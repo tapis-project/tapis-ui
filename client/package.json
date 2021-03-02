@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hot-loader/react-dom": "^17.0.1",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.1",
     "axios": "^0.21.1",
+    "babel-plugin-react-css-modules": "^5.2.6",
     "cross-fetch": "^3.0.6",
+    "eslint-loader": "^4.0.2",
+    "html-loader": "^2.1.1",
+    "html-webpack-plugin": "^5.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hot-loader": "^4.13.0",
@@ -15,13 +20,21 @@
     "react-scripts": "4.0.3",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
-    "web-vitals": "^1.1.0"
+    "sass": "^1.32.8",
+    "web-vitals": "^1.1.0",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint '**/*.{css,scss,sass}'",
+    "build": "NODE_ENV=production BABEL_ENV=production webpack -p --display-error-details --config webpack.prod.js",
+    "test": "TZ=America/Chicago jest",
+    "test:watch": "npm run test -- --watch",
+    "staging": "NODE_ENV=development webpack --config webpack.dev.js",
+    "dev": "NODE_ENV=development BABEL_ENV=development webpack serve --config webpack.dev.js"
   },
   "eslintConfig": {
     "extends": [
@@ -40,5 +53,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "html-webpack-harddisk-plugin": "^2.0.0"
   }
 }
