@@ -1,10 +1,9 @@
-import logo from './logo.svg';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { useLogin } from 'tapis-redux';
 import './App.css';
 
 const App = () => {
-  const { user, loading, error } = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
   return (
     <div className="App">
       <div>

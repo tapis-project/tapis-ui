@@ -8,4 +8,11 @@ export const authSuccess = [
   }
 ];
 
+export const authInitialState = {
+  user: null,
+  loading: false,
+  error: null
+};
+
+
 export default authSuccess;
