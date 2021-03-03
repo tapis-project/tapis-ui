@@ -1,7 +1,7 @@
 import { authInitialState } from './auth.fixture';
 
 const tapisReduxStore = {
-  auth: authInitialState
-}
+  auth: authInitialState,
+};
 
 export default tapisReduxStore;

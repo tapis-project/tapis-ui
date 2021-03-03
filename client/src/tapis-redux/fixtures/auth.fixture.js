@@ -4,15 +4,14 @@ export const authSuccess = [
     first_name: 'Firstname',
     last_name: 'Lastname',
     username: 'username',
-    token: 'abcdef'
-  }
+    token: 'abcdef',
+  },
 ];
 
 export const authInitialState = {
   user: null,
   loading: false,
-  error: null
+  error: null,
 };
-
 
 export default authSuccess;

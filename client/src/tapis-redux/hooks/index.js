@@ -1,1 +1,3 @@
-export { default as useLogin } from './useLogin';
+import useLogin from './useLogin';
+
+export default useLogin;
