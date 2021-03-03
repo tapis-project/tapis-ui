@@ -1,5 +1,5 @@
-import 'react-hot-loader';
 import React from 'react';
+import 'react-hot-loader';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import App from './components/App';

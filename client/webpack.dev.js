@@ -11,7 +11,7 @@ module.exports = merge(common, {
   devtool: 'eval-cheap-module-source-map',
   output: {
     path: path.resolve(__dirname, 'build'),
-    publicPath: 'https://localhost:3000/build/',
+    publicPath: 'https://localhost:3000/',
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js'
   },
@@ -74,6 +74,7 @@ module.exports = merge(common, {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'public', 'index.html'),
+      inject: true
     }),
     new HtmlWebpackHarddiskPlugin(),
     new webpack.HotModuleReplacementPlugin()

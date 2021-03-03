@@ -48,6 +48,9 @@ module.exports = {
     }
   },
   plugins: [
+    new webpack.ProvidePlugin({
+        "React": "react",
+    }),
     new webpack.ProgressPlugin(),
     new webpack.ProvidePlugin({
       jQuery: 'jquery',

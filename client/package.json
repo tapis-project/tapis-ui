@@ -34,7 +34,7 @@
     "test": "TZ=America/Chicago jest",
     "test:watch": "npm run test -- --watch",
     "staging": "NODE_ENV=development webpack --config webpack.dev.js",
-    "dev": "NODE_ENV=development BABEL_ENV=development webpack serve --config webpack.dev.js"
+    "dev": "NODE_ENV=development BABEL_ENV=development webpack serve --https --config webpack.dev.js"
   },
   "eslintConfig": {
     "extends": [
