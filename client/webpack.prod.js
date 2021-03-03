@@ -15,7 +15,7 @@ module.exports = merge(common, {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/core/static/build/',
     filename: '[name].[hash].bundle.js',
-    chunkFilename: '[name].[hash].bundle.js'
+    chunkFilename: '[name].[hash].bundle.js',
   },
   module: {
     rules: [
@@ -23,47 +23,47 @@ module.exports = merge(common, {
         test: /^(.)*\.module\.(css|sass|scss)$/i,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
               modules: {
-                localIdentName: '[name]__[local]--[hash:base64:10]'
+                localIdentName: '[name]__[local]--[hash:base64:10]',
               },
-              localsConvention: 'camelCase'
-            }
+              localsConvention: 'camelCase',
+            },
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /^((?!\.module).)*\.(css|sass|scss)$/i,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true
-            }
+              sourceMap: true,
+            },
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
-      }
-    ]
+              sourceMap: true,
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -72,12 +72,12 @@ module.exports = merge(common, {
       template:
         '../server/portal/apps/workbench/templates/portal/apps/workbench/index.j2',
       filename:
-        '../../server/portal/apps/workbench/templates/portal/apps/workbench/index.html'
+        '../../server/portal/apps/workbench/templates/portal/apps/workbench/index.html',
       // jsExtension: '.gz'
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash].css',
-      chunkFilename: '[id].css'
+      chunkFilename: '[id].css',
     }),
     new CompressionPlugin({
       // filename: '[path].br[query]',
@@ -87,9 +87,9 @@ module.exports = merge(common, {
       // threshold: 10240,
       // minRatio: 0.8
     }),
-    new HtmlWebpackChangeAssetsExtensionPlugin()
+    new HtmlWebpackChangeAssetsExtensionPlugin(),
   ],
   optimization: {
-    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
-  }
+    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+  },
 });
