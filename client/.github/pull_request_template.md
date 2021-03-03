@@ -1,8 +1,8 @@
 ## Overview: ##
 
-## Related Jira tickets: ##
+## Related Github Issues: ##
 
-* [FP-123](https://jira.tacc.utexas.edu/browse/FP-123)
+* [1234](https://github.com/tapis-project/tapis-ui/issues/1234)
 
 ## Summary of Changes: ##
 

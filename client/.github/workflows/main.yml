@@ -3,7 +3,7 @@ name: CI
 # Controls when the action will run. Triggers the workflow on pushes to main or on pull request events
 on:
   push:
-    branches: [ main ]
+    branches: [ react-tapis-helloworld ]
   pull_request:
     branches: [ '**' ]
 
