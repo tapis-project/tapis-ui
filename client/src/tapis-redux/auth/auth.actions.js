@@ -1,6 +1,3 @@
-
-import { put } from 'redux-saga/effects';
-
 export const login = (username, password) => {
   return {
     type: ACTIONS.LOGIN.LOGIN,
@@ -17,6 +14,6 @@ export const ACTIONS = {
     START: 'TAPIS_AUTH_LOGIN_START',
     SUCCESS: 'TAPIS_AUTH_LOGIN_SUCCESS',
     ERROR: 'TAPIS_AUHT_LOGIN_ERROR',
-    FAILED: 'TAPIS_AUTH_LOGIN_FAILED'
-  }
+    FAILED: 'TAPIS_AUTH_LOGIN_FAILED',
+  },
 };

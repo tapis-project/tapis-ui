@@ -1,12 +1,12 @@
-import { call, put, takeLeading } from 'redux-saga/effects';
-import { authSuccess } from '../fixtures/auth.fixture';
+import { put, takeLeading } from 'redux-saga/effects';
+import { authSuccess } from './auth.fixture';
 // import login from 'utils/tapis';
-import { ACTIONS } from '../actions/auth';
+import { ACTIONS } from './auth.actions';
 
 export function* authLogin(action) {
   try {
     yield put({ type: ACTIONS.LOGIN.START });
-    //const userJson = yield call(login, action.payload);
+    // const userJson = yield call(login, action.payload);
     const userJson = authSuccess;
     yield put({ type: ACTIONS.LOGIN.SUCCESS, payload: userJson });
   } catch (error) {

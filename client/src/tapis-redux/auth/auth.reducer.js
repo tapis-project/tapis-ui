@@ -1,14 +1,13 @@
-import { ACTIONS } from '../actions/auth';
+import { ACTIONS } from './auth.actions';
 
 export const initialState = {
   user: null,
   loading: false,
   error: null,
-  failed: false
+  failed: false,
 };
 
 export default function auth(state = initialState, action) {
-  console.log("Action", action);
   switch (action.type) {
     case ACTIONS.LOGIN.START:
       return {
@@ -16,7 +15,7 @@ export default function auth(state = initialState, action) {
         user: null,
         loading: true,
         error: null,
-        failed: false
+        failed: false,
       };
     case ACTIONS.LOGIN.SUCCESS:
       return {
@@ -24,7 +23,7 @@ export default function auth(state = initialState, action) {
         user: action.payload,
         loading: false,
         error: null,
-        failed: false
+        failed: false,
       };
     case ACTIONS.LOGIN.ERROR:
       return {
@@ -32,7 +31,7 @@ export default function auth(state = initialState, action) {
         user: null,
         loading: false,
         error: action.payload,
-        failed: false
+        failed: false,
       };
     case ACTIONS.LOGIN.FAILED:
       return {
@@ -40,8 +39,8 @@ export default function auth(state = initialState, action) {
         user: null,
         loading: false,
         error: null,
-        failed: true
-      }
+        failed: true,
+      };
     default:
       return state;
   }

@@ -1,6 +1,5 @@
-import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { login } from '../actions/auth';
+import { login } from './auth.actions';
 
 const useLogin = () => {
   const { user, loading, error } = useSelector((state) => state.auth);
@@ -8,7 +7,7 @@ const useLogin = () => {
     user,
     loading,
     error,
-    login
+    login,
   };
 };
 
