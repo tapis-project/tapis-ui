@@ -2,14 +2,14 @@ import React from 'react';
 import 'react-hot-loader';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import Login from './components/Login';
+import { App } from './components';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import store from './tapis-redux/store';
 
 ReactDOM.render(
   <Provider store={store}>
-    <Login />
+    <App />
   </Provider>,
   document.getElementById('root')
 );

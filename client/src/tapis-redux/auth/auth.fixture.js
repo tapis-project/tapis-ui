@@ -6,10 +6,9 @@ export const authSuccess = {
   token: 'abcdef',
 };
 
-export const authInitialState = {
-  user: null,
+export const authStore = {
+  user: authSuccess,
   loading: false,
   error: null,
+  failed: false,
 };
-
-export default authSuccess;

@@ -35,9 +35,7 @@ const LoginForm = () => {
 const Login = () => {
   const { user } = useLogin();
   return (
-    <div className="App">
-      {!user ? <LoginForm /> : <div>Logged in as {user.username}</div>}
-    </div>
+    <div>{!user ? <LoginForm /> : <div>Logged in as {user.username}</div>}</div>
   );
 };
 
