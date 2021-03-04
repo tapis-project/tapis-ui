@@ -1,19 +1,22 @@
 import { call, put, takeLeading } from 'redux-saga/effects';
-import login from 'utils/tapis';
+import { authSuccess } from '../fixtures/auth.fixture';
+// import login from 'utils/tapis';
+import { ACTIONS } from '../actions/auth';
 
 export function* authLogin(action) {
   try {
-    yield put({ type: 'TAPIS_AUTH_LOGIN_START' });
-    const userJson = yield call(login, action.payload);
-    yield put({ type: 'TAPIS_AUTH_LOGIN_SUCCESS', payload: userJson });
+    yield put({ type: ACTIONS.LOGIN.START });
+    //const userJson = yield call(login, action.payload);
+    const userJson = authSuccess;
+    yield put({ type: ACTIONS.LOGIN.SUCCESS, payload: userJson });
   } catch (error) {
     yield put({
-      type: 'TAPIS_AUTH_LOGIN_ERROR',
+      type: ACTIONS.LOGIN.ERROR,
       payload: error,
     });
   }
 }
 
 export function* watchLogin() {
-  yield takeLeading('TAPIS_AUTH_LOGIN', authLogin);
+  yield takeLeading(ACTIONS.LOGIN.LOGIN, authLogin);
 }

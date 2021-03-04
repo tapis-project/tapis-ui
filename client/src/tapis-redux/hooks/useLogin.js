@@ -8,9 +8,7 @@ const useLogin = () => {
     user,
     loading,
     error,
-    login: useCallback((username, password) => login(username, password), [
-      login,
-    ]),
+    login
   };
 };
 

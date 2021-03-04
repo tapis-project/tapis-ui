@@ -1,18 +1,22 @@
+
 import { put } from 'redux-saga/effects';
 
 export const login = (username, password) => {
-  put({
-    type: 'TAPIS_AUTH_LOGIN',
+  return {
+    type: ACTIONS.LOGIN.LOGIN,
     payload: {
       username,
       password,
     },
-  });
+  };
 };
 
 export const ACTIONS = {
-  LOGIN: 'TAPIS_AUTH_LOGIN',
-  LOGIN_START: 'TAPIS_AUTH_LOGIN_START',
-  LOGIN_SUCCESS: 'TAPIS_AUTH_LOGIN_SUCCESS',
-  LOGIN_FAILED: 'TAPIS_AUTH_LOGIN_FAILED',
+  LOGIN: {
+    LOGIN: 'TAPIS_AUTH_LOGIN_LOGIN',
+    START: 'TAPIS_AUTH_LOGIN_START',
+    SUCCESS: 'TAPIS_AUTH_LOGIN_SUCCESS',
+    ERROR: 'TAPIS_AUHT_LOGIN_ERROR',
+    FAILED: 'TAPIS_AUTH_LOGIN_FAILED'
+  }
 };
