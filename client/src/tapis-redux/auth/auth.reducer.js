@@ -1,31 +1,45 @@
+import { ACTIONS } from './auth.actions';
+
 export const initialState = {
   user: null,
   loading: false,
   error: null,
+  failed: false,
 };
 
 export default function auth(state = initialState, action) {
   switch (action.type) {
-    case 'TAPIS_AUTH_LOGIN_START':
+    case ACTIONS.LOGIN.START:
       return {
         ...state,
         user: null,
         loading: true,
         error: null,
+        failed: false,
       };
-    case 'TAPIS_AUTH_LOGIN_SUCCESS':
+    case ACTIONS.LOGIN.SUCCESS:
       return {
         ...state,
         user: action.payload,
         loading: false,
         error: null,
+        failed: false,
       };
-    case 'TAPIS_AUTH_LOGIN_ERROR':
+    case ACTIONS.LOGIN.ERROR:
       return {
         ...state,
         user: null,
         loading: false,
         error: action.payload,
+        failed: false,
+      };
+    case ACTIONS.LOGIN.FAILED:
+      return {
+        ...state,
+        user: null,
+        loading: false,
+        error: null,
+        failed: true,
       };
     default:
       return state;

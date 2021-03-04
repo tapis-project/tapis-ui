@@ -1,12 +1,17 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import './App.css';
+import { useAuth } from 'tapis-redux';
+import Login from '../Login';
+import Systems from '../Systems';
 
 const App = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useAuth();
   return (
-    <div className="App">
-      <div>{user ? 'Logged in ' : 'Not logged in'}</div>
+    <div>
+      <Login />
+      {
+        // Only show Systems component if logged in
+        user && <Systems />
+      }
     </div>
   );
 };

@@ -1,5 +1,3 @@
-import App from './App';
-
-// To be replaced later with:
-// export { default as App } from './App';
-export default App;
+export { default as Login } from './Login';
+export { default as Systems } from './Systems';
+export { default as App } from './App';
