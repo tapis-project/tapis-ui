@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { Form, Label, Input, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
-import { useLogin } from 'tapis-redux';
+import { useAuth } from 'tapis-redux';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { login } = useLogin();
+  const { login } = useAuth();
   /* Replace with CEP _common FormField objects, formik and yup */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +32,7 @@ const LoginForm = () => {
 };
 
 const Login = () => {
-  const { user } = useLogin();
+  const { user } = useAuth();
   return (
     <div>{!user ? <LoginForm /> : <div>Logged in as {user.username}</div>}</div>
   );
