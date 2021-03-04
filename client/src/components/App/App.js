@@ -2,7 +2,6 @@ import React from 'react';
 import { useLogin } from 'tapis-redux';
 import Login from '../Login';
 import Systems from '../Systems';
-import './App.css';
 
 const App = () => {
   const { user } = useLogin();

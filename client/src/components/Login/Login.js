@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { Form, Label, Input, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { useLogin } from 'tapis-redux';
-import './Login.css';
 
 const LoginForm = () => {
   const dispatch = useDispatch();

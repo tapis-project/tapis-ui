@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
 import PropTypes from 'prop-types';
-import './Systems.css';
 
 const System = ({ definition }) => {
   return <div>{`${definition.id} (${definition.host})`}</div>;
