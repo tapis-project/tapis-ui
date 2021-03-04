@@ -1,5 +1,5 @@
 import { put, takeLeading } from 'redux-saga/effects';
-import { authSuccess } from './auth.fixture';
+import { authSuccess } from './auth.fixtures';
 // import tapisFetch from '../utils';
 import { ACTIONS } from './auth.actions';
 

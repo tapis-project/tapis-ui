@@ -8,10 +8,10 @@ import tapisReduxStore from '../../tapis-redux/fixtures/tapis-redux.fixture';
 const mockStore = configureStore();
 
 describe('Systems', () => {
-  it('renders Login component', () => {
+  it('renders Systems component', () => {
     const store = mockStore(tapisReduxStore);
 
-    const { getAllByText } = renderComponent(<Login />, store);
-    expect(getAllByText(/password/).length).toEqual(1);
+    const { getAllByText } = renderComponent(<Systems />, store);
+    expect(getAllByText(/tapis.system/).length).toEqual(1);
   });
 });

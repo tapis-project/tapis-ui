@@ -12,6 +12,6 @@ describe('Login', () => {
     const store = mockStore(tapisReduxStore);
 
     const { getAllByText } = renderComponent(<Login />, store);
-    expect(getAllByText(/password/).length).toEqual(1);
+    expect(getAllByText(/username/).length).toEqual(1);
   });
 });

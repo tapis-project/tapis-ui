@@ -1,13 +1,16 @@
 import { select, put, takeLeading } from 'redux-saga/effects';
 import getToken from '../auth/auth.selectors';
-import { listingSuccess } from './systems.fixture';
+import { listingSuccess } from './systems.fixtures';
 import { ACTIONS } from './systems.actions';
 
 export function* systemsList(action) {
   try {
     // Should the saga try to track token state? Or is each
     // client expected to monitor auth'd user and expicitly provide token?
-    const token = action.token ? action.token : yield select(getToken);
+    let token = action.payload ? action.payload.token : null;
+    if (!token) {
+      token = yield select(getToken);
+    }
     if (!token) {
       yield put({
         type: ACTIONS.LIST.FAILED,

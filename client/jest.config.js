@@ -69,7 +69,7 @@ module.exports = {
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
-    '^_common(.*)$': '<rootDir>/src/components/_common$1',
+    '^tapis-redux(.*)$': '<rootDir>/src/tapis-redux$1',
     '^utils(.*)$': '<rootDir>/src/utils$1',
   },
 
