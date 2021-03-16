@@ -12,16 +12,16 @@ module.exports = merge(common, {
     path: path.resolve(__dirname, 'build'),
     publicPath: 'https://localhost:3000/',
     filename: '[name].bundle.js',
-    chunkFilename: '[name].bundle.js',
+    chunkFilename: '[name].bundle.js'
   },
   // serve assets via webpack serve
   devServer: {
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': '*'
     },
     port: 3000,
     compress: true,
-    hot: true,
+    hot: true
   },
   module: {
     rules: [
@@ -29,46 +29,46 @@ module.exports = merge(common, {
         test: /^(.)*\.module\.(css|sass|scss)$/i,
         use: [
           {
-            loader: 'style-loader',
+            loader: 'style-loader'
           },
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
               modules: {
-                localIdentName: '[name]__[local]--[hash:base64:10]',
-              },
-            },
+                localIdentName: '[name]__[local]--[hash:base64:10]'
+              }
+            }
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true,
-            },
-          },
-        ],
+              sourceMap: true
+            }
+          }
+        ]
       },
       {
         test: /^((?!\.module).)*\.(css|sass|scss)$/i,
         use: [
           {
-            loader: 'style-loader',
+            loader: 'style-loader'
           },
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true,
-            },
+              sourceMap: true
+            }
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true,
-            },
-          },
-        ],
-      },
-    ],
+              sourceMap: true
+            }
+          }
+        ]
+      }
+    ]
   },
   plugins: [
     new webpack.EnvironmentPlugin({
@@ -77,9 +77,9 @@ module.exports = merge(common, {
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'public', 'index.html'),
-      inject: true,
+      inject: true
     }),
     new HtmlWebpackHarddiskPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-  ],
+    new webpack.HotModuleReplacementPlugin()
+  ]
 });
