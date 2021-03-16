@@ -20,13 +20,13 @@ const Login = ({ config, onApi }) => {
       <Input
         type="text"
         id="username"
-        onChange={(e) => setUsername(e.target.value)}
+        onChange={e => setUsername(e.target.value)}
       />
       <Label for="password">Password</Label>
       <Input
         type="password"
         id="password"
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={e => setPassword(e.target.value)}
       />
       <Button onClick={onLogin} disabled={loading}>
         Login

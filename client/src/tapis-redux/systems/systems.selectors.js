@@ -1,3 +1,3 @@
-const getSystems = (state) => state.systems.definitions;
+const getSystems = state => state.systems.definitions;
 
 export default getSystems;
