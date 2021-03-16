@@ -2,7 +2,7 @@
 
 ## Related Github Issues: ##
 
-* [1234](https://github.com/tapis-project/tapis-ui/issues/1234)
+* [TUI-1234](https://github.com/tapis-project/tapis-ui/issues/1234)
 
 ## Summary of Changes: ##
 
