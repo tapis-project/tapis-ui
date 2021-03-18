@@ -5,9 +5,14 @@ import Systems from '../Systems';
 
 const App = () => {
   const { token } = useAuthenticator();
+  const config = {
+    token: null,
+    tenant: 'https://tacc.tapis.io/v3',
+    authenticator: 'https://tacc.tapis.io/v3/oauth2',
+  };
   return (
     <div>
-      <Login />
+      <Login config={config} />
       {
         // Only show Systems component if logged in
         token && <Systems />

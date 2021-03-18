@@ -1,13 +1,14 @@
 import { useSelector } from 'react-redux';
-import { login } from './authenticator.actions';
+import { login as loginAction } from './authenticator.actions';
 
-const useAuthenticator = () => {
+const useAuthenticator = (config) => {
   const { token, loading, error } = useSelector((state) => state.authenticator);
   return {
     token,
     loading,
     error,
-    login,
+    login: (username, password) =>
+      loginAction(username, password, config.authenticator),
   };
 };
 

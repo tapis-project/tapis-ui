@@ -2,10 +2,11 @@ import React, { useState, useCallback } from 'react';
 import { Form, Label, Input, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { useAuthenticator } from 'tapis-redux';
+import { configPropType, defaultConfig } from 'tapis-redux/types';
 
-const LoginForm = () => {
+const LoginForm = ({ config }) => {
   const dispatch = useDispatch();
-  const { login } = useAuthenticator();
+  const { login } = useAuthenticator(config);
   /* Replace with CEP _common FormField objects, formik and yup */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,9 +32,28 @@ const LoginForm = () => {
   );
 };
 
-const Login = () => {
-  const { token } = useAuthenticator();
-  return <div>{!token ? <LoginForm /> : <div>Logged in</div>}</div>;
+LoginForm.propTypes = {
+  // TAPIS configuration, with optional authenticator url
+  config: configPropType,
+};
+
+LoginForm.defaultProps = {
+  config: defaultConfig,
+};
+
+const Login = ({ config }) => {
+  const { token } = useAuthenticator(config);
+  return (
+    <div>{!token ? <LoginForm config={config} /> : <div>Logged in</div>}</div>
+  );
+};
+
+Login.propTypes = {
+  config: configPropType,
+};
+
+Login.defaultProps = {
+  config: defaultConfig,
 };
 
 export default Login;

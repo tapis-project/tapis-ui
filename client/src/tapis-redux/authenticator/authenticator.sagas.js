@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ACTIONS } from './authenticator.actions';
 
 export const tapisAuthPassword = ({ username, password, authenticator }) => {
-  const url = `${authenticator || process.env.TAPIS_AUTHENTICATOR_URL}/tokens`;
+  const url = `${authenticator}/tokens`;
   return axios.post(url, {
     username,
     password,
