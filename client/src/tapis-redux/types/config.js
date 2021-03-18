@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
+import tokenPropType from './token';
 
 export const configPropType = PropTypes.shape({
-  token: PropTypes.string,
+  token: tokenPropType,
   tenant: PropTypes.string,
   authenticator: PropTypes.string,
 });
