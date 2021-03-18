@@ -5,6 +5,8 @@ import Systems from '../Systems';
 
 const App = () => {
   const { token } = useAuthenticator();
+
+  // Demonstration of config to use alternate URLs or provided tokens
   const config = {
     token: null,
     tenant: 'https://tacc.tapis.io/v3',
