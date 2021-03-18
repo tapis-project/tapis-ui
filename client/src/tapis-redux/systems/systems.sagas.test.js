@@ -18,7 +18,7 @@ describe('Systems listing saga', () => {
       expectSaga(systemsList, action)
         .withReducer(systems)
         .provide([[matchers.select.selector(getToken), authenticatorToken]])
-        .select(getToken)
+        //.select(getToken)
         .put({
           type: ACTIONS.LIST.START,
         })
