@@ -6,6 +6,7 @@ export const configPropType = PropTypes.shape({
   authenticator: PropTypes.string,
 });
 
+// Default configuration uses environment variables to configure URLs
 export const defaultConfig = {
   token: null,
   tenant: process.env.TAPIS_TENANT_URL,
