@@ -1,2 +1,2 @@
-export { default as useAuth } from './auth/useAuth';
+export { default as useAuthenticator } from './authenticator/useAuthenticator';
 export { default as useSystems } from './systems/useSystems';

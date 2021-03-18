@@ -1,45 +1,33 @@
-import { ACTIONS } from './auth.actions';
+import { ACTIONS } from './authenticator.actions';
 
 export const initialState = {
-  user: null,
+  token: null,
   loading: false,
   error: null,
-  failed: false,
 };
 
-export default function auth(state = initialState, action) {
+export default function authenticator(state = initialState, action) {
   switch (action.type) {
     case ACTIONS.LOGIN.START:
       return {
         ...state,
-        user: null,
+        token: null,
         loading: true,
         error: null,
-        failed: false,
       };
     case ACTIONS.LOGIN.SUCCESS:
       return {
         ...state,
-        user: action.payload,
+        token: action.payload,
         loading: false,
         error: null,
-        failed: false,
       };
     case ACTIONS.LOGIN.ERROR:
       return {
         ...state,
-        user: null,
+        token: null,
         loading: false,
         error: action.payload,
-        failed: false,
-      };
-    case ACTIONS.LOGIN.FAILED:
-      return {
-        ...state,
-        user: null,
-        loading: false,
-        error: null,
-        failed: true,
       };
     default:
       return state;

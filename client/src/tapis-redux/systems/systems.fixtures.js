@@ -11,5 +11,4 @@ export const systemsStore = {
   },
   loading: false,
   error: null,
-  failed: false,
 };

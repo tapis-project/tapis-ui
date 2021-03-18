@@ -4,7 +4,6 @@ export const initialState = {
   definitions: {},
   loading: true,
   error: null,
-  failed: false,
 };
 
 export const addSystems = (definitions, listing) => {
@@ -23,7 +22,6 @@ export default function systems(state = initialState, action) {
         ...state,
         loading: true,
         error: null,
-        failed: false,
       };
     case ACTIONS.LIST.SUCCESS:
       return {
@@ -31,21 +29,12 @@ export default function systems(state = initialState, action) {
         definitions: addSystems(state.definitions, action.payload),
         loading: false,
         error: null,
-        failed: false,
       };
     case ACTIONS.LIST.ERROR:
       return {
         ...state,
         loading: false,
         error: action.payload,
-        failed: false,
-      };
-    case ACTIONS.LIST.FAILED:
-      return {
-        ...state,
-        loading: false,
-        error: null,
-        failed: true,
       };
     default:
       return state;

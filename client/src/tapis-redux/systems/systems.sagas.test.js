@@ -3,8 +3,9 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { systemsList } from './systems.sagas';
 import { ACTIONS } from './systems.actions';
 import { listingSuccess, systemsStore } from './systems.fixtures';
+import { authenticatorToken } from '../authenticator/authenticator.fixtures';
 import systems from './systems.reducer';
-import getToken from '../auth/auth.selectors';
+import getToken from '../authenticator/authenticator.selectors';
 
 jest.mock('cross-fetch');
 
@@ -16,7 +17,7 @@ describe('Systems listing saga', () => {
     return (
       expectSaga(systemsList, action)
         .withReducer(systems)
-        .provide([[matchers.select.selector(getToken), '1234']])
+        .provide([[matchers.select.selector(getToken), authenticatorToken]])
         .select(getToken)
         .put({
           type: ACTIONS.LIST.START,
@@ -41,6 +42,7 @@ describe('Systems listing saga', () => {
     return (
       expectSaga(systemsList, action)
         .withReducer(systems)
+        .provide([[matchers.select.selector(getToken), authenticatorToken]])
         .put({
           type: ACTIONS.LIST.START,
         })
@@ -52,27 +54,5 @@ describe('Systems listing saga', () => {
         .hasFinalState(systemsStore)
         .run()
     );
-  });
-
-  it('fails to run saga, when no token is provided and not logged in', async () => {
-    const action = {
-      type: ACTIONS.LIST.LIST,
-      payload: {},
-    };
-    return expectSaga(systemsList, action)
-      .withReducer(systems)
-      .provide([[matchers.select.selector(getToken), null]])
-      .select(getToken)
-      .put({
-        type: ACTIONS.LIST.FAILED,
-        payload: 'tapis-redux not logged in',
-      })
-      .hasFinalState({
-        definitions: {},
-        loading: false,
-        error: null,
-        failed: true,
-      })
-      .run();
   });
 });
