@@ -38,7 +38,8 @@ module.exports = {
     alias: {
       'react-dom': '@hot-loader/react-dom',
       utils: path.resolve(__dirname, 'src/utils/'),
-      'tapis-redux': path.resolve(__dirname, 'src/tapis-redux/')
+      'tapis-redux': path.resolve(__dirname, 'src/tapis-redux/'),
+      _common: path.resolve(__dirname, '/src/components/_common')
     }
   },
   optimization: {

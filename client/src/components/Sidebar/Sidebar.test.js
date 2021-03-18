@@ -12,7 +12,7 @@ describe('Sidebar', () => {
     const store = mockStore(tapisReduxStore);
 
     const { getAllByText } = renderComponent(<Sidebar />, store);
-    expect(getAllByText(/Home/).length).toEqual(1);
+    expect(getAllByText(/Dashboard/).length).toEqual(1);
     expect(getAllByText(/Login/).length).toEqual(1);
     expect(getAllByText(/UI Patterns/).length).toEqual(1);
   });

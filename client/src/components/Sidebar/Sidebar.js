@@ -1,48 +1,48 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { Nav, NavItem, NavLink } from 'reactstrap';
+import { NavLink as RRNavLink } from 'react-router-dom';
 import { useAuth } from 'tapis-redux';
-import Login from '../Login';
-import Systems from '../Systems';
-import UIPatterns from '../UIPatterns';
+import PropTypes from 'prop-types';
+import { Icon } from '../_common';
+// import * as ROUTES from '../../constants/routes';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
+
+const SidebarItem = ({ to, label, iconName }) => {
+  return (
+    <NavItem>
+      <NavLink
+        tag={RRNavLink}
+        to={to}
+        styleName="link"
+        activeStyleName="link--active"
+      >
+        <div styleName="content" className="nav-content">
+          <Icon name={iconName} />
+          <span styleName="text">{label}</span>
+        </div>
+      </NavLink>
+    </NavItem>
+  );
+};
+
+SidebarItem.propTypes = {
+  to: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  iconName: PropTypes.string.isRequired
+};
 
 const Sidebar = () => {
   const { user } = useAuth();
   return (
-    <Router>
-      <div>
-        <nav>
-          <div>
-            <Link to="/">Home</Link>
-          </div>
-          <div>
-            <Link to="/login">Login</Link>
-          </div>
-          {user && (
-            <div>
-              <Link to="/systems">Systems</Link>
-            </div>
-          )}
-          <div>
-            <Link to="/uipatterns">UI Patterns</Link>
-          </div>
-        </nav>
-      </div>
-      <hr />
-      <Switch>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/systems">{user && <Systems />}</Route>
-        <Route path="/uipatterns">
-          <UIPatterns />
-        </Route>
-        <Route path="/">
-          <div>Home</div>
-        </Route>
-      </Switch>
-    </Router>
+    <Nav styleName="root" vertical>
+      <SidebarItem to="" label="Dashboard" iconName="dashboard" />
+      <SidebarItem to="/login" label="Login" iconName="link" />
+      {user && (
+        <SidebarItem to="/systems" label="Systems" iconName="allocations" />
+      )}
+      <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
+    </Nav>
   );
 };
 
