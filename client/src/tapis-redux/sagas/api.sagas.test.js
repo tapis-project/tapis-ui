@@ -2,7 +2,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import tapisFetch from '../utils';
 import { apiSagaHelper } from './api.sagas';
-import ACTIONS from './api.actions';
+import API_ACTIONS from './api.actions';
 
 jest.mock('cross-fetch');
 
@@ -29,7 +29,7 @@ describe('API Saga Helper', () => {
       responseParser
     }
     const action = {
-      type: ACTIONS.API.CALL,
+      type: API_ACTIONS.API.CALL,
       payload
     }
     const apiResult = {
@@ -107,7 +107,7 @@ describe('API Saga Helper', () => {
       config
     }
     const action = {
-      type: ACTIONS.API.CALL,
+      type: API_ACTIONS.API.CALL,
       payload
     }
     const apiResult = {
