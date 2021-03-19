@@ -14,21 +14,33 @@ export const tapisAuthPassword = ({ username, password, authenticator }) => {
 
 export function* authenticatorLogin(action) {
   try {
+    // Notify tapis-redux that login action has started
     yield put({ type: ACTIONS.LOGIN.START });
+    // Make API call
     const result = yield call(tapisAuthPassword, {
       username: action.payload.username,
       password: action.payload.password,
       authenticator: action.payload.authenticator,
     });
+    const token = result.data.result.access_token;
+    // Notify tapis-redux store of token
     yield put({
       type: ACTIONS.LOGIN.SUCCESS,
-      payload: result.data.result.access_token,
+      payload: token,
     });
+    // Call external callback with a copy of the token
+    if (action.payload.callback) {
+      action.payload.callback({ ...token });
+    }
   } catch (error) {
+    // Catch any errors and save exception in tapis-redux
     yield put({
       type: ACTIONS.LOGIN.ERROR,
       payload: error,
     });
+    if (action.payload.callback) {
+      action.payload.callback(error);
+    }
   }
 }
 
