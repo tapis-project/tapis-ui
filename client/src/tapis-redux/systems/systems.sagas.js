@@ -1,5 +1,4 @@
 import { put, takeLeading } from 'redux-saga/effects';
-// import getToken from '../authenticator/authenticator.selectors';
 import { listingSuccess } from './systems.fixtures';
 import { ACTIONS } from './systems.actions';
 
