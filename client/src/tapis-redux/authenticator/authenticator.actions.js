@@ -1,11 +1,11 @@
-export const login = (username, password, authenticator, callback) => {
+export const login = (username, password, authenticator, apiCallback) => {
   return {
     type: ACTIONS.LOGIN.LOGIN,
     payload: {
       username,
       password,
       authenticator,
-      callback,
+      apiCallback,
     },
   };
 };

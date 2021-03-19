@@ -29,8 +29,8 @@ export function* authenticatorLogin(action) {
       payload: token,
     });
     // Call external callback with a copy of the token
-    if (action.payload.callback) {
-      action.payload.callback({ ...token });
+    if (action.payload.apiCallback) {
+      action.payload.apiCallback({ ...token });
     }
   } catch (error) {
     // Catch any errors and save exception in tapis-redux
@@ -39,7 +39,7 @@ export function* authenticatorLogin(action) {
       payload: error,
     });
     if (action.payload.callback) {
-      action.payload.callback(error);
+      action.payload.apiCallback(error);
     }
   }
 }

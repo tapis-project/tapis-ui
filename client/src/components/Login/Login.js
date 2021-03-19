@@ -5,9 +5,9 @@ import { useAuthenticator } from 'tapis-redux';
 import { configPropType, defaultConfig } from 'tapis-redux/types';
 import PropTypes from 'prop-types';
 
-const Login = ({ config, callback }) => {
+const Login = ({ config, apiCallback }) => {
   const dispatch = useDispatch();
-  const { login, loading, error } = useAuthenticator(config, callback);
+  const { login, loading, error } = useAuthenticator(config, apiCallback);
   /* Replace with CEP _common FormField objects, formik and yup */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +38,7 @@ const Login = ({ config, callback }) => {
 
 Login.propTypes = {
   config: configPropType,
-  callback: PropTypes.func,
+  apiCallback: PropTypes.func,
 };
 
 Login.defaultProps = {
