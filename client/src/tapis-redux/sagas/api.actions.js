@@ -1,5 +1,24 @@
 export const defaultResponseParser = (response) => response.data.result;
 
+export const apiCall = ({
+  config,
+  onApi,
+  dispatches,
+  apiParams,
+  responseParser,
+}) => {
+  return {
+    type: API_ACTIONS.API.CALL,
+    payload: {
+      config,
+      onApi,
+      dispatches,
+      apiParams,
+      responseParser: responseParser || defaultResponseParser,
+    },
+  };
+};
+
 export const API_ACTIONS = {
   API: {
     CALL: 'TAPIS_REDUX_API_CALL',

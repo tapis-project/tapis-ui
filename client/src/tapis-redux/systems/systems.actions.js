@@ -1,22 +1,18 @@
-import { defaultResponseParser, API_ACTIONS } from '../sagas/api.actions';
+import { apiCall } from '../sagas/api.actions';
 
 export const list = (config, onApi) => {
   // Generate a dispatch that calls the API saga with
   // a systems listing payload
-  return {
-    type: API_ACTIONS.API.CALL,
-    payload: {
-      config,
-      onApi,
-      dispatches: ACTIONS.LIST,
-      apiParams: {
-        method: 'get',
-        service: 'systems',
-        path: '/',
-      },
-      responseParser: defaultResponseParser,
+  return apiCall({
+    config,
+    onApi,
+    dispatches: ACTIONS.LIST,
+    apiParams: {
+      method: 'get',
+      service: 'systems',
+      path: '/',
     },
-  };
+  });
 };
 
 export const ACTIONS = {
