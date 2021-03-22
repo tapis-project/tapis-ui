@@ -26,7 +26,7 @@ const Systems = ({ config, onApi }) => {
     <div>
       <h5>Systems</h5>
       {definitions &&
-        (definitions.length > 0 ? (
+        (Object.keys(definitions).length > 0 ? (
           Object.keys(definitions).map((id) => (
             <System definition={definitions[id]} key={id} />
           ))
