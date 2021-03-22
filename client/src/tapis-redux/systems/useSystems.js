@@ -7,7 +7,7 @@ const useSystems = (config, onApi) => {
     definitions,
     loading,
     error,
-    list: () => list(config),
+    list: () => list(config, onApi),
   };
 };
 

@@ -4,7 +4,7 @@ const tapisFetch = ({ method, token, service, path, params, tenant, data }) => {
   const baseUrl = tenant || process.env.TAPIS_TENANT_URL;
   return axios.request({
     method,
-    url: `https://${baseUrl}/${service}${path}`,
+    url: `${baseUrl}/${service}${path}`,
     params,
     data,
     headers: {
