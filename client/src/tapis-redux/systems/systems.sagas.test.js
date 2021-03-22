@@ -1,32 +1,59 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { systemsList, systemsListResponseParser } from './systems.sagas';
-import { ACTIONS } from './systems.actions';
-import API_ACTIONS from '../sagas/api.actions';
-jest.mock('cross-fetch');
+import * as matchers from "redux-saga-test-plan/matchers";
+import { apiSaga } from '../sagas/api.sagas';
+import { list, ACTIONS } from './systems.actions';
+import { systems } from './systems.reducer';
+import { listingResponse, listingResult, systemsStore } from './systems.fixtures';
+import getToken from '../authenticator/authenticator.selectors';
+import tapisFetch from '../utils';
 
 describe('Systems listing saga', () => {
   it('runs saga', async () => {
-    const action = {
-      type: ACTIONS.LIST.LIST,
-      payload: {}
-    };
-    return (
-      expectSaga(systemsList, action)
-        .put({
-          type: API_ACTIONS.API.CALL,
-          payload: {
-            apiParams: {
-              method: 'get',
-              service: 'systems',
-              path: '/'
-            },
-            config: undefined,
-            onApi: undefined,
-            dispatches: ACTIONS.LIST,
-            responseParser: systemsListResponseParser
-          }
-        })
-        .run()
-    );
+    // Generate an api call with a custom configuration and callback
+    const config = {
+      token: {
+        access_token: 'provided_token',
+      },
+      tenant: 'https://tenant.url'
+    }
+    const onApi = jest.fn();
+    const action = list(config, onApi);
+
+    // Make sure saga runs with correct sequence of events
+    expectSaga(apiSaga, action)
+      .withReducer(systems)
+      // Mock the call to tapisFetch to return the systems listing fixture
+      .provide([
+        [matchers.call.fn(tapisFetch), listingResponse],
+        [matchers.select.selector(getToken), { access_token: 'default_token' }]
+      ])
+      .put({
+        type: ACTIONS.LIST.START,
+      })
+      // Assert that the correct api call is made
+      .call(
+        tapisFetch,
+        {
+          method: 'get',
+          token: 'provided_token',
+          service: 'systems',
+          path: '/',
+          params: undefined,
+          tenant: 'https://tenant.url',
+          data: undefined,
+        }
+      )
+      // Assert that the systems listing action contains a parsed result
+      .put({
+        type: ACTIONS.LIST.SUCCESS,
+        payload: listingResult,
+      })
+      // Assert that the onApi callback happens with the result
+      .call(onApi, listingResult)
+      // Assert that the reducer correctly builds the new systems listing state
+      .hasFinalState(systemsStore)
+      .run();
+    // Make sure callback fires
+    expect(onApi.mock.calls[0][0]).toStrictEqual(listingResult);
   });
 });

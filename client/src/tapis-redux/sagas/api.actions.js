@@ -1,4 +1,6 @@
-const API_ACTIONS = {
+export const defaultResponseParser = (response) => response.data.result;
+
+export const API_ACTIONS = {
   API: {
     CALL: 'TAPIS_REDUX_API_CALL',
     START: 'TAPIS_REDUX_API_START',
@@ -6,5 +8,3 @@ const API_ACTIONS = {
     ERROR: 'TAPIS_REDUX_API_ERROR',
   },
 };
-
-export default API_ACTIONS;

@@ -1,9 +1,9 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import getToken from '../authenticator/authenticator.selectors';
 import tapisFetch from '../utils';
-import ACTIONS from './api.actions';
+import { API_ACTIONS } from './api.actions';
 
-export function* apiSagaHelper(action) {
+export function* apiSaga(action) {
   const {
     config,
     onApi,
@@ -42,6 +42,6 @@ export function* apiSagaHelper(action) {
   }
 }
 
-export function* watchApiSagaHelper() {
-  yield takeEvery(ACTIONS.API.CALL, apiSagaHelper);
+export function* watchApiSaga() {
+  yield takeEvery(API_ACTIONS.API.CALL, apiSaga);
 }

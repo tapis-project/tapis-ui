@@ -8,7 +8,7 @@ const tapisFetch = ({ method, token, service, path, params, tenant, data }) => {
     params,
     data,
     headers: {
-      HTTP_JWT: token,
+      'X-Tapis-Token': token,
     },
   });
 };

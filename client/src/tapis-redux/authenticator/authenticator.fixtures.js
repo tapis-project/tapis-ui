@@ -5,7 +5,7 @@ export const authenticatorToken = {
   jti: '',
 };
 
-export const authenticatorResult = {
+export const authenticatorResponse = {
   data: {
     result: {
       access_token: authenticatorToken,

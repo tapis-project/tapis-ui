@@ -2,7 +2,7 @@ import { ACTIONS } from './systems.actions';
 
 export const initialState = {
   definitions: {},
-  loading: true,
+  loading: false,
   error: null,
 };
 
@@ -15,7 +15,7 @@ export const addSystems = (definitions, listing) => {
   return result;
 };
 
-export default function systems(state = initialState, action) {
+export function systems(state = initialState, action) {
   switch (action.type) {
     case ACTIONS.LIST.START:
       return {

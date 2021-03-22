@@ -1,7 +1,21 @@
-export const list = (token) => {
+import { defaultResponseParser, API_ACTIONS } from '../sagas/api.actions';
+
+export const list = (config, onApi) => {
+  // Generate a dispatch that calls the API saga with
+  // a systems listing payload
   return {
-    type: ACTIONS.LIST.LIST,
-    token,
+    type: API_ACTIONS.API.CALL,
+    payload: {
+      config,
+      onApi,
+      dispatches: ACTIONS.LIST,
+      apiParams: {
+        method: 'get',
+        service: 'systems',
+        path: '/',
+      },
+      responseParser: defaultResponseParser,
+    },
   };
 };
 

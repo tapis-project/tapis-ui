@@ -1,13 +1,19 @@
-export const listingSuccess = [
-  {
-    id: 'tapis.system',
-    host: 'tapis.system.host',
+export const tapisSystem = {
+  id: 'tapis.system',
+  host: 'tapis.system.host',
+};
+
+export const listingResult = [{ ...tapisSystem }];
+
+export const listingResponse = {
+  data: {
+    result: [...listingResult],
   },
-];
+};
 
 export const systemsStore = {
   definitions: {
-    [listingSuccess[0].id]: listingSuccess[0],
+    [listingResult[0].id]: { ...listingResult[0] },
   },
   loading: false,
   error: null,

@@ -1,7 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { tapisAuthPassword, authenticatorLogin } from './authenticator.sagas';
 import { ACTIONS } from './authenticator.actions';
-import { authenticatorToken, authenticatorStore, authenticatorResult } from './authenticator.fixtures';
+import { authenticatorToken, authenticatorStore, authenticatorResponse } from './authenticator.fixtures';
 import authenticator from './authenticator.reducer';
 import * as matchers from "redux-saga-test-plan/matchers";
 
@@ -23,7 +23,7 @@ describe('Authenticator login saga', () => {
       .withReducer(authenticator)
       .provide([
         // Mock the call to tapisAuthPassword to return the fixture
-        [matchers.call.fn(tapisAuthPassword), authenticatorResult]
+        [matchers.call.fn(tapisAuthPassword), authenticatorResponse]
       ])
       .put({
         type: ACTIONS.LOGIN.START,

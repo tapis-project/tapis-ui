@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import tapisFetch from '../utils';
-import { apiSagaHelper } from './api.sagas';
-import API_ACTIONS from './api.actions';
+import { apiSaga } from './api.sagas';
+import { API_ACTIONS } from './api.actions';
 
 jest.mock('cross-fetch');
 
@@ -42,7 +42,7 @@ describe('API Saga Helper', () => {
       }
     }
     // Make sure saga runs with correct sequence of events
-    expectSaga(apiSagaHelper, action)
+    expectSaga(apiSaga, action)
       .withState({
         authenticator: {
           token: {
@@ -121,7 +121,7 @@ describe('API Saga Helper', () => {
       }
     }
     // Make sure saga runs with correct sequence of events
-    expectSaga(apiSagaHelper, action)
+    expectSaga(apiSaga, action)
       .withState({
         authenticator: {
           token: {
