@@ -13,7 +13,7 @@ describe('API Saga Helper', () => {
       SUCCESS: 'API_SUCCESS',
       ERROR: 'API_ERROR'
     }
-    const apiCallback = jest.fn();
+    const onApi = jest.fn();
     const apiParams = {
       method: 'post',
       service: 'service',
@@ -24,7 +24,7 @@ describe('API Saga Helper', () => {
     const responseParser = result => result.data.result.value;
     const payload = {
       dispatches,
-      apiCallback,
+      onApi,
       apiParams,
       responseParser
     }
@@ -73,9 +73,10 @@ describe('API Saga Helper', () => {
         type: 'API_SUCCESS',
         payload: {'tapis': 'object'},
       })
+      .call(onApi, {'tapis': 'object'})
       .run();
     // Make sure callback fires
-    expect(apiCallback.mock.calls[0][0]).toStrictEqual({'tapis': 'object'});
+    expect(onApi.mock.calls[0][0]).toStrictEqual({'tapis': 'object'});
   });
 
   it('runs saga with provided configuration', async () => {
@@ -90,7 +91,7 @@ describe('API Saga Helper', () => {
       SUCCESS: 'API_SUCCESS',
       ERROR: 'API_ERROR'
     }
-    const apiCallback = jest.fn();
+    const onApi = jest.fn();
     const apiParams = {
       method: 'post',
       service: 'service',
@@ -101,7 +102,7 @@ describe('API Saga Helper', () => {
     const responseParser = result => result.data.result.value;
     const payload = {
       dispatches,
-      apiCallback,
+      onApi,
       apiParams,
       responseParser,
       config
@@ -151,9 +152,10 @@ describe('API Saga Helper', () => {
         type: 'API_SUCCESS',
         payload: {'tapis': 'object'},
       })
+      .call(onApi, {'tapis': 'object'})
       .run();
     // Make sure callback fires
-    expect(apiCallback.mock.calls[0][0]).toStrictEqual({'tapis': 'object'});
+    expect(onApi.mock.calls[0][0]).toStrictEqual({'tapis': 'object'});
   });
 
 });

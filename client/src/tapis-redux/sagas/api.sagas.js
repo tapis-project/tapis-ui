@@ -6,7 +6,7 @@ import ACTIONS from './api.actions';
 export function* apiSagaHelper(action) {
   const {
     config,
-    apiCallback,
+    onApi,
     apiParams,
     dispatches,
     responseParser,
@@ -31,13 +31,13 @@ export function* apiSagaHelper(action) {
     const response = yield call(tapisFetch, fetchParams);
     const result = responseParser(response);
     yield put({ type: dispatches.SUCCESS, payload: result });
-    if (apiCallback) {
-      apiCallback(result);
+    if (onApi) {
+      yield call(onApi, result);
     }
   } catch (error) {
     yield put({ type: dispatches.ERROR, payload: error });
-    if (apiCallback) {
-      apiCallback(error);
+    if (onApi) {
+      yield call(onApi, error);
     }
   }
 }

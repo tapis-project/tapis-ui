@@ -2,7 +2,7 @@ import { put, takeLeading } from 'redux-saga/effects';
 import { ACTIONS } from './systems.actions';
 import API_ACTIONS from '../sagas/api.actions';
 
-export const systemsListResponseParser = response => response.data.result;
+export const systemsListResponseParser = (response) => response.data.result;
 
 export function* systemsList(action) {
   try {
@@ -20,15 +20,15 @@ export function* systemsList(action) {
     const apiParams = {
       method: 'get',
       service: 'systems',
-      path: '/'
-    }
+      path: '/',
+    };
     const payload = {
       config: action.payload.config,
-      apiCallback: action.payload.apiCallback,
+      onApi: action.payload.onApi,
       dispatches: ACTIONS.LIST,
       apiParams,
-      responseParser: systemsListResponseParser
-    }
+      responseParser: systemsListResponseParser,
+    };
     yield put({ type: API_ACTIONS.API.CALL, payload });
   } catch (error) {
     yield put({

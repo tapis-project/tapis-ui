@@ -28,7 +28,7 @@ const App = () => {
 
   return (
     <div>
-      {token ? <Systems /> : <Login config={config} apiCallback={authCallback} />}
+      {token ? <Systems /> : <Login config={config} onApi={authCallback} />}
     </div>
   );
 };

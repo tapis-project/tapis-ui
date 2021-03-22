@@ -9,13 +9,13 @@ jest.mock('cross-fetch');
 
 describe('Authenticator login saga', () => {
   it('runs saga', async () => {
-    const apiCallback = jest.fn();
+    const onApi = jest.fn();
     const action = {
       type: ACTIONS.LOGIN.LOGIN,
       payload: {
         username: 'username',
         password: 'password',
-        apiCallback
+        onApi
       }
     };
     // Make sure saga runs with correct sequence of events
@@ -33,9 +33,10 @@ describe('Authenticator login saga', () => {
         type: ACTIONS.LOGIN.SUCCESS,
         payload: authenticatorToken,
       })
+      .call(onApi, authenticatorToken)
       .hasFinalState(authenticatorStore)
       .run();
     // Make sure callback fires
-    expect(apiCallback.mock.calls[0][0]).toStrictEqual(authenticatorToken);
+    expect(onApi.mock.calls[0][0]).toStrictEqual(authenticatorToken);
   });
 });

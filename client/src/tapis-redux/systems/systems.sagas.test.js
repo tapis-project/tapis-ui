@@ -21,7 +21,7 @@ describe('Systems listing saga', () => {
               path: '/'
             },
             config: undefined,
-            apiCallback: undefined,
+            onApi: undefined,
             dispatches: ACTIONS.LIST,
             responseParser: systemsListResponseParser
           }
