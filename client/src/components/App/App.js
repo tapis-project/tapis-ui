@@ -30,7 +30,7 @@ const App = () => {
 
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
-    token: null,
+    token: token,
     tenant: 'https://tacc.tapis.io/v3',
     authenticator: 'https://tacc.tapis.io/v3/oauth2',
   };
