@@ -1,16 +1,46 @@
-import React from 'react';
-import { useAuth } from 'tapis-redux';
+import React, { useState, useCallback } from 'react';
 import Login from '../Login';
 import Systems from '../Systems';
 
 const App = () => {
-  const { user } = useAuth();
+  // Demonstration of using some type of external state
+  // management that isn't tapis-redux
+  const [token, setToken] = useState(null);
+  const authCallback = useCallback(
+    (result) => {
+      /* eslint-disable */
+      console.log("Authentication api result", result);
+      // Handle errors during login
+      if (result instanceof Error) {
+        return;
+      }
+      // Set local view state
+      setToken(result);
+      // Can make also make an external call to propagate the login result
+    },
+    [setToken]
+  );
+
+  const systemsListCallback = useCallback(
+    (result) => {
+      /* eslint-disable */
+      console.log("Systems listing api result", result);
+    },
+  )
+
+  // Demonstration of config to use alternate URLs or provided tokens
+  const config = {
+    token: null,
+    tenant: 'https://tacc.tapis.io/v3',
+    authenticator: 'https://tacc.tapis.io/v3/oauth2',
+  };
+
   return (
     <div>
-      <Login />
       {
-        // Only show Systems component if logged in
-        user && <Systems />
+        token 
+          ? <Systems config={config} onApi={systemsListCallback} />
+          : <Login config={config} onApi={authCallback} />
       }
     </div>
   );

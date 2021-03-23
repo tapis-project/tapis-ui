@@ -1,7 +1,7 @@
 import { all } from 'redux-saga/effects';
-import { watchLogin } from '../auth/auth.sagas';
-import { watchSystemsListing } from '../systems/systems.sagas';
+import { watchLogin } from '../authenticator/authenticator.sagas';
+import { watchApiSaga } from './api.sagas';
 
 export default function* rootSaga() {
-  yield all([watchLogin(), watchSystemsListing()]);
+  yield all([watchApiSaga(), watchLogin()]);
 }

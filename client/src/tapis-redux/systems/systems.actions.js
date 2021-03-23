@@ -1,8 +1,18 @@
-export const list = (token) => {
-  return {
-    type: ACTIONS.LIST.LIST,
-    token,
-  };
+import { apiCall } from '../sagas/api.actions';
+
+export const list = (config, onApi) => {
+  // Generate a dispatch that calls the API saga with
+  // a systems listing payload
+  return apiCall({
+    config,
+    onApi,
+    dispatches: ACTIONS.LIST,
+    apiParams: {
+      method: 'get',
+      service: 'systems',
+      path: '/',
+    },
+  });
 };
 
 export const ACTIONS = {
@@ -11,6 +21,5 @@ export const ACTIONS = {
     START: 'TAPIS_SYSTEMS_LIST_START',
     SUCCESS: 'TAPIS_SYSTEMS_LIST_SUCCESS',
     ERROR: 'TAPIS_SYSTEMS_LIST_ERROR',
-    FAILED: 'TAPIS_SYSTEMS_LIST_FAILED',
   },
 };

@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-const tapisFetch = ({ method, tenant, token, service, path, query }) => {
+const tapisFetch = ({ method, token, service, path, params, tenant, data }) => {
+  const baseUrl = tenant || process.env.TAPIS_TENANT_URL;
   return axios.request({
     method,
-    url: `https://${tenant}/${service}${path}`,
-    data: query,
+    url: `${baseUrl}/${service}${path}`,
+    params,
+    data,
     headers: {
-      HTTP_JWT: token,
+      'X-Tapis-Token': token,
     },
   });
 };

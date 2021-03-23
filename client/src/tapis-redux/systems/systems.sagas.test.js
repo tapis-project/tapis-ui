@@ -1,78 +1,59 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import * as matchers from 'redux-saga-test-plan/matchers';
-import { systemsList } from './systems.sagas';
-import { ACTIONS } from './systems.actions';
-import { listingSuccess, systemsStore } from './systems.fixtures';
-import systems from './systems.reducer';
-import getToken from '../auth/auth.selectors';
-
-jest.mock('cross-fetch');
+import * as matchers from "redux-saga-test-plan/matchers";
+import { apiSaga } from '../sagas/api.sagas';
+import { list, ACTIONS } from './systems.actions';
+import { systems } from './systems.reducer';
+import { listingResponse, listingResult, systemsStore } from './systems.fixtures';
+import getToken from '../authenticator/authenticator.selectors';
+import tapisFetch from '../utils';
 
 describe('Systems listing saga', () => {
-  it('runs saga, when user is logged in', async () => {
-    const action = {
-      type: ACTIONS.LIST.LIST,
-    };
-    return (
-      expectSaga(systemsList, action)
-        .withReducer(systems)
-        .provide([[matchers.select.selector(getToken), '1234']])
-        .select(getToken)
-        .put({
-          type: ACTIONS.LIST.START,
-        })
-        // .call(fetchSystems)
-        .put({
-          type: ACTIONS.LIST.SUCCESS,
-          payload: listingSuccess,
-        })
-        .hasFinalState(systemsStore)
-        .run()
-    );
-  });
-
-  it('runs saga, when token is provided', async () => {
-    const action = {
-      type: ACTIONS.LIST.LIST,
-      payload: {
-        token: '1234',
+  it('runs saga', async () => {
+    // Generate an api call with a custom configuration and callback
+    const config = {
+      token: {
+        access_token: 'provided_token',
       },
-    };
-    return (
-      expectSaga(systemsList, action)
-        .withReducer(systems)
-        .put({
-          type: ACTIONS.LIST.START,
-        })
-        // .call(fetchSystems)
-        .put({
-          type: ACTIONS.LIST.SUCCESS,
-          payload: listingSuccess,
-        })
-        .hasFinalState(systemsStore)
-        .run()
-    );
-  });
+      tenant: 'https://tenant.url'
+    }
+    const onApi = jest.fn();
+    const action = list(config, onApi);
 
-  it('fails to run saga, when no token is provided and not logged in', async () => {
-    const action = {
-      type: ACTIONS.LIST.LIST,
-      payload: {},
-    };
-    return expectSaga(systemsList, action)
+    // Make sure saga runs with correct sequence of events
+    expectSaga(apiSaga, action)
       .withReducer(systems)
-      .provide([[matchers.select.selector(getToken), null]])
-      .select(getToken)
+      // Mock the call to tapisFetch to return the systems listing fixture
+      .provide([
+        [matchers.call.fn(tapisFetch), listingResponse],
+        [matchers.select.selector(getToken), { access_token: 'default_token' }]
+      ])
       .put({
-        type: ACTIONS.LIST.FAILED,
-        payload: 'tapis-redux not logged in',
+        type: ACTIONS.LIST.START,
       })
-      .hasFinalState({
-        definitions: {},
-        loading: false,
-        error: null,
-        failed: true,
+      // Assert that the correct api call is made
+      .call(
+        tapisFetch,
+        {
+          method: 'get',
+          token: 'provided_token',
+          service: 'systems',
+          path: '/',
+          params: undefined,
+          tenant: 'https://tenant.url',
+          data: undefined,
+        }
+      )
+      // Assert that the systems listing action contains a parsed result
+      .put({
+        type: ACTIONS.LIST.SUCCESS,
+        payload: listingResult,
       })
+      // Assert that the onApi callback happens with the result
+      .call(onApi, listingResult)
+      // Assert that the reducer correctly builds the new systems listing state
+      .hasFinalState(systemsStore)
       .run();
+    // Make sure callback fires
+    expect(onApi.mock.calls[0][0]).toStrictEqual(listingResult);
   });
 });

@@ -2,9 +2,8 @@ import { ACTIONS } from './systems.actions';
 
 export const initialState = {
   definitions: {},
-  loading: true,
+  loading: false,
   error: null,
-  failed: false,
 };
 
 export const addSystems = (definitions, listing) => {
@@ -16,14 +15,13 @@ export const addSystems = (definitions, listing) => {
   return result;
 };
 
-export default function systems(state = initialState, action) {
+export function systems(state = initialState, action) {
   switch (action.type) {
     case ACTIONS.LIST.START:
       return {
         ...state,
         loading: true,
         error: null,
-        failed: false,
       };
     case ACTIONS.LIST.SUCCESS:
       return {
@@ -31,21 +29,12 @@ export default function systems(state = initialState, action) {
         definitions: addSystems(state.definitions, action.payload),
         loading: false,
         error: null,
-        failed: false,
       };
     case ACTIONS.LIST.ERROR:
       return {
         ...state,
         loading: false,
         error: action.payload,
-        failed: false,
-      };
-    case ACTIONS.LIST.FAILED:
-      return {
-        ...state,
-        loading: false,
-        error: null,
-        failed: true,
       };
     default:
       return state;
