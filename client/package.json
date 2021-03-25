@@ -35,7 +35,8 @@
     "test": "TZ=America/Chicago jest",
     "test:watch": "npm run test -- --watch",
     "staging": "NODE_ENV=development webpack --config webpack.dev.js",
-    "dev": "NODE_ENV=development BABEL_ENV=development webpack serve --https --config webpack.dev.js"
+    "dev": "NODE_ENV=development BABEL_ENV=development webpack serve --https --config webpack.dev.js",
+    "api": "rm -rf tapis-api && openapi-generator-cli generate --input-spec https://raw.githubusercontent.com/tapis-project/tenants-api/prod/service/resources/openapi_v3.yml --generator-name typescript-fetch --output tapis-api --config tapis-api.json && cd tapis-api && npm install"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.2.3",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
     "eslint-config-airbnb": "^18.0.1",
