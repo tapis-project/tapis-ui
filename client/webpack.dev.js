@@ -1,11 +1,11 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 const webpack = require('webpack');
 const path = require('path');
 const common = require('./webpack.common.js');
 
-module.exports = merge.smart(common, {
+module.exports = merge(common, {
   mode: 'development',
   devtool: 'eval-cheap-module-source-map',
   output: {
