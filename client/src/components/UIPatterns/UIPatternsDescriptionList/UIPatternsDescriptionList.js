@@ -1,5 +1,5 @@
 import React from 'react';
-import { DescriptionList, Icon } from '../../_common';
+import { DescriptionList, Icon } from '_common';
 
 import './UIPatternsDescriptionList.module.css';
 

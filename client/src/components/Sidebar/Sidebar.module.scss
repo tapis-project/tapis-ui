@@ -1,6 +1,8 @@
 $width: 215px;
 
 .root {
+    overflow-y: auto;
+    flex-wrap: nowrap; /* Overwrite Bootstrap `_nav.scss` style for `.nav` */
     min-width: $width;
     max-width: $width;
     width: $width;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReadMore } from '../../_common';
+import { ReadMore } from '_common';
 import './UIPatternsReadMore.module.scss';
 
 function UIPatternsReadMore() {

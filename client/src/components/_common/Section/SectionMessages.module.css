@@ -1,0 +1,6 @@
+/* Elements */
+
+/* FAQ: Add space between each message and at top of first message */
+.root > * {
+  margin: var(--global-space--section-top) 0;
+}

@@ -69,7 +69,8 @@ p.is-scope-section {
 
 /* Modifiers: Type */
 
-// .is-info .icon { }
+/* Design decided icon is not necessary for informational messages */
+.is-info .icon { display: none; }
 
 
 /* Modifiers: Scope */

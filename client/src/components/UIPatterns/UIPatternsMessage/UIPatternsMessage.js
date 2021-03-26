@@ -1,5 +1,5 @@
 import React from 'react';
-import { InlineMessage, SectionMessage } from '../../_common';
+import { InlineMessage, SectionMessage } from '_common';
 import './UIPatternsMessage.module.scss';
 
 const EXAMPLE_LINK = {

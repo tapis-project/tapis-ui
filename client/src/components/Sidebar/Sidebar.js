@@ -3,7 +3,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { useAuth } from 'tapis-redux';
 import PropTypes from 'prop-types';
-import { Icon } from '../_common';
+import { Icon } from '_common';
 // import * as ROUTES from '../../constants/routes';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
@@ -16,6 +16,7 @@ const SidebarItem = ({ to, label, iconName }) => {
         to={to}
         styleName="link"
         activeStyleName="link--active"
+        disabled={false}
       >
         <div styleName="content" className="nav-content">
           <Icon name={iconName} />

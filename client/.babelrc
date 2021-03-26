@@ -18,7 +18,11 @@
                 ".scss": { "syntax": "postcss-scss" }
             },
             // Support third-party component `className`-like properties
-            "attributeNames": { "activeStyleName": "activeClassName" },
+            "attributeNames": {
+                "activeStyleName": "activeClassName",
+                "contentStyleName": "contentClassName",
+                "headerStyleName": "headerClassName"
+            },
             "webpackHotModuleReloading": true,
             // WARNING: This MUST match `localIdentName` in `client/webpack.*.js`
             "generateScopedName": "[name]__[local]--[hash:base64:10]",
