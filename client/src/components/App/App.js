@@ -7,6 +7,7 @@ const App = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
   const [token, setToken] = useState(null);
+  const [uipatterns, showUIPatterns] = useState(false);
   const authCallback = useCallback(
     (result) => {
       /* eslint-disable */
@@ -43,7 +44,13 @@ const App = () => {
           ? <Systems config={config} onApi={systemsListCallback} />
           : <Login config={config} onApi={authCallback} />
       }
-      {/* <UIPatterns display={false}/> */}
+      <div>
+        <hr />
+        <button onClick={() => showUIPatterns(show => !show)}>
+          {uipatterns ? "Hide UI Patterns" : "Show UI Patterns"}
+        </button>
+        {uipatterns ? <UIPatterns /> : null}
+      </div>
     </div>
   );
 }
