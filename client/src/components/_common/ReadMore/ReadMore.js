@@ -38,11 +38,11 @@ const ReadMore = ({ className, children }) => {
 
 ReadMore.propTypes = {
   className: PropTypes.string,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 ReadMore.defaultProps = {
-  className: ''
+  className: '',
 };
 
 export default ReadMore;

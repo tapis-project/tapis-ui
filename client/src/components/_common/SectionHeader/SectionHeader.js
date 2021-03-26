@@ -37,7 +37,7 @@ function SectionHeader({
   children,
   className,
   isForForm,
-  isForTable
+  isForTable,
 }) {
   let styleName = '';
   const styleNameList = ['root'];
@@ -68,14 +68,14 @@ SectionHeader.propTypes = {
   /** Whether this header is for a form */
   isForForm: PropTypes.bool,
   /** Whether this header is for a table */
-  isForTable: PropTypes.bool
+  isForTable: PropTypes.bool,
 };
 SectionHeader.defaultProps = {
   actions: '',
   className: '',
   children: '',
   isForForm: false,
-  isForTable: false
+  isForTable: false,
 };
 
 export default SectionHeader;

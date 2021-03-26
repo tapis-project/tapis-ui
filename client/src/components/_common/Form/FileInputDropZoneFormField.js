@@ -10,14 +10,14 @@ function FileInputDropZoneFormField({
   isSubmitted,
   description,
   maxSizeMessage,
-  maxSize
+  maxSize,
 }) {
   const [field, , helpers] = useField(id);
 
-  const onSetFiles = acceptedFiles => {
+  const onSetFiles = (acceptedFiles) => {
     helpers.setValue([...field.value, ...acceptedFiles]);
   };
-  const onRemoveFile = fileIndex => {
+  const onRemoveFile = (fileIndex) => {
     const files = field.value;
     files.splice(fileIndex, 1);
     helpers.setValue(files);
@@ -53,12 +53,12 @@ FileInputDropZoneFormField.propTypes = {
   isSubmitted: PropTypes.bool.isRequired,
   description: PropTypes.string,
   maxSizeMessage: PropTypes.string.isRequired,
-  maxSize: PropTypes.number
+  maxSize: PropTypes.number,
 };
 
 FileInputDropZoneFormField.defaultProps = {
   description: undefined,
-  maxSize: Infinity
+  maxSize: Infinity,
 };
 
 export default FileInputDropZoneFormField;

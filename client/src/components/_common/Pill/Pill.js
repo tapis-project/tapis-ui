@@ -18,13 +18,13 @@ Pill.propTypes = {
   children: PropTypes.string.isRequired,
   type: PropTypes.string,
   className: PropTypes.string,
-  shouldTruncate: PropTypes.bool
+  shouldTruncate: PropTypes.bool,
 };
 
 Pill.defaultProps = {
   type: 'normal',
   className: '',
-  shouldTruncate: true
+  shouldTruncate: true,
 };
 
 export default Pill;

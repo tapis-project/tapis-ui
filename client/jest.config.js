@@ -71,7 +71,7 @@ module.exports = {
     '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
     '^tapis-redux(.*)$': '<rootDir>/src/tapis-redux$1',
     '^_common(.*)$': '<rootDir>/src/components/_common$1',
-    '^utils(.*)$': '<rootDir>/src/utils$1'
+    '^utils(.*)$': '<rootDir>/src/utils$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -134,7 +134,7 @@ module.exports = {
   // The glob patterns Jest uses to detect test files
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/src/**/?(*.)+(spec|test).[tj]s?(x)'
+    '<rootDir>/src/**/?(*.)+(spec|test).[tj]s?(x)',
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
@@ -157,8 +157,8 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    '\\.(js|jsx)?$': 'babel-jest'
-  }
+    '\\.(js|jsx)?$': 'babel-jest',
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [

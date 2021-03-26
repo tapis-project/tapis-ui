@@ -7,7 +7,7 @@ import {
   FormText,
   Badge,
   InputGroup,
-  InputGroupAddon
+  InputGroupAddon,
 } from 'reactstrap';
 
 import { useField } from 'formik';
@@ -34,10 +34,10 @@ FormFieldWrapper.propTypes = {
   /** The content for the wrapper */
   children: PropTypes.node.isRequired,
   /** Which wrapper to use */
-  type: PropTypes.oneOf(['InputGroup', 'FormGroup', ''])
+  type: PropTypes.oneOf(['InputGroup', 'FormGroup', '']),
 };
 FormFieldWrapper.defaultProps = {
-  type: 'FormGroup'
+  type: 'FormGroup',
 };
 
 /**
@@ -168,7 +168,7 @@ FormField.propTypes = {
   /** An [`<InputGroupAddon>`](https://reactstrap.github.io/components/input-group/) to add */
   addon: PropTypes.node,
   /** The [`<InputGroupAddon>` `addonType`](https://reactstrap.github.io/components/input-group/) to add */
-  addonType: PropTypes.oneOf(['prepend', 'append'])
+  addonType: PropTypes.oneOf(['prepend', 'append']),
 };
 FormField.defaultProps = {
   id: undefined,
@@ -179,7 +179,7 @@ FormField.defaultProps = {
   agaveFile: undefined,
   SelectModal: undefined,
   addon: undefined,
-  addonType: undefined
+  addonType: undefined,
 };
 
 export default FormField;

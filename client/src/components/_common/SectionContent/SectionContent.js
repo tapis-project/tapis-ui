@@ -20,7 +20,7 @@ export const LAYOUT_CLASS_MAP = {
    *
    * (On narrow screens, this behaves like `oneColumn`)
    */
-  twoColumn: 'two-column'
+  twoColumn: 'two-column',
 };
 export const DEFAULT_LAYOUT = 'oneRow';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
@@ -52,7 +52,7 @@ function SectionContent({
   layoutName,
   shouldScroll,
   shouldDebugLayout,
-  tagName
+  tagName,
 }) {
   let styleName = '';
   const styleNameList = ['styles.root'];
@@ -84,13 +84,13 @@ SectionContent.propTypes = {
   /** Whether to allow panel debugging (highlight each panel with unique hue) */
   shouldDebugLayout: PropTypes.bool,
   /** Override tag of the root element */
-  tagName: PropTypes.string
+  tagName: PropTypes.string,
 };
 SectionContent.defaultProps = {
   className: '',
   shouldScroll: false,
   shouldDebugLayout: false,
-  tagName: 'div'
+  tagName: 'div',
 };
 
 export default SectionContent;

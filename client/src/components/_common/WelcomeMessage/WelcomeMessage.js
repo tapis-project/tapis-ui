@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
  * @param {String} messageName - The name of the message to check
  */
 export function shouldShowMessage(messageName) {
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const welcomeMessages = useSelector((state) => state.welcomeMessages);
 
   return welcomeMessages && welcomeMessages[messageName];
 }
@@ -29,13 +29,13 @@ export function shouldShowMessage(messageName) {
  */
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const welcomeMessages = useSelector((state) => state.welcomeMessages);
   const shouldShow = shouldShowMessage(messageName);
 
   function onDismiss(name) {
     const newMessagesState = {
       ...welcomeMessages,
-      [name]: false
+      [name]: false,
     };
     dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
   }
@@ -57,10 +57,10 @@ WelcomeMessage.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** A unique identifier for the message */
-  messageName: PropTypes.string.isRequired
+  messageName: PropTypes.string.isRequired,
 };
 WelcomeMessage.defaultProps = {
-  className: ''
+  className: '',
 };
 
 export default WelcomeMessage;

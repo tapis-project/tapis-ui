@@ -9,7 +9,7 @@ const DATA = {
   Name: 'Bob Ward',
   Suffix: 'The 5th',
   'Favorite Numeric Value': 5,
-  Icon: <Icon name="dashboard" />
+  Icon: <Icon name="dashboard" />,
 };
 
 function UIPatternsDropdownSelector() {
@@ -75,7 +75,7 @@ function UIPatternsDropdownSelector() {
                 ),
                 'Nested List Two': (
                   <DescriptionList data={DATA} direction="vertical" />
-                )
+                ),
               }}
             />
           </dd>
@@ -88,7 +88,7 @@ function UIPatternsDropdownSelector() {
                 ),
                 'Nested List Two': (
                   <DescriptionList data={DATA} direction="horizontal" />
-                )
+                ),
               }}
               direction="vertical"
             />

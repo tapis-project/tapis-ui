@@ -6,14 +6,14 @@ import './DescriptionList.module.scss';
 
 export const DIRECTION_CLASS_MAP = {
   vertical: 'is-vert',
-  horizontal: 'is-horz'
+  horizontal: 'is-horz',
 };
 export const DEFAULT_DIRECTION = 'vertical';
 export const DIRECTIONS = ['', ...Object.keys(DIRECTION_CLASS_MAP)];
 
 export const DENSITY_CLASS_MAP = {
   compact: 'is-narrow',
-  default: 'is-wide'
+  default: 'is-wide',
 };
 export const DEFAULT_DENSITY = 'default';
 export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
@@ -36,7 +36,7 @@ const DescriptionList = ({ className, data, density, direction }) => {
             {key}
           </dt>
           {Array.isArray(value) ? (
-            value.map(val => (
+            value.map((val) => (
               <dd styleName="value" data-testid="value" key={uuidv4()}>
                 {val}
               </dd>
@@ -61,12 +61,12 @@ DescriptionList.propTypes = {
   /** Layout density */
   density: PropTypes.oneOf(DENSITIES),
   /** Layout direction */
-  direction: PropTypes.oneOf(DIRECTIONS)
+  direction: PropTypes.oneOf(DIRECTIONS),
 };
 DescriptionList.defaultProps = {
   className: '',
   density: DEFAULT_DENSITY,
-  direction: DEFAULT_DIRECTION
+  direction: DEFAULT_DIRECTION,
 };
 
 export default DescriptionList;

@@ -21,7 +21,7 @@ const TextCopyField = ({ value, placeholder }) => {
     }, stateTimeout * 1000);
   }, [isCopied, setIsCopied]);
   const isEmpty = !value || value.length === 0;
-  const onChange = event => {
+  const onChange = (event) => {
     // Swallow keyboard events on the Input control, but
     // still allow selecting the text. readOnly property of
     // Input is not adequate for this purpose because it
@@ -67,12 +67,12 @@ const TextCopyField = ({ value, placeholder }) => {
 
 TextCopyField.propTypes = {
   value: PropTypes.string,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
 };
 
 TextCopyField.defaultProps = {
   value: '',
-  placeholder: ''
+  placeholder: '',
 };
 
 export default TextCopyField;

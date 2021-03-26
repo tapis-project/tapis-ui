@@ -9,7 +9,7 @@ export function* authLogin(action) {
   } catch (error) {
     yield put({
       type: 'TAPIS_AUTH_LOGIN_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }

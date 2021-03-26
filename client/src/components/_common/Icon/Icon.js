@@ -18,11 +18,11 @@ Icon.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Name of icon from icon font (without the (`icon-` prefix) */
-  name: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
 };
 Icon.defaultProps = {
   children: '',
-  className: ''
+  className: '',
 };
 
 export default Icon;

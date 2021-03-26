@@ -19,7 +19,7 @@ const PaginatorPage = ({ number, callback, current }) => {
 PaginatorPage.propTypes = {
   number: PropTypes.number.isRequired,
   callback: PropTypes.func.isRequired,
-  current: PropTypes.number.isRequired
+  current: PropTypes.number.isRequired,
 };
 
 const Paginator = ({ pages, current, callback, spread }) => {
@@ -60,7 +60,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
       </Button>
       <PaginatorPage number={1} callback={callback} current={current} />
       {middlePages[0] > 2 && <span>...</span>}
-      {middlePages.map(number => {
+      {middlePages.map((number) => {
         return (
           <PaginatorPage
             number={number}
@@ -90,11 +90,11 @@ Paginator.propTypes = {
   pages: PropTypes.number.isRequired,
   current: PropTypes.number.isRequired,
   callback: PropTypes.func.isRequired,
-  spread: PropTypes.number // Number of page buttons to show
+  spread: PropTypes.number, // Number of page buttons to show
 };
 
 Paginator.defaultProps = {
-  spread: 11
+  spread: 11,
 };
 
 export default Paginator;

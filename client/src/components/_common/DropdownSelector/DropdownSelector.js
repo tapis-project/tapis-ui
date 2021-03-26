@@ -35,14 +35,14 @@ DropdownSelector.propTypes = {
   /** Selector type */
   type: PropTypes.oneOf(TYPES),
   /** Selector type */
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
   /** Options (as children, like Reactstrap) */
   // FAQ: Limiting and documenting this has become a rabbit hole; help welcome — Wes B
   // children: PropTypes.any.isRequired
 };
 DropdownSelector.defaultProps = {
   type: DEFAULT_TYPE,
-  onChange: () => {}
+  onChange: () => {},
 };
 
 export default DropdownSelector;

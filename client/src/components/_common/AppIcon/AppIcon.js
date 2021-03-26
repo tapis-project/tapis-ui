@@ -5,10 +5,10 @@ import Icon from '../Icon';
 import './AppIcon.scss';
 
 const AppIcon = ({ appId }) => {
-  const appIcons = useSelector(state => state.apps.appIcons);
-  const findAppIcon = id => {
+  const appIcons = useSelector((state) => state.apps.appIcons);
+  const findAppIcon = (id) => {
     let appIcon = 'applications';
-    Object.keys(appIcons).forEach(appName => {
+    Object.keys(appIcons).forEach((appName) => {
       if (id.includes(appName)) {
         appIcon = appIcons[appName].toLowerCase();
       }
@@ -20,7 +20,7 @@ const AppIcon = ({ appId }) => {
   return <Icon name={iconName} />;
 };
 AppIcon.propTypes = {
-  appId: PropTypes.string.isRequired
+  appId: PropTypes.string.isRequired,
 };
 
 export default AppIcon;

@@ -9,7 +9,7 @@ import Message from '../Message';
  * // Blah blah…
  * <Sample jsx>
  */
-const SectionMessage = props => {
+const SectionMessage = (props) => {
   const [isVisible, setIsVisible] = useState(true);
 
   // Manage visibility
@@ -23,7 +23,7 @@ const SectionMessage = props => {
     ...props,
     isVisible,
     onDismiss,
-    scope: 'section'
+    scope: 'section',
   };
 
   // Avoid manually syncing <Message>'s props
@@ -33,7 +33,7 @@ const SectionMessage = props => {
 SectionMessage.propTypes = {
   ...Message.propTypes,
   isVisible: PropTypes.bool,
-  onDismiss: PropTypes.func
+  onDismiss: PropTypes.func,
 };
 SectionMessage.defaultProps = Message.defaultProps;
 

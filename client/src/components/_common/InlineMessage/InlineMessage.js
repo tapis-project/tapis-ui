@@ -8,13 +8,13 @@ import Message from '../Message';
  * // Blah blah…
  * <Sample jsx>
  */
-const InlineMessage = props => {
+const InlineMessage = (props) => {
   // Override default props
   const messageProps = {
     ...Message.defaultProps,
     ...props,
     canDismiss: false,
-    scope: 'inline'
+    scope: 'inline',
   };
 
   // Avoid manually syncing <Message>'s props

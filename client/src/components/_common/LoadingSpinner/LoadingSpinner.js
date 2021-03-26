@@ -12,11 +12,11 @@ const LoadingSpinner = ({ placement, className }) => {
 };
 LoadingSpinner.propTypes = {
   placement: PropTypes.string,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 LoadingSpinner.defaultProps = {
   placement: 'section',
-  className: ''
+  className: '',
 };
 
 export default LoadingSpinner;

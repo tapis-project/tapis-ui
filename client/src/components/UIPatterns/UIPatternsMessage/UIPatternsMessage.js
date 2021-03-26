@@ -6,7 +6,7 @@ const EXAMPLE_LINK = {
   short: (
     <a
       href={window.location.href}
-      onClick={e => e.preventDefault()}
+      onClick={(e) => e.preventDefault()}
       className="wb-link"
     >
       Example link
@@ -15,30 +15,30 @@ const EXAMPLE_LINK = {
   long: (
     <a
       href={window.location.href}
-      onClick={e => e.preventDefault()}
+      onClick={(e) => e.preventDefault()}
       className="wb-link"
     >
       Example link can be a complete sentence.
     </a>
-  )
+  ),
 };
 const EXAMPLE_TEXT = {
   info: {
     short: 'You exist.',
-    long: 'All your information, are belong to us.'
+    long: 'All your information, are belong to us.',
   },
   success: {
     short: 'We did well.',
-    long: 'All your success, are belong to us.'
+    long: 'All your success, are belong to us.',
   },
   warn: {
     short: 'You did poorly.',
-    long: 'All your warning, are come from us.'
+    long: 'All your warning, are come from us.',
   },
   error: {
     short: 'You failed.',
-    long: 'All your error, are belong to you.'
-  }
+    long: 'All your error, are belong to you.',
+  },
 };
 
 const NOTIFICATION_TEXT = (

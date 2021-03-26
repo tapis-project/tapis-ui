@@ -11,30 +11,30 @@ export const ERROR_TEXT = {
   deprecatedType:
     'In a <(Section|Inline)Message> `type="warn"` is deprecated. Use `type="warning"` instead.',
   missingScope:
-    'A <Message> without a `scope` should become an <InlineMessage>. (If <Message> must be used, then explicitely set `scope="inline"`.)'
+    'A <Message> without a `scope` should become an <InlineMessage>. (If <Message> must be used, then explicitely set `scope="inline"`.)',
 };
 
 export const TYPE_MAP = {
   info: {
     iconName: 'conversation',
     className: 'is-info',
-    iconText: 'Notice'
+    iconText: 'Notice',
   },
   success: {
     iconName: 'approved-reverse',
     className: 'is-success',
-    iconText: 'Notice'
+    iconText: 'Notice',
   },
   warning: {
     iconName: 'alert',
     className: 'is-warn',
-    iconText: 'Warning'
+    iconText: 'Warning',
   },
   error: {
     iconName: 'alert',
     className: 'is-error',
-    iconText: 'Error'
-  }
+    iconText: 'Error',
+  },
 };
 TYPE_MAP.warn = TYPE_MAP.warning; // FAQ: Deprecated support for `type="warn"`
 export const TYPES = Object.keys(TYPE_MAP);
@@ -43,13 +43,13 @@ export const SCOPE_MAP = {
   inline: {
     className: 'is-scope-inline',
     role: 'status',
-    tagName: 'span'
+    tagName: 'span',
   },
   section: {
     className: 'is-scope-section',
     role: 'status',
-    tagName: 'p'
-  }
+    tagName: 'p',
+  },
   // app: { … } // FAQ: Do not use; instead, use a <NotificationToast>
 };
 export const SCOPES = ['', ...Object.keys(SCOPE_MAP)];
@@ -69,7 +69,7 @@ const Message = ({
   canDismiss,
   isVisible,
   scope,
-  type
+  type,
 }) => {
   const typeMap = TYPE_MAP[type];
   const scopeMap = SCOPE_MAP[scope || DEFAULT_SCOPE];
@@ -108,7 +108,7 @@ const Message = ({
     ...Fade.defaultProps,
     unmountOnExit: true,
     baseClass: shouldFade ? Fade.defaultProps.baseClass : '',
-    timeout: shouldFade ? Fade.defaultProps.timeout : 0
+    timeout: shouldFade ? Fade.defaultProps.timeout : 0,
   };
 
   return (
@@ -156,14 +156,14 @@ Message.propTypes = {
   /** How to place the message within the layout */
   scope: PropTypes.oneOf(SCOPES), // RFE: Require scope; change all instances
   /** Message type or severity */
-  type: PropTypes.oneOf(TYPES).isRequired
+  type: PropTypes.oneOf(TYPES).isRequired,
 };
 Message.defaultProps = {
   className: '',
   canDismiss: false,
   isVisible: true,
   onDismiss: () => {},
-  scope: '' // RFE: Require scope; remove this line
+  scope: '', // RFE: Require scope; remove this line
 };
 
 export default Message;

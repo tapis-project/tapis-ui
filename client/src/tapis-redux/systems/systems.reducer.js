@@ -9,7 +9,7 @@ export const initialState = {
 export const addSystems = (definitions, listing) => {
   // Append listing results to existing definitions, generate new object
   const result = { ...definitions };
-  listing.forEach(system => {
+  listing.forEach((system) => {
     result[system.id] = { ...system };
   });
   return result;

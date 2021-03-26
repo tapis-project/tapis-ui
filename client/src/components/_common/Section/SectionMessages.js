@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
   WelcomeMessage,
-  shouldShowMessage as shouldShowWelcomeMessage
+  shouldShowMessage as shouldShowWelcomeMessage,
 } from '..';
 import * as MESSAGES from '../../../constants/welcomeMessages';
 
@@ -81,13 +81,13 @@ SectionMessages.propTypes = {
   /** The name of the route section (to search for required welcome message) */
   routeName: PropTypes.string,
   /** Custom welcome text (can overwrite `routeName`-based welcome message) */
-  welcomeText: PropTypes.string
+  welcomeText: PropTypes.string,
 };
 SectionMessages.defaultProps = {
   children: '',
   className: '',
   routeName: '',
-  welcomeText: ''
+  welcomeText: '',
 };
 
 export default SectionMessages;

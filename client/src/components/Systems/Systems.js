@@ -11,8 +11,8 @@ const System = ({ definition }) => {
 System.propTypes = {
   definition: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    host: PropTypes.string.isRequired
-  }).isRequired
+    host: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 const Systems = ({ config, onApi }) => {

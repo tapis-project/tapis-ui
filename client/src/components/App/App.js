@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import Login from '../Login';
 import Systems from '../Systems';
+import UIPatterns from '../UIPatterns';
 
 const App = () => {
   // Demonstration of using some type of external state
@@ -42,6 +43,7 @@ const App = () => {
           ? <Systems config={config} onApi={systemsListCallback} />
           : <Login config={config} onApi={authCallback} />
       }
+      {/* <UIPatterns display={false}/> */}
     </div>
   );
 }

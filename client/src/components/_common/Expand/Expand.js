@@ -31,10 +31,10 @@ Expand.propTypes = {
   className: PropTypes.string,
 
   detail: PropTypes.string.isRequired,
-  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 };
 Expand.defaultProps = {
-  className: ''
+  className: '',
 };
 
 export default Expand;
