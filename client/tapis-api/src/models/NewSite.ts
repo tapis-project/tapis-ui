@@ -54,7 +54,7 @@ export interface NewSite {
      * @type {string}
      * @memberof NewSite
      */
-    site_master_tenant_id: string;
+    site_admin_tenant_id: string;
 }
 
 export function NewSiteFromJSON(json: any): NewSite {
@@ -72,7 +72,7 @@ export function NewSiteFromJSONTyped(json: any, ignoreDiscriminator: boolean): N
         'primary': json['primary'],
         'services': json['services'],
         'tenant_base_url_template': !exists(json, 'tenant_base_url_template') ? undefined : json['tenant_base_url_template'],
-        'site_master_tenant_id': json['site_master_tenant_id'],
+        'site_admin_tenant_id': json['site_admin_tenant_id'],
     };
 }
 
@@ -90,7 +90,7 @@ export function NewSiteToJSON(value?: NewSite | null): any {
         'primary': value.primary,
         'services': value.services,
         'tenant_base_url_template': value.tenant_base_url_template,
-        'site_master_tenant_id': value.site_master_tenant_id,
+        'site_admin_tenant_id': value.site_admin_tenant_id,
     };
 }
 

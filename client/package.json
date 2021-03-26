@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@openapi-generator-plus/typescript-fetch-client-generator": "^0.11.0",
     "@openapitools/openapi-generator-cli": "^2.2.3",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
@@ -75,6 +76,7 @@
     "eslint-plugin-react-hooks": "^2.3.0",
     "eslint-plugin-standard": "^4.0.1",
     "html-webpack-harddisk-plugin": "^2.0.0",
+    "openapi-generator-plus": "^0.21.2",
     "prettier": "^2.2.1",
     "redux-mock-store": "^1.5.4",
     "redux-saga-test-plan": "^4.0.1",

@@ -1,0 +1,5 @@
+{
+    "inputPath": "openapi_v3.yml",
+    "outputPath": "tapis-api-ogp",
+    "generator": "@openapi-generator-plus/typescript-fetch-client-generator"
+}
