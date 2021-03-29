@@ -1,13 +1,15 @@
 import React, { useState, useCallback } from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Login from '../Login';
+import Sidebar from '../Sidebar/Sidebar';
 import Systems from '../Systems';
 import UIPatterns from '../UIPatterns';
+import './App.scss';
 
 const App = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
   const [token, setToken] = useState(null);
-  const [uipatterns, showUIPatterns] = useState(false);
   const authCallback = useCallback(
     (result) => {
       /* eslint-disable */
@@ -38,19 +40,22 @@ const App = () => {
   };
 
   return (
-    <div>
-      {
-        token 
-          ? <Systems config={config} onApi={systemsListCallback} />
-          : <Login config={config} onApi={authCallback} />
-      }
-      <div>
-        <hr />
-        <button onClick={() => showUIPatterns(show => !show)}>
-          {uipatterns ? "Hide UI Patterns" : "Show UI Patterns"}
-        </button>
-        {uipatterns ? <UIPatterns /> : null}
-      </div>
+    <div className="workbench-wrapper">
+      <Router>
+        <Sidebar token={token != null}/>
+        <div className="workbench-content">
+          <Route exact path='/'>
+            <div>Hello World!</div>
+          </Route>
+          <Route path='/login'>
+            <Login config={config} onApi={authCallback} />
+          </Route>
+          <Route path='/systems'>
+            <Systems config={config} onApi={systemsListCallback} />
+          </Route>
+          <Route path='/uipatterns' component={UIPatterns} />
+        </div>
+      </Router>
     </div>
   );
 }
