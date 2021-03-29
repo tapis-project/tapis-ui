@@ -1,0 +1,30 @@
+// .root nesting provides specificity to override bootstrap button styles
+.root {
+  .endcap > * {
+    margin-right: 0.25em;
+  }
+
+  .endcap {
+    padding-left: 12px;
+    font-size: 12px;
+  }
+}
+
+.page-root {
+  display: inline-block;
+  .page {
+    border-radius: 0;
+    font-size: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+    width: 32px;
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+  .page:not(.current) {
+    background-color: var(--global-color-primary--xx-light);
+  }
+  .page.current {
+    background-color: var(--global-color-accent--light);
+  }
+}

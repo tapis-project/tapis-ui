@@ -1,11 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import Login from '../Login';
 import Systems from '../Systems';
+import UIPatterns from '../UIPatterns';
 
 const App = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
   const [token, setToken] = useState(null);
+  const [uipatterns, showUIPatterns] = useState(false);
   const authCallback = useCallback(
     (result) => {
       /* eslint-disable */
@@ -42,8 +44,15 @@ const App = () => {
           ? <Systems config={config} onApi={systemsListCallback} />
           : <Login config={config} onApi={authCallback} />
       }
+      <div>
+        <hr />
+        <button onClick={() => showUIPatterns(show => !show)}>
+          {uipatterns ? "Hide UI Patterns" : "Show UI Patterns"}
+        </button>
+        {uipatterns ? <UIPatterns /> : null}
+      </div>
     </div>
   );
-};
+}
 
 export default App;

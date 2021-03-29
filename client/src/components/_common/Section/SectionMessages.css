@@ -1,0 +1,10 @@
+/* Increase minimum height for at least one message */
+/* FAQ: Edit global style based on local state side effect */
+/* TODO: Update Dashboard.(s)css, DataFiles.css to use this */
+body.has-message {
+  --section-messages-base-height: 100px; /* approx. 1 section message height */
+
+  /* SEE */
+  /* HACK: Overrite `min-height` directly, because updating `--min-height` with a reference to itself would cause an infinite loop */
+  min-height: calc(var(--min-height) + var(--section-messages-base-height));
+}

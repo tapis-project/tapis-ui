@@ -1,0 +1,39 @@
+$width: 215px;
+
+.root {
+    overflow-y: auto;
+    flex-wrap: nowrap; /* Overwrite Bootstrap `_nav.scss` style for `.nav` */
+    min-width: $width;
+    max-width: $width;
+    width: $width;
+    background: #f4f4f4;
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+    padding-top: 20px;
+}
+
+.link,
+.link:hover {
+  color: #707070;
+}
+.link--active {
+  background-color: #dfdaf5;
+}
+
+.content {
+  padding-left: 20px;
+}
+
+.text {
+  padding-left: 20px;
+  font-size: 0.75em; /* ~20px (16px design * 1.2 design-to-app ratio) */
+  font-weight: 500;
+}
+
+.feedback-nav-item {
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: 1em;
+}
+.disabled {
+  color: var(--global-color-primary--light);
+}

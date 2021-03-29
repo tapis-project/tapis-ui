@@ -70,6 +70,7 @@ module.exports = {
   moduleNameMapper: {
     '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
     '^tapis-redux(.*)$': '<rootDir>/src/tapis-redux$1',
+    '^_common(.*)$': '<rootDir>/src/components/_common$1',
     '^utils(.*)$': '<rootDir>/src/utils$1',
   },
 
