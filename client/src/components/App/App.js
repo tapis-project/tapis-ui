@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import Login from '../Login';
 import Systems from '../Systems';
+import Streams from '../Streams';
 import UIPatterns from '../UIPatterns';
 
 const App = () => {
@@ -29,6 +30,12 @@ const App = () => {
       console.log("Systems listing api result", result);
     },
   )
+  const streamsListCallback = useCallback(
+    (result) => {
+      /* eslint-disable */
+      console.log("Streams listing api result", result);
+    },
+  )
 
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
@@ -40,10 +47,14 @@ const App = () => {
   return (
     <div>
       {
-        token 
+        token
           ? <Systems config={config} onApi={systemsListCallback} />
+        //  ?
           : <Login config={config} onApi={authCallback} />
       }
+      <div>
+      <Streams config={config} onApi={streamsListCallback} />
+      </div>
       <div>
         <hr />
         <button onClick={() => showUIPatterns(show => !show)}>
@@ -54,5 +65,6 @@ const App = () => {
     </div>
   );
 }
+
 
 export default App;
