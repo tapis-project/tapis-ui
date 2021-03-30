@@ -12,6 +12,7 @@ const SidebarItem = ({ to, label, iconName }) => {
       <NavLink
         tag={RRNavLink}
         to={to}
+        exact
         styleName="link"
         activeStyleName="link--active"
         disabled={false}
@@ -31,16 +32,21 @@ SidebarItem.propTypes = {
   iconName: PropTypes.string.isRequired,
 };
 
-const Sidebar = () => {
+const Sidebar = ({ token }) => {
   return (
-    // WIP
     <Nav styleName="root" vertical>
-      <SidebarItem to="" label="Dashboard" iconName="dashboard" />
+      <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
       <SidebarItem to="/login" label="Login" iconName="link" />
-      <SidebarItem to="/systems" label="Systems" iconName="allocations" />
+      {token && (
+        <SidebarItem to="/systems" label="Systems" iconName="allocations" />
+      )}
       <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
     </Nav>
   );
+};
+
+Sidebar.propTypes = {
+  token: PropTypes.bool.isRequired,
 };
 
 export default Sidebar;
