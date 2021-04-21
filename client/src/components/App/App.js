@@ -1,3 +1,4 @@
+import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Login from '../Login';
@@ -60,4 +61,4 @@ const App = () => {
   );
 }
 
-export default App;
+export default hot(App);
