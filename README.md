@@ -5,7 +5,7 @@
 
 ### Instructions
 
-In the [`./client`](./client) directory, first install node dependencies:
+First install node dependencies in the base directory:
 
 
 ```
