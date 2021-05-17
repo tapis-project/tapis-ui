@@ -1,0 +1,58 @@
+{
+    "root": true,
+    "env": {
+        "browser": true,
+        "es6": true,
+        "jest": true
+    },
+    "extends": [
+        "airbnb",
+        "standard",
+        "prettier",
+        "prettier/react",
+        "prettier/standard"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "prettier",
+        "jest"
+    ],
+    "parser": "babel-eslint",
+    "ignorePatterns": ["*.test.js"],
+    "rules": {
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js", "**/utils/testing.js"]}],
+        "semi": [1, "always"],
+        "no-underscore-dangle": 0,
+        "react/jsx-props-no-spreading": [2, {
+            "html": "enforce" ,
+            "custom": "enforce",
+            "exceptions": ["input", "Input", "FormField", "Table", "table", "thead", "tbody", "th", "tr", "td", "div", "Slide"],
+            "explicitSpread": "ignore"
+        }],
+        "prettier/prettier": ["error", { "singleQuote": true }],
+        "jsx-a11y/anchor-is-valid": 0
+    },
+    "settings": {
+        "import/resolver": {
+            // Prevent `path` resolution error in Webpack configs.
+            // SEE: https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-511007063
+            "node": {},
+            // Support Webpack aliases
+            "webpack": {
+                "config": "webpack.common.js"
+            }
+        }
+    }
+}

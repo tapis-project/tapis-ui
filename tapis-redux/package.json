@@ -1,0 +1,62 @@
+{
+  "name": "@tapis/tapis-redux",
+  "version": "0.1.0",
+  "description": "Redux middleware for managing state",
+  "scripts": {
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint '**/*.{css,scss,sass}'",
+    "build": "NODE_ENV=production BABEL_ENV=production webpack --config webpack.prod.js",
+    "test": "TZ=America/Chicago jest",
+    "test:watch": "npm run test -- --watch",
+    "devO": "NODE_ENV=development BABEL_ENV=development webpack serve --https --config webpack.dev.js",
+    "dev": "NODE_ENV=development BABEL_ENV=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapis-project/tapis-ui.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tapis-project/tapis-ui/issues"
+  },
+  "homepage": "https://github.com/tapis-project/tapis-ui#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "prop-types": "^15.7.2",
+    "redux": "^4.0.5",
+    "redux-saga": "^1.1.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.0",
+    "@babel/core": "^7.13.0",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/preset-env": "^7.13.0",
+    "@babel/preset-react": "^7.13.0",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^25.1.0",
+    "babel-loader": "^8.0.6",
+    "babel-preset-react-app": "^9.1.2",
+    "eslint": "^6.0.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-import-resolver-webpack": "^0.12.1",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^23.1.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^26.0.0",
+    "mini-css-extract-plugin": "^1.3.9",
+    "node-sass": "^4.13.1",
+    "redux-mock-store": "^1.5.4",
+    "redux-saga-test-plan": "^4.0.1"
+  }
+}

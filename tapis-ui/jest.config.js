@@ -68,10 +68,10 @@ module.exports = {
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    '.*\\.(css|scss|sass)$': '<rootDir>/tapis-ui/__mocks__/styleMock.js',
-    '^tapis-redux(.*)$': '<rootDir>/tapis-redux/src$1',
-    '^_common(.*)$': '<rootDir>/tapis-ui/src/components/_common$1',
-    '^utils(.*)$': '<rootDir>/tapis-ui/src/utils$1',
+    '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
+    '^tapis-redux(.*)$': '<rootDir>/node_modules/@tapis/tapis-redux$1',
+    '^_common(.*)$': '<rootDir>/src/components/_common$1',
+    '^utils(.*)$': '<rootDir>/src/utils$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -108,7 +108,7 @@ module.exports = {
   // rootDir: null,
 
   // A list of paths to directories that Jest should use to search for files in
-  roots: ['<rootDir>/tapis-ui/src', '<rootDir>/tapis-redux/src'],
+  roots: ['<rootDir>/src', '../tapis-redux/src'],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
@@ -134,7 +134,7 @@ module.exports = {
   // The glob patterns Jest uses to detect test files
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/tapis-ui/src/**/?(*.)+(spec|test).[tj]s?(x)'
+    '<rootDir>/src/**/?(*.)+(spec|test).[tj]s?(x)'
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
@@ -161,9 +161,9 @@ module.exports = {
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  // transformIgnorePatterns: [
-  //   "/node_modules/"
-  // ],
+  transformIgnorePatterns: [
+    "/node_modules/@tapis/tapis-redux"
+  ],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,

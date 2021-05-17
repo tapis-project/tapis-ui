@@ -61,14 +61,14 @@ module.exports = {
   // maxWorkers: "50%",
 
   // An array of directory names to be searched recursively up from the requiring module's location
-  moduleDirectories: ['node_modules'],
+  // moduleDirectories: ['node_modules'],
 
   // An array of file extensions your modules use
   moduleFileExtensions: ['js', 'json', 'jsx', 'ts', 'tsx', 'node'],
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    '.*\\.(css|scss|sass)$': '<rootDir>/tapis-ui/__mocks__/styleMock.js',
+    '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
     '^tapis-redux(.*)$': '<rootDir>/tapis-redux/src$1',
     '^_common(.*)$': '<rootDir>/tapis-ui/src/components/_common$1',
     '^utils(.*)$': '<rootDir>/tapis-ui/src/utils$1',
@@ -108,7 +108,7 @@ module.exports = {
   // rootDir: null,
 
   // A list of paths to directories that Jest should use to search for files in
-  roots: ['<rootDir>/tapis-ui/src', '<rootDir>/tapis-redux/src'],
+  roots: ['<rootDir>/tapis-ui', '<rootDir>/tapis-redux'],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
@@ -134,7 +134,8 @@ module.exports = {
   // The glob patterns Jest uses to detect test files
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/tapis-ui/src/**/?(*.)+(spec|test).[tj]s?(x)'
+    '<rootDir>/tapis-ui/**/?(*.)+(spec|test).[tj]s?(x)',
+    '<rootDir>/tapis-redux/**/?(*.)+(spec|test).[tj]s?(x)',
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
