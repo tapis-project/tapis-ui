@@ -77,7 +77,7 @@ module.exports = merge(common, {
       TAPIS_AUTHENTICATOR_URL: 'https://tacc.tapis.io/v3/oauth2',
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'tapis-ui', 'index.html'),
+      template: path.resolve(__dirname, 'tapis-ui/src', 'index.html'),
       inject: true,
     }),
     new HtmlWebpackHarddiskPlugin(),

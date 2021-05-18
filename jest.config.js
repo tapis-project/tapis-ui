@@ -69,8 +69,9 @@ module.exports = {
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
-    '^tapis-redux(.*)$': '<rootDir>/tapis-redux$1',
-    '^_common(.*)$': '<rootDir>/tapis-ui/components/_common$1',
+    '^tapis-app(.*)$': '<rootDir>/tapis-app/src$1',
+    '^tapis-redux(.*)$': '<rootDir>/tapis-redux/src$1',
+    '^_common(.*)$': '<rootDir>/tapis-ui/src/_common$1',
     '^utils(.*)$': '<rootDir>/tapis-ui/utils$1',
   },
 
