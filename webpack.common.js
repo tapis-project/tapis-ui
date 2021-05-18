@@ -36,7 +36,6 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      'react-dom': '@hot-loader/react-dom',
       utils: path.resolve(__dirname, 'tapis-ui/utils/'),
       _common: path.resolve(__dirname, 'tapis-ui/src/_common/'),
       'tapis-app': path.resolve(__dirname, 'tapis-app/src/'),
