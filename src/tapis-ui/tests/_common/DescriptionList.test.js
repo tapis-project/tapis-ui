@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import DescriptionList, * as DL from '_common/DescriptionList/DescriptionList';
-import renderComponent from 'utils/testing';
 
 const DATA = {
   Username: 'bobward500',

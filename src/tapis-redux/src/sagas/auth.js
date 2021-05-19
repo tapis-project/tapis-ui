@@ -1,5 +1,5 @@
 import { call, put, takeLeading } from 'redux-saga/effects';
-import login from 'utils/tapis';
+import login from '../utils/tapis';
 
 export function* authLogin(action) {
   try {
