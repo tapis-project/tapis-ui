@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: ['react-hot-loader/patch', './tapis-ui/src/index.js'],
+  entry: ['react-hot-loader/patch', './src/tapis-app/src/index.js'],
   output: {
     path: path.resolve(__dirname, 'build'),
   },
@@ -36,10 +36,10 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      utils: path.resolve(__dirname, 'tapis-ui/utils/'),
-      _common: path.resolve(__dirname, 'tapis-ui/src/_common/'),
-      'tapis-app': path.resolve(__dirname, 'tapis-app/src/'),
-      'tapis-redux': path.resolve(__dirname, 'tapis-redux/src/'),
+      _common: path.resolve(__dirname, 'src/tapis-ui/src/_common/'),
+      'tapis-ui': path.resolve(__dirname, 'src/tapis-ui/src/'),
+      'tapis-app': path.resolve(__dirname, 'src/tapis-app/src/'),
+      'tapis-redux': path.resolve(__dirname, 'src/tapis-redux/src/'),
     },
   },
   optimization: {

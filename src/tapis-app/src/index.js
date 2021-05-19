@@ -2,9 +2,9 @@ import React from 'react';
 import 'react-hot-loader';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { App } from 'tapis-app';
-import './index.css';
 import store from 'tapis-redux/store';
+import App from './App';
+import './index.css';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

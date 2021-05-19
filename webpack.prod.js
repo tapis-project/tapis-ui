@@ -68,7 +68,7 @@ module.exports = merge(common, {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'tapis-ui/src', 'index.html'),
+      template: path.resolve(__dirname, 'src/tapis-app/src', 'index.html'),
       inject: true,
     }),
     new MiniCssExtractPlugin({
