@@ -27,11 +27,9 @@ jobs:
 
     - name: npm ci
       run: |
-        cd client
         npm ci
     - name: Client Side Unit Tests
       run: |
-        cd client
         npm run test
 
 #    - name: Upload coverage to Codecov
@@ -55,9 +53,7 @@ jobs:
 
     - name: npm ci
       run: |
-        cd client
         npm ci
     - name: Client Side Linting
       run: |
-        cd client
         npm run lint
