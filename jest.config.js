@@ -73,7 +73,7 @@ module.exports = {
     '^tapis-ui(.*)$': '<rootDir>/src/tapis-ui/src$1',
     '^tapis-redux(.*)$': '<rootDir>/src/tapis-redux/src$1',
     '^_common(.*)$': '<rootDir>/src/tapis-ui/src/_common$1',
-    '^fixtures(.*)$': '<rootDir>/fixtures$1'
+    '^fixtures(.*)$': '<rootDir>/fixtures$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -110,7 +110,11 @@ module.exports = {
   // rootDir: null,
 
   // A list of paths to directories that Jest should use to search for files in
-  roots: ['<rootDir>/src/tapis-ui', '<rootDir>/src/tapis-app', '<rootDir>/src/tapis-redux'],
+  roots: [
+    '<rootDir>/src/tapis-ui',
+    '<rootDir>/src/tapis-app',
+    '<rootDir>/src/tapis-redux',
+  ],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
@@ -134,9 +138,7 @@ module.exports = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  testMatch: [
-    '**/__tests__/**/*.test.[jt]s?(x)'
-  ],
+  testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: ['./node_modules/'],
