@@ -69,10 +69,11 @@ module.exports = {
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
-    '^tapis-app(.*)$': '<rootDir>/tapis-app/src$1',
-    '^tapis-redux(.*)$': '<rootDir>/tapis-redux/src$1',
-    '^_common(.*)$': '<rootDir>/tapis-ui/src/_common$1',
-    '^utils(.*)$': '<rootDir>/tapis-ui/utils$1',
+    '^tapis-app(.*)$': '<rootDir>/src/tapis-app/src$1',
+    '^tapis-ui(.*)$': '<rootDir>/src/tapis-ui/src$1',
+    '^tapis-redux(.*)$': '<rootDir>/src/tapis-redux/src$1',
+    '^_common(.*)$': '<rootDir>/src/tapis-ui/src/_common$1',
+    '^fixtures(.*)$': '<rootDir>/fixtures$1'
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -109,7 +110,7 @@ module.exports = {
   // rootDir: null,
 
   // A list of paths to directories that Jest should use to search for files in
-  roots: ['<rootDir>/tapis-ui', '<rootDir>/tapis-redux'],
+  roots: ['<rootDir>/src/tapis-ui', '<rootDir>/src/tapis-app', '<rootDir>/src/tapis-redux'],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
