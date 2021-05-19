@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { Alert } from 'reactstrap';
 
-import SectionMessages from '_common/section/SectionMessages';
+import SectionMessages from '_common/Section/SectionMessages';
 import * as MESSAGES from '../../src/_constants/welcomeMessages';
 
 const mockStore = configureStore();
