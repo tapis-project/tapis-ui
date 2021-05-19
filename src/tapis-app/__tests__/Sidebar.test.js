@@ -3,7 +3,7 @@ import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from './utils/testing';
 import Sidebar from 'tapis-app/Sidebar';
-import tapisReduxStore from '../../../tapis-redux/fixtures/tapis-redux.fixture';
+import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 
 const mockStore = configureStore();
 
