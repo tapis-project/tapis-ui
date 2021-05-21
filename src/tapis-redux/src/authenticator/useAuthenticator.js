@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { login as loginAction } from './actions';
+import { authenticatorLoginRequest } from './actions';
 
 const useAuthenticator = (config, onApi) => {
   const { token, loading, error } = useSelector((state) => state.authenticator);
@@ -8,7 +8,12 @@ const useAuthenticator = (config, onApi) => {
     loading,
     error,
     login: (username, password) =>
-      loginAction(username, password, config.authenticator, onApi),
+      authenticatorLoginRequest({
+        username,
+        password,
+        authenticator: config.authenticator,
+        onApi
+      })
   };
 };
 

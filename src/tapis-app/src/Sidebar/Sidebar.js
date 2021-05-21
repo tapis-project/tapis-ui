@@ -46,7 +46,7 @@ const Sidebar = ({ token }) => {
 };
 
 Sidebar.propTypes = {
-  token: PropTypes.bool.isRequired,
+  token: PropTypes.any.isRequired,
 };
 
 export default Sidebar;

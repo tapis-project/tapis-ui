@@ -3,11 +3,12 @@ import { Form, Label, Input, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { useAuthenticator } from 'tapis-redux';
 import { configPropType, defaultConfig } from 'tapis-redux/types';
+import { LoadingSpinner } from '../../_common';
 import PropTypes from 'prop-types';
 
 const Login = ({ config, onApi }) => {
   const dispatch = useDispatch();
-  const { login, loading, error } = useAuthenticator(config, onApi);
+  const { login, loading, error, token } = useAuthenticator(config, onApi);
   /* Replace with CEP _common FormField objects, formik and yup */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,7 +32,12 @@ const Login = ({ config, onApi }) => {
       />
       <Button onClick={onLogin} disabled={loading}>
         Login
+        {loading && <>
+          &nbsp;
+          <LoadingSpinner placement="inline" />
+        </>}
       </Button>
+      {token && <div>Logged in</div>}
       {error && <>Login error</>}
     </Form>
   );

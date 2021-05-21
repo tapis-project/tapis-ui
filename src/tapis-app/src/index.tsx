@@ -3,7 +3,7 @@ import 'react-hot-loader';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import configureStore from '../../tapis-redux/src/store';
-import * as App from './App';
+import App from './App';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,7 +12,7 @@ const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>
-
+    <App />
   </Provider>,
   document.getElementById('react-root')
 );

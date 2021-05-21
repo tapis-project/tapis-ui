@@ -42,7 +42,7 @@ const App = () => {
   return (
     <div className="workbench-wrapper">
       <Router>
-        <Sidebar token={token != null}/>
+        <Sidebar token={token}/>
         <div className="workbench-content">
           <Route exact path='/'>
             <div>Hello World!</div>
@@ -50,9 +50,11 @@ const App = () => {
           <Route path='/login'>
             <Login config={config} onApi={authCallback} />
           </Route>
+          {/* 
           <Route path='/systems'>
             <Systems config={config} onApi={systemsListCallback} />
           </Route>
+          */}
           <Route path='/uipatterns' component={UIPatterns} />
         </div>
       </Router>

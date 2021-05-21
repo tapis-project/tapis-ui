@@ -4,7 +4,7 @@ import {
   TAPIS_AUTH_LOGIN_SUCCESS
 } from './actionTypes';
 
-export type LoginCallback = Function;
+export type LoginCallback = (result: any, ...args: any[]) => any;
 
 export interface ILoginRequest {
   username: string,
