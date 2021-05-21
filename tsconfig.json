@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "dist",
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "typeRoots": [
+      "./types",
+      "node_modules/@types"
+    ],
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true, 
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "paths": {
+      "tapis-app": ["./src/tapis-app/src"],
+      "tapis-ui": ["./src/tapis-ui/src"],
+      "tapis-redux": ["./src/tapis-redux/src"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "e2e"
+  ]
+}

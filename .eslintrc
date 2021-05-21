@@ -26,7 +26,8 @@
     "plugins": [
         "react",
         "prettier",
-        "jest"
+        "jest",
+        "import"
     ],
     "parser": "babel-eslint",
     "ignorePatterns": ["*.test.js"],
