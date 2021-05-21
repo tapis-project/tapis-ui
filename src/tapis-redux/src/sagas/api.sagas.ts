@@ -1,6 +1,6 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects';
-import tapisFetch from 'tapis-redux/utils/fetch';
-import getToken from '../authenticator/authenticator.selectors';
+import tapisFetch from '../utils/fetch';
+import getToken from '../authenticator/selectors';
 import { API_ACTIONS } from './api.actions';
 
 export function* apiSaga(action) {

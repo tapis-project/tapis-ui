@@ -10,7 +10,7 @@
       "./types",
       "node_modules/@types"
     ],
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "module": "es6",
     "target": "es5",
     "jsx": "react",
@@ -19,10 +19,11 @@
     "allowSyntheticDefaultImports": true, 
     "esModuleInterop": true,
     "sourceMap": true,
+    "baseUrl": "./",
     "paths": {
-      "tapis-app": ["./src/tapis-app/src"],
-      "tapis-ui": ["./src/tapis-ui/src"],
-      "tapis-redux": ["./src/tapis-redux/src"]
+      "tapis-app": ["src/tapis-app/src"],
+      "tapis-ui": ["src/tapis-ui/src"],
+      "tapis-redux": ["src/tapis-redux/src"]
     }
   },
   "exclude": [
