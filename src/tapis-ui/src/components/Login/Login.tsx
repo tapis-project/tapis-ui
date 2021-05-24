@@ -2,8 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { Form, Label, Input, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { useAuthenticator } from 'tapis-redux';
-import { configPropType, defaultConfig } from 'tapis-redux/types';
+import { defaultConfig } from 'tapis-redux/types';
 import { LoadingSpinner } from '../../_common';
+import { ConfigPropType } from 'tapis-ui/proptypes';
 import PropTypes from 'prop-types';
 
 const Login = ({ config, onApi }) => {
@@ -44,7 +45,7 @@ const Login = ({ config, onApi }) => {
 };
 
 Login.propTypes = {
-  config: configPropType,
+  config: ConfigPropType,
   onApi: PropTypes.func,
 };
 

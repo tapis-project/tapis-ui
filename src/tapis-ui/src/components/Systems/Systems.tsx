@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
-import { configPropType, defaultConfig } from 'tapis-redux/types';
+import { defaultConfig } from 'tapis-redux/types';
+import { ConfigPropType } from 'tapis-ui/proptypes';
 import PropTypes from 'prop-types';
 
 const System = ({ definition }) => {
@@ -38,7 +39,7 @@ const Systems = ({ config, onApi }) => {
 };
 
 Systems.propTypes = {
-  config: configPropType,
+  config: ConfigPropType,
   onApi: PropTypes.func,
 };
 

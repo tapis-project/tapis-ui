@@ -19,11 +19,14 @@
     "allowSyntheticDefaultImports": true, 
     "esModuleInterop": true,
     "sourceMap": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "tapis-app": ["src/tapis-app/src"],
+      "tapis-app/*": ["src/tapis-app/src/*"],
       "tapis-ui": ["src/tapis-ui/src"],
-      "tapis-redux": ["src/tapis-redux/src"]
+      "tapis-ui/*": ["src/tapis-ui/src/*"],
+      "tapis-redux": ["src/tapis-redux/src"],
+      "tapis-redux/*": ["src/tapis-redux/src/*"]
     }
   },
   "exclude": [

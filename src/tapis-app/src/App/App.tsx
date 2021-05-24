@@ -30,6 +30,7 @@ const App = () => {
       /* eslint-disable */
       console.log("Systems listing api result", result);
     },
+    []
   )
 
   // Demonstration of config to use alternate URLs or provided tokens
