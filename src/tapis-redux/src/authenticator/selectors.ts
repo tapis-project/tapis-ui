@@ -1,6 +1,6 @@
 import { TapisState } from '../store/rootReducer';
+import { Token } from './types';
 
-// TODO: Replace with Token type
-const getToken: any = (state: TapisState) => state.authenticator.token;
+const getToken = (state: TapisState): Token => state.authenticator.token;
 
 export default getToken;

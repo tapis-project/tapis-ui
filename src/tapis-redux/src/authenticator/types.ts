@@ -4,7 +4,13 @@ import {
   TAPIS_AUTH_LOGIN_SUCCESS
 } from './actionTypes';
 
-export type LoginCallback = (result: any, ...args: any[]) => any;
+export interface Token {
+  access_token: string,
+  expires_at: string,
+  expires_in: number
+}
+
+export type LoginCallback = (result: Token | Error, ...args: any[]) => any;
 
 export interface ILoginRequest {
   username: string,
@@ -14,18 +20,17 @@ export interface ILoginRequest {
 }
 
 export interface AuthenticatorState {
-  // TODO: replace with token type
-  token: any,
+  token: Token,
   loading: boolean,
-  error: any
+  error: Error
 }
 
 export interface AuthenticatorLoginSuccessPayload {
-  token: any
+  token: Token
 }
 
 export interface AuthenticatorLoginFailurePayload {
-  error: any;
+  error: Error;
 }
 
 export interface AuthenticatorLoginRequest {

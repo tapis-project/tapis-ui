@@ -5,7 +5,6 @@ import {
   TAPIS_AUTH_LOGIN_SUCCESS
 } from './actionTypes';
 
-
 export const initialState: AuthenticatorState = {
   token: null,
   loading: false,
@@ -24,7 +23,7 @@ export const authenticator = (state: AuthenticatorState = initialState, action: 
     case TAPIS_AUTH_LOGIN_SUCCESS:
       return {
         ...state,
-        token: action.payload,
+        token: action.payload.token,
         loading: false,
         error: null,
       };
@@ -33,7 +32,7 @@ export const authenticator = (state: AuthenticatorState = initialState, action: 
         ...state,
         token: null,
         loading: false,
-        error: action.payload,
+        error: action.payload.error,
       };
     default:
       return state;

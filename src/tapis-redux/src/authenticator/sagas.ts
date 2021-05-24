@@ -28,7 +28,7 @@ export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
     // Notify tapis-redux store of token
     yield put({
       type: TAPIS_AUTH_LOGIN_SUCCESS,
-      payload: token,
+      payload: { token }
     });
     // Call external callback with a copy of the token
     if (action.payload.onApi) {
@@ -38,7 +38,7 @@ export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
     // Catch any errors and save exception in tapis-redux
     yield put({
       type: TAPIS_AUTH_LOGIN_FAILURE,
-      payload: error,
+      payload: { error }
     });
     if (action.payload.onApi) {
       yield call(action.payload.onApi, error);
