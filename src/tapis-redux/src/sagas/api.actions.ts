@@ -1,5 +1,16 @@
+import { ApiSagaDispatch, ApiSagaRequest } from './types';
+import { TAPIS_REDUX_API_REQUEST } from './actionTypes';
+
 export const defaultResponseParser = (response) => response.data.result;
 
+export function apiCall<T>(dispatch: ApiSagaDispatch<T>): ApiSagaRequest<T> {
+  return {
+    type: TAPIS_REDUX_API_REQUEST,
+    payload: dispatch
+  }
+}
+ 
+/*
 export const apiCall = ({
   config,
   onApi,
@@ -18,6 +29,7 @@ export const apiCall = ({
     },
   };
 };
+*/
 
 export const API_ACTIONS = {
   API: {

@@ -36,7 +36,7 @@ const App = () => {
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
     token: token,
-    tenant: 'https://tacc.tapis.io/v3',
+    tenant: 'https://tacc.tapis.io',
     authenticator: 'https://tacc.tapis.io/v3/oauth2',
   };
 
@@ -51,11 +51,9 @@ const App = () => {
           <Route path='/login'>
             <Login config={config} onApi={authCallback} />
           </Route>
-          {/* 
           <Route path='/systems'>
             <Systems config={config} onApi={systemsListCallback} />
           </Route>
-          */}
           <Route path='/uipatterns' component={UIPatterns} />
         </div>
       </Router>

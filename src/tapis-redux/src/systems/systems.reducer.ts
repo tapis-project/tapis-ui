@@ -1,4 +1,5 @@
-import { ACTIONS } from './systems.actions';
+import * as ACTIONS from './actionTypes';
+
 
 export const initialState = {
   definitions: {},
@@ -17,20 +18,20 @@ export const addSystems = (definitions, listing) => {
 
 export function systems(state = initialState, action) {
   switch (action.type) {
-    case ACTIONS.LIST.START:
+    case ACTIONS.TAPIS_SYSTEMS_LIST_REQUEST:
       return {
         ...state,
         loading: true,
         error: null,
       };
-    case ACTIONS.LIST.SUCCESS:
+    case ACTIONS.TAPIS_SYSTEMS_LIST_SUCCESS:
       return {
         ...state,
-        definitions: addSystems(state.definitions, action.payload),
+        definitions: addSystems(state.definitions, action.payload.result),
         loading: false,
         error: null,
       };
-    case ACTIONS.LIST.ERROR:
+    case ACTIONS.TAPIS_SYSTEMS_LIST_FAILURE:
       return {
         ...state,
         loading: false,
