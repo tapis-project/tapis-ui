@@ -1,14 +1,7 @@
-import { 
-  TAPIS_REDUX_API_FAILURE,
-  TAPIS_REDUX_API_REQUEST,
-  TAPIS_REDUX_API_SUCCESS
-} from './actionTypes';
+import * as ACTIONS from './actionTypes';
 
-import { Config } from '../types';
+import { Config, ApiCallback } from '../types';
 
-export type ApiCallback<T> = (result: T | Error, ...args: any[]) => any;
-
-// TODO: make a stronger specifier for this to match all generated APIs
 type BaseApiClass = {
   new(...args: any[]): any
 };
@@ -36,17 +29,17 @@ export type ApiSagaDispatch<T> = {
 }
 
 export interface ApiSagaRequest<T> {
-  type: typeof TAPIS_REDUX_API_REQUEST
+  type: typeof ACTIONS.TAPIS_REDUX_API_REQUEST
   payload: ApiSagaDispatch<T>
 }
 
 export interface ApiSagaSuccess<T> {
-  type: typeof TAPIS_REDUX_API_REQUEST,
+  type: typeof ACTIONS.TAPIS_REDUX_API_SUCCESS,
   payload: T
 }
 
 export interface ApiSagaFailure {
-  type: typeof TAPIS_REDUX_API_FAILURE,
+  type: typeof ACTIONS.TAPIS_REDUX_API_FAILURE,
   payload: Error
 }
 

@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { list } from './systems.actions';
+import { list } from './actions';
 import { TapisState } from '../store/rootReducer';
 
 const useSystems = (config, onApi) => {
