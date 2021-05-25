@@ -1,9 +1,7 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects';
-import tapisFetch from '../utils/fetch';
 import getToken from '../authenticator/selectors';
-import { ApiSagaRequest, ApiDispatches } from './types';
-import { Config, ApiCallback } from 'tapis-redux/types';
-import { TAPIS_REDUX_API_REQUEST, TAPIS_REDUX_API_FAILURE, TAPIS_REDUX_API_SUCCESS } from './actionTypes';
+import { ApiSagaRequest } from './types';
+import * as ACTIONS from './actionTypes';
 
 export function* apiSaga<T>(action: ApiSagaRequest<T>) {
   const { config, onApi, dispatches, module, fnName, args } = action.payload;
@@ -26,7 +24,7 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     const configuration = new (module.Configuration)({
       basePath: tenant,
       headers: {
-        "X-Tapis-Token": storeToken.access_token
+        "X-Tapis-Token": token
       }
     });
 
@@ -43,6 +41,9 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     if (onApi) {
       yield call(onApi, result);
     }
+
+    // Send general SUCCESS event
+    yield put({ type: ACTIONS.TAPIS_REDUX_API_SUCCESS });
   } catch (error) {
     // Notify the external reducer that there is an error
     yield put({ type: dispatches.failure, payload: error });
@@ -51,9 +52,12 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     if (onApi) {
       yield call(onApi, error);
     }
+
+    // Send general FAILURE event
+    yield put({ type: ACTIONS.TAPIS_REDUX_API_FAILURE });
   }
 }
 
 export function* watchApiSaga() {
-  yield takeEvery(TAPIS_REDUX_API_REQUEST, apiSaga);
+  yield takeEvery(ACTIONS.TAPIS_REDUX_API_REQUEST, apiSaga);
 }
