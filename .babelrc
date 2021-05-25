@@ -6,6 +6,7 @@
                 "targets": "> 1%, not dead"
             }
         ],
+        "@babel/preset-typescript",
         "react-app"
     ],
     "plugins": [
