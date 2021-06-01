@@ -34,6 +34,6 @@ describe('Systems dispatch generators', () => {
     expect(module).toEqual(Systems);
     expect(api).toEqual(Systems.SystemsApi);
     expect(fnName).toEqual('getSystems');
-    expect(args).toEqual({});
+    expect(args).toEqual([{}]);
   });
 });
