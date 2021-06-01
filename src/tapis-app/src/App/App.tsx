@@ -6,7 +6,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import './App.scss';
 
-const App = () => {
+const App: React.FC = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
   const [token, setToken] = useState(null);

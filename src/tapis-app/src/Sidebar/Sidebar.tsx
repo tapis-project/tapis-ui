@@ -1,12 +1,19 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Icon } from '_common';
+import { Icon } from 'tapis-ui/_common';
+import { Token } from 'tapis-redux/types';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
 
-const SidebarItem = ({ to, label, iconName }) => {
+
+type SidebarItemProps = {
+  to: string,
+  label: string,
+  iconName: string
+}
+
+const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
   return (
     <NavItem>
       <NavLink
@@ -26,13 +33,12 @@ const SidebarItem = ({ to, label, iconName }) => {
   );
 };
 
-SidebarItem.propTypes = {
-  to: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  iconName: PropTypes.string.isRequired,
-};
 
-const Sidebar = ({ token }) => {
+interface SidebarProps {
+  token?: Token
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ token }) => {
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
@@ -45,8 +51,8 @@ const Sidebar = ({ token }) => {
   );
 };
 
-Sidebar.propTypes = {
-  token: PropTypes.any.isRequired,
-};
+Sidebar.defaultProps = {
+  token: null
+}
 
 export default Sidebar;
