@@ -24,7 +24,7 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     const configuration = new (module.Configuration)({
       basePath: tenant,
       headers: {
-        "X-Tapis-Token": token
+        "X-Tapis-Token": token.access_token
       }
     });
 
