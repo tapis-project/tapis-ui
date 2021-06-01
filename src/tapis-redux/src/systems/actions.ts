@@ -11,7 +11,7 @@ export const list = (config: Config = null, onApi: ApiCallback<SystemsResponse> 
 
   // Create a request object
   const request: Systems.GetSystemsRequest = {};
-  return apiCall<SystemsResponse>({
+  return apiCall<Systems.RespSystems>({
     // Optional configuration
     config,
     // Optional callback
