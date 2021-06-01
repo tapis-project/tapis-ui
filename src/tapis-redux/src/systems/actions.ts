@@ -1,16 +1,17 @@
 import { apiCall } from '../sagas/actions';
 import * as ACTIONS from './actionTypes';
 import { Systems } from '@tapis/tapis-typescript';
+import { SystemsResponse } from './types';
 import { ApiCallback, Config } from 'tapis-redux/types';
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, onApi: ApiCallback<Systems.RespSystems> = null) => {
+export const list = (config: Config = null, onApi: ApiCallback<SystemsResponse> = null) => {
   // Generate a dispatch that calls the API saga with
   // a systems listing payload
 
   // Create a request object
   const request: Systems.GetSystemsRequest = {};
-  return apiCall<Systems.RespSystems>({
+  return apiCall<SystemsResponse>({
     // Optional configuration
     config,
     // Optional callback

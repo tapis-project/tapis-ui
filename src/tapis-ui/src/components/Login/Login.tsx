@@ -2,12 +2,16 @@ import React, { useState, useCallback } from 'react';
 import { Form, Label, Input, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { useAuthenticator } from 'tapis-redux';
-import { defaultConfig } from 'tapis-redux/types';
 import { LoadingSpinner } from '../../_common';
-import { ConfigPropType } from 'tapis-ui/proptypes';
-import PropTypes from 'prop-types';
+import { Config } from 'tapis-redux/types';
+import { LoginCallback } from 'tapis-redux/authenticator/types';
 
-const Login = ({ config, onApi }) => {
+interface LoginProps  {
+  config?: Config,
+  onApi?: LoginCallback
+}
+
+const Login: React.FC<LoginProps> = ({ config, onApi }) => {
   const dispatch = useDispatch();
   const { login, loading, error, token } = useAuthenticator(config, onApi);
   /* Replace with CEP _common FormField objects, formik and yup */
@@ -44,14 +48,10 @@ const Login = ({ config, onApi }) => {
   );
 };
 
-Login.propTypes = {
-  config: ConfigPropType,
-  onApi: PropTypes.func,
-};
-
 Login.defaultProps = {
-  config: defaultConfig,
-  onApi: null,
-};
+  config: null,
+  onApi: null
+}
+
 
 export default Login;

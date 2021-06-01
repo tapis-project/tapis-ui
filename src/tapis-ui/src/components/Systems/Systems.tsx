@@ -1,22 +1,23 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
-import { defaultConfig } from 'tapis-redux/types';
-import { ConfigPropType } from 'tapis-ui/proptypes';
-import PropTypes from 'prop-types';
+import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { Config, ApiCallback, SystemsResponse } from 'tapis-redux/types';
 
-const System = ({ definition }) => {
+type SystemProps = {
+  definition: TapisSystem
+}
+
+const System: React.FC<SystemProps> = ({ definition }) => {
   return <div>{`${definition.id} (${definition.host})`}</div>;
 };
 
-System.propTypes = {
-  definition: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    host: PropTypes.string.isRequired,
-  }).isRequired,
-};
+interface SystemsProps {
+  config?: Config,
+  onApi?: ApiCallback<SystemsResponse>
+}
 
-const Systems = ({ config, onApi }) => {
+const Systems: React.FC<SystemsProps> = ({ config, onApi }) => {
   const dispatch = useDispatch();
   const { definitions, list } = useSystems(config, onApi);
   useEffect(() => {
@@ -38,14 +39,9 @@ const Systems = ({ config, onApi }) => {
   );
 };
 
-Systems.propTypes = {
-  config: ConfigPropType,
-  onApi: PropTypes.func,
-};
-
 Systems.defaultProps = {
-  config: defaultConfig,
-  onApi: null,
-};
+  config: null,
+  onApi: null
+}
 
 export default Systems;
