@@ -6,9 +6,9 @@ import { LoadingSpinner } from '../../_common';
 import { Config } from 'tapis-redux/types';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 
-type LoginProps = {
-  config: Config,
-  onApi: LoginCallback
+interface LoginProps  {
+  config?: Config,
+  onApi?: LoginCallback
 }
 
 const Login: React.FC<LoginProps> = ({ config, onApi }) => {
@@ -47,6 +47,11 @@ const Login: React.FC<LoginProps> = ({ config, onApi }) => {
     </Form>
   );
 };
+
+Login.defaultProps = {
+  config: null,
+  onApi: null
+}
 
 
 export default Login;

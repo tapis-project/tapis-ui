@@ -12,9 +12,9 @@ const System: React.FC<SystemProps> = ({ definition }) => {
   return <div>{`${definition.id} (${definition.host})`}</div>;
 };
 
-type SystemsProps = {
-  config: Config,
-  onApi: ApiCallback<SystemsResponse>
+interface SystemsProps {
+  config?: Config,
+  onApi?: ApiCallback<SystemsResponse>
 }
 
 const Systems: React.FC<SystemsProps> = ({ config, onApi }) => {
@@ -38,5 +38,10 @@ const Systems: React.FC<SystemsProps> = ({ config, onApi }) => {
     </div>
   );
 };
+
+Systems.defaultProps = {
+  config: null,
+  onApi: null
+}
 
 export default Systems;
