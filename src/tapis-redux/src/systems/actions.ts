@@ -27,7 +27,7 @@ export const list = (config: Config = null, onApi: ApiCallback<SystemsResponse> 
     // Specify the API constructor
     api: Systems.SystemsApi,
     // Specify the function name to run 
-    fnName: 'getSystems',
+    func: Systems.SystemsApi.prototype.getSystems,
     // Provide the arguments for the function
     args: [request]
   });

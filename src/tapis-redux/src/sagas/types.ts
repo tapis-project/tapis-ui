@@ -24,7 +24,7 @@ export type ApiSagaDispatch<T> = {
   onApi?: ApiCallback<T>,
   module: ApiModule,
   api: BaseApiClass,
-  fnName: string,
+  func: (...args: any[]) => any,
   args: any[]
 }
 

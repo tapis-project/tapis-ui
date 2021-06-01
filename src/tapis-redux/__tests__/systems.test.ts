@@ -21,7 +21,7 @@ describe('Systems dispatch generators', () => {
       dispatches,
       module,
       api,
-      fnName,
+      func,
       args
     } = call.payload;
     expect(config).toStrictEqual(providedConfig);
@@ -33,7 +33,7 @@ describe('Systems dispatch generators', () => {
     });
     expect(module).toEqual(Systems);
     expect(api).toEqual(Systems.SystemsApi);
-    expect(fnName).toEqual('getSystems');
+    expect(func).toEqual(Systems.SystemsApi.prototype.getSystems);
     expect(args).toEqual([{}]);
   });
 });

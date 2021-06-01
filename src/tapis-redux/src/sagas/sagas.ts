@@ -4,7 +4,7 @@ import { ApiSagaRequest } from './types';
 import * as ACTIONS from './actionTypes';
 
 export function* apiSaga<T>(action: ApiSagaRequest<T>) {
-  const { config, onApi, dispatches, module, fnName, args } = action.payload;
+  const { config, onApi, dispatches, module, func, args } = action.payload;
   try {
     // Notify external reducer that a request has begun
     yield put({ type: dispatches.request });
@@ -32,7 +32,7 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     const api: typeof action.payload.api = new (action.payload.api)(configuration);
 
     // Call the specified function name, and expect that specific return type
-    const result: T = yield call([api, api[fnName]], ...args);
+    const result: T = yield call([api, func], ...args);
 
     // Notify the external reducer that we have the desired result
     yield put({ type: dispatches.success, payload: result });

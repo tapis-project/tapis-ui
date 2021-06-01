@@ -79,7 +79,7 @@ describe('API Saga Helper', () => {
         Configuration
       },
       api: MockApi,
-      fnName: 'mockFunction',
+      func: mockFunction,
       args
     }
     
@@ -132,7 +132,7 @@ describe('API Saga Helper', () => {
         Configuration
       },
       api: MockApi,
-      fnName: 'mockFunction',
+      func: mockFunction,
       args
     }
     
