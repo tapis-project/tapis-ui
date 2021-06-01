@@ -20,7 +20,7 @@ export type ApiDispatches = {
 
 export type ApiSagaDispatch<T> = {
   dispatches: ApiDispatches,
-  config: Config,
+  config?: Config,
   onApi: ApiCallback<T>,
   module: ApiModule,
   api: BaseApiClass,
