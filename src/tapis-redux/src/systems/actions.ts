@@ -4,7 +4,7 @@ import { Systems } from '@tapis/tapis-typescript';
 import { ApiCallback, Config } from 'tapis-redux/types';
 
 // Create a 'list' dispatch generator
-export const list = (config: Config, onApi: ApiCallback<Systems.RespSystems>) => {
+export const list = (config: Config = null, onApi: ApiCallback<Systems.RespSystems> = null) => {
   // Generate a dispatch that calls the API saga with
   // a systems listing payload
 
