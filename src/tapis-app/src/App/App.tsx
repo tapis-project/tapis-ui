@@ -2,11 +2,13 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Login, Systems } from 'tapis-ui/components';
+import { SystemsResponse } from 'tapis-redux/types';
+import { RespSystems } from '@tapis/tapis-typescript-systems';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import './App.scss';
 
-const App = () => {
+const App: React.FC = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
   const [token, setToken] = useState(null);
@@ -25,7 +27,7 @@ const App = () => {
     [setToken]
   );
 
-  const systemsListCallback = useCallback(
+  const systemsListCallback = useCallback<(result: RespSystems) => any>(
     (result) => {
       /* eslint-disable */
       console.log("Systems listing api result", result);
