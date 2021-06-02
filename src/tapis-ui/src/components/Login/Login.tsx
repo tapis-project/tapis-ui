@@ -8,17 +8,17 @@ import { LoginCallback } from 'tapis-redux/authenticator/types';
 
 interface LoginProps  {
   config?: Config,
-  onApi?: LoginCallback
+  onAuth?: LoginCallback
 }
 
-const Login: React.FC<LoginProps> = ({ config, onApi }) => {
+const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
   const dispatch = useDispatch();
-  const { login, loading, error, token } = useAuthenticator(config, onApi);
+  const { login, loading, error, token } = useAuthenticator(config);
   /* Replace with CEP _common FormField objects, formik and yup */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const onLogin = useCallback(() => {
-    dispatch(login(username, password));
+    dispatch(login(username, password, onAuth));
   }, [dispatch, login, username, password]);
   return (
     <Form>
@@ -50,7 +50,7 @@ const Login: React.FC<LoginProps> = ({ config, onApi }) => {
 
 Login.defaultProps = {
   config: null,
-  onApi: null
+  onAuth: null
 }
 
 

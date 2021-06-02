@@ -1,38 +1,47 @@
 import { call, put, takeLeading } from 'redux-saga/effects';
-import axios from 'axios';
 import { 
   TAPIS_AUTH_LOGIN_REQUEST,
   TAPIS_AUTH_LOGIN_SUCCESS,
   TAPIS_AUTH_LOGIN_FAILURE
 } from './actionTypes';
 import { AuthenticatorLoginRequest } from './types';
-
-export const tapisAuthPassword = ({ username, password, authenticator }) => {
-  const url = `${authenticator}/tokens`;
-  return axios.post(url, {
-    username,
-    password,
-    grant_type: 'password',
-  });
-};
+import { Authenticator } from '@tapis/tapis-typescript';
+import fetch from 'cross-fetch';
 
 export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
   try {
-    // Make API call
-    const result = yield call(tapisAuthPassword, {
-      username: action.payload.username,
-      password: action.payload.password,
-      authenticator: action.payload.authenticator,
+    const { authenticator, username, password } = action.payload;
+    // Authenticator does not seem to be properly supported in the API Spec
+    // Search for a tenant url a provided tapis config, or just use environment default
+    const defaultUrl = process.env.TAPIS_TENANT_URL;
+    const tenant = authenticator ? authenticator || defaultUrl : defaultUrl;
+
+    // Generate a configuration object for the module with the
+    // API URL and the authorization header
+    const configuration = new (Authenticator.Configuration)({
+      basePath: tenant,
+      fetchApi: fetch
     });
-    const token = result.data.result.access_token;
+    const api: Authenticator.TokensApi = new Authenticator.TokensApi(configuration);
+    const reqCreateToken: Authenticator.ReqCreateToken = {
+      grant_type: "password",
+      username,
+      password
+    }
+    const request: Authenticator.CreateTokenRequest = {
+      reqCreateToken
+    }
+    // Make API call
+    const result: Authenticator.RespCreateToken = yield call([api, api.createToken], request);
+    const token = result.result.access_token;
     // Notify tapis-redux store of token
     yield put({
       type: TAPIS_AUTH_LOGIN_SUCCESS,
       payload: { token }
     });
     // Call external callback with a copy of the token
-    if (action.payload.onApi) {
-      yield call(action.payload.onApi, { ...token });
+    if (action.payload.onAuth) {
+      yield call(action.payload.onAuth, { ...token });
     }
   } catch (error) {
     // Catch any errors and save exception in tapis-redux
@@ -40,8 +49,8 @@ export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
       type: TAPIS_AUTH_LOGIN_FAILURE,
       payload: { error }
     });
-    if (action.payload.onApi) {
-      yield call(action.payload.onApi, error);
+    if (action.payload.onAuth) {
+      yield call(action.payload.onAuth, error);
     }
   }
 }

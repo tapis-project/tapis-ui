@@ -3,20 +3,18 @@ import {
   TAPIS_AUTH_LOGIN_FAILURE,
   TAPIS_AUTH_LOGIN_SUCCESS
 } from './actionTypes';
+import { ApiCallback } from 'tapis-redux/types';
+import { Authenticator } from '@tapis/tapis-typescript';
 
-export interface Token {
-  access_token: string,
-  expires_at: string,
-  expires_in: number
-}
+export type Token = Authenticator.NewAccessTokenResponse;
 
-export type LoginCallback = (result: Token | Error, ...args: any[]) => any;
+export type LoginCallback = ApiCallback<Token>;
 
 export interface ILoginRequest {
   username: string,
   password: string,
   authenticator: string,
-  onApi?: LoginCallback
+  onAuth?: LoginCallback
 }
 
 export interface AuthenticatorState {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
-import { Token } from 'tapis-redux/types';
+import { Token } from 'tapis-redux/authenticator/types';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
 

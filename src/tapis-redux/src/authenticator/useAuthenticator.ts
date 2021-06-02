@@ -4,18 +4,18 @@ import { TapisState } from '../store/rootReducer';
 import { LoginCallback } from './types';
 import { Config } from '../types/config';
 
-const useAuthenticator = (config: Config, onApi: LoginCallback) => {
+const useAuthenticator = (config: Config) => {
   const { token, loading, error } = useSelector((state: TapisState) => state.authenticator);
   return {
     token,
     loading,
     error,
-    login: (username, password) =>
+    login: (username, password, onAuth: LoginCallback = null) =>
       authenticatorLoginRequest({
         username,
         password,
         authenticator: config.authenticator,
-        onApi
+        onAuth
       })
   };
 };
