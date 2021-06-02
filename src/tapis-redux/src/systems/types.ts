@@ -1,3 +1,4 @@
 import { Systems } from '@tapis/tapis-typescript';
+import { ApiCallback } from 'tapis-redux/types';
 
-export type SystemsResponse = Systems.RespSystems | Systems.RespSystem;
+export type SystemsListCallback = ApiCallback<Systems.RespSystems>;

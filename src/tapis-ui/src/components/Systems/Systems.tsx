@@ -2,26 +2,39 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { Config, ApiCallback, SystemsResponse } from 'tapis-redux/types';
+import { SystemsListCallback } from 'tapis-redux/systems/types';
+import { Config } from 'tapis-redux/types';
 
-type SystemProps = {
-  definition: TapisSystem
+export type OnSelectCallback = (id: string) => any;
+
+interface SystemItemProps {
+  definition: TapisSystem,
+  onSelect?: OnSelectCallback
 }
 
-const System: React.FC<SystemProps> = ({ definition }) => {
-  return <div>{`${definition.id} (${definition.host})`}</div>;
+const SystemItem: React.FC<SystemItemProps> = ({ definition, onSelect }) => {
+  return (
+    <div onClick={() => onSelect(definition.id)}>
+      {`${definition.id} (${definition.host})`}
+    </div>
+  );
 };
+
+SystemItem.defaultProps = {
+  onSelect: null
+}
 
 interface SystemsProps {
   config?: Config,
-  onApi?: ApiCallback<SystemsResponse>
+  onList?: SystemsListCallback,
+  onSelect?: (id: string) => any
 }
 
-const Systems: React.FC<SystemsProps> = ({ config, onApi }) => {
+const Systems: React.FC<SystemsProps> = ({ config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { definitions, list } = useSystems(config, onApi);
+  const { definitions, list } = useSystems(config);
   useEffect(() => {
-    dispatch(list());
+    dispatch(list(onList));
   }, [dispatch]);
 
   return (
@@ -30,7 +43,7 @@ const Systems: React.FC<SystemsProps> = ({ config, onApi }) => {
       {definitions &&
         (Object.keys(definitions).length > 0 ? (
           Object.keys(definitions).map((id) => (
-            <System definition={definitions[id]} key={id} />
+            <SystemItem definition={definitions[id]} key={id} onSelect={onSelect} />
           ))
         ) : (
           <i>No systems found</i>
@@ -41,7 +54,8 @@ const Systems: React.FC<SystemsProps> = ({ config, onApi }) => {
 
 Systems.defaultProps = {
   config: null,
-  onApi: null
+  onList: null,
+  onSelect: null
 }
 
 export default Systems;
