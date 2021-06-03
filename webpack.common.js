@@ -16,10 +16,15 @@ module.exports = {
         }
       },
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: [
-          'babel-loader',
+          {
+            loader: 'babel-loader',
+          },
+          {
+            loader: 'ts-loader'
+          },
           {
             loader: 'eslint-loader',
             options: {
@@ -37,10 +42,6 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg|woff|woff2|eot|ttf|otf)$/,
         loader: 'file-loader',
-      },
-      {
-        test: /\.(ts|tsx)$/,
-        use: 'ts-loader',
       }
     ],
   },
