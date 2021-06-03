@@ -29,7 +29,7 @@ describe('Authenticator login saga', () => {
       .call(tapisAuth, { username: 'username', password: 'password', onAuth })
       .put({
         type: ACTIONS.TAPIS_AUTH_LOGIN_SUCCESS,
-        payload: authenticatorToken,
+        payload: { token: authenticatorToken },
       })
       .call(onAuth, authenticatorToken)
       .hasFinalState(authenticatorStore)

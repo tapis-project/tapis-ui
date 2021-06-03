@@ -32,8 +32,8 @@ export function* tapisAuth(payload) {
       reqCreateToken
     }
     // Make API call
-    const result: Authenticator.RespCreateToken = yield call([api, api.createToken], request);
-    return result.result.access_token;
+    const response: Authenticator.RespCreateToken = yield call([api, api.createToken], request);
+    return response.result.access_token;
 }
 
 export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
