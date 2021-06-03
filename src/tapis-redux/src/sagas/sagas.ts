@@ -13,7 +13,7 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     const storeToken = yield select(getToken);
 
     // Search for a token in a provided tapis config, or just use the store's token
-    const token = config ? config.jwt || storeToken : storeToken;
+    const token = config ? config.jwt || storeToken.access_token : storeToken.access_token;
 
     // Search for a tenant url a provided tapis config, or just use environment default
     const defaultUrl = process.env.TAPIS_TENANT_URL;

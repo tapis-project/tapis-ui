@@ -6,13 +6,8 @@ describe('Systems dispatch generators', () => {
   it('generates a system listing dispatch', async () => {
     const callback: ApiCallback<Systems.RespSystems> = (result: Systems.RespSystems) => {};
     const providedConfig: Config = {
-      authenticator: 'mock.authenticator',
       tenant: 'mock.tenant',
-      token: {
-        access_token: 'mock_token',
-        expires_at: 'tomorrow',
-        expires_in: 24
-      }
+      jwt: 'mock_jwt'
     }
     const call = list(providedConfig, callback);
     const {

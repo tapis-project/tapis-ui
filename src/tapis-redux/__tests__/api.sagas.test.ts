@@ -1,8 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import * as matchers from 'redux-saga-test-plan/matchers';
 import { apiSaga } from 'tapis-redux/sagas/sagas';
 import { ApiSagaDispatch, ApiDispatches, ApiSagaRequest } from 'tapis-redux/sagas/types';
-import { Token } from 'tapis-redux/authenticator/types';
 import { Config, ApiCallback } from 'tapis-redux/types';
 import * as ACTIONS from 'tapis-redux/sagas/actionTypes';
 
@@ -33,18 +31,10 @@ const mockApiInstance = {
 // Mocked API that contains a function to be called by name
 const MockApi = jest.fn().mockImplementation(() => mockApiInstance);
 
-// mock token
-const token: Token = {
-  access_token: 'mock_provided_token',
-  expires_at: 'tomorrow',
-  expires_in: 24
-}
-
 // mock configuration
 const config: Config = {
-  token,
-  tenant: 'mock.api',
-  authenticator: 'mock.authenticator'
+  jwt: 'mock_jwt',
+  tenant: 'mock.api'
 }
 
 // onApi callback that passes the result to the jest observer
@@ -170,7 +160,7 @@ describe('API Saga Helper', () => {
     expect(Configuration.mock.calls[0][0]).toStrictEqual({
       basePath: "mock.api",
       headers: {
-        "X-Tapis-Token": "mock_provided_token"
+        "X-Tapis-Token": "mock_jwt"
       }
     })
     // Make sure callback fired
