@@ -9,11 +9,11 @@ import {
   AuthenticatorLoginRequest,
   AuthenticatorLoginSuccess,
   AuthenticatorLoginSuccessPayload,
-  ILoginRequest
+  LoginRequest
 } from "./types";
 
 export const authenticatorLoginRequest = (
-  request: ILoginRequest
+  request: LoginRequest
 ): AuthenticatorLoginRequest => ({
   type: TAPIS_AUTH_LOGIN_REQUEST,
   payload: request

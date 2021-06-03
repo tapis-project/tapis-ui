@@ -10,11 +10,11 @@ import fetch from 'cross-fetch';
 
 export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
   try {
-    const { authenticator, username, password } = action.payload;
+    const { config, username, password } = action.payload;
     // Authenticator does not seem to be properly supported in the API Spec
     // Search for a tenant url a provided tapis config, or just use environment default
     const defaultUrl = process.env.TAPIS_TENANT_URL;
-    const tenant = authenticator ? authenticator || defaultUrl : defaultUrl;
+    const tenant = config ? config.tenant || defaultUrl : defaultUrl;
 
     // Generate a configuration object for the module with the
     // API URL and the authorization header

@@ -14,7 +14,7 @@ const useAuthenticator = (config: Config) => {
       authenticatorLoginRequest({
         username,
         password,
-        authenticator: config.authenticator,
+        config,
         onAuth
       })
   };
