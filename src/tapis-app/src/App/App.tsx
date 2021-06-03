@@ -11,7 +11,7 @@ import './App.scss';
 const App: React.FC = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
-  const [token, setToken] = useState(null);
+  const [jwt, setJwt] = useState<string>(null);
   const authCallback = useCallback<LoginCallback>(
     (result) => {
       /* eslint-disable */
@@ -21,10 +21,10 @@ const App: React.FC = () => {
         return;
       }
       // Set local view state
-      setToken(result);
+      setJwt(result.access_token);
       // Can make also make an external call to propagate the login result
     },
-    [setToken]
+    [setJwt]
   );
 
   const systemsListCallback = useCallback<SystemsListCallback>(
@@ -37,15 +37,14 @@ const App: React.FC = () => {
 
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
-    token: token,
+    jwt,
     tenant: 'https://dev.develop.tapis.io',
-    authenticator: 'https://dev.develop.tapis.io',
   };
 
   return (
     <div className="workbench-wrapper">
       <Router>
-        <Sidebar token={token}/>
+        <Sidebar jwt={jwt}/>
         <div className="workbench-content">
           <Route exact path='/'>
             <div>Hello World!</div>

@@ -1,5 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { tapisAuthPassword, authenticatorLogin } from 'tapis-redux/authenticator/sagas';
+import { authenticatorLogin } from 'tapis-redux/authenticator/sagas';
 import * as ACTIONS from 'tapis-redux/authenticator/actionTypes';
 import { AuthenticatorLoginRequest } from 'tapis-redux/authenticator/types';
 import { authenticatorToken, authenticatorStore, authenticatorResponse } from 'fixtures/authenticator.fixtures';

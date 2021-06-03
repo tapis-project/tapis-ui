@@ -2,7 +2,6 @@ import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
-import { Token } from 'tapis-redux/authenticator/types';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
 
@@ -35,15 +34,15 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
 
 
 interface SidebarProps {
-  token?: Token
+  jwt?: string
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ token }) => {
+const Sidebar: React.FC<SidebarProps> = ({ jwt }) => {
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
       <SidebarItem to="/login" label="Login" iconName="link" />
-      {token && (
+      {jwt && (
         <SidebarItem to="/systems" label="Systems" iconName="allocations" />
       )}
       <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
@@ -52,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ token }) => {
 };
 
 Sidebar.defaultProps = {
-  token: null
+  jwt: null
 }
 
 export default Sidebar;
