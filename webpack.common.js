@@ -2,23 +2,29 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: ['react-hot-loader/patch', './src/tapis-app/src/index.js'],
+  entry: ['react-hot-loader/patch', './src/tapis-app/src/index.tsx'],
+  devtool: 'inline-source-map',
   output: {
     path: path.resolve(__dirname, 'build'),
   },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false
+        }
+      },
+      {
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: [
-          'babel-loader',
           {
-            loader: 'eslint-loader',
-            options: {
-              emitWarning: true,
-            },
+            loader: 'babel-loader',
           },
+          {
+            loader: 'ts-loader'
+          }
         ],
       },
       {
@@ -30,11 +36,11 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg|woff|woff2|eot|ttf|otf)$/,
         loader: 'file-loader',
-      },
+      }
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
     alias: {
       _common: path.resolve(__dirname, 'src/tapis-ui/src/_common/'),
       'tapis-ui': path.resolve(__dirname, 'src/tapis-ui/src/'),

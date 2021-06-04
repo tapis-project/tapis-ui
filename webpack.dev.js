@@ -73,8 +73,7 @@ module.exports = merge(common, {
   },
   plugins: [
     new webpack.EnvironmentPlugin({
-      TAPIS_TENANT_URL: 'https://tacc.tapis.io/v3',
-      TAPIS_AUTHENTICATOR_URL: 'https://tacc.tapis.io/v3/oauth2',
+      TAPIS_TENANT_URL: 'https://dev.develop.tapis.io'
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/tapis-app/src', 'index.html'),
