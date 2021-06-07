@@ -8,7 +8,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@reduxjs/toolkit": "^1.5.1",
-    "@tapis/tapis-typescript": "0.0.4",
+    "@tapis/tapis-typescript": "0.0.5",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.1",
