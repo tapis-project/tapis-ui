@@ -34,6 +34,13 @@ export const updateResults = <T>(original: PaginatedResults<T>, incoming: Array<
   result.offset = offset;
   result.limit = limit;
 
+  // If the offset is 0, assume that this is a new listing operation
+  // and replace the entire existin glist.
+  if (offset === 0) {
+    result.results = incoming;
+    return result;
+  }
+
   // If results are the next page, append them
   if (original.results.length === offset) {
     result.results = result.results.concat(incoming);

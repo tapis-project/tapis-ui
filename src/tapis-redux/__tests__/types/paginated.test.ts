@@ -25,6 +25,14 @@ describe('PaginatedResults utilities', () => {
   });
 
   it('updates results correctly', () => {
+    // Test to see that an offset of zero means a new listing
+    expect(updateResults(initialResults, [ 1, 2, 3, 4 ], 0, 4)).toStrictEqual({
+      ...initialResults,
+      results: [ 1, 2, 3, 4 ],
+      offset: 0,
+      limit: 4  
+    })
+
     // Test to see that results can be added to the end of existing results
     expect(updateResults(initialResults, [ 1, 2, 3, 4 ], 10, 4)).toStrictEqual({
       ...initialResults,
