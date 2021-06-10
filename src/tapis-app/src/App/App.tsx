@@ -2,8 +2,10 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Login, Systems } from 'tapis-ui/components';
+import { FileListing } from 'tapis-ui/components/files';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
+import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import './App.scss';
@@ -12,6 +14,8 @@ const App: React.FC = () => {
   // Demonstration of using some type of external state
   // management that isn't tapis-redux
   const [jwt, setJwt] = useState<string>(null);
+  const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
+  
   const authCallback = useCallback<LoginCallback>(
     (result) => {
       /* eslint-disable */
@@ -35,6 +39,13 @@ const App: React.FC = () => {
     []
   )
 
+  const systemSelectCallback = useCallback(
+    (system: TapisSystem) => {
+      setSelectedSystem(system);
+    },
+    [setSelectedSystem]
+  )
+
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
     jwt,
@@ -53,7 +64,15 @@ const App: React.FC = () => {
             <Login config={config} onAuth={authCallback} />
           </Route>
           <Route path='/systems'>
-            <Systems config={config} onList={systemsListCallback} />
+            <Systems config={config} onList={systemsListCallback} onSelect={systemSelectCallback} />
+          </Route>
+          <Route path='/files'>
+            {
+              // TODO: This should be a tapis-app file browser component that uses FileListing
+              selectedSystem
+                ? <FileListing systemId={selectedSystem.id} path={'/'} />
+                : <div>No selected system</div>
+            }
           </Route>
           <Route path='/uipatterns' component={UIPatterns} />
         </div>

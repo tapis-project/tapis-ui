@@ -1,7 +1,19 @@
 import { TapisState } from '../store/rootReducer';
+import { useSelector } from 'react-redux';
+import { FileListingDirectory } from './types';
 
+// A selector generator that returns a selector for a given path listing
+// ex:
+// const listing: FileListingDirectory = useSelector(getListing('MySystemId', '/path'));
+type getListingSelectorType = (state: TapisState) => FileListingDirectory;
 
+const getListing = (systemId: string, path: string): getListingSelectorType => {
+  return (state: TapisState): FileListingDirectory => {
+    if (systemId in state.files.listings && path in state.files.listings[systemId]) {
+      return state.files.listings[systemId][path];
+    }
+    return undefined;
+  }
+}
 
-const getSystems = (state: TapisState) => state.systems.definitions;
-
-export default getSystems;
+export default getListing;
