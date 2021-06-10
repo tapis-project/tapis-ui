@@ -41,6 +41,8 @@ const App: React.FC = () => {
 
   const systemSelectCallback = useCallback(
     (system: TapisSystem) => {
+      /* eslint-disable */
+      console.log("System selected", system);
       setSelectedSystem(system);
     },
     [setSelectedSystem]
