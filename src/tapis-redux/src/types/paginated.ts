@@ -9,18 +9,34 @@ export type PaginatedResults<T> = {
   limit: number
 }
 
-export const setLoading = <T>(original: PaginatedResults<T>, loading: boolean): PaginatedResults<T> => {
-  const result: PaginatedResults<T> = { ...original, loading };
+export const offsetCheck = (offset: number | undefined): number => 
+  offset === undefined ? 0 : offset;
+
+export const limitCheck = (limit: number | undefined, defaultLimit: number): number =>
+  limit === undefined ? defaultLimit : limit;
+
+export const getEmptyPaginatedResults = <T>(defaultLimit: number): PaginatedResults<T> => {
+  return {
+    loading: false,
+    error: null,
+    results: [],
+    offset: 0,
+    limit: defaultLimit
+  }
+}
+
+export const setRequesting = <T>(original: PaginatedResults<T>): PaginatedResults<T> => {
+  const result: PaginatedResults<T> = { ...original, loading: true, error: null };
   return result;
 }
 
-export const setError = <T>(original: PaginatedResults<T>, error: Error): PaginatedResults<T> => {
-  const result: PaginatedResults<T> = { ...original, error };
+export const setFailure = <T>(original: PaginatedResults<T>, error: Error): PaginatedResults<T> => {
+  const result: PaginatedResults<T> = { ...original, loading: false, error };
   return result;
 }
 
 export const updateResults = <T>(original: PaginatedResults<T>, incoming: Array<T>, 
-  offset: number, limit: number): PaginatedResults<T> => {
+  offset: number, limit: number, defaultLimit: number): PaginatedResults<T> => {
 
   // Deep clone results
   const result: PaginatedResults<T> = cloneDeep(original);
@@ -31,11 +47,15 @@ export const updateResults = <T>(original: PaginatedResults<T>, incoming: Array<
   }
 
   // Update offsets and limits
-  result.offset = offset;
-  result.limit = limit;
+  result.offset = offsetCheck(offset);
+  result.limit = limitCheck(limit, defaultLimit);
+
+  // Update loading states
+  result.loading = false;
+  result.error = null;
 
   // If the offset is 0, assume that this is a new listing operation
-  // and replace the entire existin glist.
+  // and replace the entire existing list.
   if (offset === 0) {
     result.results = incoming;
     return result;

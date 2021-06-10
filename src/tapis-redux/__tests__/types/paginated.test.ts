@@ -1,25 +1,27 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { PaginatedResults, setLoading, setError, updateResults } from 'tapis-redux/types/paginated';
+import { PaginatedResults, setRequesting, setFailure, updateResults } from 'tapis-redux/types/paginated';
 
 describe('PaginatedResults utilities', () => {
   const initialResults: PaginatedResults<number> = {
     loading: false,
-    error: null,
+    error: new Error("olderror"),
     results: Array.from<number>(Array(10).keys()),
     offset: 0,
     limit: 10
   }
 
   it('sets the loading state', () => {
-    expect(setLoading<number>(initialResults, true)).toStrictEqual({
+    expect(setRequesting<number>({ ...initialResults, loading: false }, true)).toStrictEqual({
       ...initialResults,
-      loading: true
+      loading: true,
+      error: null
     })
   });
 
   it('sets the error state', () => {
-    expect(setError<number>(initialResults, new Error("error"))).toStrictEqual({
+    expect(setFailure<number>({ ...initialResults, loading: true }, new Error("error"))).toStrictEqual({
       ...initialResults,
+      loading: false,
       error: new Error("error"),
     })
   });
@@ -30,7 +32,9 @@ describe('PaginatedResults utilities', () => {
       ...initialResults,
       results: [ 1, 2, 3, 4 ],
       offset: 0,
-      limit: 4  
+      limit: 4,
+      loading: false,
+      error: null
     })
 
     // Test to see that results can be added to the end of existing results
@@ -38,7 +42,9 @@ describe('PaginatedResults utilities', () => {
       ...initialResults,
       results: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4 ],
       offset: 10,
-      limit: 4
+      limit: 4,
+      loading: false,
+      error: null
     });
 
     // Test to see that results can be replaced
@@ -46,7 +52,9 @@ describe('PaginatedResults utilities', () => {
       ...initialResults,
       results: [ 0, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4 ],
       offset: 8,
-      limit: 4
+      limit: 4,
+      loading: false,
+      error: null
     });
 
     // Test to see that results can jump ahead
@@ -54,7 +62,9 @@ describe('PaginatedResults utilities', () => {
       ...initialResults,
       results: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, null, null, 1, 2, 3, 4 ],
       offset: 12,
-      limit: 4
+      limit: 4,
+      loading: false,
+      error: null
     })
   });
 });
