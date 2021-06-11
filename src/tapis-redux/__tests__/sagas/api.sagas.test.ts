@@ -1,6 +1,13 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { apiSaga } from 'tapis-redux/sagas/sagas';
-import { ApiSagaDispatch, ApiDispatches, ApiSagaRequest } from 'tapis-redux/sagas/types';
+import {
+  ApiSagaDispatch,
+  ApiDispatches,
+  ApiSagaRequest,
+  OnRequestCallback,
+  OnSuccessCallback,
+  OnFailureCallback
+} from 'tapis-redux/sagas/types';
 import { Config, ApiCallback } from 'tapis-redux/types';
 import * as ACTIONS from 'tapis-redux/sagas/actionTypes';
 
@@ -48,11 +55,27 @@ const args = [
   'arg2'
 ]
 
-// Dispatches
-const dispatches: ApiDispatches = {
-  request: 'mock_request',
-  failure: 'mock_failure',
-  success: 'mock_success'
+// callbacks
+const onRequest: OnRequestCallback = () => {
+  return {
+    type: 'mock_request'
+  }
+}
+
+const onSuccess: OnSuccessCallback = (results) => {
+  return {
+    type: 'mock_success',
+    payload: results
+  }
+}
+
+const onFailure: OnFailureCallback = (error) => {
+  return {
+    type: 'mock_failure',
+    payload: {
+      error
+    }
+  }
 }
 
 describe('API Saga Helper', () => {
@@ -63,7 +86,9 @@ describe('API Saga Helper', () => {
   });
   it('runs saga with default configuration', async () => {
     const dispatch: ApiSagaDispatch<MockReturnType> = {
-      dispatches,
+      onSuccess,
+      onRequest,
+      onFailure,
       onApi,
       module: {
         Configuration
@@ -79,7 +104,7 @@ describe('API Saga Helper', () => {
     }
 
     // Make sure saga runs with correct sequence of events
-    expectSaga(apiSaga, action)
+    const sagaTest = expectSaga(apiSaga, action)
       .withState({
         authenticator: {
           token: {
@@ -112,10 +137,13 @@ describe('API Saga Helper', () => {
     })
     // Make sure callback fired
     expect(callbackSpy.mock.calls[0][0]).toStrictEqual(mockReturn);
+    return sagaTest;
   });
   it('runs saga with provided configuration', async () => {
     const dispatch: ApiSagaDispatch<MockReturnType> = {
-      dispatches,
+      onRequest,
+      onSuccess,
+      onFailure,
       config,
       onApi,
       module: {
@@ -132,7 +160,7 @@ describe('API Saga Helper', () => {
     }
 
     // Make sure saga runs with correct sequence of events
-    expectSaga(apiSaga, action)
+    const sagaTest = expectSaga(apiSaga, action)
       .withState({
         authenticator: {
           token: {
@@ -165,5 +193,6 @@ describe('API Saga Helper', () => {
     })
     // Make sure callback fired
     expect(callbackSpy.mock.calls[0][0]).toStrictEqual(mockReturn);
+    return sagaTest;
   });
 });
