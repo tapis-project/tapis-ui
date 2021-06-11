@@ -1,8 +1,8 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { PaginatedResults, setRequesting, setFailure, updateResults } from 'tapis-redux/types/paginated';
+import { TapisListResults, setRequesting, setFailure, updateList } from 'tapis-redux/types/results';
 
-describe('PaginatedResults utilities', () => {
-  const initialResults: PaginatedResults<number> = {
+describe('TapisListResults utilities', () => {
+  const initialResults: TapisListResults<number> = {
     loading: false,
     error: new Error("olderror"),
     results: Array.from<number>(Array(10).keys()),
@@ -26,9 +26,9 @@ describe('PaginatedResults utilities', () => {
     })
   });
 
-  it('updates results correctly', () => {
+  it('updates list results correctly', () => {
     // Test to see that an offset of zero means a new listing
-    expect(updateResults(initialResults, [ 1, 2, 3, 4 ], 0, 4)).toStrictEqual({
+    expect(updateList(initialResults, [ 1, 2, 3, 4 ], 0, 4)).toStrictEqual({
       ...initialResults,
       results: [ 1, 2, 3, 4 ],
       offset: 0,
@@ -38,7 +38,7 @@ describe('PaginatedResults utilities', () => {
     })
 
     // Test to see that results can be added to the end of existing results
-    expect(updateResults(initialResults, [ 1, 2, 3, 4 ], 10, 4)).toStrictEqual({
+    expect(updateList(initialResults, [ 1, 2, 3, 4 ], 10, 4)).toStrictEqual({
       ...initialResults,
       results: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4 ],
       offset: 10,
@@ -48,7 +48,7 @@ describe('PaginatedResults utilities', () => {
     });
 
     // Test to see that results can be replaced
-    expect(updateResults(initialResults, [ 1, 2, 3, 4 ], 8, 4)).toStrictEqual({
+    expect(updateList(initialResults, [ 1, 2, 3, 4 ], 8, 4)).toStrictEqual({
       ...initialResults,
       results: [ 0, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4 ],
       offset: 8,
@@ -58,7 +58,7 @@ describe('PaginatedResults utilities', () => {
     });
 
     // Test to see that results can jump ahead
-    expect(updateResults(initialResults, [ 1, 2, 3, 4], 12, 4)).toStrictEqual({
+    expect(updateList(initialResults, [ 1, 2, 3, 4], 12, 4)).toStrictEqual({
       ...initialResults,
       results: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, null, null, 1, 2, 3, 4 ],
       offset: 12,
