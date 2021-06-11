@@ -1,8 +1,8 @@
 import { Files } from '@tapis/tapis-typescript';
-import { ApiCallback, PaginatedResults } from 'tapis-redux/types';
+import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
-export type FileListingDirectory = PaginatedResults<Files.FileInfo>;
+export type FileListingDirectory = TapisListResults<Files.FileInfo>;
 
 export type FileListingSystem = {
   [ path: string ]: FileListingDirectory

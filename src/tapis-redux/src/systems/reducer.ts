@@ -1,41 +1,63 @@
+import {
+  SystemsReducerState,
+  SystemsListingRequestPayload,
+  SystemsListingSuccessPayload,
+  SystemsListingFailurePayload
+} from './types';
+import {
+  updateList,
+  setRequesting,
+  setFailure,
+  getEmptyListResults,
+  TapisListResults
+} from 'tapis-redux/types/results'
+import { TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import * as ACTIONS from './actionTypes';
+import { Systems } from '@tapis/tapis-typescript';
 
 
-export const initialState = {
-  definitions: {},
-  loading: false,
-  error: null,
+const emptyResults = getEmptyListResults(TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT);
+
+export const initialState: SystemsReducerState = {
+  systems: { ...emptyResults }
 };
 
-export const addSystems = (definitions, listing) => {
-  // Append listing results to existing definitions, generate new object
-  const result = { ...definitions };
-  listing.forEach((system) => {
-    result[system.id] = { ...system };
-  });
+const setListingRequest = (systems: TapisListResults<Systems.TapisSystem>,
+  payload: SystemsListingRequestPayload): TapisListResults<Systems.TapisSystem> => {
+  const result = setRequesting(systems);
   return result;
-};
+} 
 
-export function systems(state = initialState, action) {
+const setListingSuccess = (systems: TapisListResults<Systems.TapisSystem>,
+  payload: SystemsListingSuccessPayload): TapisListResults<Systems.TapisSystem> => {
+  // TODO: Handle different combinations of skip and startAfter requests
+  const result = updateList(systems, payload.incoming, payload.params.skip, 
+    payload.params.limit, TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT);
+  return result;
+}
+
+const setListingFailure = (systems: TapisListResults<Systems.TapisSystem>,
+  payload: SystemsListingFailurePayload): TapisListResults<Systems.TapisSystem> => {
+  const result = setFailure(systems, payload.error);
+  return result;
+}
+
+export function systems(state: SystemsReducerState = initialState, action): SystemsReducerState {
   switch (action.type) {
     case ACTIONS.TAPIS_SYSTEMS_LIST_REQUEST:
       return {
         ...state,
-        loading: true,
-        error: null,
+        systems: setListingRequest(state.systems, action.payload)
       };
     case ACTIONS.TAPIS_SYSTEMS_LIST_SUCCESS:
       return {
         ...state,
-        definitions: addSystems(state.definitions, action.payload.result),
-        loading: false,
-        error: null,
+        systems: setListingSuccess(state.systems, action.payload)
       };
     case ACTIONS.TAPIS_SYSTEMS_LIST_FAILURE:
       return {
         ...state,
-        loading: false,
-        error: action.payload,
+        systems: setListingFailure(state.systems, action.payload)
       };
     default:
       return state;

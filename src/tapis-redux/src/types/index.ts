@@ -1,4 +1,4 @@
 export { defaultConfig, Config } from './config';
 export { default as ApiCallback } from './callback';
-export { PaginatedResults } from './paginated';
+export { TapisListResults } from './results';
 export { TapisState } from '../store/rootReducer';

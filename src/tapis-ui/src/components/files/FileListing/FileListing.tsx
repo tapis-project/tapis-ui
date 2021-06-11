@@ -40,8 +40,8 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
   // Get a file listing given the systemId and path
   const { list } = useFiles(config);
   useEffect(() => {
-    dispatch(list(onList, systemId, path));
-  }, [dispatch]);
+    dispatch(list({ systemId, path, onList }));
+  }, [dispatch, systemId, path, onList]);
 
   // Get the file listing for this systemId and path
   const result: FileListingDirectory = useSelector<TapisState, FileListingDirectory>(
@@ -56,6 +56,14 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
     },
     [onSelect]
   )
+
+  if (!result || result.loading) {
+    return (
+      <div>
+        Loading...
+      </div>
+    )
+  }
 
   const files: Array<Files.FileInfo> = result.results;
 

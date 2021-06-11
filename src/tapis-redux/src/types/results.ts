@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash';
 
 // Paginated result type and utility functions
-export type PaginatedResults<T> = {
+export type TapisListResults<T> = {
   loading: boolean,
   error: Error,
   results: Array<T>,
@@ -15,7 +15,7 @@ export const offsetCheck = (offset: number | undefined): number =>
 export const limitCheck = (limit: number | undefined, defaultLimit: number): number =>
   limit === undefined ? defaultLimit : limit;
 
-export const getEmptyPaginatedResults = <T>(defaultLimit: number): PaginatedResults<T> => {
+export const getEmptyListResults = <T>(defaultLimit: number): TapisListResults<T> => {
   return {
     loading: false,
     error: null,
@@ -25,21 +25,21 @@ export const getEmptyPaginatedResults = <T>(defaultLimit: number): PaginatedResu
   }
 }
 
-export const setRequesting = <T>(original: PaginatedResults<T>): PaginatedResults<T> => {
-  const result: PaginatedResults<T> = { ...original, loading: true, error: null };
+export const setRequesting = <T>(original: TapisListResults<T>): TapisListResults<T> => {
+  const result: TapisListResults<T> = { ...original, loading: true, error: null };
   return result;
 }
 
-export const setFailure = <T>(original: PaginatedResults<T>, error: Error): PaginatedResults<T> => {
-  const result: PaginatedResults<T> = { ...original, loading: false, error };
+export const setFailure = <T>(original: TapisListResults<T>, error: Error): TapisListResults<T> => {
+  const result: TapisListResults<T> = { ...original, loading: false, error };
   return result;
 }
 
-export const updateResults = <T>(original: PaginatedResults<T>, incoming: Array<T>, 
-  offset: number, limit: number, defaultLimit: number): PaginatedResults<T> => {
+export const updateList = <T>(original: TapisListResults<T>, incoming: Array<T>, 
+  offset: number, limit: number, defaultLimit: number): TapisListResults<T> => {
 
   // Deep clone results
-  const result: PaginatedResults<T> = cloneDeep(original);
+  const result: TapisListResults<T> = cloneDeep(original);
 
   // If no results to be added, do nothing
   if (!incoming.length) {
@@ -56,7 +56,7 @@ export const updateResults = <T>(original: PaginatedResults<T>, incoming: Array<
 
   // If the offset is 0, assume that this is a new listing operation
   // and replace the entire existing list.
-  if (offset === 0) {
+  if (result.offset === 0) {
     result.results = incoming;
     return result;
   }

@@ -32,22 +32,28 @@ interface SystemsProps {
 
 const Systems: React.FC<SystemsProps> = ({ config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { definitions, list } = useSystems(config);
+  const { systems, list } = useSystems(config);
   useEffect(() => {
     dispatch(list(onList));
   }, [dispatch]);
 
+  const definitions: Array<TapisSystem> = systems.results;
+
+  if (systems.loading) {
+    return <div>Loading</div>
+  }
+
   return (
     <div>
       <h5>Systems</h5>
-      {definitions &&
-        (Object.keys(definitions).length > 0 ? (
-          Object.keys(definitions).map((id) => (
-            <SystemItem system={definitions[id]} key={id} onSelect={onSelect} />
-          ))
-        ) : (
-          <i>No systems found</i>
-        ))}
+      {
+        definitions.length
+          ? definitions.map(
+              (system) => <SystemItem system={system} key={system.id} onSelect={onSelect} />
+            )
+          : <i>No systems found</i>
+  
+      }
     </div>
   );
 };

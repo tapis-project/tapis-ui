@@ -9,11 +9,11 @@ import {
   FileListingSuccessPayload
 } from './types';
 import {
-  updateResults,
+  updateList,
   setRequesting,
   setFailure,
-  getEmptyPaginatedResults
-} from 'tapis-redux/types/paginated';
+  getEmptyListResults
+} from 'tapis-redux/types/results';
 import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 
 export const initialState: FilesReducerState = {
@@ -28,17 +28,17 @@ export const listingMapCheck = (listings: FileListingSystemMap,
     result[systemId] = {}
   }
   if (!(path in result[systemId])) {
-    result[systemId][path] = getEmptyPaginatedResults<Files.FileInfo>(
+    result[systemId][path] = getEmptyListResults<Files.FileInfo>(
       TAPIS_DEFAULT_FILES_LISTING_LIMIT);
   }
   return result;
 }
 
-export const updateListing = (listings: FileListingSystemMap, payload: FileListingSuccessPayload): FileListingSystemMap => {
+const setListingSuccess = (listings: FileListingSystemMap, payload: FileListingSuccessPayload): FileListingSystemMap => {
   // Append listing results to existing definitions, generate new object
   const { systemId, path, incoming, offset, limit } = payload;
   const result: FileListingSystemMap = listingMapCheck(listings, systemId, path);
-  result[systemId][path] = updateResults<Files.FileInfo>(
+  result[systemId][path] = updateList<Files.FileInfo>(
     result[systemId][path],
     incoming,
     offset,
@@ -48,7 +48,7 @@ export const updateListing = (listings: FileListingSystemMap, payload: FileListi
   return result;
 };
 
-export const setListingRequest = (listings: FileListingSystemMap, 
+const setListingRequest = (listings: FileListingSystemMap, 
   payload: FileListingRequestPayload): FileListingSystemMap => {
   const { systemId, path } = payload;
   const result: FileListingSystemMap = listingMapCheck(listings, systemId, path);
@@ -56,7 +56,7 @@ export const setListingRequest = (listings: FileListingSystemMap,
   return result;
 }
 
-export const setListingFailure = (listings: FileListingSystemMap, 
+const setListingFailure = (listings: FileListingSystemMap, 
   payload: FileListingFailurePayload): FileListingSystemMap =>  {
   const { systemId, path, error } = payload;
   const result: FileListingSystemMap = listingMapCheck(listings, systemId, path);
@@ -74,7 +74,7 @@ export function files(state = initialState, action: FileListingActions): FilesRe
     case ACTIONS.TAPIS_FILES_LIST_SUCCESS:
       return {
         ...state,
-        listings: updateListing(state.listings, action.payload)
+        listings: setListingSuccess(state.listings, action.payload)
       };
     case ACTIONS.TAPIS_FILES_LIST_FAILURE:
       return {

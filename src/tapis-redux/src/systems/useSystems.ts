@@ -4,11 +4,9 @@ import { TapisState } from '../store/rootReducer';
 import { SystemsListCallback } from './types';
 
 const useSystems = (config) => {
-  const { definitions, loading, error } = useSelector((state: TapisState) => state.systems);
+  const { systems } = useSelector((state: TapisState) => state.systems);
   return {
-    definitions,
-    loading,
-    error,
+    systems,
     list: (onList: SystemsListCallback) => list(config, onList),
   };
 };

@@ -4,10 +4,12 @@ import { ApiSagaRequest } from './types';
 import * as ACTIONS from './actionTypes';
 
 export function* apiSaga<T>(action: ApiSagaRequest<T>) {
-  const { config, onApi, dispatches, module, func, args } = action.payload;
+  const { config, onApi, onRequest, onSuccess, onFailure, module, func, args } = action.payload;
   try {
     // Notify external reducer that a request has begun
-    yield put({ type: dispatches.request });
+    if (onRequest) {
+      yield put(onRequest());
+    }
 
     // Get any saved token from the current store
     const storeToken = yield select(getToken);
@@ -35,8 +37,10 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     const result: T = yield call([api, func], ...args);
 
     // Notify the external reducer that we have the desired result
-    yield put({ type: dispatches.success, payload: result });
-
+    if (onSuccess) {
+      yield put(onSuccess(result));
+    }
+    
     // If there is an onApi callback, call it now.
     if (onApi) {
       yield call(onApi, result);
@@ -46,7 +50,9 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     yield put({ type: ACTIONS.TAPIS_REDUX_API_SUCCESS });
   } catch (error) {
     // Notify the external reducer that there is an error
-    yield put({ type: dispatches.failure, payload: error });
+    if (onFailure) {
+      yield put(onFailure(error));
+    }    
 
     // If there is an onApi callback, call it with the error
     if (onApi) {
