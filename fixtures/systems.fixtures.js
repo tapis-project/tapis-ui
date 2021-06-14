@@ -1,20 +1,19 @@
 export const tapisSystem = {
-  id: 'tapis.system',
-  host: 'tapis.system.host',
-};
-
-export const listingResult = [{ ...tapisSystem }];
-
-export const listingResponse = {
-  data: {
-    result: [...listingResult],
-  },
+  id: 'testuser8-e2e',
+  systemType: 'LINUX',
+  owner: 'testuser8',
+  host: '129.114.17.47',
+  effectiveUserId: 'testuser2',
+  defaultAuthnMethod: 'PKI_KEYS',
+  canExec: false,
 };
 
 export const systemsStore = {
-  definitions: {
-    [listingResult[0].id]: { ...listingResult[0] },
+  systems: {
+    results: [tapisSystem],
+    offset: 0,
+    limit: -1,
+    loading: false,
+    error: null,
   },
-  loading: false,
-  error: null,
 };

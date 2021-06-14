@@ -12,6 +12,6 @@ describe('Systems', () => {
     const store = mockStore(tapisReduxStore);
 
     const { getAllByText } = renderComponent(<Systems />, store);
-    expect(getAllByText(/tapis.system/).length).toEqual(1);
+    expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
   });
 });
