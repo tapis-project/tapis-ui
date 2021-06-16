@@ -34,7 +34,7 @@ const Systems: React.FC<SystemsProps> = ({ config, onList, onSelect }) => {
   const dispatch = useDispatch();
   const { systems, list } = useSystems(config);
   useEffect(() => {
-    dispatch(list(onList));
+    dispatch(list({ onList }));
   }, [dispatch]);
 
   const definitions: Array<TapisSystem> = systems.results;
