@@ -7,7 +7,7 @@ const tapisReduxStore = {
   authenticator,
   systems,
   files,
-  apps
+  apps,
 };
 
 export default tapisReduxStore;
