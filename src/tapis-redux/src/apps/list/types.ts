@@ -1,7 +1,6 @@
 import { Apps } from '@tapis/tapis-typescript';
-import { ApiCallback, TapisListResults } from 'tapis-redux/types';
+import { ApiCallback } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
-
 
 export interface AppsListingRequestPayload {
   // Original request parameters
