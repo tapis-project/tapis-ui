@@ -56,13 +56,13 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect }) =
     )
   }
 
-  const files: Array<Apps.TapisApp> = apps.results;
+  const appList: Array<Apps.TapisApp> = apps.results;
 
   return (
     <div>
-      <h5>Files</h5>
+      <h5>Apps</h5>
       {
-        files.map((app: Apps.TapisApp) => {
+        appList.map((app: Apps.TapisApp) => {
           return (
             <AppsListingItem app={app} />
           )
