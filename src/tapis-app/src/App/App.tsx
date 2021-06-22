@@ -2,6 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Login, Systems } from 'tapis-ui/components';
+import { AppsListing } from 'tapis-ui/components/apps';
 import { FileListing } from 'tapis-ui/components/files';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
@@ -75,6 +76,9 @@ const App: React.FC = () => {
                 ? <FileListing systemId={selectedSystem.id} path={'/'} />
                 : <div>No selected system</div>
             }
+          </Route>
+          <Route path='/apps'>
+            <AppsListing />
           </Route>
           <Route path='/uipatterns' component={UIPatterns} />
         </div>
