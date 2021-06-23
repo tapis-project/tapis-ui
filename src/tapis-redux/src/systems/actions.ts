@@ -10,9 +10,7 @@ import {
 import { Config } from 'tapis-redux/types';
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, onList: SystemsListCallback = null) => {
-  const params: Systems.GetSystemsRequest = {};
-
+export const list = (config: Config = null, onList: SystemsListCallback = null, params: Systems.GetSystemsRequest = {}) => {
   const onRequest: OnRequestCallback = () => {
     return {
       type: ACTIONS.TAPIS_SYSTEMS_LIST_REQUEST,

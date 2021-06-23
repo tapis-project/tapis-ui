@@ -2,6 +2,7 @@ import { Jobs } from '@tapis/tapis-typescript';
 import { ApiCallback } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
+
 export interface JobsListingRequestPayload {
   // Original request parameters
   params: Jobs.GetJobListRequest

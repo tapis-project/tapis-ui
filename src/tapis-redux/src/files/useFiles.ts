@@ -5,15 +5,16 @@ import { FileListingCallback } from './types';
 import { Files } from '@tapis/tapis-typescript';
 
 export interface ListFilesAdditionalParameters {
-  onList?: FileListingCallback
+  onList?: FileListingCallback,
+  request: Files.ListFilesRequest
 }
 
 const useFiles = (config) => {
   const { listings } = useSelector((state: TapisState) => state.files);
   return {
     listings,
-    list: (params: ListFilesAdditionalParameters & Files.ListFilesRequest) => list(
-      params.systemId, params.path, params.offset, params.limit, config, params.onList
+    list: (params: ListFilesAdditionalParameters) => list(
+      config, params.onList, params.request
     ),
   };
 };

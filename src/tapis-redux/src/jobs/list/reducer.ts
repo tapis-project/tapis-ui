@@ -20,10 +20,6 @@ import { JobsReducer, JobsAction } from '../types';
 
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
 
-export const initialState: JobsReducerState = {
-  jobs: { ...emptyResults }
-};
-
 const setListingRequest = (jobs: TapisListResults<Jobs.JobListDTO>,
   payload: JobsListingRequestPayload): TapisListResults<Jobs.JobListDTO> => {
   const result = setRequesting(jobs);

@@ -24,5 +24,10 @@ export const jobsStore: JobsReducerState = {
     limit: 100,
     offset: 0,
     results: [ { ...jobInfo } ]
+  },
+  submit: {
+    loading: false,
+    error: null,
+    result: null
   }
 }

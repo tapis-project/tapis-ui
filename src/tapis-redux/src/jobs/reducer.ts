@@ -6,7 +6,12 @@ import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
 
 export const initialState: JobsReducerState = {
-  jobs: { ...emptyResults }
+  jobs: { ...emptyResults },
+  submit: {
+    loading: false,
+    error: null,
+    result: null
+  }
 };
 
 export function jobs(state: JobsReducerState=initialState, action: JobsAction): JobsReducerState {
