@@ -20,6 +20,9 @@ export type JobsSubmitFailurePayload = {
   error: Error
 } & JobsSubmitRequestPayload;
 
+export type JobsSubmitResetPayload = {
+}
+
 export type JobsSubmitRequest = {
   type: typeof ACTIONS.TAPIS_JOBS_SUBMIT_REQUEST;
   payload: JobsSubmitRequestPayload;
@@ -35,10 +38,16 @@ export type JobsSubmitFailure = {
   payload: JobsSubmitFailurePayload
 }
 
+export type JobsSubmitReset = {
+  type: typeof ACTIONS.TAPIS_JOBS_SUBMIT_RESET;
+  payload: JobsSubmitResetPayload
+}
+
 export type JobsSubmitAction = 
   | JobsSubmitRequest
   | JobsSubmitSuccess
-  | JobsSubmitFailure;
+  | JobsSubmitFailure
+  | JobsSubmitReset;
 
 
 export type JobsSubmitCallback = ApiCallback<Jobs.RespSubmitJob>;

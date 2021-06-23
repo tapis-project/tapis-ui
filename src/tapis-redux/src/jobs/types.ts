@@ -5,7 +5,7 @@ import { JobsSubmitState, JobsSubmitAction } from './submit/types';
 
 export type JobsReducerState = {
   jobs: TapisListResults<Jobs.JobListDTO>,
-  submit: JobsSubmitState
+  submission: JobsSubmitState
 }
 
 export type JobsAction = 

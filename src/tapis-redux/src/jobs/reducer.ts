@@ -7,7 +7,7 @@ const emptyResults = getEmptyListResults(TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
 
 export const initialState: JobsReducerState = {
   jobs: { ...emptyResults },
-  submit: {
+  submission: {
     loading: false,
     error: null,
     result: null

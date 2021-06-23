@@ -31,6 +31,15 @@ export const submit: JobsReducer = (state, action) => {
           result: null
         }
       };
+    case ACTIONS.TAPIS_JOBS_SUBMIT_RESET:
+      return {
+        ...state,
+        submit: {
+          loading: false,
+          error: null,
+          result: null
+        }
+      }
     default:
       return state;
   }

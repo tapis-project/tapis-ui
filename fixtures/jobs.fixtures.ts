@@ -25,7 +25,7 @@ export const jobsStore: JobsReducerState = {
     offset: 0,
     results: [ { ...jobInfo } ]
   },
-  submit: {
+  submission: {
     loading: false,
     error: null,
     result: null

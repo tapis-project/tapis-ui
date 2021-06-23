@@ -1,7 +1,7 @@
 import { apiCall } from '../../sagas/actions';
 import * as ACTIONS from './actionTypes';
 import { Jobs } from '@tapis/tapis-typescript';
-import { JobsSubmitCallback } from './types';
+import { JobsSubmitCallback, JobsSubmitReset } from './types';
 import {
   OnRequestCallback,
   OnSuccessCallback,
@@ -9,6 +9,13 @@ import {
 } from 'tapis-redux/sagas/types';
 import { Config } from 'tapis-redux/types';
 
+
+export const resetSubmit = (): JobsSubmitReset => {
+  return {
+    type: ACTIONS.TAPIS_JOBS_SUBMIT_RESET,
+    payload: {}
+  }
+}
 
 // Create a 'list' dispatch generator
 export const submit = (config: Config = null, onSubmit: JobsSubmitCallback = null, params: Jobs.ReqSubmitJob) => {

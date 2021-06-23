@@ -3,13 +3,13 @@ import { list } from './actions';
 import { TapisState } from '../store/rootReducer';
 import { FileListingCallback } from './types';
 import { Files } from '@tapis/tapis-typescript';
-
+import { Config } from 'tapis-redux/types';
 export interface ListFilesAdditionalParameters {
   onList?: FileListingCallback,
   request: Files.ListFilesRequest
 }
 
-const useFiles = (config) => {
+const useFiles = (config: Config = null) => {
   const { listings } = useSelector((state: TapisState) => state.files);
   return {
     listings,
