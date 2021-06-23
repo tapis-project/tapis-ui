@@ -3,7 +3,6 @@ import {
   AppsListingRequestPayload,
   AppsListingSuccessPayload,
   AppsListingFailurePayload,
-  AppsListingAction
 } from './types';
 import {
   updateList,
@@ -14,8 +13,8 @@ import {
 } from 'tapis-redux/types/results'
 import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import * as ACTIONS from './actionTypes';
-import { Apps, Systems } from '@tapis/tapis-typescript';
-import { AppsReducer, AppsAction } from '../types';
+import { Apps } from '@tapis/tapis-typescript';
+import { AppsReducer } from '../types';
 
 
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_APPS_LISTING_LIMIT);
@@ -38,8 +37,8 @@ const setListingSuccess = (apps: TapisListResults<Apps.TapisApp>,
   return result;
 }
 
-const setListingFailure = (systems: TapisListResults<Systems.TapisSystem>,
-  payload: AppsListingFailurePayload): TapisListResults<Systems.TapisSystem> => {
+const setListingFailure = (systems: TapisListResults<Apps.TapisApp>,
+  payload: AppsListingFailurePayload): TapisListResults<Apps.TapisApp> => {
   const result = setFailure(systems, payload.error);
   return result;
 }
