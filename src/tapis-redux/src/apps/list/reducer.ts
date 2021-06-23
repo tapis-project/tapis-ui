@@ -37,9 +37,9 @@ const setListingSuccess = (apps: TapisListResults<Apps.TapisApp>,
   return result;
 }
 
-const setListingFailure = (systems: TapisListResults<Apps.TapisApp>,
+const setListingFailure = (apps: TapisListResults<Apps.TapisApp>,
   payload: AppsListingFailurePayload): TapisListResults<Apps.TapisApp> => {
-  const result = setFailure(systems, payload.error);
+  const result = setFailure(apps, payload.error);
   return result;
 }
 

@@ -46,6 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ jwt }) => {
         <SidebarItem to="/systems" label="Systems" iconName="allocations" />
         <SidebarItem to="/files" label="Files" iconName="allocations" />
         <SidebarItem to="/apps" label="Apps" iconName="allocations" />
+        <SidebarItem to="/jobs" label="Jobs" iconName="allocations" />
       </>}
       <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
     </Nav>

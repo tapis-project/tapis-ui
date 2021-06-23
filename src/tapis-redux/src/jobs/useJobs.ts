@@ -1,18 +1,18 @@
 import { useSelector } from 'react-redux';
 import { list } from './list/actions';
 import { TapisState } from '../store/rootReducer';
-import { AppsListCallback } from './list/types';
-import { Apps } from '@tapis/tapis-typescript';
+import { JobsListCallback } from './list/types';
+import { Jobs } from '@tapis/tapis-typescript';
 
 export interface ListAppsParams {
-  onList?: AppsListCallback
+  onList?: JobsListCallback
 }
 
 const useSystems = (config) => {
-  const { apps } = useSelector((state: TapisState) => state.apps);
+  const { jobs } = useSelector((state: TapisState) => state.jobs);
   return {
-    apps,
-    list: (params: ListAppsParams & Apps.GetAppsRequest) => list(config, params.onList),
+    jobs,
+    list: (params: ListAppsParams & Jobs.GetJobListRequest) => list(config, params.onList),
   };
 };
 

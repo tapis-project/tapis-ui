@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Login, Systems } from 'tapis-ui/components';
 import { AppsListing } from 'tapis-ui/components/apps';
 import { FileListing } from 'tapis-ui/components/files';
+import { JobsListing } from 'tapis-ui/components/jobs';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
@@ -79,6 +80,9 @@ const App: React.FC = () => {
           </Route>
           <Route path='/apps'>
             <AppsListing />
+          </Route>
+          <Route path='/jobs'>
+            <JobsListing />
           </Route>
           <Route path='/uipatterns' component={UIPatterns} />
         </div>

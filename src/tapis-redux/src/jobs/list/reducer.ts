@@ -24,23 +24,23 @@ export const initialState: JobsReducerState = {
   jobs: { ...emptyResults }
 };
 
-const setListingRequest = (apps: TapisListResults<Jobs.JobListDTO>,
+const setListingRequest = (jobs: TapisListResults<Jobs.JobListDTO>,
   payload: JobsListingRequestPayload): TapisListResults<Jobs.JobListDTO> => {
-  const result = setRequesting(apps);
+  const result = setRequesting(jobs);
   return result;
 } 
 
-const setListingSuccess = (apps: TapisListResults<Jobs.JobListDTO>,
+const setListingSuccess = (jobs: TapisListResults<Jobs.JobListDTO>,
   payload: JobsListingSuccessPayload): TapisListResults<Jobs.JobListDTO> => {
   // TODO: Handle different combinations of skip and startAfter requests
-  const result = updateList(apps, payload.incoming, payload.params.skip, 
+  const result = updateList(jobs, payload.incoming, payload.params.skip, 
     payload.params.limit, TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
   return result;
 }
 
-const setListingFailure = (systems: TapisListResults<Jobs.JobListDTO>,
+const setListingFailure = (jobs: TapisListResults<Jobs.JobListDTO>,
   payload: JobsListingFailurePayload): TapisListResults<Jobs.JobListDTO> => {
-  const result = setFailure(systems, payload.error);
+  const result = setFailure(jobs, payload.error);
   return result;
 }
 
@@ -49,17 +49,17 @@ export const list: JobsReducer = (state, action) => {
     case ACTIONS.TAPIS_JOBS_LIST_REQUEST:
       return {
         ...state,
-        apps: setListingRequest(state.jobs, action.payload)
+        jobs: setListingRequest(state.jobs, action.payload)
       };
     case ACTIONS.TAPIS_JOBS_LIST_SUCCESS:
       return {
         ...state,
-        apps: setListingSuccess(state.jobs, action.payload)
+        jobs: setListingSuccess(state.jobs, action.payload)
       };
     case ACTIONS.TAPIS_JOBS_LIST_FAILURE:
       return {
         ...state,
-        apps: setListingFailure(state.jobs, action.payload)
+        jobs: setListingFailure(state.jobs, action.payload)
       };
     default:
       return state;
