@@ -14,7 +14,7 @@ interface AppsListingItemProps {
 
 const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect }) => {
   return (
-    <div onClick={() => onSelect ? onSelect(app) : null}>
+    <div onClick={() => onSelect(app)}>
       {`${app.id} v${app.version}`}
     </div>
   );
@@ -64,7 +64,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect }) =
       {
         appList.map((app: Apps.TapisApp) => {
           return (
-            <AppsListingItem app={app} />
+            <AppsListingItem app={app} onSelect={appSelectCallback}/>
           )
         })
       }

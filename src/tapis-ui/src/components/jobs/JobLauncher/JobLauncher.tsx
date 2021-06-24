@@ -1,17 +1,16 @@
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React, { useState, useCallback } from 'react';
 import JobForm, { OnChangeCallback } from 'tapis-ui/components/jobs/JobForm';
 import JobSubmit from 'tapis-ui/components/jobs/JobSubmit';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useJobs } from 'tapis-redux';
 
-export interface JobSubmitModalProps {
+export interface JobLauncherProps {
   appId?: string,
   appVersion?: string,
   execSystemId?: string
 }
 
-const JobSubmitModal: React.FC<JobSubmitModalProps> = ({ appId, appVersion, execSystemId }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, execSystemId }) => {
   const [ request, setRequest ] = useState<Jobs.ReqSubmitJob>({ appId, appVersion, execSystemId });
   const [ valid, setValid ] = useState<boolean>(false);
 
@@ -29,23 +28,16 @@ const JobSubmitModal: React.FC<JobSubmitModalProps> = ({ appId, appVersion, exec
   )
 
   return (
-    <Modal>
-      <ModalHeader>
-        <h5>Submit Job</h5>
-      </ModalHeader>
-      <ModalBody>
-        <JobForm
-          appId={appId}
-          appVersion={appVersion}
-          execSystemId={execSystemId}
-          onChange={onChange}
-        ></JobForm>
-      </ModalBody>
-      <ModalFooter>
-        <JobSubmit request={request} disabled={!valid}/>
-      </ModalFooter>
-    </Modal>
+    <div>
+      <JobForm
+        appId={appId}
+        appVersion={appVersion}
+        execSystemId={execSystemId}
+        onChange={onChange}
+      ></JobForm>
+      <JobSubmit request={request} disabled={!valid}/>
+    </div>
   )
 }
 
-export default JobSubmitModal;
+export default JobLauncher;

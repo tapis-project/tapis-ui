@@ -2,6 +2,7 @@ import * as React from 'react';
 import 'react-hot-loader';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 import configureStore from '../../tapis-redux/src/store';
 import App from './App';
 import './index.css';
@@ -12,7 +13,9 @@ const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </Provider>,
   document.getElementById('react-root')
 );
