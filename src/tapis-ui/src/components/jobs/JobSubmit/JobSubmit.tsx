@@ -17,6 +17,18 @@ interface JobSubmitProps {
   disabled?: boolean
 }
 
+const JobSubmitStatus: React.FC = () => {
+  const { submission } = useJobs();
+  if (submission.result) {
+    return <Icon name="approved-reverse" />
+  } else if (submission.loading) {
+    return <LoadingSpinner placement="inline" />
+  } else if (submission.error) {
+    return <Icon name="denied-reverse" />
+  }
+  return <></>;
+}
+
 const JobSubmit: React.FC<JobSubmitProps> = ({ config, onSubmit, request, disabled }) => {
   const dispatch = useDispatch();
   const { submit, submission } = useJobs();
@@ -46,11 +58,7 @@ const JobSubmit: React.FC<JobSubmitProps> = ({ config, onSubmit, request, disabl
       disabled={disabled || submission.loading || submission.result != null}
       onClick={() => onClickCallback()}>
       Submit Job
-      {
-        submission.loading
-          ? <LoadingSpinner placement="inline" />
-          : (submission.result && <Icon name="check" />)
-      }
+      <JobSubmitStatus />
     </Button>
   );
 };

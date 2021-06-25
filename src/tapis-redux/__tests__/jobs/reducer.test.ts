@@ -62,4 +62,8 @@ describe('Jobs reducer', () => {
       limit: TAPIS_DEFAULT_JOBS_LISTING_LIMIT
     });
   });
+
+  it('reduces job submissions', () => {
+    //TODO job submission reducer tests
+  });
 });

@@ -7,7 +7,7 @@ export const submit: JobsReducer = (state, action) => {
     case ACTIONS.TAPIS_JOBS_SUBMIT_REQUEST:
       return {
         ...state,
-        submit: {
+        submission: {
           loading: true,
           error: null,
           result: null
@@ -16,7 +16,7 @@ export const submit: JobsReducer = (state, action) => {
     case ACTIONS.TAPIS_JOBS_SUBMIT_SUCCESS:
       return {
         ...state,
-        submit: {
+        submission: {
           loading: false,
           error: null,
           result: action.payload.result
@@ -25,7 +25,7 @@ export const submit: JobsReducer = (state, action) => {
     case ACTIONS.TAPIS_JOBS_SUBMIT_FAILURE:
       return {
         ...state,
-        submit: {
+        submission: {
           loading: false,
           error: action.payload.error,
           result: null
@@ -34,7 +34,7 @@ export const submit: JobsReducer = (state, action) => {
     case ACTIONS.TAPIS_JOBS_SUBMIT_RESET:
       return {
         ...state,
-        submit: {
+        submission: {
           loading: false,
           error: null,
           result: null
