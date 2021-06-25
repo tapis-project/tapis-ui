@@ -50,11 +50,12 @@ const JobSubmit: React.FC<JobSubmitProps> = ({ config, onSubmit, request, disabl
     () => {
       dispatch(submit({ onSubmit: submitDecoderCallback, request }))
     },
-    []
+    [request]
   )
 
   return (
-    <Button 
+    <Button
+      className="btn btn-primary"
       disabled={disabled || submission.loading || submission.result != null}
       onClick={() => onClickCallback()}>
       Submit Job

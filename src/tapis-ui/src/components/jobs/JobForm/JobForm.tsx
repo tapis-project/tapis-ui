@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useApps, useSystems } from 'tapis-redux';
+import { useSystems } from 'tapis-redux';
 import { Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { DescriptionList } from 'tapis-ui/_common';
@@ -10,34 +10,32 @@ export type OnChangeCallback = (request: Jobs.ReqSubmitJob, validated: boolean) 
 interface JobFormProps {
   config?: Config,
   onChange?: OnChangeCallback,
-  appId?: string,
-  appVersion?: string,
-  execSystemId?: string
+  request?: Jobs.ReqSubmitJob
 }
 
-const JobForm: React.FC<JobFormProps> = ({ config, onChange, appId, appVersion, execSystemId }) => {
+const JobForm: React.FC<JobFormProps> = ({ config, onChange, request }) => {
   const dispatch = useDispatch();
 
-  const [ request, setRequest ] = useState<Jobs.ReqSubmitJob>({appId, appVersion, execSystemId })
+  const [ requestState, setRequestState ] = useState<Jobs.ReqSubmitJob>({ ...request })
 
   const systemsHook = useSystems(config);
   const listSystems = systemsHook.list;
   const systems = systemsHook.systems;
 
-  // TODO: Temporary code
+  // TODO: Temporary code - populate
+  // request state with new values from formik and then
+  // notify clients
   const formikChangeCallback = useCallback(
     () => {
       const newRequest = {
-        appId,
-        appVersion,
-        execSystemId
+        ...request
       }
-      setRequest(newRequest);
+      setRequestState(newRequest);
       if (onChange) {
         onChange(newRequest, true);
       }
     },
-    [ setRequest, onChange ]
+    [ setRequestState, onChange ]
   )
 
   useEffect(
@@ -52,6 +50,7 @@ const JobForm: React.FC<JobFormProps> = ({ config, onChange, appId, appVersion, 
     [ systems, dispatch, formikChangeCallback ]
   )
 
+  const { name, appId, appVersion, execSystemId } = requestState;
 
   return (
     <div>
@@ -60,6 +59,7 @@ const JobForm: React.FC<JobFormProps> = ({ config, onChange, appId, appVersion, 
         Submitting:
         <DescriptionList 
           data={{
+            name,
             appId,
             appVersion,
             execSystemId
@@ -74,9 +74,7 @@ const JobForm: React.FC<JobFormProps> = ({ config, onChange, appId, appVersion, 
 JobForm.defaultProps = {
   config: null,
   onChange: null,
-  appId: null,
-  appVersion: null,
-  execSystemId: null
+  request: null
 }
 
 export default JobForm;

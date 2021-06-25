@@ -34,7 +34,7 @@ export const submit = (config: Config = null, onSubmit: JobsSubmitCallback = nul
       type: ACTIONS.TAPIS_JOBS_SUBMIT_SUCCESS,
       payload: {
         params,
-        incoming: result.result
+        result: result.result
       }
     }
   }
