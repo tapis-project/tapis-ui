@@ -1,7 +1,7 @@
 import { apiCall } from '../../sagas/actions';
 import * as ACTIONS from './actionTypes';
-import { Apps } from '@tapis/tapis-typescript';
-import { AppsListCallback } from './types';
+import { Jobs } from '@tapis/tapis-typescript';
+import { JobsListCallback } from './types';
 import {
   OnRequestCallback,
   OnSuccessCallback,
@@ -11,16 +11,18 @@ import { Config } from 'tapis-redux/types';
 
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, onList: AppsListCallback = null, params: Apps.GetAppsRequest = {}) => {
+export const list = (config: Config = null, onList: JobsListCallback = null) => {
+  const params: Jobs.GetJobListRequest = {}
+
   const onRequest: OnRequestCallback = () => {
     return {
-      type: ACTIONS.TAPIS_APPS_LIST_REQUEST,
+      type: ACTIONS.TAPIS_JOBS_LIST_REQUEST,
     }
   }
 
-  const onSuccess: OnSuccessCallback<Apps.RespApps> = (result) => {
+  const onSuccess: OnSuccessCallback<Jobs.RespGetJobList> = (result) => {
     return {
-      type: ACTIONS.TAPIS_APPS_LIST_SUCCESS,
+      type: ACTIONS.TAPIS_JOBS_LIST_SUCCESS,
       payload: {
         params,
         incoming: result.result
@@ -30,7 +32,7 @@ export const list = (config: Config = null, onList: AppsListCallback = null, par
 
   const onFailure: OnFailureCallback = (error) => {
     return {
-      type: ACTIONS.TAPIS_APPS_LIST_FAILURE,
+      type: ACTIONS.TAPIS_JOBS_LIST_FAILURE,
       payload: {
         error,
         params
@@ -38,15 +40,15 @@ export const list = (config: Config = null, onList: AppsListCallback = null, par
     }
   }
 
-  return apiCall<Apps.RespApps>({
+  return apiCall<Jobs.RespGetJobList>({
     config,
     onApi: onList,
     onRequest,
     onSuccess,
     onFailure,
-    module: Apps,
-    api: Apps.ApplicationsApi,
-    func: Apps.ApplicationsApi.prototype.getApps,
+    module: Jobs,
+    api: Jobs.JobsApi,
+    func: Jobs.JobsApi.prototype.getJobList,
     args: [params]
   });
 };

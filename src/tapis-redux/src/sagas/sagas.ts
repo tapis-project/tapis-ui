@@ -49,6 +49,10 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     // Send general SUCCESS event
     yield put({ type: ACTIONS.TAPIS_REDUX_API_SUCCESS });
   } catch (error) {
+    // If error has a json body, replace the error with the json body
+    if (error.json) {
+      error = yield error.json();
+    }
     // Notify the external reducer that there is an error
     if (onFailure) {
       yield put(onFailure(error));

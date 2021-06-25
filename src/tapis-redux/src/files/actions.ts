@@ -12,16 +12,9 @@ import {
   OnFailureCallback
 } from 'tapis-redux/sagas/types';
 
-export const list = (systemId: string, path: string,
-  offset: number = 0, limit: number = TAPIS_DEFAULT_FILES_LISTING_LIMIT,
-  config: Config = null, onList: FileListingCallback = null) => {
+export const list = (config: Config = null, onList: FileListingCallback = null, request: Files.ListFilesRequest) => {
 
-  const request: Files.ListFilesRequest = {
-    systemId,
-    path,
-    offset,
-    limit
-  };
+  const { systemId, path, offset, limit } = request;
 
   const onRequest: OnRequestCallback = () => {
     return {
