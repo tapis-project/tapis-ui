@@ -3,8 +3,10 @@ import { useDispatch } from 'react-redux';
 import { useJobs } from 'tapis-redux';
 import { Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { Form, Label, Input, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types';
+import { isTapisResponse } from 'tapis-redux/types';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -19,18 +21,24 @@ const JobSubmit: React.FC<JobSubmitProps> = ({ config, onSubmit, request, disabl
   const dispatch = useDispatch();
   const { submit, submission } = useJobs();
 
-  const onSubmitCallback = useCallback<OnSubmitCallback>(
-    (job: Jobs.Job) => {
-      onSubmit(job)
+  // tapis-redux will make the callback with an agave response
+  // this callback will extract the Job returned in the result field
+  // of the response
+  const submitDecoderCallback = useCallback<JobsSubmitCallback>(
+    (result: Jobs.RespSubmitJob | Error) => {
+      if (onSubmit && isTapisResponse<Jobs.RespSubmitJob>(result)) {
+        const jobResponse: Jobs.RespSubmitJob = result as Jobs.RespSubmitJob;
+        onSubmit(jobResponse.result);
+      }
     },
-    [ onSubmit ]
+    [onSubmit]
   )
 
   const onClickCallback = useCallback(
     () => {
-      dispatch(submit({ onSubmit: onSubmitCallback, request }))
+      dispatch(submit({ onSubmit: submitDecoderCallback, request }))
     },
-    [ onSubmitCallback, dispatch, submit ]
+    []
   )
 
   return (
