@@ -9,7 +9,7 @@ import {
 } from 'tapis-redux/jobs/list/types';
 import * as LIST_ACTIONS from 'tapis-redux/jobs/list/actionTypes';
 
-describe('Jobs reducer', () => {
+describe('Jobs List reducer', () => {
   it('reduces a listing request', () => {
     const request: JobsListingRequest = {
       type: LIST_ACTIONS.TAPIS_JOBS_LIST_REQUEST,
@@ -61,9 +61,5 @@ describe('Jobs reducer', () => {
       offset: 0,
       limit: TAPIS_DEFAULT_JOBS_LISTING_LIMIT
     });
-  });
-
-  it('reduces job submissions', () => {
-    //TODO job submission reducer tests
   });
 });
