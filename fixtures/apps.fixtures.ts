@@ -35,11 +35,7 @@ export const appsResponse: Apps.RespApps = {
     recordsSkipped: 0,
     orderBy: undefined,
     startAfter: undefined,
-<<<<<<< HEAD
-    totalCount: -1
-=======
     totalCount: 1
->>>>>>> task/TUI-51--redux-applications-api
   }
 }
 
@@ -47,11 +43,7 @@ export const appsStore: AppsReducerState = {
   apps: {
     error: null,
     loading: false,
-<<<<<<< HEAD
-    limit: -1,
-=======
     limit: 100,
->>>>>>> task/TUI-51--redux-applications-api
     offset: 0,
     results: [ { ...tapisApp } ]
   }
