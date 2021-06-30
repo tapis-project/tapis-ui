@@ -1,3 +1,1 @@
-import Systems from './Systems';
-
-export default Systems;
+export { default as SystemList } from './SystemList';

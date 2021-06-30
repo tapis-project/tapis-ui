@@ -60,7 +60,6 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect }) =
 
   return (
     <div>
-      <h5>Apps</h5>
       {
         appList.map((app: Apps.TapisApp) => {
           return (
