@@ -35,7 +35,7 @@ export const appsResponse: Apps.RespApps = {
     recordsSkipped: 0,
     orderBy: undefined,
     startAfter: undefined,
-    totalCount: -1
+    totalCount: 1
   }
 }
 
@@ -43,7 +43,7 @@ export const appsStore: AppsReducerState = {
   apps: {
     error: null,
     loading: false,
-    limit: -1,
+    limit: 100,
     offset: 0,
     results: [ { ...tapisApp } ]
   }
