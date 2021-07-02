@@ -55,6 +55,7 @@ const JobSubmit: React.FC<JobSubmitProps> = ({ config, onSubmit, request, disabl
 
   return (
     <Button
+      type="submit"
       className="btn btn-primary"
       disabled={disabled || submission.loading || submission.result != null}
       onClick={() => onClickCallback()}>

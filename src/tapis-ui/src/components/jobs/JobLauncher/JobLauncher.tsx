@@ -1,70 +1,88 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import JobForm, { OnChangeCallback } from 'tapis-ui/components/jobs/JobForm';
-import JobSubmit, { OnSubmitCallback } from 'tapis-ui/components/jobs/JobSubmit';
-import { Jobs } from '@tapis/tapis-typescript';
-import { useJobs } from 'tapis-redux';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSystems } from 'tapis-redux';
 import { Config } from 'tapis-redux/types';
+import { Jobs } from '@tapis/tapis-typescript';
+import { DescriptionList } from 'tapis-ui/_common';
+import { Button, FormGroup } from 'reactstrap';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import JobSubmit from 'tapis-ui/components/jobs/JobSubmit';
+import {
+  AppIcon,
+  Icon,
+  LoadingSpinner,
+  SectionMessage
+} from 'tapis-ui/_common';
+import JobFormField from './JobFormField';
+import * as Yup from 'yup';
 
-export interface JobLauncherProps {
-  request: Jobs.ReqSubmitJob,
-  onSubmit?: OnSubmitCallback,
-  config?: Config
+export type OnSubmitCallback = (job: Jobs.Job) => any;
+
+interface JobLauncherProps {
+  config?: Config,
+  initialValues?: Jobs.ReqSubmitJob,
+  onSubmit?: OnSubmitCallback
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ request, onSubmit, config }) => {
-  const [ requestState, setRequestState ] = useState<Jobs.ReqSubmitJob>({ ...request });
-  const [ valid, setValid ] = useState<boolean>(false);
-  const { submission, resetSubmit } = useJobs();
+const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, onSubmit }) => {
   const dispatch = useDispatch();
+  const systemsHook = useSystems(config);
+  const listSystems = systemsHook.list;
+  const systems = systemsHook.systems;
 
   useEffect(
     () => {
-      dispatch(resetSubmit());
-    },
-    []
-  )
-
-  // If request changes in JobForm, reflect it here so that
-  // the new request state can be passed to JobSubmit
-  const onChange = useCallback<OnChangeCallback>(
-    (changedRequest: Jobs.ReqSubmitJob, valid: boolean) => {
-      setValid(valid);
-      if (valid) {
-        setRequestState(changedRequest);
+      // Make sure systems have been retrieved
+      if (!systems.loading && !systems.error && !systems.results.length) {
+        dispatch(listSystems({}));
       }
     },
-    [ setRequestState, setValid ]
+    [ systems, dispatch ]
   )
-  
-  const now = new Date().toISOString().slice(0, -5);
 
-  console.log(submission);
+  const validate = (values) => {
+  }
+
+  const formSubmit = (values, { setSubmitting }) => {
+    console.log(values);
+  }
 
   return (
     <div>
-      <JobForm
-        config={config}
-        onChange={onChange}
-        request={requestState}
-      ></JobForm>
-      <JobSubmit request={request} disabled={!valid} onSubmit={onSubmit} config={config}/>
-      <div>
-        {
-          submission.error && <div>{submission.error.message}</div>
-        }
-        {
-          submission.result && <div>{submission.result.name} submitted with UUID {submission.result.uuid}</div>
-        }
-      </div>
+      <h5>Job Submit</h5>
+      <Formik
+        initialValues={initialValues}
+        validate={validate}
+        onSubmit={formSubmit}
+      >
+       {({ isSubmitting }) => (
+         <Form>
+           <JobFormField 
+            addon={undefined} addonType={''} 
+            description="Job Name" 
+            label="Job Name"
+            required={true}
+            type="string" 
+            name="name" />
+           <ErrorMessage name="name" component="div" />
+           <Field type="string" name="appId" />
+           <ErrorMessage name="appId" component="div" />
+           <Field type="string" name="appVersion" />
+           <ErrorMessage name="appVersion" component="div" />
+           <Field type="string" name="execSystemId" />
+           <ErrorMessage name="execSystemId" component="div" />
+           <button type="submit">Submit</button>
+         </Form>
+       )}
+      </Formik>
     </div>
-  )
+  );
+};
+
+JobLauncherProps.defaultProps = {
+  config: null,
+  initialValues: {},
+  onSubmit: null
 }
 
-JobLauncher.defaultProps = {
-  request: null,
-  onSubmit: null,
-  config: null
-}
-
-export default JobLauncher;
+export default JobLauncherProps;
