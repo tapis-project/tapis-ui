@@ -12,7 +12,6 @@ import {
   LoadingSpinner,
   SectionMessage
 } from 'tapis-ui/_common';
-import JobFormField from './JobFormField';
 import JobFieldWrapper, { JobFieldWrapperProps } from './JobFieldWrapper';
 import * as Yup from 'yup';
 import {
@@ -37,51 +36,6 @@ type JobFieldType = {
   addonType?: 'prepend' | 'append'
 }
 
-const jobFields: Array<JobFieldWrapperProps> = [
-  {
-    props: {
-      name: 'name',
-      type: 'string'
-    },
-    description: 'A name for this job',
-    label: 'Name',
-    required: true,
-    children: <Input bsSize="sm" />
-  },
-  {
-    props: {
-      name: 'appId',
-      type: 'string',  
-    },
-    description: 'The ID of the TAPIS application to run',
-    label:'App ID',
-    required: true,
-    children: <Input bsSize="sm" />
-  },
-  {
-    props: {
-      name: 'appVersion',
-      type: 'string',
-    },
-    description: 'The version of the application to run',
-    label: 'App Version',
-    required: true,
-    children: <Input bsSize="sm" />
-  },
-  {
-    props: {
-      name: 'execSystemId',
-      type: 'string',
-    },
-    description: 'A TAPIS system that can run this application',
-    label: 'Execution System',
-    required: true,
-    children: <Input bsSize="sm" />
-  }
-]
-
-
-
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 interface JobLauncherProps {
   config?: Config,
@@ -93,8 +47,20 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
   const dispatch = useDispatch();
   const systemsHook = useSystems(config);
   const listSystems = systemsHook.list;
-  const systems = systemsHook.systems;
+  // TODO: Temporary
+  //const systems = systemsHook.systems;
+  const systems = {
+    results: [
+      {
+        id: 'tapisv3-storage'
+      },
+      {
+        id: 'tapisv3-exec'
+      }
+    ]
+  }
 
+  /*
   useEffect(
     () => {
       // Make sure systems have been retrieved
@@ -104,6 +70,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
     },
     [ systems, dispatch ]
   )
+  */
 
   const validate = (values) => {
     console.log("Validate", values);
@@ -112,6 +79,57 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
   const formSubmit = (values, { setSubmitting }) => {
     console.log(values);
   }
+
+  const jobFields: Array<JobFieldWrapperProps> = [
+    {
+      props: {
+        name: 'name',
+        type: 'string'
+      },
+      description: 'A name for this job',
+      label: 'Name',
+      required: true,
+      children: <Input bsSize="sm" />
+    },
+    {
+      props: {
+        name: 'appId',
+        type: 'string',  
+      },
+      description: 'The ID of the TAPIS application to run',
+      label:'App ID',
+      required: true,
+      children: <Input bsSize="sm" />
+    },
+    {
+      props: {
+        name: 'appVersion',
+        type: 'string',
+      },
+      description: 'The version of the application to run',
+      label: 'App Version',
+      required: true,
+      children: <Input bsSize="sm" />
+    },
+    {
+      props: {
+        name: 'execSystemId',
+        type: "select"
+      },
+      description: 'A TAPIS system that can run this application',
+      label: 'Execution System',
+      required: true,
+      children: <Input>
+        {
+          systems.results.map(
+            system => (
+              <option>{system.id}</option>
+            )
+          )
+        }
+      </Input> 
+    }
+  ]
 
   return (
     <div>
