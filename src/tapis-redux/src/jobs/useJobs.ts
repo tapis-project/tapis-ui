@@ -9,6 +9,7 @@ import { Config } from 'tapis-redux/types';
 
 export interface ListJobsParams {
   onList?: JobsListCallback
+  request?: Jobs.GetJobListRequest
 }
 
 export interface SubmitJobsParams {
@@ -21,7 +22,7 @@ const useSystems = (config: Config = null) => {
   return {
     jobs,
     submission,
-    list: (params: ListJobsParams & Jobs.GetJobListRequest) => list(config, params.onList),
+    list: (params: ListJobsParams) => list(config, params.onList, params.request),
     submit: (params: SubmitJobsParams) => submit(config, params.onSubmit, params.request),
     resetSubmit: () => resetSubmit()
   };

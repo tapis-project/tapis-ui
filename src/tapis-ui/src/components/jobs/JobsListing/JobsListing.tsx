@@ -36,7 +36,7 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) =
   // Get a file listing given the systemId and path
   const { list, jobs } = useJobs(config);
   useEffect(() => {
-    dispatch(list({ onList }));
+    dispatch(list({ onList, request: { orderBy: "created(desc)"} }));
   }, [dispatch, onList]);
 
   const jobSelectCallback = useCallback<OnSelectCallback>(
