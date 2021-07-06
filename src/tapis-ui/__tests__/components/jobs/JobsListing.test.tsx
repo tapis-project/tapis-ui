@@ -7,7 +7,7 @@ import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 
 const mockStore = configureStore();
 
-describe('Jobs', () => {
+describe('JobsListing', () => {
   it('renders JobsListing component', () => {
     const store = mockStore(tapisReduxStore);
 

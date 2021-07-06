@@ -22,7 +22,6 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
   }, [dispatch, login, username, password]);
   return (
     <Form>
-      <h5>Login</h5>
       <Label for="username">Username</Label>
       <Input
         type="text"

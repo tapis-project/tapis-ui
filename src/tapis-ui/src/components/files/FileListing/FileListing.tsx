@@ -69,7 +69,6 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
 
   return (
     <div>
-      <h5>Files</h5>
       {
         files.map((file: Files.FileInfo) => {
           return (

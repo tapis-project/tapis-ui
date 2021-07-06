@@ -1,70 +1,179 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import JobForm, { OnChangeCallback } from 'tapis-ui/components/jobs/JobForm';
-import JobSubmit, { OnSubmitCallback } from 'tapis-ui/components/jobs/JobSubmit';
-import { Jobs } from '@tapis/tapis-typescript';
-import { useJobs } from 'tapis-redux';
+import React, { useCallback } from 'react';
+import { useSystems } from 'tapis-redux';
 import { Config } from 'tapis-redux/types';
+import { Jobs } from '@tapis/tapis-typescript';
+import { useDispatch } from 'react-redux';
+import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
+import { Formik, Form,} from 'formik';
+import { isTapisResponse } from 'tapis-redux/types';
+import { useJobs } from 'tapis-redux';
+import {
+  Icon,
+  LoadingSpinner,
+} from 'tapis-ui/_common';
+import JobFieldWrapper, { JobFieldWrapperProps } from './JobFieldWrapper';
+import * as Yup from 'yup';
+import {
+  Button,
+  Input,
+} from 'reactstrap';
 
-export interface JobLauncherProps {
-  request: Jobs.ReqSubmitJob,
-  onSubmit?: OnSubmitCallback,
-  config?: Config
+const JobSubmitStatus: React.FC = () => {
+  const { submission } = useJobs();
+  if (submission.result) {
+    return <Icon name="approved-reverse" />
+  } else if (submission.loading) {
+    return <LoadingSpinner placement="inline" />
+  } else if (submission.error) {
+    return <Icon name="denied-reverse" />
+  }
+  return <></>;
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ request, onSubmit, config }) => {
-  const [ requestState, setRequestState ] = useState<Jobs.ReqSubmitJob>({ ...request });
-  const [ valid, setValid ] = useState<boolean>(false);
-  const { submission, resetSubmit } = useJobs();
+export type OnSubmitCallback = (job: Jobs.Job) => any;
+
+interface JobLauncherProps {
+  config?: Config,
+  initialValues?: Jobs.ReqSubmitJob,
+  onSubmit?: OnSubmitCallback
+}
+
+const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubmit }) => {
   const dispatch = useDispatch();
+  const { submit, submission } = useJobs();
+  const systemsHook = useSystems(config);
+  const listSystems = systemsHook.list;
+  const systems = systemsHook.systems;
+  /*
+  const systems = {
+    results: [
+      {
+        id: 'tapisv3-storage'
+      },
+      {
+        id: 'tapisv3-exec'
+      }
+    ]
+  }
+  */
 
-  useEffect(
-    () => {
-      dispatch(resetSubmit());
-    },
-    []
-  )
-
-  // If request changes in JobForm, reflect it here so that
-  // the new request state can be passed to JobSubmit
-  const onChange = useCallback<OnChangeCallback>(
-    (changedRequest: Jobs.ReqSubmitJob, valid: boolean) => {
-      setValid(valid);
-      if (valid) {
-        setRequestState(changedRequest);
+  // tapis-redux will make the callback with an agave response
+  // this callback will extract the Job returned in the result field
+  // of the response
+  const submitDecoderCallback = useCallback<JobsSubmitCallback>(
+    (result: Jobs.RespSubmitJob | Error) => {
+      if (onSubmit && isTapisResponse<Jobs.RespSubmitJob>(result)) {
+        const jobResponse: Jobs.RespSubmitJob = result as Jobs.RespSubmitJob;
+        onSubmit(jobResponse.result);
       }
     },
-    [ setRequestState, setValid ]
+    [onSubmit]
   )
-  
-  const now = new Date().toISOString().slice(0, -5);
 
-  console.log(submission);
+  const validationSchema = (props) => {
+    return Yup.lazy(values => {
+      const schema = Yup.object({});
+      return schema;
+    })
+  }
+  const formSubmit = (values, { setSubmitting }) => {
+    dispatch(submit({ onSubmit: submitDecoderCallback, request: values }));
+    setSubmitting(false);
+  }
+
+  const jobFields: Array<JobFieldWrapperProps> = [
+    {
+      props: {
+        name: 'name',
+        type: 'string',
+      },
+      description: 'A name for this job',
+      label: 'Name',
+      required: true,
+      children: <Input bsSize="sm" />
+    },
+    {
+      props: {
+        name: 'appId',
+        type: 'string',
+      },
+      description: 'The ID of the TAPIS application to run',
+      label:'App ID',
+      required: true,
+      children: <Input bsSize="sm" data-testid="appId" />
+    },
+    {
+      props: {
+        name: 'appVersion',
+        type: 'string',
+      },
+      description: 'The version of the application to run',
+      label: 'App Version',
+      required: true,
+      children: <Input bsSize="sm" />
+    },
+    {
+      props: {
+        name: 'execSystemId',
+        type: "select"
+      },
+      description: 'A TAPIS system that can run this application',
+      label: 'Execution System',
+      required: true,
+      children: <Input>
+        {
+          systems.results.map(
+            system => (
+              <option key={system.id}>{system.id}</option>
+            )
+          )
+        }
+      </Input> 
+    }
+  ]
 
   return (
     <div>
-      <JobForm
-        config={config}
-        onChange={onChange}
-        request={requestState}
-      ></JobForm>
-      <JobSubmit request={request} disabled={!valid} onSubmit={onSubmit} config={config}/>
-      <div>
-        {
-          submission.error && <div>{submission.error.message}</div>
-        }
-        {
-          submission.result && <div>{submission.result.name} submitted with UUID {submission.result.uuid}</div>
-        }
-      </div>
+      <h5>Job Submit</h5>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={formSubmit}
+      >
+       {({ isSubmitting }) => (
+         <Form>
+           {
+             jobFields.map(field => {
+               return (
+                 <JobFieldWrapper 
+                   props={field.props}
+                   label={field.label}
+                   required={field.required}
+                   children={field.children}
+                   description={field.description}
+                   key={field.props.name}
+                 />
+               )
+             })
+           }
+           <Button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isSubmitting || submission.loading || submission.result != null}>
+              Submit Job
+              <JobSubmitStatus />
+            </Button>
+         </Form>
+       )}
+      </Formik>
     </div>
-  )
-}
+  );
+};
 
 JobLauncher.defaultProps = {
-  request: null,
-  onSubmit: null,
-  config: null
+  config: null,
+  initialValues: {},
+  onSubmit: null
 }
 
 export default JobLauncher;

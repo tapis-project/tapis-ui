@@ -8,10 +8,7 @@ import './UIPatterns.module.scss';
 
 function UIPatterns() {
   return (
-    <div styleName="container">
-      <div styleName="header">
-        <h5>UI Patterns</h5>
-      </div>
+    <div>
       <div styleName="items">
         <div styleName="grid-item">
           <h6>Message &amp; Notification</h6>
