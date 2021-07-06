@@ -7,28 +7,21 @@ import { Icon } from 'tapis-ui/_common';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { Config } from 'tapis-redux/types';
 import './SystemList.scss';
-// import { select } from 'redux-saga/effects';
 
 export type OnSelectCallback = (system: TapisSystem) => any;
 
 interface SystemItemProps {
   system: TapisSystem,
-  onSelect?: OnSelectCallback
-  isSelected: String,
-  setIsSelected: Function,
+  currentSystem: string,
+  select: Function,
 }
 
 
-const SystemItem: React.FC<SystemItemProps> = ({ system, onSelect, isSelected, setIsSelected }) => {
-  const select = () => {
-    setIsSelected(system.id)
-    onSelect(system)
-  };
+const SystemItem: React.FC<SystemItemProps> = ({ system, currentSystem, select}) => {
   return (
     <li className="nav-item">
-      {/* placeholder selection until I can figure out a way of doing this */}
-      <button className={"nav-link" + (system.id == isSelected ? ' active' : '')}>
-        <div className="nav-content" onClick={() => select() }>
+      <button className={"nav-link" + (system.id == currentSystem ? ' active' : '')}>
+        <div className="nav-content" onClick={() => select(system) }>
           <Icon name="data-files" />
           <span className="nav-text">{`${system.id} (${system.host})`}</span>
         </div>
@@ -38,7 +31,7 @@ const SystemItem: React.FC<SystemItemProps> = ({ system, onSelect, isSelected, s
 };
 
 SystemItem.defaultProps = {
-  onSelect: null
+  currentSystem: null
 }
 
 interface SystemListProps {
@@ -54,7 +47,16 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect }) => 
     dispatch(list({ onList }));
   }, [dispatch]);
   const definitions: Array<TapisSystem> = systems.results;
-  const [isSelected, setIsSelected] = useState('');
+  const [currentSystem, setCurrentSystem] = useState(String);
+
+  if (systems.loading) {
+    return <LoadingSpinner />
+  }
+
+  const select = useCallback((system) => {
+    onSelect(system);
+    setCurrentSystem(system.id)
+  },[]);
 
   if (systems.loading) {
     return <LoadingSpinner />
@@ -68,9 +70,8 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect }) => 
               (system) => <SystemItem
                             system={system}
                             key={system.id}
-                            onSelect={onSelect}
-                            isSelected={isSelected}
-                            setIsSelected={setIsSelected}
+                            currentSystem={currentSystem}
+                            select={select}
                           />
             )
           : <i>No systems found</i>
