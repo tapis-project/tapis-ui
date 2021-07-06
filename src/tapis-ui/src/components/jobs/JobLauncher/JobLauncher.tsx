@@ -1,42 +1,37 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useSystems } from 'tapis-redux';
 import { Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { DescriptionList } from 'tapis-ui/_common';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import JobSubmit from 'tapis-ui/components/jobs/JobSubmit';
+import { useDispatch } from 'react-redux';
+import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
+import { Formik, Form,} from 'formik';
+import { isTapisResponse } from 'tapis-redux/types';
+import { useJobs } from 'tapis-redux';
 import {
-  AppIcon,
   Icon,
   LoadingSpinner,
-  SectionMessage
 } from 'tapis-ui/_common';
 import JobFieldWrapper, { JobFieldWrapperProps } from './JobFieldWrapper';
 import * as Yup from 'yup';
 import {
   Button,
-  FormGroup,
-  Label,
   Input,
-  FormText,
-  Badge,
-  InputGroup,
-  InputGroupAddon,
 } from 'reactstrap';
 
-
-type JobFieldType = {
-  name: string,
-  type: string,
-  required: boolean, 
-  description: string,
-  label: string,
-  addon?: React.ReactNode,
-  addonType?: 'prepend' | 'append'
+const JobSubmitStatus: React.FC = () => {
+  const { submission } = useJobs();
+  if (submission.result) {
+    return <Icon name="approved-reverse" />
+  } else if (submission.loading) {
+    return <LoadingSpinner placement="inline" />
+  } else if (submission.error) {
+    return <Icon name="denied-reverse" />
+  }
+  return <></>;
 }
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
+
 interface JobLauncherProps {
   config?: Config,
   initialValues?: Jobs.ReqSubmitJob,
@@ -45,6 +40,7 @@ interface JobLauncherProps {
 
 const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, onSubmit }) => {
   const dispatch = useDispatch();
+  const { submit, submission } = useJobs();
   const systemsHook = useSystems(config);
   const listSystems = systemsHook.list;
   // TODO: Temporary
@@ -60,24 +56,29 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
     ]
   }
 
-  /*
-  useEffect(
-    () => {
-      // Make sure systems have been retrieved
-      if (!systems.loading && !systems.error && !systems.results.length) {
-        dispatch(listSystems({}));
+  // tapis-redux will make the callback with an agave response
+  // this callback will extract the Job returned in the result field
+  // of the response
+  const submitDecoderCallback = useCallback<JobsSubmitCallback>(
+    (result: Jobs.RespSubmitJob | Error) => {
+      if (onSubmit && isTapisResponse<Jobs.RespSubmitJob>(result)) {
+        const jobResponse: Jobs.RespSubmitJob = result as Jobs.RespSubmitJob;
+        onSubmit(jobResponse.result);
       }
     },
-    [ systems, dispatch ]
+    [onSubmit]
   )
-  */
 
-  const validate = (values) => {
-    console.log("Validate", values);
+  const validationSchema = (props) => {
+    return Yup.lazy(values => {
+      const schema = Yup.object({});
+      return schema;
+    })
   }
-
   const formSubmit = (values, { setSubmitting }) => {
     console.log(values);
+    //dispatch(submit({ onSubmit: submitDecoderCallback, request }));
+    setSubmitting(false);
   }
 
   const jobFields: Array<JobFieldWrapperProps> = [
@@ -136,7 +137,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
       <h5>Job Submit</h5>
       <Formik
         initialValues={initialValues}
-        validate={validate}
+        validationSchema={validationSchema}
         onSubmit={formSubmit}
       >
        {({ isSubmitting }) => (
@@ -154,7 +155,13 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
                )
              })
            }
-           <button type="submit">Submit</button>
+           <Button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isSubmitting || submission.loading || submission.result != null}>
+              Submit Job
+              <JobSubmitStatus />
+            </Button>
          </Form>
        )}
       </Formik>
