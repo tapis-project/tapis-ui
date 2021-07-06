@@ -2,6 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import { Login, Systems } from 'tapis-ui/components';
+import { Apps } from 'tapis-app/Sections';
 import { AppsListing } from 'tapis-ui/components/apps';
 import { FileListing } from 'tapis-ui/components/files';
 import { JobsListing } from 'tapis-ui/components/jobs';
@@ -55,15 +56,6 @@ const App: React.FC = () => {
     [setSelectedSystem]
   )
 
-  const appSelectCallback = useCallback<AppSelectCallback>(
-    (app: TapisApp) => {
-      /* eslint-disable */
-      console.log("App selected", app);
-      history.push(`/launch/${app.id}/${app.version}`)
-    },
-    [ history ]
-  )
-
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
     jwt,
@@ -92,7 +84,7 @@ const App: React.FC = () => {
           }
         </Route>
         <Route path='/apps'>
-          <AppsListing onSelect={appSelectCallback}/>
+          <Apps />
         </Route>
         <Route path='/jobs'>
           <JobsListing />
