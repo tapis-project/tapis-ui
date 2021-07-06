@@ -43,8 +43,8 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
   const { submit, submission } = useJobs();
   const systemsHook = useSystems(config);
   const listSystems = systemsHook.list;
-  // TODO: Temporary
-  //const systems = systemsHook.systems;
+  const systems = systemsHook.systems;
+  /*
   const systems = {
     results: [
       {
@@ -55,6 +55,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
       }
     ]
   }
+  */
 
   // tapis-redux will make the callback with an agave response
   // this callback will extract the Job returned in the result field
@@ -77,7 +78,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
   }
   const formSubmit = (values, { setSubmitting }) => {
     console.log(values);
-    //dispatch(submit({ onSubmit: submitDecoderCallback, request }));
+    dispatch(submit({ onSubmit: submitDecoderCallback, request: values }));
     setSubmitting(false);
   }
 
