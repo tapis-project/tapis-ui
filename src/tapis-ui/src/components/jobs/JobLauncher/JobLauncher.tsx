@@ -134,7 +134,6 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
 
   return (
     <div>
-      <h5>Job Submit</h5>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
