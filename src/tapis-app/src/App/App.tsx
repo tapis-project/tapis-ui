@@ -12,6 +12,8 @@ import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { OnSelectCallback as AppSelectCallback } from 'tapis-ui/components/apps/AppsListing';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
+import { useDispatch } from 'react-redux';
+import { useApps, useSystems } from 'tapis-redux';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import Launcher from '../Launcher';
@@ -22,6 +24,9 @@ const App: React.FC = () => {
   // management that isn't tapis-redux
   const [jwt, setJwt] = useState<string>(null);
   const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
+  const dispatch = useDispatch();
+  const listApps = useApps().list;
+  const listSystems = useSystems().list;
 
   const history = useHistory();
   
@@ -36,6 +41,8 @@ const App: React.FC = () => {
       // Set local view state
       setJwt(result.access_token);
       // Can make also make an external call to propagate the login result
+      dispatch(listApps({}));
+      dispatch(listSystems({}));
     },
     [setJwt]
   );
