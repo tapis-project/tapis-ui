@@ -2,16 +2,14 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import { Login } from 'tapis-ui/components';
-import { AppsListing } from 'tapis-ui/components/apps';
+import { Apps } from 'tapis-app/Sections';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { FileListing } from 'tapis-ui/components/files';
 import { SystemList } from 'tapis-ui/components/systems';
 import { SectionHeader } from 'tapis-ui/_common';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
-import { OnSelectCallback as AppSelectCallback } from 'tapis-ui/components/apps/AppsListing';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { TapisApp } from '@tapis/tapis-typescript-apps';
 import { useDispatch } from 'react-redux';
 import { useApps, useSystems } from 'tapis-redux';
 import Sidebar from '../Sidebar/Sidebar';
@@ -64,15 +62,6 @@ const App: React.FC = () => {
     [setSelectedSystem]
   )
 
-  const appSelectCallback = useCallback<AppSelectCallback>(
-    (app: TapisApp) => {
-      /* eslint-disable */
-      console.log("App selected", app);
-      history.push(`/launch/${app.id}/${app.version}`)
-    },
-    [ history ]
-  )
-
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
     jwt,
@@ -111,10 +100,7 @@ const App: React.FC = () => {
           </div>
         </Route>
         <Route path='/apps'>
-          <SectionHeader>Apps</SectionHeader>
-          <div className="container">
-            <AppsListing />
-          </div>
+          <Apps />
         </Route>
         <Route path='/jobs'>
         <SectionHeader>Jobs</SectionHeader>
