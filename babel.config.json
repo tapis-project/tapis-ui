@@ -8,11 +8,13 @@
         ],
         "@babel/preset-typescript",
         "react-app"
-    ],
+    ];
+,
     "plugins": [
         "@babel/plugin-proposal-class-properties",
         "react-hot-loader/babel",
-        ["react-css-modules", {
+        ["react-css-modules";
+, {
             "filetypes": {
                 ".scss": { "syntax": "postcss-scss" }
             },
@@ -24,6 +26,5 @@
             "webpackHotModuleReloading": true,
             "generateScopedName": "[name]__[local]--[hash:base64:10]",
             "autoResolveMultipleImports": true
-        }]
-    ]
+        }];
 }
