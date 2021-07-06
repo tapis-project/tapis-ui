@@ -12,15 +12,15 @@ export type OnSelectCallback = (system: TapisSystem) => any;
 
 interface SystemItemProps {
   system: TapisSystem,
-  currentSystem: string,
-  select: Function,
+  select: Function
+  selected: boolean,
 }
 
 
-const SystemItem: React.FC<SystemItemProps> = ({ system, currentSystem, select}) => {
+const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected}) => {
   return (
     <li className="nav-item">
-      <div className={"nav-link" + (system.id == currentSystem ? ' active' : '')}>
+      <div className={"nav-link" + (selected ? ' active' : '')}>
         <div className="nav-content" onClick={() => select(system) }>
           <Icon name="data-files" />
           <span className="nav-text">{`${system.id} (${system.host})`}</span>
@@ -31,7 +31,7 @@ const SystemItem: React.FC<SystemItemProps> = ({ system, currentSystem, select})
 };
 
 SystemItem.defaultProps = {
-  currentSystem: null
+  selected: false
 }
 
 interface SystemListProps {
@@ -64,8 +64,7 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect }) => 
           ? definitions.map(
               (system) => <SystemItem
                             system={system}
-                            key={system.id}
-                            currentSystem={currentSystem}
+                            selected={currentSystem === system.id}
                             select={select}
                           />
             )
