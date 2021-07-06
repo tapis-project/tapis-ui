@@ -4,8 +4,10 @@ import { JobLauncher } from 'tapis-ui/components/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 
 const Launcher: React.FC = () => {
-  const { appId, appVersion } = useParams();
-  const request: Jobs.ReqSubmitJob = {
+  //const { appId, appVersion } = useParams();
+  const appId = "SleepSeconds";
+  const appVersion = "0.0.1";
+  const initialValues: Jobs.ReqSubmitJob = {
     appId,
     appVersion,
     name: `${appId}-${appVersion}-${new Date().toISOString().slice(0, -5)}`,
@@ -13,7 +15,7 @@ const Launcher: React.FC = () => {
   }
   return (
     <div>
-      <JobLauncher request={request} />
+      <JobLauncher initialValues={initialValues} />
     </div>
   )
 }

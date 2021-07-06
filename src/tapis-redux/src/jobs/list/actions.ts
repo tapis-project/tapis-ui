@@ -11,9 +11,7 @@ import { Config } from 'tapis-redux/types';
 
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, onList: JobsListCallback = null) => {
-  const params: Jobs.GetJobListRequest = {}
-
+export const list = (config: Config = null, onList: JobsListCallback = null, params: Jobs.GetJobListRequest = {}) => {
   const onRequest: OnRequestCallback = () => {
     return {
       type: ACTIONS.TAPIS_JOBS_LIST_REQUEST,
