@@ -38,7 +38,7 @@ interface JobLauncherProps {
   onSubmit?: OnSubmitCallback
 }
 
-const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, onSubmit }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubmit }) => {
   const dispatch = useDispatch();
   const { submit, submission } = useJobs();
   const systemsHook = useSystems(config);
@@ -77,7 +77,6 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
     })
   }
   const formSubmit = (values, { setSubmitting }) => {
-    console.log(values);
     dispatch(submit({ onSubmit: submitDecoderCallback, request: values }));
     setSubmitting(false);
   }
@@ -86,7 +85,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
     {
       props: {
         name: 'name',
-        type: 'string'
+        type: 'string',
       },
       description: 'A name for this job',
       label: 'Name',
@@ -96,7 +95,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
     {
       props: {
         name: 'appId',
-        type: 'string',  
+        type: 'string',
       },
       description: 'The ID of the TAPIS application to run',
       label:'App ID',
@@ -125,7 +124,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
         {
           systems.results.map(
             system => (
-              <option>{system.id}</option>
+              <option key={system.id}>{system.id}</option>
             )
           )
         }
@@ -152,6 +151,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
                    required={field.required}
                    children={field.children}
                    description={field.description}
+                   key={field.props.name}
                  />
                )
              })
@@ -170,10 +170,10 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
   );
 };
 
-JobLauncherProps.defaultProps = {
+JobLauncher.defaultProps = {
   config: null,
   initialValues: {},
   onSubmit: null
 }
 
-export default JobLauncherProps;
+export default JobLauncher;

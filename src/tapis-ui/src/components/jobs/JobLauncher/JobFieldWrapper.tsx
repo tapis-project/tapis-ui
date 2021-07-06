@@ -21,6 +21,7 @@ type JobFieldWrapperCustomProps = {
   children?:
     | React.ReactChild
     | React.ReactChild[];
+  key?: string
 }
 
 export type JobFieldWrapperProps = {
@@ -46,7 +47,7 @@ const JobFieldWrapper: React.FC<JobFieldWrapperProps> = ({ props, label, require
       {
         React.Children.map(children, child => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child, {...field, ...props});
+            return React.cloneElement(child, {...field, ...props, key: props.name });
           }
           return child;
         })
