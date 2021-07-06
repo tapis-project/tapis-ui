@@ -1,10 +1,12 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
-import { Login, Systems } from 'tapis-ui/components';
+import { Login } from 'tapis-ui/components';
 import { AppsListing } from 'tapis-ui/components/apps';
-import { FileListing } from 'tapis-ui/components/files';
 import { JobsListing } from 'tapis-ui/components/jobs';
+import { FileListing } from 'tapis-ui/components/files';
+import { SystemList } from 'tapis-ui/components/systems';
+import { SectionHeader } from 'tapis-ui/_common';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { OnSelectCallback as AppSelectCallback } from 'tapis-ui/components/apps/AppsListing';
@@ -72,35 +74,57 @@ const App: React.FC = () => {
 
   return (
     <div className="workbench-wrapper">
-      <Sidebar jwt={jwt}/>
+      <Sidebar jwt={jwt} selectedSystem={selectedSystem}/>
       <div className="workbench-content">
         <Route exact path='/'>
-          <div>Hello World!</div>
+          <SectionHeader>Dashboard</SectionHeader>
+          <div className="container">[dashboard]</div>
         </Route>
         <Route path='/login'>
-          <Login config={config} onAuth={authCallback} />
+          <SectionHeader>Login</SectionHeader>
+          <div className="container">
+            <Login config={config} onAuth={authCallback} />
+          </div>
         </Route>
         <Route path='/systems'>
-          <Systems config={config} onList={systemsListCallback} onSelect={systemSelectCallback} />
+          <SectionHeader>System Select</SectionHeader>
+          <div className="container">
+            <SystemList config={config} onList={systemsListCallback} onSelect={systemSelectCallback} />
+          </div>
         </Route>
         <Route path='/files'>
-          {
-            // TODO: This should be a tapis-app file browser component that uses FileListing
-            selectedSystem
-              ? <FileListing systemId={selectedSystem.id} path={'/'} />
-              : <div>No selected system</div>
-          }
+          <SectionHeader>Files</SectionHeader>
+          <div className="container">
+            {
+              // TODO: This should be a tapis-app file browser component that uses FileListing
+              selectedSystem
+                ? <FileListing systemId={selectedSystem.id} path={'/'} />
+                : <div>No selected system</div>
+            }
+          </div>
         </Route>
         <Route path='/apps'>
-          <AppsListing onSelect={appSelectCallback}/>
+          <SectionHeader>Apps</SectionHeader>
+          <div className="container">
+            <AppsListing />
+          </div>
         </Route>
         <Route path='/jobs'>
-          <JobsListing />
+        <SectionHeader>Jobs</SectionHeader>
+          <div className="container">
+            <JobsListing />
+          </div>
         </Route>
         <Route path='/launch/:appId/:appVersion'>
-          <Launcher />
+          <SectionHeader>Launcher</SectionHeader>
+          <div className="container">
+            <Launcher />
+          </div>
         </Route>
-        <Route path='/uipatterns' component={UIPatterns} />
+        <Route path='/uipatterns'>
+          <SectionHeader>UI Patterns</SectionHeader>
+          <UIPatterns />
+        </Route>
       </div>
     </div>
   );

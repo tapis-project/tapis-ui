@@ -1,7 +1,7 @@
 .workbench-wrapper {
     display: flex;
     flex-direction: row;
-
+    height: 100%;
     color: #484848;
 }
 .workbench-content {
@@ -11,6 +11,7 @@
     /* As a flex container */
     display: flex;
     flex-direction: column;
+    padding: 20px 25px 25px 25px; // for giving the working area some padding...
 }
 /* FAQ: If the workbench content has only a single child,
         then it should be the same height as the app root */
@@ -21,7 +22,6 @@
 .workbench-content > :nth-child(2) {
     flex-grow: 1;
 }
-
 
 .workbench-content .wb-text-primary {
     color: #484848;
@@ -83,6 +83,8 @@
 /* Align content tables to the left by undoing some Bootstrap */
 .workbench-content .container {
     margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
+    padding-top: 20px;
+    padding-left: 0; /* override `padding-left: 20px;` */
 }
 /* Prevent width constraint for Extra Large breakpoint */
 /* TODO: Support Bootstrap mixins, or find another why to make this DRY */
