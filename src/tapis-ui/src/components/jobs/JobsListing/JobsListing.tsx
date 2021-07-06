@@ -60,7 +60,6 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) =
 
   return (
     <div>
-      <h5>Jobs</h5>
       {
         jobsList.map((job: Jobs.JobListDTO) => {
           return (

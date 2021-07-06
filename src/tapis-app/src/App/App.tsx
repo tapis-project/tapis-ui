@@ -122,8 +122,9 @@ const App: React.FC = () => {
             <JobsListing />
           </div>
         </Route>
-        <Route path='/launch/:appId/:appVersion'>
-          <SectionHeader>Launcher</SectionHeader>
+        {/* <Route path='/launch/:appId/:appVersion'> */}
+        <Route path='/launcher'>
+          <SectionHeader>Job Launcher</SectionHeader>
           <div className="container">
             <Launcher />
           </div>
