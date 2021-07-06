@@ -20,12 +20,12 @@ interface SystemItemProps {
 const SystemItem: React.FC<SystemItemProps> = ({ system, currentSystem, select}) => {
   return (
     <li className="nav-item">
-      <button className={"nav-link" + (system.id == currentSystem ? ' active' : '')}>
+      <div className={"nav-link" + (system.id == currentSystem ? ' active' : '')}>
         <div className="nav-content" onClick={() => select(system) }>
           <Icon name="data-files" />
           <span className="nav-text">{`${system.id} (${system.host})`}</span>
         </div>
-      </button>
+      </div>
     </li>
   );
 };
@@ -48,15 +48,10 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect }) => 
   }, [dispatch]);
   const definitions: Array<TapisSystem> = systems.results;
   const [currentSystem, setCurrentSystem] = useState(String);
-
-  if (systems.loading) {
-    return <LoadingSpinner />
-  }
-
   const select = useCallback((system) => {
     onSelect(system);
     setCurrentSystem(system.id)
-  },[]);
+  },[onSelect, setCurrentSystem]);
 
   if (systems.loading) {
     return <LoadingSpinner />
