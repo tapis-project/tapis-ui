@@ -100,7 +100,7 @@ const JobLauncherProps: React.FC<JobLauncherProps> = ({ config, initialValues, o
       description: 'The ID of the TAPIS application to run',
       label:'App ID',
       required: true,
-      children: <Input bsSize="sm" />
+      children: <Input bsSize="sm" data-testid="appId" />
     },
     {
       props: {
