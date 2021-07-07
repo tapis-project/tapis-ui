@@ -1,7 +1,7 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { tapisAuth, authenticatorLogin } from 'tapis-redux/authenticator/sagas';
 import * as ACTIONS from 'tapis-redux/authenticator/actionTypes';
-import { AuthenticatorLoginRequest } from 'tapis-redux/authenticator/types';
+import { AuthenticatorLoginRequest, AuthenticatorLogoutRequest } from 'tapis-redux/authenticator/types';
 import { authenticatorToken, authenticatorStore } from 'fixtures/authenticator.fixtures';
 import { authenticator } from 'tapis-redux/authenticator/reducer';
 import * as matchers from "redux-saga-test-plan/matchers";
@@ -36,5 +36,17 @@ describe('Authenticator login saga', () => {
       .run();
     // Make sure callback fires
     expect(onAuth.mock.calls[0][0]).toStrictEqual(authenticatorToken);
+  });
+  it('logs out', () => {
+    const action: AuthenticatorLogoutRequest = {
+      type: ACTIONS.TAPIS_AUTH_LOGOUT_REQUEST
+    }
+    const initialState = {
+      token: { 'token': 'access_token' },
+      loading: true,
+      error: true
+    }
+    const result = authenticator(initialState, action);
+    expect(result).toStrictEqual({ token: null, loading: false, error: null });
   });
 });
