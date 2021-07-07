@@ -14,7 +14,7 @@ module.exports = merge(common, {
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'build'),
-    publicPath: '/tapis-ui',
+    publicPath: '/tapis-ui/',
     filename: '[name].[hash].bundle.js',
     chunkFilename: '[name].[hash].bundle.js',
   },
@@ -63,7 +63,7 @@ module.exports = merge(common, {
             },
           },
         ],
-      },
+      }
     ],
   },
   plugins: [
