@@ -17,7 +17,7 @@ export interface SubmitJobsParams {
   request: Jobs.ReqSubmitJob
 }
 
-const useSystems = (config: Config = null) => {
+const useSystems = (config?: Config) => {
   const { jobs, submission } = useSelector((state: TapisState) => state.jobs);
   return {
     jobs,

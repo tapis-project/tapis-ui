@@ -3,6 +3,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { useAuthenticator } from 'tapis-redux';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
 
@@ -62,27 +63,22 @@ const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
 };
 
 
-interface SidebarProps {
-  jwt?: string,
-  selectedSystem?: TapisSystem
-}
 
-const Sidebar: React.FC<SidebarProps> = ({ jwt, selectedSystem }) => {
+const Sidebar: React.FC = () => {
+  const { token } = useAuthenticator();
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
-      <SidebarItem to="/login" label="Login" iconName="link" />
-      {jwt && <>
+      {!token && <SidebarItem to="/login" label="Login" iconName="link" />}
+      {token && <>
         <SidebarItem to="/systems" label="Systems" iconName="allocations" />
         <SidebarItem to="/files" label="Files" iconName="allocations" />
         <SidebarItem to="/apps" label="Apps" iconName="allocations" />
         <SidebarItem to="/jobs" label="Jobs" iconName="allocations" />
         <SidebarItem to="/launcher" label="Launcher" iconName="allocations" />
+        <SidebarItem to="/logout" label="Log Out" iconName="allocations" />
       </>}
       <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
-      {selectedSystem && <>
-        <SystemInfo system={selectedSystem} />
-      </>}
     </Nav>
   );
 };

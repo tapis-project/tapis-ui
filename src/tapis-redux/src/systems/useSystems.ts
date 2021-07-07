@@ -10,7 +10,7 @@ export interface SystemsListParams {
   request?: Systems.GetSystemsRequest
 }
 
-const useSystems = (config: Config = null) => {
+const useSystems = (config?: Config) => {
   const { systems } = useSelector((state: TapisState) => state.systems);
   return {
     systems,
