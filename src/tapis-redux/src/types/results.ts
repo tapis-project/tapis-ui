@@ -43,6 +43,8 @@ export const updateList = <T>(original: TapisListResults<T>, incoming: Array<T>,
 
   // If no results to be added, do nothing
   if (!incoming.length) {
+    result.loading = false;
+    result.error = null;
     return result;
   }
 
