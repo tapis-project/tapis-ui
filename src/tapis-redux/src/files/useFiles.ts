@@ -9,7 +9,7 @@ export interface ListFilesAdditionalParameters {
   request: Files.ListFilesRequest
 }
 
-const useFiles = (config: Config = null) => {
+const useFiles = (config?: Config) => {
   const { listings } = useSelector((state: TapisState) => state.files);
   return {
     listings,

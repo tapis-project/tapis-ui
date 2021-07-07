@@ -15,6 +15,7 @@ import { useApps, useSystems } from 'tapis-redux';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import Launcher from '../Launcher';
+import Logout from '../Logout';
 import './App.scss';
 
 const App: React.FC = () => {
@@ -62,15 +63,9 @@ const App: React.FC = () => {
     [setSelectedSystem]
   )
 
-  // Demonstration of config to use alternate URLs or provided tokens
-  const config = {
-    jwt,
-    tenant: 'https://dev.develop.tapis.io',
-  };
-
   return (
     <div className="workbench-wrapper">
-      <Sidebar jwt={jwt} selectedSystem={selectedSystem}/>
+      <Sidebar/>
       <div className="workbench-content">
         <Route exact path='/'>
           <SectionHeader>Dashboard</SectionHeader>
@@ -79,13 +74,16 @@ const App: React.FC = () => {
         <Route path='/login'>
           <SectionHeader>Login</SectionHeader>
           <div className="container">
-            <Login config={config} onAuth={authCallback} />
+            <Login onAuth={authCallback} />
           </div>
+        </Route>
+        <Route path='/logout'>
+          <Logout />
         </Route>
         <Route path='/systems'>
           <SectionHeader>System Select</SectionHeader>
           <div className="container">
-            <SystemList config={config} onList={systemsListCallback} onSelect={systemSelectCallback} />
+            <SystemList onList={systemsListCallback} onSelect={systemSelectCallback} />
           </div>
         </Route>
         <Route path='/files'>

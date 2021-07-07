@@ -1,7 +1,8 @@
 import {
   TAPIS_AUTH_LOGIN_FAILURE,
   TAPIS_AUTH_LOGIN_SUCCESS,
-  TAPIS_AUTH_LOGIN_REQUEST
+  TAPIS_AUTH_LOGIN_REQUEST,
+  TAPIS_AUTH_LOGOUT_REQUEST
 } from "./actionTypes";
 import {
   AuthenticatorLoginFailure,
@@ -9,8 +10,13 @@ import {
   AuthenticatorLoginRequest,
   AuthenticatorLoginSuccess,
   AuthenticatorLoginSuccessPayload,
+  AuthenticatorLogoutRequest,
   LoginRequest
 } from "./types";
+
+export const authenticatorLogoutRequest = (): AuthenticatorLogoutRequest => ({
+  type: TAPIS_AUTH_LOGOUT_REQUEST
+});
 
 export const authenticatorLoginRequest = (
   request: LoginRequest
