@@ -13,7 +13,7 @@ module.exports = merge(common, {
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'build'),
-    publicPath: '/',
+    publicPath: '/tapis-ui',
     filename: '[name].[hash].bundle.js',
     chunkFilename: '[name].[hash].bundle.js',
   },
