@@ -1,10 +1,11 @@
 import { useSelector } from 'react-redux';
-import { authenticatorLoginRequest } from './actions';
+import { authenticatorLoginRequest, authenticatorLogoutRequest } from './actions';
 import { TapisState } from '../store/rootReducer';
 import { LoginCallback } from './types';
 import { Config } from '../types/config';
+import { Apps } from '@tapis/tapis-typescript';
 
-const useAuthenticator = (config: Config) => {
+const useAuthenticator = (config?: Config) => {
   const { token, loading, error } = useSelector((state: TapisState) => state.authenticator);
   return {
     token,
@@ -16,7 +17,8 @@ const useAuthenticator = (config: Config) => {
         password,
         config,
         onAuth
-      })
+      }),
+    logout: () => authenticatorLogoutRequest()
   };
 };
 
