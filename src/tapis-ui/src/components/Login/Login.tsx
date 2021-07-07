@@ -17,11 +17,12 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
   /* Replace with CEP _common FormField objects, formik and yup */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const onLogin = useCallback(() => {
+  const onLogin = useCallback((event) => {
+    event.preventDefault();
     dispatch(login(username, password, onAuth));
   }, [dispatch, login, username, password]);
   return (
-    <Form>
+    <Form onSubmit={onLogin}>
       <h5>Login</h5>
       <Label for="username">Username</Label>
       <Input
@@ -35,7 +36,7 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
         id="password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button onClick={onLogin} disabled={loading}>
+      <Button type="submit" disabled={loading}>
         Login
         {loading && <>
           &nbsp;

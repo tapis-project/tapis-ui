@@ -1,14 +1,14 @@
+import { Apps } from '@tapis/tapis-typescript';
 import { useSelector } from 'react-redux';
+import { AppsListCallback } from './list/types';
 import { list } from './list/actions';
 import { TapisState } from '../store/rootReducer';
-import { AppsListCallback } from './list/types';
-import { Apps } from '@tapis/tapis-typescript';
 
 export interface ListAppsParams {
   onList?: AppsListCallback
 }
 
-const useSystems = (config) => {
+const useApps = (config) => {
   const { apps } = useSelector((state: TapisState) => state.apps);
   return {
     apps,
@@ -16,4 +16,4 @@ const useSystems = (config) => {
   };
 };
 
-export default useSystems;
+export default useApps;

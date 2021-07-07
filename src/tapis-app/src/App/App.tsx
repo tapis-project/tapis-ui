@@ -1,12 +1,14 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Login, Systems } from 'tapis-ui/components';
+import { Login, Systems, Projects } from 'tapis-ui/components';
 import { AppsListing } from 'tapis-ui/components/apps';
 import { FileListing } from 'tapis-ui/components/files';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
+//import { ProjectsListCallback } from 'tapis-redux/streams/projects/types';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { Project } from "@tapis/tapis-typescript-streams"
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import './App.scss';
@@ -49,6 +51,14 @@ const App: React.FC = () => {
     [setSelectedSystem]
   )
 
+  const projectSelectCallback = useCallback(
+    //just print for now, should set project for other streams components
+    (project: Project) => {
+      console.log("Project selected", project);
+    },
+    []
+  )
+
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
     jwt,
@@ -65,6 +75,9 @@ const App: React.FC = () => {
           </Route>
           <Route path='/login'>
             <Login config={config} onAuth={authCallback} />
+          </Route>
+          <Route path='/projects'>
+            <Projects config={config} onSelect={projectSelectCallback} />
           </Route>
           <Route path='/systems'>
             <Systems config={config} onList={systemsListCallback} onSelect={systemSelectCallback} />
