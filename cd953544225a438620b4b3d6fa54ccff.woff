@@ -1,0 +1,1 @@
+export default __webpack_public_path__ + "fonts/Cortal-Icons-1.2.woff";
