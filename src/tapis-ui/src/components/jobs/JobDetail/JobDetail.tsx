@@ -4,7 +4,7 @@ import { useJobs } from 'tapis-redux';
 import { JobRetrieveCallback } from 'tapis-redux/jobs/retrieve/types';
 import { Config, TapisState } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner } from 'tapis-ui/_common';
+import { LoadingSpinner, DescriptionList } from 'tapis-ui/_common';
 
 export type OnRetrieveCallback = JobRetrieveCallback;
 
@@ -42,7 +42,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) =>
 
   useEffect(() => {
     dispatch(retrieve({ request: { jobUuid }, onRetrieve: jobRetrieveCallback }));
-  }, [onRetrieve]);
+  }, [onRetrieve, jobUuid]);
 
 
   if (!job) {
@@ -53,13 +53,11 @@ const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) =>
     )
   }
 
-  const jobsList: Array<Jobs.JobListDTO> = jobs.results;
-
   return (
-    <div>
-      {
-        job.name
-      }
+    <div>     
+      <h3>{job.name}</h3>
+      <h5>{job.uuid}</h5>
+      <DescriptionList data={job} />
     </div>
   );
 };
