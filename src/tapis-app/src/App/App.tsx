@@ -2,7 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import { Login } from 'tapis-ui/components';
-import { Apps } from 'tapis-app/Sections';
+import { Apps, Jobs } from 'tapis-app/Sections';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { FileListing } from 'tapis-ui/components/files';
 import { SystemList } from 'tapis-ui/components/systems';
@@ -101,12 +101,8 @@ const App: React.FC = () => {
           <Apps />
         </Route>
         <Route path='/jobs'>
-        <SectionHeader>Jobs</SectionHeader>
-          <div className="container">
-            <JobsListing />
-          </div>
+          <Jobs />
         </Route>
-        {/* <Route path='/launch/:appId/:appVersion'> */}
         <Route path='/launcher'>
           <SectionHeader>Job Launcher</SectionHeader>
           <div className="container">
