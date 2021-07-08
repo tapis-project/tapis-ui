@@ -3,16 +3,16 @@ import { Redirect } from 'react-router-dom';
 import { Login as TapisLogin } from 'tapis-ui/components';
 import { SectionHeader } from 'tapis-ui/_common';
 import { LoginCallback } from 'tapis-redux/authenticator/types';
+import { RespCreateTokenStatusEnum } from '@tapis/tapis-typescript-authenticator';
 
 const Login: React.FC = () => {
   const [redirect, setRedirect] = useState<boolean>(false);
   
   const authCallback = useCallback<LoginCallback>(
-    (result) => {
+    (response) => {
       /* eslint-disable */
-      console.log("Authentication api result", result);
       // Handle errors during login
-      if (result instanceof Error) {
+      if (response instanceof Error || !response.result) {
         return;
       }
       setRedirect(true);
