@@ -1,37 +1,45 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useJobs } from 'tapis-redux';
 import { JobsListCallback } from 'tapis-redux/jobs/list/types';
 import { Config, TapisState } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner } from 'tapis-ui/_common';
+import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import './JobsListing.scss'
 
 export type OnSelectCallback = (app: Jobs.JobListDTO) => any;
 
 interface JobsListingItemProps {
   job: Jobs.JobListDTO,
-  onSelect?: OnSelectCallback
+  select: Function
+  selected: boolean,
 }
 
-const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, onSelect }) => {
+const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected }) => {
   return (
-    <div onClick={() => onSelect ? onSelect(job) : null}>
-      {`${job.name} ${job.uuid} (${job.status})`}
+    <li className="nav-item">
+    <div className={"nav-link" + (selected ? ' active' : '')}>
+      <div className="nav-content" onClick={() => select(job) }>
+        <Icon name="jobs" />
+        <span className="nav-text">{`${job.name} - (${job.status})`}</span>
+      </div>
     </div>
+  </li>
   );
 };
 
 JobsListingItem.defaultProps = {
-  onSelect: null
+  selected: false
 }
 
 interface JobsListingProps {
   config?: Config,
   onList?: JobsListCallback,
-  onSelect?: OnSelectCallback
+  onSelect?: OnSelectCallback,
+  className?: string
 }
 
-const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) => {
+const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, className }) => {
   const dispatch = useDispatch();
 
   // Get a file listing given the systemId and path
@@ -49,6 +57,14 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) =
     [onSelect]
   )
 
+  const [currentJob, setCurrentJob] = useState(String);
+  const select = useCallback<OnSelectCallback>(
+    (job: Jobs.JobListDTO) => {
+      onSelect(job);
+      setCurrentJob(job.uuid)
+  },
+  [onSelect, setCurrentJob]);
+
   if (!jobs || jobs.loading) {
     return <LoadingSpinner />
   }
@@ -56,11 +72,15 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) =
   const jobsList: Array<Jobs.JobListDTO> = jobs.results;
 
   return (
-    <div>
+    <div className={className ? className : "job-list nav flex-column"}>
       {
         jobsList.map((job: Jobs.JobListDTO) => {
           return (
-            <JobsListingItem job={job} onSelect={jobSelectCallback} />
+            <JobsListingItem
+              job={job}
+              select={select}
+              selected={currentJob === job.uuid}
+            />
           )
         })
       }
