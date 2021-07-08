@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const webpack = require('webpack');
 const path = require('path');
 const common = require('./webpack.common.js');
 
@@ -13,7 +14,7 @@ module.exports = merge(common, {
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'build'),
-    publicPath: '/',
+    publicPath: '/tapis-ui/',
     filename: '[name].[hash].bundle.js',
     chunkFilename: '[name].[hash].bundle.js',
   },
@@ -62,10 +63,13 @@ module.exports = merge(common, {
             },
           },
         ],
-      },
+      }
     ],
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new webpack.EnvironmentPlugin({
       TAPIS_TENANT_URL: 'https://tacc.tapis.io'
     }),
