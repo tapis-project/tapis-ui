@@ -9,7 +9,7 @@ import { Authenticator } from '@tapis/tapis-typescript';
 
 export type Token = Authenticator.NewAccessTokenResponse;
 
-export type LoginCallback = ApiCallback<Token>;
+export type LoginCallback = ApiCallback<Authenticator.RespCreateToken>;
 
 export interface LoginRequest {
   username: string,
@@ -25,7 +25,7 @@ export interface AuthenticatorState {
 }
 
 export interface AuthenticatorLoginSuccessPayload {
-  token: Token
+  response: Authenticator.RespCreateToken
 }
 
 export interface AuthenticatorLoginFailurePayload {

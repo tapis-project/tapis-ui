@@ -11,7 +11,7 @@ import {
   Icon,
   LoadingSpinner,
 } from 'tapis-ui/_common';
-import JobFieldWrapper, { JobFieldWrapperProps } from './JobFieldWrapper';
+import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
 import * as Yup from 'yup';
 import {
   Button,
@@ -81,7 +81,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
     setSubmitting(false);
   }
 
-  const jobFields: Array<JobFieldWrapperProps> = [
+  const jobFields: Array<FieldWrapperProps> = [
     {
       props: {
         name: 'name',
@@ -144,7 +144,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
            {
              jobFields.map(field => {
                return (
-                 <JobFieldWrapper 
+                 <FieldWrapper 
                    props={field.props}
                    label={field.label}
                    required={field.required}

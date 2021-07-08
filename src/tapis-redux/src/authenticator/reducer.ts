@@ -24,7 +24,7 @@ export const authenticator = (state: AuthenticatorState = initialState, action: 
     case TAPIS_AUTH_LOGIN_SUCCESS:
       return {
         ...state,
-        token: action.payload.token,
+        token: action.payload.response.result.access_token,
         loading: false,
         error: null,
       };

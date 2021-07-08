@@ -1,20 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Button,
   FormGroup,
   Label,
-  Input,
   FormText,
   Badge,
-  InputGroup,
-  InputGroupAddon,
 } from 'reactstrap';
 
 import { useField, FieldHookConfig } from 'formik';
-import PropTypes from 'prop-types';
-import './JobFieldWrapper.scss';
+import './FieldWrapper.scss';
 
-type JobFieldWrapperCustomProps = {
+type FieldWrapperCustomProps = {
   label: string;
   required?: boolean;
   description: string;
@@ -24,11 +19,11 @@ type JobFieldWrapperCustomProps = {
   key?: string
 }
 
-export type JobFieldWrapperProps = {
+export type FieldWrapperProps = {
   props: FieldHookConfig<string>
-} & JobFieldWrapperCustomProps;
+} & FieldWrapperCustomProps;
 
-const JobFieldWrapper: React.FC<JobFieldWrapperProps> = ({ props, label, required, description, children }) => {
+const FieldWrapper: React.FC<FieldWrapperProps> = ({ props, label, required, description, children }) => {
   const [ field, meta, helpers ] = useField(props);
   return (
     <FormGroup>
@@ -66,4 +61,4 @@ const JobFieldWrapper: React.FC<JobFieldWrapperProps> = ({ props, label, require
 }
 
 
-export default JobFieldWrapper;
+export default FieldWrapper;
