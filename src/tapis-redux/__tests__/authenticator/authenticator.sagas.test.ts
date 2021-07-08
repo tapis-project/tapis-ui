@@ -19,23 +19,28 @@ describe('Authenticator login saga', () => {
         onAuth
       }
     };
+    const response = {
+      result: {
+        access_token: authenticatorToken
+      }
+    }
     // Make sure saga runs with correct sequence of events
     expectSaga(authenticatorLogin, action)
       .withReducer(authenticator)
       .provide([
         // Mock the call to tapisAuthPassword to return the fixture
-        [matchers.call.fn(tapisAuth), authenticatorToken]
+        [matchers.call.fn(tapisAuth), response]
       ])
       .call(tapisAuth, { username: 'username', password: 'password', onAuth })
       .put({
         type: ACTIONS.TAPIS_AUTH_LOGIN_SUCCESS,
-        payload: { token: authenticatorToken },
+        payload: { response },
       })
-      .call(onAuth, authenticatorToken)
+      .call(onAuth, response)
       .hasFinalState(authenticatorStore)
       .run();
     // Make sure callback fires
-    expect(onAuth.mock.calls[0][0]).toStrictEqual(authenticatorToken);
+    expect(onAuth.mock.calls[0][0]).toStrictEqual(response);
   });
   it('logs out', () => {
     const action: AuthenticatorLogoutRequest = {

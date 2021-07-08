@@ -33,27 +33,27 @@ export function* tapisAuth(payload) {
     }
     // Make API call
     const response: Authenticator.RespCreateToken = yield call([api, api.createToken], request);
-    return response.result.access_token;
+    return response;
 }
 
 export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
   try {
-    const token = yield call(tapisAuth, action.payload);
+    const response = yield call(tapisAuth, action.payload);
     // Notify tapis-redux store of token
     yield put({
       type: TAPIS_AUTH_LOGIN_SUCCESS,
-      payload: { token }
+      payload: { response }
     });
     // Call external callback with a copy of the token
     if (action.payload.onAuth) {
-      yield call(action.payload.onAuth, { ...token });
+      yield call(action.payload.onAuth, { ...response });
     }
   } catch (error) {
     // If error has a json body, replace the error with the json body
     if (error.json) {
       error = yield error.json();
     }
-    
+
     // Catch any errors and save exception in tapis-redux
     yield put({
       type: TAPIS_AUTH_LOGIN_FAILURE,
