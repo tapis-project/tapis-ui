@@ -1,8 +1,7 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
-import { Login } from 'tapis-ui/components';
-import { Apps } from 'tapis-app/Sections';
+import { Apps, Login } from 'tapis-app/Sections';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { FileListing } from 'tapis-ui/components/files';
 import { SystemList } from 'tapis-ui/components/systems';
@@ -19,32 +18,10 @@ import Logout from '../Logout';
 import './App.scss';
 
 const App: React.FC = () => {
-  // Demonstration of using some type of external state
-  // management that isn't tapis-redux
-  const [jwt, setJwt] = useState<string>(null);
   const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
-  const dispatch = useDispatch();
-  const listApps = useApps().list;
-  const listSystems = useSystems().list;
 
   const history = useHistory();
-  
-  const authCallback = useCallback<LoginCallback>(
-    (result) => {
-      /* eslint-disable */
-      console.log("Authentication api result", result);
-      // Handle errors during login
-      if (result instanceof Error) {
-        return;
-      }
-      // Set local view state
-      setJwt(result.access_token);
-      // Can make also make an external call to propagate the login result
-      dispatch(listApps({}));
-      dispatch(listSystems({}));
-    },
-    [setJwt]
-  );
+
 
   const systemsListCallback = useCallback<SystemsListCallback>(
     (result) => {
@@ -72,10 +49,7 @@ const App: React.FC = () => {
           <div className="container">[dashboard]</div>
         </Route>
         <Route path='/login'>
-          <SectionHeader>Login</SectionHeader>
-          <div className="container">
-            <Login onAuth={authCallback} />
-          </div>
+          <Login /> 
         </Route>
         <Route path='/logout'>
           <Logout />
