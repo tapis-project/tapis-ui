@@ -1,5 +1,6 @@
 .root {
-  padding: 1em 1em 1em 1em;
+  // this padding is already handled in the workbench-content of App.scss
+  // padding: 1em 1em 1em 1em;
 }
 
 .body {
@@ -7,6 +8,7 @@
   flex-direction: row;
   margin-top: 1em;
   width: 100%;
+  min-height: 600px;
 }
 
 .list {
@@ -17,4 +19,8 @@
   border: 1px solid gray;
   padding: 1em 1em 1em 1em;
   flex-basis: 100%;
+}
+
+.sub-header {
+  padding-bottom: 1em;
 }

@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
 import { AppsListing } from 'tapis-ui/components/apps';
+import Launcher from 'tapis-app/Launcher';
 import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
+import { SectionMessage } from 'tapis-ui/_common';
 import { 
   ListSection, 
   ListSectionBody, 
@@ -14,6 +16,7 @@ const Apps: React.FC = () => {
   const [selectedApp, setSelectedApp] = useState<TapisApp>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
+      console.log(app.id)
       setSelectedApp(app);
     },
     [ setSelectedApp ]
@@ -24,11 +27,17 @@ const Apps: React.FC = () => {
       <ListSectionHeader>Apps</ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing />
+          <AppsListing onSelect={appSelectCallback} />
         </ListSectionList>
         <ListSectionDetail>
+          <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
           <div>
-            {selectedApp ? selectedApp.id : "Select an app from the list"}
+            {selectedApp
+              ? <Launcher />
+              : <SectionMessage type="info">
+                  Select an app from the list.
+                </SectionMessage>
+            }
           </div>
         </ListSectionDetail>
       </ListSectionBody>

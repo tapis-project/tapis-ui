@@ -5,7 +5,6 @@ import { AppsListCallback } from 'tapis-redux/apps/list/types';
 import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Apps } from '@tapis/tapis-typescript';
-import './AppsListing.module.scss';
 
 export type OnSelectCallback = (app: Apps.TapisApp) => any;
 
@@ -42,21 +41,8 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
     dispatch(list({ onList }));
   }, [dispatch, onList]);
 
-  const appSelectCallback = useCallback<OnSelectCallback>(
-    (app: Apps.TapisApp) => {
-      if (onSelect) {
-        onSelect(app);
-      }
-    },
-    [onSelect]
-  )
-
   if (!apps || apps.loading) {
-    return (
-      <div className={className}>
-        <LoadingSpinner placement="inline" styleName="loading" /> Loading...
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   const appList: Array<Apps.TapisApp> = apps.results;
@@ -66,7 +52,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
       {
         appList.map((app: Apps.TapisApp) => {
           return (
-            <AppsListingItem app={app} onSelect={appSelectCallback}/>
+            <AppsListingItem app={app} onSelect={onSelect}/>
           )
         })
       }
