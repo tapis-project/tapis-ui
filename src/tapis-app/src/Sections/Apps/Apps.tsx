@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
+import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
 import Launcher from 'tapis-app/Launcher';
 import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
@@ -20,6 +21,14 @@ const Apps: React.FC = () => {
     },
     [ setSelectedApp ]
   )
+  const appId = "SleepSeconds";
+  const appVersion = "0.0.1";
+  const initialValues: Jobs.ReqSubmitJob = {
+    appId,
+    appVersion,
+    name: `${appId}-${appVersion}-${new Date().toISOString().slice(0, -5)}`,
+    execSystemId: 'tapisv3-exec'
+  }
 
   return (
     <ListSection>
@@ -32,7 +41,7 @@ const Apps: React.FC = () => {
           <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
           <div>
             {selectedApp
-              ? <Launcher />
+              ? <Launcher initialValues={initialValues}/>
               : <SectionMessage type="info">
                   Select an app from the list.
                 </SectionMessage>
