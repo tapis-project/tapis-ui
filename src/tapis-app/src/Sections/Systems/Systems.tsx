@@ -45,14 +45,12 @@ const Systems: React.FC<SystemsProps> = ({config}) => {
             </ListSectionList>
             <ListSectionDetail>
                 <ListSectionHeader type={"sub-header"}>Files</ListSectionHeader>
-                <div>
-                    {selectedSystem
-                        ? <FileListing systemId={selectedSystem.id} path={'/'} />
-                        : <SectionMessage type="info">
-                            Select a system from the list.
-                          </SectionMessage>
-                    }
-                </div>
+                {selectedSystem
+                    ? <FileListing systemId={selectedSystem.id} path={'/'} />
+                    : <SectionMessage type="info">
+                        Select a system from the list.
+                        </SectionMessage>
+                }
             </ListSectionDetail>
         </ListSectionBody>
         </ListSection>
