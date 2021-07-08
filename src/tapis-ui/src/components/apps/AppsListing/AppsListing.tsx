@@ -29,7 +29,6 @@ const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, select, selected
 };
 
 AppsListingItem.defaultProps = {
-  // onSelect: null
   selected: false
 }
 
