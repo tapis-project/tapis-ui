@@ -3,16 +3,18 @@ import { list } from './actions';
 import { TapisState } from '../store/rootReducer';
 import { SystemsListCallback } from './types';
 import { Systems } from '@tapis/tapis-typescript';
+import { Config } from 'tapis-redux/types';
 
-interface SystemsListParams {
-  onList?: SystemsListCallback
+export interface SystemsListParams {
+  onList?: SystemsListCallback,
+  request?: Systems.GetSystemsRequest
 }
 
-const useSystems = (config) => {
+const useSystems = (config?: Config) => {
   const { systems } = useSelector((state: TapisState) => state.systems);
   return {
     systems,
-    list: (params: SystemsListParams & Systems.GetSystemsRequest) => list(config, params.onList),
+    list: (params: SystemsListParams) => list(config, params.onList, params.request || {}),
   };
 };
 

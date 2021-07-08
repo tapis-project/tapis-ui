@@ -2,8 +2,10 @@ import * as React from 'react';
 import 'react-hot-loader';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 import configureStore from '../../tapis-redux/src/store';
 import App from './App';
+import { SectionHeader } from 'tapis-ui/_common';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,7 +14,10 @@ const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <SectionHeader>Tapis-App</SectionHeader>
+      <App />
+    </Router>
   </Provider>,
   document.getElementById('react-root')
 );

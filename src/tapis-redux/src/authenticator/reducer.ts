@@ -2,7 +2,8 @@ import { AuthenticatorState, AuthenticatorActions } from './types';
 import {
   TAPIS_AUTH_LOGIN_REQUEST,
   TAPIS_AUTH_LOGIN_FAILURE,
-  TAPIS_AUTH_LOGIN_SUCCESS
+  TAPIS_AUTH_LOGIN_SUCCESS,
+  TAPIS_AUTH_LOGOUT_REQUEST
 } from './actionTypes';
 
 export const initialState: AuthenticatorState = {
@@ -34,6 +35,13 @@ export const authenticator = (state: AuthenticatorState = initialState, action: 
         loading: false,
         error: action.payload.error,
       };
+    case TAPIS_AUTH_LOGOUT_REQUEST:
+      return {
+        ...state,
+        token: null,
+        loading: false,
+        error: null
+      }
     default:
       return state;
   }

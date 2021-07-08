@@ -1,7 +1,8 @@
 import { 
   TAPIS_AUTH_LOGIN_REQUEST,
   TAPIS_AUTH_LOGIN_FAILURE,
-  TAPIS_AUTH_LOGIN_SUCCESS
+  TAPIS_AUTH_LOGIN_SUCCESS,
+  TAPIS_AUTH_LOGOUT_REQUEST
 } from './actionTypes';
 import { ApiCallback, Config } from 'tapis-redux/types';
 import { Authenticator } from '@tapis/tapis-typescript';
@@ -47,7 +48,12 @@ export type AuthenticatorLoginFailure = {
   payload: AuthenticatorLoginFailurePayload;
 };
 
+export type AuthenticatorLogoutRequest = {
+  type: typeof TAPIS_AUTH_LOGOUT_REQUEST;
+}
+
 export type AuthenticatorActions =
   | AuthenticatorLoginRequest
   | AuthenticatorLoginSuccess
-  | AuthenticatorLoginFailure;
+  | AuthenticatorLoginFailure
+  | AuthenticatorLogoutRequest;

@@ -2,6 +2,8 @@ import React from 'react';
 import { Nav, NavItem, NavLink, UncontrolledCollapse } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
+import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { useAuthenticator } from 'tapis-redux';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
 
@@ -56,17 +58,18 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName, style, i
 };
 
 type SidebarGroupProps = {
+  group: string,
   id: string,
   label: string,
-  iconName: string,
   items: SidebarItemProps[]
 };
 
-const SidebarGroup: React.FC<SidebarGroupProps> = ({id, label, iconName, items}) => {
-  let togglerTag = `#${id}`; 
+const SidebarGroup: React.FC<SidebarGroupProps> = ({id, label, items, group}) => {
+  let togglerTag = `#${id}`;
+  let groupLink = `/${group}`
   return (
     <>
-      <SidebarItem id={id} to="/" label="Streams" iconName="folder"></SidebarItem>
+      <SidebarItem id={id} to={groupLink} label={label} iconName="folder"></SidebarItem>
       <UncontrolledCollapse toggler={togglerTag}>
         {
           items.map((item, index) => {
@@ -80,27 +83,69 @@ const SidebarGroup: React.FC<SidebarGroupProps> = ({id, label, iconName, items})
 }
 
 
-interface SidebarProps {
-  jwt?: string
+type SystemInfoProps = {
+  system: TapisSystem
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ jwt }) => {
+// const Sidebar: React.FC<SidebarProps> = ({ jwt }) => {
+
+
+//   return (
+//     <Nav styleName="root" vertical>
+//       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
+//       <SidebarItem to="/login" label="Login" iconName="link" />
+//       {jwt && <>
+//         <SidebarGroup id="streams-toggle" label="Streams" iconName="allocations" items={streamProps} />
+const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
+  return (
+    <div>
+      <hr></hr>
+      <div styleName="system-content">
+        <h6>Selected System</h6>
+        <div styleName="system-info">
+          <strong>ID: </strong>
+          {system.id}
+        </div>
+        <div styleName="system-info">
+          <strong>Type: </strong>
+          {system.systemType}
+        </div>
+        <div styleName="system-info">
+          <strong>Host: </strong>
+          {system.host}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+const Sidebar: React.FC = () => {
   let streamProps: SidebarItemProps[] = [];
   streamProps.push({
-    to: "/projects",
+    to: "/streams/projects",
     label: "Projects",
     iconName: "allocations"
   });
-
+  streamProps.push({
+    to: "/streams/sites",
+    label: "Sites",
+    iconName: "allocations"
+  });
+  const { token } = useAuthenticator();
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
-      <SidebarItem to="/login" label="Login" iconName="link" />
-      {jwt && <>
-        <SidebarGroup id="streams-toggle" label="Streams" iconName="allocations" items={streamProps} />
+      {!token && <SidebarItem to="/login" label="Login" iconName="link" />}
+      {token && <>
+        <SidebarGroup id="streams-toggle" label="Streams" items={streamProps} group="streams" />
         <SidebarItem to="/systems" label="Systems" iconName="allocations" />
         <SidebarItem to="/files" label="Files" iconName="allocations" />
         <SidebarItem to="/apps" label="Apps" iconName="allocations" />
+        <SidebarItem to="/jobs" label="Jobs" iconName="allocations" />
+        <SidebarItem to="/launcher" label="Launcher" iconName="allocations" />
+        <SidebarItem to="/logout" label="Log Out" iconName="link" />
       </>}
       <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
     </Nav>

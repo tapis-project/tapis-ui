@@ -43,7 +43,6 @@ export const updateList = <T>(original: TapisListResults<T>, incoming: Array<T>,
 
   // If no results to be added, do nothing
   if(incoming.length) {
-
     // Update offsets and limits
     result.offset = offsetCheck(offset);
     result.limit = limitCheck(limit, defaultLimit);

@@ -40,7 +40,7 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
   // Get a file listing given the systemId and path
   const { list } = useFiles(config);
   useEffect(() => {
-    dispatch(list({ systemId, path, onList }));
+    dispatch(list({ onList, request: { systemId, path } }));
   }, [dispatch, systemId, path, onList]);
 
   // Get the file listing for this systemId and path
@@ -69,7 +69,6 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
 
   return (
     <div>
-      <h5>Files</h5>
       {
         files.map((file: Files.FileInfo) => {
           return (
