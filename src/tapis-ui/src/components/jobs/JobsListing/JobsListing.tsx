@@ -40,9 +40,9 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) =
   }, [dispatch, onList]);
 
   const jobSelectCallback = useCallback<OnSelectCallback>(
-    (app: Jobs.JobListDTO) => {
+    (job: Jobs.JobListDTO) => {
       if (onSelect) {
-        onSelect(app);
+        onSelect(job);
       }
     },
     [onSelect]
@@ -63,7 +63,7 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect }) =
       {
         jobsList.map((job: Jobs.JobListDTO) => {
           return (
-            <JobsListingItem job={job} />
+            <JobsListingItem job={job} onSelect={jobSelectCallback} />
           )
         })
       }

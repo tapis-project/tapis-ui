@@ -1,16 +1,12 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
-import { Apps, Login } from 'tapis-app/Sections';
-import { JobsListing } from 'tapis-ui/components/jobs';
+import { Apps, Jobs, Login } from 'tapis-app/Sections';
 import { FileListing } from 'tapis-ui/components/files';
 import { SystemList } from 'tapis-ui/components/systems';
 import { SectionHeader } from 'tapis-ui/_common';
-import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { useDispatch } from 'react-redux';
-import { useApps, useSystems } from 'tapis-redux';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import Launcher from '../Launcher';
@@ -75,12 +71,8 @@ const App: React.FC = () => {
           <Apps />
         </Route>
         <Route path='/jobs'>
-        <SectionHeader>Jobs</SectionHeader>
-          <div className="container">
-            <JobsListing />
-          </div>
+          <Jobs />
         </Route>
-        {/* <Route path='/launch/:appId/:appVersion'> */}
         <Route path='/launcher'>
           <SectionHeader>Job Launcher</SectionHeader>
           <div className="container">
