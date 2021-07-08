@@ -1,5 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom'
 import { JobLauncher } from 'tapis-ui/components/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 
@@ -8,7 +7,6 @@ interface LauncherProps {
 }
 
 const Launcher: React.FC<LauncherProps> = ({initialValues}) => {
-  //const { appId, appVersion } = useParams();
   return (
     <div>
       <JobLauncher initialValues={initialValues} />

@@ -14,21 +14,19 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Apps: React.FC = () => {
-  const [selectedApp, setSelectedApp] = useState<TapisApp>(null);
+  const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
-      setSelectedApp(app);
+      console.log(app);
+      setInitialValues({
+        appId: app.id,
+        appVersion: app.version,
+        name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
+        execSystemId: 'tapisv3-exec'
+      })
     },
-    [ setSelectedApp ]
+    [ setInitialValues ]
   )
-  const appId = "SleepSeconds";
-  const appVersion = "0.0.1";
-  const initialValues: Jobs.ReqSubmitJob = {
-    appId,
-    appVersion,
-    name: `${appId}-${appVersion}-${new Date().toISOString().slice(0, -5)}`,
-    execSystemId: 'tapisv3-exec'
-  }
 
   return (
     <ListSection>
@@ -39,14 +37,12 @@ const Apps: React.FC = () => {
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
-          <div>
-            {selectedApp
+            {initialValues
               ? <Launcher initialValues={initialValues}/>
               : <SectionMessage type="info">
                   Select an app from the list.
                 </SectionMessage>
             }
-          </div>
         </ListSectionDetail>
       </ListSectionBody>
     </ListSection>

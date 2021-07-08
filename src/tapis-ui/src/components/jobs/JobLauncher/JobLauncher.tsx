@@ -1,12 +1,10 @@
 import React, { useCallback } from 'react';
-import { useSystems } from 'tapis-redux';
-import { Config } from 'tapis-redux/types';
+import { useSystems, useJobs } from 'tapis-redux';
+import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
+import { isTapisResponse, Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useDispatch } from 'react-redux';
-import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
 import { Formik, Form,} from 'formik';
-import { isTapisResponse } from 'tapis-redux/types';
-import { useJobs } from 'tapis-redux';
 import {
   Icon,
   LoadingSpinner,
@@ -57,6 +55,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
   }
   */
 
+  console.log(initialValues);
   // tapis-redux will make the callback with an agave response
   // this callback will extract the Job returned in the result field
   // of the response
@@ -136,6 +135,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
     <div>
       <Formik
         initialValues={initialValues}
+        enableReinitialize={true}
         validationSchema={validationSchema}
         onSubmit={formSubmit}
       >
