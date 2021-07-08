@@ -1,7 +1,7 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
-import { Apps, Login } from 'tapis-app/Sections';
+import { Apps, Login, Dashboard } from 'tapis-app/Sections';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { FileListing } from 'tapis-ui/components/files';
 import { SystemList } from 'tapis-ui/components/systems';
@@ -45,8 +45,7 @@ const App: React.FC = () => {
       <Sidebar/>
       <div className="workbench-content">
         <Route exact path='/'>
-          <SectionHeader>Dashboard</SectionHeader>
-          <div className="container">[dashboard]</div>
+          <Dashboard />
         </Route>
         <Route path='/login'>
           <Login /> 
