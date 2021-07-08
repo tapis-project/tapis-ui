@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { LoadingSpinner } from 'tapis-ui/_common';
-import { Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Icon } from 'tapis-ui/_common';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { Config } from 'tapis-redux/types';
 import './SystemList.scss';
@@ -37,10 +36,11 @@ SystemItem.defaultProps = {
 interface SystemListProps {
   config?: Config,
   onList?: SystemsListCallback,
-  onSelect?: OnSelectCallback
+  onSelect?: OnSelectCallback,
+  className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect }) => {
+const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, className }) => {
   const dispatch = useDispatch();
   const { systems, list } = useSystems(config);
   useEffect(() => {
@@ -58,7 +58,7 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect }) => 
   }
 
   return (
-    <div className="system-list nav flex-column">
+    <div className={className ? className : "system-list nav flex-column"}>
       {
         definitions.length
           ? definitions.map(

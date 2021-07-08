@@ -16,7 +16,6 @@ const Apps: React.FC = () => {
   const [selectedApp, setSelectedApp] = useState<TapisApp>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
-      console.log(app.id)
       setSelectedApp(app);
     },
     [ setSelectedApp ]
