@@ -82,7 +82,7 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
             )}
             {error && (
               <div styleName="message">
-                <Message canDismiss={false} type="error" scope="inline">Login error</Message>
+                <Message canDismiss={false} type="error" scope="inline">{error.message}</Message>
               </div>
             )}
           </div>
