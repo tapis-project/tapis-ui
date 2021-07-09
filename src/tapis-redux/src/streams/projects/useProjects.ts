@@ -3,16 +3,18 @@ import { list } from './actions';
 import { TapisState } from '../../store/rootReducer';
 import { ProjectsListCallback } from './types';
 import * as Streams from "@tapis/tapis-typescript-streams";
+import { Config } from 'tapis-redux/types';
 
-interface ProjectsListParams {
-  onList?: ProjectsListCallback
+export interface ProjectsListParams {
+  onList?: ProjectsListCallback,
+  request?: Streams.ListProjectsRequest
 }
 
-const useProjects = (config) => {
+const useProjects = (config?: Config) => {
   const { projects } = useSelector((state: TapisState) => state.projects);
   return {
     projects,
-    list: (params: ProjectsListParams & Streams.ListProjectsRequest) => list(config, params.onList),
+    list: (params: ProjectsListParams) => list(config, params.onList, params.request || {}),
   };
 };
 

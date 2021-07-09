@@ -43,21 +43,22 @@ ProjectItem.defaultProps = {
 interface ProjectListProps {
   config?: Config,
   onList?: ProjectsListCallback,
-  onSelect?: OnSelectCallback
+  onSelect?: OnSelectCallback,
+  selected?: Project
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect }) => {
+const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect, selected }) => {
   const dispatch = useDispatch();
   const { projects, list } = useProjects(config);
   useEffect(() => {
     dispatch(list({ onList }));
   }, [dispatch]);
   const definitions: Array<Project> = projects.results;
-  const [currentProject, setCurrentProject] = useState(String);
   const select = useCallback((project: Project) => {
-    onSelect(project);
-    setCurrentProject(project.project_name);
-  },[onSelect, setCurrentProject]);
+    if(onSelect) {
+      onSelect(project);
+    }
+  }, [onSelect]);
 
   if (projects.loading) {
     return <LoadingSpinner/>
@@ -68,7 +69,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect }) =
       {
         definitions.length
           ? definitions.map(
-              (project) => <ProjectItem project={project} key={project.project_name} selected={currentProject === project.project_name} select={select} />
+              (project) => <ProjectItem project={project} key={project.project_name} selected={selected? selected.project_name === project.project_name : false} select={select} />
             )
           : <i>No projects found</i>
       }
@@ -79,7 +80,8 @@ const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect }) =
 ProjectList.defaultProps = {
   config: null,
   onList: null,
-  onSelect: null
+  onSelect: null,
+  selected: null
 }
 
 export default ProjectList;

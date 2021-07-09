@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Site } from "@tapis/tapis-typescript-streams";
-import { useProjects } from 'tapis-redux';
-import { ProjectsListCallback } from 'tapis-redux/streams/projects/types';
+import { useSites } from 'tapis-redux';
+import { SitesListCallback } from 'tapis-redux/streams/sites/types';
 import { Config } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
@@ -43,25 +43,30 @@ SiteItem.defaultProps = {
 interface SiteListProps {
   projectId: string,
   config?: Config,
-  onList?: ProjectsListCallback,
-  onSelect?: OnSelectCallback
+  onList?: SitesListCallback,
+  onSelect?: OnSelectCallback,
+  selected?: Site
 }
 
-const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect }) => {
-  console.log(projectId);
+const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect, selected }) => {
   const dispatch = useDispatch();
-  const { projects, list } = useProjects(config);
+  const { sites, list } = useSites(config);
   useEffect(() => {
-    dispatch(list({ onList }));
+    dispatch(list({ 
+      onList, 
+      request: {
+        projectUuid: projectId
+      }
+    }));
   }, [dispatch]);
-  const definitions: Array<Site> = projects.results;
-  const [currentSite, setCurrentSite] = useState(String);
+  const definitions: Array<Site> = sites.results;
   const select = useCallback((site: Site) => {
-    onSelect(site);
-    setCurrentSite(site.site_name);
-  },[onSelect, setCurrentSite]);
+    if(onSelect) {
+      onSelect(site);
+    }
+  },[onSelect]);
 
-  if (projects.loading) {
+  if (sites.loading) {
     return <LoadingSpinner/>
   }
 
@@ -70,7 +75,7 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
       {
         definitions.length
           ? definitions.map(
-              (site) => <SiteItem site={site} key={site.site_name} selected={currentSite === site.site_name} select={select} />
+              (site) => <SiteItem site={site} key={site.site_id} selected={selected? selected.site_id === site.site_id : false} select={select} />
             )
           : <i>No sites found</i>
       }

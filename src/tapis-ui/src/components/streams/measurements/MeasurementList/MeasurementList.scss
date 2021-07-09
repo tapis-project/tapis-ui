@@ -1,0 +1,31 @@
+$core-portal-color-primary: #9d85ef;
+
+.measurement-list {
+  --horizontal-buffer: var(--global-space--section-left);
+  --vertical-buffer: 0.75rem;
+  --min-width: 100%;
+  padding-top: 0.5rem;
+}
+
+.measurement-list .nav-link {
+  min-width: var(--min-width);
+  border: none;
+  padding-left: var(--horizontal-buffer);
+  color: #707070;
+  background-color: white;
+  cursor: pointer;
+}
+
+.measurement-list .nav-link.active {
+  background: rgba($core-portal-color-primary, 0.25);
+}
+
+.measurement-list .nav-text {
+  padding-left: 16px;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  font-weight: 500;
+}
+
+.loading {
+  display: inline;
+}

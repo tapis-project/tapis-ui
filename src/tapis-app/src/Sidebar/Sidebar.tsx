@@ -133,6 +133,21 @@ const Sidebar: React.FC = () => {
     label: "Sites",
     iconName: "allocations"
   });
+  streamProps.push({
+    to: "/streams/instruments",
+    label: "Instruments",
+    iconName: "allocations"
+  });
+  streamProps.push({
+    to: "/streams/variables",
+    label: "Variables",
+    iconName: "allocations"
+  });
+  streamProps.push({
+    to: "/streams/measurements",
+    label: "Measurements",
+    iconName: "allocations"
+  });
   const { token } = useAuthenticator();
   return (
     <Nav styleName="root" vertical>

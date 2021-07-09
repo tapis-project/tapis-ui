@@ -5,6 +5,10 @@ import { files } from '../files/reducer';
 import { apps } from '../apps/reducer';
 import { projects } from "../streams/projects/reducer";
 import { jobs } from '../jobs/reducer';
+import { sites } from "../streams/sites/reducer";
+import { instruments } from "../streams/instruments/reducer";
+import { variables } from "../streams/variables/reducer";
+import { measurements } from "../streams/measurements/reducer";
 
 const rootReducer = combineReducers({
   authenticator,
@@ -12,7 +16,11 @@ const rootReducer = combineReducers({
   files,
   apps,
   projects,
-  jobs
+  jobs,
+  sites,
+  instruments,
+  variables,
+  measurements
 });
 
 export type TapisState = ReturnType<typeof rootReducer>;

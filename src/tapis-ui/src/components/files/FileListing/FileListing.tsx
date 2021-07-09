@@ -6,8 +6,14 @@ import { FileListingCallback, FileListingDirectory } from 'tapis-redux/files/typ
 import { Config, TapisState } from 'tapis-redux/types';
 import { Files } from '@tapis/tapis-typescript';
 import { useSelector } from 'react-redux';
+import { getId } from "tapis-util";
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
+
+interface IdFile {
+  id: string,
+  file: Files.FileInfo
+}
 
 interface FileListingItemProps {
   file: Files.FileInfo,
@@ -65,14 +71,20 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
     )
   }
 
-  const files: Array<Files.FileInfo> = result.results;
+  //is path unique?
+  const files: Array<IdFile> = result.results.map((file: Files.FileInfo) => {
+    return {
+      id: getId(),
+      file: file
+    };
+  });
 
   return (
     <div>
       {
-        files.map((file: Files.FileInfo) => {
+        files.map((file: IdFile) => {
           return (
-            <FileListingItem file={file}  />
+            <FileListingItem key={file.id} file={file.file}  />
           )
         })
       }

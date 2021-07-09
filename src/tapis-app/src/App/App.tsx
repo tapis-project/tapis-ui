@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import { Login } from 'tapis-ui/components';
 import { Apps } from 'tapis-app/Sections';
-import { ProjectList, SiteList } from "tapis-ui/components/streams";
+import { ProjectList, SiteList, InstrumentList, VariableList, MeasurementList } from "tapis-ui/components/streams";
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { FileListing } from 'tapis-ui/components/files';
 import { SystemList } from 'tapis-ui/components/systems';
@@ -12,7 +12,7 @@ import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 //import { ProjectsListCallback } from 'tapis-redux/streams/projects/types';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { Project, Site } from "@tapis/tapis-typescript-streams"
+import { Project, Site, Instrument, Variable, Measurement } from "@tapis/tapis-typescript-streams"
 import { useDispatch } from 'react-redux';
 import { useApps, useSystems } from 'tapis-redux';
 import Sidebar from '../Sidebar/Sidebar';
@@ -27,6 +27,8 @@ const App: React.FC = () => {
   const [jwt, setJwt] = useState<string>(null);
   const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
   const [selectedProject, setSelectedProject] = useState<Project>(null);
+  const [selectedSite, setSelectedSite] = useState<Site>(null);
+  const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(null);
   const dispatch = useDispatch();
   const listApps = useApps().list;
   const listSystems = useSystems().list;
@@ -56,7 +58,7 @@ const App: React.FC = () => {
       console.log("Systems listing api result", result);
     },
     []
-  )
+  );
 
   const systemSelectCallback = useCallback(
     (system: TapisSystem) => {
@@ -65,16 +67,50 @@ const App: React.FC = () => {
       setSelectedSystem(system);
     },
     [setSelectedSystem]
-  )
+  );
 
   const projectSelectCallback = useCallback(
-    //just print for now, should set project for other streams components
     (project: Project) => {
       console.log("Project selected", project);
       setSelectedProject(project);
+      //clear selected site and instrument
+      setSelectedSite(null);
+      setSelectedInstrument(null);
     },
     [setSelectedProject]
-  )
+  );
+
+  const siteSelectCallback = useCallback(
+    (site: Site) => {
+      console.log("Site selected", site);
+      setSelectedSite(site);
+      //clear selected instrument
+      setSelectedInstrument(null);
+    },
+    [setSelectedSite]
+  );
+
+  const instrumentSelectCallback = useCallback(
+    (instrument: Instrument) => {
+      console.log("Instrument selected", instrument);
+      setSelectedInstrument(instrument);
+    },
+    [setSelectedInstrument]
+  );
+
+  const variableSelectCallback = useCallback(
+    (variable: Variable) => {
+      console.log("Variable selected", variable);
+    },
+    []
+  );
+
+  const measurementSelectCallback = useCallback(
+    (measurement: Measurement) => {
+      console.log("Measurement selected", measurement);
+    },
+    []
+  );
 
   // Demonstration of config to use alternate URLs or provided tokens
   const config = {
@@ -118,24 +154,53 @@ const App: React.FC = () => {
         <Route path='/streams/projects'>
           <SectionHeader>Project Select</SectionHeader>
           <div className="container">
-            <ProjectList config={config} onSelect={projectSelectCallback} />
+            <ProjectList config={config} onSelect={projectSelectCallback} selected={selectedProject} />
           </div>
         </Route>
         <Route path='/streams/sites'>
           <SectionHeader>Site Select</SectionHeader>
           <div className="container">
-            <ProjectList config={config} onSelect={projectSelectCallback} />
             {
               selectedProject
-                ? <SiteList projectId={selectedProject.project_name} />
+                ? <SiteList projectId={selectedProject.project_name} onSelect={siteSelectCallback} selected={selectedSite} />
                 : <div>No selected project</div>
+            }
+          </div>
+        </Route>
+        <Route path='/streams/instruments'>
+          <SectionHeader>Instrument Select</SectionHeader>
+          <div className="container">
+            {
+              selectedSite
+                ? <InstrumentList projectId={selectedProject.project_name} siteId={selectedSite.site_id} onSelect={instrumentSelectCallback} selected={selectedInstrument} />
+                : <div>No selected site</div>
+            }
+          </div>
+        </Route>
+        <Route path='/streams/variables'>
+          <SectionHeader>Variable Select</SectionHeader>
+          <div className="container">
+            {
+              selectedInstrument
+                ? <VariableList projectId={selectedProject.project_name} siteId={selectedSite.site_id} instrumentId={selectedInstrument.inst_id} onSelect={variableSelectCallback} />
+                : <div>No selected instrument</div>
+            }
+          </div>
+        </Route>
+        <Route path='/streams/measurements'>
+          <SectionHeader>Measurements</SectionHeader>
+          <div className="container">
+            {
+              selectedInstrument
+                ? <MeasurementList projectId={selectedProject.project_name} siteId={selectedSite.site_id} instrumentId={selectedInstrument.inst_id} onSelect={measurementSelectCallback} />
+                : <div>No selected instrument</div>
             }
           </div>
         </Route>
         <Route path='/systems'>
           <SectionHeader>System Select</SectionHeader>
           <div className="container">
-            <SystemList onList={systemsListCallback} onSelect={systemSelectCallback} />
+            <SystemList onList={systemsListCallback} onSelect={systemSelectCallback} selected={selectedSystem} />
           </div>
         </Route>
         <Route path='/files'>
