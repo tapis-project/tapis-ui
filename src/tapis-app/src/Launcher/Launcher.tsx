@@ -1,18 +1,12 @@
 import React from 'react';
-import { useParams } from 'react-router-dom'
 import { JobLauncher } from 'tapis-ui/components/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 
-const Launcher: React.FC = () => {
-  //const { appId, appVersion } = useParams();
-  const appId = "SleepSeconds";
-  const appVersion = "0.0.1";
-  const initialValues: Jobs.ReqSubmitJob = {
-    appId,
-    appVersion,
-    name: `${appId}-${appVersion}-${new Date().toISOString().slice(0, -5)}`,
-    execSystemId: 'tapisv3-exec'
-  }
+interface LauncherProps {
+  initialValues: Jobs.ReqSubmitJob
+}
+
+const Launcher: React.FC<LauncherProps> = ({initialValues}) => {
   return (
     <div>
       <JobLauncher initialValues={initialValues} />

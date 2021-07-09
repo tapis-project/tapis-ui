@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { JobListDTO } from '@tapis/tapis-typescript-jobs';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { JobDetail } from 'tapis-ui/components/jobs';
+import { SectionMessage } from 'tapis-ui/_common';
 import { OnSelectCallback } from 'tapis-ui/components/jobs/JobsListing';
 import { 
   ListSection, 
@@ -28,9 +29,13 @@ const Jobs: React.FC = () => {
           <JobsListing onSelect={jobSelectCallback} />
         </ListSectionList>
         <ListSectionDetail>
-          <div>
-            {job ? <JobDetail jobUuid={job.uuid} /> : "Select a job from the list"}
-          </div>
+          <ListSectionHeader type={"sub-header"}>Job Details</ListSectionHeader>
+          {job
+            ? <JobDetail jobUuid={job.uuid} />
+            : <SectionMessage type="info">
+                Select a job from the list.
+              </SectionMessage>
+          }
         </ListSectionDetail>
       </ListSectionBody>
     </ListSection>

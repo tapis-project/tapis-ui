@@ -6,8 +6,17 @@ interface SectionProps {
   children: React.ReactNode[] | React.ReactNode
 }
 
-export const ListSectionHeader: React.FC<SectionProps> = ({children}) => {
-  return <SectionHeader>{children}</SectionHeader>
+interface SectionHeaderProps {
+  children: React.ReactNode[] | React.ReactNode
+  type?: string
+}
+
+export const ListSectionHeader: React.FC<SectionHeaderProps> = ({children, type}) => {
+  return (
+    <div styleName={type}>
+      <SectionHeader>{children}</SectionHeader>
+    </div>
+  )
 }
 
 export const ListSectionBody: React.FC<SectionProps> = ({children}) => {

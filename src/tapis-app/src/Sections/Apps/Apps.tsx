@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
+import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
+import Launcher from 'tapis-app/Launcher';
 import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
+import { SectionMessage } from 'tapis-ui/_common';
 import { 
   ListSection, 
   ListSectionBody, 
@@ -11,12 +14,18 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Apps: React.FC = () => {
-  const [selectedApp, setSelectedApp] = useState<TapisApp>(null);
+  const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
-      setSelectedApp(app);
+      console.log(app);
+      setInitialValues({
+        appId: app.id,
+        appVersion: app.version,
+        name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
+        execSystemId: 'tapisv3-exec'
+      })
     },
-    [ setSelectedApp ]
+    [ setInitialValues ]
   )
 
   return (
@@ -24,12 +33,16 @@ const Apps: React.FC = () => {
       <ListSectionHeader>Apps</ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing />
+          <AppsListing onSelect={appSelectCallback} />
         </ListSectionList>
         <ListSectionDetail>
-          <div>
-            {selectedApp ? selectedApp.id : "Select an app from the list"}
-          </div>
+          <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
+            {initialValues
+              ? <Launcher initialValues={initialValues}/>
+              : <SectionMessage type="info">
+                  Select an app from the list.
+                </SectionMessage>
+            }
         </ListSectionDetail>
       </ListSectionBody>
     </ListSection>

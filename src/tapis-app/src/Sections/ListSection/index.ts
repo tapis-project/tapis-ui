@@ -1,6 +1,6 @@
 export { 
   ListSection, 
-  ListSectionHeader, 
+  ListSectionHeader,
   ListSectionBody, 
   ListSectionDetail, 
   ListSectionList 
