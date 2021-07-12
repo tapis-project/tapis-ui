@@ -3,6 +3,7 @@ import { SectionHeader } from 'tapis-ui/_common';
 import { useAuthenticator } from 'tapis-redux';
 import { Redirect } from 'react-router-dom';
 import './ListSection.module.scss';
+import { isExpired } from 'tapis-redux/utils';
 
 interface SectionProps {
   children: React.ReactNode[] | React.ReactNode
@@ -35,8 +36,8 @@ export const ListSectionDetail: React.FC<SectionProps> = ({children}) => {
 
 export const ListSection: React.FC<SectionProps> = ({ children }) => {
   const { token } = useAuthenticator();
-  if (!token) {
-    return <Redirect to="/" />
+  if (!token || isExpired(token)) {
+    return <Redirect to="/login" />
   }
   return <div styleName="root">{children}</div>
 }
