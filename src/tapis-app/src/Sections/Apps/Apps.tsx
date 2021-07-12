@@ -2,8 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
 import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
-import Launcher from 'tapis-app/Launcher';
 import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
+import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
 import { SectionMessage } from 'tapis-ui/_common';
 import { 
   ListSection, 
@@ -38,7 +38,7 @@ const Apps: React.FC = () => {
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
             {initialValues
-              ? <Launcher initialValues={initialValues}/>
+              ? <JobLauncher initialValues={initialValues}/>
               : <SectionMessage type="info">
                   Select an app from the list.
                 </SectionMessage>
