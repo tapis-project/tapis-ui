@@ -15,7 +15,7 @@ const store = configureStore();
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <SectionHeader>Tapis-App</SectionHeader>
+      <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
       <App />
     </Router>
   </Provider>,

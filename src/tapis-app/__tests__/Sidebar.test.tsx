@@ -14,6 +14,5 @@ describe('Sidebar', () => {
     const { getAllByText } = renderComponent(<Sidebar />, store);
     expect(getAllByText(/Dashboard/).length).toEqual(1);
     expect(getAllByText(/Log Out/).length).toEqual(1);
-    expect(getAllByText(/UI Patterns/).length).toEqual(1);
   });
 });
