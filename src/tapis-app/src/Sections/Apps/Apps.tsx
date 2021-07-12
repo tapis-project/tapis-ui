@@ -17,11 +17,13 @@ const Apps: React.FC = () => {
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
+      const execSystemId = app.jobAttributes && 
+        app.jobAttributes.execSystemId ? app.jobAttributes.execSystemId : null;
       setInitialValues({
         appId: app.id,
         appVersion: app.version,
         name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-        execSystemId: 'tapisv3-exec'
+        execSystemId
       })
     },
     [ setInitialValues ]
@@ -32,7 +34,7 @@ const Apps: React.FC = () => {
       <ListSectionHeader>Apps</ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing onSelect={appSelectCallback} />
+          <AppsListing onSelect={appSelectCallback} select="jobAttributes,version" />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
