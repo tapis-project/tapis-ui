@@ -37,7 +37,7 @@ const Apps: React.FC = () => {
           <AppsListing onSelect={appSelectCallback} select="jobAttributes,version" />
         </ListSectionList>
         <ListSectionDetail>
-          <ListSectionHeader type={"sub-header"}>Launcher</ListSectionHeader>
+          <ListSectionHeader type={"sub-header"}>Job Launcher</ListSectionHeader>
             {initialValues
               ? <JobLauncher initialValues={initialValues}/>
               : <SectionMessage type="info">
