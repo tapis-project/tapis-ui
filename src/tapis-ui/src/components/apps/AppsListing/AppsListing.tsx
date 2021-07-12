@@ -11,15 +11,15 @@ export type OnSelectCallback = (app: Apps.TapisApp) => any;
 
 interface AppsListingItemProps {
   app: Apps.TapisApp,
-  select: Function
+  onSelect: Function
   selected: boolean,
 }
 
-const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, select, selected }) => {
+const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, selected }) => {
   return (
     <li className="nav-item">
       <div className={"nav-link" + (selected ? ' active' : '')}>
-        <div className="nav-content" onClick={() => select(app) }>
+        <div className="nav-content" onClick={() => onSelect(app) }>
           <Icon name="applications" /> {/* we'll want to set name based on the app */}
           <span className="nav-text">{`${app.id} v${app.version}`}</span>
         </div>
@@ -37,16 +37,17 @@ interface AppsListingProps {
   onList?: AppsListCallback,
   onSelect?: OnSelectCallback,
   className?: string
+  select?: string
 }
 
-const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, className }) => {
+const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, className, select }) => {
   const dispatch = useDispatch();
   const { list, apps } = useApps(config);
   useEffect(() => {
-    dispatch(list({ onList }));
+    dispatch(list({ onList, request: { select } }));
   }, [dispatch, onList]);
   const [currentApp, setCurrentApp] = useState(String);
-  const select = useCallback((app) => {
+  const selectCallback = useCallback((app) => {
     onSelect(app);
     setCurrentApp(app.id)
   },[onSelect, setCurrentApp]);
@@ -65,7 +66,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
             <AppsListingItem
               app={app}
               selected={currentApp === app.id}
-              select={select}
+              onSelect={selectCallback}
             />
           )
         })
@@ -77,7 +78,8 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
 AppsListing.defaultProps = {
   config: null,
   onList: null,
-  onSelect: null
+  onSelect: null,
+  select: ""
 }
 
 export default AppsListing;

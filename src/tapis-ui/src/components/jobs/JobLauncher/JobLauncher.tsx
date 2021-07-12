@@ -10,23 +10,14 @@ import {
   LoadingSpinner,
 } from 'tapis-ui/_common';
 import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
+import { Message } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 import {
   Button,
   Input,
 } from 'reactstrap';
-
-const JobSubmitStatus: React.FC = () => {
-  const { submission } = useJobs();
-  if (submission.result) {
-    return <Icon name="approved-reverse" />
-  } else if (submission.loading) {
-    return <LoadingSpinner placement="inline" />
-  } else if (submission.error) {
-    return <Icon name="denied-reverse" />
-  }
-  return <></>;
-}
+import './JobLauncher.module.scss';
+import './JobLauncher.scss';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -40,22 +31,8 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
   const dispatch = useDispatch();
   const { submit, submission } = useJobs();
   const systemsHook = useSystems(config);
-  const listSystems = systemsHook.list;
   const systems = systemsHook.systems;
-  /*
-  const systems = {
-    results: [
-      {
-        id: 'tapisv3-storage'
-      },
-      {
-        id: 'tapisv3-exec'
-      }
-    ]
-  }
-  */
 
-  console.log(initialValues);
   // tapis-redux will make the callback with an agave response
   // this callback will extract the Job returned in the result field
   // of the response
@@ -139,29 +116,43 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
         validationSchema={validationSchema}
         onSubmit={formSubmit}
       >
-       {({ isSubmitting }) => (
-         <Form>
-           {
-             jobFields.map(field => {
-               return (
-                 <FieldWrapper 
-                   props={field.props}
-                   label={field.label}
-                   required={field.required}
-                   children={field.children}
-                   description={field.description}
-                   key={field.props.name}
-                 />
-               )
-             })
-           }
-           <Button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting || submission.loading || submission.result != null}>
-              Submit Job
-              <JobSubmitStatus />
-            </Button>
+        {({ isSubmitting }) => (
+          <Form>
+            {
+              jobFields.map(field => {
+                return (
+                  <FieldWrapper 
+                    props={field.props}
+                    label={field.label}
+                    required={field.required}
+                    children={field.children}
+                    description={field.description}
+                    key={field.props.name}
+                  />
+                )
+              })
+            }
+            <div styleName="status">
+              <Button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting || submission.loading || submission.result != null}>
+                Submit Job
+              </Button>
+              {
+                submission.loading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
+              }
+              {submission.result && (
+                <div styleName="message">
+                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {submission.result.uuid}</Message>
+                </div>
+              )}
+              {submission.error && (
+                <div styleName="message">
+                  <Message canDismiss={false} type="error" scope="inline">{submission.error.message}</Message>
+                </div>
+              )}
+            </div>
          </Form>
        )}
       </Formik>
