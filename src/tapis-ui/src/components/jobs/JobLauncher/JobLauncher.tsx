@@ -17,7 +17,7 @@ import {
   Input,
 } from 'reactstrap';
 import './JobLauncher.module.scss';
-
+import './JobLauncher.scss';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -132,25 +132,27 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
                 )
               })
             }
-            <Button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting || submission.loading || submission.result != null}>
-              Submit Job
-            </Button>
-            {
-              submission.loading && <LoadingSpinner className="login__loading-spinner" placement="inline"/>
-            }
-            {submission.result && (
-              <div styleName="message">
-                <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {submission.result.uuid}</Message>
-              </div>
-            )}
-            {submission.error && (
-              <div styleName="message">
-                <Message canDismiss={false} type="error" scope="inline">{submission.error.message}</Message>
-              </div>
-            )}
+            <div styleName="status">
+              <Button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting || submission.loading || submission.result != null}>
+                Submit Job
+              </Button>
+              {
+                submission.loading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
+              }
+              {submission.result && (
+                <div styleName="message">
+                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {submission.result.uuid}</Message>
+                </div>
+              )}
+              {submission.error && (
+                <div styleName="message">
+                  <Message canDismiss={false} type="error" scope="inline">{submission.error.message}</Message>
+                </div>
+              )}
+            </div>
          </Form>
        )}
       </Formik>
