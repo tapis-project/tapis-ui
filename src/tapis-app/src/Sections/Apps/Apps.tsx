@@ -17,7 +17,6 @@ const Apps: React.FC = () => {
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
-      console.log(app);
       setInitialValues({
         appId: app.id,
         appVersion: app.version,

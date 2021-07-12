@@ -20,17 +20,9 @@ interface SystemsProps  {
 
 const Systems: React.FC<SystemsProps> = ({config}) => {
     const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
-    const systemsListCallback = useCallback<SystemsListCallback>(
-        (result) => {
-            /* eslint-disable */
-            console.log("Systems listing api result", result);
-        },
-        []
-    )
     const systemSelectCallback = useCallback(
         (system: TapisSystem) => {
           /* eslint-disable */
-          console.log("System selected", system);
           setSelectedSystem(system);
         },
         [setSelectedSystem]
@@ -41,7 +33,7 @@ const Systems: React.FC<SystemsProps> = ({config}) => {
         <ListSectionHeader>System List</ListSectionHeader>
         <ListSectionBody>
             <ListSectionList>
-                <SystemList config={config} onList={systemsListCallback} onSelect={systemSelectCallback} />
+                <SystemList config={config} onSelect={systemSelectCallback} />
             </ListSectionList>
             <ListSectionDetail>
                 <ListSectionHeader type={"sub-header"}>Files</ListSectionHeader>
