@@ -71,12 +71,11 @@ const Sidebar: React.FC = () => {
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
       {!token && <SidebarItem to="/login" label="Login" iconName="user" />}
       {token && <>
-        <SidebarItem to="/logout" label="Log Out" iconName="user" />
         <SidebarItem to="/systems" label="Systems" iconName="data-files" />
         <SidebarItem to="/apps" label="Apps" iconName="applications" />
         <SidebarItem to="/jobs" label="Jobs" iconName="jobs" />
+        <SidebarItem to="/logout" label="Log Out" iconName="user" />
       </>}
-      <SidebarItem to="/uipatterns" label="UI Patterns" iconName="code" />
     </Nav>
   );
 };
