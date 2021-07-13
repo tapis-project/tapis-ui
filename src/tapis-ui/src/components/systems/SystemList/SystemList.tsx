@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
@@ -52,6 +53,11 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
     onSelect(system);
     setCurrentSystem(system.id)
   },[onSelect, setCurrentSystem]);
+  const refresh = () => {
+    dispatch(list({ onList }));
+    onSelect(null);
+    setCurrentSystem(null)
+  }
 
   if (!systems || systems.loading) {
     return <LoadingSpinner />
@@ -62,19 +68,29 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
   }
 
   return (
-    <div className={className ? className : "system-list nav flex-column"}>
-      {
-        definitions.length
-          ? definitions.map(
-              (system) => <SystemItem
-                            system={system}
-                            selected={currentSystem === system.id}
-                            select={select}
-                            key={system.id}
-                          />
-            )
-          : <i>No systems found</i>
-      }
+    <div>
+      <Button
+        type="submit"
+        className="btn btn-secondary"
+        disabled={systems.loading}
+        onClick={() => refresh()}
+      >
+        <Icon name="refresh" />
+      </Button>
+      <div className={className ? className : "system-list nav flex-column"}>
+        {
+          definitions.length
+            ? definitions.map(
+                (system) => <SystemItem
+                              system={system}
+                              selected={currentSystem === system.id}
+                              select={select}
+                              key={system.id}
+                            />
+              )
+            : <i>No systems found</i>
+        }
+      </div>
     </div>
   );
 };
