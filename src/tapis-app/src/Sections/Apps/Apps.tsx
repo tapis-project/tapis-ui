@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
 import { useDispatch } from 'react-redux';
-import { useApps } from 'tapis-redux';
+import { useApps, useJobs } from 'tapis-redux';
 import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
 import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
@@ -14,15 +14,12 @@ import {
   ListSectionList,
   ListSectionHeader
 } from 'tapis-app/Sections/ListSection';
-import { useJobs } from 'tapis-redux';
-import { useDispatch } from 'react-redux';
 
 const Apps: React.FC = () => {
   const { resetSubmit } = useJobs();
   const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
   const apps = useApps();
-  const dispatch = useDispatch();
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
       dispatch(resetSubmit());
