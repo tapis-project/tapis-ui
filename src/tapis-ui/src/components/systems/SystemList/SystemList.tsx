@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { Config } from 'tapis-redux/types';
 import './SystemList.scss';
@@ -53,8 +53,12 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
     setCurrentSystem(system.id)
   },[onSelect, setCurrentSystem]);
 
-  if (systems.loading) {
+  if (!systems || systems.loading) {
     return <LoadingSpinner />
+  }
+
+  if (systems.error && systems.error !== null) {
+    return <Message canDismiss={false} type="error" scope="inline">{systems.error.message}</Message>
   }
 
   return (
