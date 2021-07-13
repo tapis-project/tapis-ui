@@ -21,7 +21,7 @@ interface SystemsProps  {
 
 const Systems: React.FC<SystemsProps> = ({config}) => {
     const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
-    const systems = useSystems();
+    const { list } = useSystems();
     const dispatch = useDispatch();
     const systemSelectCallback = useCallback(
         (system: TapisSystem) => {
@@ -32,7 +32,7 @@ const Systems: React.FC<SystemsProps> = ({config}) => {
     )
     const refresh = () => {
         setSelectedSystem(null);
-        dispatch(systems.list({}));
+        dispatch(list({}));
     }
 
     return (

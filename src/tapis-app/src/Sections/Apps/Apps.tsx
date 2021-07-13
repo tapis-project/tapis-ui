@@ -19,7 +19,7 @@ const Apps: React.FC = () => {
   const { resetSubmit } = useJobs();
   const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
-  const apps = useApps();
+  const { list } = useApps();
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
       dispatch(resetSubmit());
@@ -36,7 +36,7 @@ const Apps: React.FC = () => {
   )
   const refresh = () => {
     setInitialValues(null);
-    dispatch(apps.list({}));
+    dispatch(list({}));
 }
 
   return (

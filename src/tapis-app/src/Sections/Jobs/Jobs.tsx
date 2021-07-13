@@ -16,7 +16,7 @@ import {
 
 const Jobs: React.FC = () => {
   const [job, setJob] = useState<JobListDTO>(null);
-  const jobs = useJobs();
+  const { list } = useJobs();
   const dispatch = useDispatch();
   const jobSelectCallback = useCallback<OnSelectCallback>(
     (job: JobListDTO) => {
@@ -26,7 +26,7 @@ const Jobs: React.FC = () => {
   )
   const refresh = () => {
     setJob(null);
-    dispatch(jobs.list({request: { orderBy: "created(desc)"}}));
+    dispatch(list({request: { orderBy: "created(desc)"}}));
 }
 
   return (
