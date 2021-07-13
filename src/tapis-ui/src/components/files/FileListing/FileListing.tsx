@@ -71,7 +71,7 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
       {
         files.map((file: Files.FileInfo) => {
           return (
-            <FileListingItem file={file}  />
+            <FileListingItem file={file} key={file.name} />
           )
         })
       }

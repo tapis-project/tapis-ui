@@ -80,6 +80,7 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
               job={job}
               select={select}
               selected={currentJob === job.uuid}
+              key={job.uuid}
             />
           )
         })

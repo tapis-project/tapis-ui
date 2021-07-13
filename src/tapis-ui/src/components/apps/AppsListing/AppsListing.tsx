@@ -67,6 +67,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
               app={app}
               selected={currentApp === app.id}
               onSelect={selectCallback}
+              key={app.id}
             />
           )
         })

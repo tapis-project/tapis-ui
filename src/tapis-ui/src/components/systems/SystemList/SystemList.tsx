@@ -66,6 +66,7 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
                             system={system}
                             selected={currentSystem === system.id}
                             select={select}
+                            key={system.id}
                           />
             )
           : <i>No systems found</i>
