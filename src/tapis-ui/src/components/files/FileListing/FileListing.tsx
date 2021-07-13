@@ -6,7 +6,7 @@ import { FileListingCallback, FileListingDirectory } from 'tapis-redux/files/typ
 import { Config, TapisState } from 'tapis-redux/types';
 import { Files } from '@tapis/tapis-typescript';
 import { useSelector } from 'react-redux';
-import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './FileListing.scss';
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
@@ -64,6 +64,10 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
     return <div className="file-list"><LoadingSpinner /></div>
   }
 
+  if (result.error) {
+    return <Message canDismiss={false} type="error" scope="inline">{result.error.message}</Message>
+  }
+
   const files: Array<Files.FileInfo> = result.results;
 
   return (
@@ -71,7 +75,7 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
       {
         files.map((file: Files.FileInfo) => {
           return (
-            <FileListingItem file={file}  />
+            <FileListingItem file={file} key={file.name} />
           )
         })
       }

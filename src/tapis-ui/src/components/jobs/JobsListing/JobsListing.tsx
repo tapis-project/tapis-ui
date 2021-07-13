@@ -4,7 +4,7 @@ import { useJobs } from 'tapis-redux';
 import { JobsListCallback } from 'tapis-redux/jobs/list/types';
 import { Config, TapisState } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './JobsListing.scss'
 
 export type OnSelectCallback = (app: Jobs.JobListDTO) => any;
@@ -69,6 +69,10 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
     return <LoadingSpinner />
   }
 
+  if (jobs.error) {
+    return <Message canDismiss={false} type="error" scope="inline">{jobs.error.message}</Message>
+  }
+
   const jobsList: Array<Jobs.JobListDTO> = jobs.results;
 
   return (
@@ -80,6 +84,7 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
               job={job}
               select={select}
               selected={currentJob === job.uuid}
+              key={job.uuid}
             />
           )
         })

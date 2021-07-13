@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useApps } from 'tapis-redux';
 import { AppsListCallback } from 'tapis-redux/apps/list/types';
 import { Config, TapisState } from 'tapis-redux/types';
-import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { Apps } from '@tapis/tapis-typescript';
 import './AppsListing.scss';
 
@@ -56,6 +56,10 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
     return <LoadingSpinner />
   }
 
+  if (apps.error) {
+    return <Message canDismiss={false} type="error" scope="inline">{apps.error.message}</Message>
+  }
+
   const appList: Array<Apps.TapisApp> = apps.results;
 
   return (
@@ -67,6 +71,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
               app={app}
               selected={currentApp === app.id}
               onSelect={selectCallback}
+              key={app.id}
             />
           )
         })
