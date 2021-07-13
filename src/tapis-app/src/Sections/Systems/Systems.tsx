@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { useSystems } from 'tapis-redux';
 import { SystemList } from 'tapis-ui/components/systems';
 import { FileListing } from 'tapis-ui/components/files';
-import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { SectionMessage } from 'tapis-ui/_common';
+import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { 
   ListSection, 
   ListSectionBody, 
@@ -20,17 +21,31 @@ interface SystemsProps  {
 
 const Systems: React.FC<SystemsProps> = ({config}) => {
     const [selectedSystem, setSelectedSystem] = useState<TapisSystem>(null);
+    const systems = useSystems();
+    const dispatch = useDispatch();
     const systemSelectCallback = useCallback(
         (system: TapisSystem) => {
-          /* eslint-disable */
-          setSelectedSystem(system);
+            /* eslint-disable */
+            setSelectedSystem(system);
         },
         [setSelectedSystem]
     )
+    const refresh = () => {
+        setSelectedSystem(null);
+        dispatch(systems.list({}));
+    }
 
     return (
         <ListSection>
-        <ListSectionHeader>System List</ListSectionHeader>
+        <ListSectionHeader>
+            <div>
+                System List
+                &nbsp;
+                <span className="btn-head" onClick={refresh}>
+                    <Icon name="refresh" />
+                </span>
+            </div>
+        </ListSectionHeader>
         <ListSectionBody>
             <ListSectionList>
                 <SystemList config={config} onSelect={systemSelectCallback} />
