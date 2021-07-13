@@ -69,7 +69,7 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
     return <LoadingSpinner />
   }
 
-  if (jobs.error && jobs.error !== null) {
+  if (jobs.error) {
     return <Message canDismiss={false} type="error" scope="inline">{jobs.error.message}</Message>
   }
 

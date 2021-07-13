@@ -64,7 +64,7 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
     return <div className="file-list"><LoadingSpinner /></div>
   }
 
-  if (result.error && result.error !== null) {
+  if (result.error) {
     return <Message canDismiss={false} type="error" scope="inline">{result.error.message}</Message>
   }
 

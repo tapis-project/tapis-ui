@@ -57,7 +57,7 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
     return <LoadingSpinner />
   }
 
-  if (systems.error && systems.error !== null) {
+  if (systems.error) {
     return <Message canDismiss={false} type="error" scope="inline">{systems.error.message}</Message>
   }
 

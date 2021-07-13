@@ -56,7 +56,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
     return <LoadingSpinner />
   }
 
-  if (apps.error && apps.error !== null) {
+  if (apps.error) {
     return <Message canDismiss={false} type="error" scope="inline">{apps.error.message}</Message>
   }
 
