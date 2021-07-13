@@ -12,11 +12,16 @@ import {
   ListSectionList,
   ListSectionHeader
 } from 'tapis-app/Sections/ListSection';
+import { useJobs } from 'tapis-redux';
+import { useDispatch } from 'react-redux';
 
 const Apps: React.FC = () => {
+  const { resetSubmit } = useJobs();
+  const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
+      dispatch(resetSubmit());
       const execSystemId = app.jobAttributes && 
         app.jobAttributes.execSystemId ? app.jobAttributes.execSystemId : null;
       setInitialValues({
@@ -24,9 +29,9 @@ const Apps: React.FC = () => {
         appVersion: app.version,
         name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
         execSystemId
-      })
+      });
     },
-    [ setInitialValues ]
+    [ setInitialValues, dispatch, resetSubmit ]
   )
 
   return (
