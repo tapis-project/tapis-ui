@@ -78,16 +78,18 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
   return (
     <div className={className ? className : "job-list nav flex-column"}>
       {
-        jobsList.map((job: Jobs.JobListDTO) => {
-          return (
-            <JobsListingItem
-              job={job}
-              select={select}
-              selected={currentJob === job.uuid}
-              key={job.uuid}
-            />
-          )
-        })
+        jobsList.length
+        ? jobsList.map((job: Jobs.JobListDTO) => {
+            return (
+              <JobsListingItem
+                job={job}
+                select={select}
+                selected={currentJob === job.uuid}
+                key={job.uuid}
+              />
+            )
+          })
+        : <i>No jobs found</i>
       }
     </div>
   );

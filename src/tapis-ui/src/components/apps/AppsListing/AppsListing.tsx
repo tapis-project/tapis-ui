@@ -64,17 +64,19 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
 
   return (
     <div className={className ? className : "apps-list nav flex-column"}>
-      {
-        appList.map((app: Apps.TapisApp) => {
-          return (
-            <AppsListingItem
-              app={app}
-              selected={currentApp === app.id}
-              onSelect={selectCallback}
-              key={app.id}
-            />
-          )
-        })
+      { 
+        appList.length
+          ? appList.map((app: Apps.TapisApp) => {
+              return (
+                <AppsListingItem
+                  app={app}
+                  selected={currentApp === app.id}
+                  onSelect={selectCallback}
+                  key={app.id}
+                />
+              )
+            })
+          : <i>No applications found</i>
       }
     </div>
   );
