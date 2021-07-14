@@ -5,15 +5,10 @@ import { useMeasurements } from 'tapis-redux';
 import { MeasurementsListCallback } from 'tapis-redux/streams/measurements/types';
 import { Config } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
-import { getId } from "tapis-util";
+import { v4 as uuidv4 } from "uuid";
 import "./MeasurementList.scss";
 
 export type OnSelectCallback = (measurement: Measurement) => any;
-
-interface IdMeasurement {
-  id: string,
-  measurement: Measurement
-}
 
 interface MeasurementListItemProps {
   measurement: Measurement,
@@ -52,12 +47,7 @@ const MeasurementList: React.FC<MeasurementListProps> = ({ projectId, siteId, in
       }
     }));
   }, [dispatch]);
-  const definitions: Array<IdMeasurement> = measurements.results.map((measurement: Measurement) => {
-    return {
-      id: getId(),
-      measurement
-    }
-  });
+  const definitions: Array<Measurement> = measurements.results;
 
 
   const select = useCallback((measurement: Measurement) => {
@@ -75,7 +65,7 @@ const MeasurementList: React.FC<MeasurementListProps> = ({ projectId, siteId, in
       {
         definitions.length
           ? definitions.map(
-              (measurement) => <MeasurementListItem measurement={measurement.measurement} key={measurement.id} select={select} />
+              (measurement) => <MeasurementListItem measurement={measurement} key={uuidv4()} select={select} />
             )
           : <i>No measurements found</i>
       }

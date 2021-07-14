@@ -2,7 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import { Login } from 'tapis-ui/components';
-import { Apps } from 'tapis-app/Sections';
+import { Apps, Projects, Sites, Instruments, Variables, Measurements } from 'tapis-app/Sections';
 import { ProjectList, SiteList, InstrumentList, VariableList, MeasurementList } from "tapis-ui/components/streams";
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { FileListing } from 'tapis-ui/components/files';
