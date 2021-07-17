@@ -4,4 +4,5 @@
 // export { default as Variables } from './Variables';
 // export { default as Measurements } from './Measurements';
 
-export { Instruments, Sites, Projects } from "./Streams";
+import { default as Streams } from "./Streams";
+export default Streams;

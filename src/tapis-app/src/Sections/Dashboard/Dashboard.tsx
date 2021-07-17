@@ -64,6 +64,7 @@ const Dashboard: React.FC = () => {
         dispatch(systems.list({}));
         dispatch(jobs.list({}));
         dispatch(apps.list({}));
+        dispatch(projects.list({}));
       }
     },
     [ token ]
@@ -109,9 +110,9 @@ const Dashboard: React.FC = () => {
                 loading={jobs.jobs.loading}
               />
               <DashboardCard
-                icon="jobs"
+                icon="allocations"
                 name="Projects"
-                text="View streams objects"
+                text="View streams projects"
                 link="/streams/projects"
                 counter={`${projects.projects.results.length} projects`}
                 loading={projects.projects.loading}

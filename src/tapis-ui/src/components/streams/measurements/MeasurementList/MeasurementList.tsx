@@ -16,9 +16,18 @@ interface MeasurementListItemProps {
 }
 
 const MeasurementListItem: React.FC<MeasurementListItemProps> = ({ measurement, select }) => {
+  let label = "";
+  if(measurement.datetime) {
+    label = `${measurement.datetime}: `;
+  }
+  let varIds = measurement.vars.map((measuredVar: Streams.MeasurementVars) => {
+    return measuredVar.var_id;
+  });
+  label += `Measured Variables: ${varIds.join(", ")}`;
+  
   return (
     <div onClick={() => select ? select(measurement) : null}>
-      {`${measurement.datetime}`}
+      {`${label}`}
     </div>
   );
 };

@@ -35,17 +35,14 @@ export const ListSectionDetail: React.FC<SectionProps> = ({children}) => {
   return <div styleName="detail">{children}</div>
 }
 
-export const ListSectionGroup: React.FC<SectionProps> = ({ children }) => {
-  return <div styleName="list-group">{children}</div>
+export const ListSectionListFull: React.FC<SectionProps> = ({ children }) => {
+  return <div styleName="list-full">{children}</div>
 };
 
-export const ListSectionGroupItem: React.FC<SectionProps> = ({ children }) => {
-  return <div styleName="list-group-item">{children}</div>
-};
+export const ListSectionDetailHalf: React.FC<SectionProps> = ({children}) => {
+  return <div styleName="detail-half">{children}</div>
+}
 
-export const ListSectionGroupItemBody: React.FC<SectionProps> = ({ children }) => {
-  return <div styleName="list-group-item-body">{children}</div>
-};
 
 
 export const ListSection: React.FC<SectionProps> = ({ children }) => {

@@ -3,5 +3,7 @@ export {
   ListSectionHeader,
   ListSectionBody, 
   ListSectionDetail, 
-  ListSectionList 
+  ListSectionList ,
+  ListSectionListFull,
+  ListSectionDetailHalf
 } from './ListSection';

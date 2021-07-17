@@ -1,7 +1,7 @@
 import { hot } from 'react-hot-loader/root';
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Apps, Login, Dashboard, Jobs, Systems, Projects, Sites, Instruments } from 'tapis-app/Sections';
+import React from 'react';
+import { Route } from 'react-router-dom';
+import { Apps, Login, Dashboard, Jobs, Systems, Streams } from 'tapis-app/Sections';
 import { SectionHeader } from 'tapis-ui/_common';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
@@ -22,14 +22,8 @@ const App: React.FC = () => {
         <Route path='/logout'>
           <Logout />
         </Route>
-        <Route path='/streams/projects'>
-          <Projects/>
-        </Route>
-        <Route path='/streams/sites'>
-          <Sites/>
-        </Route>
-        <Route path='/streams/instruments'>
-          <Instruments/>
+        <Route path='/streams'>
+          <Streams/>
         </Route>
         <Route path='/systems'>
           <Systems />

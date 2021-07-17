@@ -15,10 +15,20 @@
   flex-basis: 30%;
 }
 
+.list-full {
+  flex-basis: 100%;
+}
+
 .detail {
   border: 1px solid gray;
   padding: 1em 1em 1em 1em;
   flex-basis: 100%;
+}
+
+.detail-half {
+  border: 1px solid gray;
+  padding: 1em 1em 1em 1em;
+  flex-basis: 50%;
 }
 
 .sub-header {
