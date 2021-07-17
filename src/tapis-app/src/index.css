@@ -101,3 +101,6 @@ body > .content {
   top: 0;
   bottom: 0;
 }
+.tapis-ui__header {
+  padding-left: 1em;
+}

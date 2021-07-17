@@ -1,4 +1,4 @@
-import * as Streams from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 

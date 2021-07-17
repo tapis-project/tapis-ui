@@ -8,5 +8,6 @@ export { default as useJobs } from './jobs/useJobs';
 export { default as useInstruments } from "./streams/instruments/useInstruments";
 export { default as useVariables } from "./streams/variables/useVariables";
 export { default as useMeasurements } from "./streams/measurements/useMeasurements";
+export * as utils from './utils';
 export * as store from './store';
 

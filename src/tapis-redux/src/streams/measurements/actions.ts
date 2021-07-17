@@ -1,6 +1,6 @@
 import { apiCall } from '../../sagas/actions';
 import * as ACTIONS from './actionTypes';
-import * as Streams from "@tapis/tapis-typescript-streams"
+import { Streams } from "@tapis/tapis-typescript";
 import { MeasurementsListCallback } from './types';
 import {
   OnRequestCallback,
@@ -8,10 +8,9 @@ import {
   OnFailureCallback
 } from 'tapis-redux/sagas/types';
 import { Config } from 'tapis-redux/types';
-import { ListMeasurementsRequest } from '@tapis/tapis-typescript-streams';
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, params: ListMeasurementsRequest, onList: MeasurementsListCallback = null) => {
+export const list = (config: Config = null, params: Streams.ListMeasurementsRequest, onList: MeasurementsListCallback = null) => {
 
   const onRequest: OnRequestCallback = () => {
     return {

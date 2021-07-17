@@ -1,34 +1,23 @@
 import React, { useCallback } from 'react';
-import { useSystems } from 'tapis-redux';
-import { Config } from 'tapis-redux/types';
+import { useSystems, useJobs } from 'tapis-redux';
+import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
+import { isTapisResponse, Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useDispatch } from 'react-redux';
-import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
 import { Formik, Form,} from 'formik';
-import { isTapisResponse } from 'tapis-redux/types';
-import { useJobs } from 'tapis-redux';
 import {
   Icon,
   LoadingSpinner,
 } from 'tapis-ui/_common';
-import JobFieldWrapper, { JobFieldWrapperProps } from './JobFieldWrapper';
+import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
+import { Message } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 import {
   Button,
   Input,
 } from 'reactstrap';
-
-const JobSubmitStatus: React.FC = () => {
-  const { submission } = useJobs();
-  if (submission.result) {
-    return <Icon name="approved-reverse" />
-  } else if (submission.loading) {
-    return <LoadingSpinner placement="inline" />
-  } else if (submission.error) {
-    return <Icon name="denied-reverse" />
-  }
-  return <></>;
-}
+import './JobLauncher.module.scss';
+import './JobLauncher.scss';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -42,20 +31,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
   const dispatch = useDispatch();
   const { submit, submission } = useJobs();
   const systemsHook = useSystems(config);
-  const listSystems = systemsHook.list;
   const systems = systemsHook.systems;
-  /*
-  const systems = {
-    results: [
-      {
-        id: 'tapisv3-storage'
-      },
-      {
-        id: 'tapisv3-exec'
-      }
-    ]
-  }
-  */
 
   // tapis-redux will make the callback with an agave response
   // this callback will extract the Job returned in the result field
@@ -81,7 +57,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
     setSubmitting(false);
   }
 
-  const jobFields: Array<JobFieldWrapperProps> = [
+  const jobFields: Array<FieldWrapperProps> = [
     {
       props: {
         name: 'name',
@@ -136,32 +112,47 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
     <div>
       <Formik
         initialValues={initialValues}
+        enableReinitialize={true}
         validationSchema={validationSchema}
         onSubmit={formSubmit}
       >
-       {({ isSubmitting }) => (
-         <Form>
-           {
-             jobFields.map(field => {
-               return (
-                 <JobFieldWrapper 
-                   props={field.props}
-                   label={field.label}
-                   required={field.required}
-                   children={field.children}
-                   description={field.description}
-                   key={field.props.name}
-                 />
-               )
-             })
-           }
-           <Button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting || submission.loading || submission.result != null}>
-              Submit Job
-              <JobSubmitStatus />
-            </Button>
+        {({ isSubmitting }) => (
+          <Form>
+            {
+              jobFields.map(field => {
+                return (
+                  <FieldWrapper 
+                    props={field.props}
+                    label={field.label}
+                    required={field.required}
+                    children={field.children}
+                    description={field.description}
+                    key={field.props.name}
+                  />
+                )
+              })
+            }
+            <div styleName="status">
+              <Button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting || submission.loading || submission.result != null}>
+                Submit Job
+              </Button>
+              {
+                submission.loading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
+              }
+              {submission.result && (
+                <div styleName="message">
+                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {submission.result.uuid}</Message>
+                </div>
+              )}
+              {submission.error && (
+                <div styleName="message">
+                  <Message canDismiss={false} type="error" scope="inline">{submission.error.message}</Message>
+                </div>
+              )}
+            </div>
          </Form>
        )}
       </Formik>

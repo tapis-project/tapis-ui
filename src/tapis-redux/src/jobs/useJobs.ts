@@ -1,7 +1,9 @@
 import { useSelector } from 'react-redux';
 import { list } from './list/actions';
 import { resetSubmit, submit } from './submit/actions';
+import { retrieve } from './retrieve/actions';
 import { TapisState } from '../store/rootReducer';
+import { JobRetrieveCallback } from './retrieve/types';
 import { JobsListCallback } from './list/types';
 import { JobsSubmitCallback } from './submit/types';
 import { Jobs } from '@tapis/tapis-typescript';
@@ -17,6 +19,11 @@ export interface SubmitJobsParams {
   request: Jobs.ReqSubmitJob
 }
 
+export interface RetrieveJobParams {
+  onRetrieve?: JobRetrieveCallback,
+  request: Jobs.GetJobRequest
+}
+
 const useSystems = (config?: Config) => {
   const { jobs, submission } = useSelector((state: TapisState) => state.jobs);
   return {
@@ -24,7 +31,8 @@ const useSystems = (config?: Config) => {
     submission,
     list: (params: ListJobsParams) => list(config, params.onList, params.request),
     submit: (params: SubmitJobsParams) => submit(config, params.onSubmit, params.request),
-    resetSubmit: () => resetSubmit()
+    resetSubmit: () => resetSubmit(),
+    retrieve: (params: RetrieveJobParams) => retrieve(config, params.onRetrieve, params.request)
   };
 };
 

@@ -1,25 +1,24 @@
-import React, { useState, useCallback } from 'react';
-import { TapisApp } from '@tapis/tapis-typescript-apps';
-import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
-import { SectionHeader } from 'tapis-ui/_common';
+import { OnSelectCallback } from 'tapis-ui/components/streams/projects/ProjectList';
+import { Config } from 'tapis-redux/types';
+import { ProjectsListCallback } from 'tapis-redux/streams/projects/types';
+import { Streams } from '@tapis/tapis-typescript';
+import { ListSectionList } from 'tapis-app/Sections/ListSection';
+import { ProjectList } from "tapis-ui/components/streams";
 
-const Projects: React.FC = () => {
-  const [selectedApp, setSelectedApp] = useState<TapisApp>(null);
-  const appSelectCallback = useCallback<OnSelectCallback>(
-    (app: TapisApp) => {
-      setSelectedApp(app);
-    },
-    [ setSelectedApp ]
-  )
+interface ProjectsProps  {
+  config?: Config,
+  onList?: ProjectsListCallback,
+  onSelect?: OnSelectCallback,
+  selected?: Streams.Project
+}
+
+const Projects: React.FC<ProjectsProps> = ({ config, onList, onSelect, selected }) => {
 
   return (
-    <>
-      <SectionHeader>Project Select</SectionHeader>
-      <div className="container">
-        <ProjectList config={config} onSelect={projectSelectCallback} selected={selectedProject} />
-      </div>
-    </>
-  )
+    <ListSectionList>
+        <ProjectList config={config} onList={onList} onSelect={onSelect} selected={selected} />
+    </ListSectionList> 
+  );
 }
 
 

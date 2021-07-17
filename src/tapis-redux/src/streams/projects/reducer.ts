@@ -13,7 +13,7 @@ import {
 } from 'tapis-redux/types/results'
 import { TAPIS_DEFAULT_PROJECTS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import * as ACTIONS from './actionTypes';
-import * as Streams from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 
 
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_PROJECTS_LISTING_LIMIT);

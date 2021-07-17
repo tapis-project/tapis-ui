@@ -1,31 +1,30 @@
-import React, { useState, useCallback } from 'react';
-import { TapisApp } from '@tapis/tapis-typescript-apps';
-import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
-import { SectionHeader } from 'tapis-ui/_common';
+import { OnSelectCallback } from 'tapis-ui/components/streams/sites/SiteList';
+import { Config } from 'tapis-redux/types';
+import { SitesListCallback } from 'tapis-redux/streams/sites/types';
+import { Streams } from '@tapis/tapis-typescript';
+import { ListSectionList } from 'tapis-app/Sections/ListSection';
+import { SiteList } from "tapis-ui/components/streams";
 
 
-
-const Sites: React.FC = () => {
-  const [selectedApp, setSelectedApp] = useState<TapisApp>(null);
-  const appSelectCallback = useCallback<OnSelectCallback>(
-    (app: TapisApp) => {
-      setSelectedApp(app);
-    },
-    [ setSelectedApp ]
-  )
-
-  return (
-    <>
-      <SectionHeader>Site Select</SectionHeader>
-      <div className="container">
-        {
-          selectedProject
-            ? <SiteList projectId={selectedProject.project_name} onSelect={siteSelectCallback} selected={selectedSite} />
-            : <div>No selected project</div>
-        }
-      </div>
-    </>
-  )
+interface SitesProps  {
+  project: Streams.Project,
+  config?: Config,
+  onList?: SitesListCallback,
+  onSelect?: OnSelectCallback,
+  selected?: Streams.Site
 }
 
-export default Sites;
+const Projects: React.FC<SitesProps> = ({ project, config, onList, onSelect, selected }) => {
+
+  return (
+    <div className="container">
+      {
+        project
+        ? <ListSectionList><SiteList projectId={project.project_name} config={config} onList={onList} onSelect={onSelect} selected={selected} /></ListSectionList> 
+        : <div>No selected project</div>
+      }
+    </div>
+  );
+}
+
+export default Projects;

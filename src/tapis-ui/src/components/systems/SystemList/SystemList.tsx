@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSystems } from 'tapis-redux';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { LoadingSpinner } from 'tapis-ui/_common';
-import { Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { SystemsListCallback } from 'tapis-redux/systems/types';
 import { Config } from 'tapis-redux/types';
 import './SystemList.scss';
@@ -38,10 +37,11 @@ interface SystemListProps {
   config?: Config,
   onList?: SystemsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: TapisSystem
+  selected?: TapisSystem,
+  className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, selected }) => {
+const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, selected, className }) => {
   const dispatch = useDispatch();
   const { systems, list } = useSystems(config);
   useEffect(() => {
@@ -52,12 +52,16 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, selec
     onSelect(system);
   },[onSelect]);
 
-  if (systems.loading) {
+  if (!systems || systems.loading) {
     return <LoadingSpinner />
   }
 
+  if (systems.error) {
+    return <Message canDismiss={false} type="error" scope="inline">{systems.error.message}</Message>
+  }
+
   return (
-    <div className="system-list nav flex-column">
+    <div className={className ? className : "system-list nav flex-column"}>
       {
         definitions.length
           ? definitions.map(

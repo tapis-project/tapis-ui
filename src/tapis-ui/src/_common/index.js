@@ -19,3 +19,5 @@ export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
 export { default as ReadMore } from './ReadMore';
 export { default as Paginator } from './Paginator';
+/* eslint-disable */
+export { default as FieldWrapper } from './FieldWrapper';

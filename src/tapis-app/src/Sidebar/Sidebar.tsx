@@ -138,31 +138,18 @@ const Sidebar: React.FC = () => {
     label: "Instruments",
     iconName: "allocations"
   });
-  streamProps.push({
-    to: "/streams/variables",
-    label: "Variables",
-    iconName: "allocations"
-  });
-  streamProps.push({
-    to: "/streams/measurements",
-    label: "Measurements",
-    iconName: "allocations"
-  });
   const { token } = useAuthenticator();
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
-      {!token && <SidebarItem to="/login" label="Login" iconName="link" />}
+      {!token && <SidebarItem to="/login" label="Login" iconName="user" />}
       {token && <>
         <SidebarGroup id="streams-toggle" label="Streams" items={streamProps} group="streams" />
-        <SidebarItem to="/systems" label="Systems" iconName="allocations" />
-        <SidebarItem to="/files" label="Files" iconName="allocations" />
-        <SidebarItem to="/apps" label="Apps" iconName="allocations" />
-        <SidebarItem to="/jobs" label="Jobs" iconName="allocations" />
-        <SidebarItem to="/launcher" label="Launcher" iconName="allocations" />
-        <SidebarItem to="/logout" label="Log Out" iconName="link" />
+        <SidebarItem to="/systems" label="Systems" iconName="data-files" />
+        <SidebarItem to="/apps" label="Apps" iconName="applications" />
+        <SidebarItem to="/jobs" label="Jobs" iconName="jobs" />
+        <SidebarItem to="/logout" label="Log Out" iconName="user" />
       </>}
-      <SidebarItem to="/uipatterns" label="UI Patterns" iconName="copy" />
     </Nav>
   );
 };

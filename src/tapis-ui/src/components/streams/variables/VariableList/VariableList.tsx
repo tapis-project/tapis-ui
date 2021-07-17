@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { Variable } from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 import { useVariables } from 'tapis-redux';
 import { VariablesListCallback } from 'tapis-redux/streams/variables/types';
 import { Config } from 'tapis-redux/types';
@@ -8,10 +8,10 @@ import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./VariableList.scss";
 
-export type OnSelectCallback = (variable: Variable) => any;
+export type OnSelectCallback = (variable: Streams.Variable) => any;
 
 interface VariableItemProps {
-  variable: Variable,
+  variable: Streams.Variable,
   select: Function,
   selected: boolean
 }
@@ -55,9 +55,9 @@ const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrume
       }
     }));
   }, [dispatch]);
-  const definitions: Array<Variable> = variables.results;
+  const definitions: Array<Streams.Variable> = variables.results;
   const [currentVariable, setCurrentVariable] = useState(String);
-  const select = useCallback((variable: Variable) => {
+  const select = useCallback((variable: Streams.Variable) => {
     if(onSelect) {
       onSelect(variable);
     }

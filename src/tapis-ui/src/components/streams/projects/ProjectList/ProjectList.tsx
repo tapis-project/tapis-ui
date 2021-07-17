@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useProjects } from 'tapis-redux';
-import { Project } from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 import { ProjectsListCallback } from 'tapis-redux/streams/projects/types';
 import { Config } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./ProjectList.scss";
 
-export type OnSelectCallback = (project: Project) => any;
+export type OnSelectCallback = (project: Streams.Project) => any;
 
 interface ProjectItemProps {
-  project: Project,
+  project: Streams.Project,
   select: Function,
   selected: boolean
 }
@@ -44,7 +44,7 @@ interface ProjectListProps {
   config?: Config,
   onList?: ProjectsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Project
+  selected?: Streams.Project
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect, selected }) => {
@@ -53,8 +53,8 @@ const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect, sel
   useEffect(() => {
     dispatch(list({ onList }));
   }, [dispatch]);
-  const definitions: Array<Project> = projects.results;
-  const select = useCallback((project: Project) => {
+  const definitions: Array<Streams.Project> = projects.results;
+  const select = useCallback((project: Streams.Project) => {
     if(onSelect) {
       onSelect(project);
     }

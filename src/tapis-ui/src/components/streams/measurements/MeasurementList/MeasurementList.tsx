@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { Measurement } from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 import { useMeasurements } from 'tapis-redux';
 import { MeasurementsListCallback } from 'tapis-redux/streams/measurements/types';
 import { Config } from 'tapis-redux/types';
@@ -8,10 +8,10 @@ import { LoadingSpinner } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from "uuid";
 import "./MeasurementList.scss";
 
-export type OnSelectCallback = (measurement: Measurement) => any;
+export type OnSelectCallback = (measurement: Streams.Measurement) => any;
 
 interface MeasurementListItemProps {
-  measurement: Measurement,
+  measurement: Streams.Measurement,
   select: Function
 }
 
@@ -47,10 +47,10 @@ const MeasurementList: React.FC<MeasurementListProps> = ({ projectId, siteId, in
       }
     }));
   }, [dispatch]);
-  const definitions: Array<Measurement> = measurements.results;
+  const definitions: Array<Streams.Measurement> = measurements.results;
 
 
-  const select = useCallback((measurement: Measurement) => {
+  const select = useCallback((measurement: Streams.Measurement) => {
     if(onSelect) {
       onSelect(measurement);
     }

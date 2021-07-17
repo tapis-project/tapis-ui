@@ -1,6 +1,6 @@
 import { apiCall } from '../../sagas/actions';
 import * as ACTIONS from './actionTypes';
-import * as Streams from "@tapis/tapis-typescript-streams"
+import { Streams } from "@tapis/tapis-typescript";
 import { ProjectsListCallback } from './types';
 import {
   OnRequestCallback,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { Instrument } from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 import { useInstruments } from 'tapis-redux';
 import { InstrumentsListCallback } from 'tapis-redux/streams/instruments/types';
 import { Config } from 'tapis-redux/types';
@@ -8,10 +8,10 @@ import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./InstrumentList.scss";
 
-export type OnSelectCallback = (instrument: Instrument) => any;
+export type OnSelectCallback = (instrument: Streams.Instrument) => any;
 
 interface InstrumentItemProps {
-  instrument: Instrument,
+  instrument: Streams.Instrument,
   select: Function,
   selected: boolean
 }
@@ -39,7 +39,7 @@ interface InstrumentListProps {
   config?: Config,
   onList?: InstrumentsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Instrument
+  selected?: Streams.Instrument
 }
 
 const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, config, onList, onSelect, selected }) => {
@@ -54,8 +54,8 @@ const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, conf
       }
     }));
   }, [dispatch]);
-  const definitions: Array<Instrument> = instruments.results;
-  const select = useCallback((instrument: Instrument) => {
+  const definitions: Array<Streams.Instrument> = instruments.results;
+  const select = useCallback((instrument: Streams.Instrument) => {
     if(onSelect) {
       onSelect(instrument);
     }

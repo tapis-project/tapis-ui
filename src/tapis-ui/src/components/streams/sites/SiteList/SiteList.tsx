@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { Site } from "@tapis/tapis-typescript-streams";
+import { Streams } from "@tapis/tapis-typescript";
 import { useSites } from 'tapis-redux';
 import { SitesListCallback } from 'tapis-redux/streams/sites/types';
 import { Config } from 'tapis-redux/types';
@@ -8,10 +8,10 @@ import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./SiteList.scss";
 
-export type OnSelectCallback = (site: Site) => any;
+export type OnSelectCallback = (site: Streams.Site) => any;
 
 interface SiteItemProps {
-  site: Site,
+  site: Streams.Site,
   select: Function,
   selected: boolean
 }
@@ -45,7 +45,7 @@ interface SiteListProps {
   config?: Config,
   onList?: SitesListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Site
+  selected?: Streams.Site
 }
 
 const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect, selected }) => {
@@ -59,8 +59,8 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
       }
     }));
   }, [dispatch]);
-  const definitions: Array<Site> = sites.results;
-  const select = useCallback((site: Site) => {
+  const definitions: Array<Streams.Site> = sites.results;
+  const select = useCallback((site: Streams.Site) => {
     if(onSelect) {
       onSelect(site);
     }

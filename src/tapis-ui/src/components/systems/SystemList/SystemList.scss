@@ -4,7 +4,6 @@ $core-portal-color-primary: #9d85ef;
   --horizontal-buffer: var(--global-space--section-left);
   --vertical-buffer: 0.75rem;
   --min-width: 100%;
-  padding-top: 0.5rem;
 }
 
 .system-list .nav-link {
@@ -22,6 +21,6 @@ $core-portal-color-primary: #9d85ef;
 
 .system-list .nav-text {
   padding-left: 16px;
-  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  font-size: 0.75rem;
   font-weight: 500;
 }

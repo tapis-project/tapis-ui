@@ -2,7 +2,7 @@ import * as React from 'react';
 import 'react-hot-loader';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import configureStore from '../../tapis-redux/src/store';
 import App from './App';
 import { SectionHeader } from 'tapis-ui/_common';
@@ -15,7 +15,7 @@ const store = configureStore();
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <SectionHeader>Tapis-App</SectionHeader>
+      <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
       <App />
     </Router>
   </Provider>,
