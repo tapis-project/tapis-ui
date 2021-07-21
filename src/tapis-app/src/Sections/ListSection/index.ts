@@ -5,5 +5,6 @@ export {
   ListSectionDetail, 
   ListSectionList ,
   ListSectionListFull,
-  ListSectionDetailHalf
+  ListSectionDetailHalf,
+  ListSectionDetailSection
 } from './ListSection';

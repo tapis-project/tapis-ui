@@ -35,6 +35,10 @@ export const ListSectionDetail: React.FC<SectionProps> = ({children}) => {
   return <div styleName="detail">{children}</div>
 }
 
+export const ListSectionDetailSection: React.FC<SectionProps> = ({children}) => {
+  return <div styleName="detail-section">{children}</div>
+}
+
 export const ListSectionListFull: React.FC<SectionProps> = ({ children }) => {
   return <div styleName="list-full">{children}</div>
 };

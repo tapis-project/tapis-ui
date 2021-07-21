@@ -2,36 +2,26 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Streams } from "@tapis/tapis-typescript";
 import { useVariables } from 'tapis-redux';
-import { VariablesListCallback } from 'tapis-redux/streams/variables/types';
+import { VariablesListCallback, VariablesListingAction } from 'tapis-redux/streams/variables/types';
 import { Config } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
-import { Icon } from 'tapis-ui/_common';
+import { v4 as uuidv4 } from "uuid";
 import "./VariableList.scss";
 
 export type OnSelectCallback = (variable: Streams.Variable) => any;
 
 interface VariableItemProps {
   variable: Streams.Variable,
-  select: Function,
-  selected: boolean
+  onSelect?: OnSelectCallback
 }
 
-const VariableItem: React.FC<VariableItemProps> = ({ variable, select, selected }) => {
+const VariableItem: React.FC<VariableItemProps> = ({ variable, onSelect }) => {
   return (
-    <li className="nav-item">
-      <div className={"nav-link" + (selected ? ' active' : '')}>
-        <div className="nav-content" onClick={() => select(variable) }>
-          <Icon name="data-files" />
-          <span className="nav-text">{`${variable.var_name}`}</span>
-        </div>
-      </div>
+    <li onClick={() => onSelect ? onSelect(variable) : null}>
+        {`${variable.var_name}`}
     </li>
   );
 };
-
-VariableItem.defaultProps = {
-  selected: false
-}
 
 interface VariableListProps {
   projectId: string,
@@ -41,6 +31,8 @@ interface VariableListProps {
   onList?: VariablesListCallback,
   onSelect?: OnSelectCallback
 }
+
+
 
 const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrumentId, config, onList, onSelect }) => {
   const dispatch = useDispatch();
@@ -56,26 +48,20 @@ const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrume
     }));
   }, [dispatch]);
   const definitions: Array<Streams.Variable> = variables.results;
-  const [currentVariable, setCurrentVariable] = useState(String);
-  const select = useCallback((variable: Streams.Variable) => {
-    if(onSelect) {
-      onSelect(variable);
-    }
-    setCurrentVariable(variable.inst_id);
-  },[onSelect, setCurrentVariable]);
+
 
   if (variables.loading) {
     return <LoadingSpinner/>
   }
 
   return (
-    <div className="variable-list nav flex-column">
+    <div className="variable-list">
       {
         definitions.length
-          ? definitions.map(
-              (variable) => <VariableItem variable={variable} key={variable.inst_id} selected={currentVariable === variable.inst_id} select={select} />
-            )
-          : <i>No variables found</i>
+        ? definitions.map(
+            (variable: Streams.Variable) => <VariableItem variable={variable} key={uuidv4()} onSelect={onSelect} />
+          )
+        : <i>No variables found</i>
       }
     </div>
   );

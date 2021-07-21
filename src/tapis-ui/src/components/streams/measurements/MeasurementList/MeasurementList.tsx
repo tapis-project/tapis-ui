@@ -10,12 +10,26 @@ import "./MeasurementList.scss";
 
 export type OnSelectCallback = (measurement: Streams.Measurement) => any;
 
-interface MeasurementListItemProps {
+//typings are very wrong, do this later
+// const measurements2vars = (measurements: Streams.Measurement[]) => {
+//   let varMap = measurements.reduce((acc: {[variable: string]: {[datetime: string]: any}}, value: Streams.Measurement) => {
+//     if(value.vars) {
+//       let varTimeMap = value.vars.reduce((acc: []) => {
+
+//       }, {});
+//     }
+    
+//     return acc;
+//   }, {});
+
+// }
+
+interface MeasurementItemProps {
   measurement: Streams.Measurement,
-  select: Function
+  onSelect?: OnSelectCallback
 }
 
-const MeasurementListItem: React.FC<MeasurementListItemProps> = ({ measurement, select }) => {
+const MeasurementListItem: React.FC<MeasurementItemProps> = ({ measurement, onSelect }) => {
   let label = "";
   if(measurement.datetime) {
     label = `${measurement.datetime}: `;
@@ -26,11 +40,13 @@ const MeasurementListItem: React.FC<MeasurementListItemProps> = ({ measurement, 
   label += `Measured Variables: ${varIds.join(", ")}`;
   
   return (
-    <div onClick={() => select ? select(measurement) : null}>
-      {`${label}`}
-    </div>
+    <li onClick={() => onSelect ? onSelect(measurement) : null}>
+        {`${label}`}
+    </li>
   );
 };
+
+
 
 MeasurementListItem.defaultProps = {};
 
@@ -59,24 +75,18 @@ const MeasurementList: React.FC<MeasurementListProps> = ({ projectId, siteId, in
   const definitions: Array<Streams.Measurement> = measurements.results;
 
 
-  const select = useCallback((measurement: Streams.Measurement) => {
-    if(onSelect) {
-      onSelect(measurement);
-    }
-  }, [onSelect]);
-
   if (measurements.loading) {
     return <LoadingSpinner/>
   }
 
   return (
-    <div className="measurement-list nav flex-column">
+    <div className="measurement-list">
       {
         definitions.length
-          ? definitions.map(
-              (measurement) => <MeasurementListItem measurement={measurement} key={uuidv4()} select={select} />
-            )
-          : <i>No measurements found</i>
+        ? definitions.map(
+            (measurement) => <MeasurementListItem measurement={measurement} key={uuidv4()} onSelect={onSelect} />
+          )
+        : <i>No measurements found</i>
       }
     </div>
   );

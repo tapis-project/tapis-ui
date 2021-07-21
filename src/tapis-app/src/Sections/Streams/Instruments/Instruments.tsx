@@ -5,7 +5,7 @@ import { InstrumentList } from "tapis-ui/components/streams";
 import { InstrumentsListCallback } from 'tapis-redux/streams/instruments/types';
 import { default as Measurements } from "../Measurements";
 import { default as Variables } from "../Variables";
-import { ListSectionListFull, ListSection, ListSectionBody, ListSectionHeader, ListSectionDetailHalf } from 'tapis-app/Sections/ListSection';
+import { ListSectionList, ListSection, ListSectionBody, ListSectionHeader, ListSectionDetail, ListSectionDetailSection } from 'tapis-app/Sections/ListSection';
 import { Icon } from 'tapis-ui/_common';
 
 interface InstrumentsProps  {
@@ -36,17 +36,23 @@ const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, o
           site && project
           ?
           <>
-            <ListSectionListFull>
+            <ListSectionList>
               <InstrumentList projectId={project.project_name} siteId={site.site_id} config={config} onList={onList} onSelect={onSelect} selected={selected} />
-            </ListSectionListFull>
-            <ListSectionDetailHalf>
+            </ListSectionList>
+            {/* <ListSectionDetailHalf>
               <ListSectionHeader type={"sub-header"}>Measurements</ListSectionHeader>
               <Measurements config={config} project={project} site={site} instrument={selected} />
-            </ListSectionDetailHalf>
-            <ListSectionDetailHalf>
+            </ListSectionDetailHalf> */}
+            <ListSectionDetail>
+              {/* <ListSectionDetailSection> */}
               <ListSectionHeader type={"sub-header"}>Variables</ListSectionHeader>
               <Variables config={config} project={project} site={site} instrument={selected} />
-            </ListSectionDetailHalf>
+              {/* </ListSectionDetailSection>
+              <ListSectionDetailSection>
+                <ListSectionHeader type={"sub-header"}>Measurements</ListSectionHeader>
+                <Measurements config={config} project={project} site={site} instrument={selected} />
+              </ListSectionDetailSection> */}
+            </ListSectionDetail>
           </>
           : <div>No selected site</div>
         }
