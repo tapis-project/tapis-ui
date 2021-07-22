@@ -11,7 +11,7 @@ export interface ProjectsListParams {
 }
 
 const useProjects = (config?: Config) => {
-  const { projects } = useSelector((state: TapisState) => state.projects);
+  const projects = useSelector((state: TapisState) => state.projects);
   return {
     projects,
     list: (params: ProjectsListParams) => list(config, params.onList, params.request || {}),

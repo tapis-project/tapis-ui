@@ -11,7 +11,7 @@ interface SitesListParams {
 }
 
 const useSites = (config?: Config) => {
-  const { sites } = useSelector((state: TapisState) => state.sites);
+  const sites = useSelector((state: TapisState) => state.sites);
   return {
     sites,
     list: (params: SitesListParams) => list(config, params.request, params.onList),

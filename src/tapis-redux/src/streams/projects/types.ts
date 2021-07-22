@@ -2,14 +2,12 @@ import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
-export type ProjectsReducerState = {
-  projects: TapisListResults<Streams.Project>
-}
+export type ProjectsReducerState = TapisListResults<Streams.Project>;
 
 export interface ProjectsListingRequestPayload {
   // Original request parameters
   params: Streams.ListProjectsRequest
-}
+};
 
 export type ProjectsListingSuccessPayload = {
   incoming: Array<Streams.Project>

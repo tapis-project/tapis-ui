@@ -67,15 +67,30 @@ const setListingFailure = (listings: FileListingSystemMap,
 export function files(state = initialState, action: FileListingActions): FilesReducerState {
   switch (action.type) {
     case ACTIONS.TAPIS_FILES_LIST_REQUEST:
-      return {
+      console.log(action);
+      console.log(JSON.parse(JSON.stringify(state)));
+      let r1 = {
         ...state,
         listings: setListingRequest(state.listings, action.payload) 
       };
+      console.log(r1);
+      return r1;
     case ACTIONS.TAPIS_FILES_LIST_SUCCESS:
-      return {
+      console.log(action);
+      console.log(JSON.parse(JSON.stringify(state)));
+      state.listings = {
+        "tapis-demo": {
+          "/path": null
+        }
+      };
+      console.log(state);
+      let r2 = {
+        //combines all subproperties as well
         ...state,
         listings: setListingSuccess(state.listings, action.payload)
       };
+      console.log(r2);
+      return r2;
     case ACTIONS.TAPIS_FILES_LIST_FAILURE:
       return {
         ...state,

@@ -5,6 +5,8 @@ import { Streams } from '@tapis/tapis-typescript';
 import { ListSectionListFull, ListSection, ListSectionBody, ListSectionHeader } from 'tapis-app/Sections/ListSection';
 import { ProjectList } from "tapis-ui/components/streams";
 import { Icon } from 'tapis-ui/_common';
+import { useDispatch } from 'react-redux';
+import { useProjects } from 'tapis-redux';
 
 interface ProjectsProps  {
   config?: Config,
@@ -15,9 +17,12 @@ interface ProjectsProps  {
 }
 
 const Projects: React.FC<ProjectsProps> = ({ config, onList, onSelect, selected, refresh }) => {
+  const { list } = useProjects();
+  const dispatch = useDispatch();
   if(!refresh) {
     refresh = () => {
       onSelect(null);
+      dispatch(list({}));
     }
   }
 

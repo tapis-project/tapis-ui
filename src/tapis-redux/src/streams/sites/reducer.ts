@@ -2,14 +2,14 @@ import {
   SitesReducerState,
   SitesListingRequestPayload,
   SitesListingSuccessPayload,
-  SitesListingFailurePayload
+  SitesListingFailurePayload,
+  SitesListingAction
 } from './types';
 import {
+  getEmptyListResults,
   updateList,
   setRequesting,
-  setFailure,
-  getEmptyListResults,
-  TapisListResults
+  setFailure
 } from 'tapis-redux/types/results'
 import { TAPIS_DEFAULT_SITES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import * as ACTIONS from './actionTypes';
@@ -18,48 +18,64 @@ import { Streams } from "@tapis/tapis-typescript";
 
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_SITES_LISTING_LIMIT);
 
-export const initialState: SitesReducerState = {
-  sites: { ...emptyResults }
-};
+export const initialState: SitesReducerState = {};
 
-const setListingRequest = (sites: TapisListResults<Streams.Site>,
-  payload: SitesListingRequestPayload): TapisListResults<Streams.Site> => {
-  const result = setRequesting(sites);
+const sitesMapCheck = (sites: SitesReducerState, projectId: string): SitesReducerState => {
+  const result: SitesReducerState = {...sites};
+  if(!(projectId in result)) {
+    result[projectId] = {...emptyResults}
+  }
+  return result;
+}
+
+const setListingRequest = (sites: SitesReducerState, payload: SitesListingRequestPayload): SitesReducerState => {
+  const { projectUuid } = payload.params;
+  const result = sitesMapCheck(sites, projectUuid);
+  result[projectUuid] = setRequesting<Streams.Site>(result[projectUuid]);
   return result;
 } 
 
-const setListingSuccess = (sites: TapisListResults<Streams.Site>,
-  payload: SitesListingSuccessPayload): TapisListResults<Streams.Site> => {
-  // TODO: Handle different combinations of skip and startAfter requests
-  const result = updateList(sites, payload.incoming, 0, 
-    payload.params.limit, TAPIS_DEFAULT_SITES_LISTING_LIMIT);
+const setListingSuccess = (sites: SitesReducerState, payload: SitesListingSuccessPayload): SitesReducerState => {
+  const { projectUuid, offset, limit } = payload.params;
+  const { incoming } = payload;
+  const result: SitesReducerState = sitesMapCheck(sites, projectUuid);
+  result[projectUuid] = updateList<Streams.Site>(result[projectUuid], incoming, offset, limit, TAPIS_DEFAULT_SITES_LISTING_LIMIT);
   return result;
 }
 
-const setListingFailure = (sites: TapisListResults<Streams.Site>,
-  payload: SitesListingFailurePayload): TapisListResults<Streams.Site> => {
-  const result = setFailure(sites, payload.error);
+const setListingFailure = (sites: SitesReducerState, payload: SitesListingFailurePayload): SitesReducerState => {
+  const { projectUuid } = payload.params;
+  const { error } = payload;
+  const result: SitesReducerState = sitesMapCheck(sites, projectUuid);
+  result[projectUuid] = setFailure<Streams.Site>(result[projectUuid], error);
   return result;
 }
 
-export function sites(state: SitesReducerState = initialState, action): SitesReducerState {
+export function sites(state: SitesReducerState = initialState, action: SitesListingAction): SitesReducerState {
+  console.log(action);
   switch (action.type) {
     case ACTIONS.TAPIS_SITES_LIST_REQUEST:
       return {
         ...state,
-        sites: setListingRequest(state.sites, action.payload)
+        ...setListingRequest(state, action.payload)
       };
     case ACTIONS.TAPIS_SITES_LIST_SUCCESS:
-      return {
+      console.log(state);
+      let setState = setListingSuccess(state, action.payload);
+      console.log(setState);
+      let r = {
         ...state,
-        sites: setListingSuccess(state.sites, action.payload)
-      };
+        ...setState
+      }
+      console.log(r);
+      return r;
     case ACTIONS.TAPIS_SITES_LIST_FAILURE:
       return {
         ...state,
-        sites: setListingFailure(state.sites, action.payload)
+        ...setListingFailure(state, action.payload)
       };
     default:
+      console.log(state);
       return state;
   }
 }

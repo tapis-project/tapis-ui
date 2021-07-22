@@ -1,5 +1,12 @@
 import { TapisState } from '../../store/rootReducer';
+import { SiteList } from "./types";
 
-const getSites = (state: TapisState) => state.sites.sites;
+type getListingSelectorType = (state: TapisState) => SiteList;
+
+const getSites = (projectId: string): getListingSelectorType => {
+    return (state: TapisState): SiteList => {
+        return state.sites[projectId];
+    };
+}
 
 export default getSites;

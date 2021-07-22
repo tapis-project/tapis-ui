@@ -39,7 +39,7 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
         if(selectedProject) {
             dispatch(listSites({
                 request: {
-                    projectUuid: selectedProject.project_uuid
+                    projectUuid: selectedProject.project_name
                 }
             }));
         }
@@ -49,7 +49,7 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
         if(selectedProject && selectedSite) {
             dispatch(listInstruments({
                 request: {
-                    projectUuid: selectedProject.project_uuid,
+                    projectUuid: selectedProject.project_name,
                     siteId: selectedSite.site_id
                 }
             }));

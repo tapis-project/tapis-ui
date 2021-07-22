@@ -5,6 +5,8 @@ import { Streams } from '@tapis/tapis-typescript';
 import { SiteList } from "tapis-ui/components/streams";
 import { ListSectionListFull, ListSection, ListSectionBody, ListSectionHeader } from 'tapis-app/Sections/ListSection';
 import { Icon } from 'tapis-ui/_common';
+import { useSites } from 'tapis-redux';
+import { useDispatch } from 'react-redux';
 
 
 interface SitesProps  {
@@ -17,9 +19,16 @@ interface SitesProps  {
 }
 
 const Projects: React.FC<SitesProps> = ({ project, config, onList, onSelect, selected, refresh }) => {
+  const { list } = useSites();
+  const dispatch = useDispatch();
   if(!refresh) {
     refresh = () => {
       onSelect(null);
+      dispatch(list({
+        request: {
+          projectUuid: project.project_name
+        }
+      }));
     }
   }
 

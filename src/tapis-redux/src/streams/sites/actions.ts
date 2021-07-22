@@ -1,7 +1,7 @@
 import { apiCall } from '../../sagas/actions';
 import * as ACTIONS from './actionTypes';
 import { Streams } from "@tapis/tapis-typescript";
-import { SitesListCallback } from './types';
+import { SitesListCallback, SitesListingFailure, SitesListingRequest, SitesListingSuccess } from './types';
 import {
   OnRequestCallback,
   OnSuccessCallback,
@@ -11,13 +11,16 @@ import { Config } from 'tapis-redux/types';
 // Create a 'list' dispatch generator
 export const list = (config: Config = null, params: Streams.ListSitesRequest, onList: SitesListCallback = null) => {
 
-  const onRequest: OnRequestCallback = () => {
+  const onRequest: OnRequestCallback = (): SitesListingRequest => {
     return {
       type: ACTIONS.TAPIS_SITES_LIST_REQUEST,
+      payload: {
+        params
+      }  
     }
   }
 
-  const onSuccess: OnSuccessCallback<Streams.RespListSites> = (result) => {
+  const onSuccess: OnSuccessCallback<Streams.RespListSites> = (result): SitesListingSuccess => {
     return {
       type: ACTIONS.TAPIS_SITES_LIST_SUCCESS,
       payload: {
@@ -27,7 +30,7 @@ export const list = (config: Config = null, params: Streams.ListSitesRequest, on
     }
   }
 
-  const onFailure: OnFailureCallback = (error) => {
+  const onFailure: OnFailureCallback = (error): SitesListingFailure => {
     return {
       type: ACTIONS.TAPIS_SITES_LIST_FAILURE,
       payload: {

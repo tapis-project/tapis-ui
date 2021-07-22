@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Streams } from "@tapis/tapis-typescript";
 import { useSites } from 'tapis-redux';
-import { SitesListCallback } from 'tapis-redux/streams/sites/types';
-import { Config } from 'tapis-redux/types';
+import { SiteList, SitesListCallback, SitesReducerState } from 'tapis-redux/streams/sites/types';
+import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
+import getSites from "tapis-redux/streams/sites/selectors";
 import "./SiteList.scss";
 
 export type OnSelectCallback = (site: Streams.Site) => any;
@@ -51,6 +52,7 @@ interface SiteListProps {
 const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect, selected }) => {
   const dispatch = useDispatch();
   const { sites, list } = useSites(config);
+  console.log(sites);
   useEffect(() => {
     dispatch(list({ 
       onList, 
@@ -58,26 +60,36 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
         projectUuid: projectId
       }
     }));
-  }, [dispatch]);
-  const definitions: Array<Streams.Site> = sites.results;
+  }, [dispatch, projectId]);
+
+  // const definitions: Array<Streams.Site> = sites.results;
   const select = useCallback((site: Streams.Site) => {
     if(onSelect) {
       onSelect(site);
     }
   },[onSelect]);
 
-  if (sites.loading) {
+  // Get the file listing for this systemId and path
+  const result: SiteList = useSelector<TapisState, SiteList>(
+    getSites(projectId)
+  );
+
+  if(!result || result.loading) {
     return <LoadingSpinner/>
   }
+
+  console.log(result);
+
+  let definitions = result.results;
 
   return (
     <div className="site-list nav flex-column">
       {
         definitions.length
-          ? definitions.map(
-              (site) => <SiteItem site={site} key={site.site_id} selected={selected? selected.site_id === site.site_id : false} select={select} />
-            )
-          : <i>No sites found</i>
+        ? definitions.map(
+            (site: Streams.Site) => <SiteItem site={site} key={site.site_id} selected={selected? selected.site_id === site.site_id : false} select={select} />
+          )
+        : <i>No sites found</i>
       }
     </div>
   );

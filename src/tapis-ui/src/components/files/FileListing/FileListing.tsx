@@ -1,11 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFiles } from 'tapis-redux';
 import getListing from 'tapis-redux/files/selectors';
 import { FileListingCallback, FileListingDirectory } from 'tapis-redux/files/types';
 import { Config, TapisState } from 'tapis-redux/types';
 import { Files } from '@tapis/tapis-typescript';
-import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from "uuid";
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './FileListing.scss';
@@ -42,7 +41,8 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
   const dispatch = useDispatch();
 
   // Get a file listing given the systemId and path
-  const { list } = useFiles(config);
+  const { listings, list } = useFiles(config);
+  console.log(listings);
   useEffect(() => {
     dispatch(list({ onList, request: { systemId, path } }));
   }, [dispatch, systemId, path, onList]);

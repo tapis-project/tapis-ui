@@ -2,9 +2,19 @@ import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
+
+
+// export type SiteListingProjectMap = {
+//   [ projectId: string ]: TapisListResults<Streams.Site>
+// }
+
+export type SiteList = TapisListResults<Streams.Site>;
+
 export type SitesReducerState = {
-  sites: TapisListResults<Streams.Site>
+  [ projectId: string ]: TapisListResults<Streams.Site>
 }
+
+
 
 export interface SitesListingRequestPayload {
   // Original request parameters
