@@ -49,7 +49,7 @@ const Projects: React.FC<SitesProps> = ({ project, config, onList, onSelect, sel
             ? <ListSectionListFull>
               <SiteList projectId={project.project_name} config={config} onList={onList} onSelect={onSelect} selected={selected} />
             </ListSectionListFull> 
-            : <div>No selected project</div>
+            : <div>Please select a Project to view its Sites</div>
           }
         </ListSectionBody>
     </ListSection>

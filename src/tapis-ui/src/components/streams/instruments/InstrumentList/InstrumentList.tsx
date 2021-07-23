@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Streams } from "@tapis/tapis-typescript";
 import { useInstruments } from 'tapis-redux';
-import { InstrumentsListCallback } from 'tapis-redux/streams/instruments/types';
-import { Config } from 'tapis-redux/types';
+import { InstrumentList, InstrumentsListCallback } from 'tapis-redux/streams/instruments/types';
+import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./InstrumentList.scss";
+import getInstruments from 'tapis-redux/streams/instruments/selectors';
 
 export type OnSelectCallback = (instrument: Streams.Instrument) => any;
 
@@ -46,24 +47,31 @@ const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, conf
   const dispatch = useDispatch();
   const { instruments, list } = useInstruments(config);
   useEffect(() => {
-    dispatch(list({ 
-      onList, 
-      request: {
-        projectUuid: projectId,
-        siteId
-      }
-    }));
+    if(!instruments[projectId] || !instruments[projectId][siteId]) {
+      dispatch(list({ 
+        onList, 
+        request: {
+          projectUuid: projectId,
+          siteId
+        }
+      }));
+    }
   }, [dispatch]);
-  const definitions: Array<Streams.Instrument> = instruments.results;
+
   const select = useCallback((instrument: Streams.Instrument) => {
     if(onSelect) {
       onSelect(instrument);
     }
   },[onSelect]);
 
-  if (instruments.loading) {
+  const selector = getInstruments(projectId, siteId);
+  const result: InstrumentList = useSelector<TapisState, InstrumentList>(selector);
+
+  if(!result || result.loading) {
     return <LoadingSpinner/>
   }
+
+  let definitions = result.results;
 
   return (
     <div className="instrument-list nav flex-column">

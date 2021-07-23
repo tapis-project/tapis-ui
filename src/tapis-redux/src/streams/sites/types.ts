@@ -11,7 +11,7 @@ import * as ACTIONS from './actionTypes';
 export type SiteList = TapisListResults<Streams.Site>;
 
 export type SitesReducerState = {
-  [ projectId: string ]: TapisListResults<Streams.Site>
+  [ projectId: string ]: SiteList
 }
 
 

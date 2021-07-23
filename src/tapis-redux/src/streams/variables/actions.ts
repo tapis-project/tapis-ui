@@ -15,6 +15,9 @@ export const list = (config: Config = null, params: Streams.ListVariablesRequest
   const onRequest: OnRequestCallback = () => {
     return {
       type: ACTIONS.TAPIS_VARIABLES_LIST_REQUEST,
+      payload: {
+        params
+      }
     }
   }
 

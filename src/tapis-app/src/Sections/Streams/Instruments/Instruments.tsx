@@ -54,7 +54,7 @@ const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, o
               </ListSectionDetailSection> */}
             </ListSectionDetail>
           </>
-          : <div>No selected site</div>
+          : <div>Please select a Site to view its Instruments</div>
         }
         </ListSectionBody>
     </ListSection>

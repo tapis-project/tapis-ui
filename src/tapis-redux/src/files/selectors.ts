@@ -9,7 +9,7 @@ type getListingSelectorType = (state: TapisState) => FileListingDirectory;
 
 const getListing = (systemId: string, path: string): getListingSelectorType => {
   return (state: TapisState): FileListingDirectory => {
-    if (systemId in state.files.listings && path in state.files.listings[systemId]) {
+    if(systemId in state.files.listings && path in state.files.listings[systemId]) {
       return state.files.listings[systemId][path];
     }
     return undefined;

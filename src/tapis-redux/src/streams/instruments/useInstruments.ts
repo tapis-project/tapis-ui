@@ -11,7 +11,7 @@ interface InstrumentsListParams {
 }
 
 const useInstruments = (config?: Config) => {
-  const { instruments } = useSelector((state: TapisState) => state.instruments);
+  const instruments = useSelector((state: TapisState) => state.instruments);
   return {
     instruments,
     list: (params: InstrumentsListParams) => list(config, params.request, params.onList),

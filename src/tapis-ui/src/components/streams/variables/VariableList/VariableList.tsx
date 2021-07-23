@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Streams } from "@tapis/tapis-typescript";
 import { useVariables } from 'tapis-redux';
-import { VariablesListCallback, VariablesListingAction } from 'tapis-redux/streams/variables/types';
-import { Config } from 'tapis-redux/types';
+import { VariableList, VariablesListCallback, VariablesListingAction } from 'tapis-redux/streams/variables/types';
+import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from "uuid";
 import "./VariableList.scss";
+import getVariables from 'tapis-redux/streams/variables/selectors';
 
 export type OnSelectCallback = (variable: Streams.Variable) => any;
 
@@ -38,21 +39,28 @@ const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrume
   const dispatch = useDispatch();
   const { variables, list } = useVariables(config);
   useEffect(() => {
-    dispatch(list({ 
-      onList, 
-      request: {
-        projectUuid: projectId,
-        siteId,
-        instId: instrumentId
-      }
-    }));
+    if(!variables[projectId] || !variables[projectId][siteId] || !variables[projectId][siteId][instrumentId]) {
+      dispatch(list({ 
+        onList, 
+        request: {
+          projectUuid: projectId,
+          siteId,
+          instId: instrumentId
+        }
+      }));
+    }
   }, [dispatch]);
-  const definitions: Array<Streams.Variable> = variables.results;
+  
+  
+  const selector = getVariables(projectId, siteId, instrumentId);
+  const result: VariableList = useSelector<TapisState, VariableList>(selector);
+  console.log(result);
 
-
-  if (variables.loading) {
+  if(!result || result.loading) {
     return <LoadingSpinner/>
   }
+
+  let definitions = result.results;
 
   return (
     <div className="variable-list">

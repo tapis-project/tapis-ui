@@ -11,7 +11,7 @@ interface VariablesListParams {
 }
 
 const useVariables = (config?: Config) => {
-  const { variables } = useSelector((state: TapisState) => state.variables);
+  const variables = useSelector((state: TapisState) => state.variables);
   return {
     variables,
     list: (params: VariablesListParams) => list(config, params.request, params.onList),

@@ -15,9 +15,7 @@ import * as ACTIONS from './actionTypes';
 import { Streams } from "@tapis/tapis-typescript";
 
 
-const emptyResults = getEmptyListResults(TAPIS_DEFAULT_PROJECTS_LISTING_LIMIT);
-
-export const initialState: TapisListResults<Streams.Project> = { ...emptyResults };
+export const initialState: TapisListResults<Streams.Project> = getEmptyListResults(TAPIS_DEFAULT_PROJECTS_LISTING_LIMIT);
 
 const setListingRequest = (projects: TapisListResults<Streams.Project>): TapisListResults<Streams.Project> => {
   const result = setRequesting<Streams.Project>(projects);

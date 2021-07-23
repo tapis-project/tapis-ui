@@ -15,6 +15,9 @@ export const list = (config: Config = null, params: Streams.ListInstrumentsReque
   const onRequest: OnRequestCallback = () => {
     return {
       type: ACTIONS.TAPIS_INSTRUMENTS_LIST_REQUEST,
+      payload: {
+        params
+      }
     }
   }
 

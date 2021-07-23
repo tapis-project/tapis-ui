@@ -53,14 +53,20 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
   const dispatch = useDispatch();
   const { sites, list } = useSites(config);
   console.log(sites);
+  
   useEffect(() => {
-    dispatch(list({ 
-      onList, 
-      request: {
-        projectUuid: projectId
-      }
-    }));
+    //if already have project sites don't re-request
+    if(!sites[projectId]) {
+      dispatch(list({ 
+        onList, 
+        request: {
+          projectUuid: projectId
+        }
+      }));
+    }
+    
   }, [dispatch, projectId]);
+  
 
   // const definitions: Array<Streams.Site> = sites.results;
   const select = useCallback((site: Streams.Site) => {
@@ -70,15 +76,12 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
   },[onSelect]);
 
   // Get the file listing for this systemId and path
-  const result: SiteList = useSelector<TapisState, SiteList>(
-    getSites(projectId)
-  );
+  const selector = getSites(projectId);
+  const result: SiteList = useSelector<TapisState, SiteList>(selector);
 
   if(!result || result.loading) {
     return <LoadingSpinner/>
   }
-
-  console.log(result);
 
   let definitions = result.results;
 

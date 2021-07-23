@@ -52,7 +52,6 @@ const setListingFailure = (sites: SitesReducerState, payload: SitesListingFailur
 }
 
 export function sites(state: SitesReducerState = initialState, action: SitesListingAction): SitesReducerState {
-  console.log(action);
   switch (action.type) {
     case ACTIONS.TAPIS_SITES_LIST_REQUEST:
       return {
@@ -60,22 +59,16 @@ export function sites(state: SitesReducerState = initialState, action: SitesList
         ...setListingRequest(state, action.payload)
       };
     case ACTIONS.TAPIS_SITES_LIST_SUCCESS:
-      console.log(state);
-      let setState = setListingSuccess(state, action.payload);
-      console.log(setState);
-      let r = {
+      return {
         ...state,
-        ...setState
-      }
-      console.log(r);
-      return r;
+        ...setListingSuccess(state, action.payload)
+      };
     case ACTIONS.TAPIS_SITES_LIST_FAILURE:
       return {
         ...state,
         ...setListingFailure(state, action.payload)
       };
     default:
-      console.log(state);
       return state;
   }
 }

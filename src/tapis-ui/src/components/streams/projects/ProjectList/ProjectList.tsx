@@ -51,8 +51,14 @@ const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect, sel
   const dispatch = useDispatch();
   const { projects, list } = useProjects(config);
   useEffect(() => {
-    dispatch(list({ onList }));
+    //if projects list isn't empty don't re-request
+    if(projects.results.length < 1) {
+      dispatch(list({
+        onList
+      }));
+    }
   }, [dispatch]);
+
   const definitions: Array<Streams.Project> = projects.results;
   const select = useCallback((project: Streams.Project) => {
     if(onSelect) {

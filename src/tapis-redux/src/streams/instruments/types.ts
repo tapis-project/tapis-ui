@@ -2,8 +2,14 @@ import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
+export type InstrumentList = TapisListResults<Streams.Instrument>;
+
+export type InstrumentSiteMap = {
+  [ siteId: string ]: InstrumentList
+}
+
 export type InstrumentsReducerState = {
-  instruments: TapisListResults<Streams.Instrument>
+  [ projectId: string ]: InstrumentSiteMap
 }
 
 export interface InstrumentsListingRequestPayload {
