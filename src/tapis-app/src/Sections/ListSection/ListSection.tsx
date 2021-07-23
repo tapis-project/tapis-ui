@@ -35,6 +35,20 @@ export const ListSectionDetail: React.FC<SectionProps> = ({children}) => {
   return <div styleName="detail">{children}</div>
 }
 
+export const ListSectionDetailSection: React.FC<SectionProps> = ({children}) => {
+  return <div styleName="detail-section">{children}</div>
+}
+
+export const ListSectionListFull: React.FC<SectionProps> = ({ children }) => {
+  return <div styleName="list-full">{children}</div>
+};
+
+export const ListSectionDetailHalf: React.FC<SectionProps> = ({children}) => {
+  return <div styleName="detail-half">{children}</div>
+}
+
+
+
 export const ListSection: React.FC<SectionProps> = ({ children }) => {
   const dispatch = useDispatch();
   const { token, logout } = useAuthenticator();
@@ -44,3 +58,4 @@ export const ListSection: React.FC<SectionProps> = ({ children }) => {
   }
   return <div styleName="root">{children}</div>
 }
+

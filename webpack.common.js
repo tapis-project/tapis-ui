@@ -4,8 +4,12 @@ const path = require('path');
 module.exports = {
   entry: ['react-hot-loader/patch', './src/tapis-app/src/index.tsx'],
   devtool: 'inline-source-map',
+  devServer: {
+    historyApiFallback: true,
+  },
   output: {
     path: path.resolve(__dirname, 'build'),
+    publicPath: "/"
   },
   module: {
     rules: [
@@ -45,7 +49,7 @@ module.exports = {
       _common: path.resolve(__dirname, 'src/tapis-ui/src/_common/'),
       'tapis-ui': path.resolve(__dirname, 'src/tapis-ui/src/'),
       'tapis-app': path.resolve(__dirname, 'src/tapis-app/src/'),
-      'tapis-redux': path.resolve(__dirname, 'src/tapis-redux/src/'),
+      'tapis-redux': path.resolve(__dirname, 'src/tapis-redux/src/')
     },
   },
   optimization: {

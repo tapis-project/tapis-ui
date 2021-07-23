@@ -29,6 +29,7 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
         "X-Tapis-Token": token
       }
     });
+    console.log(configuration);
 
     // Create an instance of the API
     const api: typeof action.payload.api = new (action.payload.api)(configuration);

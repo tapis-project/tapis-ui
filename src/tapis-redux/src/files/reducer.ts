@@ -73,6 +73,7 @@ export function files(state = initialState, action: FileListingActions): FilesRe
       };
     case ACTIONS.TAPIS_FILES_LIST_SUCCESS:
       return {
+        //combines all subproperties as well
         ...state,
         listings: setListingSuccess(state.listings, action.payload)
       };

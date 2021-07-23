@@ -15,12 +15,44 @@
   flex-basis: 30%;
 }
 
+.list-full {
+  flex-basis: 100%;
+}
+
 .detail {
   border: 1px solid gray;
   padding: 1em 1em 1em 1em;
   flex-basis: 100%;
 }
 
+.detail-half {
+  border: 1px solid gray;
+  padding: 1em 1em 1em 1em;
+  flex-basis: 50%;
+}
+
 .sub-header {
   padding-bottom: 1em;
+}
+
+.list-group {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 600px;
+}
+
+.list-group-item {
+  flex-basis: 100%;
+}
+
+.list-group-item-body {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1em;
+  min-height: 600px;
+}
+
+.detail-section {
+  padding-bottom: 40px;
 }

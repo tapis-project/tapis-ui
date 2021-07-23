@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav, NavItem, NavLink, UncontrolledCollapse } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
@@ -11,13 +11,36 @@ import './Sidebar.module.scss';
 type SidebarItemProps = {
   to: string,
   label: string,
-  iconName: string
-}
+  iconName: string,
+  style?: string,
+  id?: string
+};
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
+// const SidebarCollapsibleItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
+//   return (
+//     <NavItem>
+//       <NavLink
+//         tag={RRNavLink}
+//         to={to}
+//         exact
+//         styleName="link"
+//         activeStyleName="link--active"
+//         disabled={false}
+//       >
+//         <div styleName="content" className="nav-content">
+//           <Icon name={iconName} />
+//           <span styleName="text">{label}</span>
+//         </div>
+//       </NavLink>
+//     </NavItem>
+//   );
+// };
+
+const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName, style, id }) => {
   return (
     <NavItem>
       <NavLink
+        id={id}
         tag={RRNavLink}
         to={to}
         exact
@@ -25,7 +48,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
         activeStyleName="link--active"
         disabled={false}
       >
-        <div styleName="content" className="nav-content">
+        <div styleName={style} className="nav-content">
           <Icon name={iconName} />
           <span styleName="text">{label}</span>
         </div>
@@ -34,11 +57,45 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
   );
 };
 
+type SidebarGroupProps = {
+  group: string,
+  id: string,
+  label: string,
+  items: SidebarItemProps[]
+};
+
+const SidebarGroup: React.FC<SidebarGroupProps> = ({id, label, items, group}) => {
+  let togglerTag = `#${id}`;
+  let groupLink = `/${group}`
+  return (
+    <>
+      <SidebarItem id={id} to={groupLink} label={label} iconName="folder"></SidebarItem>
+      <UncontrolledCollapse toggler={togglerTag}>
+        {
+          items.map((item, index) => {
+            return <SidebarItem key={index} to={item.to} label={item.label} iconName={item.iconName} style="content"></SidebarItem>
+          })
+        }
+        
+      </UncontrolledCollapse>
+    </>
+  );
+}
+
 
 type SystemInfoProps = {
   system: TapisSystem
 }
 
+// const Sidebar: React.FC<SidebarProps> = ({ jwt }) => {
+
+
+//   return (
+//     <Nav styleName="root" vertical>
+//       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
+//       <SidebarItem to="/login" label="Login" iconName="link" />
+//       {jwt && <>
+//         <SidebarGroup id="streams-toggle" label="Streams" iconName="allocations" items={streamProps} />
 const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
   return (
     <div>
@@ -65,12 +122,29 @@ const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
 
 
 const Sidebar: React.FC = () => {
+  let streamProps: SidebarItemProps[] = [];
+  streamProps.push({
+    to: "/streams/projects",
+    label: "Projects",
+    iconName: "allocations"
+  });
+  streamProps.push({
+    to: "/streams/sites",
+    label: "Sites",
+    iconName: "allocations"
+  });
+  streamProps.push({
+    to: "/streams/instruments",
+    label: "Instruments",
+    iconName: "allocations"
+  });
   const { token } = useAuthenticator();
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
       {!token && <SidebarItem to="/login" label="Login" iconName="user" />}
       {token && <>
+        <SidebarGroup id="streams-toggle" label="Streams" items={streamProps} group="streams" />
         <SidebarItem to="/systems" label="Systems" iconName="data-files" />
         <SidebarItem to="/apps" label="Apps" iconName="applications" />
         <SidebarItem to="/jobs" label="Jobs" iconName="jobs" />

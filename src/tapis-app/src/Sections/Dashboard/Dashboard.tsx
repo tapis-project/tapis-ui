@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { SectionHeader, Icon } from 'tapis-ui/_common';
 import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'reactstrap';
-import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux';
+import { useAuthenticator, useSystems, useApps, useJobs, useProjects  } from 'tapis-redux';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import './Dashboard.module.scss';
 import './Dashboard.scss';
@@ -55,6 +55,7 @@ const Dashboard: React.FC = () => {
   const systems = useSystems();
   const jobs = useJobs();
   const apps = useApps();
+  const projects = useProjects();
   const dispatch = useDispatch();
 
   useEffect(
@@ -63,6 +64,7 @@ const Dashboard: React.FC = () => {
         dispatch(systems.list({}));
         dispatch(jobs.list({}));
         dispatch(apps.list({}));
+        dispatch(projects.list({}));
       }
     },
     [ token ]
@@ -106,6 +108,14 @@ const Dashboard: React.FC = () => {
                 link="/jobs"
                 counter={`${jobs.jobs.results.length} jobs`}
                 loading={jobs.jobs.loading}
+              />
+              <DashboardCard
+                icon="allocations"
+                name="Projects"
+                text="View streams projects"
+                link="/streams/projects"
+                counter={`${projects.projects.results.length} projects`}
+                loading={projects.projects.loading}
               />
             </>
           ) : (

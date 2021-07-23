@@ -4,6 +4,7 @@ import { TapisState } from '../store/rootReducer';
 import { FileListingCallback } from './types';
 import { Files } from '@tapis/tapis-typescript';
 import { Config } from 'tapis-redux/types';
+
 export interface ListFilesAdditionalParameters {
   onList?: FileListingCallback,
   request: Files.ListFilesRequest

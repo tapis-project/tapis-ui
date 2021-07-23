@@ -1,0 +1,13 @@
+.variable-list {
+  height: 500px;
+  overflow-y: auto;
+}
+
+.variable-list li {
+  padding: 0.5rem 1rem;
+  list-style-type: none;
+}
+
+.variable-list li:nth-child(odd){
+  background-color: #f4f4f4;
+}

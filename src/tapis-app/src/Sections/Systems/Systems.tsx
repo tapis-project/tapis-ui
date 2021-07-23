@@ -37,31 +37,116 @@ const Systems: React.FC<SystemsProps> = ({config}) => {
 
     return (
         <ListSection>
-        <ListSectionHeader>
-            <div>
-                System List
-                &nbsp;
-                <span className="btn-head" onClick={refresh}>
-                    <Icon name="refresh" />
-                </span>
-            </div>
-        </ListSectionHeader>
-        <ListSectionBody>
-            <ListSectionList>
-                <SystemList config={config} onSelect={systemSelectCallback} />
-            </ListSectionList>
-            <ListSectionDetail>
-                <ListSectionHeader type={"sub-header"}>Files</ListSectionHeader>
-                {selectedSystem
-                    ? <FileListing systemId={selectedSystem.id} path={'/'} />
-                    : <SectionMessage type="info">
-                        Select a system from the list.
-                        </SectionMessage>
-                }
-            </ListSectionDetail>
-        </ListSectionBody>
+            <ListSectionHeader>
+                <div>
+                    System List
+                    &nbsp;
+                    <span className="btn-head" onClick={refresh}>
+                        <Icon name="refresh" />
+                    </span>
+                </div>
+            </ListSectionHeader>
+            <ListSectionBody>
+                <ListSectionList>
+                    <SystemList config={config} onSelect={systemSelectCallback} />
+                </ListSectionList>
+                <ListSectionDetail>
+                    <ListSectionHeader type={"sub-header"}>Files</ListSectionHeader>
+                    {selectedSystem
+                        ? <FileListing systemId={selectedSystem.id} path={'/'} />
+                        : <SectionMessage type="info">
+                            Select a system from the list.
+                            </SectionMessage>
+                    }
+                </ListSectionDetail>
+            </ListSectionBody>
         </ListSection>
     )
 }
 
 export default Systems;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // return (
+    //     <ListSection>
+    //         <ListSectionGroup>
+    //             <ListSectionGroupItem>
+    //                 <ListSectionHeader>
+    //                     <div>
+    //                         System List
+    //                         &nbsp;
+    //                         <span className="btn-head" onClick={refresh}>
+    //                             <Icon name="refresh" />
+    //                         </span>
+    //                     </div>
+    //                 </ListSectionHeader>
+    //                 <ListSectionGroupItemBody>
+                        
+    //                     <ListSectionList>
+    //                         <SystemList config={config} onSelect={systemSelectCallback} />
+    //                     </ListSectionList>
+    //                 </ListSectionGroupItemBody>   
+    //             </ListSectionGroupItem>
+    //             <ListSectionGroupItem>
+    //                 <ListSectionHeader>
+    //                     <div>
+    //                         System List
+    //                         &nbsp;
+    //                         <span className="btn-head" onClick={refresh}>
+    //                             <Icon name="refresh" />
+    //                         </span>
+    //                     </div>
+    //                 </ListSectionHeader>
+    //                 <ListSectionGroupItemBody>
+                        
+    //                     <ListSectionList>
+    //                         <SystemList config={config} onSelect={systemSelectCallback} />
+    //                     </ListSectionList>
+
+                        
+    //                 </ListSectionGroupItemBody>
+
+                    
+    //             </ListSectionGroupItem>
+    //             <ListSectionGroupItem>
+    //                 <ListSectionDetail>
+    //                     <ListSectionHeader type={"sub-header"}>Files</ListSectionHeader>
+    //                     {selectedSystem
+    //                         ? <FileListing systemId={selectedSystem.id} path={'/'} />
+    //                         : <SectionMessage type="info">
+    //                             Select a system from the list.
+    //                             </SectionMessage>
+    //                     }
+    //                 </ListSectionDetail>
+    //             </ListSectionGroupItem>
+    //             <ListSectionGroupItem>
+    //                 <ListSectionDetail>
+    //                     <ListSectionHeader type={"sub-header"}>Files</ListSectionHeader>
+    //                     {selectedSystem
+    //                         ? <FileListing systemId={selectedSystem.id} path={'/'} />
+    //                         : <SectionMessage type="info">
+    //                             Select a system from the list.
+    //                             </SectionMessage>
+    //                     }
+    //                 </ListSectionDetail>
+    //             </ListSectionGroupItem>
+                
+    //         </ListSectionGroup>
+          
+    
+    //     </ListSection>
+
+        
+    // )

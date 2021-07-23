@@ -1,3 +1,4 @@
+
 import { useSelector } from 'react-redux';
 import { list } from './list/actions';
 import { TapisState } from '../store/rootReducer';
@@ -9,7 +10,7 @@ export interface ListAppsParams {
   request?: Apps.GetAppsRequest
 }
 
-const useSystems = (config: Config = null) => {
+const useApps = (config: Config = null) => {
   const { apps } = useSelector((state: TapisState) => state.apps);
   return {
     apps,
@@ -17,4 +18,4 @@ const useSystems = (config: Config = null) => {
   };
 };
 
-export default useSystems;
+export default useApps;

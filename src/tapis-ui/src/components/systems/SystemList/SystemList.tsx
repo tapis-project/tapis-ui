@@ -37,21 +37,20 @@ interface SystemListProps {
   config?: Config,
   onList?: SystemsListCallback,
   onSelect?: OnSelectCallback,
+  selected?: TapisSystem,
   className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, className }) => {
+const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, selected, className }) => {
   const dispatch = useDispatch();
   const { systems, list } = useSystems(config);
   useEffect(() => {
     dispatch(list({ onList }));
   }, [dispatch]);
   const definitions: Array<TapisSystem> = systems.results;
-  const [currentSystem, setCurrentSystem] = useState(String);
-  const select = useCallback((system) => {
+  const select = useCallback((system: TapisSystem) => {
     onSelect(system);
-    setCurrentSystem(system.id)
-  },[onSelect, setCurrentSystem]);
+  },[onSelect]);
 
   if (!systems || systems.loading) {
     return <LoadingSpinner />
@@ -67,10 +66,11 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
         definitions.length
           ? definitions.map(
               (system) => <SystemItem
-                            system={system}
-                            selected={currentSystem === system.id}
-                            select={select}
                             key={system.id}
+                            system={system}
+                            //moved to props to maintain state
+                            selected={selected? selected.id === system.id : false}
+                            select={select}
                           />
             )
           : <i>No systems found</i>
