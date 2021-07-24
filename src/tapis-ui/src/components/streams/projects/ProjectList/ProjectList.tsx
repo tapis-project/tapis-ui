@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useProjects } from 'tapis-redux';
 import { Streams } from "@tapis/tapis-typescript";
-import { ProjectsListCallback } from 'tapis-redux/streams/projects/types';
-import { Config } from 'tapis-redux/types';
+import { ProjectList, ProjectsListCallback, ProjectsReducerState } from 'tapis-redux/streams/projects/types';
+import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./ProjectList.scss";
+import { getProjects } from 'tapis-redux/streams/projects/selectors';
 
 export type OnSelectCallback = (project: Streams.Project) => any;
 
@@ -44,38 +45,47 @@ interface ProjectListProps {
   config?: Config,
   onList?: ProjectsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Streams.Project
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect, selected }) => {
+const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { projects, list } = useProjects(config);
+  const { state, list } = useProjects(config);
   useEffect(() => {
     //if projects list isn't empty don't re-request
-    if(projects.results.length < 1) {
+    if(state.projects.results.length < 1) {
       dispatch(list({
         onList
       }));
     }
-  }, [dispatch]);
+  }, [dispatch, state, onList]);
 
-  const definitions: Array<Streams.Project> = projects.results;
+  dispatch({
+    type: "test",
+    payload: "id"
+  });
+
   const select = useCallback((project: Streams.Project) => {
     if(onSelect) {
       onSelect(project);
     }
   }, [onSelect]);
 
-  if (projects.loading) {
+
+  const selector = getProjects();
+  const result: ProjectList = useSelector<TapisState, ProjectList>(selector); 
+
+  if(!result || result.loading) {
     return <LoadingSpinner/>
   }
+
+  let definitions = result.results;
 
   return (
     <div className="project-list nav flex-column">
       {
         definitions.length
           ? definitions.map(
-              (project) => <ProjectItem project={project} key={project.project_name} selected={selected? selected.project_name === project.project_name : false} select={select} />
+              (project) => <ProjectItem project={project} key={project.project_name} selected={state.selected? state.selected.project_name === project.project_name : false} select={select} />
             )
           : <i>No projects found</i>
       }
@@ -83,11 +93,11 @@ const ProjectList: React.FC<ProjectListProps> = ({ config, onList, onSelect, sel
   );
 };
 
-ProjectList.defaultProps = {
-  config: null,
-  onList: null,
-  onSelect: null,
-  selected: null
-}
+// ProjectList.defaultProps = {
+//   config: null,
+//   onList: null,
+//   onSelect: null,
+//   selected: null
+// }
 
 export default ProjectList;

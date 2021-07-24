@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { list } from './actions';
+import { list, select } from './actions';
 import { TapisState } from '../../store/rootReducer';
 import { ProjectsListCallback } from './types';
 import { Streams } from "@tapis/tapis-typescript";
@@ -11,10 +11,18 @@ export interface ProjectsListParams {
 }
 
 const useProjects = (config?: Config) => {
-  const projects = useSelector((state: TapisState) => state.projects);
+  const state = useSelector((state: TapisState) => state.projects);
   return {
-    projects,
-    list: (params: ProjectsListParams) => list(config, params.onList, params.request || {}),
+    state,
+    list: (params: ProjectsListParams) => {
+      return list(config, params.onList, params.request)
+    },
+    select: (project: Streams.Project) => {
+      return select(project);
+    },
+    init: () => {
+      return list(config);
+    }
   };
 };
 

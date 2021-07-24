@@ -17,15 +17,11 @@ interface VariablesProps  {
 const Variables: React.FC<VariablesProps> = ({ project, site, instrument, config, onList }) => {
 
   return (
-    <div className="container">
-      {
         project && site && instrument
         ? <VariableList projectId={project.project_name} siteId={site.site_id} instrumentId={instrument.inst_id} config={config} onList={onList} />
         : <SectionMessage type="info">
           Select an instrument from the list.
         </SectionMessage>
-      }
-    </div>
   );
 }
 

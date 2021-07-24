@@ -2,7 +2,13 @@ import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
-export type ProjectsReducerState = TapisListResults<Streams.Project>;
+export type ProjectList = TapisListResults<Streams.Project>;
+
+export type ProjectsReducerState = {
+  projects: ProjectList,
+  selected: Streams.Project
+};
+
 
 export interface ProjectsListingRequestPayload {
   // Original request parameters
@@ -18,24 +24,30 @@ export type ProjectsListingFailurePayload = {
 } & ProjectsListingRequestPayload;
 
 export type ProjectsListingRequest = {
-  type: typeof ACTIONS.TAPIS_PROJECTS_LIST_REQUEST;
+  type: typeof ACTIONS.TAPIS_PROJECTS_LIST_REQUEST,
   payload: ProjectsListingRequestPayload;
 }
 
 export type ProjectsListingSuccess = {
-  type: typeof ACTIONS.TAPIS_PROJECTS_LIST_SUCCESS;
+  type: typeof ACTIONS.TAPIS_PROJECTS_LIST_SUCCESS,
   payload: ProjectsListingSuccessPayload;
 }
 
 export type ProjectsListingFailure = {
-  type: typeof ACTIONS.TAPIS_PROJECTS_LIST_FAILURE;
+  type: typeof ACTIONS.TAPIS_PROJECTS_LIST_FAILURE,
   payload: ProjectsListingFailurePayload
+}
+
+export type ProjectSelect = {
+  type: typeof ACTIONS.TAPIS_SELECT_PROJECT,
+  payload: Streams.Project
 }
 
 export type ProjectsListingAction = 
   | ProjectsListingRequest
   | ProjectsListingSuccess
-  | ProjectsListingFailure;
+  | ProjectsListingFailure
+  | ProjectSelect;
 
 
 export type ProjectsListCallback = ApiCallback<Streams.RespListProjects>;

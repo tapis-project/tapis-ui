@@ -36,6 +36,7 @@ const variableMapCheck = (variables: VariablesReducerState, projectId: string, s
 }
 
 const setListingRequest = (variables: VariablesReducerState, payload: VariablesListingRequestPayload): VariablesReducerState => {
+  console.log("Request!");
   const {projectUuid, siteId, instId} = payload.params;
   const result = variableMapCheck(variables, projectUuid, siteId, instId);
   result[projectUuid][siteId][instId] = setRequesting<Streams.Variable>(result[projectUuid][siteId][instId]);

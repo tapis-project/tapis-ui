@@ -49,12 +49,11 @@ const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrume
         }
       }));
     }
-  }, [dispatch]);
+  }, [dispatch, projectId, siteId, instrumentId, variables, onList]);
   
   
   const selector = getVariables(projectId, siteId, instrumentId);
   const result: VariableList = useSelector<TapisState, VariableList>(selector);
-  console.log(result);
 
   if(!result || result.loading) {
     return <LoadingSpinner/>

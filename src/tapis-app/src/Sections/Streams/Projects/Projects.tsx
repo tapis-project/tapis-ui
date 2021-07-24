@@ -12,17 +12,16 @@ interface ProjectsProps  {
   config?: Config,
   onList?: ProjectsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Streams.Project,
   refresh?: () => void
 }
 
-const Projects: React.FC<ProjectsProps> = ({ config, onList, onSelect, selected, refresh }) => {
-  const { list } = useProjects();
+const Projects: React.FC<ProjectsProps> = ({ config, onList, onSelect, refresh }) => {
+  const { init } = useProjects();
   const dispatch = useDispatch();
   if(!refresh) {
     refresh = () => {
       onSelect(null);
-      dispatch(list({}));
+      dispatch(init());
     }
   }
 
@@ -39,7 +38,7 @@ const Projects: React.FC<ProjectsProps> = ({ config, onList, onSelect, selected,
         </ListSectionHeader>
         <ListSectionBody>
           <ListSectionListFull>
-            <ProjectList config={config} onList={onList} onSelect={onSelect} selected={selected} />
+            <ProjectList config={config} onList={onList} onSelect={onSelect} />
           </ListSectionListFull> 
         </ListSectionBody>
     </ListSection>

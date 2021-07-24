@@ -56,7 +56,7 @@ const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, conf
         }
       }));
     }
-  }, [dispatch]);
+  }, [dispatch, projectId, siteId, instruments, onList]);
 
   const select = useCallback((instrument: Streams.Instrument) => {
     if(onSelect) {

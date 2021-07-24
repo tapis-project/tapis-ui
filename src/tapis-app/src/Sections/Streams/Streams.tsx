@@ -19,25 +19,29 @@ interface StreamsProps  {
 export const Streams: React.FC<StreamsProps> = ({config}) => {
 
     const dispatch = useDispatch();
-    const listProjects = useProjects().list;
-    const listSites = useSites().list;
-    const listInstruments = useInstruments().list;
+    const projects = useProjects();
+    const sites = useSites();
+    const instruments = useInstruments();
+    
+    console.log(projects.state.selected);
 
-    const [selectedProject, setSelectedProject] = useState<StreamsAPI.Project>(null);
+    //const [selectedProject, setSelectedProject] = useState<StreamsAPI.Project>(projects.state.selected);
     const [selectedSite, setSelectedSite] = useState<StreamsAPI.Site>(null);
     const [selectedInstrument, setSelectedInstrument] = useState<StreamsAPI.Instrument>(null);
 
+    let selectedProject = projects.state.selected;
+
     const refreshProjects = () => {
-        setSelectedProject(null);
+        //setSelectedProject(null);
         setSelectedSite(null);
         setSelectedInstrument(null);
-        dispatch(listProjects({}));
+        dispatch(projects.init());
     }
     const refreshSites = () => {
         setSelectedSite(null);
         setSelectedInstrument(null);
         if(selectedProject) {
-            dispatch(listSites({
+            dispatch(sites.list({
                 request: {
                     projectUuid: selectedProject.project_name
                 }
@@ -47,7 +51,7 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
     const refreshInstruments = () => {
         setSelectedInstrument(null);
         if(selectedProject && selectedSite) {
-            dispatch(listInstruments({
+            dispatch(instruments.list({
                 request: {
                     projectUuid: selectedProject.project_name,
                     siteId: selectedSite.site_id
@@ -59,12 +63,12 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
     const projectSelectCallback = useCallback(
         (project: StreamsAPI.Project) => {
             console.log("Project selected", project);
-            setSelectedProject(project);
+            dispatch(projects.select(project));
             //clear selected site and instrument
             setSelectedSite(null);
             setSelectedInstrument(null);
         },
-        [setSelectedProject]
+        [projects]
     );
 
     const siteSelectCallback = useCallback(
@@ -89,7 +93,7 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
     return (
         <>
             <Route path='/streams/projects'>
-                <Projects config={config} onSelect={projectSelectCallback} selected={selectedProject} refresh={refreshProjects} />
+                <Projects config={config} onSelect={projectSelectCallback} refresh={refreshProjects} />
             </Route>
             <Route path='/streams/sites'>
                 <Sites project={selectedProject} config={config} onSelect={siteSelectCallback} selected={selectedSite} refresh={refreshSites} />

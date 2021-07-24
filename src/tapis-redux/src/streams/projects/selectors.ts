@@ -1,5 +1,13 @@
+import { Streams } from '@tapis/tapis-typescript';
 import { TapisState } from '../../store/rootReducer';
+import { ProjectList } from './types';
 
-const getProjects = (state: TapisState) => state.projects.projects;
+type getListingSelectorType = (state: TapisState) => ProjectList;
 
-export default getProjects;
+export const getProjects = (): getListingSelectorType => {
+    return (state: TapisState): ProjectList => {
+        return state.projects.projects;
+    };
+};
+
+

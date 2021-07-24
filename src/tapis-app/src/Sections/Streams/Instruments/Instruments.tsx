@@ -39,19 +39,9 @@ const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, o
             <ListSectionList>
               <InstrumentList projectId={project.project_name} siteId={site.site_id} config={config} onList={onList} onSelect={onSelect} selected={selected} />
             </ListSectionList>
-            {/* <ListSectionDetailHalf>
-              <ListSectionHeader type={"sub-header"}>Measurements</ListSectionHeader>
-              <Measurements config={config} project={project} site={site} instrument={selected} />
-            </ListSectionDetailHalf> */}
             <ListSectionDetail>
-              {/* <ListSectionDetailSection> */}
               <ListSectionHeader type={"sub-header"}>Variables</ListSectionHeader>
               <Variables config={config} project={project} site={site} instrument={selected} />
-              {/* </ListSectionDetailSection>
-              <ListSectionDetailSection>
-                <ListSectionHeader type={"sub-header"}>Measurements</ListSectionHeader>
-                <Measurements config={config} project={project} site={site} instrument={selected} />
-              </ListSectionDetailSection> */}
             </ListSectionDetail>
           </>
           : <div>Please select a Site to view its Instruments</div>

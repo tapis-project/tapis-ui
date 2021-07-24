@@ -42,7 +42,6 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
 
   // Get a file listing given the systemId and path
   const { listings, list } = useFiles(config);
-  console.log(listings);
   useEffect(() => {
     dispatch(list({ onList, request: { systemId, path } }));
   }, [dispatch, systemId, path, onList]);

@@ -52,7 +52,6 @@ interface SiteListProps {
 const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect, selected }) => {
   const dispatch = useDispatch();
   const { sites, list } = useSites(config);
-  console.log(sites);
   
   useEffect(() => {
     //if already have project sites don't re-request
@@ -65,7 +64,7 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
       }));
     }
     
-  }, [dispatch, projectId]);
+  }, [dispatch, projectId, sites, onList]);
   
 
   // const definitions: Array<Streams.Site> = sites.results;

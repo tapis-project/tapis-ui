@@ -11,7 +11,6 @@ import { Config } from 'tapis-redux/types';
 
 // Create a 'list' dispatch generator
 export const list = (config: Config = null, onList: ProjectsListCallback = null, params: Streams.ListProjectsRequest = {}) => {
-  console.log("!!!");
 
   const onRequest: OnRequestCallback = () => {
     return {
@@ -51,3 +50,10 @@ export const list = (config: Config = null, onList: ProjectsListCallback = null,
     args: [params]
   });
 };
+
+export const select = (project: Streams.Project) => {
+  return {
+    type: ACTIONS.TAPIS_SELECT_PROJECT,
+    payload: project
+  }
+}

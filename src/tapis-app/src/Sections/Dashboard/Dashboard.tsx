@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
         dispatch(systems.list({}));
         dispatch(jobs.list({}));
         dispatch(apps.list({}));
-        dispatch(projects.list({}));
+        dispatch(projects.init());
       }
     },
     [ token ]
@@ -114,8 +114,8 @@ const Dashboard: React.FC = () => {
                 name="Projects"
                 text="View streams projects"
                 link="/streams/projects"
-                counter={`${projects.projects.results.length} projects`}
-                loading={projects.projects.loading}
+                counter={`${projects.state.projects.results.length} projects`}
+                loading={projects.state.projects.loading}
               />
             </>
           ) : (

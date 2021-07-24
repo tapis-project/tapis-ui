@@ -4,9 +4,18 @@ import * as ACTIONS from './actionTypes';
 
 
 
-// export type SiteListingProjectMap = {
-//   [ projectId: string ]: TapisListResults<Streams.Site>
+
+// export type SiteList = TapisListResults<Streams.Site>;
+
+// export type ProjectMap = {
+//   [ projectId: string ]: SiteList
 // }
+
+// export type SitesReducerState = {
+//   state: ProjectMap,
+//   selected: string
+// }
+
 
 export type SiteList = TapisListResults<Streams.Site>;
 
