@@ -14,11 +14,10 @@ interface SitesProps  {
   config?: Config,
   onList?: SitesListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Streams.Site,
   refresh?: () => void
 }
 
-const Projects: React.FC<SitesProps> = ({ project, config, onList, onSelect, selected, refresh }) => {
+const Sites: React.FC<SitesProps> = ({ project, config, onList, onSelect, refresh }) => {
   const { list } = useSites();
   const dispatch = useDispatch();
   if(!refresh) {
@@ -47,7 +46,7 @@ const Projects: React.FC<SitesProps> = ({ project, config, onList, onSelect, sel
           {
             project
             ? <ListSectionListFull>
-              <SiteList projectId={project.project_name} config={config} onList={onList} onSelect={onSelect} selected={selected} />
+              <SiteList projectId={project.project_name} config={config} onList={onList} onSelect={onSelect} />
             </ListSectionListFull> 
             : <div>Please select a Project to view its Sites</div>
           }
@@ -56,4 +55,4 @@ const Projects: React.FC<SitesProps> = ({ project, config, onList, onSelect, sel
   );
 }
 
-export default Projects;
+export default Sites;

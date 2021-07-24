@@ -3,13 +3,11 @@ import { InstrumentList } from "./types";
 
 type getListingSelectorType = (state: TapisState) => InstrumentList;
 
-const getInstruments = (projectId: string, siteId: string): getListingSelectorType => {
+export const getInstruments = (projectId: string, siteId: string): getListingSelectorType => {
     return (state: TapisState): InstrumentList => {
-        if(state.instruments[projectId] && state.instruments[projectId][siteId]) {
-            return state.instruments[projectId][siteId];
+        if(state.instruments.instrumentMap[projectId] && state.instruments.instrumentMap[projectId][siteId]) {
+            return state.instruments.instrumentMap[projectId][siteId];
         }
         return undefined;
     }
 };
-
-export default getInstruments;

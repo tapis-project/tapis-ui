@@ -6,7 +6,7 @@ import { SiteList, SitesListCallback, SitesReducerState } from 'tapis-redux/stre
 import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
-import getSites from "tapis-redux/streams/sites/selectors";
+import { getSites } from "tapis-redux/streams/sites/selectors";
 import "./SiteList.scss";
 
 export type OnSelectCallback = (site: Streams.Site) => any;
@@ -46,16 +46,15 @@ interface SiteListProps {
   config?: Config,
   onList?: SitesListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Streams.Site
 }
 
-const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect, selected }) => {
+const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { sites, list } = useSites(config);
+  const { state, list } = useSites(config);
   
   useEffect(() => {
     //if already have project sites don't re-request
-    if(!sites[projectId]) {
+    if(!state.siteMap[projectId]) {
       dispatch(list({ 
         onList, 
         request: {
@@ -64,7 +63,7 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
       }));
     }
     
-  }, [dispatch, projectId, sites, onList]);
+  }, [dispatch, projectId, state, onList]);
   
 
   // const definitions: Array<Streams.Site> = sites.results;
@@ -89,7 +88,7 @@ const SiteList: React.FC<SiteListProps> = ({ projectId, config, onList, onSelect
       {
         definitions.length
         ? definitions.map(
-            (site: Streams.Site) => <SiteItem site={site} key={site.site_id} selected={selected? selected.site_id === site.site_id : false} select={select} />
+            (site: Streams.Site) => <SiteItem site={site} key={site.site_id} selected={state.selected? state.selected.site_id === site.site_id : false} select={select} />
           )
         : <i>No sites found</i>
       }

@@ -19,9 +19,6 @@ const useProjects = (config?: Config) => {
     },
     select: (project: Streams.Project) => {
       return select(project);
-    },
-    init: () => {
-      return list(config);
     }
   };
 };

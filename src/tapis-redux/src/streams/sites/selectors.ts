@@ -3,10 +3,9 @@ import { SiteList } from "./types";
 
 type getListingSelectorType = (state: TapisState) => SiteList;
 
-const getSites = (projectId: string): getListingSelectorType => {
+export const getSites = (projectId: string): getListingSelectorType => {
     return (state: TapisState): SiteList => {
-        return state.sites[projectId];
+        return state.sites.siteMap[projectId];
     };
 };
 
-export default getSites;

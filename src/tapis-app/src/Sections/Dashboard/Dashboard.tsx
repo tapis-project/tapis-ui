@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
         dispatch(systems.list({}));
         dispatch(jobs.list({}));
         dispatch(apps.list({}));
-        dispatch(projects.init());
+        dispatch(projects.list({}));
       }
     },
     [ token ]

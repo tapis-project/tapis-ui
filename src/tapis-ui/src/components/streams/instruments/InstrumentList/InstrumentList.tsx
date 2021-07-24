@@ -7,7 +7,7 @@ import { Config, TapisState } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { Icon } from 'tapis-ui/_common';
 import "./InstrumentList.scss";
-import getInstruments from 'tapis-redux/streams/instruments/selectors';
+import { getInstruments } from 'tapis-redux/streams/instruments/selectors';
 
 export type OnSelectCallback = (instrument: Streams.Instrument) => any;
 
@@ -40,14 +40,13 @@ interface InstrumentListProps {
   config?: Config,
   onList?: InstrumentsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Streams.Instrument
 }
 
-const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, config, onList, onSelect, selected }) => {
+const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { instruments, list } = useInstruments(config);
+  const { state, list } = useInstruments(config);
   useEffect(() => {
-    if(!instruments[projectId] || !instruments[projectId][siteId]) {
+    if(!state.instrumentMap[projectId] || !state.instrumentMap[projectId][siteId]) {
       dispatch(list({ 
         onList, 
         request: {
@@ -56,7 +55,7 @@ const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, conf
         }
       }));
     }
-  }, [dispatch, projectId, siteId, instruments, onList]);
+  }, [dispatch, projectId, siteId, state, onList]);
 
   const select = useCallback((instrument: Streams.Instrument) => {
     if(onSelect) {
@@ -78,7 +77,7 @@ const InstrumentList: React.FC<InstrumentListProps> = ({ projectId, siteId, conf
       {
         definitions.length
           ? definitions.map(
-              (instrument) => <InstrumentItem instrument={instrument} key={instrument.inst_id} selected={selected ? selected.inst_id === instrument.inst_id : false} select={select} />
+              (instrument) => <InstrumentItem instrument={instrument} key={instrument.inst_id} selected={state.selected ? state.selected.inst_id === instrument.inst_id : false} select={select} />
             )
           : <i>No instruments found</i>
       }

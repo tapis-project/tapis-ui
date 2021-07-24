@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { list } from './actions';
+import { list, select } from './actions';
 import { TapisState } from '../../store/rootReducer';
 import { InstrumentsListCallback } from './types';
 import { Streams } from "@tapis/tapis-typescript";
@@ -11,10 +11,15 @@ interface InstrumentsListParams {
 }
 
 const useInstruments = (config?: Config) => {
-  const instruments = useSelector((state: TapisState) => state.instruments);
+  const state = useSelector((state: TapisState) => state.instruments);
   return {
-    instruments,
-    list: (params: InstrumentsListParams) => list(config, params.request, params.onList),
+    state,
+    list: (params: InstrumentsListParams) => {
+      return list(config, params.request, params.onList)
+    },
+    select: (instrument: Streams.Instrument) => {
+      return select(instrument);
+    }
   };
 };
 

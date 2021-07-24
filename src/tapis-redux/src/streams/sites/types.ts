@@ -5,24 +5,16 @@ import * as ACTIONS from './actionTypes';
 
 
 
-// export type SiteList = TapisListResults<Streams.Site>;
-
-// export type ProjectMap = {
-//   [ projectId: string ]: SiteList
-// }
-
-// export type SitesReducerState = {
-//   state: ProjectMap,
-//   selected: string
-// }
-
-
 export type SiteList = TapisListResults<Streams.Site>;
 
-export type SitesReducerState = {
+export type ProjectMap = {
   [ projectId: string ]: SiteList
 }
 
+export type SitesReducerState = {
+  siteMap: ProjectMap,
+  selected: Streams.Site
+}
 
 
 export interface SitesListingRequestPayload {
@@ -39,24 +31,30 @@ export type SitesListingFailurePayload = {
 } & SitesListingRequestPayload;
 
 export type SitesListingRequest = {
-  type: typeof ACTIONS.TAPIS_SITES_LIST_REQUEST;
+  type: typeof ACTIONS.TAPIS_SITES_LIST_REQUEST,
   payload: SitesListingRequestPayload;
 }
 
 export type SitesListingSuccess = {
-  type: typeof ACTIONS.TAPIS_SITES_LIST_SUCCESS;
+  type: typeof ACTIONS.TAPIS_SITES_LIST_SUCCESS,
   payload: SitesListingSuccessPayload;
 }
 
 export type SitesListingFailure = {
-  type: typeof ACTIONS.TAPIS_SITES_LIST_FAILURE;
+  type: typeof ACTIONS.TAPIS_SITES_LIST_FAILURE,
   payload: SitesListingFailurePayload
+}
+
+export type SiteSelect = {
+  type: typeof ACTIONS.TAPIS_SELECT_SITE,
+  payload: Streams.Site
 }
 
 export type SitesListingAction = 
   | SitesListingRequest
   | SitesListingSuccess
-  | SitesListingFailure;
+  | SitesListingFailure
+  | SiteSelect;
 
 
 export type SitesListCallback = ApiCallback<Streams.RespListSites>;

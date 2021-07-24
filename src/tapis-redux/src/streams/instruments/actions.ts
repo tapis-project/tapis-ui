@@ -53,3 +53,10 @@ export const list = (config: Config = null, params: Streams.ListInstrumentsReque
     args: [params]
   });
 };
+
+export const select = (instrument: Streams.Instrument) => {
+  return {
+    type: ACTIONS.TAPIS_SELECT_INSTRUMENT,
+    payload: instrument
+  }
+};

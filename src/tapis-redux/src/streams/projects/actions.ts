@@ -56,4 +56,5 @@ export const select = (project: Streams.Project) => {
     type: ACTIONS.TAPIS_SELECT_PROJECT,
     payload: project
   }
-}
+};
+

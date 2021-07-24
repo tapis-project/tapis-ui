@@ -2,30 +2,22 @@ import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
-// export type InstrumentList = TapisListResults<Streams.Instrument>;
-
-// export type SiteMap = {
-//   [ siteId: string ]: InstrumentList
-// }
-
-// export type ProjectMap = {
-//   [ projectId: string ]: SiteMap
-// }
-
-// export type InstrumentsReducerState = {
-//   state: ProjectMap,
-//   selected: string
-// }
-
 export type InstrumentList = TapisListResults<Streams.Instrument>;
 
-export type InstrumentSiteMap = {
+export type SiteMap = {
   [ siteId: string ]: InstrumentList
 }
 
-export type InstrumentsReducerState = {
-  [ projectId: string ]: InstrumentSiteMap
+export type ProjectMap = {
+  [ projectId: string ]: SiteMap
 }
+
+export type InstrumentsReducerState = {
+  instrumentMap: ProjectMap,
+  selected: Streams.Instrument
+}
+
+
 
 export interface InstrumentsListingRequestPayload {
   // Original request parameters
@@ -41,24 +33,30 @@ export type InstrumentsListingFailurePayload = {
 } & InstrumentsListingRequestPayload;
 
 export type InstrumentsListingRequest = {
-  type: typeof ACTIONS.TAPIS_INSTRUMENTS_LIST_REQUEST;
-  payload: InstrumentsListingRequestPayload;
+  type: typeof ACTIONS.TAPIS_INSTRUMENTS_LIST_REQUEST,
+  payload: InstrumentsListingRequestPayload
 }
 
 export type InstrumentsListingSuccess = {
-  type: typeof ACTIONS.TAPIS_INSTRUMENTS_LIST_SUCCESS;
-  payload: InstrumentsListingSuccessPayload;
+  type: typeof ACTIONS.TAPIS_INSTRUMENTS_LIST_SUCCESS,
+  payload: InstrumentsListingSuccessPayload
 }
 
 export type InstrumentsListingFailure = {
-  type: typeof ACTIONS.TAPIS_INSTRUMENTS_LIST_FAILURE;
+  type: typeof ACTIONS.TAPIS_INSTRUMENTS_LIST_FAILURE,
   payload: InstrumentsListingFailurePayload
+}
+
+export type InstrumentSelect = {
+  type: typeof ACTIONS.TAPIS_SELECT_INSTRUMENT,
+  payload: Streams.Instrument
 }
 
 export type InstrumentsListingAction = 
   | InstrumentsListingRequest
   | InstrumentsListingSuccess
-  | InstrumentsListingFailure;
+  | InstrumentsListingFailure
+  | InstrumentSelect;
 
 
 export type InstrumentsListCallback = ApiCallback<Streams.RespListInstruments>;

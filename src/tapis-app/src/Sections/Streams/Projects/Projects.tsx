@@ -16,12 +16,12 @@ interface ProjectsProps  {
 }
 
 const Projects: React.FC<ProjectsProps> = ({ config, onList, onSelect, refresh }) => {
-  const { init } = useProjects();
+  const { list } = useProjects();
   const dispatch = useDispatch();
   if(!refresh) {
     refresh = () => {
       onSelect(null);
-      dispatch(init());
+      dispatch(list({}));
     }
   }
 

@@ -19,27 +19,22 @@ interface StreamsProps  {
 export const Streams: React.FC<StreamsProps> = ({config}) => {
 
     const dispatch = useDispatch();
-    const projects = useProjects();
-    const sites = useSites();
-    const instruments = useInstruments();
-    
-    console.log(projects.state.selected);
-
-    //const [selectedProject, setSelectedProject] = useState<StreamsAPI.Project>(projects.state.selected);
-    const [selectedSite, setSelectedSite] = useState<StreamsAPI.Site>(null);
-    const [selectedInstrument, setSelectedInstrument] = useState<StreamsAPI.Instrument>(null);
+    const projects = useProjects(config);
+    const sites = useSites(config);
+    const instruments = useInstruments(config);
 
     let selectedProject = projects.state.selected;
-
+    let selectedSite = sites.state.selected;
+    
     const refreshProjects = () => {
-        //setSelectedProject(null);
-        setSelectedSite(null);
-        setSelectedInstrument(null);
-        dispatch(projects.init());
+        dispatch(projects.select(null));
+        dispatch(sites.select(null));
+        dispatch(instruments.select(null));
+        dispatch(projects.list({}));
     }
     const refreshSites = () => {
-        setSelectedSite(null);
-        setSelectedInstrument(null);
+        dispatch(sites.select(null));
+        dispatch(instruments.select(null));
         if(selectedProject) {
             dispatch(sites.list({
                 request: {
@@ -49,7 +44,7 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
         }
     }
     const refreshInstruments = () => {
-        setSelectedInstrument(null);
+        dispatch(instruments.select(null));
         if(selectedProject && selectedSite) {
             dispatch(instruments.list({
                 request: {
@@ -65,28 +60,28 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
             console.log("Project selected", project);
             dispatch(projects.select(project));
             //clear selected site and instrument
-            setSelectedSite(null);
-            setSelectedInstrument(null);
+            dispatch(sites.select(null));
+            dispatch(instruments.select(null));
         },
-        [projects]
+        [dispatch, projects, sites, instruments]
     );
 
     const siteSelectCallback = useCallback(
         (site: StreamsAPI.Site) => {
             console.log("Site selected", site);
-            setSelectedSite(site);
+            dispatch(sites.select(site));
             //clear selected instrument
-            setSelectedInstrument(null);
+            dispatch(instruments.select(null));
         },
-        [setSelectedSite]
+        [dispatch, sites, instruments]
     );
 
     const instrumentSelectCallback = useCallback(
         (instrument: StreamsAPI.Instrument) => {
-        console.log("Instrument selected", instrument);
-            setSelectedInstrument(instrument);
+            console.log("Instrument selected", instrument);
+            dispatch(instruments.select(instrument));
         },
-        [setSelectedInstrument]
+        [dispatch, instruments]
     );
 
 
@@ -96,10 +91,10 @@ export const Streams: React.FC<StreamsProps> = ({config}) => {
                 <Projects config={config} onSelect={projectSelectCallback} refresh={refreshProjects} />
             </Route>
             <Route path='/streams/sites'>
-                <Sites project={selectedProject} config={config} onSelect={siteSelectCallback} selected={selectedSite} refresh={refreshSites} />
+                <Sites project={selectedProject} config={config} onSelect={siteSelectCallback} refresh={refreshSites} />
             </Route>
             <Route path='/streams/instruments'>
-                <Instruments project={selectedProject} site={selectedSite} config={config} onSelect={instrumentSelectCallback} selected={selectedInstrument} refresh={refreshInstruments} />
+                <Instruments project={selectedProject} site={selectedSite} config={config} onSelect={instrumentSelectCallback} refresh={refreshInstruments} />
             </Route>
         </>
         

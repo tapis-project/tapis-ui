@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { list } from './actions';
+import { list, select } from './actions';
 import { TapisState } from '../../store/rootReducer';
 import { SitesListCallback } from './types';
 import { Streams } from "@tapis/tapis-typescript";
@@ -11,10 +11,15 @@ interface SitesListParams {
 }
 
 const useSites = (config?: Config) => {
-  const sites = useSelector((state: TapisState) => state.sites);
+  const state = useSelector((state: TapisState) => state.sites);
   return {
-    sites,
-    list: (params: SitesListParams) => list(config, params.request, params.onList),
+    state,
+    list: (params: SitesListParams) => {
+      return list(config, params.request, params.onList);
+    },
+    select: (site: Streams.Site) => {
+      return select(site);
+    }
   };
 };
 

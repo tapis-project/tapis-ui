@@ -52,3 +52,10 @@ export const list = (config: Config = null, params: Streams.ListSitesRequest, on
     args: [params]
   });
 };
+
+export const select = (site: Streams.Site) => {
+  return {
+    type: ACTIONS.TAPIS_SELECT_SITE,
+    payload: site
+  }
+};

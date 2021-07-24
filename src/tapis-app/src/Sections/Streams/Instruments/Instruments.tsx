@@ -7,6 +7,7 @@ import { default as Measurements } from "../Measurements";
 import { default as Variables } from "../Variables";
 import { ListSectionList, ListSection, ListSectionBody, ListSectionHeader, ListSectionDetail, ListSectionDetailSection } from 'tapis-app/Sections/ListSection';
 import { Icon } from 'tapis-ui/_common';
+import { useInstruments } from 'tapis-redux';
 
 interface InstrumentsProps  {
   project: Streams.Project,
@@ -14,11 +15,12 @@ interface InstrumentsProps  {
   config?: Config,
   onList?: InstrumentsListCallback,
   onSelect?: OnSelectCallback,
-  selected?: Streams.Instrument,
   refresh?: () => void
 }
 
-const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, onSelect, selected, refresh }) => {
+const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, onSelect, refresh }) => {
+
+  const { state } = useInstruments(config);
 
   return (
     <ListSection>
@@ -37,11 +39,11 @@ const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, o
           ?
           <>
             <ListSectionList>
-              <InstrumentList projectId={project.project_name} siteId={site.site_id} config={config} onList={onList} onSelect={onSelect} selected={selected} />
+              <InstrumentList projectId={project.project_name} siteId={site.site_id} config={config} onList={onList} onSelect={onSelect} />
             </ListSectionList>
             <ListSectionDetail>
               <ListSectionHeader type={"sub-header"}>Variables</ListSectionHeader>
-              <Variables config={config} project={project} site={site} instrument={selected} />
+              <Variables config={config} project={project} site={site} instrument={state.selected} />
             </ListSectionDetail>
           </>
           : <div>Please select a Site to view its Instruments</div>

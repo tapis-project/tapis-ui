@@ -3,7 +3,8 @@ import {
   InstrumentsListingRequestPayload,
   InstrumentsListingSuccessPayload,
   InstrumentsListingFailurePayload,
-  InstrumentsListingAction
+  InstrumentsListingAction,
+  ProjectMap
 } from './types';
 import {
   updateList,
@@ -17,10 +18,13 @@ import { Streams } from "@tapis/tapis-typescript";
 
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_INSTRUMENTS_LISTING_LIMIT);
 
-export const initialState: InstrumentsReducerState = {};
+export const initialState: InstrumentsReducerState = {
+  instrumentMap: {},
+  selected: null
+};
 
-const instrumentMapCheck = (instruments: InstrumentsReducerState, projectId: string, siteId: string): InstrumentsReducerState => {
-  const result: InstrumentsReducerState = {...instruments};
+const instrumentMapCheck = (instruments: ProjectMap, projectId: string, siteId: string): ProjectMap => {
+  const result: ProjectMap = {...instruments};
   if(!(projectId in result)) {
     result[projectId] = {};
   }
@@ -30,46 +34,64 @@ const instrumentMapCheck = (instruments: InstrumentsReducerState, projectId: str
   return result;
 }
 
-const setListingRequest = (instruments: InstrumentsReducerState, payload: InstrumentsListingRequestPayload): InstrumentsReducerState => {
+const setListingRequest = (instruments: ProjectMap, payload: InstrumentsListingRequestPayload): ProjectMap => {
   const {projectUuid, siteId} = payload.params;
-  const result = instrumentMapCheck(instruments, projectUuid, siteId);
+  const result: ProjectMap = instrumentMapCheck(instruments, projectUuid, siteId);
   result[projectUuid][siteId] = setRequesting<Streams.Instrument>(result[projectUuid][siteId]);
   return result;
 } 
 
-const setListingSuccess = (instruments: InstrumentsReducerState, payload: InstrumentsListingSuccessPayload): InstrumentsReducerState => {
+const setListingSuccess = (instruments: ProjectMap, payload: InstrumentsListingSuccessPayload): ProjectMap => {
   const { projectUuid, siteId, offset, limit } = payload.params;
   const { incoming } = payload;
-  const result: InstrumentsReducerState = instrumentMapCheck(instruments, projectUuid, siteId);
+  const result: ProjectMap = instrumentMapCheck(instruments, projectUuid, siteId);
   result[projectUuid][siteId] = updateList<Streams.Instrument>(result[projectUuid][siteId], incoming, offset, limit, TAPIS_DEFAULT_INSTRUMENTS_LISTING_LIMIT);
   return result;
 }
 
-const setListingFailure = (instruments: InstrumentsReducerState, payload: InstrumentsListingFailurePayload): InstrumentsReducerState => {
+const setListingFailure = (instruments: ProjectMap, payload: InstrumentsListingFailurePayload): ProjectMap => {
   const { projectUuid, siteId } = payload.params;
   const { error } = payload;
-  const result: InstrumentsReducerState = instrumentMapCheck(instruments, projectUuid, siteId);
+  const result: ProjectMap = instrumentMapCheck(instruments, projectUuid, siteId);
   result[projectUuid][siteId] = setFailure<Streams.Instrument>(result[projectUuid][siteId], error);
   return result;
 }
 
 export function instruments(state: InstrumentsReducerState = initialState, action: InstrumentsListingAction): InstrumentsReducerState {
   switch (action.type) {
-    case ACTIONS.TAPIS_INSTRUMENTS_LIST_REQUEST:
+    case ACTIONS.TAPIS_INSTRUMENTS_LIST_REQUEST: {
       return {
-        ...state,
-        ...setListingRequest(state, action.payload)
+        instrumentMap: {
+          ...state.instrumentMap,
+          ...setListingRequest(state.instrumentMap, action.payload)
+        },
+        selected: state.selected
       };
-    case ACTIONS.TAPIS_INSTRUMENTS_LIST_SUCCESS:
+    }
+    case ACTIONS.TAPIS_INSTRUMENTS_LIST_SUCCESS: {
       return {
-        ...state,
-        ...setListingSuccess(state, action.payload)
+        instrumentMap: {
+          ...state.instrumentMap,
+          ...setListingSuccess(state.instrumentMap, action.payload)
+        },
+        selected: state.selected
       };
-    case ACTIONS.TAPIS_INSTRUMENTS_LIST_FAILURE:
+    }
+    case ACTIONS.TAPIS_INSTRUMENTS_LIST_FAILURE: {
       return {
-        ...state,
-        ...setListingFailure(state, action.payload)
+        instrumentMap: {
+          ...state.instrumentMap,
+          ...setListingFailure(state.instrumentMap, action.payload)
+        },
+        selected: state.selected
       };
+    }
+    case ACTIONS.TAPIS_SELECT_INSTRUMENT: {
+      return {
+        instrumentMap: state.instrumentMap,
+        selected: action.payload
+      }
+    }
     default:
       return state;
   }
