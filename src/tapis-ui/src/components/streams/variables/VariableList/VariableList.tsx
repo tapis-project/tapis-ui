@@ -37,9 +37,9 @@ interface VariableListProps {
 
 const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrumentId, config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { variables, list } = useVariables(config);
+  const { state, list } = useVariables(config);
   useEffect(() => {
-    if(!variables[projectId] || !variables[projectId][siteId] || !variables[projectId][siteId][instrumentId]) {
+    if(!state.variableMap[projectId] || !state.variableMap[projectId][siteId] || !state.variableMap[projectId][siteId][instrumentId]) {
       dispatch(list({ 
         onList, 
         request: {
@@ -49,7 +49,7 @@ const VariableList: React.FC<VariableListProps> = ({ projectId, siteId, instrume
         }
       }));
     }
-  }, [dispatch, projectId, siteId, instrumentId, variables, onList]);
+  }, [dispatch, projectId, siteId, instrumentId, state, onList]);
   
   
   const selector = getVariables(projectId, siteId, instrumentId);

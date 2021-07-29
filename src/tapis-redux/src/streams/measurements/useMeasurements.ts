@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { list } from './actions';
+import { list, select } from './actions';
 import { TapisState } from '../../store/rootReducer';
 import { MeasurementsListCallback } from './types';
 import { Streams } from "@tapis/tapis-typescript";
@@ -11,10 +11,15 @@ interface MeasurementsListParams {
 }
 
 const useMeasurements = (config?: Config) => {
-  const { measurements } = useSelector((state: TapisState) => state.measurements);
+  const state = useSelector((state: TapisState) => state.measurements);
   return {
-    measurements,
-    list: (params: MeasurementsListParams) => list(config, params.request, params.onList),
+    state,
+    list: (params: MeasurementsListParams) => {
+      return list(config, params.request, params.onList)
+    },
+    select: (measurement: Streams.Measurement) => {
+      return select(measurement);
+    }
   };
 };
 

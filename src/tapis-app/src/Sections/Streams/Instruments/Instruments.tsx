@@ -4,7 +4,7 @@ import { Streams } from '@tapis/tapis-typescript';
 import { InstrumentList } from "tapis-ui/components/streams";
 import { InstrumentsListCallback } from 'tapis-redux/streams/instruments/types';
 import { default as Measurements } from "../Measurements";
-import { default as Variables } from "../Variables";
+import { default as VariablesAndMeasurements } from "../VariablesAndMeasurements";
 import { ListSectionList, ListSection, ListSectionBody, ListSectionHeader, ListSectionDetail, ListSectionDetailSection } from 'tapis-app/Sections/ListSection';
 import { Icon } from 'tapis-ui/_common';
 import { useInstruments } from 'tapis-redux';
@@ -42,8 +42,8 @@ const Projects: React.FC<InstrumentsProps> = ({ project, site, config, onList, o
               <InstrumentList projectId={project.project_name} siteId={site.site_id} config={config} onList={onList} onSelect={onSelect} />
             </ListSectionList>
             <ListSectionDetail>
-              <ListSectionHeader type={"sub-header"}>Variables</ListSectionHeader>
-              <Variables config={config} project={project} site={site} instrument={state.selected} />
+              <ListSectionHeader type={"sub-header"}>Variables and Measurements</ListSectionHeader>
+              <VariablesAndMeasurements config={config} project={project} site={site} instrument={state.selected} />
             </ListSectionDetail>
           </>
           : <div>Please select a Site to view its Instruments</div>

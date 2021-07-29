@@ -50,3 +50,10 @@ export const list = (config: Config = null, params: Streams.ListMeasurementsRequ
     args: [params]
   });
 };
+
+export const select = (measurement: Streams.Measurement) => {
+  return {
+    type: ACTIONS.TAPIS_SELECT_MEASUREMENT,
+    payload: measurement
+  }
+};

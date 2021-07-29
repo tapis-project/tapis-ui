@@ -7,6 +7,7 @@ import { Config } from 'tapis-redux/types';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from "uuid";
 import "./MeasurementList.scss";
+import { getMeasurements, getVariableMeasurements } from 'tapis-redux/streams/measurements/selectors';
 
 export type OnSelectCallback = (measurement: Streams.Measurement) => any;
 
@@ -51,33 +52,37 @@ const MeasurementListItem: React.FC<MeasurementItemProps> = ({ measurement, onSe
 MeasurementListItem.defaultProps = {};
 
 interface MeasurementListProps {
-  projectId: string,
-  siteId: string,
   instrumentId: string,
+  variableId: string,
   config?: Config,
   onList?: MeasurementsListCallback,
   onSelect?: OnSelectCallback
 }
 
-const MeasurementList: React.FC<MeasurementListProps> = ({ projectId, siteId, instrumentId, config, onList, onSelect }) => {
+const MeasurementList: React.FC<MeasurementListProps> = ({ instrumentId, variableId, config, onList, onSelect }) => {
   const dispatch = useDispatch();
-  const { measurements, list } = useMeasurements(config);
+  //move thsi up to "Measurement" component since there's multiple listings
+  const { state, list } = useMeasurements(config);
   useEffect(() => {
     dispatch(list({ 
       onList, 
       request: {
-        projectUuid: projectId,
-        siteId,
+        //these will be removed
+        projectUuid: null,
+        siteId: null,
         instId: instrumentId
       }
     }));
   }, [dispatch]);
-  const definitions: Array<Streams.Measurement> = measurements.results;
 
+  const selector = getVariableMeasurements(instrumentId, variableId);
+  const result: VariableList = useSelector<TapisState, VariableList>(selector);
 
-  if (measurements.loading) {
+  if(!result || result.loading) {
     return <LoadingSpinner/>
   }
+
+  let definitions = result.results;
 
   return (
     <div className="measurement-list">

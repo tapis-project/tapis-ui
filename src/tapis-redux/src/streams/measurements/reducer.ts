@@ -2,7 +2,8 @@ import {
   MeasurementsReducerState,
   MeasurementsListingRequestPayload,
   MeasurementsListingSuccessPayload,
-  MeasurementsListingFailurePayload
+  MeasurementsListingFailurePayload,
+  InstrumentMap
 } from './types';
 import {
   updateList,
@@ -19,46 +20,73 @@ import { Streams } from "@tapis/tapis-typescript";
 const emptyResults = getEmptyListResults(TAPIS_DEFAULT_MEASUREMENTS_LISTING_LIMIT);
 
 export const initialState: MeasurementsReducerState = {
-  measurements: { ...emptyResults }
+  measurementMap: {},
+  selected: null
 };
 
-const setListingRequest = (measurements: TapisListResults<Streams.Measurement>,
-  payload: MeasurementsListingRequestPayload): TapisListResults<Streams.Measurement> => {
-  const result = setRequesting(measurements);
-  return result;
-} 
-
-const setListingSuccess = (measurements: TapisListResults<Streams.Measurement>,
-  payload: MeasurementsListingSuccessPayload): TapisListResults<Streams.Measurement> => {
-  // TODO: Handle different combinations of skip and startAfter requests
-  const result = updateList(measurements, payload.incoming, 0, 
-    payload.params.limit, TAPIS_DEFAULT_MEASUREMENTS_LISTING_LIMIT);
+const variablesMapCheck = (variables: InstrumentMap, instrumentId: string): InstrumentMap => {
+  const result: InstrumentMap = {...variables};
+  if(!(instrumentId in result)) {
+    result[instrumentId] = {...emptyResults}
+  }
   return result;
 }
 
-const setListingFailure = (measurements: TapisListResults<Streams.Measurement>,
-  payload: MeasurementsListingFailurePayload): TapisListResults<Streams.Measurement> => {
-  const result = setFailure(measurements, payload.error);
+const setListingRequest = (measurements: InstrumentMap, payload: MeasurementsListingRequestPayload): InstrumentMap => {
+  const { instId } = payload.params;
+  const result: InstrumentMap = variablesMapCheck(measurements, instId);
+  result[instId] = setRequesting<Streams.Measurement>(result[instId]);
+  return result;
+} 
+
+const setListingSuccess = (measurements: InstrumentMap, payload: MeasurementsListingSuccessPayload): InstrumentMap => {
+  const { instId, offset, limit } = payload.params;
+  const { incoming } = payload;
+  const result: InstrumentMap = variablesMapCheck(measurements, instId);
+  result[instId] = updateList<Streams.Measurement>(result[instId], incoming, offset, limit, TAPIS_DEFAULT_MEASUREMENTS_LISTING_LIMIT);
+  return result;
+}
+
+const setListingFailure = (measurements: InstrumentMap, payload: MeasurementsListingFailurePayload): InstrumentMap => {
+  const { instId } = payload.params;
+  const { error } = payload;
+  const result: InstrumentMap = variablesMapCheck(measurements, instId);
+  result[instId] = setFailure<Streams.Measurement>(result[instId], error);
   return result;
 }
 
 export function measurements(state: MeasurementsReducerState = initialState, action): MeasurementsReducerState {
   switch (action.type) {
-    case ACTIONS.TAPIS_MEASUREMENTS_LIST_REQUEST:
+    case ACTIONS.TAPIS_MEASUREMENTS_LIST_REQUEST: {
       return {
-        ...state,
-        measurements: setListingRequest(state.measurements, action.payload)
+        measurementMap: {
+          ...state.measurementMap,
+          ...setListingRequest(state.measurementMap, action.payload)
+        },
+        selected: state.selected
       };
-    case ACTIONS.TAPIS_MEASUREMENTS_LIST_SUCCESS:
+    }
+    case ACTIONS.TAPIS_MEASUREMENTS_LIST_SUCCESS: {
       return {
-        ...state,
-        measurements: setListingSuccess(state.measurements, action.payload)
+        measurementMap: {
+          ...state.measurementMap,
+          ...setListingSuccess(state.measurementMap, action.payload)
+        },
+        selected: state.selected
       };
-    case ACTIONS.TAPIS_MEASUREMENTS_LIST_FAILURE:
+    }
+    case ACTIONS.TAPIS_MEASUREMENTS_LIST_FAILURE: {
       return {
-        ...state,
-        measurements: setListingFailure(state.measurements, action.payload)
+        measurementMap: {
+          ...state.measurementMap,
+          ...setListingFailure(state.measurementMap, action.payload)
+        },
+        selected: state.selected
       };
+    }
+    case ACTIONS.TAPIS_SELECT_MEASUREMENT: {
+      
+    }
     default:
       return state;
   }

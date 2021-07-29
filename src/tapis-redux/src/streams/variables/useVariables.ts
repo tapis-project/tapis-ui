@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { list } from './actions';
+import { list, select } from './actions';
 import { TapisState } from '../../store/rootReducer';
 import { VariablesListCallback } from './types';
 import { Streams } from "@tapis/tapis-typescript";
@@ -11,10 +11,15 @@ interface VariablesListParams {
 }
 
 const useVariables = (config?: Config) => {
-  const variables = useSelector((state: TapisState) => state.variables);
+  const state = useSelector((state: TapisState) => state.variables);
   return {
-    variables,
-    list: (params: VariablesListParams) => list(config, params.request, params.onList),
+    state,
+    list: (params: VariablesListParams) => {
+      return list(config, params.request, params.onList)
+    },
+    select: (variable: Streams.Site) => {
+      return select(variable);
+    }
   };
 };
 

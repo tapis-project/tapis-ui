@@ -53,3 +53,10 @@ export const list = (config: Config = null, params: Streams.ListVariablesRequest
     args: [params]
   });
 };
+
+export const select = (site: Streams.Site) => {
+  return {
+    type: ACTIONS.TAPIS_SELECT_VARIABLE,
+    payload: site
+  }
+};

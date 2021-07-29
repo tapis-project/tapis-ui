@@ -14,15 +14,15 @@ interface VariablesProps  {
   onList?: VariablesListCallback,
 }
 
-const Variables: React.FC<VariablesProps> = ({ project, site, instrument, config, onList }) => {
+const VariablesAndMeasurements: React.FC<VariablesProps> = ({ project, site, instrument, config, onList }) => {
 
   return (
         project && site && instrument
-        ? <VariableList projectId={project.project_name} siteId={site.site_id} instrumentId={instrument.inst_id} config={config} onList={onList} />
+        ? <VariableAndMeasurementList projectId={project.project_name} siteId={site.site_id} instrumentId={instrument.inst_id} config={config} onList={onList} />
         : <SectionMessage type="info">
-          Select an instrument from the list.
+          Select an Instrument from the list.
         </SectionMessage>
   );
 }
 
-export default Variables;
+export default VariablesAndMeasurements;

@@ -2,8 +2,20 @@ import { Streams } from "@tapis/tapis-typescript";
 import { ApiCallback, TapisListResults } from 'tapis-redux/types';
 import * as ACTIONS from './actionTypes';
 
+
+export type MeasurementList = TapisListResults<Streams.Measurement>;
+
+export type InstrumentMap = {
+  [ instrumentId: string ]: MeasurementList
+}
+
 export type MeasurementsReducerState = {
-  measurements: TapisListResults<Streams.Measurement>
+  measurementMap: InstrumentMap,
+  selected: Streams.Measurement
+}
+
+export interface VariableMeasurmentListing {
+  [datetime: string]: number
 }
 
 export interface MeasurementsListingRequestPayload {
@@ -34,10 +46,16 @@ export type MeasurementsListingFailure = {
   payload: MeasurementsListingFailurePayload
 }
 
+export type MeasurementSelect = {
+  type: typeof ACTIONS.TAPIS_SELECT_MEASUREMENT,
+  payload: Streams.Measurement
+}
+
 export type MeasurementsListingAction = 
   | MeasurementsListingRequest
   | MeasurementsListingSuccess
-  | MeasurementsListingFailure;
+  | MeasurementsListingFailure
+  | MeasurementSelect;
 
 
 export type MeasurementsListCallback = ApiCallback<Streams.RespListMeasurements>;
