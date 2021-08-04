@@ -3,7 +3,6 @@ import { Config } from 'tapis-redux/types';
 import { Streams } from '@tapis/tapis-typescript';
 import { InstrumentList } from "tapis-ui/components/streams";
 import { InstrumentsListCallback } from 'tapis-redux/streams/instruments/types';
-import { default as Measurements } from "../Measurements";
 import { default as VariablesAndMeasurements } from "../VariablesAndMeasurements";
 import { ListSectionList, ListSection, ListSectionBody, ListSectionHeader, ListSectionDetail, ListSectionDetailSection } from 'tapis-app/Sections/ListSection';
 import { Icon } from 'tapis-ui/_common';

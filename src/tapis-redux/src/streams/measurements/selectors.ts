@@ -1,5 +1,4 @@
 import { Streams } from '@tapis/tapis-typescript';
-import { VariableList } from 'tapis-ui/components/streams';
 import { TapisState } from '../../store/rootReducer';
 import { MeasurementList, VariableMeasurmentListing } from "./types";
 

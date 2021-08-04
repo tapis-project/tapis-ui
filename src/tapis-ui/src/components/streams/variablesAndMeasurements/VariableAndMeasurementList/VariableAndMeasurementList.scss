@@ -8,6 +8,27 @@
   list-style-type: none;
 }
 
-.variable-list li:nth-child(odd){
+.variable-list li .measurements-list div:nth-child(odd){
   background-color: #f4f4f4;
+}
+
+.variable-list li .measurements-list {
+  padding-left: 20px;
+}
+
+.variable-list li:hover {
+  cursor: pointer;
+}
+
+.graph-container {
+  max-height: 0;
+  opacity: 0;
+  overflow-y: hidden;
+  transition: all 1s ease-out;
+}
+
+.graph-container.graph-container-expand {
+  max-height: 400px;
+  opacity: 1;
+  transition: all 1s ease-in;
 }

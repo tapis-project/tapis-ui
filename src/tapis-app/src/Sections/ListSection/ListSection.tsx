@@ -7,11 +7,12 @@ import { isExpired } from 'tapis-redux/utils';
 import { useDispatch } from 'react-redux';
 
 interface SectionProps {
-  children: React.ReactNode[] | React.ReactNode
+  children: React.ReactNode[] | React.ReactNode,
+  id?: string
 }
 
 interface SectionHeaderProps {
-  children: React.ReactNode[] | React.ReactNode
+  children: React.ReactNode[] | React.ReactNode,
   type?: string
 }
 
@@ -23,28 +24,28 @@ export const ListSectionHeader: React.FC<SectionHeaderProps> = ({children, type}
   )
 }
 
-export const ListSectionBody: React.FC<SectionProps> = ({children}) => {
-  return <div styleName="body">{children}</div>
+export const ListSectionBody: React.FC<SectionProps> = ({children, id}) => {
+  return <div id={id} styleName="body">{children}</div>
 }
 
-export const ListSectionList: React.FC<SectionProps> = ({children}) => {
-  return <div styleName="list">{children}</div>
+export const ListSectionList: React.FC<SectionProps> = ({children, id}) => {
+  return <div id={id} styleName="list">{children}</div>
 }
 
-export const ListSectionDetail: React.FC<SectionProps> = ({children}) => {
-  return <div styleName="detail">{children}</div>
+export const ListSectionDetail: React.FC<SectionProps> = ({children, id}) => {
+  return <div id={id} styleName="detail">{children}</div>
 }
 
-export const ListSectionDetailSection: React.FC<SectionProps> = ({children}) => {
-  return <div styleName="detail-section">{children}</div>
+export const ListSectionDetailSection: React.FC<SectionProps> = ({children, id}) => {
+  return <div id={id} styleName="detail-section">{children}</div>
 }
 
-export const ListSectionListFull: React.FC<SectionProps> = ({ children }) => {
-  return <div styleName="list-full">{children}</div>
+export const ListSectionListFull: React.FC<SectionProps> = ({ children, id }) => {
+  return <div id={id} styleName="list-full">{children}</div>
 };
 
-export const ListSectionDetailHalf: React.FC<SectionProps> = ({children}) => {
-  return <div styleName="detail-half">{children}</div>
+export const ListSectionDetailHalf: React.FC<SectionProps> = ({children, id}) => {
+  return <div id={id} styleName="detail-half">{children}</div>
 }
 
 
