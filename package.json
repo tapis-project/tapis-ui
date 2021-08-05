@@ -35,6 +35,7 @@
     "react-dom": "16.12.0",
     "react-dropzone": "^10.2.1",
     "react-hot-loader": "^4.13.0",
+    "react-query": "^3.19.2",
     "react-redux": "^7.2.2",
     "react-resize-detector": "^6.1.0",
     "react-router-dom": "^5.2.0",
