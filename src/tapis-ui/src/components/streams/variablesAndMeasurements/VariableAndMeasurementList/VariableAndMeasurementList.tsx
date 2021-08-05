@@ -22,13 +22,14 @@ interface VariableAndMeasurementItemProps {
   variable: Streams.Variable,
   instrumentId: string,
   onSelect: OnSelectCallback,
-  id: string
+  id: string,
+  graphWidth: number
 }
 
-const VariableAndMeasurementItem: React.FC<VariableAndMeasurementItemProps> = ({ instrumentId, variable, onSelect, id }) => {
+const VariableAndMeasurementItem: React.FC<VariableAndMeasurementItemProps> = ({ instrumentId, variable, onSelect, id, graphWidth }) => {
   const variableMeasurementSelector = getVariableMeasurements(instrumentId, variable.var_id);
   let measurements: VariableMeasurmentListing = useSelector<TapisState, VariableMeasurmentListing>(variableMeasurementSelector);
-  let containerWidth = document.getElementById("variableAndMeasurementContainer").clientWidth;
+ 
   //for testing
   measurements = {
     ...measurements,
@@ -36,7 +37,7 @@ const VariableAndMeasurementItem: React.FC<VariableAndMeasurementItemProps> = ({
     "2021-10-31T01:03:22": 4
   }
   let plotlyLayout: Partial<Plotly.Layout> = {
-    width: containerWidth,
+    width: graphWidth,
     height: 400
   };
   let plotlyData: any = [
@@ -67,15 +68,20 @@ const VariableAndMeasurementItem: React.FC<VariableAndMeasurementItemProps> = ({
           }
         </div>
         <div id={id} className="graph-container">
-          <Plot
-            data={plotlyData}
-            layout={plotlyLayout}
-          />
+          <div id={`${id}_size_wrapper`}>
+            <Plot
+              data={plotlyData}
+              layout={plotlyLayout}
+            />
+          </div>
         </div>
         
     </li>
   );
 };
+
+
+
 
 
 interface VariableAndMeasurementWrapperProps {
@@ -84,37 +90,102 @@ interface VariableAndMeasurementWrapperProps {
   onVariableSelect?: OnSelectCallback
 }
 
+let throttle = {
+  timer: null,
+  lock: false,
+  timeout: 500
+};
+
 const VariableAndMeasurementWrapper: React.FC<VariableAndMeasurementWrapperProps> = ({ result, instrumentId, onVariableSelect }) => {
-  let definitions = result.results;
-  let ids = definitions.map(() => uuidv4());
-  let selected = null;
+  //note if lower bound less than 10 the graph will not size properly, lower graph sizes results in default value in plotly
+  const graphSizeBounds = [100, 1000];
+
+  const [values, setValues] = useState({
+    definitions: result.results,
+    ids: result.results.map(() => uuidv4())
+  });
+  const [graphWidth, setGraphWidth] = useState(graphSizeBounds[0]);
+  const [selected, setSelected] = useState(null);
+
+  //using props to toggle expand state causes application to freeze up and does not animate properly, so just use dom selectors and css transitions
   let select = (id: string) => {
     return (variable: Streams.Variable) => {
-      if(selected == id) {
-        //using props to toggle expand state causes application to freeze up and does not animate properly, so just use dom selectors and css transitions
-        document.getElementById(id).classList.remove("graph-container-expand");
-        selected = null;
-      }
-      else {
-        document.getElementById(id).classList.add("graph-container-expand");
+      //remove selected if null or id matches the element already selected
+      if(id === null || selected == id) {
+        //if selected element exists remove expand style
         if(selected) {
           document.getElementById(selected).classList.remove("graph-container-expand");
         }
-        selected = id;
+        //set selector to null
+        setSelected(null);
       }
-      if(onVariableSelect) {
-        onVariableSelect(variable);
+      //select the variable
+      else {
+        //expand graph on selected element
+        document.getElementById(id).classList.add("graph-container-expand");
+        //if another element previously selected remove the expand style
+        if(selected) {
+          document.getElementById(selected).classList.remove("graph-container-expand");
+        }
+        //update selector
+        setSelected(id);
+        //execute external updates
+        if(onVariableSelect) {
+          onVariableSelect(variable);
+        }
       }
     };
   };
+
+  let setThrottle = () => {
+    throttle.timer = setTimeout(() => {
+      setGraphWidth(graphSizeBounds[0]);
+      setTimeout(() => {
+        let el: HTMLElement = document.getElementById(values.ids[0]);
+        if(el) {
+          let containerSize = el.clientWidth;
+          //adjust to bounds
+          let graphSize = Math.max(Math.min(containerSize, graphSizeBounds[1]), graphSizeBounds[0]);
+          setGraphWidth(graphSize);
+        }
+      }, 0);
+      throttle.timer = null;
+      throttle.lock = false;
+    }, throttle.timeout);
+    throttle.lock = true;
+  };
+  
+  let resetThrottle = () => {
+    clearTimeout(throttle.timer);
+    setThrottle();
+  };
+  
+  useEffect(() => {
+    let handleResize = () => {
+      if(!throttle.lock) {
+        setThrottle(); 
+      }
+      else {
+        resetThrottle();
+      }
+    }
+    window.addEventListener("resize", handleResize);
+    //create initial graph sizing
+    handleResize();
+    //remove event listener on rerender
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    }
+  //only rerun on value changes
+  }, [values]);
   
   return (
     <div className="variable-list">
       {
-        definitions.length
-        ? definitions.map((variable: Streams.Variable, index: number) => {
-          const id = ids[index]
-          return <VariableAndMeasurementItem variable={variable} instrumentId={instrumentId} key={id} id={id} onSelect={select(id)} />
+        values.definitions.length
+        ? values.definitions.map((variable: Streams.Variable, index: number) => {
+          const id = values.ids[index]
+          return <VariableAndMeasurementItem graphWidth={graphWidth} variable={variable} instrumentId={instrumentId} key={id} id={id} onSelect={select(id)} />
         })
         : <i>No variables found</i>
       }
