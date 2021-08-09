@@ -1,1 +1,0 @@
-export { useTapisQuery, useTapisMutation } from './useTapisQuery';

@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import TapisContext, { TapisContextType } from '../context';
 import { TapisQueryParams } from './types';
 
-export const queryHelper = <T extends unknown>(params: TapisQueryParams<T>, tapisContext: TapisContextType): Promise<T> => {
+const queryHelper = async <T extends unknown>(params: TapisQueryParams<T>, tapisContext: TapisContextType): Promise<T> => {
   // Get configuration from TapisContext
   const token = tapisContext.accessToken && tapisContext.accessToken.access_token ? tapisContext.accessToken.access_token : null;
   const tenant = tapisContext.tenantUrl;
@@ -29,16 +29,17 @@ export const queryHelper = <T extends unknown>(params: TapisQueryParams<T>, tapi
   const api: typeof params.api = new (params.api)(configuration);
 
   // Call the specified function name, and expect that specific return type
-  const resultPromise: Promise<T> = func.apply(api, args);
-  return resultPromise;
+  try {
+    const result: T = await func.apply(api, args);
+    return result;
+  } catch (error) {
+    if (error.json) {
+      const decoded = await error.json();
+      throw decoded;
+    } else {
+      throw error;
+    }
+  }
 }
 
-export const useTapisMutation = <T extends unknown>(params: TapisQueryParams<T>) => {
-  const tapisContext = useContext<TapisContextType>(TapisContext);
-  return useMutation(() => queryHelper<T>(params, tapisContext));
-}
-
-export const useTapisQuery = <T extends unknown>(params: TapisQueryParams<T>) => {
-  const tapisContext = useContext<TapisContextType>(TapisContext);
-  return useQuery(['query', params], () => queryHelper<T>(params, tapisContext));
-}
+export default queryHelper;

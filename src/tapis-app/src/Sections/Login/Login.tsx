@@ -10,11 +10,6 @@ const Login: React.FC = () => {
   
   const authCallback = useCallback<(token: Authenticator.RespCreateToken) => any>(
     (response) => {
-      /* eslint-disable */
-      // Handle errors during login
-      if (response instanceof Error || !response.result) {
-        return;
-      }
       setRedirect(true);
     },
     [setRedirect]

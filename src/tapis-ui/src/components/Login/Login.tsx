@@ -10,10 +10,11 @@ import * as Yup from 'yup';
 import './Login.module.scss';
 import './Login.scss';
 interface LoginProps  {
-  onAuth?: (token: Authenticator.RespCreateToken) => any
+  onAuth?: (token: Authenticator.RespCreateToken) => any,
+  onError?: (error: any) => any
 }
 
-const Login: React.FC<LoginProps> = ({ onAuth }) => {
+const Login: React.FC<LoginProps> = ({ onAuth, onError }) => {
   const { login, isLoading, isError, error } = useLogin();
   const { accessToken } = useContext(TapisContext);
 
@@ -29,7 +30,7 @@ const Login: React.FC<LoginProps> = ({ onAuth }) => {
 
   const formSubmit = (values, { setSubmitting }) => {
     const { username, password } = values;
-    login(username, password, onAuth);
+    login({ username, password, onSuccess: onAuth, onError });
     setSubmitting(false);
   }
 
@@ -79,7 +80,7 @@ const Login: React.FC<LoginProps> = ({ onAuth }) => {
             )}
             {isError && (
               <div styleName="message">
-                <Message canDismiss={false} type="error" scope="inline">{error}</Message>
+                <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
               </div>
             )}
           </div>
@@ -90,7 +91,8 @@ const Login: React.FC<LoginProps> = ({ onAuth }) => {
 };
 
 Login.defaultProps = {
-  onAuth: null
+  onAuth: null,
+  onError: null
 }
 
 
