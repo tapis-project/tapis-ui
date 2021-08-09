@@ -2,13 +2,13 @@ import React, { useState, useCallback } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Login as TapisLogin } from 'tapis-ui/components';
 import { SectionHeader } from 'tapis-ui/_common';
-import { LoginCallback } from 'tapis-redux/authenticator/types';
+import { Authenticator } from '@tapis/tapis-typescript';
 import { RespCreateTokenStatusEnum } from '@tapis/tapis-typescript-authenticator';
 
 const Login: React.FC = () => {
   const [redirect, setRedirect] = useState<boolean>(false);
   
-  const authCallback = useCallback<LoginCallback>(
+  const authCallback = useCallback<(token: Authenticator.RespCreateToken) => any>(
     (response) => {
       /* eslint-disable */
       // Handle errors during login
@@ -28,7 +28,7 @@ const Login: React.FC = () => {
     <>
       <SectionHeader>Login</SectionHeader>
       <div className="container">
-        <TapisLogin onAuth={authCallback} />
+        <TapisLogin onAuth={authCallback}/>
       </div>
     </>
   )
