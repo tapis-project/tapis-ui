@@ -115,7 +115,7 @@ module.exports = {
     '<rootDir>/src/tapis-ui',
     '<rootDir>/src/tapis-app',
     '<rootDir>/src/tapis-redux',
-    '<rootDir>/src/tapis-hooks'
+    '<rootDir>/src/tapis-hooks',
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner
