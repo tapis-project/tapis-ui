@@ -17,6 +17,8 @@ const queryHelper = async <T extends unknown>(params: TapisQueryParams<T>, tapis
 
   });
 
+  // If a token is present, add it to the headers for the call.
+  // (Some operations do not require a token)
   if (token) {
     configuration.headers = {
       headers: {
@@ -28,11 +30,13 @@ const queryHelper = async <T extends unknown>(params: TapisQueryParams<T>, tapis
   // Create an instance of the API
   const api: typeof params.api = new (params.api)(configuration);
 
-  // Call the specified function name, and expect that specific return type
   try {
+    // Call the specified function name, and expect that specific return type
     const result: T = await func.apply(api, args);
     return result;
   } catch (error) {
+    // If an exception occurred, try to decode the json response from it and
+    // rethrow it
     if (error.json) {
       const decoded = await error.json();
       throw decoded;

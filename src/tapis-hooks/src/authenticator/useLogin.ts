@@ -17,11 +17,12 @@ type LoginParams = {
 const useLogin = () => {
   const tapisContext = useContext(TapisContext);
 
-  // Save login state to tapis context for future calls
+  // On successful login, save the token to the TapisContext state
   const onSuccess = (response: Authenticator.RespCreateToken) => {
     tapisContext.setAccessToken(response.result.access_token);
   }
  
+  // This helper takes the username and password and assembles an API call
   const loginHelper = ({ username, password }: LoginHelperParams): Promise<Authenticator.RespCreateToken>  => {
     const reqCreateToken: Authenticator.ReqCreateToken = {
       username,
@@ -31,6 +32,9 @@ const useLogin = () => {
     const request: Authenticator.CreateTokenRequest = {
       reqCreateToken
     }
+
+    // Once the request parameters are wrapped, call queryHelper to
+    // perform the operation
     return queryHelper<Authenticator.RespCreateToken>({
       module: Authenticator,
       api: Authenticator.TokensApi,
@@ -39,8 +43,14 @@ const useLogin = () => {
     }, tapisContext);
   };
 
+  // The useMutation react-query hook is used to call operations that make server-side changes
+  // (Other hooks would be used for data retrieval)
+  //
+  // In this case, loginHelper is called to perform the operation, with an onSuccess callback
+  // passed as an option
   const { mutate, isLoading, isError, isSuccess, error } = useMutation(loginHelper, { onSuccess });
 
+  // Return hook object with loading states and login function
   return {
     isLoading,
     isError,
@@ -48,6 +58,8 @@ const useLogin = () => {
     error,
     login: (params: LoginParams) => {
       const { username, password, onSuccess, onError } = params;
+
+      // Call mutate to trigger a single post-like API operation
       return mutate(
         { username, password },
         { 

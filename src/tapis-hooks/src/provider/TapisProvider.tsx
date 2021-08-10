@@ -16,6 +16,8 @@ interface TapisProviderProps {
 const TapisProvider: React.FC<TapisProviderProps> = ({ token, tenantUrl, children }) => {
 
   const [ accessToken, setAccessToken ] = useState<Authenticator.NewAccessTokenResponse>(token);
+
+  // Callback wrapper for setting the access token, that also saves it in a cookie
   const accessTokenCallback = useCallback(
     (token) => {
       setAccessToken(token);
@@ -23,7 +25,10 @@ const TapisProvider: React.FC<TapisProviderProps> = ({ token, tenantUrl, childre
     },
     [setAccessToken]
   )
-  const contextValue: TapisContextType  = {
+
+  // Provide a context state for the rest of the application, including
+  // a way of modifying the state
+  const contextValue: TapisContextType = {
     accessToken,
     setAccessToken: accessTokenCallback,
     tenantUrl
@@ -53,8 +58,8 @@ const TapisProvider: React.FC<TapisProviderProps> = ({ token, tenantUrl, childre
     [token, setAccessToken]
   )
 
+  // react-query client
   const queryClient = new QueryClient();
-
 
   return (
     <TapisContext.Provider value={contextValue}>
