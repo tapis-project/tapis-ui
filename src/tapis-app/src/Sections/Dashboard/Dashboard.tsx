@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { SectionHeader, Icon } from 'tapis-ui/_common';
 import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'reactstrap';
 import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux';
+import { useTapisConfig } from 'tapis-hooks';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import './Dashboard.module.scss';
 import './Dashboard.scss';
@@ -51,21 +52,24 @@ const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name,
 }
 
 const Dashboard: React.FC = () => {
-  const { token } = useAuthenticator();
+  const { accessToken } = useTapisConfig();
   const systems = useSystems();
   const jobs = useJobs();
   const apps = useApps();
   const dispatch = useDispatch();
 
+  // TODO: Replace useEffect with react-query dependent retrieval
   useEffect(
     () => {
-      if (token) {
+      if (accessToken) {
+        /*
         dispatch(systems.list({}));
         dispatch(jobs.list({}));
         dispatch(apps.list({}));
+        */
       }
     },
-    [ token ]
+    [ accessToken ]
   )
 
 
@@ -81,7 +85,7 @@ const Dashboard: React.FC = () => {
       </div>
       <div styleName="cards">
         {
-          token ? (
+          accessToken ? (
             <>
               <DashboardCard
                 icon="data-files"

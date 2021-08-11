@@ -3,7 +3,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { useAuthenticator } from 'tapis-redux';
+import { useTapisConfig } from 'tapis-hooks';
 import './Sidebar.global.scss';
 import './Sidebar.module.scss';
 
@@ -65,12 +65,12 @@ const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
 
 
 const Sidebar: React.FC = () => {
-  const { token } = useAuthenticator();
+  const { accessToken } = useTapisConfig();
   return (
     <Nav styleName="root" vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
-      {!token && <SidebarItem to="/login" label="Login" iconName="user" />}
-      {token && <>
+      {!accessToken && <SidebarItem to="/login" label="Login" iconName="user" />}
+      {accessToken && <>
         <SidebarItem to="/systems" label="Systems" iconName="data-files" />
         <SidebarItem to="/apps" label="Apps" iconName="applications" />
         <SidebarItem to="/jobs" label="Jobs" iconName="jobs" />
