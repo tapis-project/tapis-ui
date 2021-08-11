@@ -1,0 +1,6 @@
+/* GENERIC: Roots */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Main_root */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Sectioning_root */
+
+/* TODO: Migrate `index.scss` styles for `body`, `html`, and other "root" elements */
+/* NOTE: Only do after merge of PR #6 / FP-273, which updates the root styles in `index.scss` */

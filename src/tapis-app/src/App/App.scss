@@ -1,0 +1,121 @@
+.workbench-wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    color: #484848;
+}
+.workbench-content {
+    /* As a flex item */
+    flex-grow: 1;
+
+    /* As a flex container */
+    display: flex;
+    flex-direction: column;
+    padding: 20px 25px 25px 25px; // for giving the working area some padding...
+}
+/* FAQ: If the workbench content has only a single child,
+        then it should be the same height as the app root */
+.workbench-content > :only-child {
+    height: 100%;
+}
+
+.workbench-content > :nth-child(2) {
+    flex-grow: 1;
+}
+
+.workbench-content .wb-text-primary {
+    color: #484848;
+}
+
+.workbench-content .wb-text-secondary {
+    color: #707070;
+}
+
+.workbench-content .wb-bold {
+  font-weight: 500;
+}
+
+.spin-sun {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+}
+
+.workbench-content .btn-link,
+.workbench-content .wb-link {
+  color: #9d85ef;
+}
+.workbench-content .btn-head {
+  color: #9d85ef;
+  cursor: pointer;
+}
+
+.workbench-content .btn-secondary {
+  background-color: #F4F4F4;
+  color: #484848;
+  border: 1px solid #AFAFAF;
+}
+
+.workbench-content .btn-primary {
+  background-color: #9d85ef;
+  color: white;
+  border: none;
+}
+
+.workbench-content .badge-success {
+  background-color: #43D130;
+}
+
+.workbench-content .badge-warning {
+  background-color: #C7CE1D;
+  color: white;
+}
+
+.workbench-content .badge-danger {
+  background-color: #EB6E6E;
+  color: white;
+}
+
+/* Overrides Bootstrap `.row`, because we need to
+   "undo" two horizontal instances of Bootstrap `.row`'s. */
+.workbench-content .row {
+  margin-right: -30px;
+  margin-left: -30px;
+}
+
+/* Align content tables to the left by undoing some Bootstrap */
+.workbench-content .container {
+    margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
+    padding-top: 20px;
+    padding-left: 0; /* override `padding-left: 20px;` */
+}
+/* Prevent width constraint for Extra Large breakpoint */
+/* TODO: Support Bootstrap mixins, or find another why to make this DRY */
+/* SEE: https://getbootstrap.com/docs/4.0/layout/grid/#example-usage */
+@media (min-width: 1200px) {
+    .workbench-content .container {
+        max-width: none;
+    }
+}
+/* Mimic `.container { max-width: … }` (Bootstrap Grid) for "Extra Extra Large" breakpoint */
+/* WARN: Non-standard un-documented first-party breakpoint */
+@media (min-width: 1700px) {
+    .workbench-content .container {
+        max-width: 1645px;
+    }
+}
+
+.modal-dialog {
+  height: 100vh;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcomeMessage {
+  margin: 20px 20px 0 20px;
+  flex-grow: 0;
+}

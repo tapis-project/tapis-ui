@@ -1,0 +1,50 @@
+/*
+Flex-Item Table-Wrap
+
+A wrapper to allow a table to behave like a flex item (because a `<table>` can __not__ be a flex item).
+
+Reference:
+- [Why does flex-box work with a div, but not a table?](https://stackoverflow.com/q/41421512/11817077))
+
+Markup:
+<section style="display: flex; flex-direction: column">
+  <header>Section Title</header>
+  <p>Section/Table Description</p>
+  <div class="o-flex-item-table-wrap">
+    <table>
+        <thead>
+          <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A</td>
+            <td>B</td>
+            <td>C</td>
+          </tr>
+        </thead>
+    </table>
+  </div>
+</section>
+
+Styleguide Objects.FlexItemTableWrap
+*/
+/* Constrain stretched <table>'s position and dimension */
+.o-flex-item-table-wrap {
+  /* Ensure wrapper has dimensions (which will be remaining space in parent) */
+  flex-grow: 1;
+
+  /* Set position and maximum dimensions for child <table> */
+  position: relative;
+}
+/* Strech <table> to fill available space of flex item (the wrapper) */
+.o-flex-item-table-wrap > table {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

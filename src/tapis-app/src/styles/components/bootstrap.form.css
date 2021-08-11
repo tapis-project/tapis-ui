@@ -1,0 +1,19 @@
+/*
+Form (Bootstrap)
+
+Override Bootstrap styles. See:
+
+- [ReactStrap Forms](https://reactstrap.github.io/components/form/)
+- [Bootstrap Forms](https://getbootstrap.com/docs/4.4/components/forms/)
+
+Styleguide Components.Bootstrap.Form
+*/
+.form-control {
+  border: var(--global-border--normal);
+  border-radius: 0;
+}
+input.form-control,
+textarea.form-control {
+  /* FAQ: Vertical padding reduced by 1px each to near input height of design * 1.2 */
+  padding: 6px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
+}

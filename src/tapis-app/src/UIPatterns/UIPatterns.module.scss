@@ -1,0 +1,28 @@
+// /* This is a version of the Dashboard stylesheet with these changes:
+//     - CSS Modules
+//     - minimal
+//     - no flexbox
+// */
+
+.container {
+  // FAQ: Extra padding is added to bottom only for this section
+  padding: 20px 40px 40px 25px;
+}
+
+.header {
+  border-bottom: 1px solid #707070;
+}
+
+.header h5 {
+  font-weight: 400;
+}
+
+/* FAQ: Ancestor of `.dashboard-items` */
+/* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
+.grid-item {
+  margin-top: 20px;
+}
+
+.items {
+  font-size: 14px;
+}
