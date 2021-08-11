@@ -3,7 +3,7 @@ import getToken from '../authenticator/selectors';
 import { ApiSagaRequest } from './types';
 import * as ACTIONS from './actionTypes';
 
-export function* apiSaga<T>(action: ApiSagaRequest<T>) {
+export function* apiSaga<T>(action: ApiSagaRequest<T>): any {
   const { config, onApi, onRequest, onSuccess, onFailure, module, func, args } = action.payload;
   try {
     // Notify external reducer that a request has begun

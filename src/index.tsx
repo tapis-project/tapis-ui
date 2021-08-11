@@ -1,12 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from 'tapis-app/src/App';
 import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';
+import { HashRouter as Router } from 'react-router-dom';
+import configureStore from 'tapis-redux/src/store';
+import { SectionHeader } from 'tapis-ui/src/_common';
+import TapisProvider from 'tapis-hooks/src/provider';
+import 'tapis-app/src/index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const store = configureStore();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <TapisProvider basePath="https://tacc.tapis.io">
+      <Provider store={store}>
+        <Router>
+          <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
+          <App />
+        </Router>
+      </Provider>
+    </TapisProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

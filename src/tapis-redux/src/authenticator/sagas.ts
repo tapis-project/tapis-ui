@@ -8,7 +8,7 @@ import { AuthenticatorLoginRequest } from './types';
 import { Authenticator } from '@tapis/tapis-typescript';
 import fetch from 'cross-fetch';
 
-export function* tapisAuth(payload) {
+export function* tapisAuth(payload: any) {
     const { config, username, password } = payload;
 
     // Authenticator does not seem to be properly supported in the API Spec
@@ -36,7 +36,7 @@ export function* tapisAuth(payload) {
     return response;
 }
 
-export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
+export function* authenticatorLogin(action: AuthenticatorLoginRequest): any {
   try {
     const response = yield call(tapisAuth, action.payload);
     // Notify tapis-redux store of token

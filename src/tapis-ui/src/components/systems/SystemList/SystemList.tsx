@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useSystems } from 'tapis-redux';
+import { useSystems } from 'tapis-redux/src';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
-import { SystemsListCallback } from 'tapis-redux/systems/types';
-import { Config } from 'tapis-redux/types';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/src/_common';
+import { SystemsListCallback } from 'tapis-redux/src/systems/types';
+import { Config } from 'tapis-redux/src/types';
 import './SystemList.scss';
 
 export type OnSelectCallback = (system: TapisSystem) => any;
@@ -46,10 +46,10 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
   useEffect(() => {
     dispatch(list({ onList }));
   }, [dispatch]);
-  const definitions: Array<TapisSystem> = systems.results;
+  const definitions: Array<TapisSystem | null> = systems.results;
   const [currentSystem, setCurrentSystem] = useState(String);
   const select = useCallback((system) => {
-    onSelect(system);
+    onSelect && onSelect(system);
     setCurrentSystem(system.id)
   },[onSelect, setCurrentSystem]);
 
@@ -66,7 +66,7 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
       {
         definitions.length
           ? definitions.map(
-              (system) => <SystemItem
+              (system) => system && <SystemItem
                             system={system}
                             selected={currentSystem === system.id}
                             select={select}
@@ -80,9 +80,9 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
 };
 
 SystemList.defaultProps = {
-  config: null,
-  onList: null,
-  onSelect: null
+  config: undefined,
+  onList: undefined,
+  onSelect: undefined
 }
 
 export default SystemList;

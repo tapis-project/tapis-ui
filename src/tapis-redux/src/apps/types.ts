@@ -1,4 +1,4 @@
-import { TapisListResults } from 'tapis-redux/types';
+import { TapisListResults } from 'tapis-redux/src/types';
 import { Apps } from '@tapis/tapis-typescript';
 import { AppsListingAction } from './list/types';
 

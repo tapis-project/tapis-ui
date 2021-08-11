@@ -1,6 +1,6 @@
 
 import { Authenticator } from '@tapis/tapis-typescript';
-import { queryHelper } from 'tapis-api/utils';
+import { queryHelper } from 'tapis-api/src/utils';
 
 
 export interface LoginParams {

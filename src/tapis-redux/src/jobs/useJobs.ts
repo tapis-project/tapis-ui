@@ -7,7 +7,7 @@ import { JobRetrieveCallback } from './retrieve/types';
 import { JobsListCallback } from './list/types';
 import { JobsSubmitCallback } from './submit/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { Config } from 'tapis-redux/types';
+import { Config } from 'tapis-redux/src/types';
 
 export interface ListJobsParams {
   onList?: JobsListCallback

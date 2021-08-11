@@ -3,8 +3,8 @@ import { cloneDeep } from 'lodash';
 // Paginated result type and utility functions
 export type TapisListResults<T> = {
   loading: boolean,
-  error: Error,
-  results: Array<T>,
+  error: Error | null,
+  results: Array<T | null>,
   offset: number,
   limit: number
 }
@@ -77,7 +77,7 @@ export const updateList = <T>(original: TapisListResults<T>, incoming: Array<T>,
 
   // If the offset is beyond the existing range, then pad with null
   if (original.results.length < offset) {
-    const padding: Array<T> = [];
+    const padding: Array<T | null> = [];
     for (let i = 0; i < offset - original.results.length; i++) {
       padding.push(null);
     }

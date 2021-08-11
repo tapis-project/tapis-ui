@@ -1,12 +1,12 @@
 import { Jobs } from '@tapis/tapis-typescript';
-import { ApiCallback } from 'tapis-redux/types';
+import { ApiCallback } from 'tapis-redux/src/types';
 import * as ACTIONS from './actionTypes';
 
 
 export type JobsSubmitState = {
   loading: boolean,
-  error: Error,
-  result: Jobs.Job
+  error: Error | null,
+  result: Jobs.Job | null
 }
 
 export interface JobsSubmitRequestPayload {
@@ -50,4 +50,4 @@ export type JobsSubmitAction =
   | JobsSubmitReset;
 
 
-export type JobsSubmitCallback = ApiCallback<Jobs.RespSubmitJob>;
+export type JobsSubmitCallback = ApiCallback<Jobs.RespSubmitJob> | null;

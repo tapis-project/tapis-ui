@@ -1,4 +1,4 @@
 import { Jobs } from '@tapis/tapis-typescript';
-import { ApiCallback } from 'tapis-redux/types';
+import { ApiCallback } from 'tapis-redux/src/types';
 
-export type JobRetrieveCallback = ApiCallback<Jobs.RespGetJob>;
+export type JobRetrieveCallback = ApiCallback<Jobs.RespGetJob> | null;

@@ -1,5 +1,5 @@
 import { Jobs } from '@tapis/tapis-typescript';
-import { ApiCallback } from 'tapis-redux/types';
+import { ApiCallback } from 'tapis-redux/src/types';
 import * as ACTIONS from './actionTypes';
 
 
@@ -37,4 +37,4 @@ export type JobsListingAction =
   | JobsListingFailure;
 
 
-export type JobsListCallback = ApiCallback<Jobs.RespGetJobList>;
+export type JobsListCallback = ApiCallback<Jobs.RespGetJobList> | null;

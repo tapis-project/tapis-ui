@@ -1,9 +1,9 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
-import { Icon } from 'tapis-ui/_common';
+import { Icon } from 'tapis-ui/src/_common';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from 'tapis-hooks/src';
 import './Sidebar.global.scss';
 import styles from './Sidebar.module.scss';
 
@@ -21,8 +21,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
         tag={RRNavLink}
         to={to}
         exact
-        styleName="link"
-        activeStyleName="link--active"
+        className={styles.link}
+        activeClassName={styles.link_Active}
         disabled={false}
       >
         <div className={`${styles.content} nav-content`}>
@@ -43,17 +43,17 @@ const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
   return (
     <div>
       <hr></hr>
-      <div styleName="system-content">
+      <div className={styles.systemContent}>
         <h6>Selected System</h6>
-        <div styleName="system-info">
+        <div className={styles.systemInfo}>
           <strong>ID: </strong>
           {system.id}
         </div>
-        <div styleName="system-info">
+        <div className={styles.systemInfo}>
           <strong>Type: </strong>
           {system.systemType}
         </div>
-        <div styleName="system-info">
+        <div className={styles.systemInfo}>
           <strong>Host: </strong>
           {system.host}
         </div>
@@ -67,7 +67,7 @@ const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();
   return (
-    <Nav styleName="root" vertical>
+    <Nav className={styles.root} vertical>
       <SidebarItem to="/" label="Dashboard" iconName="dashboard" />
       {!accessToken && <SidebarItem to="/login" label="Login" iconName="user" />}
       {accessToken && <>

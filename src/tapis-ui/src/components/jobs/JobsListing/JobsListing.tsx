@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useJobs } from 'tapis-redux';
-import { JobsListCallback } from 'tapis-redux/jobs/list/types';
-import { Config, TapisState } from 'tapis-redux/types';
+import { useJobs } from 'tapis-redux/src';
+import { JobsListCallback } from 'tapis-redux/src/jobs/list/types';
+import { Config, TapisState } from 'tapis-redux/src/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/src/_common';
 import './JobsListing.scss'
 
 export type OnSelectCallback = (app: Jobs.JobListDTO) => any;
@@ -57,11 +57,11 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
     [onSelect]
   )
 
-  const [currentJob, setCurrentJob] = useState(String);
+  const [currentJob, setCurrentJob] = useState<string>('');
   const select = useCallback<OnSelectCallback>(
     (job: Jobs.JobListDTO) => {
-      onSelect(job);
-      setCurrentJob(job.uuid)
+      onSelect && onSelect(job);
+      setCurrentJob(job.uuid ?? '')
   },
   [onSelect, setCurrentJob]);
 
@@ -73,14 +73,14 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
     return <Message canDismiss={false} type="error" scope="inline">{jobs.error.message}</Message>
   }
 
-  const jobsList: Array<Jobs.JobListDTO> = jobs.results;
+  const jobsList: Array<Jobs.JobListDTO | null> = jobs.results;
 
   return (
     <div className={className ? className : "job-list nav flex-column"}>
       {
         jobsList.length
-        ? jobsList.map((job: Jobs.JobListDTO) => {
-            return (
+        ? jobsList.map((job: Jobs.JobListDTO | null) => {
+            return job && (
               <JobsListingItem
                 job={job}
                 select={select}
@@ -96,9 +96,9 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
 };
 
 JobsListing.defaultProps = {
-  config: null,
+  config: undefined,
   onList: null,
-  onSelect: null
+  onSelect: undefined
 }
 
 export default JobsListing;

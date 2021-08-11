@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useJobs } from 'tapis-redux';
-import { JobRetrieveCallback } from 'tapis-redux/jobs/retrieve/types';
-import { Config, TapisState } from 'tapis-redux/types';
+import { useJobs } from 'tapis-redux/src';
+import { JobRetrieveCallback } from 'tapis-redux/src/jobs/retrieve/types';
+import { Config, TapisState } from 'tapis-redux/src/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner, DescriptionList } from 'tapis-ui/_common';
+import { LoadingSpinner, DescriptionList } from 'tapis-ui/src/_common';
 
 export type OnRetrieveCallback = JobRetrieveCallback;
 
@@ -17,23 +17,23 @@ interface JobDetailProps {
 const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) => {
   const dispatch = useDispatch();
 
-  const [job, setJob] = useState<Jobs.Job>(null);
+  const [job, setJob] = useState<Jobs.Job | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Get a file listing given the systemId and path
   const { jobs, retrieve } = useJobs(config);
 
-  const jobRetrieveCallback = useCallback<JobRetrieveCallback>(
+  const jobRetrieveCallback = useCallback(
     (response: Jobs.RespGetJob) => {
       if (onRetrieve) {
         onRetrieve(response);
       }
       if (response.status !== "success") {
-        setError(response.message);
+        setError(response.message || null);
       } else {
         setError(null);
-        setJob(response.result);
+        setJob(response.result || null);
       }
       setLoading(false);
     },
@@ -63,7 +63,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) =>
 };
 
 JobDetail.defaultProps = {
-  config: null,
+  config: undefined,
   onRetrieve: null
 }
 

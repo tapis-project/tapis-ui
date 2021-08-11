@@ -6,7 +6,7 @@ export type TapisContextType = {
 }
 
 export const authContext: TapisContextType = {
-  basePath: null,
+  basePath: '',
 }
 
 const TapisContext: React.Context<TapisContextType> = React.createContext<TapisContextType>(authContext);

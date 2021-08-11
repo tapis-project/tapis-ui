@@ -1,24 +1,24 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
 import { useDispatch } from 'react-redux';
-import { useApps, useJobs } from 'tapis-redux';
+import { useApps, useJobs } from 'tapis-redux/src';
 import { Jobs } from '@tapis/tapis-typescript';
-import { AppsListing } from 'tapis-ui/components/apps';
-import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
-import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
-import { SectionMessage, Icon } from 'tapis-ui/_common';
+import { AppsListing } from 'tapis-ui/src/components/apps';
+import { OnSelectCallback } from 'tapis-ui/src/components/apps/AppsListing';
+import JobLauncher from 'tapis-ui/src/components/jobs/JobLauncher';
+import { SectionMessage, Icon } from 'tapis-ui/src/_common';
 import { 
   ListSection, 
   ListSectionBody, 
   ListSectionDetail,
   ListSectionList,
   ListSectionHeader
-} from 'tapis-app/Sections/ListSection';
+} from 'tapis-app/src/Sections/ListSection';
 
 const Apps: React.FC = () => {
   const { resetSubmit } = useJobs();
   const dispatch = useDispatch();
-  const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob>(null);
+  const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob | null>(null);
   const { list } = useApps();
   const appSelectCallback = useCallback<OnSelectCallback>(
     (app: TapisApp) => {
@@ -29,7 +29,7 @@ const Apps: React.FC = () => {
         appId: app.id,
         appVersion: app.version,
         name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-        execSystemId
+        execSystemId: execSystemId ?? undefined
       });
     },
     [ setInitialValues, dispatch, resetSubmit ]

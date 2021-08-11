@@ -6,12 +6,12 @@ import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/sagas/types';
-import { Config } from 'tapis-redux/types';
+} from 'tapis-redux/src/sagas/types';
+import { Config } from 'tapis-redux/src/types';
 
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, onList: JobsListCallback = null, params: Jobs.GetJobListRequest = {}) => {
+export const list = (config: Config | undefined = undefined, onList: JobsListCallback = null, params: Jobs.GetJobListRequest = {}) => {
   const onRequest: OnRequestCallback = () => {
     return {
       type: ACTIONS.TAPIS_JOBS_LIST_REQUEST,
@@ -40,7 +40,7 @@ export const list = (config: Config = null, onList: JobsListCallback = null, par
 
   return apiCall<Jobs.RespGetJobList>({
     config,
-    onApi: onList,
+    onApi: onList ?? undefined,
     onRequest,
     onSuccess,
     onFailure,
