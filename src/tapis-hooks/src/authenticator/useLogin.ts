@@ -41,8 +41,9 @@ const useLogin = () => {
           onSuccess,
           onError
         }
-    )
-    }
+      )
+    },
+    logout: () => setAccessToken(null)
   }
 }
 

@@ -20,7 +20,11 @@ const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps> > = ({
   const accessTokenCallback = useCallback(
     (token) => {
       setAccessToken(token);
-      Cookies.set('tapis-token', JSON.stringify(token));
+      if (!token) {
+        Cookies.remove('tapis-token');
+      } else {
+        Cookies.set('tapis-token', JSON.stringify(token));
+      }
     },
     [setAccessToken]
   )
