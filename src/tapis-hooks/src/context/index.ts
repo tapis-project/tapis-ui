@@ -1,4 +1,2 @@
-import TapisContext from './TapisContext';
-export { TapisContextType } from './TapisContext';
-
-export default TapisContext;
+export { default as TapisContext, TapisContextType } from './TapisContext';
+export { default as useTapisConfig } from './useTapisConfig';

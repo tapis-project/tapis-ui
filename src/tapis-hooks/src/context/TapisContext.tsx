@@ -3,13 +3,13 @@ import { Authenticator } from '@tapis/tapis-typescript';
 
 export type TapisContextType = {
   accessToken: Authenticator.NewAccessTokenResponse,
-  tenantUrl: string,
+  basePath: string,
   setAccessToken: (token: Authenticator.NewAccessTokenResponse) => any
 }
 
 export const authContext: TapisContextType = {
   accessToken: null,
-  tenantUrl: null,
+  basePath: null,
   setAccessToken: null
 }
 

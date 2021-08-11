@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Label, Input, Button } from 'reactstrap';
 import { useLogin } from 'tapis-hooks/authenticator';
-import TapisContext from 'tapis-hooks/context';
+import { useTapisConfig } from 'tapis-hooks/context';
 import { LoadingSpinner } from '../../_common';
 import { Formik, Form,} from 'formik';
 import { FieldWrapper, Icon, Message } from 'tapis-ui/_common';
@@ -16,7 +16,7 @@ interface LoginProps  {
 
 const Login: React.FC<LoginProps> = ({ onAuth, onError }) => {
   const { login, isLoading, isError, error } = useLogin();
-  const { accessToken } = useContext(TapisContext);
+  const { accessToken } = useTapisConfig();
 
   const validationSchema = (props) => {
     return Yup.lazy(values => {

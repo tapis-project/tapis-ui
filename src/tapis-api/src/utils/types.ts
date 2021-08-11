@@ -1,14 +1,3 @@
-// Default configuration uses environment variables to configure URLs
-export const defaultConfig: Config = {
-  jwt: null,
-  tenant: process.env.TAPIS_TENANT_URL
-};
-
-export interface Config {
-  jwt: string,
-  tenant: string,
-}
-
 type BaseApiClass = {
   new(...args: any[]): any
 };
@@ -84,5 +73,15 @@ export type TapisQueryParams<T> = {
   /**
    * Any 
    */
-  args: any[]
+  args: any[],
+
+  /**
+   * TAPIS API Base Path (e.g. https://tacc.tapis.io)
+   */
+  basePath: string,
+
+  /**
+   * TAPIS token
+   */
+  jwt: string
 }

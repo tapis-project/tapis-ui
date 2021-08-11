@@ -14,7 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const store = configureStore();
 
 ReactDOM.render(
-  <TapisProvider tenantUrl="https://tacc.tapis.io">
+  <TapisProvider basePath="https://tacc.tapis.io">
     <Provider store={store}>
       <Router>
         <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>

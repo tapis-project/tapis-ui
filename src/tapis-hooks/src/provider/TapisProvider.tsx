@@ -10,10 +10,10 @@ import TapisContext, { TapisContextType } from '../context/TapisContext';
 interface TapisProviderProps {
   children: React.ReactNode[] | React.ReactNode,
   token?: Authenticator.NewAccessTokenResponse,
-  tenantUrl: string
+  basePath: string
 }
 
-const TapisProvider: React.FC<TapisProviderProps> = ({ token, tenantUrl, children }) => {
+const TapisProvider: React.FC<TapisProviderProps> = ({ token, basePath, children }) => {
 
   const [ accessToken, setAccessToken ] = useState<Authenticator.NewAccessTokenResponse>(token);
 
@@ -31,7 +31,7 @@ const TapisProvider: React.FC<TapisProviderProps> = ({ token, tenantUrl, childre
   const contextValue: TapisContextType = {
     accessToken,
     setAccessToken: accessTokenCallback,
-    tenantUrl
+    basePath
   }
 
   // Attempt to load cached cookie

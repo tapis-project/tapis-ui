@@ -73,6 +73,7 @@ module.exports = {
     '^tapis-ui(.*)$': '<rootDir>/src/tapis-ui/src$1',
     '^tapis-redux(.*)$': '<rootDir>/src/tapis-redux/src$1',
     '^tapis-hooks(.*)$': '<rootDir>/src/tapis-hooks/src$1',
+    '^tapis-api(.*)$': '<rootDir>/src/tapis-api/src$1',
     '^_common(.*)$': '<rootDir>/src/tapis-ui/src/_common$1',
     '^fixtures(.*)$': '<rootDir>/fixtures$1',
   },

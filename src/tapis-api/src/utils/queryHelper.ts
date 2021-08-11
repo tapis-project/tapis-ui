@@ -1,28 +1,20 @@
-import { useQuery, useMutation } from 'react-query';
-import { useContext } from 'react';
-import TapisContext, { TapisContextType } from '../context';
 import { TapisQueryParams } from './types';
 
-const queryHelper = async <T extends unknown>(params: TapisQueryParams<T>, tapisContext: TapisContextType): Promise<T> => {
-  // Get configuration from TapisContext
-  const token = tapisContext.accessToken && tapisContext.accessToken.access_token ? tapisContext.accessToken.access_token : null;
-  const tenant = tapisContext.tenantUrl;
-
-  const { module, func, args } = params;
+const queryHelper = async <T extends unknown>(params: TapisQueryParams<T>): Promise<T> => {
+  const { module, func, args, jwt, basePath } = params;
 
   // Generate a configuration object for the module with the
   // API URL and the authorization header
   const configuration = new (module.Configuration)({
-    basePath: tenant,
-
+    basePath
   });
 
   // If a token is present, add it to the headers for the call.
   // (Some operations do not require a token)
-  if (token) {
+  if (jwt) {
     configuration.headers = {
       headers: {
-        "X-Tapis-Token": token
+        "X-Tapis-Token": jwt
       }
     }
   }

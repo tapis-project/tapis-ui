@@ -8,7 +8,7 @@ import TapisProvider from 'tapis-hooks/provider';
 export default function renderComponent(component, store, history) {
   if (history) {
     return render(
-      <TapisProvider tenantUrl="https://tacc.tapis.io">
+      <TapisProvider baseUrl="https://tacc.tapis.io">
         <Provider store={store}>
           <Router history={history}>{component}</Router>
         </Provider>
@@ -16,7 +16,7 @@ export default function renderComponent(component, store, history) {
     );
   }
   return render(
-    <TapisProvider tenantUrl="https://tacc.tapis.io">
+    <TapisProvider baseUrl="https://tacc.tapis.io">
       <Provider store={store}>
         <BrowserRouter>{component}</BrowserRouter>
       </Provider>
