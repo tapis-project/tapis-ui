@@ -8,17 +8,6 @@ type ApiModule = {
   }
 }
 
-export type Action = {
-  type: string,
-  payload?: any
-}
-
-export type OnRequestCallback = () => Action;
-
-export type OnSuccessCallback<T> = (result: T) => any;
-
-export type OnFailureCallback = (error: Error) => Action;
-
 /**
  * A type that describes a payload to send to the API saga
  * 
@@ -38,23 +27,6 @@ export type OnFailureCallback = (error: Error) => Action;
  * ```
  */
 export type TapisQueryParams<T> = {
-  /**
-   * Callback that yields an action when the API request begins
-   */
-  onRequest?: OnRequestCallback,
-
-  /**
-   * Callback that yields an action when the API request succeeds
-   * @param result - the result of the provided function
-   */
-  onSuccess?: OnSuccessCallback<T>,
-
-  /**
-   * Callback that yields an action when the API request fails
-   * @param error - the error object generated
-   */
-  onFailure?: OnFailureCallback,
-
   /**
    * The `@tapis/tapis-typescript` module to use
    */
