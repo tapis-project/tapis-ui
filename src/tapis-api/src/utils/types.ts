@@ -9,20 +9,19 @@ type ApiModule = {
 }
 
 /**
- * A type that describes a payload to send to the API saga
+ * A type that describes parameters for queryHelper
  * 
  * @example
  * ```
  * import { Systems } from '@tapis/tapis-typescript'
  * 
- * const payload: ApiSagaPayload<Systems.RespSystems> = {
- *   onRequest: () => { type: 'TAPIS_SYSTEMS_LIST_REQUEST' },
- *   onSuccess: (result) => { type: 'TAPIS_SYSTEMS_LIST_SUCCESS', payload: result },
- *   onFailure: (error) => { type: 'TAPIS_SYSTEMS_LIST_FAILURE', payload: error },
+ * const payload: TapisQueryParams<Systems.RespSystems> = {
  *   module: Systems,
  *   api: Systems.SystemsApi,
  *   func: Systems.SystemsApi.prototype.GetSystems,
- *   args: [ {} ]
+ *   args: [ {} ],
+ *   basePath: "https://tacc.tapis.io",
+ *   jwt: "abcedef"
  * }
  * ```
  */
