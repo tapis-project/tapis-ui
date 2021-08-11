@@ -1,23 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Label, Input, Button } from 'reactstrap';
-import { useDispatch } from 'react-redux';
-import { useAuthenticator } from 'tapis-redux';
+import { useLogin } from 'tapis-hooks/authenticator';
+import { useTapisConfig } from 'tapis-hooks/context';
 import { LoadingSpinner } from '../../_common';
-import { Config } from 'tapis-redux/types';
-import { LoginCallback } from 'tapis-redux/authenticator/types';
 import { Formik, Form,} from 'formik';
 import { FieldWrapper, Icon, Message } from 'tapis-ui/_common';
+import { Authenticator } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 import './Login.module.scss';
 import './Login.scss';
 interface LoginProps  {
-  config?: Config,
-  onAuth?: LoginCallback
+  onAuth?: (token: Authenticator.RespCreateToken) => any,
+  onError?: (error: any) => any
 }
 
-const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
-  const dispatch = useDispatch();
-  const { login, loading, error, token } = useAuthenticator(config);
+const Login: React.FC<LoginProps> = ({ onAuth, onError }) => {
+  const { login, isLoading, isError, error } = useLogin();
+  const { accessToken } = useTapisConfig();
 
   const validationSchema = (props) => {
     return Yup.lazy(values => {
@@ -31,7 +30,7 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
 
   const formSubmit = (values, { setSubmitting }) => {
     const { username, password } = values;
-    dispatch(login(username, password, onAuth));
+    login({ username, password, onSuccess: onAuth, onError });
     setSubmitting(false);
   }
 
@@ -39,7 +38,6 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
     username: '',
     password: ''
   }
-
 
   return (
     <Formik
@@ -69,20 +67,20 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
             <Button
               type="submit"
               className="btn btn-primary"
-              disabled={isSubmitting || loading || token != null}>
+              disabled={isSubmitting || isLoading || accessToken != null}>
               Log In
             </Button>
             {
-              loading && <LoadingSpinner className="login__loading-spinner" placement="inline"/>
+              isLoading && <LoadingSpinner className="login__loading-spinner" placement="inline"/>
             }
-            {token && (
+            {accessToken && (
               <div styleName="message">
                 <Message canDismiss={false} type="success" scope="inline">Successfully logged in</Message>
               </div>
             )}
-            {error && (
+            {isError && (
               <div styleName="message">
-                <Message canDismiss={false} type="error" scope="inline">{error.message}</Message>
+                <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
               </div>
             )}
           </div>
@@ -93,8 +91,8 @@ const Login: React.FC<LoginProps> = ({ config, onAuth }) => {
 };
 
 Login.defaultProps = {
-  config: null,
-  onAuth: null
+  onAuth: null,
+  onError: null
 }
 
 

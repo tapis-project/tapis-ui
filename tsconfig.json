@@ -26,7 +26,11 @@
       "tapis-ui": ["src/tapis-ui/src"],
       "tapis-ui/*": ["src/tapis-ui/src/*"],
       "tapis-redux": ["src/tapis-redux/src"],
-      "tapis-redux/*": ["src/tapis-redux/src/*"]
+      "tapis-redux/*": ["src/tapis-redux/src/*"],
+      "tapis-hooks": ["src/tapis-hooks/src"],
+      "tapis-hooks/*": ["src/tapis-hooks/src/*"],
+      "tapis-api": ["src/tapis-api/src"],
+      "tapis-api/*": ["src/tapis-api/src/*"]
     }
   },
   "exclude": [

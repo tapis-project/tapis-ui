@@ -6,6 +6,7 @@ import { HashRouter as Router } from 'react-router-dom';
 import configureStore from '../../tapis-redux/src/store';
 import App from './App';
 import { SectionHeader } from 'tapis-ui/_common';
+import TapisProvider from 'tapis-hooks/provider';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,12 +14,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const store = configureStore();
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router>
-      <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
-      <App />
-    </Router>
-  </Provider>,
+  <TapisProvider basePath="https://tacc.tapis.io">
+    <Provider store={store}>
+      <Router>
+        <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
+        <App />
+      </Router>
+    </Provider>
+  </TapisProvider>,
   document.getElementById('react-root')
 );
 

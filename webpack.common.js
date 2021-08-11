@@ -46,6 +46,8 @@ module.exports = {
       'tapis-ui': path.resolve(__dirname, 'src/tapis-ui/src/'),
       'tapis-app': path.resolve(__dirname, 'src/tapis-app/src/'),
       'tapis-redux': path.resolve(__dirname, 'src/tapis-redux/src/'),
+      'tapis-hooks': path.resolve(__dirname, 'src/tapis-hooks/src/'),
+      'tapis-api': path.resolve(__dirname, 'src/tapis-api/src/')
     },
   },
   optimization: {

@@ -6,16 +6,7 @@ import './ListSection.module.scss';
 import { isExpired } from 'tapis-redux/utils';
 import { useDispatch } from 'react-redux';
 
-interface SectionProps {
-  children: React.ReactNode[] | React.ReactNode
-}
-
-interface SectionHeaderProps {
-  children: React.ReactNode[] | React.ReactNode
-  type?: string
-}
-
-export const ListSectionHeader: React.FC<SectionHeaderProps> = ({children, type}) => {
+export const ListSectionHeader: React.FC<React.PropsWithChildren<{ type?: string }> > = ({children, type}) => {
   return (
     <div styleName={type}>
       <SectionHeader>{children}</SectionHeader>
@@ -23,19 +14,19 @@ export const ListSectionHeader: React.FC<SectionHeaderProps> = ({children, type}
   )
 }
 
-export const ListSectionBody: React.FC<SectionProps> = ({children}) => {
+export const ListSectionBody: React.FC<React.PropsWithChildren<{}> > = ({children}) => {
   return <div styleName="body">{children}</div>
 }
 
-export const ListSectionList: React.FC<SectionProps> = ({children}) => {
+export const ListSectionList: React.FC<React.PropsWithChildren<{}> > = ({children}) => {
   return <div styleName="list">{children}</div>
 }
 
-export const ListSectionDetail: React.FC<SectionProps> = ({children}) => {
+export const ListSectionDetail: React.FC<React.PropsWithChildren<{}> > = ({children}) => {
   return <div styleName="detail">{children}</div>
 }
 
-export const ListSection: React.FC<SectionProps> = ({ children }) => {
+export const ListSection: React.FC<React.PropsWithChildren<{}> > = ({ children }) => {
   const dispatch = useDispatch();
   const { token, logout } = useAuthenticator();
   if (!token || isExpired(token)) {
