@@ -8,12 +8,11 @@ import { Authenticator } from '@tapis/tapis-typescript';
 import TapisContext, { TapisContextType } from '../context/TapisContext';
 
 interface TapisProviderProps {
-  children: React.ReactNode[] | React.ReactNode,
   token?: Authenticator.NewAccessTokenResponse,
   basePath: string
 }
 
-const TapisProvider: React.FC<TapisProviderProps> = ({ token, basePath, children }) => {
+const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps> > = ({ token, basePath, children }) => {
 
   const [ accessToken, setAccessToken ] = useState<Authenticator.NewAccessTokenResponse>(token);
 
