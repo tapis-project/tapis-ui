@@ -5,10 +5,12 @@ import { useTapisConfig } from 'tapis-hooks';
 
 const useList = (params: Systems.GetSystemsRequest) => {
   const { accessToken, basePath } = useTapisConfig();
-  const limit = params.limit ?? 100;
   const result = useQuery<Systems.RespSystems, Error>(
-    [params],
-    () => list(params, basePath, accessToken.access_token)
+    [params, accessToken],
+    () => list(params, basePath, accessToken.access_token),
+    {
+      enabled: !!accessToken
+    }
   );
   return result;
 }
