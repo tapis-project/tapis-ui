@@ -9,25 +9,11 @@
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@reduxjs/toolkit": "^1.5.1",
     "@tapis/tapis-typescript": "^0.0.10",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.24",
-    "@types/lodash.clonedeep": "^4.5.6",
-    "@types/node": "^12.20.19",
-    "@types/react": "^17.0.17",
-    "@types/react-css-modules": "^4.6.3",
-    "@types/react-dom": "^17.0.9",
-    "@types/react-redux": "^7.1.16",
-    "@types/redux-logger": "^3.0.8",
-    "@types/redux-saga": "^0.10.5",
-    "@types/redux-thunk": "^2.1.0",
     "axios": "^0.21.1",
     "babel-plugin-react-css-modules": "^5.2.6",
     "bootstrap": "^4.6.0",
     "cross-fetch": "^3.1.4",
     "formik": "^2.2.6",
-    "jquery": "^3.6.0",
     "js-cookie": "^3.0.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
@@ -56,12 +42,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ."
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "prettier"
     ]
   },
   "browserslist": {
@@ -77,10 +65,26 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "@types/jest": "^26.0.24",
     "@types/js-cookie": "^2.2.7",
+    "@types/lodash.clonedeep": "^4.5.6",
+    "@types/node": "^12.20.19",
+    "@types/react": "^17.0.17",
+    "@types/react-css-modules": "^4.6.3",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.8",
+    "@types/redux-logger": "^3.0.8",
     "@types/redux-mock-store": "^1.0.3",
+    "@types/redux-saga": "^0.10.5",
+    "@types/redux-thunk": "^2.1.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
     "prettier": "^2.3.2",
-    "redux-mock-store": "^1.5.4"
+    "redux-mock-store": "^1.5.4",
+    "redux-saga-test-plan": "^4.0.3"
   }
 }

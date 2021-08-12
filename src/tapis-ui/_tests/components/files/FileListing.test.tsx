@@ -2,16 +2,16 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from '../../utils/testing';
-import { SystemList } from 'tapis-ui/components/systems';
+import { FileListing } from 'tapis-ui/src/components/files';
 import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 
 const mockStore = configureStore();
 
-describe('SystemList', () => {
-  it('renders SystemList component', () => {
+describe('Files', () => {
+  it('renders File Listing component', () => {
     const store = mockStore(tapisReduxStore);
 
-    const { getAllByText } = renderComponent(<SystemList />, store);
-    expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
+    const { getAllByText } = renderComponent(<FileListing systemId={"system"} path={"/"} />, store);
+    expect(getAllByText(/file1/).length).toEqual(1);
   });
 });

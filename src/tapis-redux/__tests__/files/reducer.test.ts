@@ -1,12 +1,12 @@
-import { files } from 'tapis-redux/files/reducer';
-import * as ACTIONS from 'tapis-redux/files/actionTypes';
+import { files } from 'tapis-redux/src/files/reducer';
+import * as ACTIONS from 'tapis-redux/src/files/actionTypes';
 import {
   FilesReducerState,
   FileListingRequest,
   FileListingFailure,
   FileListingSuccess
-} from 'tapis-redux/files/types';
-import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+} from 'tapis-redux/src/files/types';
+import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 import { fileInfo, filesStore } from 'fixtures/files.fixtures';
 
 describe('Files reducer', () => {

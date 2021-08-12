@@ -1,13 +1,13 @@
-import { apps } from 'tapis-redux/apps/reducer';
-import { AppsReducerState } from 'tapis-redux/apps/types';
-import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+import { apps } from 'tapis-redux/src/apps/reducer';
+import { AppsReducerState } from 'tapis-redux/src/apps/types';
+import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 import { tapisApp, appsStore } from 'fixtures/apps.fixtures';
 import {
   AppsListingRequest,
   AppsListingFailure,
   AppsListingSuccess
-} from 'tapis-redux/apps/list/types';
-import * as LIST_ACTIONS from 'tapis-redux/apps/list/actionTypes';
+} from 'tapis-redux/src/apps/list/types';
+import * as LIST_ACTIONS from 'tapis-redux/src/apps/list/actionTypes';
 
 describe('Apps reducer', () => {
   it('reduces a listing request', () => {

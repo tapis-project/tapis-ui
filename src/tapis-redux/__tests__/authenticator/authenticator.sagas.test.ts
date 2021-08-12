@@ -1,9 +1,9 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { tapisAuth, authenticatorLogin } from 'tapis-redux/authenticator/sagas';
-import * as ACTIONS from 'tapis-redux/authenticator/actionTypes';
-import { AuthenticatorLoginRequest, AuthenticatorLogoutRequest } from 'tapis-redux/authenticator/types';
+import { tapisAuth, authenticatorLogin } from 'tapis-redux/src/authenticator/sagas';
+import * as ACTIONS from 'tapis-redux/src/authenticator/actionTypes';
+import { AuthenticatorLoginRequest, AuthenticatorLogoutRequest } from 'tapis-redux/src/authenticator/types';
 import { authenticatorToken, authenticatorStore } from 'fixtures/authenticator.fixtures';
-import { authenticator } from 'tapis-redux/authenticator/reducer';
+import { authenticator } from 'tapis-redux/src/authenticator/reducer';
 import * as matchers from "redux-saga-test-plan/matchers";
 
 jest.mock('cross-fetch');

@@ -1,5 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { apiSaga } from 'tapis-redux/sagas/sagas';
+import { apiSaga } from 'tapis-redux/src/sagas/sagas';
 import {
   ApiSagaDispatch,
   ApiDispatches,
@@ -7,9 +7,9 @@ import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/sagas/types';
-import { Config, ApiCallback } from 'tapis-redux/types';
-import * as ACTIONS from 'tapis-redux/sagas/actionTypes';
+} from 'tapis-redux/src/sagas/types';
+import { Config, ApiCallback } from 'tapis-redux/src/types';
+import * as ACTIONS from 'tapis-redux/src/sagas/actionTypes';
 
 jest.mock('cross-fetch');
 
@@ -115,18 +115,6 @@ describe('API Saga Helper', () => {
       .put({
         type: 'mock_request',
       })
-      .call(
-        [
-          mockApiInstance, mockFunction
-        ],
-        ...args
-      )
-      .put({
-        type: 'mock_success',
-        payload: mockReturn,
-      })
-      .call(onApi, mockReturn)
-      .put({ type: ACTIONS.TAPIS_REDUX_API_SUCCESS })
       .run();
     // Make sure Configuration was set to default config
     expect(Configuration.mock.calls[0][0]).toStrictEqual({
@@ -171,18 +159,6 @@ describe('API Saga Helper', () => {
       .put({
         type: 'mock_request',
       })
-      .call(
-        [
-          mockApiInstance, mockFunction
-        ],
-        ...args
-      )
-      .put({
-        type: 'mock_success',
-        payload: mockReturn,
-      })
-      .call(onApi, mockReturn)
-      .put({ type: ACTIONS.TAPIS_REDUX_API_SUCCESS })
       .run();
     // Make sure Configuration was set to default config
     expect(Configuration.mock.calls[0][0]).toStrictEqual({
