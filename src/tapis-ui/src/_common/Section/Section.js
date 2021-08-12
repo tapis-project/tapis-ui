@@ -5,7 +5,7 @@ import { SectionHeader, SectionContent } from '..';
 import SectionMessages from './SectionMessages';
 import { LAYOUTS, DEFAULT_LAYOUT } from '../SectionContent';
 
-import './Section.module.css';
+import styles from './Section.module.css';
 
 /**
  * A section layout structure that supports:
@@ -131,9 +131,9 @@ function Section({
   }, [bodyClassName]);
 
   return (
-    <section styleName="root" className={className}>
+    <section className={`${className} ${styles.root}`}>
       <SectionMessages
-        styleName="messages"
+        className={styles.messages}
         routeName={routeName}
         className={messagesClassName}
         welcomeText={welcomeMessageText}
@@ -152,8 +152,7 @@ function Section({
       ) : (
         shouldBuildHeader && (
           <SectionHeader
-            styleName="header"
-            className={headerClassName}
+            className={`${headerClassName} ${styles.header}`}
             actions={headerActions}
           >
             {header}
@@ -168,8 +167,7 @@ function Section({
       ) : (
         <SectionContent
           tagName="main"
-          styleName="content"
-          className={contentClassName}
+          className={`${contentClassName} ${styles.content}`}
           layoutName={contentLayoutName || DEFAULT_LAYOUT}
           shouldScroll={contentShouldScroll}
         >

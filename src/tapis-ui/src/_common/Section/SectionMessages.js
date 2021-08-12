@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 
 import {
   WelcomeMessage,
-  shouldShowMessage as shouldShowWelcomeMessage,
+  useShouldShowMessage as useShouldShowWelcomeMessage,
 } from '..';
 import * as MESSAGES from '../../_constants/welcomeMessages';
 
-import './SectionMessages.module.css';
+import styles from './SectionMessages.module.css';
 import './SectionMessages.css';
 
 /**
@@ -55,7 +55,7 @@ function SectionMessages({ children, className, routeName, welcomeText }) {
       {welcomeMessageText}
     </WelcomeMessage>
   );
-  const hasMessage = shouldShowWelcomeMessage(routeName) || children.length > 0;
+  const hasMessage = useShouldShowWelcomeMessage(routeName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
   useEffect(() => {
@@ -67,7 +67,7 @@ function SectionMessages({ children, className, routeName, welcomeText }) {
   }, [hasMessage]);
 
   return (
-    <aside styleName="root" className={className}>
+    <aside className={`${styles.root} ${className}`}>
       {welcomeMessage}
       {children}
     </aside>

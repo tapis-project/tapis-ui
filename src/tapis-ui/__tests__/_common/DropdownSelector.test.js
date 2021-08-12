@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import DropdownSelector, { TYPES } from '_common/DropdownSelector/DropdownSelector';
+import DropdownSelector, { TYPES } from 'tapis-ui/src/_common/DropdownSelector/DropdownSelector';
 
 describe('Select Dropdown Field', () => {
   it.each(TYPES)('has accurate tag and attributes when type is "%s"', type => {

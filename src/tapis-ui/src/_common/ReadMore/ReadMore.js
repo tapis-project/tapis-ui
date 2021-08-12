@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import './ReadMore.module.scss';
+import styles from './ReadMore.module.scss';
 
 const ReadMore = ({ className, children }) => {
   const [expanded, setExpanded] = useState(false);
@@ -20,8 +20,7 @@ const ReadMore = ({ className, children }) => {
     <>
       {
         <div
-          styleName={expanded ? 'expanded' : 'clamped'}
-          className={className}
+          className={`${expanded ? styles.expanded : styles.clamped} ${className}`}
           ref={ref}
         >
           {children}

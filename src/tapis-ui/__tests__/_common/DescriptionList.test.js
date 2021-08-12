@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import DescriptionList, * as DL from '_common/DescriptionList/DescriptionList';
+import DescriptionList, * as DL from 'tapis-ui/src/_common/DescriptionList/DescriptionList';
 
 const DATA = {
   Username: 'bobward500',

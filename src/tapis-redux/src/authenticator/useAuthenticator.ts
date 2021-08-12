@@ -11,7 +11,7 @@ const useAuthenticator = (config?: Config) => {
     token,
     loading,
     error,
-    login: (username, password, onAuth: LoginCallback = null) =>
+    login: (username: string, password: string, onAuth: LoginCallback = () => {}) =>
       authenticatorLoginRequest({
         username,
         password,

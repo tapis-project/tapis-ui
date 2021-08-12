@@ -6,7 +6,7 @@ import rootSaga from '../sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
-const middlewares = [];
+const middlewares: any[] = [];
 
 if (process.env.NODE_ENV === 'development') {
   middlewares.push(createLogger());

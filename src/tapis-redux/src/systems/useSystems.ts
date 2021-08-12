@@ -3,7 +3,7 @@ import { list } from './actions';
 import { TapisState } from '../store/rootReducer';
 import { SystemsListCallback } from './types';
 import { Systems } from '@tapis/tapis-typescript';
-import { Config } from 'tapis-redux/types';
+import { Config } from 'tapis-redux/src/types';
 
 export interface SystemsListParams {
   onList?: SystemsListCallback,

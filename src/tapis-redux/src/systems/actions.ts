@@ -6,11 +6,11 @@ import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/sagas/types';
-import { Config } from 'tapis-redux/types';
+} from 'tapis-redux/src/sagas/types';
+import { Config } from 'tapis-redux/src/types';
 
 // Create a 'list' dispatch generator
-export const list = (config: Config = null, onList: SystemsListCallback = null, params: Systems.GetSystemsRequest = {}) => {
+export const list = (config: Config | null = null, onList: SystemsListCallback = () => {}, params: Systems.GetSystemsRequest = {}) => {
   const onRequest: OnRequestCallback = () => {
     return {
       type: ACTIONS.TAPIS_SYSTEMS_LIST_REQUEST,
@@ -38,7 +38,7 @@ export const list = (config: Config = null, onList: SystemsListCallback = null, 
   }
 
   return apiCall<Systems.RespSystems>({
-    config,
+    config: config ?? undefined,
     onApi: onList,
     onRequest,
     onSuccess,

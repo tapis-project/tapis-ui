@@ -111,7 +111,6 @@ const FormField = ({
 
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <>
     {label && hasAddon ? <FieldLabel /> : null}
     <FormFieldWrapper type={wrapperType}>
@@ -154,7 +153,6 @@ const FormField = ({
     </FormFieldWrapper>
     {hasAddon ? <FieldNote /> : null}
     </>
-    /* eslint-enable prettier/prettier */
   );
 };
 FormField.propTypes = {

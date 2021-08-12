@@ -1,4 +1,4 @@
 import { default as FieldWrapper } from './FieldWrapper';
-export { FieldWrapperProps } from './FieldWrapper';
+export type { FieldWrapperProps } from './FieldWrapper';
 
 export default FieldWrapper;

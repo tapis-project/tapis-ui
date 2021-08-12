@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import WelcomeMessage from '_common/WelcomeMessage';
+import WelcomeMessage from 'tapis-ui/src/_common/WelcomeMessage';
 
 const mockStore = configureStore();
 const store = mockStore({});

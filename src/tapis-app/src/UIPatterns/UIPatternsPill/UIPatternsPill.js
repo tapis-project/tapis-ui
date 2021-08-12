@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pill } from '_common';
+import { Pill } from 'tapis-ui/src/_common';
 
 function UIPatternsPill() {
   return (

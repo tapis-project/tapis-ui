@@ -6,12 +6,12 @@ import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/sagas/types';
-import { Config } from 'tapis-redux/types';
+} from 'tapis-redux/src/sagas/types';
+import { Config } from 'tapis-redux/src/types';
 
 
 // Create a 'getJob' dispatch generator
-export const retrieve = (config: Config = null, onRetrieve: JobRetrieveCallback = null, params: Jobs.GetJobRequest) => {
+export const retrieve = (config: Config | undefined = undefined, onRetrieve: JobRetrieveCallback = null, params: Jobs.GetJobRequest) => {
   // The job is retrieved with the callback, but results are not cached in a reducer
   const onRequest: OnRequestCallback = null;
   const onSuccess: OnSuccessCallback<Jobs.RespGetJob> = null;
@@ -19,7 +19,7 @@ export const retrieve = (config: Config = null, onRetrieve: JobRetrieveCallback 
 
   return apiCall<Jobs.RespGetJob>({
     config,
-    onApi: onRetrieve,
+    onApi: onRetrieve || undefined,
     onRequest,
     onSuccess,
     onFailure,

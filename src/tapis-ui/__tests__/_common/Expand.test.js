@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Expand from '_common/Expand';
+import Expand from 'tapis-ui/src/_common/Expand';
 
 describe('Expand component', () => {
   it('render message and detail', () => {

@@ -83,5 +83,5 @@ export type TapisQueryParams<T> = {
   /**
    * TAPIS token
    */
-  jwt: string
+  jwt: string | null
 }

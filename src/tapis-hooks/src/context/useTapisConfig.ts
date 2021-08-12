@@ -11,21 +11,26 @@ const useTapisConfig = () => {
     | Authenticator.NewAccessTokenResponse
     | undefined => {
     const cookie = Cookies.get('tapis-token');
-    if (!!cookie) return JSON.parse(Cookies.get('tapis-token'));
-    return cookie;
+    if (!!cookie) return JSON.parse(cookie);
+    return undefined;
   };
 
-  const { data, refetch } = useQuery<Authenticator.NewAccessTokenResponse>(
+  const { data, refetch } = useQuery<Authenticator.NewAccessTokenResponse | undefined>(
     'tapis-token',
     getAccessToken,
     {
-        initialData: () => getAccessToken()
+      initialData: () => getAccessToken()
     }
   );
 
   const setAccessToken = async (
-    resp: Authenticator.NewAccessTokenResponse
+    resp: Authenticator.NewAccessTokenResponse | null | undefined
   ): Promise<void> => {
+    if (!resp) {
+      Cookies.remove('tapis-token');
+      await refetch();
+      return;
+    }
     const expires = new Date(resp.expires_at ?? 0);
     Cookies.set('tapis-token', JSON.stringify(resp), { expires });
     await refetch();

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
  * Whether to show a welcome message
  * @param {String} messageName - The name of the message to check
  */
-export function shouldShowMessage(messageName) {
+export function useShouldShowMessage(messageName) {
   const welcomeMessages = useSelector((state) => state.welcomeMessages);
 
   return welcomeMessages && welcomeMessages[messageName];
@@ -30,7 +30,7 @@ export function shouldShowMessage(messageName) {
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const welcomeMessages = useSelector((state) => state.welcomeMessages);
-  const shouldShow = shouldShowMessage(messageName);
+  const shouldShow = useShouldShowMessage(messageName);
 
   function onDismiss(name) {
     const newMessagesState = {

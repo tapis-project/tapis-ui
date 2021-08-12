@@ -1,9 +1,10 @@
+import { Apps } from '@tapis/tapis-typescript';
 import { list } from './list/reducer';
-import { getEmptyListResults } from 'tapis-redux/types/results';
+import { getEmptyListResults } from 'tapis-redux/src/types/results';
 import { AppsReducerState, AppsAction, AppsReducer } from './types';
-import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 
-const emptyResults = getEmptyListResults(TAPIS_DEFAULT_APPS_LISTING_LIMIT);
+const emptyResults = getEmptyListResults<Apps.TapisApp>(TAPIS_DEFAULT_APPS_LISTING_LIMIT);
 
 export const initialState: AppsReducerState = {
   apps: { ...emptyResults }

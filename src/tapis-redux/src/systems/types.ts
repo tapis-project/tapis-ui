@@ -1,5 +1,5 @@
 import { Systems } from '@tapis/tapis-typescript';
-import { ApiCallback, TapisListResults } from 'tapis-redux/types';
+import { ApiCallback, TapisListResults } from 'tapis-redux/src/types';
 import * as ACTIONS from './actionTypes';
 
 export type SystemsReducerState = {

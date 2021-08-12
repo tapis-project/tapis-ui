@@ -1,22 +1,22 @@
 import React, { useCallback } from 'react';
-import { useSystems, useJobs } from 'tapis-redux';
-import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
-import { isTapisResponse, Config } from 'tapis-redux/types';
+import { useSystems, useJobs } from 'tapis-redux/src';
+import { JobsSubmitCallback } from 'tapis-redux/src/jobs/submit/types'
+import { isTapisResponse, Config } from 'tapis-redux/src/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useDispatch } from 'react-redux';
 import { Formik, Form,} from 'formik';
 import {
   Icon,
   LoadingSpinner,
-} from 'tapis-ui/_common';
-import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
-import { Message } from 'tapis-ui/_common';
+} from 'tapis-ui/src/_common';
+import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/src/_common/FieldWrapper';
+import { Message } from 'tapis-ui/src/_common';
 import * as Yup from 'yup';
 import {
   Button,
   Input,
 } from 'reactstrap';
-import './JobLauncher.module.scss';
+import styles from './JobLauncher.module.scss';
 import './JobLauncher.scss';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
@@ -36,23 +36,23 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
   // tapis-redux will make the callback with an agave response
   // this callback will extract the Job returned in the result field
   // of the response
-  const submitDecoderCallback = useCallback<JobsSubmitCallback>(
+  const submitDecoderCallback = useCallback(
     (result: Jobs.RespSubmitJob | Error) => {
       if (onSubmit && isTapisResponse<Jobs.RespSubmitJob>(result)) {
         const jobResponse: Jobs.RespSubmitJob = result as Jobs.RespSubmitJob;
-        onSubmit(jobResponse.result);
+        onSubmit(jobResponse?.result ?? {});
       }
     },
     [onSubmit]
   )
 
-  const validationSchema = (props) => {
-    return Yup.lazy(values => {
+  const validationSchema = (props: React.PropsWithChildren<React.ReactNode>) => {
+    return Yup.lazy((values: any) => {
       const schema = Yup.object({});
       return schema;
     })
   }
-  const formSubmit = (values, { setSubmitting }) => {
+  const formSubmit = (values: any, { setSubmitting }: {setSubmitting: any}) => {
     dispatch(submit({ onSubmit: submitDecoderCallback, request: values }));
     setSubmitting(false);
   }
@@ -99,7 +99,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
       children: <Input>
         {
           systems.results.map(
-            system => (
+            (system: any) => (
               <option key={system.id}>{system.id}</option>
             )
           )
@@ -111,7 +111,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
   return (
     <div>
       <Formik
-        initialValues={initialValues}
+        initialValues={initialValues ?? {}}
         enableReinitialize={true}
         validationSchema={validationSchema}
         onSubmit={formSubmit}
@@ -132,7 +132,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
                 )
               })
             }
-            <div styleName="status">
+            <div className={styles.status}>
               <Button
                 type="submit"
                 className="btn btn-primary"
@@ -143,12 +143,12 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
                 submission.loading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
               }
               {submission.result && (
-                <div styleName="message">
+                <div className={styles.message}>
                   <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {submission.result.uuid}</Message>
                 </div>
               )}
               {submission.error && (
-                <div styleName="message">
+                <div className={styles.message}>
                   <Message canDismiss={false} type="error" scope="inline">{submission.error.message}</Message>
                 </div>
               )}
@@ -161,9 +161,9 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
 };
 
 JobLauncher.defaultProps = {
-  config: null,
+  config: undefined,
   initialValues: {},
-  onSubmit: null
+  onSubmit: undefined
 }
 
 export default JobLauncher;
