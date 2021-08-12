@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { CardHeader, CardBody, Card, Collapse } from 'reactstrap';
 import Icon from '../Icon';
 import './Expand.global.scss';
-import './Expand.module.scss';
+import styles from './Expand.module.scss';
 
 const Expand = ({ className, detail, message }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,9 +14,9 @@ const Expand = ({ className, detail, message }) => {
   // TODO: Use `details/summary` tags, when `onToggle` support is "last 2 versions"
   // SEE: https://github.com/facebook/react/issues/15486#issuecomment-669674869
   return (
-    <Card styleName="container" className={className} tag="div">
-      <CardHeader styleName="summary" onClick={toggleCallback} tag="div">
-        <strong styleName="header">{detail}</strong>
+    <Card className={styles.container} className={className} tag="div">
+      <CardHeader className={styles.summary} onClick={toggleCallback} tag="div">
+        <strong className={styles.header}>{detail}</strong>
         <Icon name={isOpen ? 'collapse' : 'expand'} />
       </CardHeader>
       <Collapse isOpen={isOpen}>

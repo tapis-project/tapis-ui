@@ -20,9 +20,9 @@ type DashboardCardProps = {
 
 const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name, text, loading}) => {
   return (
-    <Card styleName={styles.card}>
+    <Card className={styles.card}>
       <CardHeader>
-        <div  className={styles.cardHeader}>
+        <div  className={styles['card-header']}>
           <div>
             <Icon name={icon} className="dashboard__card-icon"/>
           </div>          
@@ -43,7 +43,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name,
           {text}
         </CardText>
       </CardBody>
-      <CardFooter className={styles.cardFooter}>
+      <CardFooter className={styles['card-footer']}>
         <Link to={link}>Go to {name}</Link>
         <Icon name="push-right" />
       </CardFooter>
@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <SectionHeader className="dashboard__section-header">Dashboard for {process.env.TAPIS_TENANT_URL}</SectionHeader>
+      <SectionHeader className="dashboard__section-header">Dashboard for {process.env.REACT_APP_TAPIS_TENANT_URL}</SectionHeader>
       <div className={styles.header}>
         <h5>Welcome to TAPIS-UI</h5>
         <div>
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
           ) : (
             <Card>
               <CardHeader>
-                <div className={styles.cardHeader}>
+                <div className={styles['card-header']}>
                   <div>
                     <Icon name="user" className="dashboard__card-icon"/>
                   </div>          
@@ -129,7 +129,7 @@ const Dashboard: React.FC = () => {
                   Please log in to use TAPIS
                 </CardTitle>
               </CardBody>
-              <CardFooter className={styles.cardFooter}>
+              <CardFooter className={styles['card-footer']}>
                 <Link to="/login">Proceed to login</Link>
                 <Icon name="push-right" /> 
               </CardFooter>

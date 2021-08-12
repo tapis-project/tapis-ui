@@ -22,7 +22,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
         to={to}
         exact
         className={styles.link}
-        activeClassName={styles.link_Active}
+        activeClassName={styles['link--active']}
         disabled={false}
       >
         <div className={`${styles.content} nav-content`}>

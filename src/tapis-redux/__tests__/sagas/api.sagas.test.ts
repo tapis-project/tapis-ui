@@ -130,7 +130,7 @@ describe('API Saga Helper', () => {
       .run();
     // Make sure Configuration was set to default config
     expect(Configuration.mock.calls[0][0]).toStrictEqual({
-      basePath: process.env.TAPIS_TENANT_URL,
+      basePath: process.env.REACT_APP_TAPIS_TENANT_URL,
       headers: {
         "X-Tapis-Token": "mock_access_token"
       }

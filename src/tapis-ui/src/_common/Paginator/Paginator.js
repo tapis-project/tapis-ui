@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import PropTypes from 'prop-types';
-import './Paginator.module.scss';
+import styles from './Paginator.module.scss';
 
 const PaginatorPage = ({ number, callback, current }) => {
   return (
-    <div styleName="page-root">
+    <div className={styles["page-root"]}>
       <Button
-        styleName={`page ${number === current ? 'current' : ''}`}
+        className={`${styles.page} ${number === current ? styles.current : ''}`}
         onClick={() => callback(number)}
       >
         {number}
@@ -49,10 +49,10 @@ const Paginator = ({ pages, current, callback, spread }) => {
           .map((_, index) => start + index)
       : [];
   return (
-    <div styleName="root">
+    <div className={styles.root}>
       <Button
         color="link"
-        styleName="endcap"
+        className={styles.root}
         onClick={() => callback(current - 1)} // eslint-disable-line
         disabled={current === 1}
       >
@@ -76,7 +76,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
       )}
       <Button
         color="link"
-        styleName="endcap"
+        className={styles.endcap}
         onClick={() => callback(current + 1)} // eslint-disable-line
         disabled={current === pages}
       >

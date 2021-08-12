@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Pill from '_common/Pill';
+import Pill from 'tapis-ui/src/_common/Pill';
 
 
 describe('Pill component', () => {

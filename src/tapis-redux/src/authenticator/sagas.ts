@@ -13,7 +13,7 @@ export function* tapisAuth(payload: any) {
 
     // Authenticator does not seem to be properly supported in the API Spec
     // Search for a tenant url a provided tapis config, or just use environment default
-    const defaultUrl = process.env.TAPIS_TENANT_URL;
+    const defaultUrl = process.env.REACT_APP_TAPIS_TENANT_URL;
     const tenant = config ? config.tenant || defaultUrl : defaultUrl;
 
     // Generate a configuration object for the module with the

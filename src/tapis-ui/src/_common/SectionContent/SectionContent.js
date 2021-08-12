@@ -59,15 +59,15 @@ function SectionContent({
   const layoutClass = LAYOUT_CLASS_MAP[layoutName];
   const TagName = tagName;
 
-  if (shouldScroll) styleNameList.push('styles.should-scroll');
-  if (shouldDebugLayout) styleNameList.push('styles.should-debug-layout');
-  if (layoutClass) styleNameList.push(`layoutStyles.${layoutClass}`);
+  if (shouldScroll) styleNameList.push(styles['should-scroll']);
+  if (shouldDebugLayout) styleNameList.push(styles['should-debug-layout']);
+  if (layoutClass) styleNameList.push(layoutStyles[layoutClass]);
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
   return (
-    <TagName styleName={styleName} className={className}>
+    <TagName className={`${className} ${styleName}`}>
       {children}
     </TagName>
   );

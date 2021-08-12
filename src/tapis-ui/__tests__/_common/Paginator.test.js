@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Paginator from '_common/Paginator';
+import Paginator from 'tapis-ui/src/_common/Paginator';
 
 describe('Paginator', () => {
   it('renders pages', () => {

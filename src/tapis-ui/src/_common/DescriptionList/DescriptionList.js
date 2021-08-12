@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
-import './DescriptionList.module.scss';
+import styles from './DescriptionList.module.scss';
 
 export const DIRECTION_CLASS_MAP = {
   vertical: 'is-vert',
@@ -22,27 +22,27 @@ const DescriptionList = ({ className, data, density, direction }) => {
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
-  const containerStyleNames = ['container', ...modifierClasses].join(' ');
+  const containerStyleNames = ['container', ...modifierClasses].map(name => styles[name]).join(' ');
+
 
   return (
     <dl
-      styleName={containerStyleNames}
-      className={className}
+      className={`${className} ${containerStyleNames}`}
       data-testid="list"
     >
       {Object.entries(data).map(([key, value]) => (
         <React.Fragment key={key}>
-          <dt styleName="key" data-testid="key">
+          <dt className={styles.key} data-testid="key">
             {key}
           </dt>
           {Array.isArray(value) ? (
             value.map((val) => (
-              <dd styleName="value" data-testid="value" key={uuidv4()}>
+              <dd className={styles.value} data-testid="value" key={uuidv4()}>
                 {val}
               </dd>
             ))
           ) : (
-            <dd styleName="value" data-testid="value">
+            <dd className={styles.value} data-testid="value">
               {value}
             </dd>
           )}
