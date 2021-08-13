@@ -3,7 +3,7 @@ import getToken from '../authenticator/selectors';
 import { ApiSagaRequest } from './types';
 import * as ACTIONS from './actionTypes';
 
-export function* apiSaga<T>(action: ApiSagaRequest<T>) {
+export function* apiSaga<T>(action: ApiSagaRequest<T>): any {
   const { config, onApi, onRequest, onSuccess, onFailure, module, func, args } = action.payload;
   try {
     // Notify external reducer that a request has begun
@@ -18,7 +18,7 @@ export function* apiSaga<T>(action: ApiSagaRequest<T>) {
     const token = config ? config.jwt || storeToken.access_token : storeToken.access_token;
 
     // Search for a tenant url a provided tapis config, or just use environment default
-    const defaultUrl = process.env.TAPIS_TENANT_URL;
+    const defaultUrl = process.env.REACT_APP_TAPIS_TENANT_URL;
     const tenant = config ? config.tenant || defaultUrl : defaultUrl;
 
     // Generate a configuration object for the module with the

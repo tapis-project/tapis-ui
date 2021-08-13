@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './SectionHeader.module.css';
+import styles from './SectionHeader.module.css';
 
 /**
  * A header for a `Section[…]` component
@@ -40,19 +40,19 @@ function SectionHeader({
   isForTable,
 }) {
   let styleName = '';
-  const styleNameList = ['root'];
+  const styleNameList = [styles['root']];
   const HeadingTagName = isForForm || isForTable ? 'h3' : 'h2';
 
-  if (isForForm) styleNameList.push('for-form');
-  if (isForTable) styleNameList.push('for-table');
+  if (isForForm) styleNameList.push(styles['for-form']);
+  if (isForTable) styleNameList.push(styles['for-table']);
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
   return (
-    <header styleName={styleName} className={className}>
+    <header className={`${styleName} ${className}`}>
       {children && (
-        <HeadingTagName styleName="heading">{children}</HeadingTagName>
+        <HeadingTagName className={styles.heading}>{children}</HeadingTagName>
       )}
       {actions}
     </header>

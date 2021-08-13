@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Fade } from 'reactstrap';
 import Icon from '../Icon';
 
-import './Message.module.scss';
+import styles from './Message.module.scss';
 
 export const ERROR_TEXT = {
   mismatchCanDismissScope:
@@ -98,7 +98,7 @@ const Message = ({
   const modifierClassNames = [];
   modifierClassNames.push(typeClassName);
   modifierClassNames.push(scopeClassName);
-  const containerStyleNames = ['container', ...modifierClassNames].join(' ');
+  const containerStyleNames = ['container', ...modifierClassNames].map(name => styles[name]).join(' ');
 
   // Manage disappearance
   // FAQ: Design does not want fade, but we still use <Fade> to manage dismissal
@@ -117,25 +117,24 @@ const Message = ({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...fadeProps}
       tag={tagName}
-      styleName={containerStyleNames}
-      className={className}
+      className={`${className} ${containerStyleNames}`}
       role={role}
       in={isVisible}
     >
-      <Icon styleName="icon type-icon" name={iconName}>
+      <Icon className={styles["icon type-icon"]} name={iconName}>
         {iconText}
       </Icon>
-      <span styleName="text" data-testid="text">
+      <span className={styles.text} data-testid="text">
         {children}
       </span>
       {canDismiss && hasDismissSupport ? (
         <button
           type="button"
-          styleName="close-button"
+          className={styles["close-button"]}
           aria-label="Close"
           onClick={onDismiss}
         >
-          <Icon styleName="icon close-icon" name="close" />
+          <Icon className={`${styles.icon} ${styles['close-icon']}`} name="close" />
         </button>
       ) : null}
     </Fade>

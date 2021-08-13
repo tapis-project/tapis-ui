@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input as BootstrapInput } from 'reactstrap';
 
-import './DropdownSelector.module.css';
+import styles from './DropdownSelector.module.css';
 
 export const TYPES = ['', 'single', 'multiple'];
 export const DEFAULT_TYPE = 'single';
@@ -23,7 +23,7 @@ const DropdownSelector = ({ type, onChange, ...props }) => {
       {...props}
       onChange={onChange}
       type="select"
-      styleName="container"
+      className={styles.container}
       multiple={canSelectMany}
       data-testid="selector"
       // The ARIA role for a `<select>` is implicit (and depends on `<select>` attributes)

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useAuthenticator } from 'tapis-redux';
+import { useAuthenticator } from 'tapis-redux/src';
 
 const Logout: React.FC = () => {
   const dispatch = useDispatch();

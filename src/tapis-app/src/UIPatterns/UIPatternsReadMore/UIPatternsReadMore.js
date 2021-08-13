@@ -1,10 +1,10 @@
 import React from 'react';
-import { ReadMore } from '_common';
-import './UIPatternsReadMore.module.scss';
+import { ReadMore } from 'tapis-ui/src/_common';
+import styles from './UIPatternsReadMore.module.scss';
 
 function UIPatternsReadMore() {
   return (
-    <div styleName="root">
+    <div className={styles.root}>
       <ReadMore>
         Long text beyond 4 lines should be clamped. Short text should not be
         clamped. This element is responsive to line number changes due to window

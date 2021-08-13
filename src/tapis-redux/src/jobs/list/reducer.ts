@@ -11,8 +11,8 @@ import {
   setFailure,
   getEmptyListResults,
   TapisListResults
-} from 'tapis-redux/types/results'
-import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+} from 'tapis-redux/src/types/results'
+import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 import * as ACTIONS from './actionTypes';
 import { Jobs, Systems } from '@tapis/tapis-typescript';
 import { JobsReducer, JobsAction } from '../types';
@@ -29,8 +29,8 @@ const setListingRequest = (jobs: TapisListResults<Jobs.JobListDTO>,
 const setListingSuccess = (jobs: TapisListResults<Jobs.JobListDTO>,
   payload: JobsListingSuccessPayload): TapisListResults<Jobs.JobListDTO> => {
   // TODO: Handle different combinations of skip and startAfter requests
-  const result = updateList(jobs, payload.incoming, payload.params.skip, 
-    payload.params.limit, TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
+  const result = updateList(jobs, payload.incoming, payload.params.skip ?? 0, 
+    payload.params.limit ?? TAPIS_DEFAULT_JOBS_LISTING_LIMIT, TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
   return result;
 }
 

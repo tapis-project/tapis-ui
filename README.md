@@ -1,55 +1,46 @@
-# `tapis-ui`
+# Getting Started with Create React App
 
-This project is a React-Redux based web client for [`https://tapis.io`](https://tapis.io).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Requirements
+## Available Scripts
 
-- node.js stable
+In the project directory, you can run:
 
-## Installing and Running
+### `npm start`
 
-First install node dependencies in the base directory:
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-```bash
-npm install
-```
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-Next, start a development server with:
+### `npm test`
 
-```bash
-npm run dev
-```
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-You can then browse to you [`https://localhost:3000`](https://localhost:3000) to view the application.
-Due to a self-signed certificate being used for the dev server, you will receive a security warning.
+### `npm run build`
 
-## Project Structure
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-All of the project sources are in the [`./src`](./src) directory. There are three major components:
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-- [`tapis-redux`](./src/tapis-redux): Redux state management and service for accessing `tapis.io`
-- [`tapis-ui`](./src/tapis-ui): UI components for interacting `tapis.io` services
-- [`tapis-app`](./src/tapis-app): A sample web application built on `tapis-ui` and `tapis-redux` components
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-Each component is structured so that they can eventually be published as separate npm packages. They each have:
+### `npm run eject`
 
-- `src` directory
-- `__tests__` directory for unit tests for those components
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-In addition, all fixtures are available in [`./fixtures/`](./fixtures)
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-## Testing, Linting and Pipelines
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You may run unit tests with
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-```bash
-npm run test
-```
+## Learn More
 
-You may run linting with
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-```bash
-npm run lint
-```
-
-On pull request, these will be run via Github actions.
+To learn React, check out the [React documentation](https://reactjs.org/).

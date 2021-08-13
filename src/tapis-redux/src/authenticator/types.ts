@@ -4,10 +4,10 @@ import {
   TAPIS_AUTH_LOGIN_SUCCESS,
   TAPIS_AUTH_LOGOUT_REQUEST
 } from './actionTypes';
-import { ApiCallback, Config } from 'tapis-redux/types';
+import { ApiCallback, Config } from 'tapis-redux/src/types';
 import { Authenticator } from '@tapis/tapis-typescript';
 
-export type Token = Authenticator.NewAccessTokenResponse;
+export type Token = Authenticator.NewAccessTokenResponse | null;
 
 export type LoginCallback = ApiCallback<Authenticator.RespCreateToken>;
 
@@ -19,9 +19,9 @@ export interface LoginRequest {
 }
 
 export interface AuthenticatorState {
-  token: Token,
+  token: Token | null,
   loading: boolean,
-  error: Error
+  error: Error | null
 }
 
 export interface AuthenticatorLoginSuccessPayload {

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { SectionHeader, Icon } from 'tapis-ui/_common';
+import { SectionHeader, Icon } from 'tapis-ui/src/_common';
 import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'reactstrap';
-import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux';
-import { useTapisConfig } from 'tapis-hooks';
-import { LoadingSpinner } from 'tapis-ui/_common';
-import './Dashboard.module.scss';
+import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux/src';
+import { useTapisConfig } from 'tapis-hooks/src';
+import { LoadingSpinner } from 'tapis-ui/src/_common';
+import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 
 type DashboardCardProps = {
@@ -20,9 +20,9 @@ type DashboardCardProps = {
 
 const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name, text, loading}) => {
   return (
-    <Card styleName="card">
+    <Card className={styles.card}>
       <CardHeader>
-        <div styleName="card-header">
+        <div  className={styles['card-header']}>
           <div>
             <Icon name={icon} className="dashboard__card-icon"/>
           </div>          
@@ -43,7 +43,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name,
           {text}
         </CardText>
       </CardBody>
-      <CardFooter styleName="card-footer">
+      <CardFooter className={styles['card-footer']}>
         <Link to={link}>Go to {name}</Link>
         <Icon name="push-right" />
       </CardFooter>
@@ -75,15 +75,15 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <SectionHeader className="dashboard__section-header">Dashboard for {process.env.TAPIS_TENANT_URL}</SectionHeader>
-      <div styleName="header">
+      <SectionHeader className="dashboard__section-header">Dashboard for {process.env.REACT_APP_TAPIS_TENANT_URL}</SectionHeader>
+      <div className={styles.header}>
         <h5>Welcome to TAPIS-UI</h5>
         <div>
           This web application demonstrates how to leverage the TAPIS API and <i>tapis-ui</i> React components
           to build a serverless interface for High Performance Computing systems.
         </div>
       </div>
-      <div styleName="cards">
+      <div className={styles.cards}>
         {
           accessToken ? (
             <>
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
           ) : (
             <Card>
               <CardHeader>
-                <div styleName="card-header">
+                <div className={styles['card-header']}>
                   <div>
                     <Icon name="user" className="dashboard__card-icon"/>
                   </div>          
@@ -129,7 +129,7 @@ const Dashboard: React.FC = () => {
                   Please log in to use TAPIS
                 </CardTitle>
               </CardBody>
-              <CardFooter styleName="card-footer">
+              <CardFooter className={styles['card-footer']}>
                 <Link to="/login">Proceed to login</Link>
                 <Icon name="push-right" /> 
               </CardFooter>

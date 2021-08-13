@@ -13,8 +13,8 @@ import {
   setRequesting,
   setFailure,
   getEmptyListResults
-} from 'tapis-redux/types/results';
-import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+} from 'tapis-redux/src/types/results';
+import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 
 export const initialState: FilesReducerState = {
   listings: {}

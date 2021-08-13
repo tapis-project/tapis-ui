@@ -10,13 +10,13 @@ import {
   setFailure,
   getEmptyListResults,
   TapisListResults
-} from 'tapis-redux/types/results'
-import { TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+} from 'tapis-redux/src/types/results'
+import { TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 import * as ACTIONS from './actionTypes';
 import { Systems } from '@tapis/tapis-typescript';
 
 
-const emptyResults = getEmptyListResults(TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT);
+const emptyResults = getEmptyListResults<Systems.TapisSystem>(TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT);
 
 export const initialState: SystemsReducerState = {
   systems: { ...emptyResults }
@@ -31,8 +31,8 @@ const setListingRequest = (systems: TapisListResults<Systems.TapisSystem>,
 const setListingSuccess = (systems: TapisListResults<Systems.TapisSystem>,
   payload: SystemsListingSuccessPayload): TapisListResults<Systems.TapisSystem> => {
   // TODO: Handle different combinations of skip and startAfter requests
-  const result = updateList(systems, payload.incoming, payload.params.skip, 
-    payload.params.limit, TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT);
+  const result = updateList(systems, payload.incoming, payload.params.skip ?? 0, 
+    payload.params.limit ?? TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT, TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT);
   return result;
 }
 
@@ -42,7 +42,7 @@ const setListingFailure = (systems: TapisListResults<Systems.TapisSystem>,
   return result;
 }
 
-export function systems(state: SystemsReducerState = initialState, action): SystemsReducerState {
+export function systems(state: SystemsReducerState = initialState, action: any): SystemsReducerState {
   switch (action.type) {
     case ACTIONS.TAPIS_SYSTEMS_LIST_REQUEST:
       return {

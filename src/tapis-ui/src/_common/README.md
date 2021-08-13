@@ -19,7 +19,7 @@ It can be caused by attempts to import a common component via the following the 
 // assuming importer has its own folder
 import … from '..';
 // a syntax allowed outside of `_common`
-import … from '_common';
+import … from 'tapis-ui/src/_common';
 ```
 
 If you have two common components to import into another common component, then import each individually:
@@ -31,5 +31,5 @@ import LoadingSpinner from '../LoadingSpinner';
 
 // Do NOT import them together
 // import { Icon, LoadingSpinner } from '..';
-// import { Icon, LoadingSpinner } from '_common';
+// import { Icon, LoadingSpinner } from 'tapis-ui/src/_common';
 ```

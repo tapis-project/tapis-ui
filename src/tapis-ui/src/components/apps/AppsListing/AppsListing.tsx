@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useApps } from 'tapis-redux';
-import { AppsListCallback } from 'tapis-redux/apps/list/types';
-import { Config, TapisState } from 'tapis-redux/types';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
+import { useApps } from 'tapis-redux/src';
+import { AppsListCallback } from 'tapis-redux/src/apps/list/types';
+import { Config, TapisState } from 'tapis-redux/src/types';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/src/_common';
 import { Apps } from '@tapis/tapis-typescript';
 import './AppsListing.scss';
 
@@ -48,7 +48,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
   }, [dispatch, onList]);
   const [currentApp, setCurrentApp] = useState(String);
   const selectCallback = useCallback((app) => {
-    onSelect(app);
+    onSelect && onSelect(app);
     setCurrentApp(app.id)
   },[onSelect, setCurrentApp]);
 
@@ -60,14 +60,14 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
     return <Message canDismiss={false} type="error" scope="inline">{apps.error.message}</Message>
   }
 
-  const appList: Array<Apps.TapisApp> = apps.results;
+  const appList: Array<Apps.TapisApp |null> = apps.results;
 
   return (
     <div className={className ? className : "apps-list nav flex-column"}>
       { 
         appList.length
-          ? appList.map((app: Apps.TapisApp) => {
-              return (
+          ? appList.map((app: Apps.TapisApp | null) => {
+              return app && (
                 <AppsListingItem
                   app={app}
                   selected={currentApp === app.id}
@@ -83,9 +83,9 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
 };
 
 AppsListing.defaultProps = {
-  config: null,
-  onList: null,
-  onSelect: null,
+  config: undefined,
+  onList: undefined,
+  onSelect: undefined,
   select: ""
 }
 
