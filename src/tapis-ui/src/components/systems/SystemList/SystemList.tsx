@@ -37,7 +37,7 @@ interface SystemListProps {
   className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config, onSelect, className }) => {
+const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, className='' }) => {
 
   // Get a systems listing with default request params
   const { data, isLoading, error } = useList({});
