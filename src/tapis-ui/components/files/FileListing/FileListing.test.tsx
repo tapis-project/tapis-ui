@@ -1,7 +1,7 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from '../../utils/testing';
+import renderComponent from 'utils/testing';
 import { FileListing } from 'tapis-ui/components/files';
 import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 

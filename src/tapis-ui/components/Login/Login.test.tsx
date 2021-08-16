@@ -1,16 +1,17 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from './utils/testing';
-import App from 'tapis-app/App';
+import renderComponent from 'utils/testing';
+import { Login } from 'tapis-ui/components';
 import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 
 const mockStore = configureStore();
 
-describe('App', () => {
-  it('renders main App component', () => {
+describe('Login', () => {
+  it('renders Login component', () => {
     const store = mockStore(tapisReduxStore);
-    const component = renderComponent(<App />, store);
-    expect(component).toBeDefined();
+
+    const { getAllByText } = renderComponent(<Login />, store);
+    expect(getAllByText(/Username/).length).toEqual(1);
   });
 });
