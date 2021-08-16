@@ -8,12 +8,12 @@ import { AuthenticatorLoginRequest } from './types';
 import { Authenticator } from '@tapis/tapis-typescript';
 import fetch from 'cross-fetch';
 
-export function* tapisAuth(payload) {
+export function* tapisAuth(payload: any) {
     const { config, username, password } = payload;
 
     // Authenticator does not seem to be properly supported in the API Spec
     // Search for a tenant url a provided tapis config, or just use environment default
-    const defaultUrl = process.env.TAPIS_TENANT_URL;
+    const defaultUrl = process.env.REACT_APP_TAPIS_TENANT_URL;
     const tenant = config ? config.tenant || defaultUrl : defaultUrl;
 
     // Generate a configuration object for the module with the
@@ -36,7 +36,7 @@ export function* tapisAuth(payload) {
     return response;
 }
 
-export function* authenticatorLogin(action: AuthenticatorLoginRequest) {
+export function* authenticatorLogin(action: AuthenticatorLoginRequest): any {
   try {
     const response = yield call(tapisAuth, action.payload);
     // Notify tapis-redux store of token

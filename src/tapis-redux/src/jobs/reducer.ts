@@ -1,10 +1,10 @@
 import { list } from './list/reducer';
 import { submit } from './submit/reducer';
-import { getEmptyListResults } from 'tapis-redux/types/results';
+import { getEmptyListResults } from 'tapis-redux/src/types/results';
 import { JobsReducerState, JobsAction, JobsReducer } from './types';
-import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 
-const emptyResults = getEmptyListResults(TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
+const emptyResults = getEmptyListResults<any>(TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
 
 export const initialState: JobsReducerState = {
   jobs: { ...emptyResults },

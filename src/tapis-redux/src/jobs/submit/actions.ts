@@ -6,8 +6,8 @@ import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/sagas/types';
-import { Config } from 'tapis-redux/types';
+} from 'tapis-redux/src/sagas/types';
+import { Config } from 'tapis-redux/src/types';
 
 
 export const resetSubmit = (): JobsSubmitReset => {
@@ -18,7 +18,7 @@ export const resetSubmit = (): JobsSubmitReset => {
 }
 
 // Create a 'list' dispatch generator
-export const submit = (config: Config = null, onSubmit: JobsSubmitCallback = null, params: Jobs.ReqSubmitJob) => {
+export const submit = (config: Config | undefined = undefined, onSubmit: JobsSubmitCallback = null, params: Jobs.ReqSubmitJob) => {
   const request: Jobs.SubmitJobRequest = {
     reqSubmitJob: params
   }
@@ -51,7 +51,7 @@ export const submit = (config: Config = null, onSubmit: JobsSubmitCallback = nul
 
   return apiCall<Jobs.RespSubmitJob>({
     config,
-    onApi: onSubmit,
+    onApi: onSubmit ?? undefined,
     onRequest,
     onSuccess,
     onFailure,

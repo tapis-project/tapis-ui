@@ -7,8 +7,8 @@ import { FileListingDirectory } from './types';
 // const listing: FileListingDirectory = useSelector(getListing('MySystemId', '/path'));
 type getListingSelectorType = (state: TapisState) => FileListingDirectory;
 
-const getListing = (systemId: string, path: string): getListingSelectorType => {
-  return (state: TapisState): FileListingDirectory => {
+const getListing = (systemId: string, path: string) => {
+  return (state: TapisState): FileListingDirectory | undefined => {
     if (systemId in state.files.listings && path in state.files.listings[systemId]) {
       return state.files.listings[systemId][path];
     }

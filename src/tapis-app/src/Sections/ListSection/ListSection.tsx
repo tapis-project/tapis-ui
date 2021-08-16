@@ -1,29 +1,29 @@
 import React from 'react';
-import { SectionHeader } from 'tapis-ui/_common';
+import { SectionHeader } from 'tapis-ui/src/_common';
+import { useLogin } from 'tapis-hooks/src/authenticator';
+import { useTapisConfig } from 'tapis-hooks/src';
 import { Redirect } from 'react-router-dom';
-import './ListSection.module.scss';
-import { isExpired } from 'tapis-redux/utils';
-import { useTapisConfig } from 'tapis-hooks';
-import { useLogin } from 'tapis-hooks/authenticator';
+import styles from './ListSection.module.scss';
+import { isExpired } from 'tapis-redux/src/utils';
 
 export const ListSectionHeader: React.FC<React.PropsWithChildren<{ type?: string }> > = ({children, type}) => {
   return (
-    <div styleName={type}>
+    <div className={type && styles[type]}>
       <SectionHeader>{children}</SectionHeader>
     </div>
   )
 }
 
 export const ListSectionBody: React.FC<React.PropsWithChildren<{}> > = ({children}) => {
-  return <div styleName="body">{children}</div>
+  return <div className={styles.body}>{children}</div>
 }
 
 export const ListSectionList: React.FC<React.PropsWithChildren<{}> > = ({children}) => {
-  return <div styleName="list">{children}</div>
+  return <div className={styles.list}>{children}</div>
 }
 
 export const ListSectionDetail: React.FC<React.PropsWithChildren<{}> > = ({children}) => {
-  return <div styleName="detail">{children}</div>
+  return <div className={styles.detail}>{children}</div>
 }
 
 export const ListSection: React.FC<React.PropsWithChildren<{}> > = ({ children }) => {
@@ -33,5 +33,5 @@ export const ListSection: React.FC<React.PropsWithChildren<{}> > = ({ children }
     logout();
     return <Redirect to="/login" />
   }
-  return <div styleName="root">{children}</div>
+  return <div className={styles.root}>{children}</div>
 }

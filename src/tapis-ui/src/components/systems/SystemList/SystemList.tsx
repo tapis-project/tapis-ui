@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
-import { useList } from 'tapis-hooks/systems';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useList } from 'tapis-hooks/src/systems';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
-import { Config } from 'tapis-redux/types';
+import { LoadingSpinner, Message, Icon } from 'tapis-ui/src/_common';
+import { Config } from 'tapis-redux/src/types';
 import './SystemList.scss';
 
 export type OnSelectCallback = (system: TapisSystem) => any;
@@ -32,8 +32,8 @@ SystemItem.defaultProps = {
 }
 
 interface SystemListProps {
-  config?: Config,
-  onSelect?: OnSelectCallback,
+  config?: Config | null,
+  onSelect?: OnSelectCallback | null,
   className?: string
 }
 
@@ -42,10 +42,10 @@ const SystemList: React.FC<SystemListProps> = ({ config, onSelect, className }) 
   // Get a systems listing with default request params
   const { data, isLoading, error } = useList({});
 
-  const definitions: Array<TapisSystem> = data.result;
+  const definitions: Array<TapisSystem> = data?.result || [];
   const [currentSystem, setCurrentSystem] = useState(String);
   const select = useCallback((system) => {
-    onSelect(system);
+    onSelect && onSelect(system);
     setCurrentSystem(system.id)
   },[onSelect, setCurrentSystem]);
 
@@ -62,7 +62,7 @@ const SystemList: React.FC<SystemListProps> = ({ config, onSelect, className }) 
       {
         definitions.length
           ? definitions.map(
-              (system) => <SystemItem
+              (system) => system && <SystemItem
                             system={system}
                             selected={currentSystem === system.id}
                             select={select}
@@ -77,7 +77,8 @@ const SystemList: React.FC<SystemListProps> = ({ config, onSelect, className }) 
 
 SystemList.defaultProps = {
   config: null,
-  onSelect: null
+  onSelect: null,
+  className: ''
 }
 
 export default SystemList;

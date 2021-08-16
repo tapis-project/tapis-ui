@@ -10,14 +10,14 @@ import {
   setFailure,
   getEmptyListResults,
   TapisListResults
-} from 'tapis-redux/types/results'
-import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+} from 'tapis-redux/src/types/results'
+import { TAPIS_DEFAULT_APPS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 import * as ACTIONS from './actionTypes';
 import { Apps } from '@tapis/tapis-typescript';
 import { AppsReducer } from '../types';
 
 
-const emptyResults = getEmptyListResults(TAPIS_DEFAULT_APPS_LISTING_LIMIT);
+const emptyResults = getEmptyListResults<Apps.TapisApp>(TAPIS_DEFAULT_APPS_LISTING_LIMIT);
 
 export const initialState: AppsReducerState = {
   apps: { ...emptyResults }
@@ -32,8 +32,8 @@ const setListingRequest = (apps: TapisListResults<Apps.TapisApp>,
 const setListingSuccess = (apps: TapisListResults<Apps.TapisApp>,
   payload: AppsListingSuccessPayload): TapisListResults<Apps.TapisApp> => {
   // TODO: Handle different combinations of skip and startAfter requests
-  const result = updateList(apps, payload.incoming, payload.params.skip, 
-    payload.params.limit, TAPIS_DEFAULT_APPS_LISTING_LIMIT);
+  const result = updateList(apps, payload.incoming, payload.params.skip ?? 0, 
+    payload.params.limit ?? TAPIS_DEFAULT_APPS_LISTING_LIMIT, TAPIS_DEFAULT_APPS_LISTING_LIMIT);
   return result;
 }
 

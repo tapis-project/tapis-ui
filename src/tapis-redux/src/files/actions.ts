@@ -4,15 +4,15 @@ import { Files } from '@tapis/tapis-typescript';
 import {
   FileListingCallback
 } from './types';
-import { Config } from 'tapis-redux/types';
-import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
+import { Config } from 'tapis-redux/src/types';
+import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
 import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/sagas/types';
+} from 'tapis-redux/src/sagas/types';
 
-export const list = (config: Config = null, onList: FileListingCallback = null, request: Files.ListFilesRequest) => {
+export const list = (config: Config | null = null, onList: FileListingCallback = () => {}, request: Files.ListFilesRequest) => {
 
   const { systemId, path, offset, limit } = request;
 
@@ -55,7 +55,7 @@ export const list = (config: Config = null, onList: FileListingCallback = null, 
   }
 
   return apiCall<Files.FileListingResponse>({
-    config,
+    config: config ?? undefined,
     onApi: onList,
     onRequest,
     onSuccess,

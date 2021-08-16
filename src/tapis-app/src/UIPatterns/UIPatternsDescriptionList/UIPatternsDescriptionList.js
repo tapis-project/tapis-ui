@@ -1,7 +1,7 @@
 import React from 'react';
-import { DescriptionList, Icon } from '_common';
+import { DescriptionList, Icon } from 'tapis-ui/src/_common';
 
-import './UIPatternsDescriptionList.module.css';
+import styles from './UIPatternsDescriptionList.module.css';
 
 const DATA = {
   Username: 'bobward500',
@@ -15,7 +15,7 @@ const DATA = {
 function UIPatternsDropdownSelector() {
   return (
     <>
-      <div styleName="list-cols">
+      <div className={styles['list-cols']}>
         <dl>
           <dt>Vertical Layout & Default Density</dt>
           <dd>
@@ -34,12 +34,12 @@ function UIPatternsDropdownSelector() {
             <DescriptionList
               data={DATA}
               density="compact"
-              styleName="item-x-narrow"
+              className={styles["item-x-narrow"]}
             />
           </dd>
         </dl>
       </div>
-      <div styleName="list-rows">
+      <div className={styles["list-rows"]}>
         <dl>
           <dt>Horizontal Layout & Default Density</dt>
           <dd>
@@ -59,12 +59,12 @@ function UIPatternsDropdownSelector() {
               data={DATA}
               density="compact"
               direction="horizontal"
-              styleName="item-narrow"
+              className={styles["item-narrow"]}
             />
           </dd>
         </dl>
       </div>
-      <div styleName="list-rows">
+      <div className={styles["list-rows"]}>
         <dl>
           <dt>Vertical Layout & Nested Data</dt>
           <dd>

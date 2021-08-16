@@ -1,21 +1,21 @@
 import React, { useState, useCallback } from 'react';
 import { JobListDTO } from '@tapis/tapis-typescript-jobs';
-import { JobsListing } from 'tapis-ui/components/jobs';
+import { JobsListing } from 'tapis-ui/src/components/jobs';
 import { useDispatch } from 'react-redux';
-import { useJobs } from 'tapis-redux';
-import { JobDetail } from 'tapis-ui/components/jobs';
-import { SectionMessage, Icon } from 'tapis-ui/_common';
-import { OnSelectCallback } from 'tapis-ui/components/jobs/JobsListing';
+import { useJobs } from 'tapis-redux/src';
+import { JobDetail } from 'tapis-ui/src/components/jobs';
+import { SectionMessage, Icon } from 'tapis-ui/src/_common';
+import { OnSelectCallback } from 'tapis-ui/src/components/jobs/JobsListing';
 import { 
   ListSection, 
   ListSectionBody, 
   ListSectionDetail,
   ListSectionList,
   ListSectionHeader
-} from 'tapis-app/Sections/ListSection';
+} from 'tapis-app/src/Sections/ListSection';
 
 const Jobs: React.FC = () => {
-  const [job, setJob] = useState<JobListDTO>(null);
+  const [job, setJob] = useState<JobListDTO | null>(null);
   const { list } = useJobs();
   const dispatch = useDispatch();
   const jobSelectCallback = useCallback<OnSelectCallback>(
@@ -47,7 +47,7 @@ const Jobs: React.FC = () => {
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Details</ListSectionHeader>
           {job
-            ? <JobDetail jobUuid={job.uuid} />
+            ? <JobDetail jobUuid={job.uuid ?? ''} />
             : <SectionMessage type="info">
                 Select a job from the list.
               </SectionMessage>

@@ -1,13 +1,13 @@
 import { useMutation } from 'react-query';
 import { Authenticator } from '@tapis/tapis-typescript';
-import { login } from 'tapis-api/authenticator';
-import { useTapisConfig } from 'tapis-hooks';
+import { login } from 'tapis-api/src/authenticator';
+import { useTapisConfig } from 'tapis-hooks/src';
 
 type LoginHookParams = {
   username: string,
   password: string,
   onSuccess?: (data: Authenticator.RespCreateToken) => any,
-  onError?: (error) => any
+  onError?: (error: any) => any
 }
 
 const useLogin = () => {
@@ -15,7 +15,7 @@ const useLogin = () => {
 
   // On successful login, save the token to the TapisContext state
   const onSuccess = (response: Authenticator.RespCreateToken) => {
-    setAccessToken(response.result.access_token);
+    setAccessToken(response?.result?.access_token);
   }
  
   // The useMutation react-query hook is used to call operations that make server-side changes

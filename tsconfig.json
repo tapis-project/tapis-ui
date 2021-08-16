@@ -1,41 +1,27 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "dist",
-    "lib": [
-      "es6",
-      "dom"
-    ],
-    "typeRoots": [
-      "./types",
-      "node_modules/@types"
-    ],
-    "noImplicitAny": false,
-    "module": "es6",
     "target": "es5",
-    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true, 
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "tapis-app": ["src/tapis-app/src"],
-      "tapis-app/*": ["src/tapis-app/src/*"],
-      "tapis-ui": ["src/tapis-ui/src"],
-      "tapis-ui/*": ["src/tapis-ui/src/*"],
-      "tapis-redux": ["src/tapis-redux/src"],
-      "tapis-redux/*": ["src/tapis-redux/src/*"],
-      "tapis-hooks": ["src/tapis-hooks/src"],
-      "tapis-hooks/*": ["src/tapis-hooks/src/*"],
-      "tapis-api": ["src/tapis-api/src"],
-      "tapis-api/*": ["src/tapis-api/src/*"]
-    }
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src"
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/__tests__"
+  "include": [
+    "src"
   ]
 }

@@ -1,1 +1,1 @@
-export { default, shouldShowMessage } from './WelcomeMessage';
+export { default, useShouldShowMessage } from './WelcomeMessage';

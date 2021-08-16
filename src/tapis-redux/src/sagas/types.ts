@@ -17,11 +17,11 @@ export type Action = {
   payload?: any
 }
 
-export type OnRequestCallback = () => Action;
+export type OnRequestCallback = ( () => Action ) | null;
 
-export type OnSuccessCallback<T> = (result: T) => Action;
+export type OnSuccessCallback<T> = ( (result: T) => Action ) | null;
 
-export type OnFailureCallback = (error: Error) => Action;
+export type OnFailureCallback = ( (error: Error) => Action ) | null;
 
 /**
  * A type that describes a payload to send to the API saga

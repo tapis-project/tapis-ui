@@ -3,7 +3,7 @@ import { TapisQueryParams } from './types';
 const queryHelper = async <T extends unknown>(params: TapisQueryParams<T>): Promise<T> => {
   const { module, func, args, jwt, basePath } = params;
 
-  const headers = {};
+  const headers: any = {};
   if (jwt) {
     headers["X-Tapis-Token"] = jwt;
   }

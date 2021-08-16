@@ -1,8 +1,8 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Apps, Login, Dashboard, Jobs, Systems } from 'tapis-app/Sections';
-import { SectionHeader } from 'tapis-ui/_common';
+import { Apps, Login, Dashboard, Jobs, Systems } from 'tapis-app/src/Sections';
+import { SectionHeader } from 'tapis-ui/src/_common';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import Logout from '../Logout';
