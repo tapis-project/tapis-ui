@@ -1,6 +1,7 @@
 
 import { Authenticator } from '@tapis/tapis-typescript';
-import { queryHelper } from 'tapis-api/src/utils';
+import { apiGenerator } from 'tapis-api/src/utils';
+import { errorDecoder } from 'tapis-api/src/utils';
 
 
 export interface LoginParams {
@@ -20,16 +21,13 @@ const login = ({ username, password, basePath }: LoginParams): Promise<Authentic
     reqCreateToken
   }
 
-  // Once the request parameters are wrapped, call queryHelper to
-  // perform the operation
-  return queryHelper<Authenticator.RespCreateToken>({
-    module: Authenticator,
-    api: Authenticator.TokensApi,
-    func: Authenticator.TokensApi.prototype.createToken,
-    args: [ request ],
-    basePath,
-    jwt: null
-  });
+  const api: Authenticator.TokensApi = apiGenerator<Authenticator.TokensApi>(
+    Authenticator, Authenticator.TokensApi, basePath, null
+  );
+
+  return errorDecoder(
+    () => api.createToken(request)
+  )
 };
 
 export default login;
