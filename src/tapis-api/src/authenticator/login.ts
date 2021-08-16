@@ -22,7 +22,7 @@ const login = ({ username, password, basePath }: LoginParams): Promise<Authentic
   }
 
   const api: Authenticator.TokensApi = apiGenerator<Authenticator.TokensApi>(
-    Authenticator, Authenticator.TokensApi, basePath, ''
+    Authenticator, Authenticator.TokensApi, basePath, null
   );
 
   return errorDecoder(

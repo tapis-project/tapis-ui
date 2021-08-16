@@ -9,7 +9,7 @@ type ApiModule = {
 }
 
 
-const apiGenerator = <T extends unknown>(module: ApiModule, api: BaseApiClass, basePath: string, jwt: string): T => {
+const apiGenerator = <T extends unknown>(module: ApiModule, api: BaseApiClass, basePath: string, jwt: string | null): T => {
 
   const headers: any = {};
   if (jwt) {
