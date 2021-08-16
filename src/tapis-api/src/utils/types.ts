@@ -39,7 +39,7 @@ export type TapisQueryParams<T> = {
   /**
    * The API function from the prototype of the api
    */
-  func: (...args: any[]) => any,
+  func: (...args: any[]) => Promise<T>,
 
   /**
    * Any 
