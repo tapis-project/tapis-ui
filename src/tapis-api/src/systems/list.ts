@@ -1,15 +1,12 @@
 import { Systems } from '@tapis/tapis-typescript';
-import { queryHelper } from 'tapis-api/src/utils';
+import { apiGenerator } from 'tapis-api/src/utils';
+import { errorDecoder } from 'tapis-api/src/utils';
 
 const list = (params: Systems.GetSystemsRequest, basePath: string, jwt: string) => {
-  return queryHelper<Systems.RespSystems>({
-    module: Systems,
-    api: Systems.SystemsApi,
-    func: Systems.SystemsApi.prototype.getSystems,
-    args: [params],
-    basePath,
-    jwt
-  });
+  const api: Systems.SystemsApi = apiGenerator<Systems.SystemsApi>(Systems, Systems.SystemsApi, basePath, jwt);
+  return errorDecoder<Systems.RespSystems>(
+    () => api.getSystems(params)
+  );
 }
 
 export default list;
