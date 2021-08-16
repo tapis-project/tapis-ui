@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSystems } from 'tapis-redux/src';
+import { useList } from 'tapis-hooks/src/systems';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/src/_common';
-import { SystemsListCallback } from 'tapis-redux/src/systems/types';
 import { Config } from 'tapis-redux/src/types';
 import './SystemList.scss';
 
@@ -34,31 +32,29 @@ SystemItem.defaultProps = {
 }
 
 interface SystemListProps {
-  config?: Config,
-  onList?: SystemsListCallback,
-  onSelect?: OnSelectCallback,
+  config?: Config | null,
+  onSelect?: OnSelectCallback | null,
   className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, className }) => {
-  const dispatch = useDispatch();
-  const { systems, list } = useSystems(config);
-  useEffect(() => {
-    dispatch(list({ onList }));
-  }, [dispatch]);
-  const definitions: Array<TapisSystem | null> = systems.results;
+const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, className='' }) => {
+
+  // Get a systems listing with default request params
+  const { data, isLoading, error } = useList({});
+
+  const definitions: Array<TapisSystem> = data?.result || [];
   const [currentSystem, setCurrentSystem] = useState(String);
   const select = useCallback((system) => {
     onSelect && onSelect(system);
     setCurrentSystem(system.id)
   },[onSelect, setCurrentSystem]);
 
-  if (!systems || systems.loading) {
+  if (isLoading) {
     return <LoadingSpinner />
   }
 
-  if (systems.error) {
-    return <Message canDismiss={false} type="error" scope="inline">{systems.error.message}</Message>
+  if (error) {
+    return <Message canDismiss={false} type="error" scope="inline">{error.message}</Message>
   }
 
   return (
@@ -80,9 +76,9 @@ const SystemList: React.FC<SystemListProps> = ({ config, onList, onSelect, class
 };
 
 SystemList.defaultProps = {
-  config: undefined,
-  onList: undefined,
-  onSelect: undefined
+  config: null,
+  onSelect: null,
+  className: ''
 }
 
 export default SystemList;

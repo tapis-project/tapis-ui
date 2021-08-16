@@ -6,6 +6,7 @@ import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'rea
 import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux/src';
 import { useTapisConfig } from 'tapis-hooks/src';
 import { LoadingSpinner } from 'tapis-ui/src/_common';
+import { useList as useSystemsList } from 'tapis-hooks/src/systems';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 
@@ -53,7 +54,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name,
 
 const Dashboard: React.FC = () => {
   const { accessToken } = useTapisConfig();
-  const systems = useSystems();
+  const systems = useSystemsList({});
   const jobs = useJobs();
   const apps = useApps();
   const dispatch = useDispatch();
@@ -92,8 +93,8 @@ const Dashboard: React.FC = () => {
                 name="Systems"
                 text="Access TAPIS systems and files"
                 link="/systems"
-                counter={`${systems.systems.results.length} systems`}
-                loading={systems.systems.loading}
+                counter={`${systems?.data?.result?.length} systems`}
+                loading={systems?.isLoading}
               />
               <DashboardCard
                 icon="applications"

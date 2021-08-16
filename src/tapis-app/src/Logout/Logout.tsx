@@ -1,16 +1,14 @@
 import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useAuthenticator } from 'tapis-redux/src';
+import { useLogin } from 'tapis-hooks/src/authenticator';
 
 const Logout: React.FC = () => {
-  const dispatch = useDispatch();
-  const { logout } = useAuthenticator();
+  const { logout } = useLogin();
   useEffect(
     () => {
-      dispatch(logout());
+      logout();
     },
-    [ logout, dispatch ]
+    [ logout ]
   )
   return <Redirect to="/" />
 }

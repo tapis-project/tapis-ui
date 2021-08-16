@@ -1,10 +1,10 @@
 import React from 'react';
 import { SectionHeader } from 'tapis-ui/src/_common';
-import { useAuthenticator } from 'tapis-redux/src';
+import { useLogin } from 'tapis-hooks/src/authenticator';
+import { useTapisConfig } from 'tapis-hooks/src';
 import { Redirect } from 'react-router-dom';
 import styles from './ListSection.module.scss';
 import { isExpired } from 'tapis-redux/src/utils';
-import { useDispatch } from 'react-redux';
 
 export const ListSectionHeader: React.FC<React.PropsWithChildren<{ type?: string }> > = ({children, type}) => {
   return (
@@ -27,10 +27,10 @@ export const ListSectionDetail: React.FC<React.PropsWithChildren<{}> > = ({child
 }
 
 export const ListSection: React.FC<React.PropsWithChildren<{}> > = ({ children }) => {
-  const dispatch = useDispatch();
-  const { token, logout } = useAuthenticator();
-  if (!token || isExpired(token)) {
-    dispatch(logout());
+  const { logout } = useLogin();
+  const { accessToken } = useTapisConfig();
+  if (!accessToken || isExpired(accessToken)) {
+    logout();
     return <Redirect to="/login" />
   }
   return <div className={styles.root}>{children}</div>
