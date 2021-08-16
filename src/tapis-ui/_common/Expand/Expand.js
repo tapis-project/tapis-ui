@@ -14,6 +14,7 @@ const Expand = ({ className, detail, message }) => {
   // TODO: Use `details/summary` tags, when `onToggle` support is "last 2 versions"
   // SEE: https://github.com/facebook/react/issues/15486#issuecomment-669674869
   return (
+    /* eslint-disable-next-line */
     <Card className={styles.container} className={className} tag="div">
       <CardHeader className={styles.summary} onClick={toggleCallback} tag="div">
         <strong className={styles.header}>{detail}</strong>

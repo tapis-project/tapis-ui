@@ -19,7 +19,7 @@ const TextCopyField = ({ value, placeholder }) => {
       setIsCopied(false);
       clearTimeout(timeout);
     }, stateTimeout * 1000);
-  }, [isCopied, setIsCopied]);
+  }, [setIsCopied, stateTimeout]);
   const isEmpty = !value || value.length === 0;
   const onChange = (event) => {
     // Swallow keyboard events on the Input control, but

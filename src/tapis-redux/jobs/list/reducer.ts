@@ -1,24 +1,19 @@
-import { JobsReducerState } from '../types';
 import {
   JobsListingRequestPayload,
   JobsListingSuccessPayload,
   JobsListingFailurePayload,
-  JobsListingAction
 } from './types';
 import {
   updateList,
   setRequesting,
   setFailure,
-  getEmptyListResults,
   TapisListResults
 } from 'tapis-redux/types/results'
 import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import * as ACTIONS from './actionTypes';
-import { Jobs, Systems } from '@tapis/tapis-typescript';
-import { JobsReducer, JobsAction } from '../types';
+import { Jobs } from '@tapis/tapis-typescript';
+import { JobsReducer } from '../types';
 
-
-const emptyResults = getEmptyListResults(TAPIS_DEFAULT_JOBS_LISTING_LIMIT);
 
 const setListingRequest = (jobs: TapisListResults<Jobs.JobListDTO>,
   payload: JobsListingRequestPayload): TapisListResults<Jobs.JobListDTO> => {

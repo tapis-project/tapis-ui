@@ -1,5 +1,4 @@
 import React from 'react';
-import { Authenticator } from '@tapis/tapis-typescript';
 
 export type TapisContextType = {
   basePath: string,

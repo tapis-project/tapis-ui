@@ -9,8 +9,10 @@ describe('Select Dropdown Field', () => {
     expect(root).toBeDefined();
     expect(root.tagName).toEqual('SELECT');
     if (type === 'multiple') {
+      /* eslint-disable-next-line */
       expect(root.getAttribute('multiple')).toBe(''); // i.e. true
     } else {
+      /* eslint-disable-next-line */
       expect(root.getAttribute('multiple')).toBe(null); // i.e. false
     }
   });

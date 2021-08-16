@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
-import { Label, Input, Button } from 'reactstrap';
+import React from 'react';
+import { Input, Button } from 'reactstrap';
 import { useLogin } from 'tapis-hooks/authenticator';
 import { useTapisConfig } from 'tapis-hooks/context';
 import { LoadingSpinner } from '../../_common';
 import { Formik, Form,} from 'formik';
-import { FieldWrapper, Icon, Message } from 'tapis-ui/_common';
+import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { Authenticator } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 import styles from './Login.module.scss';

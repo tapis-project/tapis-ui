@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { SectionHeader, Icon } from 'tapis-ui/_common';
 import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'reactstrap';
-import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux';
+import { useApps, useJobs  } from 'tapis-redux';
 import { useTapisConfig } from 'tapis-hooks';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
@@ -57,22 +56,6 @@ const Dashboard: React.FC = () => {
   const systems = useSystemsList({});
   const jobs = useJobs();
   const apps = useApps();
-  const dispatch = useDispatch();
-
-  // TODO: Replace useEffect with react-query dependent retrieval
-  useEffect(
-    () => {
-      if (accessToken) {
-        /*
-        dispatch(systems.list({}));
-        dispatch(jobs.list({}));
-        dispatch(apps.list({}));
-        */
-      }
-    },
-    [ accessToken ]
-  )
-
 
   return (
     <div>

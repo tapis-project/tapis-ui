@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';

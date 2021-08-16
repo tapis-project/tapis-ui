@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useJobs } from 'tapis-redux';
 import { JobsListCallback } from 'tapis-redux/jobs/list/types';
-import { Config, TapisState } from 'tapis-redux/types';
+import { Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './JobsListing.scss'
@@ -46,16 +46,7 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
   const { list, jobs } = useJobs(config);
   useEffect(() => {
     dispatch(list({ onList, request: { orderBy: "created(desc)"} }));
-  }, [dispatch, onList]);
-
-  const jobSelectCallback = useCallback<OnSelectCallback>(
-    (job: Jobs.JobListDTO) => {
-      if (onSelect) {
-        onSelect(job);
-      }
-    },
-    [onSelect]
-  )
+  }, [dispatch, onList, list]);
 
   const [currentJob, setCurrentJob] = useState<string>('');
   const select = useCallback<OnSelectCallback>(

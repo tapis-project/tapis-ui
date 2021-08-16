@@ -2,7 +2,6 @@ import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { Icon } from 'tapis-ui/_common';
-import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { useTapisConfig } from 'tapis-hooks';
 import './Sidebar.global.scss';
 import styles from './Sidebar.module.scss';
@@ -33,36 +32,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, label, iconName }) => {
     </NavItem>
   );
 };
-
-
-type SystemInfoProps = {
-  system: TapisSystem
-}
-
-const SystemInfo: React.FC<SystemInfoProps> = ({ system }) => {
-  return (
-    <div>
-      <hr></hr>
-      <div className={styles.systemContent}>
-        <h6>Selected System</h6>
-        <div className={styles.systemInfo}>
-          <strong>ID: </strong>
-          {system.id}
-        </div>
-        <div className={styles.systemInfo}>
-          <strong>Type: </strong>
-          {system.systemType}
-        </div>
-        <div className={styles.systemInfo}>
-          <strong>Host: </strong>
-          {system.host}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
 
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();

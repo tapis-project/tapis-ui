@@ -5,7 +5,6 @@ import {
   FileListingCallback
 } from './types';
 import { Config } from 'tapis-redux/types';
-import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import {
   OnRequestCallback,
   OnSuccessCallback,

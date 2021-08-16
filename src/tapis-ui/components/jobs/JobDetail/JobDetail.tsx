@@ -2,9 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useJobs } from 'tapis-redux';
 import { JobRetrieveCallback } from 'tapis-redux/jobs/retrieve/types';
-import { Config, TapisState } from 'tapis-redux/types';
+import { Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner, DescriptionList } from 'tapis-ui/_common';
+import { Message, LoadingSpinner, DescriptionList } from 'tapis-ui/_common';
 
 export type OnRetrieveCallback = JobRetrieveCallback;
 
@@ -22,6 +22,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) =>
   const [error, setError] = useState<string | null>(null);
 
   // Get a file listing given the systemId and path
+  /* eslint-disable-next-line */
   const { jobs, retrieve } = useJobs(config);
 
   const jobRetrieveCallback = useCallback(
@@ -42,10 +43,13 @@ const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) =>
 
   useEffect(() => {
     dispatch(retrieve({ request: { jobUuid }, onRetrieve: jobRetrieveCallback }));
-  }, [onRetrieve, jobUuid]);
+  }, [onRetrieve, jobUuid, dispatch, retrieve, jobRetrieveCallback]);
 
+  if (error) {
+    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
+  }
 
-  if (!job) {
+  if (!job || loading) {
     return (
       <div>
         <LoadingSpinner placement="inline" /> Loading...

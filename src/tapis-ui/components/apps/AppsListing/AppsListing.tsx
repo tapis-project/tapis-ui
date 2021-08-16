@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useApps } from 'tapis-redux';
 import { AppsListCallback } from 'tapis-redux/apps/list/types';
-import { Config, TapisState } from 'tapis-redux/types';
+import { Config } from 'tapis-redux/types';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { Apps } from '@tapis/tapis-typescript';
 import './AppsListing.scss';
@@ -45,7 +45,7 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
   const { list, apps } = useApps(config);
   useEffect(() => {
     dispatch(list({ onList, request: { select } }));
-  }, [dispatch, onList]);
+  }, [dispatch, onList, list, select ]);
   const [currentApp, setCurrentApp] = useState(String);
   const selectCallback = useCallback((app) => {
     onSelect && onSelect(app);

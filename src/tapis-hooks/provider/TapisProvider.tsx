@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import {
   QueryClient,
   QueryClientProvider,
 } from 'react-query'
-import Cookies from 'js-cookie';
 import { Authenticator } from '@tapis/tapis-typescript';
 import TapisContext, { TapisContextType } from '../context/TapisContext';
 

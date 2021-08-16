@@ -1,5 +1,4 @@
 import { apiCall } from '../../sagas/actions';
-import * as ACTIONS from './actionTypes';
 import { Jobs } from '@tapis/tapis-typescript';
 import { JobRetrieveCallback } from './types';
 import {

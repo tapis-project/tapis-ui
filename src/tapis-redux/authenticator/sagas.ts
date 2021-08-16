@@ -49,15 +49,16 @@ export function* authenticatorLogin(action: AuthenticatorLoginRequest): any {
       yield call(action.payload.onAuth, { ...response });
     }
   } catch (error) {
+    let decoded = null;
     // If error has a json body, replace the error with the json body
     if (error.json) {
-      error = yield error.json();
+      decoded = yield error.json();
     }
 
     // Catch any errors and save exception in tapis-redux
     yield put({
       type: TAPIS_AUTH_LOGIN_FAILURE,
-      payload: { error }
+      payload: { error: decoded || error }
     });
     if (action.payload.onAuth) {
       yield call(action.payload.onAuth, error);

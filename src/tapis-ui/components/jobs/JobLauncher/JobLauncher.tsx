@@ -1,12 +1,10 @@
 import React, { useCallback } from 'react';
 import { useSystems, useJobs } from 'tapis-redux';
-import { JobsSubmitCallback } from 'tapis-redux/jobs/submit/types'
 import { isTapisResponse, Config } from 'tapis-redux/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useDispatch } from 'react-redux';
 import { Formik, Form,} from 'formik';
 import {
-  Icon,
   LoadingSpinner,
 } from 'tapis-ui/_common';
 import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';

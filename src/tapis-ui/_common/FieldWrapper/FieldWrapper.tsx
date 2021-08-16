@@ -24,7 +24,7 @@ export type FieldWrapperProps = {
 } & FieldWrapperCustomProps;
 
 const FieldWrapper: React.FC<FieldWrapperProps> = ({ props, label, required, description, children }) => {
-  const [ field, meta, helpers ] = useField(props);
+  const [ field, meta ] = useField(props);
   return (
     <FormGroup>
       <Label

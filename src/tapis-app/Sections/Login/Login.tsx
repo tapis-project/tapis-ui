@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 import { Login as TapisLogin } from 'tapis-ui/components';
 import { SectionHeader } from 'tapis-ui/_common';
 import { Authenticator } from '@tapis/tapis-typescript';
-import { RespCreateTokenStatusEnum } from '@tapis/tapis-typescript-authenticator';
 
 const Login: React.FC = () => {
   const [redirect, setRedirect] = useState<boolean>(false);

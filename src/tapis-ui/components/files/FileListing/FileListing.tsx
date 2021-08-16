@@ -44,7 +44,7 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
   const { list } = useFiles(config);
   useEffect(() => {
     dispatch(list({ onList, request: { systemId, path } }));
-  }, [dispatch, systemId, path, onList]);
+  }, [dispatch, systemId, path, onList, list]);
 
   // Get the file listing for this systemId and path
   const result: FileListingDirectory | undefined = useSelector<TapisState, FileListingDirectory | undefined>(
@@ -75,7 +75,7 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
       {
         files.map((file: Files.FileInfo | null) => {
           return file && (
-            <FileListingItem file={file} key={file.name} />
+            <FileListingItem file={file} key={file.name} onSelect={fileSelectCallback} />
           )
         })
       }
