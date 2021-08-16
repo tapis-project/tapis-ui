@@ -1,1 +1,1 @@
-export { default as useSystemsList } from './useSystemsList';
+export { default as useList } from './useList';
