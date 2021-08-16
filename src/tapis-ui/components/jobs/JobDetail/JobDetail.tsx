@@ -14,7 +14,7 @@ interface JobDetailProps {
   onRetrieve?: OnRetrieveCallback
 }
 
-const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) => {
+const JobDetail: React.FC<JobDetailProps> = ({ config=undefined, jobUuid, onRetrieve=null }) => {
   const dispatch = useDispatch();
 
   const [job, setJob] = useState<Jobs.Job | null>(null);
@@ -65,10 +65,5 @@ const JobDetail: React.FC<JobDetailProps> = ({ config, jobUuid, onRetrieve }) =>
     </div>
   );
 };
-
-JobDetail.defaultProps = {
-  config: undefined,
-  onRetrieve: null
-}
 
 export default JobDetail;

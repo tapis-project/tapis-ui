@@ -25,7 +25,7 @@ interface JobLauncherProps {
   onSubmit?: OnSubmitCallback
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubmit }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({ config=undefined, initialValues={}, onSubmit=undefined }) => {
   const dispatch = useDispatch();
   const { submit, submission } = useJobs();
   const systemsHook = useSystems(config);
@@ -157,11 +157,5 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config, initialValues, onSubm
     </div>
   );
 };
-
-JobLauncher.defaultProps = {
-  config: undefined,
-  initialValues: {},
-  onSubmit: undefined
-}
 
 export default JobLauncher;

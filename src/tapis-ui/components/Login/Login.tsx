@@ -14,7 +14,7 @@ interface LoginProps  {
   onError?: (error: any) => any
 }
 
-const Login: React.FC<LoginProps> = ({ onAuth, onError }) => {
+const Login: React.FC<LoginProps> = ({ onAuth=undefined, onError=undefined }) => {
   const { login, isLoading, isError, error } = useLogin();
   const { accessToken } = useTapisConfig();
 
@@ -89,11 +89,5 @@ const Login: React.FC<LoginProps> = ({ onAuth, onError }) => {
     </Formik>
   );
 };
-
-Login.defaultProps = {
-  onAuth: undefined,
-  onError: undefined
-}
-
 
 export default Login;

@@ -15,7 +15,7 @@ interface AppsListingItemProps {
   selected: boolean,
 }
 
-const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, selected }) => {
+const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, selected = false }) => {
   return (
     <li className="nav-item">
       <div className={"nav-link" + (selected ? ' active' : '')}>
@@ -28,10 +28,6 @@ const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, select
   );
 };
 
-AppsListingItem.defaultProps = {
-  selected: false
-}
-
 interface AppsListingProps {
   config?: Config,
   onList?: AppsListCallback,
@@ -40,7 +36,9 @@ interface AppsListingProps {
   select?: string
 }
 
-const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, className, select }) => {
+const AppsListing: React.FC<AppsListingProps> = ({
+    config=undefined, onList=undefined, onSelect=undefined, className, select=""
+  }) => {
   const dispatch = useDispatch();
   const { list, apps } = useApps(config);
   useEffect(() => {
@@ -81,12 +79,5 @@ const AppsListing: React.FC<AppsListingProps> = ({ config, onList, onSelect, cla
     </div>
   );
 };
-
-AppsListing.defaultProps = {
-  config: undefined,
-  onList: undefined,
-  onSelect: undefined,
-  select: ""
-}
 
 export default AppsListing;

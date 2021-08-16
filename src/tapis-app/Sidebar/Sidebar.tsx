@@ -49,8 +49,5 @@ const Sidebar: React.FC = () => {
   );
 };
 
-Sidebar.defaultProps = {
-  jwt: null
-}
 
 export default Sidebar;

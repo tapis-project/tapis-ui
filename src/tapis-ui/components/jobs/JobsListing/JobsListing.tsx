@@ -15,7 +15,7 @@ interface JobsListingItemProps {
   selected: boolean,
 }
 
-const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected }) => {
+const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected=false }) => {
   return (
     <li className="nav-item">
     <div className={"nav-link" + (selected ? ' active' : '')}>
@@ -27,11 +27,6 @@ const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected
   </li>
   );
 };
-
-JobsListingItem.defaultProps = {
-  selected: false
-}
-
 interface JobsListingProps {
   config?: Config,
   onList?: JobsListCallback,
@@ -39,7 +34,7 @@ interface JobsListingProps {
   className?: string
 }
 
-const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, className }) => {
+const JobsListing: React.FC<JobsListingProps> = ({ config=undefined, onList=null, onSelect=null, className=null }) => {
   const dispatch = useDispatch();
 
   // Get a file listing given the systemId and path
@@ -85,11 +80,5 @@ const JobsListing: React.FC<JobsListingProps> = ({ config, onList, onSelect, cla
     </div>
   );
 };
-
-JobsListing.defaultProps = {
-  config: undefined,
-  onList: null,
-  onSelect: undefined
-}
 
 export default JobsListing;

@@ -14,7 +14,7 @@ interface SystemItemProps {
 }
 
 
-const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected}) => {
+const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected = false}) => {
   return (
     <li className="nav-item">
       <div className={"nav-link" + (selected ? ' active' : '')}>
@@ -27,17 +27,13 @@ const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected}) => {
   );
 };
 
-SystemItem.defaultProps = {
-  selected: false
-}
-
 interface SystemListProps {
   config?: Config | null,
   onSelect?: OnSelectCallback | null,
   className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, className='' }) => {
+const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, className=null }) => {
 
   // Get a systems listing with default request params
   const { data, isLoading, error } = useList({});
@@ -74,11 +70,5 @@ const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, cla
     </div>
   );
 };
-
-SystemList.defaultProps = {
-  config: null,
-  onSelect: null,
-  className: ''
-}
 
 export default SystemList;

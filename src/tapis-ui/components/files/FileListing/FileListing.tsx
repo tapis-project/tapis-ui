@@ -16,7 +16,7 @@ interface FileListingItemProps {
   onSelect?: OnSelectCallback
 }
 
-const FileListingItem: React.FC<FileListingItemProps> = ({ file, onSelect }) => {
+const FileListingItem: React.FC<FileListingItemProps> = ({ file, onSelect=undefined }) => {
   return (
     <li onClick={() => onSelect ? onSelect(file) : null}>
       {/* will need to conditionally set file icon */}
@@ -24,10 +24,6 @@ const FileListingItem: React.FC<FileListingItemProps> = ({ file, onSelect }) => 
     </li>
   );
 };
-
-FileListingItem.defaultProps = {
-  onSelect: undefined
-}
 
 interface FileListingProps {
   systemId: string,
@@ -37,7 +33,9 @@ interface FileListingProps {
   onSelect?: OnSelectCallback
 }
 
-const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onList, onSelect }) => {
+const FileListing: React.FC<FileListingProps> = ({ 
+    systemId, path, config=undefined, onList=undefined, onSelect=undefined
+  }) => {
   const dispatch = useDispatch();
 
   // Get a file listing given the systemId and path
@@ -82,11 +80,5 @@ const FileListing: React.FC<FileListingProps> = ({ systemId, path, config, onLis
     </div>
   );
 };
-
-FileListing.defaultProps = {
-  config: undefined,
-  onList: undefined,
-  onSelect: undefined
-}
 
 export default FileListing;
