@@ -6,7 +6,7 @@ import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'rea
 import { useAuthenticator, useSystems, useApps, useJobs  } from 'tapis-redux/src';
 import { useTapisConfig } from 'tapis-hooks/src';
 import { LoadingSpinner } from 'tapis-ui/src/_common';
-import { useList as useSystemsList } from 'tapis-hooks/src/systems';
+import { useSystemsList } from 'tapis-hooks/src/systems';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 

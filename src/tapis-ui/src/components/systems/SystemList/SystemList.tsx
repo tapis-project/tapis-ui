@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useList } from 'tapis-hooks/src/systems';
+import { useSystemsList } from 'tapis-hooks/src/systems';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/src/_common';
 import { Config } from 'tapis-redux/src/types';
@@ -40,7 +40,7 @@ interface SystemListProps {
 const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, className='' }) => {
 
   // Get a systems listing with default request params
-  const { data, isLoading, error } = useList({});
+  const { data, isLoading, error } = useSystemsList({});
 
   const definitions: Array<TapisSystem> = data?.result || [];
   const [currentSystem, setCurrentSystem] = useState(String);

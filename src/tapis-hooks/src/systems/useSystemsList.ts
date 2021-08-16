@@ -3,7 +3,7 @@ import { list } from 'tapis-api/src/systems';
 import { Systems } from '@tapis/tapis-typescript'
 import { useTapisConfig } from 'tapis-hooks/src';
 
-const useList = (params: Systems.GetSystemsRequest) => {
+const useSystemsList = (params: Systems.GetSystemsRequest) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Systems.RespSystems, Error>(
     [params, accessToken],
@@ -17,4 +17,4 @@ const useList = (params: Systems.GetSystemsRequest) => {
   return result;
 }
 
-export default useList;
+export default useSystemsList;
