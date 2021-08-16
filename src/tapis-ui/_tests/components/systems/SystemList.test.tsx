@@ -5,11 +5,11 @@ import renderComponent from '../../utils/testing';
 import { SystemList } from 'tapis-ui/src/components/systems';
 import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 import { tapisSystem } from 'fixtures/systems.fixtures';
-import { useList } from 'tapis-hooks/systems';
+import { useList } from 'tapis-hooks/src/systems';
 
 const mockStore = configureStore();
 
-jest.mock('tapis-hooks/systems');
+jest.mock('tapis-hooks/src/systems');
 
 describe('SystemList', () => {
   it('renders SystemList component', () => {
