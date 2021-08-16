@@ -4,8 +4,8 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { Alert } from 'reactstrap';
 
-import SectionMessages from 'tapis-ui/src/_common/Section/SectionMessages';
-import * as MESSAGES from '../../src/_constants/welcomeMessages';
+import SectionMessages from 'tapis-ui/_common/Section/SectionMessages';
+import * as MESSAGES from '../../_constants/welcomeMessages';
 
 const mockStore = configureStore();
 const store = mockStore({});

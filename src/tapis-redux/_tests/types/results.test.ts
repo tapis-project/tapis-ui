@@ -1,5 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { TapisListResults, setRequesting, setFailure, updateList } from 'tapis-redux/src/types/results';
+import { TapisListResults, setRequesting, setFailure, updateList } from 'tapis-redux/types/results';
 
 describe('TapisListResults utilities', () => {
   const initialResults: TapisListResults<number> = {

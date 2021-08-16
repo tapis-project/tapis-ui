@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import LoadingSpinner from 'tapis-ui/src/_common/LoadingSpinner';
+import LoadingSpinner from 'tapis-ui/_common/LoadingSpinner';
 
 describe('Loading Spinner component', () => {
   it('should render a spinner', () => {

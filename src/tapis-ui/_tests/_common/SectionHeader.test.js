@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import SectionHeader from 'tapis-ui/src/_common/SectionHeader';
+import SectionHeader from 'tapis-ui/_common/SectionHeader';
 
 export const PARAMETER_CLASS_MAP = {
   isForForm: 'for-form',

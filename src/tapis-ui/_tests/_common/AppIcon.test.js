@@ -6,7 +6,7 @@ import {
 } from '@testing-library/jest-dom/dist/matchers';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store'
-import AppIcon from 'tapis-ui/src/_common/AppIcon';
+import AppIcon from 'tapis-ui/_common/AppIcon';
 
 const mockStore = configureStore();
 const store = mockStore(

@@ -2,7 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from '../utils/testing';
-import { Login } from 'tapis-ui/src/components';
+import { Login } from 'tapis-ui/components';
 import tapisReduxStore from 'fixtures/tapis-redux.fixture';
 
 const mockStore = configureStore();

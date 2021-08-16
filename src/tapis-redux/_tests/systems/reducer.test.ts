@@ -1,12 +1,12 @@
-import { systems } from 'tapis-redux/src/systems/reducer';
-import * as ACTIONS from 'tapis-redux/src/systems/actionTypes';
+import { systems } from 'tapis-redux/systems/reducer';
+import * as ACTIONS from 'tapis-redux/systems/actionTypes';
 import {
   SystemsReducerState,
   SystemsListingRequest,
   SystemsListingSuccess,
   SystemsListingFailure 
-} from 'tapis-redux/src/systems/types';
-import { TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
+} from 'tapis-redux/systems/types';
+import { TAPIS_DEFAULT_SYSTEMS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import { tapisSystem, systemsStore } from 'fixtures/systems.fixtures';
 
 describe('Systems reducer', () => {

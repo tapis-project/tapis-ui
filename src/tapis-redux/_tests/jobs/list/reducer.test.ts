@@ -1,13 +1,13 @@
-import { jobs } from 'tapis-redux/src/jobs/reducer';
-import { JobsReducerState } from 'tapis-redux/src/jobs/types';
-import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
+import { jobs } from 'tapis-redux/jobs/reducer';
+import { JobsReducerState } from 'tapis-redux/jobs/types';
+import { TAPIS_DEFAULT_JOBS_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 import { jobInfo, jobsStore } from 'fixtures/jobs.fixtures';
 import {
   JobsListingRequest,
   JobsListingFailure,
   JobsListingSuccess
-} from 'tapis-redux/src/jobs/list/types';
-import * as LIST_ACTIONS from 'tapis-redux/src/jobs/list/actionTypes';
+} from 'tapis-redux/jobs/list/types';
+import * as LIST_ACTIONS from 'tapis-redux/jobs/list/actionTypes';
 
 describe('Jobs List reducer', () => {
   it('reduces a listing request', () => {

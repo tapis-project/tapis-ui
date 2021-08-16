@@ -1,12 +1,12 @@
-import { jobs } from 'tapis-redux/src/jobs/reducer';
-import { JobsReducerState } from 'tapis-redux/src/jobs/types';
+import { jobs } from 'tapis-redux/jobs/reducer';
+import { JobsReducerState } from 'tapis-redux/jobs/types';
 import { jobInfo, jobsStore } from 'fixtures/jobs.fixtures';
 import {
   JobsSubmitRequest,
   JobsSubmitFailure,
   JobsSubmitSuccess
-} from 'tapis-redux/src/jobs/submit/types';
-import * as SUBMIT_ACTIONS from 'tapis-redux/src/jobs/submit/actionTypes';
+} from 'tapis-redux/jobs/submit/types';
+import * as SUBMIT_ACTIONS from 'tapis-redux/jobs/submit/actionTypes';
 
 describe('Jobs Submit reducer', () => {
   it('reduces a submit request', () => {

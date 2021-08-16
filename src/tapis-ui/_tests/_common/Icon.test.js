@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Icon from 'tapis-ui/src/_common/Icon';
+import Icon from 'tapis-ui/_common/Icon';
 
 const NAME = 'test-icon-name';
 const CLASS = 'test-class-name';

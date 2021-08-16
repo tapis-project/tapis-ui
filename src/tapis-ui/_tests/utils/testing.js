@@ -3,7 +3,7 @@ import { BrowserRouter, Router } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 /* eslint-disable */
-import TapisProvider from 'tapis-hooks/src/provider';
+import TapisProvider from 'tapis-hooks/provider';
 
 export default function renderComponent(component, store, history) {
   if (history) {

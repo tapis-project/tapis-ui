@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import Section from 'tapis-ui/src/_common/Section';
+import Section from 'tapis-ui/_common/Section';
 
 const mockStore = configureStore();
 const store = mockStore({});

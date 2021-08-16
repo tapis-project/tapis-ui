@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from 'tapis-app/src/App';
+import App from 'tapis-app/App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { HashRouter as Router } from 'react-router-dom';
-import configureStore from 'tapis-redux/src/store';
-import { SectionHeader } from 'tapis-ui/src/_common';
-import TapisProvider from 'tapis-hooks/src/provider';
+import configureStore from 'tapis-redux/store';
+import { SectionHeader } from 'tapis-ui/_common';
+import TapisProvider from 'tapis-hooks/provider';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'tapis-app/src/index.css';
+import 'tapis-app/index.css';
 
 const store = configureStore();
 

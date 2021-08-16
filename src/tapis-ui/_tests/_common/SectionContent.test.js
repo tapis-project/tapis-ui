@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import SectionContent, { LAYOUT_CLASS_MAP } from 'tapis-ui/src/_common/SectionContent/SectionContent';
+import SectionContent, { LAYOUT_CLASS_MAP } from 'tapis-ui/_common/SectionContent/SectionContent';
 
 // Create our own `LAYOUTS`, because component one may include an empty string
 const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
-import SectionMessage from 'tapis-ui/src/_common/SectionMessage';
+import SectionMessage from 'tapis-ui/_common/SectionMessage';
 
 const TEST_CONTENT = '…';
 const TEST_TYPE = 'info';

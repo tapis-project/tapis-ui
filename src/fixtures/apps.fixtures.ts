@@ -1,5 +1,5 @@
 import { Apps } from '@tapis/tapis-typescript';
-import { AppsReducerState } from 'tapis-redux//src/apps/types';
+import { AppsReducerState } from 'tapis-redux/apps/types';
 
 export const tapisApp: Apps.TapisApp = { 
   tenant: undefined,

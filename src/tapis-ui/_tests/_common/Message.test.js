@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import Message, * as MSG from 'tapis-ui/src/_common/Message/Message';
+import Message, * as MSG from 'tapis-ui/_common/Message/Message';
 
 const TEST_CONTENT = '…';
 const TEST_TYPE = 'info';

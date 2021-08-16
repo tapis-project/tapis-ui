@@ -1,6 +1,6 @@
-import { FilesReducerState } from 'tapis-redux/src/files/types';
+import { FilesReducerState } from 'tapis-redux/files/types';
 import { Files } from '@tapis/tapis-typescript';
-import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/src/constants/tapis';
+import { TAPIS_DEFAULT_FILES_LISTING_LIMIT } from 'tapis-redux/constants/tapis';
 
 export const fileInfo: Files.FileInfo = {
   name: 'file1.txt',
