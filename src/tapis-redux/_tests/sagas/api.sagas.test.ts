@@ -1,5 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { apiSaga } from 'tapis-redux/src/sagas/sagas';
+import { apiSaga } from 'tapis-redux/sagas/sagas';
 import {
   ApiSagaDispatch,
   ApiDispatches,
@@ -7,9 +7,9 @@ import {
   OnRequestCallback,
   OnSuccessCallback,
   OnFailureCallback
-} from 'tapis-redux/src/sagas/types';
-import { Config, ApiCallback } from 'tapis-redux/src/types';
-import * as ACTIONS from 'tapis-redux/src/sagas/actionTypes';
+} from 'tapis-redux/sagas/types';
+import { Config, ApiCallback } from 'tapis-redux/types';
+import * as ACTIONS from 'tapis-redux/sagas/actionTypes';
 
 jest.mock('cross-fetch');
 
