@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { useJobs } from 'tapis-redux';
 import { JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
-import { OnSelectCallback } from 'tapis-ui/components/jobs/JobsListing';
 import { 
   ListSection, 
   ListSectionBody, 
@@ -18,7 +17,7 @@ const Jobs: React.FC = () => {
   const [job, setJob] = useState<JobListDTO | null>(null);
   const { list } = useJobs();
   const dispatch = useDispatch();
-  const jobSelectCallback = useCallback<OnSelectCallback>(
+  const jobSelectCallback = useCallback<(job: JobListDTO) => any>(
     (job: JobListDTO) => {
       setJob(job);
     },
