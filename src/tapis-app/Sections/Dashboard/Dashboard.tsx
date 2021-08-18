@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { SectionHeader, Icon } from 'tapis-ui/_common';
 import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'reactstrap';
-import { useApps  } from 'tapis-redux';
+import { useApps } from 'tapis-redux';
 import { useTapisConfig } from 'tapis-hooks';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
