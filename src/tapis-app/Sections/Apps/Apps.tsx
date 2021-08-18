@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { useApps, useJobs } from 'tapis-redux';
 import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
-import { OnSelectCallback } from 'tapis-ui/components/apps/AppsListing';
 import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { 
@@ -20,7 +19,7 @@ const Apps: React.FC = () => {
   const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob | null>(null);
   const { list } = useApps();
-  const appSelectCallback = useCallback<OnSelectCallback>(
+  const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
       dispatch(resetSubmit());
       const execSystemId = app.jobAttributes && 
