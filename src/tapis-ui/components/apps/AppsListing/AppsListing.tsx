@@ -1,13 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useApps } from 'tapis-redux';
-import { AppsListCallback } from 'tapis-redux/apps/list/types';
-import { Config } from 'tapis-redux/types';
+import React, { useState, useCallback } from 'react';
+import { useList } from 'tapis-hooks/apps';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { Apps } from '@tapis/tapis-typescript';
 import './AppsListing.scss';
-
-export type OnSelectCallback = (app: Apps.TapisApp) => any;
 
 interface AppsListingItemProps {
   app: Apps.TapisApp,
@@ -29,36 +24,31 @@ const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, select
 };
 
 interface AppsListingProps {
-  config?: Config,
-  onList?: AppsListCallback,
-  onSelect?: OnSelectCallback,
+  onSelect?: (app: Apps.TapisApp) => any,
   className?: string
-  select?: string
+  select?: string | undefined
 }
 
 const AppsListing: React.FC<AppsListingProps> = ({
-    config=undefined, onList=undefined, onSelect=undefined, className, select=""
+    onSelect=undefined, className, select=undefined
   }) => {
-  const dispatch = useDispatch();
-  const { list, apps } = useApps(config);
-  useEffect(() => {
-    dispatch(list({ onList, request: { select } }));
-  }, [dispatch, onList, list, select ]);
+
+  const { data, isLoading, error } = useList({ select })
   const [currentApp, setCurrentApp] = useState(String);
   const selectCallback = useCallback((app) => {
     onSelect && onSelect(app);
     setCurrentApp(app.id)
   },[onSelect, setCurrentApp]);
 
-  if (!apps || apps.loading) {
+  if (isLoading) {
     return <LoadingSpinner />
   }
 
-  if (apps.error) {
-    return <Message canDismiss={false} type="error" scope="inline">{apps.error.message}</Message>
+  if (error) {
+    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
   }
 
-  const appList: Array<Apps.TapisApp |null> = apps.results;
+  const appList: Array<Apps.TapisApp> = data?.result || [];
 
   return (
     <div className={className ? className : "apps-list nav flex-column"}>

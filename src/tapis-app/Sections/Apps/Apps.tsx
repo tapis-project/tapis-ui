@@ -1,7 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
-import { useDispatch } from 'react-redux';
-import { useApps, useJobs } from 'tapis-redux';
 import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
 import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
@@ -15,13 +13,9 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Apps: React.FC = () => {
-  const { resetSubmit } = useJobs();
-  const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob | null>(null);
-  const { list } = useApps();
   const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
-      dispatch(resetSubmit());
       const execSystemId = app.jobAttributes && 
         app.jobAttributes.execSystemId ? app.jobAttributes.execSystemId : null;
       setInitialValues({
@@ -31,12 +25,11 @@ const Apps: React.FC = () => {
         execSystemId: execSystemId ?? undefined
       });
     },
-    [ setInitialValues, dispatch, resetSubmit ]
+    [ setInitialValues ]
   )
   const refresh = () => {
     setInitialValues(null);
-    dispatch(list({}));
-}
+  }
 
   return (
     <ListSection>
