@@ -15,13 +15,7 @@ describe('Files', () => {
   it('renders File Listing component', () => {
     const store = mockStore(tapisReduxStore);
     (useList as jest.Mock).mockReturnValue({
-      data: {
-        pages: [
-          {
-            result: [ fileInfo ]
-          }
-        ]
-      },
+      concatenatedResults: [ fileInfo ],
       isLoading: false,
       error: null
     })

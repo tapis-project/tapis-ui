@@ -32,7 +32,6 @@ const useList = ({ systemId, path, limit = 100 } : useListParams) => {
     }
   );
 
-
   // If there are result pages, concatenate the results
   const concatenatedResults = result?.data?.pages 
     ? concatResults<Files.FileInfo>(

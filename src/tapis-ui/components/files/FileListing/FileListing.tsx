@@ -32,7 +32,6 @@ const FileListing: React.FC<FileListingProps> = ({
   }) => {
  
   const { 
-    data, 
     hasNextPage, 
     isLoading, 
     error, 
