@@ -31,7 +31,14 @@ const FileListing: React.FC<FileListingProps> = ({
     systemId, path, onSelect=undefined
   }) => {
  
-  const { data, hasNextPage, isLoading, error, fetchNextPage } = useList({ systemId, path });
+  const { 
+    data, 
+    hasNextPage, 
+    isLoading, 
+    error, 
+    fetchNextPage, 
+    concatenatedResults
+  } = useList({ systemId, path });
 
   const fileSelectCallback = useCallback<OnSelectCallback>(
     (file: Files.FileInfo) => {
@@ -50,15 +57,7 @@ const FileListing: React.FC<FileListingProps> = ({
     return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
   }
 
-  const pages = data?.pages;
-  const reduced = pages?.reduce(
-    (accumulator, current) => {
-      return {
-        result: accumulator?.result?.concat(current?.result || [])
-      };
-    }
-  )
-  const files: Array<Files.FileInfo> = reduced?.result || [];
+  const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
   return (
     <div className="file-list">
