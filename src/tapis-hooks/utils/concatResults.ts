@@ -1,12 +1,7 @@
-export interface ResultType<T> {
-  result: T[]
-}
+export type ResultPages<T> = { result?: T[] }[];
 
-export const concatResults = <T extends unknown>(
-  pages: ResultType<T>[]
-): T[] => {
-  const reducedPages = pages.reduce((accumulator, current) => {
-    return accumulator.concat(current?.result ?? [])
-  }, [] as T[]);
-  return reducedPages
-};
+export const concatResults = <T>(pages: ResultPages<T>): T[] =>
+  pages.reduce(
+    (accumulator: T[], current) => accumulator.concat(current.result ?? []),
+    []
+  );
