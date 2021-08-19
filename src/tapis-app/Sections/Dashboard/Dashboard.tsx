@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { SectionHeader, Icon } from 'tapis-ui/_common';
 import { Card, CardHeader, CardBody, CardTitle, CardFooter, CardText } from 'reactstrap';
-import { useApps, useJobs  } from 'tapis-redux';
 import { useTapisConfig } from 'tapis-hooks';
 import { LoadingSpinner } from 'tapis-ui/_common';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
+import { useList as useJobsList } from 'tapis-hooks/jobs';
 import { useList as useAppsList } from 'tapis-hooks/apps';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
@@ -55,8 +55,8 @@ const DashboardCard: React.FC<DashboardCardProps> = ({icon, link, counter, name,
 const Dashboard: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const systems = useSystemsList({});
+  const jobs = useJobsList({});
   const apps = useAppsList({ select: "jobAttributes,version" });
-  const jobs = useJobs();
 
   return (
     <div>
@@ -93,8 +93,8 @@ const Dashboard: React.FC = () => {
                 name="Jobs"
                 text="View status and details for previously launched TAPIS jobs"
                 link="/jobs"
-                counter={`${jobs.jobs.results.length} jobs`}
-                loading={jobs.jobs.loading}
+                counter={`${jobs?.data?.result?.length} jobs`}
+                loading={jobs?.isLoading}
               />
             </>
           ) : (

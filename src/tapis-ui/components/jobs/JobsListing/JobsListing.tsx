@@ -1,13 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useJobs } from 'tapis-redux';
-import { JobsListCallback } from 'tapis-redux/jobs/list/types';
-import { Config } from 'tapis-redux/types';
+import React, { useState, useCallback } from 'react';
+import { useList } from 'tapis-hooks/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './JobsListing.scss'
-
-export type OnSelectCallback = (app: Jobs.JobListDTO) => any;
 
 interface JobsListingItemProps {
   job: Jobs.JobListDTO,
@@ -27,39 +22,32 @@ const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected
   </li>
   );
 };
+
 interface JobsListingProps {
-  config?: Config,
-  onList?: JobsListCallback,
-  onSelect?: OnSelectCallback,
+  onSelect?: (app: Jobs.JobListDTO) => any,
   className?: string
 }
 
-const JobsListing: React.FC<JobsListingProps> = ({ config=undefined, onList=null, onSelect=null, className=null }) => {
-  const dispatch = useDispatch();
-
-  // Get a file listing given the systemId and path
-  const { list, jobs } = useJobs(config);
-  useEffect(() => {
-    dispatch(list({ onList, request: { orderBy: "created(desc)"} }));
-  }, [dispatch, onList, list]);
+const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null }) => {
+  const { data, isLoading, error } = useList({});
 
   const [currentJob, setCurrentJob] = useState<string>('');
-  const select = useCallback<OnSelectCallback>(
+  const select = useCallback<(job: Jobs.JobListDTO) => any>(
     (job: Jobs.JobListDTO) => {
       onSelect && onSelect(job);
       setCurrentJob(job.uuid ?? '')
   },
   [onSelect, setCurrentJob]);
 
-  if (!jobs || jobs.loading) {
+  if (isLoading) {
     return <LoadingSpinner />
   }
 
-  if (jobs.error) {
-    return <Message canDismiss={false} type="error" scope="inline">{jobs.error.message}</Message>
+  if (error) {
+    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
   }
 
-  const jobsList: Array<Jobs.JobListDTO | null> = jobs.results;
+  const jobsList: Array<Jobs.JobListDTO> = data?.result || [];
 
   return (
     <div className={className ? className : "job-list nav flex-column"}>
