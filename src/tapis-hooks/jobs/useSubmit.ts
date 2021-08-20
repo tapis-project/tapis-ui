@@ -27,7 +27,7 @@ const useSubmit = (appId: string, appVersion: string) => {
   // We want this hook to automatically reset if a different appId or appVersion
   // is passed to it. This eliminates the need to reset it inside the TSX component
   useEffect(
-    () => reset,
+    () => reset(),
     [ reset, appId, appVersion ]
   )
 
