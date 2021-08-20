@@ -19,7 +19,10 @@ describe('JobLauncher', () => {
       name: `Mock Job`,
       execSystemId: 'tapisv3-exec'
     }
-    const { getAllByTestId } = renderComponent(<JobLauncher initialValues={initialValues} />, store);
+    const { getAllByTestId } = renderComponent(
+      <JobLauncher appId="SleepSeconds" appVersion="0.1" name="test-job" execSystemId="exec-system "/>,
+      store
+    );
     const input: any = getAllByTestId('appId');
     expect(input[0].value).toEqual('SleepSeconds');
   });

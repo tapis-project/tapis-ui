@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
-import { Jobs } from '@tapis/tapis-typescript';
 import { AppsListing } from 'tapis-ui/components/apps';
 import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
@@ -13,22 +12,28 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Apps: React.FC = () => {
-  const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob | null>(null);
+  const [params, setParams] = useState<{
+    appId: string,
+    appVersion: string,
+    name: string,
+    execSystemId: string
+  } | null>(null);
+
   const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
       const execSystemId = app.jobAttributes && 
         app.jobAttributes.execSystemId ? app.jobAttributes.execSystemId : null;
-      setInitialValues({
-        appId: app.id,
-        appVersion: app.version,
+      setParams({
+        appId: app.id ?? '',
+        appVersion: app.version ?? '',
         name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-        execSystemId: execSystemId ?? undefined
+        execSystemId: execSystemId ?? ''
       });
     },
-    [ setInitialValues ]
+    [ setParams ]
   )
   const refresh = () => {
-    setInitialValues(null);
+    setParams(null);
   }
 
   return (
@@ -48,8 +53,13 @@ const Apps: React.FC = () => {
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Launcher</ListSectionHeader>
-            {initialValues
-              ? <JobLauncher appId={initialValues.appId!} appVersion={initialValues.appVersion!} initialValues={initialValues}/>
+            {params
+              ? <JobLauncher
+                  appId={params.appId}
+                  appVersion={params.appVersion}
+                  name={params.name}
+                  execSystemId={params.execSystemId}
+                />
               : <SectionMessage type="info">
                   Select an app from the list.
                 </SectionMessage>
