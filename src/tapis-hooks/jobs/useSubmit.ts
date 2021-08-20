@@ -17,7 +17,9 @@ const useSubmit = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, submit helper is called to perform the operation
-  const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(submit);
+  const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(
+    (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt)
+  );
 
   // Return hook object with loading states and login function
   return {
@@ -29,10 +31,9 @@ const useSubmit = () => {
     reset,
     submit: (params: SubmitHookParams) => {
       const { request, onSuccess, onError } = params;
-
       // Call mutate to trigger a single post-like API operation
       return mutate(
-        { request, basePath, jwt },
+        request,
         { 
           onSuccess,
           onError
