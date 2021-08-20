@@ -8,6 +8,7 @@ import {
 
 import { useField, FieldHookConfig } from 'formik';
 import './FieldWrapper.scss';
+import { FieldError } from 'react-hook-form';
 
 type FieldWrapperCustomProps = {
   label: string;
@@ -59,6 +60,40 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({ props, label, required, des
     </FormGroup>
   )
 }
+
+
+type FieldWrapperHookProps = {
+  label: string;
+  required: boolean;
+  description: string;
+  error?: FieldError
+}
+export const HookFieldWrapper: React.FC<FieldWrapperHookProps> = ({label, required, description, children, error}) => (
+  <FormGroup>
+  <Label
+    className="form-field__label"
+    size="sm"
+    style={{ display: 'flex', alignItems: 'center' }}
+  >
+    {label}{' '}
+    {required ? (
+      <Badge color="danger" style={{ marginLeft: '10px' }}>
+        Required
+      </Badge>
+    ) : null}
+  </Label>
+  {children}
+  {error ? (
+    <div className="form-field__validation-error">{error.message}</div>
+  ) : (
+    description && (
+      <FormText className="form-field__help" color="muted">
+        {description}
+      </FormText>
+    )
+  )}
+</FormGroup>
+)
 
 
 export default FieldWrapper;
