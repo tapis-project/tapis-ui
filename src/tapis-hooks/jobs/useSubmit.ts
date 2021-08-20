@@ -16,8 +16,7 @@ const useSubmit = () => {
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
   //
-  // In this case, loginHelper is called to perform the operation, with an onSuccess callback
-  // passed as an option
+  // In this case, submit helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(submit);
 
   // Return hook object with loading states and login function
