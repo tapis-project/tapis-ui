@@ -18,14 +18,16 @@ const useSubmit = () => {
   //
   // In this case, loginHelper is called to perform the operation, with an onSuccess callback
   // passed as an option
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation(submit);
+  const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(submit);
 
   // Return hook object with loading states and login function
   return {
     isLoading,
     isError,
     isSuccess,
+    data,
     error,
+    reset,
     submit: (params: SubmitHookParams) => {
       const { request, onSuccess, onError } = params;
 

@@ -1,3 +1,4 @@
+
 const errorDecoder = async<T>(func: () => Promise<T>) => {
   try {
     // Call the specified function name, and expect that specific return type

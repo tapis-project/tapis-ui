@@ -1,13 +1,13 @@
-import React, { useCallback } from 'react';
-import { useSystems, useJobs } from 'tapis-redux';
-import { isTapisResponse, Config } from 'tapis-redux/types';
-import { Jobs } from '@tapis/tapis-typescript';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useList } from 'tapis-hooks/systems';
+import { useSubmit } from 'tapis-hooks/jobs';
 import { Formik, Form,} from 'formik';
 import {
   LoadingSpinner,
 } from 'tapis-ui/_common';
 import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
+import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { Jobs } from '@tapis/tapis-typescript';
 import { Message } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 import {
@@ -20,29 +20,14 @@ import './JobLauncher.scss';
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
 interface JobLauncherProps {
-  config?: Config,
   initialValues?: Jobs.ReqSubmitJob,
-  onSubmit?: OnSubmitCallback
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ config=undefined, initialValues={}, onSubmit=undefined }) => {
-  const dispatch = useDispatch();
-  const { submit, submission } = useJobs();
-  const systemsHook = useSystems(config);
-  const systems = systemsHook.systems;
+const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
+  const systemsListHook = useList({});
+  const { submit, isLoading, error, data, reset } = useSubmit();
 
-  // tapis-redux will make the callback with an agave response
-  // this callback will extract the Job returned in the result field
-  // of the response
-  const submitDecoderCallback = useCallback(
-    (result: Jobs.RespSubmitJob | Error) => {
-      if (onSubmit && isTapisResponse<Jobs.RespSubmitJob>(result)) {
-        const jobResponse: Jobs.RespSubmitJob = result as Jobs.RespSubmitJob;
-        onSubmit(jobResponse?.result ?? {});
-      }
-    },
-    [onSubmit]
-  )
+  const systems: Array<TapisSystem> = systemsListHook.data?.result ?? [];
 
   const validationSchema = (props: React.PropsWithChildren<React.ReactNode>) => {
     return Yup.lazy((values: any) => {
@@ -51,9 +36,16 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config=undefined, initialValu
     })
   }
   const formSubmit = (values: any, { setSubmitting }: {setSubmitting: any}) => {
-    dispatch(submit({ onSubmit: submitDecoderCallback, request: values }));
+    submit({ request: values })
     setSubmitting(false);
   }
+
+  useEffect(
+    () => {
+      reset();
+    },
+    [ reset, initialValues ]
+  )
 
   const jobFields: Array<FieldWrapperProps> = [
     {
@@ -96,8 +88,8 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config=undefined, initialValu
       required: true,
       children: <Input>
         {
-          systems.results.map(
-            (system: any) => (
+          systems.map(
+            (system: TapisSystem) => (
               <option key={system.id}>{system.id}</option>
             )
           )
@@ -134,20 +126,20 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ config=undefined, initialValu
               <Button
                 type="submit"
                 className="btn btn-primary"
-                disabled={isSubmitting || submission.loading || submission.result != null}>
+                disabled={isSubmitting || isLoading || !!error}>
                 Submit Job
               </Button>
               {
-                submission.loading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
+                isLoading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
               }
-              {submission.result && (
+              { data && (
                 <div className={styles.message}>
-                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {submission.result.uuid}</Message>
+                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {data?.result?.uuid || ''}</Message>
                 </div>
               )}
-              {submission.error && (
+              {error && (
                 <div className={styles.message}>
-                  <Message canDismiss={false} type="error" scope="inline">{submission.error.message}</Message>
+                  <Message canDismiss={false} type="error" scope="inline">{(error as any).message ?? error}</Message>
                 </div>
               )}
             </div>
