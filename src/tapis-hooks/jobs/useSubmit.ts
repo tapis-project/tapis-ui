@@ -2,6 +2,7 @@ import { useMutation } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
 import { submit } from 'tapis-api/jobs';
 import { useTapisConfig } from 'tapis-hooks';
+import QueryKeys from './queryKeys';
 
 type SubmitHookParams = {
   request: Jobs.ReqSubmitJob,
@@ -18,7 +19,8 @@ const useSubmit = () => {
   //
   // In this case, submit helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(
-    (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt)
+    [ QueryKeys.submit, jwt],
+    (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt),
   );
 
   // Return hook object with loading states and login function
