@@ -24,12 +24,12 @@ const Login: React.FC<LoginProps> = ({
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm();
+  } = useForm({ defaultValues: { username: null, password: null } });
 
-  const usernameField = register('username', {
+  const { ref: usernameRef, ...usernameFieldProps } = register('username', {
     required: 'Username is a required field'
   });
-  const passwordField = register('password', {
+  const { ref: passwordRef, ...passwordFieldProps } = register('password', {
     required: 'Password is a required field'
   });
 
@@ -49,7 +49,7 @@ const Login: React.FC<LoginProps> = ({
         description="Your TAPIS username"
         error={errors['username']}
       >
-        <Input bsSize="sm" {...usernameField} />
+        <Input bsSize="sm" {...usernameFieldProps} innerRef={usernameRef} />
       </HookFieldWrapper>
       <HookFieldWrapper
         label="Password"
@@ -57,7 +57,12 @@ const Login: React.FC<LoginProps> = ({
         description="Your TAPIS password"
         error={errors['password']}
       >
-        <Input bsSize="sm" {...passwordField} type="password" />
+        <Input
+          bsSize="sm"
+          {...passwordFieldProps}
+          innerRef={passwordRef}
+          type="password"
+        />
       </HookFieldWrapper>
       <div className={styles.status}>
         <Button
