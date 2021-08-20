@@ -1,12 +1,8 @@
-import React, { useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useFiles } from 'tapis-redux';
-import getListing from 'tapis-redux/files/selectors';
-import { FileListingCallback, FileListingDirectory } from 'tapis-redux/files/types';
-import { Config, TapisState } from 'tapis-redux/types';
+import React, { useCallback } from 'react';
+import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
-import { useSelector } from 'react-redux';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
+import { Button } from 'reactstrap';
 import './FileListing.scss';
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
@@ -27,27 +23,21 @@ const FileListingItem: React.FC<FileListingItemProps> = ({ file, onSelect=undefi
 
 interface FileListingProps {
   systemId: string,
-  path: string,
-  config?: Config,
-  onList?: FileListingCallback,
+  path: string
   onSelect?: OnSelectCallback
 }
 
 const FileListing: React.FC<FileListingProps> = ({ 
-    systemId, path, config=undefined, onList=undefined, onSelect=undefined
+    systemId, path, onSelect=undefined
   }) => {
-  const dispatch = useDispatch();
-
-  // Get a file listing given the systemId and path
-  const { list } = useFiles(config);
-  useEffect(() => {
-    dispatch(list({ onList, request: { systemId, path } }));
-  }, [dispatch, systemId, path, onList, list]);
-
-  // Get the file listing for this systemId and path
-  const result: FileListingDirectory | undefined = useSelector<TapisState, FileListingDirectory | undefined>(
-    getListing(systemId, path)
-  );
+ 
+  const { 
+    hasNextPage, 
+    isLoading, 
+    error, 
+    fetchNextPage, 
+    concatenatedResults
+  } = useList({ systemId, path });
 
   const fileSelectCallback = useCallback<OnSelectCallback>(
     (file: Files.FileInfo) => {
@@ -58,15 +48,15 @@ const FileListing: React.FC<FileListingProps> = ({
     [onSelect]
   )
 
-  if (!result || result.loading) {
+  if (isLoading) {
     return <div className="file-list"><LoadingSpinner /></div>
   }
 
-  if (result.error) {
-    return <Message canDismiss={false} type="error" scope="inline">{result.error.message}</Message>
+  if (error) {
+    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
   }
 
-  const files: Array<Files.FileInfo | null> = result.results;
+  const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
   return (
     <div className="file-list">
@@ -76,6 +66,9 @@ const FileListing: React.FC<FileListingProps> = ({
             <FileListingItem file={file} key={file.name} onSelect={fileSelectCallback} />
           )
         })
+      }
+      {
+        hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>
       }
     </div>
   );
