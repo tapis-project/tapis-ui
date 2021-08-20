@@ -10,7 +10,7 @@ type SubmitHookParams = {
   onError?: (error: any) => any
 }
 
-const useSubmit = () => {
+const useSubmit = (appId: string, version: string) => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -19,7 +19,7 @@ const useSubmit = () => {
   //
   // In this case, submit helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(
-    [ QueryKeys.submit, jwt],
+    [ QueryKeys.submit, appId, version, basePath, jwt ],
     (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt),
   );
 

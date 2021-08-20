@@ -49,7 +49,7 @@ const Apps: React.FC = () => {
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Launcher</ListSectionHeader>
             {initialValues
-              ? <JobLauncher initialValues={initialValues}/>
+              ? <JobLauncher appId={initialValues.appVersion!} appVersion={initialValues.appVersion!} initialValues={initialValues}/>
               : <SectionMessage type="info">
                   Select an app from the list.
                 </SectionMessage>

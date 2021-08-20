@@ -20,12 +20,14 @@ import './JobLauncher.scss';
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
 interface JobLauncherProps {
+  appId: string,
+  appVersion: string,
   initialValues?: Jobs.ReqSubmitJob,
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, initialValues={} }) => {
   const systemsListHook = useList({});
-  const { submit, isLoading, error, data, reset } = useSubmit();
+  const { submit, isLoading, error, data, reset } = useSubmit(appId, appVersion);
 
   const systems: Array<TapisSystem> = systemsListHook.data?.result ?? [];
 
@@ -40,12 +42,14 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
     setSubmitting(false);
   }
 
+  /*
   useEffect(
     () => {
       reset();
     },
     [ reset, initialValues ]
   )
+  */
 
   const jobFields: Array<FieldWrapperProps> = [
     {
@@ -101,7 +105,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
   return (
     <div>
       <Formik
-        initialValues={initialValues ?? {}}
+        initialValues={{ ...initialValues, appId, appVersion }}
         enableReinitialize={true}
         validationSchema={validationSchema}
         onSubmit={formSubmit}
