@@ -10,6 +10,7 @@ import {
   ListSectionList,
   ListSectionHeader
 } from 'tapis-app/Sections/ListSection';
+import { useList } from 'tapis-hooks/apps';
 
 const Apps: React.FC = () => {
   const [params, setParams] = useState<{
@@ -18,6 +19,7 @@ const Apps: React.FC = () => {
     name: string,
     execSystemId: string
   } | null>(null);
+  const { refetch } = useList({ select: "jobAttributes,version" });
 
   const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
@@ -33,6 +35,7 @@ const Apps: React.FC = () => {
   )
   const refresh = () => {
     setParams(null);
+    refetch();
   }
 
   return (

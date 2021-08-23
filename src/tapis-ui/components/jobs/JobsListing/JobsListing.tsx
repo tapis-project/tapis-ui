@@ -29,7 +29,7 @@ interface JobsListingProps {
 }
 
 const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null }) => {
-  const { data, isLoading, error } = useList({});
+  const { data, isLoading, error } = useList({ orderBy: "created(desc)" });
 
   const [currentJob, setCurrentJob] = useState<string>('');
   const select = useCallback<(job: Jobs.JobListDTO) => any>(

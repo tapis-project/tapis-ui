@@ -1,5 +1,4 @@
 import { Jobs } from '@tapis/tapis-typescript'
-import { JobsReducerState } from 'tapis-redux/jobs/types';
 
 export const jobInfo: Jobs.JobListDTO = {
   "uuid": "ed92f727-108f-4b5d-9cb7-e3ed4827788f-007",
@@ -17,17 +16,3 @@ export const jobInfo: Jobs.JobListDTO = {
   "lastUpdated": 1624465572
 }
 
-export const jobsStore: JobsReducerState = {
-  jobs: {
-    error: null,
-    loading: false,
-    limit: 100,
-    offset: 0,
-    results: [ { ...jobInfo } ]
-  },
-  submission: {
-    loading: false,
-    error: null,
-    result: null
-  }
-}

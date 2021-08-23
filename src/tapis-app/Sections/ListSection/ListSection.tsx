@@ -4,7 +4,6 @@ import { useLogin } from 'tapis-hooks/authenticator';
 import { useTapisConfig } from 'tapis-hooks';
 import { Redirect } from 'react-router-dom';
 import styles from './ListSection.module.scss';
-import { isExpired } from 'tapis-redux/utils';
 
 export const ListSectionHeader: React.FC<React.PropsWithChildren<{ type?: string }> > = ({children, type}) => {
   return (
@@ -29,7 +28,7 @@ export const ListSectionDetail: React.FC<React.PropsWithChildren<{}> > = ({child
 export const ListSection: React.FC<React.PropsWithChildren<{}> > = ({ children }) => {
   const { logout } = useLogin();
   const { accessToken } = useTapisConfig();
-  if (!accessToken || isExpired(accessToken)) {
+  if (!accessToken) {
     logout();
     return <Redirect to="/login" />
   }
