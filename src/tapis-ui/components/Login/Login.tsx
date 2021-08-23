@@ -4,7 +4,7 @@ import { useLogin } from 'tapis-hooks/authenticator';
 import { useTapisConfig } from 'tapis-hooks/context';
 import { LoadingSpinner } from '../../_common';
 import { useForm } from 'react-hook-form';
-import { HookFieldWrapper, Message } from 'tapis-ui/_common';
+import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { Authenticator } from '@tapis/tapis-typescript';
 import styles from './Login.module.scss';
 import './Login.scss';
@@ -43,15 +43,15 @@ const Login: React.FC<LoginProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <HookFieldWrapper
+      <FieldWrapper
         label="Username"
         required={true}
         description="Your TAPIS username"
         error={errors['username']}
       >
         <Input bsSize="sm" {...usernameFieldProps} innerRef={usernameRef} />
-      </HookFieldWrapper>
-      <HookFieldWrapper
+      </FieldWrapper>
+      <FieldWrapper
         label="Password"
         required={true}
         description="Your TAPIS password"
@@ -63,7 +63,7 @@ const Login: React.FC<LoginProps> = ({
           innerRef={passwordRef}
           type="password"
         />
-      </HookFieldWrapper>
+      </FieldWrapper>
       <div className={styles.status}>
         <Button
           type="submit"
