@@ -3,14 +3,8 @@ import { Authenticator } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 
-export interface LoginParams {
-  username: string,
-  password: string,
-  basePath: string
-}
-
 // This helper takes the username and password and assembles an API call
-const login = ({ username, password, basePath }: LoginParams): Promise<Authenticator.RespCreateToken>  => {
+const login = (username: string, password: string, basePath: string): Promise<Authenticator.RespCreateToken>  => {
   const reqCreateToken: Authenticator.ReqCreateToken = {
     username,
     password,

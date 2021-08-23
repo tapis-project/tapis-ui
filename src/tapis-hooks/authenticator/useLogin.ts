@@ -2,12 +2,11 @@ import { useMutation } from 'react-query';
 import { Authenticator } from '@tapis/tapis-typescript';
 import { login } from 'tapis-api/authenticator';
 import { useTapisConfig } from 'tapis-hooks';
+import QueryKeys from './queryKeys';
 
 type LoginHookParams = {
   username: string,
   password: string,
-  onSuccess?: (data: Authenticator.RespCreateToken) => any,
-  onError?: (error: any) => any
 }
 
 const useLogin = () => {
@@ -23,7 +22,11 @@ const useLogin = () => {
   //
   // In this case, loginHelper is called to perform the operation, with an onSuccess callback
   // passed as an option
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation(login, { onSuccess });
+  const { mutate, isLoading, isError, isSuccess, error } = useMutation(
+    [ QueryKeys.login, basePath ],
+    (params: LoginHookParams) => login(params.username, params.password, basePath),
+    { onSuccess }
+  );
 
   // Return hook object with loading states and login function
   return {
@@ -31,17 +34,9 @@ const useLogin = () => {
     isError,
     isSuccess,
     error,
-    login: (params: LoginHookParams) => {
-      const { username, password, onSuccess, onError } = params;
-
+    login: (username: string, password: string) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate(
-        { username, password, basePath },
-        { 
-          onSuccess,
-          onError
-        }
-      )
+      return mutate({ username, password })
     },
     logout: () => setAccessToken(null)
   }
