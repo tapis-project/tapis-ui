@@ -16,13 +16,12 @@ const Apps: React.FC = () => {
   const [initialValues, setInitialValues] = useState<Jobs.ReqSubmitJob | null>(null);
   const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
-      const execSystemId = app.jobAttributes && 
-        app.jobAttributes.execSystemId ? app.jobAttributes.execSystemId : null;
+      const execSystemId = app?.jobAttributes?.execSystemId ?? '';
       setInitialValues({
         appId: app.id,
         appVersion: app.version,
         name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-        execSystemId: execSystemId ?? undefined
+        execSystemId
       });
     },
     [ setInitialValues ]
