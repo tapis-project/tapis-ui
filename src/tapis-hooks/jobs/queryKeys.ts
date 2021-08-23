@@ -1,6 +1,7 @@
 const QueryKeys = {
   list: 'jobs/list',
-  details: 'jobs/details'
+  details: 'jobs/details',
+  submit: 'jobs/submit'
 }
 
 export default QueryKeys;
