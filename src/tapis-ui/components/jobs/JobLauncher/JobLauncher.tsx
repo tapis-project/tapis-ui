@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { Formik, Form,} from 'formik';
@@ -20,12 +20,15 @@ import './JobLauncher.scss';
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
 interface JobLauncherProps {
-  initialValues?: Jobs.ReqSubmitJob,
+  appId: string,
+  appVersion: string,
+  name: string,
+  execSystemId: string
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, execSystemId }) => {
   const systemsListHook = useList({});
-  const { submit, isLoading, error, data, reset } = useSubmit();
+  const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
 
   const systems: Array<TapisSystem> = systemsListHook.data?.result ?? [];
 
@@ -40,12 +43,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
     setSubmitting(false);
   }
 
-  useEffect(
-    () => {
-      reset();
-    },
-    [ reset, initialValues ]
-  )
+  const initialValues = Jobs.ReqSubmitJobFromJSON({ appId, appVersion, name, execSystemId });
 
   const jobFields: Array<FieldWrapperProps> = [
     {
@@ -101,7 +99,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ initialValues={} }) => {
   return (
     <div>
       <Formik
-        initialValues={initialValues ?? {}}
+        initialValues={initialValues}
         enableReinitialize={true}
         validationSchema={validationSchema}
         onSubmit={formSubmit}
