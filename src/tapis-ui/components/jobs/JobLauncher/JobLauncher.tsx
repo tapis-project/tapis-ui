@@ -8,7 +8,6 @@ import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Message } from 'tapis-ui/_common';
-import * as Yup from 'yup';
 import {
   Button,
   Input,
