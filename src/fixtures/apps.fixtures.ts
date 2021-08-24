@@ -1,5 +1,4 @@
 import { Apps } from '@tapis/tapis-typescript';
-import { AppsReducerState } from 'tapis-redux/apps/types';
 
 export const tapisApp: Apps.TapisApp = { 
   tenant: undefined,
@@ -36,15 +35,5 @@ export const appsResponse: Apps.RespApps = {
     orderBy: undefined,
     startAfter: undefined,
     totalCount: 1
-  }
-}
-
-export const appsStore: AppsReducerState = {
-  apps: {
-    error: null,
-    loading: false,
-    limit: 100,
-    offset: 0,
-    results: [ { ...tapisApp } ]
   }
 }

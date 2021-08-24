@@ -1,20 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { Login as TapisLogin } from 'tapis-ui/components';
 import { SectionHeader } from 'tapis-ui/_common';
-import { Authenticator } from '@tapis/tapis-typescript';
+import { useTapisConfig } from 'tapis-hooks';
 
 const Login: React.FC = () => {
-  const [redirect, setRedirect] = useState<boolean>(false);
+  const { accessToken } = useTapisConfig();
   
-  const authCallback = useCallback<(token: Authenticator.RespCreateToken) => any>(
-    (response) => {
-      setRedirect(true);
-    },
-    [setRedirect]
-  );
-
-  if (redirect) {
+  if (accessToken?.access_token) {
     return <Redirect to="/" />
   }
 
@@ -22,7 +15,7 @@ const Login: React.FC = () => {
     <>
       <SectionHeader>Login</SectionHeader>
       <div className="container">
-        <TapisLogin onAuth={authCallback}/>
+        <TapisLogin />
       </div>
     </>
   )

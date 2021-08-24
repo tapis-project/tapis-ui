@@ -5,16 +5,11 @@ import { useTapisConfig } from 'tapis-hooks/context';
 import { LoadingSpinner } from '../../_common';
 import { Formik, Form,} from 'formik';
 import { FieldWrapper, Message } from 'tapis-ui/_common';
-import { Authenticator } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 import styles from './Login.module.scss';
 import './Login.scss';
-interface LoginProps  {
-  onAuth?: (token: Authenticator.RespCreateToken) => any,
-  onError?: (error: any) => any
-}
 
-const Login: React.FC<LoginProps> = ({ onAuth=undefined, onError=undefined }) => {
+const Login: React.FC = () => {
   const { login, isLoading, isError, error } = useLogin();
   const { accessToken } = useTapisConfig();
 
@@ -30,7 +25,7 @@ const Login: React.FC<LoginProps> = ({ onAuth=undefined, onError=undefined }) =>
 
   const formSubmit = (values: any, { setSubmitting }: {setSubmitting: any}) => {
     const { username, password } = values;
-    login({ username, password, onSuccess: onAuth, onError });
+    login(username, password);
     setSubmitting(false);
   }
 

@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
-import { Config } from 'tapis-redux/types';
 import './SystemList.scss';
 
 export type OnSelectCallback = (system: TapisSystem) => any;
@@ -28,12 +27,11 @@ const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected = fals
 };
 
 interface SystemListProps {
-  config?: Config | null,
   onSelect?: OnSelectCallback | null,
   className?: string
 }
 
-const SystemList: React.FC<SystemListProps> = ({ config=null, onSelect=null, className=null }) => {
+const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }) => {
 
   // Get a systems listing with default request params
   const { data, isLoading, error } = useList({});

@@ -1,25 +1,18 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
 import { Alert } from 'reactstrap';
-
 import SectionMessages from 'tapis-ui/_common/Section/SectionMessages';
 import * as MESSAGES from '../../_constants/welcomeMessages';
 
-const mockStore = configureStore();
-const store = mockStore({});
 
 describe('SectionMessages', () => {
   describe('content and classes', () => {
     it('renders passed children and class', () => {
       const { container, getByText } = render(
-        <Provider store={store}>
-          <SectionMessages className="root-test">
-            <Alert>Message 1</Alert>
-            <Alert>Message 2</Alert>
-          </SectionMessages>
-        </Provider>
+        <SectionMessages className="root-test">
+          <Alert>Message 1</Alert>
+          <Alert>Message 2</Alert>
+        </SectionMessages>
       );
 
       expect(getByText('Message 1')).not.toEqual(null);
@@ -31,18 +24,14 @@ describe('SectionMessages', () => {
   describe('weclome message', () => {
     it('renders known welcome message', () => {
       const { getByText } = render(
-        <Provider store={store}>
-          <SectionMessages routeName="DASHBOARD" />
-        </Provider>
+        <SectionMessages routeName="DASHBOARD" />
       );
       expect(getByText(MESSAGES['DASHBOARD'])).not.toEqual(null);
     });
 
     it('renders known welcome message but with custom message', () => {
       const { getByText, queryByText } = render(
-        <Provider store={store}>
-          <SectionMessages routeName="DASHBOARD" welcomeText="Hello" />
-        </Provider>
+        <SectionMessages routeName="DASHBOARD" welcomeText="Hello" />
       );
       expect(queryByText(MESSAGES['DASHBOARD'])).toEqual(null);
       expect(getByText('Hello')).not.toEqual(null);
@@ -50,9 +39,7 @@ describe('SectionMessages', () => {
 
     it('renders custom welcome message', () => {
       const { getByText } = render(
-        <Provider store={store}>
-          <SectionMessages welcomeText="Hello" />
-        </Provider>
+        <SectionMessages welcomeText="Hello" />
       );
       expect(getByText('Hello')).not.toEqual(null);
     });
