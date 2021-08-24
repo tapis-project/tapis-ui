@@ -3,6 +3,7 @@ import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { Button } from 'reactstrap';
+import { TapisUIComponent } from 'tapis-ui/components';
 import './FileListing.scss';
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
@@ -48,18 +49,10 @@ const FileListing: React.FC<FileListingProps> = ({
     [onSelect]
   )
 
-  if (isLoading) {
-    return <div className="file-list"><LoadingSpinner /></div>
-  }
-
-  if (error) {
-    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
-  }
-
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
   return (
-    <div className="file-list">
+    <TapisUIComponent className="file-list" error={error} isLoading={isLoading}>
       {
         files.map((file: Files.FileInfo | null) => {
           return file && (
@@ -70,8 +63,8 @@ const FileListing: React.FC<FileListingProps> = ({
       {
         hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>
       }
-    </div>
-  );
+    </TapisUIComponent>
+  )
 };
 
 export default FileListing;
