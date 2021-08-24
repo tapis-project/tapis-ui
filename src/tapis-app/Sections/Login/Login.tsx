@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { Login as TapisLogin } from 'tapis-ui/components';
+import { Login as TapisLogin } from 'tapis-ui/components/authenticator';
 import { SectionHeader } from 'tapis-ui/_common';
 import { useTapisConfig } from 'tapis-hooks';
 

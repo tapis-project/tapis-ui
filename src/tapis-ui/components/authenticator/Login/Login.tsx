@@ -1,16 +1,16 @@
 import React from 'react';
-import { Input, Button } from 'reactstrap';
+import { Input } from 'reactstrap';
 import { useLogin } from 'tapis-hooks/authenticator';
 import { useTapisConfig } from 'tapis-hooks/context';
-import { LoadingSpinner } from '../../_common';
 import { Formik, Form,} from 'formik';
-import { FieldWrapper, Message } from 'tapis-ui/_common';
+import { FieldWrapper } from 'tapis-ui/_common';
 import * as Yup from 'yup';
-import styles from './Login.module.scss';
+import { TapisError } from 'tapis-api/types';
+import { TapisUISubmit } from 'tapis-ui/components';
 import './Login.scss';
 
 const Login: React.FC = () => {
-  const { login, isLoading, isError, error } = useLogin();
+  const { login, isLoading, error } = useLogin();
   const { accessToken } = useTapisConfig();
 
   const validationSchema = (props: any) => {
@@ -58,27 +58,15 @@ const Login: React.FC = () => {
           >
             <Input bsSize="sm" />
           </FieldWrapper>
-          <div className={styles.status}>
-            <Button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting || isLoading || accessToken != null}>
-              Log In
-            </Button>
-            {
-              isLoading && <LoadingSpinner className="login__loading-spinner" placement="inline"/>
-            }
-            {accessToken && (
-              <div className={styles.message}>
-                <Message canDismiss={false} type="success" scope="inline">Successfully logged in</Message>
-              </div>
-            )}
-            {isError && (
-              <div className={styles.message}>
-                <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
-              </div>
-            )}
-          </div>
+          <TapisUISubmit
+              isLoading={isLoading}
+              error={error as TapisError}
+              disabled={isSubmitting}
+              success={accessToken && "Sucessfully logged in"}
+          >
+            Log In
+          </TapisUISubmit>
+          
         </Form>
       )}
     </Formik>

@@ -3,11 +3,12 @@ import { LoadingSpinner, Message } from 'tapis-ui/_common';
 import { TapisError } from 'tapis-api/types';
 
 type TapisUIComponentProps = React.PropsWithChildren<{
-  error: TapisError,
-  isLoading: boolean
+  error: TapisError | Error | null,
+  isLoading: boolean,
+  className?: string
 }>
 
-const TapisUIComponent: React.FC<TapisUIComponentProps> = ({ error, isLoading, children }) => {
+const TapisUIComponent: React.FC<TapisUIComponentProps> = ({ error, isLoading, children, className='' }) => {
   if (isLoading) {
     return <LoadingSpinner />
   }
@@ -17,9 +18,9 @@ const TapisUIComponent: React.FC<TapisUIComponentProps> = ({ error, isLoading, c
   }
 
   return (
-    <>
+    <div className={className}>
       {children}
-    </>
+    </div>
   )
 }
 
