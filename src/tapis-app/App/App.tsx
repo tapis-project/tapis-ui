@@ -5,7 +5,6 @@ import { Apps, Login, Dashboard, Jobs, Systems } from 'tapis-app/Sections';
 import { SectionHeader } from 'tapis-ui/_common';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
-import Logout from '../Logout';
 import './App.scss';
 
 const App: React.FC = () => {
@@ -18,9 +17,6 @@ const App: React.FC = () => {
         </Route>
         <Route path='/login'>
           <Login /> 
-        </Route>
-        <Route path='/logout'>
-          <Logout />
         </Route>
         <Route path='/systems'>
           <Systems />
