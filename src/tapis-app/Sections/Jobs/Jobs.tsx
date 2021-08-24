@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
+import { useList } from 'tapis-hooks/jobs';
 import { JobListDTO } from '@tapis/tapis-typescript-jobs';
 import { JobsListing } from 'tapis-ui/components/jobs';
-import { useDispatch } from 'react-redux';
-import { useJobs } from 'tapis-redux';
 import { JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { 
@@ -14,9 +13,8 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Jobs: React.FC = () => {
+  const { refetch } = useList({ orderBy: "created(desc)"});
   const [job, setJob] = useState<JobListDTO | null>(null);
-  const { list } = useJobs();
-  const dispatch = useDispatch();
   const jobSelectCallback = useCallback<(job: JobListDTO) => any>(
     (job: JobListDTO) => {
       setJob(job);
@@ -25,8 +23,8 @@ const Jobs: React.FC = () => {
   )
   const refresh = () => {
     setJob(null);
-    dispatch(list({request: { orderBy: "created(desc)"}}));
-}
+    refetch();
+  }
 
   return (
     <ListSection>

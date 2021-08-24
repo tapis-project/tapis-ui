@@ -5,15 +5,11 @@ import renderComponent from 'utils/testing';
 import { AppsListing } from 'tapis-ui/components/apps';
 import { useList } from 'tapis-hooks/apps';
 import { tapisApp } from 'fixtures/apps.fixtures';
-import tapisReduxStore from 'fixtures/tapis-redux.fixture';
-
-const mockStore = configureStore();
 
 jest.mock('tapis-hooks/apps');
 
 describe('Apps', () => {
   it('renders AppsListing component', () => {
-    const store = mockStore(tapisReduxStore);
     (useList as jest.Mock).mockReturnValue({
       data: {
         result: [ tapisApp ],
@@ -22,7 +18,7 @@ describe('Apps', () => {
       error: null
     })
 
-    const { getAllByText } = renderComponent(<AppsListing />, store);
+    const { getAllByText } = renderComponent(<AppsListing />);
     expect(getAllByText(/SleepSeconds/).length).toEqual(1);
   });
 });

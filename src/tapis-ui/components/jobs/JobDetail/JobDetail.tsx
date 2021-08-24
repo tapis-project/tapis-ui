@@ -1,10 +1,7 @@
 import React from 'react';
 import { useDetails } from 'tapis-hooks/jobs';
-import { JobRetrieveCallback } from 'tapis-redux/jobs/retrieve/types';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Message, LoadingSpinner, DescriptionList } from 'tapis-ui/_common';
-
-export type OnRetrieveCallback = JobRetrieveCallback;
 
 interface JobDetailProps {
   jobUuid: string,

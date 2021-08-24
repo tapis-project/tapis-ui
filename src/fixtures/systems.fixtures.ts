@@ -1,5 +1,4 @@
 import { Systems } from '@tapis/tapis-typescript';
-import { SystemsReducerState } from 'tapis-redux/systems/types';
 
 export const tapisSystem: Systems.TapisSystem = {
   id: 'testuser8-e2e',
@@ -9,14 +8,4 @@ export const tapisSystem: Systems.TapisSystem = {
   effectiveUserId: 'testuser2',
   defaultAuthnMethod: Systems.AuthnEnum.PkiKeys,
   canExec: false,
-};
-
-export const systemsStore = {
-  systems: {
-    results: [tapisSystem],
-    offset: 0,
-    limit: 100,
-    loading: false,
-    error: null,
-  },
 };

@@ -12,9 +12,3 @@ export const authenticatorResponse = {
     },
   },
 };
-
-export const authenticatorStore = {
-  token: authenticatorToken,
-  loading: false,
-  error: null,
-};

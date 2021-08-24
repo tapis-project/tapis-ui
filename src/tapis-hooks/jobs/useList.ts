@@ -4,7 +4,11 @@ import { Jobs } from '@tapis/tapis-typescript'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const useList = (params: Jobs.GetJobListRequest) => {
+const defaultParams: Jobs.GetJobListRequest = {
+  orderBy: "created(desc)"
+};
+
+const useList = (params: Jobs.GetJobListRequest = defaultParams) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Jobs.RespGetJobList, Error>(
     [QueryKeys.list, params, accessToken],
