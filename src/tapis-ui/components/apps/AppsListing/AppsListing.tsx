@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/apps';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { Apps } from '@tapis/tapis-typescript';
+import { TapisUIComponent } from 'tapis-ui/components';
 import './AppsListing.scss';
 
 interface AppsListingItemProps {
@@ -40,18 +41,10 @@ const AppsListing: React.FC<AppsListingProps> = ({
     setCurrentApp(app.id)
   },[onSelect, setCurrentApp]);
 
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
-
-  if (error) {
-    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
-  }
-
   const appList: Array<Apps.TapisApp> = data?.result || [];
 
   return (
-    <div className={className ? className : "apps-list nav flex-column"}>
+    <TapisUIComponent error={error} isLoading={isLoading} className={className ?? "apps-list nav flex-column"}>
       { 
         appList.length
           ? appList.map((app: Apps.TapisApp | null) => {
@@ -66,8 +59,8 @@ const AppsListing: React.FC<AppsListingProps> = ({
             })
           : <i>No applications found</i>
       }
-    </div>
-  );
+    </TapisUIComponent>
+  )
 };
 
 export default AppsListing;
