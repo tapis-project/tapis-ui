@@ -121,7 +121,7 @@ const Message = ({
       role={role}
       in={isVisible}
     >
-      <Icon className={styles["icon type-icon"]} name={iconName}>
+      <Icon className={`${styles['icon']} ${styles['type-icon']}`} name={iconName}>
         {iconText}
       </Icon>
       <span className={styles.text} data-testid="text">
