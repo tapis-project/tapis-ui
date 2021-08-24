@@ -19,7 +19,10 @@ const useList = (params: Apps.GetAppsRequest = defaultParams) => {
       enabled: !!accessToken
     }
   );
-  return result;
+  return {
+    result,
+    ...defaultParams
+  };
 }
 
 export default useList;

@@ -19,7 +19,10 @@ const useList = (params: Jobs.GetJobListRequest = defaultParams) => {
       enabled: !!accessToken
     }
   );
-  return result;
+  return {
+    ...result,
+    defaultParams
+  };
 }
 
 export default useList;
