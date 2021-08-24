@@ -23,31 +23,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ label, iconName, onClick=unde
   );
 };
 
-const SidebarLogout: React.FC = () => {
-  const { logout } = useLogin();
-  return (
-    <NavItem>
-      <NavLink 
-        tag={RRNavLink}
-        to="/login"
-        exact
-        className={styles.link}
-        activeClassName={styles['link--active']}
-        disabled={false}
-      >
-        <SidebarItem label="Log Out" iconName="user" onClick={logout} />
-      </NavLink>
-    </NavItem>
-  )
-}
-
 type SidebarNavProps = {
   to: string,
   label: string,
-  iconName: string
+  iconName: string,
+  onClick?: () => any
 }
 
-const SidebarNav: React.FC<SidebarNavProps> = ({ to, label, iconName }) => {
+const SidebarNav: React.FC<SidebarNavProps> = ({ to, label, iconName, onClick=undefined }) => {
   return (
     <NavItem>
       <NavLink
@@ -57,9 +40,16 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ to, label, iconName }) => {
         className={styles.link}
         activeClassName={styles['link--active']}
       >
-        <SidebarItem label={label} iconName={iconName} />
+        <SidebarItem label={label} iconName={iconName} onClick={onClick} />
       </NavLink>
     </NavItem>
+  )
+}
+
+const SidebarLogout: React.FC = () => {
+  const { logout } = useLogin();
+  return (
+    <SidebarNav to="/login" label="Log Out" iconName="user" onClick={logout} />
   )
 }
 
