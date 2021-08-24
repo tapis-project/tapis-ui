@@ -13,7 +13,7 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Jobs: React.FC = () => {
-  const { refetch } = useList({ orderBy: "created(desc)"});
+  const { refetch } = useList();
   const [job, setJob] = useState<JobListDTO | null>(null);
   const jobSelectCallback = useCallback<(job: JobListDTO) => any>(
     (job: JobListDTO) => {

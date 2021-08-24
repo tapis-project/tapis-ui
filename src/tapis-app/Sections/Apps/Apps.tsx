@@ -19,7 +19,7 @@ const Apps: React.FC = () => {
     name: string,
     execSystemId: string
   } | null>(null);
-  const { refetch } = useList({ select: "jobAttributes,version" });
+  const { refetch } = useList();
 
   const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
@@ -51,7 +51,7 @@ const Apps: React.FC = () => {
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing onSelect={appSelectCallback} select="jobAttributes,version" />
+          <AppsListing onSelect={appSelectCallback} />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Launcher</ListSectionHeader>

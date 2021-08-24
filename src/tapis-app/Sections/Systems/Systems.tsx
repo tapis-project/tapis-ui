@@ -14,7 +14,7 @@ import { useList } from 'tapis-hooks/systems';
 
 const Systems: React.FC = () => {
   const [selectedSystem, setSelectedSystem] = useState<TapisSystem | null>(null);
-  const { refetch } = useList({});
+  const { refetch } = useList();
   const systemSelectCallback = useCallback(
     (system: TapisSystem) => {
       /* eslint-disable */

@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/systems';
-import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { Systems } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './SystemList.scss';
 
-export type OnSelectCallback = (system: TapisSystem) => any;
+export type OnSelectCallback = (system: Systems.TapisSystem) => any;
 
 interface SystemItemProps {
-  system: TapisSystem,
+  system: Systems.TapisSystem,
   select: Function
   selected: boolean,
 }
@@ -28,15 +28,16 @@ const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected = fals
 
 interface SystemListProps {
   onSelect?: OnSelectCallback | null,
-  className?: string
+  className?: string,
+  params?: Systems.GetSystemRequest
 }
 
-const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }) => {
+const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null, params=undefined }) => {
 
   // Get a systems listing with default request params
-  const { data, isLoading, error } = useList({});
+  const { data, isLoading, error } = useList(params);
 
-  const definitions: Array<TapisSystem> = data?.result || [];
+  const definitions: Array<Systems.TapisSystem> = data?.result || [];
   const [currentSystem, setCurrentSystem] = useState(String);
   const select = useCallback((system) => {
     onSelect && onSelect(system);

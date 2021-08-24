@@ -4,7 +4,7 @@ import { Apps } from '@tapis/tapis-typescript'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const defaultParams: Apps.GetAppsRequest = {
+export const defaultParams: Apps.GetAppsRequest = {
   select: "jobAttributes,version"
 }
 
@@ -19,10 +19,7 @@ const useList = (params: Apps.GetAppsRequest = defaultParams) => {
       enabled: !!accessToken
     }
   );
-  return {
-    result,
-    ...defaultParams
-  };
+  return result; 
 }
 
 export default useList;

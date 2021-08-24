@@ -6,6 +6,8 @@ import { concatResults } from 'tapis-hooks/utils/concatResults';
 import QueryKeys from './queryKeys';
 
 
+// Does not use defaultParams because systemId and path are required
+
 const useList = (params: Files.ListFilesRequest) => {
   const { accessToken, basePath } = useTapisConfig();
 

@@ -4,7 +4,7 @@ import { Systems } from '@tapis/tapis-typescript'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const defaultParams: Systems.GetSystemsRequest = {};
+export const defaultParams: Systems.GetSystemsRequest = {};
 
 const useList = (params: Systems.GetSystemsRequest = defaultParams) => {
   const { accessToken, basePath } = useTapisConfig();
@@ -17,10 +17,7 @@ const useList = (params: Systems.GetSystemsRequest = defaultParams) => {
       enabled: !!accessToken
     }
   );
-  return {
-    result,
-    ...defaultParams
-  };
+  return result; 
 }
 
 export default useList;
