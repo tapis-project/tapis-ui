@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
+import { Icon } from 'tapis-ui/_common';
+import { TapisUIComponent } from 'tapis-ui/components';
 import './SystemList.scss';
 
 export type OnSelectCallback = (system: TapisSystem) => any;
@@ -43,16 +44,8 @@ const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }
     setCurrentSystem(system.id)
   },[onSelect, setCurrentSystem]);
 
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
-
-  if (error) {
-    return <Message canDismiss={false} type="error" scope="inline">{error.message}</Message>
-  }
-
   return (
-    <div className={className ? className : "system-list nav flex-column"}>
+    <TapisUIComponent isLoading={isLoading} error={error} className={className ?? "system-list nav flex-column"}>
       {
         definitions.length
           ? definitions.map(
@@ -65,8 +58,8 @@ const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }
             )
           : <i>No systems found</i>
       }
-    </div>
-  );
+    </TapisUIComponent>
+  )
 };
 
 export default SystemList;
