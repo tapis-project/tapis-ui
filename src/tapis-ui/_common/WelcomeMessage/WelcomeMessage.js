@@ -1,15 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
 
 /**
  * Whether to show a welcome message
  * @param {String} messageName - The name of the message to check
  */
 export function useShouldShowMessage(messageName) {
-  const welcomeMessages = useSelector((state) => state.welcomeMessages);
-
+  const welcomeMessages = {}; 
   return welcomeMessages && welcomeMessages[messageName];
 }
 
@@ -28,16 +26,15 @@ export function useShouldShowMessage(messageName) {
  * </WelcomeMessage>
  */
 function WelcomeMessage({ children, className, messageName }) {
-  const dispatch = useDispatch();
-  const welcomeMessages = useSelector((state) => state.welcomeMessages);
   const shouldShow = useShouldShowMessage(messageName);
+  const welcomeMessages = {};
 
   function onDismiss(name) {
     const newMessagesState = {
       ...welcomeMessages,
       [name]: false,
     };
-    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
+    return newMessagesState;
   }
 
   return (

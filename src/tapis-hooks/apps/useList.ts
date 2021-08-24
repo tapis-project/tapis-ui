@@ -4,7 +4,11 @@ import { Apps } from '@tapis/tapis-typescript'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const useList = (params: Apps.GetAppsRequest) => {
+const defaultParams: Apps.GetAppsRequest = {
+  select: "jobAttributes,version"
+}
+
+const useList = (params: Apps.GetAppsRequest = defaultParams) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Apps.RespApps, Error>(
     [QueryKeys.list, params, accessToken],

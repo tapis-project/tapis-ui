@@ -1,23 +1,16 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-
 import Section from 'tapis-ui/_common/Section';
 
-const mockStore = configureStore();
-const store = mockStore({});
 
 describe('Section', () => {
   describe('elements and classes', () => {
     it('renders elements with appropriate roles', () => {
       const { getByRole } = render(
-        <Provider store={store}>
-          <Section
-            header="Header"
-            content={<p>Content</p>}
-          />
-        </Provider>
+        <Section
+          header="Header"
+          content={<p>Content</p>}
+        />
       );
       // WARNING: Only one `main` is allowed per page
       expect(getByRole('main').textContent).toEqual('Content');
@@ -30,20 +23,18 @@ describe('Section', () => {
   describe('content and classes', () => {
     it('renders all passed content and classes', () => {
       const { container, getByText } = render(
-        <Provider store={store}>
-          <Section
-            className="root-test"
-            header="Header"
-            headerActions={<button type="button">Header Actions</button>}
-            headerClassName="header-test"
-            content={<p>Content</p>}
-            contentClassName="content-test"
-            // sidebar={<nav>Sidebar</nav>}
-            // sidebarClassName="sidebar-test"
-            messages={<><strong>Message</strong><strong>List</strong></>}
-            messagesClassName="messages-test"
-          />
-        </Provider>
+        <Section
+          className="root-test"
+          header="Header"
+          headerActions={<button type="button">Header Actions</button>}
+          headerClassName="header-test"
+          content={<p>Content</p>}
+          contentClassName="content-test"
+          // sidebar={<nav>Sidebar</nav>}
+          // sidebarClassName="sidebar-test"
+          messages={<><strong>Message</strong><strong>List</strong></>}
+          messagesClassName="messages-test"
+        />
       );
       expect(container.getElementsByClassName('root-test').length).toEqual(1);
       expect(getByText('Header')).not.toEqual(null);
