@@ -4,4 +4,4 @@ export interface TapisResult {
 
 export interface TapisError {
   message?: string | undefined
-}
+};

@@ -3,11 +3,17 @@
   margin-left: 1em;
 }
 
+.messageContent {
+  margin-left: 0.25em;
+}
+
 .spinner {
   margin-left: 1em;
+  width: inherit;
 }
 
 .status {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 }

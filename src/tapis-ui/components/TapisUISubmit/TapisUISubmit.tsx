@@ -1,50 +1,62 @@
 import React from 'react';
-import {
-  Button,
-} from 'reactstrap';
-import { TapisResult, TapisError } from 'tapis-api/types';
-import {
-  LoadingSpinner,
-  Message
-} from 'tapis-ui/_common'
+import { Button } from 'reactstrap';
+import { TapisError } from 'tapis-api/types';
+import { LoadingSpinner, Message } from 'tapis-ui/_common'
 import styles from './TapisUISubmit.module.scss';
 
+type TapisUISubmitMessageProps = React.PropsWithChildren<
+  {
+    type: string
+  }
+>;
+
+const TapisUISubmitMessage: React.FC<TapisUISubmitMessageProps> = ({ type, children }) => {
+  return (
+    <div className={styles.message}>
+      <Message canDismiss={false} type={type} scope="inline">
+        <div className={styles.messageContent}>
+          {children ?? ''}
+        </div>
+      </Message>
+    </div>
+  )
+}
+
 type TapisUISubmitProps = {
-  disabled: boolean,
-  isLoading: boolean,
-  data: TapisResult,
-  error: TapisError,
+  disabled?: boolean,
+  isLoading?: boolean,
+  success?: string | null,
+  error?: TapisError | Error,
+  click?: Function,
   className?: string
 }
 
-const TapisUISubmit: React.FC<TapisUISubmitProps> = (
+const TapisUISubmit: React.FC<React.PropsWithChildren<TapisUISubmitProps>> = (
   {
-    disabled=false, isLoading=false, data=undefined, 
-    error=undefined, className=''
+    disabled=false, isLoading=false, success=undefined,
+    error=null, className='', click=undefined,
+    children=undefined
   }) => {
-    
+
   return (
-    <div className={className}>
+    <div className={styles.status}>
       <Button
         type="submit"
         className="btn btn-primary"
-        disabled={disabled || isLoading || !!error}>
-        Submit Job
+        disabled={disabled || isLoading || !!error}
+        click={click}>
+        {children ?? ''}
       </Button>
       {
-        isLoading && <LoadingSpinner className="tapis-ui-submit__loading-spinner" placement="inline" />
+        isLoading && <LoadingSpinner className={styles.spinner} placement="inline" />
       }
-      { data && (
-        <div className={styles.message}>
-          <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {data.result?.uuid || ''}</Message>
-        </div>
-      )}
-      {error && (
-        <div className={styles.message}>
-          <Message canDismiss={false} type="error" scope="inline">{error?.message ?? error}</Message>
-        </div>
-      )}
+      {
+        // This will display error messages, or if no errors exist the success message
+        error && <TapisUISubmitMessage type="error">{error?.message ?? error}</TapisUISubmitMessage>
+        || success && <TapisUISubmitMessage type="success">{success}</TapisUISubmitMessage>
+      }
     </div>
   )
-
 }
+
+export default TapisUISubmit;

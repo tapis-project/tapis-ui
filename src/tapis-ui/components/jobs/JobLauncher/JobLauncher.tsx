@@ -16,6 +16,8 @@ import {
 } from 'reactstrap';
 import styles from './JobLauncher.module.scss';
 import './JobLauncher.scss';
+import { TapisError } from 'tapis-api/types';
+import TapisUISubmit from 'tapis-ui/components/TapisUISubmit';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -120,27 +122,14 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
                 )
               })
             }
-            <div className={styles.status}>
-              <Button
-                type="submit"
-                className="btn btn-primary"
-                disabled={isSubmitting || isLoading || !!error}>
-                Submit Job
-              </Button>
-              {
-                isLoading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
-              }
-              { data && (
-                <div className={styles.message}>
-                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {data?.result?.uuid || ''}</Message>
-                </div>
-              )}
-              {error && (
-                <div className={styles.message}>
-                  <Message canDismiss={false} type="error" scope="inline">{(error as any).message ?? error}</Message>
-                </div>
-              )}
-            </div>
+            <TapisUISubmit
+              isLoading={isLoading}
+              error={error as TapisError}
+              disabled={isSubmitting}
+              success={data && `Successfully submitted job ${data?.result?.uuid ?? ''}`}
+            >
+              Submit Job
+            </TapisUISubmit>
          </Form>
        )}
       </Formik>
