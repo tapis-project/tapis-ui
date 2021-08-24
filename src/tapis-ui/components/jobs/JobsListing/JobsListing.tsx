@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
+import { Icon } from 'tapis-ui/_common';
+import { TapisUIComponent } from 'tapis-ui/components';
 import './JobsListing.scss'
 
 interface JobsListingItemProps {
@@ -39,18 +40,10 @@ const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null
   },
   [onSelect, setCurrentJob]);
 
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
-
-  if (error) {
-    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
-  }
-
   const jobsList: Array<Jobs.JobListDTO> = data?.result || [];
 
   return (
-    <div className={className ? className : "job-list nav flex-column"}>
+    <TapisUIComponent isLoading={isLoading} error={error} className={className ??  "job-list nav flex-column"}>
       {
         jobsList.length
         ? jobsList.map((job: Jobs.JobListDTO | null) => {
@@ -65,8 +58,8 @@ const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null
           })
         : <i>No jobs found</i>
       }
-    </div>
-  );
+    </TapisUIComponent>
+  )
 };
 
 export default JobsListing;
