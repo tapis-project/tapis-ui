@@ -1,8 +1,5 @@
 import React from 'react';
 import { SectionHeader } from 'tapis-ui/_common';
-import { useLogin } from 'tapis-hooks/authenticator';
-import { useTapisConfig } from 'tapis-hooks';
-import { Redirect } from 'react-router-dom';
 import styles from './ListSection.module.scss';
 
 export const ListSectionHeader: React.FC<React.PropsWithChildren<{ type?: string }> > = ({children, type}) => {
@@ -26,11 +23,5 @@ export const ListSectionDetail: React.FC<React.PropsWithChildren<{}> > = ({child
 }
 
 export const ListSection: React.FC<React.PropsWithChildren<{}> > = ({ children }) => {
-  const { logout } = useLogin();
-  const { accessToken } = useTapisConfig();
-  if (!accessToken) {
-    logout();
-    return <Redirect to="/login" />
-  }
   return <div className={styles.root}>{children}</div>
 }
