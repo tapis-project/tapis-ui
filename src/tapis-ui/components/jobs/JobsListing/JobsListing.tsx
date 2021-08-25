@@ -26,11 +26,10 @@ const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected
 interface JobsListingProps {
   onSelect?: (app: Jobs.JobListDTO) => any,
   className?: string,
-  params?: Jobs.GetJobListRequest
 }
 
-const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null, params=undefined }) => {
-  const { data, isLoading, error } = useList(params);
+const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null }) => {
+  const { data, isLoading, error } = useList();
 
   const [currentJob, setCurrentJob] = useState<string>('');
   const select = useCallback<(job: Jobs.JobListDTO) => any>(

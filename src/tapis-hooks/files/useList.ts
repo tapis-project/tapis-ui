@@ -15,7 +15,7 @@ const useList = (params: Files.ListFilesRequest) => {
   params.limit = params.limit ?? 100;
 
   const result = useInfiniteQuery<Files.FileListingResponse, Error>(
-    [QueryKeys.list, params, accessToken],
+    [QueryKeys.list, params.systemId, params.path, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
     (

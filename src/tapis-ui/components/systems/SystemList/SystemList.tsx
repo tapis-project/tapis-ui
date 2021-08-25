@@ -29,13 +29,12 @@ const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected = fals
 interface SystemListProps {
   onSelect?: OnSelectCallback | null,
   className?: string,
-  params?: Systems.GetSystemRequest
 }
 
-const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null, params=undefined }) => {
+const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }) => {
 
   // Get a systems listing with default request params
-  const { data, isLoading, error } = useList(params);
+  const { data, isLoading, error } = useList();
 
   const definitions: Array<Systems.TapisSystem> = data?.result || [];
   const [currentSystem, setCurrentSystem] = useState(String);

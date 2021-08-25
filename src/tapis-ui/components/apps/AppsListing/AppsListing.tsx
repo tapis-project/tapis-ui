@@ -26,14 +26,13 @@ const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, select
 interface AppsListingProps {
   onSelect?: (app: Apps.TapisApp) => any,
   className?: string,
-  params?: Apps.GetAppsRequest 
 }
 
 const AppsListing: React.FC<AppsListingProps> = ({
-    onSelect=undefined, className, params=undefined
+    onSelect=undefined, className
   }) => {
 
-  const { data, isLoading, error } = useList(params)
+  const { data, isLoading, error } = useList()
   const [currentApp, setCurrentApp] = useState(String);
   const selectCallback = useCallback((app) => {
     onSelect && onSelect(app);
