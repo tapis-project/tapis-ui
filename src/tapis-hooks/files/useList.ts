@@ -5,29 +5,28 @@ import { useTapisConfig } from 'tapis-hooks';
 import { concatResults } from 'tapis-hooks/utils/concatResults';
 import QueryKeys from './queryKeys';
 
-type useListParams = {
-  systemId: string;
-  path: string;
-  limit?: number;
-};
 
-const useList = ({ systemId, path, limit = 100 }: useListParams) => {
+// Does not use defaultParams because systemId and path are required
+
+const useList = (params: Files.ListFilesRequest) => {
   const { accessToken, basePath } = useTapisConfig();
-  const params: Files.ListFilesRequest = {
-    systemId,
-    path,
-    limit
-  };
+
+  // Set default limit to 100, as per TAPIS OpenAPI spec
+  params.limit = params.limit ?? 100;
+
   const result = useInfiniteQuery<Files.FileListingResponse, Error>(
-    [QueryKeys.list, params, accessToken],
+    [QueryKeys.list, params.systemId, params.path, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    ({ pageParam = params }) =>
-      list(pageParam, basePath, accessToken?.access_token ?? ''),
-    {
-      getNextPageParam: (lastPage, allPages) => {
-        if ((lastPage.result?.length ?? 0) < limit) return undefined;
-        return { ...params, offset: allPages.length * limit };
+    (
+      { pageParam = params }) => list(pageParam, basePath, accessToken?.access_token ?? ''),
+      {
+        // getNextPageParam function computes offset, with guarantee that 
+        // params.limit is set to default of 100
+        getNextPageParam: (lastPage, allPages) => {
+          if ((lastPage.result?.length ?? 0) < params.limit!) return undefined;
+          return { ...params, offset: allPages.length * params.limit!
+        };
       },
       enabled: !!accessToken
     }

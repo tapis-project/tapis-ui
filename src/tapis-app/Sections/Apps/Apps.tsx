@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { TapisApp } from '@tapis/tapis-typescript-apps';
 import { AppsListing } from 'tapis-ui/components/apps';
 import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
-import { SectionMessage, Icon } from 'tapis-ui/_common';
+import { SectionMessage } from 'tapis-ui/_common';
 import { 
   ListSection, 
   ListSectionBody, 
@@ -10,7 +10,6 @@ import {
   ListSectionList,
   ListSectionHeader
 } from 'tapis-app/Sections/ListSection';
-import { useList } from 'tapis-hooks/apps';
 
 const Apps: React.FC = () => {
   const [params, setParams] = useState<{
@@ -19,7 +18,6 @@ const Apps: React.FC = () => {
     name: string,
     execSystemId: string
   } | null>(null);
-  const { refetch } = useList({ select: "jobAttributes,version" });
 
   const appSelectCallback = useCallback<(app: TapisApp) => any>(
     (app: TapisApp) => {
@@ -33,25 +31,17 @@ const Apps: React.FC = () => {
     },
     [ setParams ]
   )
-  const refresh = () => {
-    setParams(null);
-    refetch();
-  }
 
   return (
     <ListSection>
       <ListSectionHeader>
       <div>
         Apps
-        &nbsp;
-        <span className="btn-head" onClick={refresh}>
-            <Icon name="refresh" />
-        </span>
       </div>
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing onSelect={appSelectCallback} select="jobAttributes,version" />
+          <AppsListing onSelect={appSelectCallback} />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Launcher</ListSectionHeader>
