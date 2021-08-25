@@ -1,0 +1,26 @@
+$core-portal-color-primary: #9d85ef;
+
+.list {
+  --horizontal-buffer: var(--global-space--section-left);
+  --vertical-buffer: 0.75rem;
+  --min-width: 100%;
+}
+
+.list .nav-link {
+  min-width: var(--min-width);
+  border: none;
+  padding-left: var(--horizontal-buffer);
+  color: #707070;
+  background-color: white;
+  cursor: pointer;
+}
+
+.list .nav-link.active {
+  background: rgba($core-portal-color-primary, 0.25);
+}
+
+.list .nav-text {
+  padding-left: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}

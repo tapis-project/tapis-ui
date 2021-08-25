@@ -2,7 +2,7 @@ import React from 'react';
 import { LoadingSpinner, Message } from 'tapis-ui/_common';
 import { TapisError } from 'tapis-api/types';
 
-type TapisUIComponentProps = React.PropsWithChildren<{
+export type TapisUIComponentProps = React.PropsWithChildren<{
   error: TapisError | Error | null,
   isLoading: boolean,
   className?: string
