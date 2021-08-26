@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import { NavLink, useRouteMatch } from 'react-router-dom'
 import { useList } from 'tapis-hooks/apps';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import { Apps } from '@tapis/tapis-typescript';
@@ -6,38 +7,29 @@ import './AppsListing.scss';
 
 interface AppsListingItemProps {
   app: Apps.TapisApp,
-  onSelect: Function
-  selected: boolean,
 }
 
-const AppsListingItem: React.FC<AppsListingItemProps> = ({ app, onSelect, selected = false }) => {
+const AppsListingItem: React.FC<AppsListingItemProps> = ({ app }) => {
+  const { url } = useRouteMatch();
   return (
     <li className="nav-item">
-      <div className={"nav-link" + (selected ? ' active' : '')}>
-        <div className="nav-content" onClick={() => onSelect(app) }>
+      <NavLink to={`${url}/${app.id}/${app.version}`} className={"nav-link"} activeClassName={"active"}>
+        <div className="nav-content">
           <Icon name="applications" /> {/* we'll want to set name based on the app */}
           <span className="nav-text">{`${app.id} v${app.version}`}</span>
         </div>
-      </div>
+      </NavLink>
     </li>
   );
 };
 
 interface AppsListingProps {
-  onSelect?: (app: Apps.TapisApp) => any,
   className?: string,
 }
 
-const AppsListing: React.FC<AppsListingProps> = ({
-    onSelect=undefined, className
-  }) => {
+const AppsListing: React.FC<AppsListingProps> = ({ className }) => {
 
   const { data, isLoading, error } = useList()
-  const [currentApp, setCurrentApp] = useState(String);
-  const selectCallback = useCallback((app) => {
-    onSelect && onSelect(app);
-    setCurrentApp(app.id)
-  },[onSelect, setCurrentApp]);
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -57,8 +49,6 @@ const AppsListing: React.FC<AppsListingProps> = ({
               return app && (
                 <AppsListingItem
                   app={app}
-                  selected={currentApp === app.id}
-                  onSelect={selectCallback}
                   key={app.id}
                 />
               )

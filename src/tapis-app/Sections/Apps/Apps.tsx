@@ -1,65 +1,64 @@
-import React, { useState, useCallback } from 'react';
-import { TapisApp } from '@tapis/tapis-typescript-apps';
+import React from 'react';
+import {
+  Route,
+  Switch,
+  useRouteMatch,
+  RouteComponentProps
+} from 'react-router-dom';
 import { AppsListing } from 'tapis-ui/components/apps';
 import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
 import { SectionMessage } from 'tapis-ui/_common';
-import { 
-  ListSection, 
-  ListSectionBody, 
+import {
+  ListSection,
+  ListSectionBody,
   ListSectionDetail,
   ListSectionList,
   ListSectionHeader
 } from 'tapis-app/Sections/ListSection';
 
 const Apps: React.FC = () => {
-  const [params, setParams] = useState<{
-    appId: string,
-    appVersion: string,
-    name: string,
-    execSystemId: string
-  } | null>(null);
 
-  const appSelectCallback = useCallback<(app: TapisApp) => any>(
-    (app: TapisApp) => {
-      const execSystemId = app?.jobAttributes?.execSystemId ?? '';
-      setParams({
-        appId: app.id ?? '',
-        appVersion: app.version ?? '',
-        name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-        execSystemId
-      });
-    },
-    [ setParams ]
-  )
+  const { path } = useRouteMatch();
 
   return (
     <ListSection>
       <ListSectionHeader>
-      <div>
-        Apps
-      </div>
+        <div>Apps</div>
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing onSelect={appSelectCallback} />
+          <AppsListing/>
         </ListSectionList>
         <ListSectionDetail>
-          <ListSectionHeader type={"sub-header"}>Job Launcher</ListSectionHeader>
-            {params
-              ? <JobLauncher
-                  appId={params.appId}
-                  appVersion={params.appVersion}
-                  name={params.name}
-                  execSystemId={params.execSystemId}
+          <ListSectionHeader type={'sub-header'}>
+            Job Launcher
+          </ListSectionHeader>
+          <Switch>
+            <Route path={`${path}`} exact>
+              <SectionMessage type="info">
+                Select an app from the list.
+              </SectionMessage>
+            </Route>
+
+            <Route
+              path={`${path}/:appId/:appVersion`}
+              render={({
+                match
+              }: RouteComponentProps<{
+                appId: string;
+                appVersion: string;
+              }>) => (
+                <JobLauncher
+                  appId={match.params.appId}
+                  appVersion={match.params.appVersion}
                 />
-              : <SectionMessage type="info">
-                  Select an app from the list.
-                </SectionMessage>
-            }
+              )}
+            />
+          </Switch>
         </ListSectionDetail>
       </ListSectionBody>
     </ListSection>
-  )
-}
+  );
+};
 
 export default Apps;
