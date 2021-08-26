@@ -1,11 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import {
   Route,
   Switch,
   useRouteMatch,
   RouteComponentProps
 } from 'react-router-dom';
-import { JobListDTO } from '@tapis/tapis-typescript-jobs';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage } from 'tapis-ui/_common';
@@ -18,13 +17,6 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Jobs: React.FC = () => {
-  const [job, setJob] = useState<JobListDTO | null>(null);
-  const jobSelectCallback = useCallback<(job: JobListDTO) => any>(
-    (job: JobListDTO) => {
-      setJob(job);
-    },
-    [ setJob ]
-  )
 
   const { path } = useRouteMatch();
 

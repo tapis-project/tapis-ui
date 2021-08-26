@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import { useList } from 'tapis-hooks/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
