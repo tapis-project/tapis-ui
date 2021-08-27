@@ -43,9 +43,9 @@ const Jobs: React.FC = () => {
             <Route
               path={`${path}/:jobUuid`}
               render={({
-                match
+                match: {params: {jobUuid}}
               }: RouteComponentProps<{ jobUuid: string }>) => (
-                <JobDetail jobUuid={match.params.jobUuid}/>
+                <JobDetail jobUuid={jobUuid}/>
               )}
             />
           </Switch>

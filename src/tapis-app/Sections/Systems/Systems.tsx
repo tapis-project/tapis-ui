@@ -40,9 +40,9 @@ const Systems: React.FC = () => {
             <Route
               path={`${path}/:systemId`}
               render={({
-                match
+                match: {params: {systemId}}
               }: RouteComponentProps<{ systemId: string }>) => (
-                <FileListing systemId={match.params.systemId} path={'/'} />
+                <FileListing systemId={systemId} path={'/'} />
               )}
             />
           </Switch>

@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import { JobLauncher } from 'tapis-ui/components/jobs/JobLauncher/JobLauncher';
+import { JobLauncher } from 'tapis-ui/components/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 
 describe('JobLauncher', () => {

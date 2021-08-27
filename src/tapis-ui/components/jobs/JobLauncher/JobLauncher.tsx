@@ -1,6 +1,5 @@
 import React from 'react';
 import { useList } from 'tapis-hooks/systems';
-import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { Formik, Form } from 'formik';
 import { LoadingSpinner } from 'tapis-ui/_common';
@@ -13,32 +12,6 @@ import { Button, Input } from 'reactstrap';
 import styles from './JobLauncher.module.scss';
 import './JobLauncher.scss';
 
-
-const JobLauncherWrapper: React.FC<{appId: string, appVersion: string}> = ({
-  appId,
-  appVersion
-}) => {
-  const { data: appData } = useAppDetail({ appId, appVersion });
-  const appDetails = appData?.result;
-  const execSystemId = appDetails?.jobAttributes?.execSystemId ?? '';
-  const name = `${appId}-${appVersion}-${new Date()
-    .toISOString()
-    .slice(0, -5)}`;
-
-  return (
-    <>
-      {appDetails && (
-        <JobLauncher
-          appId={appId}
-          appVersion={appVersion}
-          name={name}
-          execSystemId={execSystemId}
-        />
-      )}
-    </>
-  );
-};
-
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
 interface JobLauncherProps {
@@ -48,7 +21,7 @@ interface JobLauncherProps {
   execSystemId: string
 }
 
-export const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, execSystemId }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, execSystemId }) => {
   const systemsListHook = useList({});
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
 
@@ -170,4 +143,4 @@ export const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, nam
   );
 };
 
-export default JobLauncherWrapper;
+export default JobLauncher;

@@ -6,7 +6,7 @@ import {
   RouteComponentProps
 } from 'react-router-dom';
 import { AppsListing } from 'tapis-ui/components/apps';
-import JobLauncher from 'tapis-ui/components/jobs/JobLauncher';
+import { JobLauncher } from 'tapis-app/Sections/Apps/JobLauncher';
 import { SectionMessage } from 'tapis-ui/_common';
 import {
   ListSection,
@@ -43,14 +43,14 @@ const Apps: React.FC = () => {
             <Route
               path={`${path}/:appId/:appVersion`}
               render={({
-                match
+                match: {params: {appVersion, appId}}
               }: RouteComponentProps<{
                 appId: string;
                 appVersion: string;
               }>) => (
                 <JobLauncher
-                  appId={match.params.appId}
-                  appVersion={match.params.appVersion}
+                  appId={appId}
+                  appVersion={appVersion}
                 />
               )}
             />
