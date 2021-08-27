@@ -48,7 +48,7 @@ interface JobLauncherProps {
   execSystemId: string
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, execSystemId }) => {
+export const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, execSystemId }) => {
   const systemsListHook = useList({});
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
 
