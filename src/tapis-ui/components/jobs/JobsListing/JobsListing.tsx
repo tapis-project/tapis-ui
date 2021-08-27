@@ -1,60 +1,46 @@
 import React from 'react';
-import { NavLink, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import { useList } from 'tapis-hooks/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
-import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
-import './JobsListing.scss'
+import { LoadingSpinner, Message } from 'tapis-ui/_common';
+import { Navbar, NavItem } from 'tapis-app/Navbar';
 
-interface JobsListingItemProps {
-  job: Jobs.JobListDTO,
-}
-
-const JobsListingItem: React.FC<JobsListingItemProps> = ({ job }) => {
-  const { url } = useRouteMatch();
-  return (
-    <li className="nav-item">
-    <NavLink to={`${url}/${job.uuid}`} className={"nav-link"} activeClassName={"active"}>
-      <div className="nav-content">
-        <Icon name="jobs" />
-        <span className="nav-text">{`${job.name} - (${job.status})`}</span>
-      </div>
-    </NavLink>
-  </li>
-  );
-};
-
-interface JobsListingProps {
-  className?: string,
-}
-
-const JobsListing: React.FC<JobsListingProps> = ({ className=null }) => {
+const JobsListing: React.FC = () => {
   const { data, isLoading, error } = useList();
+  const { url } = useRouteMatch();
 
   if (isLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
   if (error) {
-    return <Message canDismiss={false} type="error" scope="inline">{(error as any).message}</Message>
+    return (
+      <Message canDismiss={false} type="error" scope="inline">
+        {(error as any).message}
+      </Message>
+    );
   }
 
   const jobsList: Array<Jobs.JobListDTO> = data?.result || [];
 
   return (
-    <div className={className ? className : "job-list nav flex-column"}>
-      {
-        jobsList.length
-        ? jobsList.map((job: Jobs.JobListDTO | null) => {
-            return job && (
-              <JobsListingItem
-                job={job}
+    <Navbar>
+      {jobsList.length ? (
+        jobsList.map((job: Jobs.JobListDTO | null) => {
+          return (
+            job && (
+              <NavItem
+                to={`${url}/${job.uuid}`}
+                icon="jobs"
                 key={job.uuid}
-              />
+              >{`${job.name} - (${job.status})`}</NavItem>
             )
-          })
-        : <i>No jobs found</i>
-      }
-    </div>
+          );
+        })
+      ) : (
+        <i>No jobs found</i>
+      )}
+    </Navbar>
   );
 };
 

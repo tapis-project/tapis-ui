@@ -1,13 +1,15 @@
 import { hot } from 'react-hot-loader/root';
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 import { Apps, Login, Dashboard, Jobs, Systems } from 'tapis-app/Sections';
 import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
+import { useLogin } from 'tapis-hooks/authenticator';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import './App.scss';
 
 const App: React.FC = () => {
+  const { logout } = useLogin();
   return (
     <div className="workbench-wrapper">
       <Sidebar/>
@@ -18,6 +20,10 @@ const App: React.FC = () => {
         <Route path='/login'>
           <Login /> 
         </Route>
+        <Route path='/logout' render={() => {
+          logout();
+          return <Redirect to='/login'/>
+        }}/>
         <ProtectedRoute path='/systems'>
           <Systems />
         </ProtectedRoute>
