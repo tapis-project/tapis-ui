@@ -1,19 +1,14 @@
 import React from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
-import { Formik, Form,} from 'formik';
-import {
-  LoadingSpinner,
-} from 'tapis-ui/_common';
+import { Formik, Form } from 'formik';
+import { LoadingSpinner } from 'tapis-ui/_common';
 import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Message } from 'tapis-ui/_common';
 import * as Yup from 'yup';
-import {
-  Button,
-  Input,
-} from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 import styles from './JobLauncher.module.scss';
 import './JobLauncher.scss';
 

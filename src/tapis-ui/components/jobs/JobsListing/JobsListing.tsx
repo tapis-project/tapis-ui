@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import { NavLink, useRouteMatch } from 'react-router-dom';
 import { useList } from 'tapis-hooks/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
@@ -6,38 +7,28 @@ import './JobsListing.scss'
 
 interface JobsListingItemProps {
   job: Jobs.JobListDTO,
-  select: Function
-  selected: boolean,
 }
 
-const JobsListingItem: React.FC<JobsListingItemProps> = ({ job, select, selected=false }) => {
+const JobsListingItem: React.FC<JobsListingItemProps> = ({ job }) => {
+  const { url } = useRouteMatch();
   return (
     <li className="nav-item">
-    <div className={"nav-link" + (selected ? ' active' : '')}>
-      <div className="nav-content" onClick={() => select(job) }>
+    <NavLink to={`${url}/${job.uuid}`} className={"nav-link"} activeClassName={"active"}>
+      <div className="nav-content">
         <Icon name="jobs" />
         <span className="nav-text">{`${job.name} - (${job.status})`}</span>
       </div>
-    </div>
+    </NavLink>
   </li>
   );
 };
 
 interface JobsListingProps {
-  onSelect?: (app: Jobs.JobListDTO) => any,
   className?: string,
 }
 
-const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null }) => {
+const JobsListing: React.FC<JobsListingProps> = ({ className=null }) => {
   const { data, isLoading, error } = useList();
-
-  const [currentJob, setCurrentJob] = useState<string>('');
-  const select = useCallback<(job: Jobs.JobListDTO) => any>(
-    (job: Jobs.JobListDTO) => {
-      onSelect && onSelect(job);
-      setCurrentJob(job.uuid ?? '')
-  },
-  [onSelect, setCurrentJob]);
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -57,8 +48,6 @@ const JobsListing: React.FC<JobsListingProps> = ({ onSelect=null, className=null
             return job && (
               <JobsListingItem
                 job={job}
-                select={select}
-                selected={currentJob === job.uuid}
                 key={job.uuid}
               />
             )

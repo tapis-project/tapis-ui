@@ -1,5 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { JobListDTO } from '@tapis/tapis-typescript-jobs';
+import React from 'react';
+import {
+  Route,
+  Switch,
+  useRouteMatch,
+  RouteComponentProps
+} from 'react-router-dom';
 import { JobsListing } from 'tapis-ui/components/jobs';
 import { JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage } from 'tapis-ui/_common';
@@ -12,13 +17,8 @@ import {
 } from 'tapis-app/Sections/ListSection';
 
 const Jobs: React.FC = () => {
-  const [job, setJob] = useState<JobListDTO | null>(null);
-  const jobSelectCallback = useCallback<(job: JobListDTO) => any>(
-    (job: JobListDTO) => {
-      setJob(job);
-    },
-    [ setJob ]
-  )
+
+  const { path } = useRouteMatch();
 
   return (
     <ListSection>
@@ -29,16 +29,26 @@ const Jobs: React.FC = () => {
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <JobsListing onSelect={jobSelectCallback} />
+          <JobsListing />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Details</ListSectionHeader>
-          {job
-            ? <JobDetail jobUuid={job.uuid ?? ''} />
-            : <SectionMessage type="info">
+          <Switch>
+            <Route path={`${path}`} exact>
+              <SectionMessage type="info">
                 Select a job from the list.
               </SectionMessage>
-          }
+            </Route>
+
+            <Route
+              path={`${path}/:jobUuid`}
+              render={({
+                match: {params: {jobUuid}}
+              }: RouteComponentProps<{ jobUuid: string }>) => (
+                <JobDetail jobUuid={jobUuid}/>
+              )}
+            />
+          </Switch>
         </ListSectionDetail>
       </ListSectionBody>
     </ListSection>

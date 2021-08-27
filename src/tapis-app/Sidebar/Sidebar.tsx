@@ -36,7 +36,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ to, label, iconName, onClick=un
       <NavLink
         tag={RRNavLink}
         to={to}
-        exact
+        exact={to === '/'}
         className={styles.link}
         activeClassName={styles['link--active']}
       >
