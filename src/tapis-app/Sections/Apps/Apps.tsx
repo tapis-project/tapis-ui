@@ -5,7 +5,7 @@ import {
   useRouteMatch,
   RouteComponentProps
 } from 'react-router-dom';
-import { AppsListing } from 'tapis-ui/components/apps';
+import { AppsNav } from 'tapis-ui/components/apps';
 import { JobLauncher } from 'tapis-app/Sections/Apps/JobLauncher';
 import { SectionMessage } from 'tapis-ui/_common';
 import {
@@ -27,19 +27,21 @@ const Apps: React.FC = () => {
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <AppsListing/>
+          <AppsNav />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={'sub-header'}>
             Job Launcher
           </ListSectionHeader>
           <Switch>
+            {
+              // If path is an exact match, no app has been selected
+            }
             <Route path={`${path}`} exact>
               <SectionMessage type="info">
                 Select an app from the list.
               </SectionMessage>
             </Route>
-
             <Route
               path={`${path}/:appId/:appVersion`}
               render={({

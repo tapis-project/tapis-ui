@@ -1,1 +1,1 @@
-export { default as AppsListing } from './AppsListing';
+export { default as AppsNav } from './AppsNav';
