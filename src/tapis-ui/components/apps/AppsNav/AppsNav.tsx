@@ -15,7 +15,7 @@ const AppsNav: React.FC = () => {
       <Navbar>
         {
           appList.map(
-            (app: Apps.TapisApp ) => (
+            (app) => (
               <NavItem
                 to={`${url}/${app.id}/${app.version}`}
                 icon="applications"
