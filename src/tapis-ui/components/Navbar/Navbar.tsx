@@ -25,7 +25,7 @@ export const NavItem: React.FC<{ to: string; icon?: string }> = ({
 );
 
 const Navbar: React.FC = ({ children }) => {
-  return <div className={`${styles['apps-list']}`}>{children}</div>;
+  return <div className={`${styles['nav-list']}`}>{children}</div>;
 };
 
 export default Navbar;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTapisConfig } from 'tapis-hooks';
 import styles from './Sidebar.module.scss';
-import { Navbar, NavItem } from 'tapis-app/Navbar';
+import { Navbar, NavItem } from 'tapis-ui/components/Navbar';
 
 
 const Sidebar: React.FC = () => {

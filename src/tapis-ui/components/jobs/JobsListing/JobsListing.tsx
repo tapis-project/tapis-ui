@@ -3,7 +3,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { useList } from 'tapis-hooks/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message } from 'tapis-ui/_common';
-import { Navbar, NavItem } from 'tapis-app/Navbar';
+import { Navbar, NavItem } from 'tapis-ui/components/Navbar';
 
 const JobsListing: React.FC = () => {
   const { data, isLoading, error } = useList();
