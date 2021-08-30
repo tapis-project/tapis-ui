@@ -34,7 +34,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
     })
   }
   const formSubmit = (values: any, { setSubmitting }: {setSubmitting: any}) => {
-    submit({ request: values })
+    submit(values as Jobs.ReqSubmitJob)
     setSubmitting(false);
   }
 
