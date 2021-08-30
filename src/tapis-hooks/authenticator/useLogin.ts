@@ -24,7 +24,7 @@ const useLogin = () => {
   // passed as an option
   const { mutate, isLoading, isError, isSuccess, error } = useMutation(
     [ QueryKeys.login, basePath ],
-    (params: LoginHookParams) => login(params.username, params.password, basePath),
+    ({username, password}: LoginHookParams) => login(username, password, basePath),
     { onSuccess }
   );
 

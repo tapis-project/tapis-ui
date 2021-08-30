@@ -5,11 +5,6 @@ import { submit } from 'tapis-api/jobs';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type SubmitHookParams = {
-  request: Jobs.ReqSubmitJob,
-  onSuccess?: (data: Jobs.RespSubmitJob) => any,
-  onError?: (error: any) => any
-}
 
 const useSubmit = (appId: string, appVersion: string) => {
   const { basePath, accessToken } = useTapisConfig();
@@ -39,8 +34,10 @@ const useSubmit = (appId: string, appVersion: string) => {
     data,
     error,
     reset,
-    submit: (params: SubmitHookParams) => {
-      const { request, onSuccess, onError } = params;
+    submit: (
+      request: Jobs.ReqSubmitJob,
+      onSuccess: ((data: Jobs.RespSubmitJob) => any) | undefined = undefined,
+      onError: ((error: any) => any) | undefined = undefined) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(
         request,
