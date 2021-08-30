@@ -2,7 +2,7 @@ import { useInfiniteQuery } from 'react-query';
 import { list } from 'tapis-api/files';
 import { Files } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
-import { concatResults } from 'tapis-hooks/utils/concatResults';
+import { concatResults, tapisNextPageParam } from 'tapis-hooks/utils/infiniteQuery';
 import QueryKeys from './queryKeys';
 
 
@@ -23,12 +23,8 @@ const useList = (params: Files.ListFilesRequest) => {
       {
         // getNextPageParam function computes offset, with guarantee that 
         // params.limit is set to default of 100
-        getNextPageParam: (lastPage, allPages) => {
-          if ((lastPage.result?.length ?? 0) < params.limit!) return undefined;
-          return { ...params, offset: allPages.length * params.limit!
-        };
-      },
-      enabled: !!accessToken
+        getNextPageParam: (lastPage, allPages) => tapisNextPageParam(lastPage, allPages, params),
+        enabled: !!accessToken
     }
   );
 
