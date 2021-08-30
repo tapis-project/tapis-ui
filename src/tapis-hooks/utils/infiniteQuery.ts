@@ -1,5 +1,4 @@
-
-  import { TapisResponse, TapisPaginatedRequest } from 'tapis-api/types/TapisInterfaces';
+import { TapisResponse, TapisPaginatedRequest } from 'tapis-api/types/TapisInterfaces';
 
 export type ResultPages<T> = { result?: T[] }[];
 
