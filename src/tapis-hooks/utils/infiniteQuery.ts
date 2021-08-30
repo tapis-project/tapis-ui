@@ -8,8 +8,8 @@ export const concatResults = <T>(pages: ResultPages<T>): T[] =>
     []
   );
 
-export const tapisNextPageParam = (
-  lastPage: TapisResponse, allPages: TapisResponse[], 
+export const tapisNextPageParam<T> = (
+  lastPage: T, allPages: T[], 
   params: TapisPaginatedRequest ) => {
   if ((lastPage.result?.length ?? 0) < params.limit!) return undefined;
   return { ...params, offset: allPages.length * params.limit! }
