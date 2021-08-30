@@ -4,7 +4,7 @@ import { Jobs } from '@tapis/tapis-typescript'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const defaultParams: Jobs.GetJobListRequest = {
+export const defaultParams: Jobs.GetJobListRequest = {
   orderBy: "created(desc)"
 };
 

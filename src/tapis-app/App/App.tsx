@@ -2,7 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { Apps, Login, Dashboard, Jobs, Systems } from 'tapis-app/Sections';
-import { SectionHeader } from 'tapis-ui/_common';
+import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
 import Sidebar from '../Sidebar/Sidebar';
 import UIPatterns from '../UIPatterns';
 import './App.scss';
@@ -18,15 +18,15 @@ const App: React.FC = () => {
         <Route path='/login'>
           <Login /> 
         </Route>
-        <Route path='/systems'>
+        <ProtectedRoute path='/systems'>
           <Systems />
-        </Route>
-        <Route path='/apps'>
+        </ProtectedRoute>
+        <ProtectedRoute path='/apps'>
           <Apps />
-        </Route>
-        <Route path='/jobs'>
+        </ProtectedRoute>
+        <ProtectedRoute path='/jobs'>
           <Jobs />
-        </Route>
+        </ProtectedRoute>
         <Route path='/uipatterns'>
           <SectionHeader>UI Patterns</SectionHeader>
           <UIPatterns />

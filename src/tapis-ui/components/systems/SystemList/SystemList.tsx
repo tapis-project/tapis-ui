@@ -1,47 +1,41 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import { NavLink, useRouteMatch } from 'react-router-dom';
 import { useList } from 'tapis-hooks/systems';
-import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import { Systems } from '@tapis/tapis-typescript';
 import { LoadingSpinner, Message, Icon } from 'tapis-ui/_common';
 import './SystemList.scss';
 
-export type OnSelectCallback = (system: TapisSystem) => any;
+export type OnSelectCallback = (system: Systems.TapisSystem) => any;
 
 interface SystemItemProps {
-  system: TapisSystem,
-  select: Function
-  selected: boolean,
+  system: Systems.TapisSystem,
 }
 
 
-const SystemItem: React.FC<SystemItemProps> = ({ system, select, selected = false}) => {
+const SystemItem: React.FC<SystemItemProps> = ({ system }) => {
+  const { url } = useRouteMatch();
   return (
     <li className="nav-item">
-      <div className={"nav-link" + (selected ? ' active' : '')}>
-        <div className="nav-content" onClick={() => select(system) }>
+      <NavLink to={`${url}/${system.id}`} className={"nav-link"} activeClassName={"active"}>
+        <div className="nav-content">
           <Icon name="data-files" />
           <span className="nav-text">{`${system.id} (${system.host})`}</span>
         </div>
-      </div>
+      </NavLink>
     </li>
   );
 };
 
 interface SystemListProps {
-  onSelect?: OnSelectCallback | null,
-  className?: string
+  className?: string,
 }
 
-const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }) => {
+const SystemList: React.FC<SystemListProps> = ({ className=null }) => {
 
   // Get a systems listing with default request params
-  const { data, isLoading, error } = useList({});
+  const { data, isLoading, error } = useList();
 
-  const definitions: Array<TapisSystem> = data?.result || [];
-  const [currentSystem, setCurrentSystem] = useState(String);
-  const select = useCallback((system) => {
-    onSelect && onSelect(system);
-    setCurrentSystem(system.id)
-  },[onSelect, setCurrentSystem]);
+  const definitions: Array<Systems.TapisSystem> = data?.result || [];
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -58,8 +52,6 @@ const SystemList: React.FC<SystemListProps> = ({ onSelect=null, className=null }
           ? definitions.map(
               (system) => system && <SystemItem
                             system={system}
-                            selected={currentSystem === system.id}
-                            select={select}
                             key={system.id}
                           />
             )
