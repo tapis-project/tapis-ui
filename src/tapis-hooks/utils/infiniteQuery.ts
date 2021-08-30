@@ -1,5 +1,3 @@
-import { TapisResponse, TapisPaginatedRequest } from 'tapis-api/types/TapisInterfaces';
-
 export type ResultPages<T> = { result?: T[] }[];
 
 export const concatResults = <T>(pages: ResultPages<T>): T[] =>
@@ -8,9 +6,9 @@ export const concatResults = <T>(pages: ResultPages<T>): T[] =>
     []
   );
 
-export const tapisNextPageParam<T> = (
+export const tapisNextPageParam = <T extends { result?: Array<any> }>(
   lastPage: T, allPages: T[], 
-  params: TapisPaginatedRequest ) => {
+  params: { limit?: number } ) => {
   if ((lastPage.result?.length ?? 0) < params.limit!) return undefined;
   return { ...params, offset: allPages.length * params.limit! }
 }

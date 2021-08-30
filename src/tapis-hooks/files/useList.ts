@@ -23,7 +23,8 @@ const useList = (params: Files.ListFilesRequest) => {
       {
         // getNextPageParam function computes offset, with guarantee that 
         // params.limit is set to default of 100
-        getNextPageParam: (lastPage, allPages) => tapisNextPageParam(lastPage, allPages, params),
+        getNextPageParam: (lastPage, allPages) => 
+          tapisNextPageParam<Files.FileListingResponse>(lastPage, allPages, params),
         enabled: !!accessToken
     }
   );
