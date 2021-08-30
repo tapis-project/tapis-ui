@@ -34,18 +34,9 @@ const useSubmit = (appId: string, appVersion: string) => {
     data,
     error,
     reset,
-    submit: (
-      request: Jobs.ReqSubmitJob,
-      onSuccess: ((data: Jobs.RespSubmitJob) => any) | undefined = undefined,
-      onError: ((error: any) => any) | undefined = undefined) => {
+    submit: (request: Jobs.ReqSubmitJob) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate(
-        request,
-        { 
-          onSuccess,
-          onError
-        }
-      )
+      return mutate(request)
     }
   }
 }
