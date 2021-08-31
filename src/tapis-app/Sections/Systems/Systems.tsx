@@ -1,16 +1,14 @@
 import React from 'react';
 import {
   Route,
-  Switch,
   useRouteMatch,
   RouteComponentProps
 } from 'react-router-dom';
 import { SystemsNav } from 'tapis-ui/components/systems';
 import { FileListing } from 'tapis-ui/components/files';
 import { SectionMessage } from 'tapis-ui/_common';
+import { Layout } from 'tapis-app/Layout';
 import {
-  ListSection,
-  ListSectionBody,
   ListSectionDetail,
   ListSectionList,
   ListSectionHeader
@@ -19,36 +17,51 @@ import {
 const Systems: React.FC = () => {
   const { path } = useRouteMatch();
 
-  return (
-    <ListSection>
-      <ListSectionHeader>
-        <div>System List</div>
-      </ListSectionHeader>
-      <ListSectionBody>
-        <ListSectionList>
-          <SystemsNav />
-        </ListSectionList>
-        <ListSectionDetail>
-          <ListSectionHeader type={'sub-header'}>Files</ListSectionHeader>
-          <Switch>
-            <Route path={`${path}`} exact>
-              <SectionMessage type="info">
-                Select a system from the list.
-              </SectionMessage>
-            </Route>
+  const header = (
+    <ListSectionHeader>
+      <div>System List</div>
+    </ListSectionHeader>
+  );
 
-            <Route
-              path={`${path}/:systemId`}
-              render={({
-                match: {params: {systemId}}
-              }: RouteComponentProps<{ systemId: string }>) => (
-                <FileListing systemId={systemId} path={'/'} />
-              )}
-            />
-          </Switch>
-        </ListSectionDetail>
-      </ListSectionBody>
-    </ListSection>
+  const subHeader = (
+    <ListSectionHeader type={'sub-header'}>Files</ListSectionHeader>
+  );
+
+  const sidebar = (
+    <ListSectionList>
+      <SystemsNav />
+    </ListSectionList>
+  );
+
+  const body = (
+    <div style={{ flex: 1 }}>
+      <ListSectionDetail>
+        <Route path={`${path}`} exact>
+          <SectionMessage type="info">
+            Select a system from the list.
+          </SectionMessage>
+        </Route>
+
+        <Route
+          path={`${path}/:systemId`}
+          render={({
+            match: {
+              params: { systemId }
+            }
+          }: RouteComponentProps<{ systemId: string }>) => (
+            <FileListing systemId={systemId} path={'/'} />
+          )}
+        />
+      </ListSectionDetail>
+    </div>
+  );
+
+  return (
+    <Layout
+      top={header}
+      left={sidebar}
+      right={<Layout top={subHeader} right={body} />}
+    />
   );
 };
 

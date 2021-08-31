@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import App from 'tapis-app/App';
 import reportWebVitals from './reportWebVitals';
 import { HashRouter as Router } from 'react-router-dom';
-import { SectionHeader } from 'tapis-ui/_common';
 import TapisProvider from 'tapis-hooks/provider';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'tapis-app/index.css';
@@ -13,7 +12,6 @@ ReactDOM.render(
   <React.StrictMode>
     <TapisProvider basePath="https://tacc.tapis.io">
       <Router>
-        <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
         <App />
       </Router>
     </TapisProvider>

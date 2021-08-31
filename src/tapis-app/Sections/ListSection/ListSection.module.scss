@@ -12,13 +12,17 @@
 }
 
 .list {
-  flex-basis: 30%;
+  flex-basis: 20%;
+  flex-shrink: 0;
+  min-width: 200px;
+  overflow: auto;
 }
 
 .detail {
   border: 1px solid gray;
   padding: 1em 1em 1em 1em;
   flex-basis: 100%;
+  overflow: auto;
 }
 
 .sub-header {
