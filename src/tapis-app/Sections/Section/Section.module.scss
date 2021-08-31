@@ -6,9 +6,12 @@
 .body {
   width: 100%;
   overflow: auto;
+  display: flex;
+  margin-top: 1em;
 }
 
-.list {
+.nav {
+  margin-top: 1em;
   flex-basis: 20%;
   flex-shrink: 0;
   min-width: 200px;

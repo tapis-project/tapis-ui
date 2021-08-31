@@ -30,7 +30,7 @@ const Apps: React.FC = () => {
   );
 
   const body = (
-    <SectionBody>
+    <div style={{flex: 1}}>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">
           Select an app from the list.
@@ -48,14 +48,14 @@ const Apps: React.FC = () => {
           appVersion: string;
         }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
       />
-    </SectionBody>
+    </div>
   );
 
   return (
     <Layout
       top={header}
       left={sidebar}
-      right={<Layout top={subHeader} right={body} />}
+      right={<SectionBody><Layout top={subHeader} right={body} /></SectionBody>}
     />
   );
 };

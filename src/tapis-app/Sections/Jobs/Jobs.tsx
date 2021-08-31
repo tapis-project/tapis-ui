@@ -30,7 +30,7 @@ const Jobs: React.FC = () => {
   );
 
   const body = (
-    <SectionBody>
+    <div style={{flex: 1}}>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">Select a job from the list.</SectionMessage>
       </Route>
@@ -45,14 +45,14 @@ const Jobs: React.FC = () => {
           <JobDetail jobUuid={jobUuid} />
         )}
       />
-    </SectionBody>
+    </div>
   );
 
   return (
     <Layout
       top={header}
       left={sidebar}
-      right={<Layout top={subHeader} right={body} />}
+      right={<SectionBody><Layout top={subHeader} right={body} /></SectionBody>}
     />
   );
 };
