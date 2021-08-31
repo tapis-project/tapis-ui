@@ -16,17 +16,18 @@ const useLogin = () => {
   const onSuccess = (response: Authenticator.RespCreateToken) => {
     setAccessToken(response?.result?.access_token);
   }
- 
+
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
   //
   // In this case, loginHelper is called to perform the operation, with an onSuccess callback
   // passed as an option
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation(
-    [ QueryKeys.login, basePath ],
-    ({username, password}: LoginHookParams) => login(username, password, basePath),
-    { onSuccess }
-  );
+  const { mutate, isLoading, isError, isSuccess, error } = 
+    useMutation<Authenticator.RespCreateToken, Error, LoginHookParams>(
+      [ QueryKeys.login, basePath ],
+      ({username, password}) => login(username, password, basePath),
+      { onSuccess }
+    );
 
   // Return hook object with loading states and login function
   return {

@@ -1,14 +1,14 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import { JobsListing } from 'tapis-ui/components/jobs';
+import { JobsNav } from 'tapis-ui/components/jobs';
 import { useList } from 'tapis-hooks/jobs';
 import { jobInfo } from 'fixtures/jobs.fixtures';
 
 jest.mock('tapis-hooks/jobs');
 
-describe('JobsListing', () => {
-  it('renders JobsListing component', () => {
+describe('JobsNav', () => {
+  it('renders JobsNav component', () => {
     (useList as jest.Mock).mockReturnValue({
       data: {
         result: [ jobInfo ],
@@ -17,7 +17,7 @@ describe('JobsListing', () => {
       error: null
     })
 
-    const { getAllByText } = renderComponent(<JobsListing />);
+    const { getAllByText } = renderComponent(<JobsNav />);
     expect(getAllByText(/SleepSeconds/).length).toEqual(1);
   });
 });
