@@ -8,7 +8,6 @@ export const NavItem: React.FC<{ to: string; icon?: string }> = ({
   icon,
   children
 }) => (
-  <li className={styles['nav-item']}>
     <NavLink
       to={to}
       className={styles['nav-link']}
@@ -21,7 +20,6 @@ export const NavItem: React.FC<{ to: string; icon?: string }> = ({
         <span className={styles['nav-text']}>{children}</span>
       </div>
     </NavLink>
-  </li>
 );
 
 const Navbar: React.FC = ({ children }) => {

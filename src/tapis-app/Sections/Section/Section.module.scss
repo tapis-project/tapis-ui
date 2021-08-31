@@ -4,21 +4,25 @@
 }
 
 .body {
-  display: flex;
-  flex-direction: row;
-  margin-top: 1em;
   width: 100%;
-  min-height: 600px;
+  overflow: auto;
+  display: flex;
+  margin-top: 1em;
 }
 
-.list {
-  flex-basis: 30%;
+.nav {
+  margin-top: 1em;
+  flex-basis: 20%;
+  flex-shrink: 0;
+  min-width: 200px;
+  overflow: auto;
 }
 
 .detail {
   border: 1px solid gray;
   padding: 1em 1em 1em 1em;
   flex-basis: 100%;
+  overflow: auto;
 }
 
 .sub-header {

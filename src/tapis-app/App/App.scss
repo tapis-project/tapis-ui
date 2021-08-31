@@ -1,9 +1,3 @@
-.workbench-wrapper {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    color: #484848;
-}
 .workbench-content {
     /* As a flex item */
     flex-grow: 1;
@@ -15,25 +9,7 @@
 }
 /* FAQ: If the workbench content has only a single child,
         then it should be the same height as the app root */
-.workbench-content > :only-child {
-    height: 100%;
-}
 
-.workbench-content > :nth-child(2) {
-    flex-grow: 1;
-}
-
-.workbench-content .wb-text-primary {
-    color: #484848;
-}
-
-.workbench-content .wb-text-secondary {
-    color: #707070;
-}
-
-.workbench-content .wb-bold {
-  font-weight: 500;
-}
 
 .spin-sun {
     display: flex;
@@ -118,4 +94,8 @@
 .welcomeMessage {
   margin: 20px 20px 0 20px;
   flex-grow: 0;
+}
+
+.tapis-ui__header {
+  padding-left: 10px;
 }
