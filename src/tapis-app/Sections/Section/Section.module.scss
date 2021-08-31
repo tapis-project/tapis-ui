@@ -4,11 +4,8 @@
 }
 
 .body {
-  display: flex;
-  flex-direction: row;
-  margin-top: 1em;
   width: 100%;
-  min-height: 600px;
+  overflow: auto;
 }
 
 .list {

@@ -1,59 +1,51 @@
 import React from 'react';
-import {
-  Route,
-  useRouteMatch,
-  RouteComponentProps
-} from 'react-router-dom';
+import { Route, useRouteMatch, RouteComponentProps } from 'react-router-dom';
 import { SystemsNav } from 'tapis-ui/components/systems';
 import { FileListing } from 'tapis-ui/components/files';
 import { SectionMessage } from 'tapis-ui/_common';
 import { Layout } from 'tapis-app/Layout';
 import {
-  ListSectionDetail,
-  ListSectionList,
-  ListSectionHeader
-} from 'tapis-app/Sections/ListSection';
+  SectionBody,
+  SectionNavWrapper,
+  SectionHeader
+} from 'tapis-app/Sections/Section';
 
 const Systems: React.FC = () => {
   const { path } = useRouteMatch();
 
   const header = (
-    <ListSectionHeader>
+    <SectionHeader>
       <div>System List</div>
-    </ListSectionHeader>
+    </SectionHeader>
   );
 
-  const subHeader = (
-    <ListSectionHeader type={'sub-header'}>Files</ListSectionHeader>
-  );
+  const subHeader = <SectionHeader type={'sub-header'}>Files</SectionHeader>;
 
   const sidebar = (
-    <ListSectionList>
+    <SectionNavWrapper>
       <SystemsNav />
-    </ListSectionList>
+    </SectionNavWrapper>
   );
 
   const body = (
-    <div style={{ flex: 1 }}>
-      <ListSectionDetail>
-        <Route path={`${path}`} exact>
-          <SectionMessage type="info">
-            Select a system from the list.
-          </SectionMessage>
-        </Route>
+    <SectionBody>
+      <Route path={`${path}`} exact>
+        <SectionMessage type="info">
+          Select a system from the list.
+        </SectionMessage>
+      </Route>
 
-        <Route
-          path={`${path}/:systemId`}
-          render={({
-            match: {
-              params: { systemId }
-            }
-          }: RouteComponentProps<{ systemId: string }>) => (
-            <FileListing systemId={systemId} path={'/'} />
-          )}
-        />
-      </ListSectionDetail>
-    </div>
+      <Route
+        path={`${path}/:systemId`}
+        render={({
+          match: {
+            params: { systemId }
+          }
+        }: RouteComponentProps<{ systemId: string }>) => (
+          <FileListing systemId={systemId} path={'/'} />
+        )}
+      />
+    </SectionBody>
   );
 
   return (

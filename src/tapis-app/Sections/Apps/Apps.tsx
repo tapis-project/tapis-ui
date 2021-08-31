@@ -1,60 +1,54 @@
 import React from 'react';
-import {
-  Route,
-  useRouteMatch,
-  RouteComponentProps
-} from 'react-router-dom';
+import { Route, useRouteMatch, RouteComponentProps } from 'react-router-dom';
 import { AppsNav } from 'tapis-ui/components/apps';
 import { JobLauncher } from 'tapis-app/Sections/Apps/JobLauncher';
 import { SectionMessage } from 'tapis-ui/_common';
 import { Layout } from 'tapis-app/Layout';
 import {
-  ListSectionDetail,
-  ListSectionList,
-  ListSectionHeader
-} from 'tapis-app/Sections/ListSection';
+  SectionBody,
+  SectionHeader,
+  SectionNavWrapper
+} from 'tapis-app/Sections/Section';
 
 const Apps: React.FC = () => {
   const { path } = useRouteMatch();
 
   const header = (
-    <ListSectionHeader>
+    <SectionHeader>
       <div>Apps</div>
-    </ListSectionHeader>
+    </SectionHeader>
   );
 
   const subHeader = (
-    <ListSectionHeader type={'sub-header'}>Job Launcher</ListSectionHeader>
+    <SectionHeader type={'sub-header'}>Job Launcher</SectionHeader>
   );
 
   const sidebar = (
-    <ListSectionList>
+    <SectionNavWrapper>
       <AppsNav />
-    </ListSectionList>
+    </SectionNavWrapper>
   );
 
   const body = (
-    <div style={{ flex: 1 }}>
-      <ListSectionDetail>
-        <Route path={`${path}`} exact>
-          <SectionMessage type="info">
-            Select an app from the list.
-          </SectionMessage>
-        </Route>
+    <SectionBody>
+      <Route path={`${path}`} exact>
+        <SectionMessage type="info">
+          Select an app from the list.
+        </SectionMessage>
+      </Route>
 
-        <Route
-          path={`${path}/:appId/:appVersion`}
-          render={({
-            match: {
-              params: { appVersion, appId }
-            }
-          }: RouteComponentProps<{
-            appId: string;
-            appVersion: string;
-          }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
-        />
-      </ListSectionDetail>
-    </div>
+      <Route
+        path={`${path}/:appId/:appVersion`}
+        render={({
+          match: {
+            params: { appVersion, appId }
+          }
+        }: RouteComponentProps<{
+          appId: string;
+          appVersion: string;
+        }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
+      />
+    </SectionBody>
   );
 
   return (
