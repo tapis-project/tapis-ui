@@ -2,15 +2,12 @@ import React from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { Formik, Form } from 'formik';
-import { LoadingSpinner } from 'tapis-ui/_common';
 import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
-import { Message } from 'tapis-ui/_common';
+import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import * as Yup from 'yup';
 import { Button, Input } from 'reactstrap';
-import styles from './JobLauncher.module.scss';
-import './JobLauncher.scss';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -115,27 +112,18 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
                 )
               })
             }
-            <div className={styles.status}>
+            <SubmitWrapper 
+              error={error}
+              isLoading={isLoading}
+              success={data && `Successfully submitted job ${data?.result?.uuid ?? ''}`}
+            >
               <Button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting || isLoading || !!error}>
                 Submit Job
               </Button>
-              {
-                isLoading && <LoadingSpinner className="launcher__loading-spinner" placement="inline" />
-              }
-              { data && (
-                <div className={styles.message}>
-                  <Message canDismiss={false} type="success" scope="inline">Successfully submitted job {data?.result?.uuid || ''}</Message>
-                </div>
-              )}
-              {error && (
-                <div className={styles.message}>
-                  <Message canDismiss={false} type="error" scope="inline">{(error as any).message ?? error}</Message>
-                </div>
-              )}
-            </div>
+            </SubmitWrapper>
          </Form>
        )}
       </Formik>

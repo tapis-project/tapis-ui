@@ -14,10 +14,11 @@ const useSubmit = (appId: string, appVersion: string) => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, submit helper is called to perform the operation
-  const { mutate, isLoading, isError, isSuccess, data, error, reset } = useMutation(
-    [ QueryKeys.submit, appId, appVersion, basePath, jwt ],
-    (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt),
-  );
+  const { mutate, isLoading, isError, isSuccess, data, error, reset } = 
+    useMutation<Jobs.RespSubmitJob, Error, Jobs.ReqSubmitJob>(
+      [ QueryKeys.submit, appId, appVersion, basePath, jwt ],
+      (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt),
+    );
 
   // We want this hook to automatically reset if a different appId or appVersion
   // is passed to it. This eliminates the need to reset it inside the TSX component
