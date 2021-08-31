@@ -5,7 +5,7 @@ import {
   useRouteMatch,
   RouteComponentProps
 } from 'react-router-dom';
-import { JobsListing } from 'tapis-ui/components/jobs';
+import { JobsNav } from 'tapis-ui/components/jobs';
 import { JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage } from 'tapis-ui/_common';
 import { 
@@ -29,7 +29,7 @@ const Jobs: React.FC = () => {
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <JobsListing />
+          <JobsNav />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={"sub-header"}>Job Details</ListSectionHeader>

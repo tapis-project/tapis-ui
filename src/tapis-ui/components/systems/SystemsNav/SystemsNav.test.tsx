@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import { SystemList } from 'tapis-ui/components/systems';
+import { SystemsNav } from 'tapis-ui/components/systems';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 import { useList } from 'tapis-hooks/systems';
 
@@ -18,7 +18,7 @@ describe('SystemList', () => {
       error: null
     })
 
-    const { getAllByText } = renderComponent(<SystemList />);
+    const { getAllByText } = renderComponent(<SystemsNav />);
     expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
   });
 });

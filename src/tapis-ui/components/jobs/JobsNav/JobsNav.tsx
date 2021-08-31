@@ -1,29 +1,29 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { useList } from 'tapis-hooks/apps';
-import { Apps } from '@tapis/tapis-typescript';
+import { useList } from 'tapis-hooks/jobs';
+import { Jobs } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from 'tapis-ui/components/Navbar';
 import QueryWrapper from 'tapis-ui/components/QueryWrapper';
 
-const AppsNav: React.FC = () => {
+const JobsNav: React.FC = () => {
   const { data, isLoading, error } = useList();
   const { url } = useRouteMatch();
-  const appList: Array<Apps.TapisApp> = data?.result ?? [];
+  const jobsList: Array<Jobs.JobListDTO> = data?.result ?? [];
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Navbar>
-        {appList.length
-          ? appList.map(app => 
-              <NavItem to={`${url}/${app.id}/${app.version}`} icon="applications" key={app.id}>
-                {`${app.id} v${app.version}`}
+        {jobsList.length
+          ? jobsList.map((job: Jobs.JobListDTO) => 
+              <NavItem to={`${url}/${job.uuid}`} icon="jobs" key={job.uuid}>
+                {`${job.name} - (${job.status})`}
               </NavItem>
             )
-          : <i>No apps found</i>
+          : <i>No jobs found</i>
         }
       </Navbar>
     </QueryWrapper>
   )
 };
 
-export default AppsNav;
+export default JobsNav;

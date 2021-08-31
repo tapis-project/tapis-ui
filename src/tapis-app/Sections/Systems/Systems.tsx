@@ -5,7 +5,7 @@ import {
   useRouteMatch,
   RouteComponentProps
 } from 'react-router-dom';
-import { SystemList } from 'tapis-ui/components/systems';
+import { SystemsNav } from 'tapis-ui/components/systems';
 import { FileListing } from 'tapis-ui/components/files';
 import { SectionMessage } from 'tapis-ui/_common';
 import {
@@ -26,7 +26,7 @@ const Systems: React.FC = () => {
       </ListSectionHeader>
       <ListSectionBody>
         <ListSectionList>
-          <SystemList />
+          <SystemsNav />
         </ListSectionList>
         <ListSectionDetail>
           <ListSectionHeader type={'sub-header'}>Files</ListSectionHeader>
