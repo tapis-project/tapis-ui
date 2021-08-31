@@ -5,12 +5,13 @@ import styles from './SubmitWrapper.module.scss';
 type SubmitWrapperProps = React.PropsWithChildren<{
   isLoading: boolean,
   success: string | undefined,
-  error: Error | null
+  error: Error | null,
+  className?: string
 }>;
 
-const SubmitWrapper: React.FC<SubmitWrapperProps> = ({isLoading, error, success, children}) => {
+const SubmitWrapper: React.FC<SubmitWrapperProps> = ({isLoading, error, success, children, className=''}) => {
   return (
-    <div className={styles.wrapper}>
+    <div className={`${className} ${styles.wrapper}`}>
       {children}
       {isLoading && <LoadingSpinner className={styles["loading-spinner"]} placement="inline"/>}
       {
