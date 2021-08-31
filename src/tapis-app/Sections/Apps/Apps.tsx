@@ -30,7 +30,7 @@ const Apps: React.FC = () => {
   );
 
   const body = (
-    <div style={{flex: 1}}>
+    <div style={{ flex: 1 }}>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">
           Select an app from the list.
@@ -55,7 +55,11 @@ const Apps: React.FC = () => {
     <Layout
       top={header}
       left={sidebar}
-      right={<SectionBody><Layout top={subHeader} right={body} /></SectionBody>}
+      right={
+        <SectionBody>
+          <Layout top={subHeader} right={body} />
+        </SectionBody>
+      }
     />
   );
 };
