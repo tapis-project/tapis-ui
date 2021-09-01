@@ -6,9 +6,9 @@ import { useTapisConfig } from 'tapis-hooks';
 
 const Login: React.FC = () => {
   const { accessToken } = useTapisConfig();
-  
+
   if (accessToken?.access_token) {
-    return <Redirect to="/" />
+    return <Redirect to="/" />;
   }
 
   return (
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
         <TapisLogin />
       </div>
     </>
-  )
-}
+  );
+};
 
 export default Login;

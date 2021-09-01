@@ -1,11 +1,11 @@
 import { useQuery } from 'react-query';
 import { list } from 'tapis-api/jobs';
-import { Jobs } from '@tapis/tapis-typescript'
+import { Jobs } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
 export const defaultParams: Jobs.GetJobListRequest = {
-  orderBy: "created(desc)"
+  orderBy: 'created(desc)',
 };
 
 const useList = (params: Jobs.GetJobListRequest = defaultParams) => {
@@ -16,10 +16,10 @@ const useList = (params: Jobs.GetJobListRequest = defaultParams) => {
     // which is expected behavior for not having a token
     () => list(params, basePath, accessToken?.access_token ?? ''),
     {
-      enabled: !!accessToken
+      enabled: !!accessToken,
     }
   );
   return result;
-}
+};
 
 export default useList;

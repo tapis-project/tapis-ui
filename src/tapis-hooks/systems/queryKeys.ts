@@ -1,5 +1,5 @@
 const QueryKeys = {
-  list: 'systems/list'
-}
+  list: 'systems/list',
+};
 
 export default QueryKeys;

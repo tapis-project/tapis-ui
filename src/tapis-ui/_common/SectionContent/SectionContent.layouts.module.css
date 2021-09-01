@@ -7,10 +7,6 @@
   flex-wrap: nowrap;
 }
 
-
-
-
-
 /* 1 Column */
 
 .one-column {
@@ -19,13 +15,8 @@
   flex-wrap: nowrap;
 }
 
-
-
-
-
 /* 2 Columns */
 /* TODO: Try (again) to use CSS Grid */
-
 
 /* Always */
 
@@ -34,10 +25,8 @@
   padding-bottom: 2.5rem; /* 40px (~32px design * 1.2 design-to-app ratio) (rounded) */
 }
 
-
 /* Wide */
 @media only screen and (min-width: 992px) {
-
   /* Setup */
 
   .two-column {
@@ -49,7 +38,6 @@
     flex-grow: 1;
   }
 
-
   /* Layout */
 
   /* CAVEAT: If section is not tall enough to stack all panels, then:
@@ -59,7 +47,9 @@
 
   .two-column {
     --side-panel-order: 9999; /* HACK: Simulate "last" position */
-    --gutter-width: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
+    --gutter-width: var(
+      --global-space--section-left
+    ); /* deviated from design to use a similar global spacing */
     --default-panel-width: 50%;
 
     /* Hide panels that are pushed off the side of the screen */
@@ -95,23 +85,22 @@
     max-width: var(--default-panel-width);
   }
 
-  /* Panel Order */     /* (required to see border) */
+  /* Panel Order */ /* (required to see border) */
   /* TODO: Make this customizable */
 
   /* Move first X panels to right column, and shrink column */
   /* FAQ: Within `*:nth-child(-n+x)`, `x` equals number of extra panels */
-  .two-column > *:nth-child(-n+1) {
+  .two-column > *:nth-child(-n + 1) {
     order: var(--side-panel-order);
     max-width: calc(40% - var(--gutter-width));
   }
 
   /* Expand left column */
   /* FAQ: Within `*:nth-child(n+y)`, `y` equals number of extra panels + 1 */
-  .two-column > *:nth-child(n+2) {
+  .two-column > *:nth-child(n + 2) {
     max-width: calc(60% - var(--gutter-width));
   }
 }
-
 
 /* Narrow */
 @media only screen and (max-width: 991px) {

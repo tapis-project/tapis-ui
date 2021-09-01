@@ -20,7 +20,9 @@ const ReadMore = ({ className, children }) => {
     <>
       {
         <div
-          className={`${expanded ? styles.expanded : styles.clamped} ${className}`}
+          className={`${
+            expanded ? styles.expanded : styles.clamped
+          } ${className}`}
           ref={ref}
         >
           {children}

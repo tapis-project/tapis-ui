@@ -14,14 +14,19 @@ const SystemsNav: React.FC = () => {
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Navbar>
-        {definitions.length
-          ? definitions.map(system =>
-              <NavItem to={`${url}/${system.id}`} icon="data-files" key={system.id}>
-                {`${system.id} (${system.host})`}
-              </NavItem>
-            )
-          : <i>No systems found</i>
-        }
+        {definitions.length ? (
+          definitions.map((system) => (
+            <NavItem
+              to={`${url}/${system.id}`}
+              icon="data-files"
+              key={system.id}
+            >
+              {`${system.id} (${system.host})`}
+            </NavItem>
+          ))
+        ) : (
+          <i>No systems found</i>
+        )}
       </Navbar>
     </QueryWrapper>
   );

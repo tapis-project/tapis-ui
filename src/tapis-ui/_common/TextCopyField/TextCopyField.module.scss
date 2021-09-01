@@ -6,8 +6,7 @@
   // May be changed by JavaScript which also needs the value
   --transition-duration: 0;
 
-  transition:
-    color var(--transition-duration),
+  transition: color var(--transition-duration),
     background-color var(--transition-duration);
 
   composes: c-button--secondary from '../../styles/components/c-button.css';

@@ -1,1 +1,1 @@
-export { default as JobLauncher} from './JobLauncher';
+export { default as JobLauncher } from './JobLauncher';

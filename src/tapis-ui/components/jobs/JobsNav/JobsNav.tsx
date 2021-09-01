@@ -13,17 +13,18 @@ const JobsNav: React.FC = () => {
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Navbar>
-        {jobsList.length
-          ? jobsList.map((job: Jobs.JobListDTO) => 
-              <NavItem to={`${url}/${job.uuid}`} icon="jobs" key={job.uuid}>
-                {`${job.name} - (${job.status})`}
-              </NavItem>
-            )
-          : <i>No jobs found</i>
-        }
+        {jobsList.length ? (
+          jobsList.map((job: Jobs.JobListDTO) => (
+            <NavItem to={`${url}/${job.uuid}`} icon="jobs" key={job.uuid}>
+              {`${job.name} - (${job.status})`}
+            </NavItem>
+          ))
+        ) : (
+          <i>No jobs found</i>
+        )}
       </Navbar>
     </QueryWrapper>
-  )
+  );
 };
 
 export default JobsNav;

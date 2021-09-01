@@ -2,9 +2,11 @@ import { useInfiniteQuery } from 'react-query';
 import { list } from 'tapis-api/files';
 import { Files } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
-import { concatResults, tapisNextPageParam } from 'tapis-hooks/utils/infiniteQuery';
+import {
+  concatResults,
+  tapisNextPageParam,
+} from 'tapis-hooks/utils/infiniteQuery';
 import QueryKeys from './queryKeys';
-
 
 // Does not use defaultParams because systemId and path are required
 const useList = (params: Files.ListFilesRequest) => {
@@ -17,14 +19,18 @@ const useList = (params: Files.ListFilesRequest) => {
     [QueryKeys.list, params.systemId, params.path, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    (
-      { pageParam = params }) => list(pageParam, basePath, accessToken?.access_token ?? ''),
-      {
-        // getNextPageParam function computes offset, with guarantee that 
-        // params.limit is set to default of 100
-        getNextPageParam: (lastPage, allPages) => 
-          tapisNextPageParam<Files.FileListingResponse>(lastPage, allPages, params),
-        enabled: !!accessToken
+    ({ pageParam = params }) =>
+      list(pageParam, basePath, accessToken?.access_token ?? ''),
+    {
+      // getNextPageParam function computes offset, with guarantee that
+      // params.limit is set to default of 100
+      getNextPageParam: (lastPage, allPages) =>
+        tapisNextPageParam<Files.FileListingResponse>(
+          lastPage,
+          allPages,
+          params
+        ),
+      enabled: !!accessToken,
     }
   );
 
@@ -35,7 +41,7 @@ const useList = (params: Files.ListFilesRequest) => {
 
   return {
     ...result,
-    concatenatedResults
+    concatenatedResults,
   };
 };
 

@@ -13,13 +13,13 @@ export const SectionHeader: React.FC<
 };
 
 export const SectionNavWrapper: React.FC<React.PropsWithChildren<{}>> = ({
-  children
+  children,
 }) => {
   return <div className={styles.nav}>{children}</div>;
 };
 
 export const SectionBody: React.FC<React.PropsWithChildren<{}>> = ({
-  children
+  children,
 }) => {
   return (
     <div className={styles.body}>

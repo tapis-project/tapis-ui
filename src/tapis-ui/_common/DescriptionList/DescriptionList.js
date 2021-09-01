@@ -22,14 +22,12 @@ const DescriptionList = ({ className, data, density, direction }) => {
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
-  const containerStyleNames = ['container', ...modifierClasses].map(name => styles[name]).join(' ');
-
+  const containerStyleNames = ['container', ...modifierClasses]
+    .map((name) => styles[name])
+    .join(' ');
 
   return (
-    <dl
-      className={`${className} ${containerStyleNames}`}
-      data-testid="list"
-    >
+    <dl className={`${className} ${containerStyleNames}`} data-testid="list">
       {Object.entries(data).map(([key, value]) => (
         <React.Fragment key={key}>
           <dt className={styles.key} data-testid="key">

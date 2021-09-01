@@ -92,7 +92,7 @@ function UIPatternsMessages() {
           </th>
         </tr>
         <tr>
-        <th scope="col" className={styles.secondary}>
+          <th scope="col" className={styles.secondary}>
             <code>type</code>
           </th>
           <td>
@@ -188,7 +188,7 @@ function UIPatternsMessages() {
               {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
             </SectionMessage>
           </td>
-          <td rowSpan="2" className={styles["is-row-end"]}>
+          <td rowSpan="2" className={styles['is-row-end']}>
             {NOTIFICATION_TEXT}
           </td>
         </tr>

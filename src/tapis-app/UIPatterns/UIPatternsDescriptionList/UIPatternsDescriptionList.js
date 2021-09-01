@@ -34,12 +34,12 @@ function UIPatternsDropdownSelector() {
             <DescriptionList
               data={DATA}
               density="compact"
-              className={styles["item-x-narrow"]}
+              className={styles['item-x-narrow']}
             />
           </dd>
         </dl>
       </div>
-      <div className={styles["list-rows"]}>
+      <div className={styles['list-rows']}>
         <dl>
           <dt>Horizontal Layout & Default Density</dt>
           <dd>
@@ -59,12 +59,12 @@ function UIPatternsDropdownSelector() {
               data={DATA}
               density="compact"
               direction="horizontal"
-              className={styles["item-narrow"]}
+              className={styles['item-narrow']}
             />
           </dd>
         </dl>
       </div>
-      <div className={styles["list-rows"]}>
+      <div className={styles['list-rows']}>
         <dl>
           <dt>Vertical Layout & Nested Data</dt>
           <dd>

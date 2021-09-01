@@ -11,11 +11,11 @@ describe('AppsNav', () => {
   it('renders AppsNav component', () => {
     (useList as jest.Mock).mockReturnValue({
       data: {
-        result: [ tapisApp ],
+        result: [tapisApp],
       },
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
 
     const { getAllByText } = renderComponent(<AppsNav />);
     expect(getAllByText(/SleepSeconds/).length).toEqual(1);

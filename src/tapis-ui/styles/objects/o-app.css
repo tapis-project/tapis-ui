@@ -22,16 +22,24 @@ Markup:
 Styleguide Objects.App
 */
 .o-app,
-[class*="o-app--"] {
+[class*='o-app--'] {
   display: flex;
   justify-content: stretch;
 }
 
 /* Z-Axis */
-.o-app__head { z-index: 4; }
-.o-app__body { z-index: 2; }
-.o-app__side { z-index: 3; }
-.o-app__foot { z-index: 1; }
+.o-app__head {
+  z-index: 4;
+}
+.o-app__body {
+  z-index: 2;
+}
+.o-app__side {
+  z-index: 3;
+}
+.o-app__foot {
+  z-index: 1;
+}
 
 .o-app--layout-vert {
   flex-direction: column;
@@ -53,7 +61,9 @@ Styleguide Objects.App
   }
 
   /* CAVEAT: Not supported */
-  & > .o-app__side { display: none; }
+  & > .o-app__side {
+    display: none;
+  }
 }
 
 .o-app--layout-horz {
@@ -75,5 +85,7 @@ Styleguide Objects.App
 
   /* CAVEAT: Not supported */
   & > .o-app__head,
-  & > .o-app__foot { display: none; }
+  & > .o-app__foot {
+    display: none;
+  }
 }

@@ -11,9 +11,9 @@
   box-sizing: content-box;
 
   padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
-  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+  border-bottom: var(--global-border-width--normal) solid
+    var(--global-color-primary--dark);
 }
-
 
 /* Elements */
 
@@ -29,7 +29,6 @@
 .heading ~ * {
   max-height: 100%; /* (gently) force oversized elements to fit */
 }
-
 
 /* Modifiers */
 

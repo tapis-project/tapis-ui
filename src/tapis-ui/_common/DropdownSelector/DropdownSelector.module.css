@@ -12,8 +12,8 @@
   composes: form-control from '../../styles/components/bootstrap.form.css';
 
   font-size: 0.75rem; /* ~10px design * 1.2 design-to-app ratio */
-                      /* WARNING: "iOS Safari will [force-zoom site] if […] less than 16px" */
-                      /* SEE: https://github.com/filamentgroup/select-css#notes-on-the-css */
+  /* WARNING: "iOS Safari will [force-zoom site] if […] less than 16px" */
+  /* SEE: https://github.com/filamentgroup/select-css#notes-on-the-css */
   width: auto; /* overwrite `.form-control` (from Bootstrap) */
   height: auto; /* overwrite `.form-control` (from Bootstrap) */
 
@@ -34,9 +34,11 @@
 /* NOTE: CSS Modules does not support `.container.form-control`, but these overrides should be isolated */
 .container {
   padding: 0 16px 0 6px; /* overwrite `.form-control` (from bootstrap.form.css) */
-                  /* 0 13.43px 0 5px design * 1.2 design-to-app ratio */
+  /* 0 13.43px 0 5px design * 1.2 design-to-app ratio */
 
-  border-color: var(--global-color-primary--dark); /* overwrite `.form-control` (from Bootstrap) */
+  border-color: var(
+    --global-color-primary--dark
+  ); /* overwrite `.form-control` (from Bootstrap) */
 }
 
 .container:focus {
@@ -55,8 +57,12 @@
   font-style: normal;
   font-weight: normal;
 }
-.container optgroup { color: var(--global-color-primary--dark); }
-.container option { color: var(--global-color-primary--x-dark); }
+.container optgroup {
+  color: var(--global-color-primary--dark);
+}
+.container option {
+  color: var(--global-color-primary--x-dark);
+}
 
 /* FAQ: Ability to style selected option is browser-dependent */
 /* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/:checked */

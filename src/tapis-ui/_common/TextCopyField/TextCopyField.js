@@ -34,7 +34,9 @@ const TextCopyField = ({ value, placeholder }) => {
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
           <Button
-            className={`${styles['copy-button']} ${isCopied ? styles['is-copied'] : ''}`}
+            className={`${styles['copy-button']} ${
+              isCopied ? styles['is-copied'] : ''
+            }`}
             // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
             //      - `data-attribute` and `attr()` (pending browser support)
             //      - PostCSS and JSON variables (pending greater need for this)
@@ -45,9 +47,9 @@ const TextCopyField = ({ value, placeholder }) => {
           >
             <Icon
               name={isCopied ? 'approved-reverse' : 'link'}
-              className={styles["button__icon"]}
+              className={styles['button__icon']}
             />
-            <span className={styles["button__text"]}>Copy</span>
+            <span className={styles['button__text']}>Copy</span>
           </Button>
         </CopyToClipboard>
       </div>

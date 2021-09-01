@@ -7,7 +7,6 @@ import TapisProvider from 'tapis-hooks/provider';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'tapis-app/index.css';
 
-
 ReactDOM.render(
   <React.StrictMode>
     <TapisProvider basePath="https://tacc.tapis.io">

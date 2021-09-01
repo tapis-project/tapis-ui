@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  FormGroup,
-  Label,
-  FormText,
-  Badge,
-} from 'reactstrap';
+import { FormGroup, Label, FormText, Badge } from 'reactstrap';
 
 import { useField, FieldHookConfig } from 'formik';
 import './FieldWrapper.scss';
@@ -13,18 +8,22 @@ type FieldWrapperCustomProps = {
   label: string;
   required?: boolean;
   description: string;
-  children?:
-    | React.ReactChild
-    | React.ReactChild[];
-  key?: string
-}
+  children?: React.ReactChild | React.ReactChild[];
+  key?: string;
+};
 
 export type FieldWrapperProps = {
-  props: FieldHookConfig<string>
+  props: FieldHookConfig<string>;
 } & FieldWrapperCustomProps;
 
-const FieldWrapper: React.FC<FieldWrapperProps> = ({ props, label, required, description, children }) => {
-  const [ field, meta ] = useField(props);
+const FieldWrapper: React.FC<FieldWrapperProps> = ({
+  props,
+  label,
+  required,
+  description,
+  children,
+}) => {
+  const [field, meta] = useField(props);
   return (
     <FormGroup>
       <Label
@@ -39,14 +38,16 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({ props, label, required, des
           </Badge>
         ) : null}
       </Label>
-      {
-        React.Children.map(children, child => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child, {...field, ...props, key: props.name });
-          }
-          return child;
-        })
-      }
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, {
+            ...field,
+            ...props,
+            key: props.name,
+          });
+        }
+        return child;
+      })}
       {meta.touched && meta.error ? (
         <div className="form-field__validation-error">{meta.error}</div>
       ) : (
@@ -57,8 +58,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({ props, label, required, des
         )
       )}
     </FormGroup>
-  )
-}
-
+  );
+};
 
 export default FieldWrapper;

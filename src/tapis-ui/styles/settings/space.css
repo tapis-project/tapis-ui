@@ -8,9 +8,7 @@
   --global-space--section-bottom: 0;
   --global-space--section-left: 1.5rem; /* 24px (~20px design * 1.2 design-to-app ratio) */
   --global-space--section-right: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
-  --global-space--section:
-      var(--global-space--section-top)
-      var(--global-space--section-right)
-      var(--global-space--section-bottom)
-      var(--global-space--section-left);
+  --global-space--section: var(--global-space--section-top)
+    var(--global-space--section-right) var(--global-space--section-bottom)
+    var(--global-space--section-left);
 }

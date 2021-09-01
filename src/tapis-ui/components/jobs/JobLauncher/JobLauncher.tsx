@@ -12,30 +12,45 @@ import { Button, Input } from 'reactstrap';
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
 interface JobLauncherProps {
-  appId: string,
-  appVersion: string,
-  name: string,
-  execSystemId: string
+  appId: string;
+  appVersion: string;
+  name: string;
+  execSystemId: string;
 }
 
-const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, execSystemId }) => {
+const JobLauncher: React.FC<JobLauncherProps> = ({
+  appId,
+  appVersion,
+  name,
+  execSystemId,
+}) => {
   const systemsListHook = useList({});
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
 
   const systems: Array<TapisSystem> = systemsListHook.data?.result ?? [];
 
-  const validationSchema = (props: React.PropsWithChildren<React.ReactNode>) => {
+  const validationSchema = (
+    props: React.PropsWithChildren<React.ReactNode>
+  ) => {
     return Yup.lazy((values: any) => {
       const schema = Yup.object({});
       return schema;
-    })
-  }
-  const formSubmit = (values: any, { setSubmitting }: {setSubmitting: any}) => {
-    submit(values as Jobs.ReqSubmitJob)
+    });
+  };
+  const formSubmit = (
+    values: any,
+    { setSubmitting }: { setSubmitting: any }
+  ) => {
+    submit(values as Jobs.ReqSubmitJob);
     setSubmitting(false);
-  }
+  };
 
-  const initialValues = Jobs.ReqSubmitJobFromJSON({ appId, appVersion, name, execSystemId });
+  const initialValues = Jobs.ReqSubmitJobFromJSON({
+    appId,
+    appVersion,
+    name,
+    execSystemId,
+  });
 
   const jobFields: Array<FieldWrapperProps> = [
     {
@@ -46,7 +61,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
       description: 'A name for this job',
       label: 'Name',
       required: true,
-      children: <Input bsSize="sm" />
+      children: <Input bsSize="sm" />,
     },
     {
       props: {
@@ -54,9 +69,9 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
         type: 'string',
       },
       description: 'The ID of the TAPIS application to run',
-      label:'App ID',
+      label: 'App ID',
       required: true,
-      children: <Input bsSize="sm" data-testid="appId" />
+      children: <Input bsSize="sm" data-testid="appId" />,
     },
     {
       props: {
@@ -66,27 +81,25 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
       description: 'The version of the application to run',
       label: 'App Version',
       required: true,
-      children: <Input bsSize="sm" />
+      children: <Input bsSize="sm" />,
     },
     {
       props: {
         name: 'execSystemId',
-        type: "select"
+        type: 'select',
       },
       description: 'A TAPIS system that can run this application',
       label: 'Execution System',
       required: true,
-      children: <Input>
-        {
-          systems.map(
-            (system: TapisSystem) => (
-              <option key={system.id}>{system.id}</option>
-            )
-          )
-        }
-      </Input> 
-    }
-  ]
+      children: (
+        <Input>
+          {systems.map((system: TapisSystem) => (
+            <option key={system.id}>{system.id}</option>
+          ))}
+        </Input>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -98,34 +111,35 @@ const JobLauncher: React.FC<JobLauncherProps> = ({ appId, appVersion, name, exec
       >
         {({ isSubmitting }) => (
           <Form>
-            {
-              jobFields.map(field => {
-                return (
-                  <FieldWrapper 
-                    props={field.props}
-                    label={field.label}
-                    required={field.required}
-                    children={field.children}
-                    description={field.description}
-                    key={field.props.name}
-                  />
-                )
-              })
-            }
-            <SubmitWrapper 
+            {jobFields.map((field) => {
+              return (
+                <FieldWrapper
+                  props={field.props}
+                  label={field.label}
+                  required={field.required}
+                  children={field.children}
+                  description={field.description}
+                  key={field.props.name}
+                />
+              );
+            })}
+            <SubmitWrapper
               error={error}
               isLoading={isLoading}
-              success={data && `Successfully submitted job ${data?.result?.uuid ?? ''}`}
+              success={
+                data && `Successfully submitted job ${data?.result?.uuid ?? ''}`
+              }
             >
               <Button
                 type="submit"
                 className="btn btn-primary"
-                disabled={isSubmitting || isLoading || !!error}>
+                disabled={isSubmitting || isLoading || !!error}
+              >
                 Submit Job
               </Button>
             </SubmitWrapper>
-         </Form>
-       )}
+          </Form>
+        )}
       </Formik>
     </div>
   );

@@ -45,9 +45,15 @@
 }
 
 /* Overwrite Bootstrap `_reboot.scss` */
-.is-vert > .value { margin-left: 0; }
-.is-vert.is-narrow > .value { padding-left: 0; }
-.is-vert.is-wide > .value   { padding-left: 2.5rem; } /* 40px Firefox default margin */
+.is-vert > .value {
+  margin-left: 0;
+}
+.is-vert.is-narrow > .value {
+  padding-left: 0;
+}
+.is-vert.is-wide > .value {
+  padding-left: 2.5rem;
+} /* 40px Firefox default margin */
 
 /* Truncate specific edge cases */
 .is-horz.is-wide > .value {

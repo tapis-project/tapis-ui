@@ -7,7 +7,7 @@ import { Alert } from 'reactstrap';
  * @param {String} messageName - The name of the message to check
  */
 export function useShouldShowMessage(messageName) {
-  const welcomeMessages = {}; 
+  const welcomeMessages = {};
   return welcomeMessages && welcomeMessages[messageName];
 }
 

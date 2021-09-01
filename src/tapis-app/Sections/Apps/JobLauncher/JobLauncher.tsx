@@ -3,7 +3,7 @@ import { JobLauncher } from 'tapis-ui/components/jobs';
 
 const JobLauncherWrapper: React.FC<{ appId: string; appVersion: string }> = ({
   appId,
-  appVersion
+  appVersion,
 }) => {
   const { data: appData } = useAppDetail({ appId, appVersion });
   const appDetails = appData?.result;

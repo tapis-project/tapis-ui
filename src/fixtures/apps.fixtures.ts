@@ -1,6 +1,6 @@
 import { Apps } from '@tapis/tapis-typescript';
 
-export const tapisApp: Apps.TapisApp = { 
+export const tapisApp: Apps.TapisApp = {
   tenant: undefined,
   id: 'SleepSeconds',
   version: '0.0.1',
@@ -20,20 +20,20 @@ export const tapisApp: Apps.TapisApp = {
   notes: undefined,
   deleted: undefined,
   created: undefined,
-  updated: undefined
-}
+  updated: undefined,
+};
 
 export const appsResponse: Apps.RespApps = {
   status: 'success',
   message: 'TAPIS_FOUND Apps found: 1 applications',
   version: '0.0.1-SNAPSHOT',
-  result: [ { ...tapisApp } ],
+  result: [{ ...tapisApp }],
   metadata: {
     recordCount: 1,
     recordLimit: 100,
     recordsSkipped: 0,
     orderBy: undefined,
     startAfter: undefined,
-    totalCount: 1
-  }
-}
+    totalCount: 1,
+  },
+};

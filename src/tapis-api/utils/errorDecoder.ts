@@ -1,5 +1,4 @@
-
-const errorDecoder = async<T>(func: () => Promise<T>) => {
+const errorDecoder = async <T>(func: () => Promise<T>) => {
   try {
     // Call the specified function name, and expect that specific return type
     const result: T = await func();
@@ -14,6 +13,6 @@ const errorDecoder = async<T>(func: () => Promise<T>) => {
       throw error;
     }
   }
-}
+};
 
 export default errorDecoder;

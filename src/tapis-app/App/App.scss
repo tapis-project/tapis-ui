@@ -1,21 +1,20 @@
 .workbench-content {
-    /* As a flex item */
-    flex-grow: 1;
+  /* As a flex item */
+  flex-grow: 1;
 
-    /* As a flex container */
-    display: flex;
-    flex-direction: column;
-    padding: 20px 25px 25px 25px; // for giving the working area some padding...
+  /* As a flex container */
+  display: flex;
+  flex-direction: column;
+  padding: 20px 25px 25px 25px; // for giving the working area some padding...
 }
 /* FAQ: If the workbench content has only a single child,
         then it should be the same height as the app root */
 
-
 .spin-sun {
-    display: flex;
-    justify-content: center;
-    height: 100%;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
 }
 
 .workbench-content .btn-link,
@@ -28,9 +27,9 @@
 }
 
 .workbench-content .btn-secondary {
-  background-color: #F4F4F4;
+  background-color: #f4f4f4;
   color: #484848;
-  border: 1px solid #AFAFAF;
+  border: 1px solid #afafaf;
 }
 
 .workbench-content .btn-primary {
@@ -40,16 +39,16 @@
 }
 
 .workbench-content .badge-success {
-  background-color: #43D130;
+  background-color: #43d130;
 }
 
 .workbench-content .badge-warning {
-  background-color: #C7CE1D;
+  background-color: #c7ce1d;
   color: white;
 }
 
 .workbench-content .badge-danger {
-  background-color: #EB6E6E;
+  background-color: #eb6e6e;
   color: white;
 }
 
@@ -62,24 +61,24 @@
 
 /* Align content tables to the left by undoing some Bootstrap */
 .workbench-content .container {
-    margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
-    padding-top: 20px;
-    padding-left: 0; /* override `padding-left: 20px;` */
+  margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
+  padding-top: 20px;
+  padding-left: 0; /* override `padding-left: 20px;` */
 }
 /* Prevent width constraint for Extra Large breakpoint */
 /* TODO: Support Bootstrap mixins, or find another why to make this DRY */
 /* SEE: https://getbootstrap.com/docs/4.0/layout/grid/#example-usage */
 @media (min-width: 1200px) {
-    .workbench-content .container {
-        max-width: none;
-    }
+  .workbench-content .container {
+    max-width: none;
+  }
 }
 /* Mimic `.container { max-width: … }` (Bootstrap Grid) for "Extra Extra Large" breakpoint */
 /* WARN: Non-standard un-documented first-party breakpoint */
 @media (min-width: 1700px) {
-    .workbench-content .container {
-        max-width: 1645px;
-    }
+  .workbench-content .container {
+    max-width: 1645px;
+  }
 }
 
 .modal-dialog {
