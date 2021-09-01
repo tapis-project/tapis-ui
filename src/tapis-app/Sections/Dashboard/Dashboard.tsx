@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SectionHeader, Icon } from 'tapis-ui/_common';
+import { SectionHeader, LoadingSpinner, Icon } from 'tapis-ui/_common';
 import {
   Card,
   CardHeader,
@@ -10,7 +10,6 @@ import {
   CardText,
 } from 'reactstrap';
 import { useTapisConfig } from 'tapis-hooks';
-import { LoadingSpinner } from 'tapis-ui/_common';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
 import { useList as useJobsList } from 'tapis-hooks/jobs';
 import { useList as useAppsList } from 'tapis-hooks/apps';
