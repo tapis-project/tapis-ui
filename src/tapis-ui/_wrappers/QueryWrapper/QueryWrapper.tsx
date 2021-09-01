@@ -2,16 +2,23 @@ import React from 'react';
 import { LoadingSpinner, Message } from 'tapis-ui/_common';
 
 type QueryWrapperProps = React.PropsWithChildren<{
-  isLoading: boolean,
-  error: Error | null,
-  className?: string
+  isLoading: boolean;
+  error: Error | null;
+  className?: string;
 }>;
 
-const QueryWrapper: React.FC<QueryWrapperProps> = ({isLoading, error, children, className=''}) => {
+const QueryWrapper: React.FC<QueryWrapperProps> = ({
+  isLoading,
+  error,
+  children,
+  className = '',
+}) => {
   if (isLoading) {
-    return <div className={className}>
-      <LoadingSpinner />
-    </div>;
+    return (
+      <div className={className}>
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (error) {
@@ -21,12 +28,9 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({isLoading, error, children, 
           {(error as any).message ?? error}
         </Message>
       </div>
-
     );
   }
-  return <div className={className}>
-    {children}
-  </div>
-}
+  return <div className={className}>{children}</div>;
+};
 
 export default QueryWrapper;

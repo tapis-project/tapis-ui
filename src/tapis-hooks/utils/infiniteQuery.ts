@@ -7,8 +7,10 @@ export const concatResults = <T>(pages: ResultPages<T>): T[] =>
   );
 
 export const tapisNextPageParam = <T extends { result?: Array<any> }>(
-  lastPage: T, allPages: T[], 
-  params: { limit?: number } ) => {
+  lastPage: T,
+  allPages: T[],
+  params: { limit?: number }
+) => {
   if ((lastPage.result?.length ?? 0) < params.limit!) return undefined;
-  return { ...params, offset: allPages.length * params.limit! }
-}
+  return { ...params, offset: allPages.length * params.limit! };
+};

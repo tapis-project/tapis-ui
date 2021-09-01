@@ -10,12 +10,14 @@ jest.mock('tapis-hooks/files');
 describe('Files', () => {
   it('renders File Listing component', () => {
     (useList as jest.Mock).mockReturnValue({
-      concatenatedResults: [ fileInfo ],
+      concatenatedResults: [fileInfo],
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
 
-    const { getAllByText } = renderComponent(<FileListing systemId={"system"} path={"/"} />);
+    const { getAllByText } = renderComponent(
+      <FileListing systemId={'system'} path={'/'} />
+    );
     expect(getAllByText(/file1/).length).toEqual(1);
   });
 });

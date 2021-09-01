@@ -6,11 +6,11 @@
 
 /* Overwrite Bootstrap `_code.scss` */
 code {
-    color: unset;
+  color: unset;
 }
 kbd {
-    padding: unset;
-    color: unset;
-    background-color: unset;
-    border-radius: unset;
+  padding: unset;
+  color: unset;
+  background-color: unset;
+  border-radius: unset;
 }

@@ -13,7 +13,10 @@ export { default as InlineMessage } from './InlineMessage';
 export { default as SectionMessage } from './SectionMessage';
 export { default as DescriptionList } from './DescriptionList';
 export { default as DropdownSelector } from './DropdownSelector';
-export { default as WelcomeMessage, useShouldShowMessage } from './WelcomeMessage';
+export {
+  default as WelcomeMessage,
+  useShouldShowMessage,
+} from './WelcomeMessage';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
 export { default as ReadMore } from './ReadMore';

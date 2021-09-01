@@ -7,7 +7,7 @@ import { Layout } from 'tapis-app/Layout';
 import {
   SectionBody,
   SectionHeader,
-  SectionNavWrapper
+  SectionNavWrapper,
 } from 'tapis-app/Sections/Section';
 
 const Apps: React.FC = () => {
@@ -41,8 +41,8 @@ const Apps: React.FC = () => {
         path={`${path}/:appId/:appVersion`}
         render={({
           match: {
-            params: { appVersion, appId }
-          }
+            params: { appVersion, appId },
+          },
         }: RouteComponentProps<{
           appId: string;
           appVersion: string;

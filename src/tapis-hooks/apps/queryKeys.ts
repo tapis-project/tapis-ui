@@ -1,5 +1,5 @@
 const QueryKeys = {
-  list: 'apps/list'
-}
+  list: 'apps/list',
+};
 
 export default QueryKeys;

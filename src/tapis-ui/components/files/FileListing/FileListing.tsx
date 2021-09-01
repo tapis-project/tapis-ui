@@ -9,13 +9,16 @@ import styles from './FileListing.module.scss';
 export type OnSelectCallback = (file: Files.FileInfo) => any;
 
 interface FileListingItemProps {
-  file: Files.FileInfo,
-  onSelect?: OnSelectCallback
+  file: Files.FileInfo;
+  onSelect?: OnSelectCallback;
 }
 
-const FileListingItem: React.FC<FileListingItemProps> = ({ file, onSelect=undefined }) => {
+const FileListingItem: React.FC<FileListingItemProps> = ({
+  file,
+  onSelect = undefined,
+}) => {
   return (
-    <li onClick={() => onSelect ? onSelect(file) : null}>
+    <li onClick={() => (onSelect ? onSelect(file) : null)}>
       {/* will need to conditionally set file icon */}
       <Icon name="file" /> {`${file.name}`}
     </li>
@@ -23,22 +26,18 @@ const FileListingItem: React.FC<FileListingItemProps> = ({ file, onSelect=undefi
 };
 
 interface FileListingProps {
-  systemId: string,
-  path: string
-  onSelect?: OnSelectCallback
+  systemId: string;
+  path: string;
+  onSelect?: OnSelectCallback;
 }
 
-const FileListing: React.FC<FileListingProps> = ({ 
-    systemId, path, onSelect=undefined
-  }) => {
- 
-  const { 
-    hasNextPage, 
-    isLoading, 
-    error, 
-    fetchNextPage, 
-    concatenatedResults
-  } = useList({ systemId, path });
+const FileListing: React.FC<FileListingProps> = ({
+  systemId,
+  path,
+  onSelect = undefined,
+}) => {
+  const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
+    useList({ systemId, path });
 
   const fileSelectCallback = useCallback<OnSelectCallback>(
     (file: Files.FileInfo) => {
@@ -47,22 +46,28 @@ const FileListing: React.FC<FileListingProps> = ({
       }
     },
     [onSelect]
-  )
+  );
 
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
   return (
-    <QueryWrapper className={styles["file-list"]} isLoading={isLoading} error={error}>
-      {
-        files.map((file: Files.FileInfo | null) => {
-          return file && (
-            <FileListingItem file={file} key={file.name} onSelect={fileSelectCallback} />
+    <QueryWrapper
+      className={styles['file-list']}
+      isLoading={isLoading}
+      error={error}
+    >
+      {files.map((file: Files.FileInfo | null) => {
+        return (
+          file && (
+            <FileListingItem
+              file={file}
+              key={file.name}
+              onSelect={fileSelectCallback}
+            />
           )
-        })
-      }
-      {
-        hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>
-      }
+        );
+      })}
+      {hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>}
     </QueryWrapper>
   );
 };

@@ -11,11 +11,11 @@ describe('JobsNav', () => {
   it('renders JobsNav component', () => {
     (useList as jest.Mock).mockReturnValue({
       data: {
-        result: [ jobInfo ],
+        result: [jobInfo],
       },
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
 
     const { getAllByText } = renderComponent(<JobsNav />);
     expect(getAllByText(/SleepSeconds/).length).toEqual(1);

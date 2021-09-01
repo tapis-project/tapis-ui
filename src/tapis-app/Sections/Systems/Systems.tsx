@@ -7,7 +7,7 @@ import { Layout } from 'tapis-app/Layout';
 import {
   SectionBody,
   SectionNavWrapper,
-  SectionHeader
+  SectionHeader,
 } from 'tapis-app/Sections/Section';
 
 const Systems: React.FC = () => {
@@ -28,7 +28,7 @@ const Systems: React.FC = () => {
   );
 
   const body = (
-    <div style={{flex: 1}}>
+    <div style={{ flex: 1 }}>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">
           Select a system from the list.
@@ -39,8 +39,8 @@ const Systems: React.FC = () => {
         path={`${path}/:systemId`}
         render={({
           match: {
-            params: { systemId }
-          }
+            params: { systemId },
+          },
         }: RouteComponentProps<{ systemId: string }>) => (
           <FileListing systemId={systemId} path={'/'} />
         )}

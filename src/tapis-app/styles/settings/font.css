@@ -4,11 +4,12 @@
 /* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
 
 :root {
-    /* stylelint-disable value-keyword-case */
-    --global-font-family--sans: 'Roboto', sans-serif;
-    --global-font-family--serif: Times, sans-serif;
-    --global-font-family--mono: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-    /* stylelint-enable value-keyword-case */
+  /* stylelint-disable value-keyword-case */
+  --global-font-family--sans: 'Roboto', sans-serif;
+  --global-font-family--serif: Times, sans-serif;
+  --global-font-family--mono: source-code-pro, Menlo, Monaco, Consolas,
+    'Courier New', monospace;
+  /* stylelint-enable value-keyword-case */
 
-    --global-line-height: 1.4; /* From Bootstrap */
+  --global-line-height: 1.4; /* From Bootstrap */
 }

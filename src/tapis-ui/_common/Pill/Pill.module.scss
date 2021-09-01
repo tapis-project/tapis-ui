@@ -4,7 +4,7 @@
   font-weight: 500;
   padding: 0.2em 0.5em; /* aim for ~23px height (19px design * 1.2 design-to-app ratio) */
   display: inline-block; /* FAQ: Supports `min/max-width` */
-  /* min-width: ____; *//* FAQ: Set only as desired (not always desired) */
+  /* min-width: ____; */ /* FAQ: Set only as desired (not always desired) */
   text-align: center;
   border-radius: 3px;
   color: var(--global-color-primary--xx-light);
@@ -17,7 +17,7 @@
 
   overflow: hidden;
   text-overflow: ellipsis;
-  /* white-space: nowrap; *//* FAQ: Set only as desired (not always desired) */
+  /* white-space: nowrap; */ /* FAQ: Set only as desired (not always desired) */
 
   /* Keep alignment that is changed by `overflow: hidden;` */
   /* SEE: https://stackoverflow.com/q/25818199 */

@@ -7,7 +7,7 @@ import { Layout } from 'tapis-app/Layout';
 import {
   SectionBody,
   SectionHeader,
-  SectionNavWrapper
+  SectionNavWrapper,
 } from 'tapis-app/Sections/Section';
 
 const Jobs: React.FC = () => {
@@ -30,7 +30,7 @@ const Jobs: React.FC = () => {
   );
 
   const body = (
-    <div style={{flex: 1}}>
+    <div style={{ flex: 1 }}>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">Select a job from the list.</SectionMessage>
       </Route>
@@ -39,8 +39,8 @@ const Jobs: React.FC = () => {
         path={`${path}/:jobUuid`}
         render={({
           match: {
-            params: { jobUuid }
-          }
+            params: { jobUuid },
+          },
         }: RouteComponentProps<{ jobUuid: string }>) => (
           <JobDetail jobUuid={jobUuid} />
         )}
@@ -52,7 +52,11 @@ const Jobs: React.FC = () => {
     <Layout
       top={header}
       left={sidebar}
-      right={<SectionBody><Layout top={subHeader} right={body} /></SectionBody>}
+      right={
+        <SectionBody>
+          <Layout top={subHeader} right={body} />
+        </SectionBody>
+      }
     />
   );
 };

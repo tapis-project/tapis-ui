@@ -8,9 +8,7 @@ function Pill({ children, type, className, shouldTruncate }) {
   if (shouldTruncate) pillStyleName += ' should-truncate';
 
   return (
-    <span className={`${styles[pillStyleName]} ${className}`}>
-      {children}
-    </span>
+    <span className={`${styles[pillStyleName]} ${className}`}>{children}</span>
   );
 }
 

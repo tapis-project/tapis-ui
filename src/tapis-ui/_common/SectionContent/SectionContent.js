@@ -66,11 +66,7 @@ function SectionContent({
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
-  return (
-    <TagName className={`${className} ${styleName}`}>
-      {children}
-    </TagName>
-  );
+  return <TagName className={`${className} ${styleName}`}>{children}</TagName>;
 }
 SectionContent.propTypes = {
   /** Any additional className(s) for the root element */

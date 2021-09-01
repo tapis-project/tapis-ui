@@ -55,7 +55,8 @@ function SectionMessages({ children, className, routeName, welcomeText }) {
       {welcomeMessageText}
     </WelcomeMessage>
   );
-  const hasMessage = useShouldShowWelcomeMessage(routeName) || children.length > 0;
+  const hasMessage =
+    useShouldShowWelcomeMessage(routeName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
   useEffect(() => {

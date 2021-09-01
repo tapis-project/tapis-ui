@@ -53,8 +53,11 @@ const InfiniteScrollTable = ({
   getRowProps,
   columnMemoProps,
 }) => {
-  /* eslint-disable-next-line */
-  const columns = React.useMemo(() => tableColumns, [columnMemoProps, tableColumns]);
+  const columns = React.useMemo(
+    () => tableColumns,
+    /* eslint-disable-next-line */
+    [columnMemoProps, tableColumns]
+  );
   const data = React.useMemo(() => tableData, [tableData]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =

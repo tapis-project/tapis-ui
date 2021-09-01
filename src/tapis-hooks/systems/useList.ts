@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 import { list } from 'tapis-api/systems';
-import { Systems } from '@tapis/tapis-typescript'
+import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -14,10 +14,10 @@ const useList = (params: Systems.GetSystemsRequest = defaultParams) => {
     // which is expected behavior for not having a token
     () => list(params, basePath, accessToken?.access_token || ''),
     {
-      enabled: !!accessToken
+      enabled: !!accessToken,
     }
   );
-  return result; 
-}
+  return result;
+};
 
 export default useList;

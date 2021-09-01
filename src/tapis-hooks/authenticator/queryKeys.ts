@@ -1,5 +1,5 @@
 const QueryKeys = {
-  login: 'authenticator/login'
-}
+  login: 'authenticator/login',
+};
 
 export default QueryKeys;

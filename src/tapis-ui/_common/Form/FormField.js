@@ -112,46 +112,46 @@ const FormField = ({
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */
     <>
-    {label && hasAddon ? <FieldLabel /> : null}
-    <FormFieldWrapper type={wrapperType}>
-      {label && !hasAddon ? <FieldLabel /> : null}
-      {agaveFile ? (
-        <>
-          <SelectModal
-            isOpen={openAgaveFileModal}
-            toggle={() => {
-              setOpenAgaveFileModal(prevState => !prevState);
-            }}
-            onSelect={(system, path) => {
-              helpers.setValue(`agave://${system}${path}`);
-            }}
-          />
+      {label && hasAddon ? <FieldLabel /> : null}
+      <FormFieldWrapper type={wrapperType}>
+        {label && !hasAddon ? <FieldLabel /> : null}
+        {agaveFile ? (
+          <>
+            <SelectModal
+              isOpen={openAgaveFileModal}
+              toggle={() => {
+                setOpenAgaveFileModal((prevState) => !prevState);
+              }}
+              onSelect={(system, path) => {
+                helpers.setValue(`agave://${system}${path}`);
+              }}
+            />
 
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <Button
-                size="sm"
-                color="secondary"
-                type="button"
-                onClick={() => setOpenAgaveFileModal(true)}
-              >
-                Select
-              </Button>
-            </InputGroupAddon>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <Button
+                  size="sm"
+                  color="secondary"
+                  type="button"
+                  onClick={() => setOpenAgaveFileModal(true)}
+                >
+                  Select
+                </Button>
+              </InputGroupAddon>
+              <Input {...field} {...props} bsSize="sm" />
+            </InputGroup>
+          </>
+        ) : (
+          /* !!!: Temporary bad indentation to make simpler PR diff */
+          <>
+            {hasAddon && addonType === 'prepend' ? addon : null}
             <Input {...field} {...props} bsSize="sm" />
-          </InputGroup>
-        </>
-      ) : (
-        /* !!!: Temporary bad indentation to make simpler PR diff */
-        <>
-        {hasAddon && addonType === 'prepend' ? addon : null}
-        <Input {...field} {...props} bsSize="sm" />
-        {hasAddon && addonType === 'append' ? addon : null}
-        </>
-      )}
-      {!hasAddon ? <FieldNote /> : null}
-    </FormFieldWrapper>
-    {hasAddon ? <FieldNote /> : null}
+            {hasAddon && addonType === 'append' ? addon : null}
+          </>
+        )}
+        {!hasAddon ? <FieldNote /> : null}
+      </FormFieldWrapper>
+      {hasAddon ? <FieldNote /> : null}
     </>
   );
 };

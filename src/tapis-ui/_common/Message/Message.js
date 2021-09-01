@@ -98,7 +98,9 @@ const Message = ({
   const modifierClassNames = [];
   modifierClassNames.push(typeClassName);
   modifierClassNames.push(scopeClassName);
-  const containerStyleNames = ['container', ...modifierClassNames].map(name => styles[name]).join(' ');
+  const containerStyleNames = ['container', ...modifierClassNames]
+    .map((name) => styles[name])
+    .join(' ');
 
   // Manage disappearance
   // FAQ: Design does not want fade, but we still use <Fade> to manage dismissal
@@ -121,7 +123,10 @@ const Message = ({
       role={role}
       in={isVisible}
     >
-      <Icon className={`${styles["icon"]} ${styles["type-icon"]}`} name={iconName}>
+      <Icon
+        className={`${styles['icon']} ${styles['type-icon']}`}
+        name={iconName}
+      >
         {iconText}
       </Icon>
       <span className={styles.text} data-testid="text">
@@ -130,11 +135,14 @@ const Message = ({
       {canDismiss && hasDismissSupport ? (
         <button
           type="button"
-          className={styles["close-button"]}
+          className={styles['close-button']}
           aria-label="Close"
           onClick={onDismiss}
         >
-          <Icon className={`${styles.icon} ${styles['close-icon']}`} name="close" />
+          <Icon
+            className={`${styles.icon} ${styles['close-icon']}`}
+            name="close"
+          />
         </button>
       ) : null}
     </Fade>

@@ -15,13 +15,11 @@ const useTapisConfig = () => {
     return undefined;
   };
 
-  const { data, refetch } = useQuery<Authenticator.NewAccessTokenResponse | undefined>(
-    'tapis-token',
-    getAccessToken,
-    {
-      initialData: () => getAccessToken()
-    }
-  );
+  const { data, refetch } = useQuery<
+    Authenticator.NewAccessTokenResponse | undefined
+  >('tapis-token', getAccessToken, {
+    initialData: () => getAccessToken(),
+  });
 
   const setAccessToken = async (
     resp: Authenticator.NewAccessTokenResponse | null | undefined
@@ -39,7 +37,7 @@ const useTapisConfig = () => {
   return {
     basePath,
     accessToken: data,
-    setAccessToken
+    setAccessToken,
   };
 };
 
