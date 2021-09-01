@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/static/css/main.cd7759c1.chunk.css",
-    "main.js": "/static/js/main.1de2b9f9.chunk.js",
-    "main.js.map": "/static/js/main.1de2b9f9.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.ae094b47.js",
-    "runtime-main.js.map": "/static/js/runtime-main.ae094b47.js.map",
-    "static/css/2.27dd871e.chunk.css": "/static/css/2.27dd871e.chunk.css",
-    "static/js/2.15605250.chunk.js": "/static/js/2.15605250.chunk.js",
-    "static/js/2.15605250.chunk.js.map": "/static/js/2.15605250.chunk.js.map",
-    "static/js/3.c327345b.chunk.js": "/static/js/3.c327345b.chunk.js",
-    "static/js/3.c327345b.chunk.js.map": "/static/js/3.c327345b.chunk.js.map",
-    "index.html": "/index.html",
-    "static/css/2.27dd871e.chunk.css.map": "/static/css/2.27dd871e.chunk.css.map",
-    "static/css/main.cd7759c1.chunk.css.map": "/static/css/main.cd7759c1.chunk.css.map",
-    "static/js/2.15605250.chunk.js.LICENSE.txt": "/static/js/2.15605250.chunk.js.LICENSE.txt",
-    "static/media/index.css": "/static/media/Cortal-Icons-1.2.a0d8332a.woff"
+    "main.css": "https://tapis-project.github.io/tapis-ui/static/css/main.231bc3d4.chunk.css",
+    "main.js": "https://tapis-project.github.io/tapis-ui/static/js/main.c24a3093.chunk.js",
+    "main.js.map": "https://tapis-project.github.io/tapis-ui/static/js/main.c24a3093.chunk.js.map",
+    "runtime-main.js": "https://tapis-project.github.io/tapis-ui/static/js/runtime-main.800cb3a7.js",
+    "runtime-main.js.map": "https://tapis-project.github.io/tapis-ui/static/js/runtime-main.800cb3a7.js.map",
+    "static/css/2.27dd871e.chunk.css": "https://tapis-project.github.io/tapis-ui/static/css/2.27dd871e.chunk.css",
+    "static/js/2.15605250.chunk.js": "https://tapis-project.github.io/tapis-ui/static/js/2.15605250.chunk.js",
+    "static/js/2.15605250.chunk.js.map": "https://tapis-project.github.io/tapis-ui/static/js/2.15605250.chunk.js.map",
+    "static/js/3.c327345b.chunk.js": "https://tapis-project.github.io/tapis-ui/static/js/3.c327345b.chunk.js",
+    "static/js/3.c327345b.chunk.js.map": "https://tapis-project.github.io/tapis-ui/static/js/3.c327345b.chunk.js.map",
+    "index.html": "https://tapis-project.github.io/tapis-ui/index.html",
+    "static/css/2.27dd871e.chunk.css.map": "https://tapis-project.github.io/tapis-ui/static/css/2.27dd871e.chunk.css.map",
+    "static/css/main.231bc3d4.chunk.css.map": "https://tapis-project.github.io/tapis-ui/static/css/main.231bc3d4.chunk.css.map",
+    "static/js/2.15605250.chunk.js.LICENSE.txt": "https://tapis-project.github.io/tapis-ui/static/js/2.15605250.chunk.js.LICENSE.txt",
+    "static/media/index.css": "https://tapis-project.github.io/tapis-ui/static/media/Cortal-Icons-1.2.a0d8332a.woff"
   },
   "entrypoints": [
-    "static/js/runtime-main.ae094b47.js",
+    "static/js/runtime-main.800cb3a7.js",
     "static/css/2.27dd871e.chunk.css",
     "static/js/2.15605250.chunk.js",
-    "static/css/main.cd7759c1.chunk.css",
-    "static/js/main.1de2b9f9.chunk.js"
+    "static/css/main.231bc3d4.chunk.css",
+    "static/js/main.c24a3093.chunk.js"
   ]
 }
