@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, useRouteMatch, RouteComponentProps } from 'react-router-dom';
-import { JobsNav } from 'tapis-ui/components/jobs';
-import { JobDetail } from 'tapis-ui/components/jobs';
+import { JobsNav, JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage } from 'tapis-ui/_common';
 import { Layout } from 'tapis-app/Layout';
 import {
