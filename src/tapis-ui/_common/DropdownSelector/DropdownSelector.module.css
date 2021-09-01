@@ -1,0 +1,69 @@
+/* NOTE: A plugin may be used, instead, when it becomes worthwhile */
+/* PORTABILITY: Only style `<select>` field (not dropdown) because of browser-limitations */
+/* CREDIT: https://github.com/filamentgroup/select-css/blob/8f91fe1/src/select-css.css */
+/* CAVEAT: Known Issues (across supported browsers):
+    1. All: The menus have unique styles per browser and/or operating system.
+    2. Safari: The element cascades certain styles (`color`, `font-…`) to menu texts, and they cannot be revert-ed nor initial-ed nor unset.
+    3. Firefox: A `width: auto` on the field implies a min-width value equal to the longest `optgroup` (not `option`).
+    4. Firefox: Extra horizontal space in field. Options are to hack-a-lot or use a plugin.
+*/
+.container {
+  /* Load select-css after Bootstrap overrides, because Bootstrap is like our "base" */
+  composes: form-control from '../../styles/components/bootstrap.form.css';
+
+  font-size: 0.75rem; /* ~10px design * 1.2 design-to-app ratio */
+  /* WARNING: "iOS Safari will [force-zoom site] if […] less than 16px" */
+  /* SEE: https://github.com/filamentgroup/select-css#notes-on-the-css */
+  width: auto; /* overwrite `.form-control` (from Bootstrap) */
+  height: auto; /* overwrite `.form-control` (from Bootstrap) */
+
+  background-color: var(--global-color-primary--xx-light);
+  background-image: url("data:image/svg+xml,%3Csvg id='tacc-arrows' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130.34 292.4'%3E%3Cdefs%3E%3Cstyle%3E.arrow%7Bfill:%23484848;%7D%3C/style%3E%3C/defs%3E%3Cg id='tacc-arrows——root'%3E%3Cpath id='Path_3088' data-name='Path 3088' class='arrow' d='M82.24,96.17,148.09,0l64.45,96.17Z' transform='translate(-82.2)'/%3E%3Cpath id='Path_3089' data-name='Path 3089' class='arrow' d='M212.5,196.23,146.65,292.4,82.2,196.23Z' transform='translate(-82.2)'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px top 50%; /* 5px design * 1.2 design-to-app ratio */
+  background-size: auto 10px; /* ~8px design * 1.2 design-to-app ratio (rounded) */
+
+  color: var(--global-color-accent--normal);
+  font-style: italic;
+  font-weight: 500;
+
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* NOTE: CSS Modules does not support `.container.form-control`, but these overrides should be isolated */
+.container {
+  padding: 0 16px 0 6px; /* overwrite `.form-control` (from bootstrap.form.css) */
+  /* 0 13.43px 0 5px design * 1.2 design-to-app ratio */
+
+  border-color: var(
+    --global-color-primary--dark
+  ); /* overwrite `.form-control` (from Bootstrap) */
+}
+
+.container:focus {
+  /* border-color: var(--global-color-primary--dark); */
+  color: var(--global-color-accent--normal);
+}
+.container[multiple] {
+  background-image: none;
+}
+
+/* Children */
+
+/* Unset styles on children */
+.container option,
+.container optgroup {
+  font-style: normal;
+  font-weight: normal;
+}
+.container optgroup {
+  color: var(--global-color-primary--dark);
+}
+.container option {
+  color: var(--global-color-primary--x-dark);
+}
+
+/* FAQ: Ability to style selected option is browser-dependent */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/:checked */
+/* .container[multiple] option:checked {} */

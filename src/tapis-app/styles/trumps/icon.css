@@ -1,0 +1,26 @@
+/* TRUMPS: Icons */
+@import url('./icon.fonts.css');
+
+.icon {
+  width: 1em;
+  height: 1em;
+  font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
+  vertical-align: middle;
+  display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
+  /* a modern slimmer alternative to `&::before { display: block; }` */
+}
+
+/* Aliases */
+/* .icon-contract */
+.icon-collapse::before {
+  content: '\e915';
+}
+
+/* Overrides */
+
+/* Align wrapped button text in buttons that have icons */
+/* HACK: Placeholder style until UI is finalized and componetized */
+.btn .icon + span,
+.btn .loading-icon + span {
+  vertical-align: middle;
+}

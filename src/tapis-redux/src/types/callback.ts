@@ -1,1 +1,0 @@
-export type ApiCallback<T> = (result: T | Error, ...args: any[]) => any;

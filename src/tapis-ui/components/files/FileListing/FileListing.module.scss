@@ -1,0 +1,12 @@
+.file-list {
+  overflow-y: auto;
+}
+
+.file-list li {
+  padding: 0.5rem 1rem;
+  list-style-type: none;
+}
+
+.file-list li:nth-child(odd) {
+  background-color: #f4f4f4;
+}

@@ -1,0 +1,22 @@
+/* Force narrow widths to trigger density features */
+.item-narrow {
+  width: 500px;
+}
+.item-x-narrow {
+  width: 7ch;
+}
+
+/* Align vertical lists left-to-right, or top-to-bottom */
+.list-cols,
+.list-rows {
+  display: flex;
+}
+.list-cols > * {
+  flex-grow: 1;
+}
+.list-cols {
+  flex-direction: row;
+}
+.list-rows {
+  flex-direction: column;
+}

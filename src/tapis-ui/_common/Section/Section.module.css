@@ -1,0 +1,36 @@
+/* Block */
+
+.root {
+  display: flex;
+  flex-direction: column;
+
+  margin-top: var(--global-space--section-top);
+  margin-bottom: var(--global-space--section-bottom);
+}
+
+/* Elements */
+
+.messages,
+/* CAVEAT: These are only applied to automatically-built sub-components */
+.header {
+  /* Border (of header) must not extend all the way to the left */
+  margin-left: var(--global-space--section-left);
+  /* Content (messages, actions) must not extend all the way to the right */
+  margin-right: var(--global-space--section-right);
+}
+.content {
+  /* Content (sidebar links) must extend all the way to the left */
+  padding-left: var(--global-space--section-left);
+  /* Scrollbar must not be positioned all the way to the right */
+  margin-right: var(--global-space--section-right);
+}
+
+/* Elements: Sub-Components */
+
+/* CAVEAT: These are only applied to automatically-built sub-components */
+.header {
+  flex-shrink: 0;
+}
+.content {
+  flex-grow: 1;
+}

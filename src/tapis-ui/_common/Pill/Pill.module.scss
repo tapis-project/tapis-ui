@@ -1,0 +1,41 @@
+/* TODO: Consider sharing code between (History)Badge and Pill */
+.root {
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  font-weight: 500;
+  padding: 0.2em 0.5em; /* aim for ~23px height (19px design * 1.2 design-to-app ratio) */
+  display: inline-block; /* FAQ: Supports `min/max-width` */
+  /* min-width: ____; */ /* FAQ: Set only as desired (not always desired) */
+  text-align: center;
+  border-radius: 3px;
+  color: var(--global-color-primary--xx-light);
+}
+
+/* CAVEAT: This alone may not trigger truncation */
+/* SEE: https://confluence.tacc.utexas.edu/x/sAoFDg */
+.should-truncate {
+  max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* white-space: nowrap; */ /* FAQ: Set only as desired (not always desired) */
+
+  /* Keep alignment that is changed by `overflow: hidden;` */
+  /* SEE: https://stackoverflow.com/q/25818199 */
+  vertical-align: bottom;
+}
+
+.is-danger {
+  background-color: var(--global-color-danger--normal);
+}
+
+.is-success {
+  background-color: var(--global-color-success--normal);
+}
+
+.is-warning {
+  background-color: var(--global-color-warning--normal);
+}
+
+.is-normal {
+  background-color: var(--global-color-accent--normal);
+}

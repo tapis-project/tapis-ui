@@ -1,0 +1,68 @@
+.container {
+  width: 100%;
+
+  /* Skin */
+  & th,
+  & td {
+    padding: 0.5em;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+  }
+
+  /* Aligment */
+  & thead th,
+  & thead td {
+    vertical-align: top;
+  }
+
+  /* Decoration */
+  & thead code + code::before {
+    content: '|';
+    display: inline-block;
+    margin: 0 0.25em;
+  }
+
+  /* Dimension */
+  & tbody > *:nth-child(1) {
+    width: 20%;
+  }
+  & tbody > *:nth-child(2) {
+    width: 40%;
+  }
+  & tbody > *:nth-child(2) {
+    width: 40%;
+  }
+
+  /* Tweak Borders */
+  & tr td:last-child,
+  & tr th:last-child {
+    border-right-width: 0;
+  }
+  & .is-row-end,
+  & tbody tr:last-child td,
+  & tbody tr:last-child th,
+  & thead tr:not(:first-child):not(:last-child) th {
+    border-bottom-width: 0;
+  }
+
+  /* Tweak Spacing */
+  ul {
+    margin: 0;
+  }
+  [role='status'] + [role='status'] {
+    margin-top: 0.5em;
+  }
+}
+
+/* Typography */
+th.secondary {
+  font-weight: normal;
+}
+
+/* Unique Alignment */
+tr:not(:last-child) th.secondary {
+  text-align: right;
+}
+tr:last-child th.secondary {
+  vertical-align: bottom;
+}

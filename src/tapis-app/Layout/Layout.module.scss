@@ -1,0 +1,13 @@
+.layout-root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.layout-row {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow: auto;
+}

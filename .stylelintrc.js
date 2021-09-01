@@ -42,9 +42,12 @@ module.exports = {
 
     // PROPERTY
     // Disallow unknown properties.
-    'property-no-unknown': [ true, {
-      ignoreProperties: ['composes']
-    }],
+    'property-no-unknown': [
+      true,
+      {
+        ignoreProperties: ['composes'],
+      },
+    ],
 
     // KEYFRAME DECLARATION
     // Disallow !important within keyframe declarations.
@@ -74,7 +77,9 @@ module.exports = {
 
     // AT-RULE
     // Disallow unknown at-rules.
-    'at-rule-no-unknown': [ true, {
+    'at-rule-no-unknown': [
+      true,
+      {
         ignoreAtRules: [
           // SASS at-rules
           // SEE: https://sass-lang.com/documentation/at-rules
@@ -92,8 +97,9 @@ module.exports = {
           'each',
           'for',
           'while',
-        ]
-    } ],
+        ],
+      },
+    ],
 
     // COMMENT
     // Disallow empty comments.
@@ -106,7 +112,7 @@ module.exports = {
     // 'no-duplicate-at-import-rules': null,
     // Disallow duplicate selectors within a stylesheet.
     'no-duplicate-selectors': null, // TODO: Uncomment to enable this after CSS Modules is heavily used
-                                    //       (duplicate selectors can help separate contexts)
+    //       (duplicate selectors can help separate contexts)
     // Disallow empty sources.
     // 'no-empty-source': null,
     // Disallow extra semicolons (Autofixable).
@@ -282,7 +288,7 @@ module.exports = {
 
     // Specify lowercase or uppercase for hex colors (Autofixable).
     'color-hex-case': null, // TODO: Uncomment later, to reduce scope of changes
-                            //       (defaults to 2, because of extended ruleset)
+    //       (defaults to 2, because of extended ruleset)
     // Specify short or long notation for hex colors (Autofixable).
     'color-hex-length': 'long',
 
@@ -503,7 +509,7 @@ module.exports = {
     // GENERAL / SHEET
     // Specify indentation (Autofixable).
     indentation: null, // TODO: Uncomment later, to reduce scope of changes
-                       //       (defaults to 2, because of extended ruleset)
+    //       (defaults to 2, because of extended ruleset)
     // Specify unix or windows linebreaks (Autofixable).
     // linebreaks: null,
     // Limit the number of adjacent empty lines (Autofixable).
@@ -518,5 +524,5 @@ module.exports = {
     // 'no-empty-first-line': true,
     // Require or disallow Unicode BOM.
     // 'unicode-bom': null
-  }
+  },
 };

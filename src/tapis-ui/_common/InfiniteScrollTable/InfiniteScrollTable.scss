@@ -1,0 +1,137 @@
+.InfiniteScrollTable {
+  --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
+  /* TODO: After, FP-103, use `composes:` not `@extend` */
+  @extend .o-fixed-header-table;
+
+  position: relative;
+  align-items: stretch;
+  width: 100%;
+  overflow: scroll;
+  max-height: inherit; /* inherit max-height from parent wrapper */
+  font-size: 0.78em;
+
+  thead {
+    user-select: none;
+    color: var(--global-color-primary--x-dark);
+    border-bottom: 1px solid #707070;
+
+    .-sort-asc,
+    .sort-desc {
+      color: #484848;
+    }
+
+    /* Match horizontal padding of `td` elements in table to align properly */
+    th {
+      padding-left: var(--cell-horizontal-padding);
+      padding-right: var(--cell-horizontal-padding);
+    }
+  }
+
+  tbody {
+    overflow-y: scroll;
+    tr:not([class='-status']) {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    tr:nth-child(even):not([class='-status']) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    tr:hover:not([class='-status']) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    td {
+      display: flex;
+      align-content: center;
+      padding: 0.7em var(--cell-horizontal-padding);
+      margin: auto 0; /* vertically center span content */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      /* Contain children to cell size and add ellipsis to overflow by default */
+      & > :only-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .-status {
+      width: 100%;
+      display: block;
+      box-sizing: border-box;
+      td {
+        /* FAQ: Because widths can be defined by component that uses this one,
+                and those width might not use a class, we must overwrite it */
+        width: 100% !important /* override allowed `td:nth-child(N)` width */;
+
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        text-align: justify;
+        display: block;
+        box-sizing: border-box;
+        clear: both;
+      }
+    }
+    .-status__message {
+      text-align: center;
+    }
+  }
+  /* Allow `.o-fixed-header-table td` width to apply to common inline elements */
+  /* Allow `.u-ellipsis` usage to have effect on common inline elements */
+  & td > a,
+  & td > span {
+    display: inline-block;
+
+    /* Stretch cell content to fit available space */
+    /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
+    width: 100%;
+  }
+}
+
+/*
+Fixed Header Table
+
+A table with a header that does not move, and a body that scrolls.
+
+> __Warning__: This forces table to become a fixed layout, and requires manually calculated column widths
+
+Markup:
+<table class="fixed-header-table">
+    <thead>
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A</td>
+        <td>B</td>
+        <td>C</td>
+      </tr>
+    </thead>
+</table>
+
+Styleguide Objects.FixedHeaderTable
+*/
+.o-fixed-header-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* Make table rows act like table rows, even though `tbody` has become a block */
+/* FP-130: Migrates this to another stylesheet */ /* stylelint-disable no-descending-specificity */
+.o-fixed-header-table tr {
+  display: flex;
+  flex-direction: row;
+}
+/* stylelint-enable no-descending-specificity */
+/* Allow table body to scroll (which also pins the table head in place) */
+.o-fixed-header-table tbody {
+  display: block;
+  overflow: auto;
+  width: 100%;
+  max-height: inherit; /* inherit max-height from InfiniteScrollTable */
+}
