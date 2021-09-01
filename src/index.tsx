@@ -4,7 +4,6 @@ import App from 'tapis-app/App';
 import reportWebVitals from './reportWebVitals';
 import { HashRouter as Router } from 'react-router-dom';
 import TapisProvider from 'tapis-hooks/provider';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import 'tapis-app/index.css';
 
 ReactDOM.render(
