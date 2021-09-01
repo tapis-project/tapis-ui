@@ -1,6 +1,5 @@
 import { Files } from '@tapis/tapis-typescript';
-import { apiGenerator } from 'tapis-api/utils';
-import { errorDecoder } from 'tapis-api/utils';
+import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const list = (
   params: Files.ListFilesRequest,
