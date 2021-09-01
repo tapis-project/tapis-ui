@@ -2,9 +2,18 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import { JobLauncher } from 'tapis-ui/components/jobs';
+import { useList } from 'tapis-hooks/systems';
+import { tapisSystem } from 'fixtures/systems.fixtures';
+
+jest.mock('tapis-hooks/systems');
 
 describe('JobLauncher', () => {
   it('renders JobsListing component', () => {
+    (useList as jest.Mock).mockReturnValue({
+      data: {
+        result: [tapisSystem],
+      },
+    });
     const { getAllByTestId } = renderComponent(
       <JobLauncher
         appId="SleepSeconds"
