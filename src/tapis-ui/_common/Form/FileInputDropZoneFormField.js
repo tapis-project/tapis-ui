@@ -1,9 +1,10 @@
+/*
 import React from 'react';
-import { useField } from 'formik';
 import { FormGroup, FormText, Label } from 'reactstrap';
 import PropTypes from 'prop-types';
 import FileInputDropZone from './FileInputDropZone';
 import './FormField.scss';
+
 
 function FileInputDropZoneFormField({
   id,
@@ -62,3 +63,4 @@ FileInputDropZoneFormField.defaultProps = {
 };
 
 export default FileInputDropZoneFormField;
+*/
