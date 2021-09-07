@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
-import { useForm, UseFormRegisterReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
