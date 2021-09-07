@@ -1,3 +1,2 @@
-import { default as Login } from './Login';
+export { default } from './Layout';
 
-export default Login;

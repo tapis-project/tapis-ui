@@ -1,3 +1,2 @@
-import Apps from './Apps';
+export { default } from './Layout';
 
-export default Apps;

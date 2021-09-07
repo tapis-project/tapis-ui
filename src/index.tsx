@@ -4,7 +4,7 @@ import App from 'tapis-app';
 import reportWebVitals from './reportWebVitals';
 import { HashRouter as Router } from 'react-router-dom';
 import TapisProvider from 'tapis-hooks/provider';
-import 'tapis-app/index.css';
+import 'tapis-ui/index.css';
 
 ReactDOM.render(
   <React.StrictMode>

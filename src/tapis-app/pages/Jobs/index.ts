@@ -1,3 +1,2 @@
-import Jobs from './Jobs';
+export { default } from './Layout';
 
-export default Jobs;

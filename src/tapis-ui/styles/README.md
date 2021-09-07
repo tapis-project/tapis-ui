@@ -1,4 +1,4 @@
-# TACC TAPIS UI - Styles
+# TACC Core Portal - Styles
 
 These files are all regular native CSS (not CSS modules, not SCSS).
 
