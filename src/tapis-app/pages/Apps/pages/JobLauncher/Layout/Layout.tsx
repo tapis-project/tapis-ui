@@ -1,5 +1,5 @@
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
-import { JobLauncher } from 'tapis-app/pages/Apps/components';
+import { JobLauncher } from '../components';
 
 const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,

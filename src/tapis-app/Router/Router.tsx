@@ -7,7 +7,7 @@ import {
   Jobs,
   Systems,
   UIPatterns,
-} from 'tapis-app/pages';
+} from '../pages';
 import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
 import { useLogin } from 'tapis-hooks/authenticator';
 
