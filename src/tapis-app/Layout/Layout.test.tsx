@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import App from 'tapis-app/App';
+import App from 'tapis-app/Layout';
 
 describe('App', () => {
   it('renders main App component', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from 'tapis-app/App';
+import App from 'tapis-app';
 import reportWebVitals from './reportWebVitals';
 import { HashRouter as Router } from 'react-router-dom';
 import TapisProvider from 'tapis-hooks/provider';

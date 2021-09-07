@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import Sidebar from 'tapis-app/Sidebar';
+import Sidebar from 'tapis-app/components/Sidebar';
 
 describe('Sidebar', () => {
   it('renders Sidebar component', () => {

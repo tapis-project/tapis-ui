@@ -1,1 +1,3 @@
-export { default as Layout } from './Layout';
+import App from './Layout';
+
+export default App;

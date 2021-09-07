@@ -1,52 +1,48 @@
 import React from 'react';
 import { Route, useRouteMatch, RouteComponentProps } from 'react-router-dom';
-import { AppsNav } from 'tapis-ui/components/apps';
-import { JobLauncher } from 'tapis-app/Sections/Apps/JobLauncher';
+import { JobsNav, JobDetail } from 'tapis-ui/components/jobs';
 import { SectionMessage } from 'tapis-ui/_common';
-import { Layout } from 'tapis-app/Layout';
+import { Layout } from 'tapis-app/components';
 import {
   SectionBody,
   SectionHeader,
   SectionNavWrapper,
-} from 'tapis-app/Sections/Section';
+} from 'tapis-app/components/Section';
 
-const Apps: React.FC = () => {
+const Jobs: React.FC = () => {
   const { path } = useRouteMatch();
 
   const header = (
     <SectionHeader>
-      <div>Apps</div>
+      <div>Jobs</div>
     </SectionHeader>
   );
 
   const subHeader = (
-    <SectionHeader type={'sub-header'}>Job Launcher</SectionHeader>
+    <SectionHeader type={'sub-header'}>Job Details</SectionHeader>
   );
 
   const sidebar = (
     <SectionNavWrapper>
-      <AppsNav />
+      <JobsNav />
     </SectionNavWrapper>
   );
 
   const body = (
     <div style={{ flex: 1 }}>
       <Route path={`${path}`} exact>
-        <SectionMessage type="info">
-          Select an app from the list.
-        </SectionMessage>
+        <SectionMessage type="info">Select a job from the list.</SectionMessage>
       </Route>
 
       <Route
-        path={`${path}/:appId/:appVersion`}
+        path={`${path}/:jobUuid`}
         render={({
           match: {
-            params: { appVersion, appId },
+            params: { jobUuid },
           },
-        }: RouteComponentProps<{
-          appId: string;
-          appVersion: string;
-        }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
+        }: RouteComponentProps<{ jobUuid: string }>) => (
+          <JobDetail jobUuid={jobUuid} />
+        )}
       />
     </div>
   );
@@ -64,4 +60,4 @@ const Apps: React.FC = () => {
   );
 };
 
-export default Apps;
+export default Jobs;

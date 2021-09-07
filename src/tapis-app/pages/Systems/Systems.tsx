@@ -3,12 +3,12 @@ import { Route, useRouteMatch, RouteComponentProps } from 'react-router-dom';
 import { SystemsNav } from 'tapis-ui/components/systems';
 import { FileListing } from 'tapis-ui/components/files';
 import { SectionMessage } from 'tapis-ui/_common';
-import { Layout } from 'tapis-app/Layout';
+import { Layout } from 'tapis-app/components';
 import {
   SectionBody,
   SectionNavWrapper,
   SectionHeader,
-} from 'tapis-app/Sections/Section';
+} from 'tapis-app/components/Section';
 
 const Systems: React.FC = () => {
   const { path } = useRouteMatch();

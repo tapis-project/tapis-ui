@@ -1,21 +1,28 @@
 import React from 'react';
-import styles from './Layout.module.scss';
+import { Layout, Sidebar } from 'tapis-app/components';
+import { Router } from 'tapis-app/Router';
+import { SectionHeader } from 'tapis-ui/_common';
+import './Layout.scss';
 
-interface LayoutProps {
-  left?: React.ReactNode;
-  right?: React.ReactNode;
-  top?: React.ReactNode;
-  bottom?: React.ReactNode;
-}
-const Layout: React.FC<LayoutProps> = ({ left, right, top, bottom }) => (
-  <div className={styles['layout-root']}>
-    {top}
-    <div className={styles['layout-row']}>
-      {left}
-      {right}
+const App: React.FC = () => {
+
+  const header = (
+    <div>
+      <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
     </div>
-    {bottom}
-  </div>
-);
+  );
 
-export default Layout;
+  const workbenchContent = (
+    <div className="workbench-content">
+      <Router />
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexGrow: 1, height: '100vh' }}>
+      <Layout top={header} left={<Sidebar />} right={workbenchContent} />
+    </div>
+  );
+};
+
+export default App;
