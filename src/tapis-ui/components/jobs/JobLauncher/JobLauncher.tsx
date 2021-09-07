@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useForm, UseFormRegisterReturn } from 'react-hook-form';
-import FieldWrapper, { FieldWrapperProps } from 'tapis-ui/_common/FieldWrapper';
+import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
 import { SubmitWrapper, QueryWrapper } from 'tapis-ui/_wrappers';
 import { Button, Input } from 'reactstrap';
+import { mapInnerRef } from 'tapis-ui/utils/forms';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -16,12 +17,6 @@ interface JobLauncherProps {
   name: string;
   execSystemId?: string;
 }
-
-// rename ref key to innerRef for use with reactstrap input.
-const mapInnerRef = (props: UseFormRegisterReturn) => {
-  const { ref, ...rest } = props;
-  return { innerRef: ref, ...rest };
-};
 
 const JobLauncher: React.FC<JobLauncherProps> = ({
   appId,
