@@ -9,7 +9,6 @@ import {
 import { Router } from '../Router';
 
 const Apps: React.FC = () => {
-
   const header = (
     <SectionHeader>
       <div>Apps</div>
@@ -28,7 +27,7 @@ const Apps: React.FC = () => {
 
   const body = (
     <div style={{ flex: 1 }}>
-      <Router/>
+      <Router />
     </div>
   );
 

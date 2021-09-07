@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import JobLauncher  from './JobLauncher';
+import JobLauncher from './JobLauncher';
 import { useList } from 'tapis-hooks/systems';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 

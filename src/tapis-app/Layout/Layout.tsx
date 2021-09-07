@@ -5,7 +5,6 @@ import { SectionHeader } from 'tapis-ui/_common';
 import './Layout.scss';
 
 const App: React.FC = () => {
-
   const header = (
     <div>
       <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { JobsNav } from '../components'
+import { JobsNav } from '../components';
 import { Router } from '../Router';
 import { Layout } from 'tapis-app/components';
 import {
@@ -9,7 +9,6 @@ import {
 } from 'tapis-app/components/Section';
 
 const Jobs: React.FC = () => {
-
   const header = (
     <SectionHeader>
       <div>Jobs</div>
@@ -28,7 +27,7 @@ const Jobs: React.FC = () => {
 
   const body = (
     <div style={{ flex: 1 }}>
-      <Router/>
+      <Router />
     </div>
   );
 

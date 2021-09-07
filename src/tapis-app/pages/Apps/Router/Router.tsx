@@ -1,13 +1,17 @@
 import React from 'react';
-import { Route, useRouteMatch, RouteComponentProps, Switch } from 'react-router-dom';
-import {JobLauncher} from '../pages';
+import {
+  Route,
+  useRouteMatch,
+  RouteComponentProps,
+  Switch,
+} from 'react-router-dom';
+import { JobLauncher } from '../pages';
 import { SectionMessage } from 'tapis-ui/_common';
-
 
 const Apps: React.FC = () => {
   const { path } = useRouteMatch();
-    return (
-      <Switch>
+  return (
+    <Switch>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">
           Select an app from the list.
@@ -25,9 +29,8 @@ const Apps: React.FC = () => {
           appVersion: string;
         }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
       />
-      </Switch>
+    </Switch>
   );
-
 };
 
 export default Apps;

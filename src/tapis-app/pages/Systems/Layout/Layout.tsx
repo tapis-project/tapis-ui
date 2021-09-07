@@ -9,7 +9,6 @@ import { SystemsNav } from '../components';
 import { Router } from '../Router';
 
 const Systems: React.FC = () => {
-
   const header = (
     <SectionHeader>
       <div>System List</div>
@@ -26,7 +25,7 @@ const Systems: React.FC = () => {
 
   const body = (
     <div style={{ flex: 1 }}>
-      <Router/>
+      <Router />
     </div>
   );
 

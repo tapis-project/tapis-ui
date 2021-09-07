@@ -1,5 +1,10 @@
 import React from 'react';
-import { Route, useRouteMatch, RouteComponentProps, Switch } from 'react-router-dom';
+import {
+  Route,
+  useRouteMatch,
+  RouteComponentProps,
+  Switch,
+} from 'react-router-dom';
 import { JobDetail } from '../pages';
 import { SectionMessage } from 'tapis-ui/_common';
 
@@ -24,7 +29,6 @@ const Router: React.FC = () => {
       />
     </Switch>
   );
-
 };
 
 export default Router;
