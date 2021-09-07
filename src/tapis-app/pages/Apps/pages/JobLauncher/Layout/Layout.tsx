@@ -1,5 +1,6 @@
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
-import { JobLauncher } from '../components';
+import { JobLauncher } from 'tapis-ui/components/apps';
+import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
 
 const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,
@@ -12,8 +13,10 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
     .toISOString()
     .slice(0, -5)}`;
 
-  return (
-    <>
+  const header = <LayoutHeader type={'sub-header'}>Job Launcher</LayoutHeader>;
+
+  const body = (
+    <div style={{ flex: 1 }}>
       {appDetails && (
         <JobLauncher
           appId={appId}
@@ -22,8 +25,10 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
           execSystemId={execSystemId}
         />
       )}
-    </>
+    </div>
   );
+
+  return <PageLayout top={header} right={body} />;
 };
 
 export default Layout;

@@ -16,10 +16,6 @@ const Layout: React.FC = () => {
     </LayoutHeader>
   );
 
-  const subHeader = (
-    <LayoutHeader type={'sub-header'}>Job Launcher</LayoutHeader>
-  );
-
   const sidebar = (
     <LayoutNavWrapper>
       <AppsNav />
@@ -27,22 +23,12 @@ const Layout: React.FC = () => {
   );
 
   const body = (
-    <div style={{ flex: 1 }}>
+    <LayoutBody>
       <Router />
-    </div>
+    </LayoutBody>
   );
 
-  return (
-    <PageLayout
-      top={header}
-      left={sidebar}
-      right={
-        <LayoutBody>
-          <PageLayout top={subHeader} right={body} />
-        </LayoutBody>
-      }
-    />
-  );
+  return <PageLayout top={header} left={sidebar} right={body} />;
 };
 
 export default Layout;

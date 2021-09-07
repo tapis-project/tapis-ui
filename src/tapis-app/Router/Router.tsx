@@ -1,13 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import {
-  Apps,
-  Login,
-  Dashboard,
-  Jobs,
-  Systems,
-  UIPatterns,
-} from '../pages';
+import { Apps, Login, Dashboard, Jobs, Systems, UIPatterns } from '../pages';
 import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
 import { useLogin } from 'tapis-hooks/authenticator';
 
