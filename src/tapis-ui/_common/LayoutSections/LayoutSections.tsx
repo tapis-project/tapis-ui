@@ -1,8 +1,8 @@
 import React from 'react';
 import { SectionHeader as CommonSectionHeader } from 'tapis-ui/_common';
-import styles from './Section.module.scss';
+import styles from './LayoutSections.module.scss';
 
-export const SectionHeader: React.FC<
+export const LayoutHeader: React.FC<
   React.PropsWithChildren<{ type?: string }>
 > = ({ children, type }) => {
   return (
@@ -12,13 +12,13 @@ export const SectionHeader: React.FC<
   );
 };
 
-export const SectionNavWrapper: React.FC<React.PropsWithChildren<{}>> = ({
+export const LayoutNavWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   return <div className={styles.nav}>{children}</div>;
 };
 
-export const SectionBody: React.FC<React.PropsWithChildren<{}>> = ({
+export const LayoutBody: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   return (

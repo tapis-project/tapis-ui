@@ -1,26 +1,26 @@
 import React from 'react';
-import { Layout } from 'tapis-app/components';
 import {
-  SectionBody,
-  SectionNavWrapper,
-  SectionHeader,
-} from 'tapis-app/components/Section';
+  PageLayout,
+  LayoutBody,
+  LayoutHeader,
+  LayoutNavWrapper,
+} from 'tapis-ui/_common';
 import { SystemsNav } from '../components';
 import { Router } from '../Router';
 
-const Systems: React.FC = () => {
+const Layout: React.FC = () => {
   const header = (
-    <SectionHeader>
+    <LayoutHeader>
       <div>System List</div>
-    </SectionHeader>
+    </LayoutHeader>
   );
 
-  const subHeader = <SectionHeader type={'sub-header'}>Files</SectionHeader>;
+  const subHeader = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
 
   const sidebar = (
-    <SectionNavWrapper>
+    <LayoutNavWrapper>
       <SystemsNav />
-    </SectionNavWrapper>
+    </LayoutNavWrapper>
   );
 
   const body = (
@@ -30,16 +30,16 @@ const Systems: React.FC = () => {
   );
 
   return (
-    <Layout
+    <PageLayout
       top={header}
       left={sidebar}
       right={
-        <SectionBody>
-          <Layout top={subHeader} right={body} />
-        </SectionBody>
+        <LayoutBody>
+          <PageLayout top={subHeader} right={body} />
+        </LayoutBody>
       }
     />
   );
 };
 
-export default Systems;
+export default Layout;

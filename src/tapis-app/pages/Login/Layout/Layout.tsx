@@ -4,7 +4,7 @@ import { Login as TapisLogin } from '../components';
 import { SectionHeader } from 'tapis-ui/_common';
 import { useTapisConfig } from 'tapis-hooks';
 
-const Login: React.FC = () => {
+const Layout: React.FC = () => {
   const { accessToken } = useTapisConfig();
 
   if (accessToken?.access_token) {
@@ -21,4 +21,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Layout;

@@ -8,7 +8,7 @@ import {
 import { JobLauncher } from '../pages';
 import { SectionMessage } from 'tapis-ui/_common';
 
-const Apps: React.FC = () => {
+const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
@@ -33,4 +33,4 @@ const Apps: React.FC = () => {
   );
 };
 
-export default Apps;
+export default Router;

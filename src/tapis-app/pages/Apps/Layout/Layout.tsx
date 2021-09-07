@@ -1,28 +1,29 @@
 import React from 'react';
 import { AppsNav } from '../components';
-import { Layout } from 'tapis-app/components';
 import {
-  SectionBody,
-  SectionHeader,
-  SectionNavWrapper,
-} from 'tapis-app/components/Section';
+  PageLayout,
+  LayoutBody,
+  LayoutHeader,
+  LayoutNavWrapper,
+} from 'tapis-ui/_common';
+
 import { Router } from '../Router';
 
-const Apps: React.FC = () => {
+const Layout: React.FC = () => {
   const header = (
-    <SectionHeader>
+    <LayoutHeader>
       <div>Apps</div>
-    </SectionHeader>
+    </LayoutHeader>
   );
 
   const subHeader = (
-    <SectionHeader type={'sub-header'}>Job Launcher</SectionHeader>
+    <LayoutHeader type={'sub-header'}>Job Launcher</LayoutHeader>
   );
 
   const sidebar = (
-    <SectionNavWrapper>
+    <LayoutNavWrapper>
       <AppsNav />
-    </SectionNavWrapper>
+    </LayoutNavWrapper>
   );
 
   const body = (
@@ -32,16 +33,16 @@ const Apps: React.FC = () => {
   );
 
   return (
-    <Layout
+    <PageLayout
       top={header}
       left={sidebar}
       right={
-        <SectionBody>
-          <Layout top={subHeader} right={body} />
-        </SectionBody>
+        <LayoutBody>
+          <PageLayout top={subHeader} right={body} />
+        </LayoutBody>
       }
     />
   );
 };
 
-export default Apps;
+export default Layout;

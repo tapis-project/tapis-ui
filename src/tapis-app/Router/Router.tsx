@@ -11,7 +11,7 @@ import {
 import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
 import { useLogin } from 'tapis-hooks/authenticator';
 
-const AppRouter: React.FC = () => {
+const Router: React.FC = () => {
   const { logout } = useLogin();
 
   return (
@@ -46,4 +46,4 @@ const AppRouter: React.FC = () => {
   );
 };
 
-export default AppRouter;
+export default Router;

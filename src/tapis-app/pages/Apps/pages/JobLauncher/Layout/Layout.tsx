@@ -1,7 +1,7 @@
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { JobLauncher } from 'tapis-app/pages/Apps/components';
 
-const JobLauncherWrapper: React.FC<{ appId: string; appVersion: string }> = ({
+const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,
   appVersion,
 }) => {
@@ -26,4 +26,4 @@ const JobLauncherWrapper: React.FC<{ appId: string; appVersion: string }> = ({
   );
 };
 
-export default JobLauncherWrapper;
+export default Layout;

@@ -8,7 +8,7 @@ interface JobDetailProps {
   jobUuid: string;
 }
 
-const JobDetail: React.FC<JobDetailProps> = ({ jobUuid }) => {
+const Layout: React.FC<JobDetailProps> = ({ jobUuid }) => {
   const { data, isLoading, error } = useDetails(jobUuid);
   const job: Jobs.Job | undefined = data?.result;
 
@@ -21,4 +21,4 @@ const JobDetail: React.FC<JobDetailProps> = ({ jobUuid }) => {
   );
 };
 
-export default JobDetail;
+export default Layout;

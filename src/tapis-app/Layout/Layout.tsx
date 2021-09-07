@@ -1,10 +1,10 @@
 import React from 'react';
-import { Layout, Sidebar } from 'tapis-app/components';
+import { Sidebar } from 'tapis-app/components';
 import { Router } from 'tapis-app/Router';
-import { SectionHeader } from 'tapis-ui/_common';
+import { SectionHeader, PageLayout } from 'tapis-ui/_common';
 import './Layout.scss';
 
-const App: React.FC = () => {
+const Layout: React.FC = () => {
   const header = (
     <div>
       <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
@@ -19,9 +19,9 @@ const App: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexGrow: 1, height: '100vh' }}>
-      <Layout top={header} left={<Sidebar />} right={workbenchContent} />
+      <PageLayout top={header} left={<Sidebar />} right={workbenchContent} />
     </div>
   );
 };
 
-export default App;
+export default Layout;
