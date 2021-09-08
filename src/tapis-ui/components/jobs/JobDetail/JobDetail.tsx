@@ -4,11 +4,7 @@ import { Jobs } from '@tapis/tapis-typescript';
 import { DescriptionList } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
-interface JobDetailProps {
-  jobUuid: string;
-}
-
-const JobDetail: React.FC<JobDetailProps> = ({ jobUuid }) => {
+const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   const { data, isLoading, error } = useDetails(jobUuid);
   const job: Jobs.Job | undefined = data?.result;
 

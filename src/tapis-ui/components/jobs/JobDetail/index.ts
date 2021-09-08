@@ -1,3 +1,1 @@
-import { default as JobDetail } from './JobDetail';
-
-export default JobDetail;
+export { default } from './JobDetail';
