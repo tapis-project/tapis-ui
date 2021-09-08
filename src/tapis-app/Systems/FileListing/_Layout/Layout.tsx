@@ -1,4 +1,4 @@
-import { FileListing } from 'tapis-ui/components/systems';
+import { FileListing } from 'tapis-ui/components/files';
 import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
 import { useParams } from 'react-router';
 
