@@ -7,8 +7,8 @@ import { useTapisConfig } from 'tapis-hooks';
 
 const Layout: React.FC = () => {
   const { accessToken } = useTapisConfig();
-  let location = useLocation<{from: Location}>();
-  let { from } = location.state || { from: { pathname: '/' } }
+  let location = useLocation<{ from: Location }>();
+  let { from } = location.state || { from: { pathname: '/' } };
 
   if (accessToken?.access_token) {
     return <Redirect to={from} />;
