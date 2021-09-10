@@ -138,8 +138,6 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
           </Input>
         </FieldWrapper>
 
-        {/* test of dictfield */}
-        {/*<DictFieldArray refName="fileInputs" specs={fileInputSpec} errors={errors} register={register} control={control} /> */}
         <FileInputs reset={resetCallback} inputs={app?.result?.jobAttributes?.fileInputs ?? []} register={register} control={control} errors={errors} />
 
         {/* Submit button */}

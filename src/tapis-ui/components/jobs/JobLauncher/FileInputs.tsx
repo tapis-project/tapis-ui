@@ -56,7 +56,7 @@ type FileInputsProps = {
 const FileInputs: React.FC<FileInputsProps> = ({ inputs, reset, control, ...rest }) => {
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'fileInputs'
+    name: 'jobAttributes.fileInputs'
   });
 
   const dictTemplate: any = {
@@ -67,12 +67,12 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs, reset, control, ...rest
 
   useEffect(
     () => {
-      console.log("Resetting");
       if (reset) {
         reset()
       }
     }, [ reset ]
   )
+
 
   return <div>
     {fields.map((item, index) => <FileInputField key={item.id} item={item} refName={`jobAttributes.fileInputs.${index}`} control={control} {...rest} />)}
