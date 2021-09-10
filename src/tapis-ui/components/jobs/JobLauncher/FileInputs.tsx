@@ -3,6 +3,7 @@ import { UseFormRegister, FieldValues, FieldError, DeepMap, Control, useFieldArr
 import DictField, { Spec } from './DictField';
 import { Button } from 'reactstrap';
 import { FileInput } from '@tapis/tapis-typescript-apps';
+import styles from './FileInputs.module.scss';
 
 
 type FileInputFieldProps = {
@@ -38,7 +39,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({ refName, item, ...rest 
     }
   ];
   return (
-    <div>
+    <div className={styles.input}>
       <DictField refName={refName} specs={specs} {...rest} />
       <i>Some meta information DictField...</i>
     </div>
@@ -74,7 +75,8 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs, reset, control, ...rest
   )
 
 
-  return <div>
+  return <div className={styles.inputs}>
+    <h3>File Inputs</h3>
     {fields.map((item, index) => <FileInputField key={item.id} item={item} refName={`jobAttributes.fileInputs.${index}`} control={control} {...rest} />)}
     <Button onClick={() => append(dictTemplate)}>+</Button>
   </div>
