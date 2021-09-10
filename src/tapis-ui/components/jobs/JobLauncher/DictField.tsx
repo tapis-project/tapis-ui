@@ -5,38 +5,42 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 
 
-export type Specs = {
-  [name: string]: {
-    label: string,
-    tapisFile?: boolean,
-    defaultValue?: string,
-    required?: string,
-    description: string
-  }
+export type Spec = {
+  name: string,
+  label: string,
+  tapisFile?: boolean,
+  defaultValue?: string,
+  checked?: boolean,
+  required?: string,
+  description: string,
+  type?: 'text' | 'checkbox'
 }
 
 export type DictFieldProps = {
-  specs: Specs,
+  specs: Array<Spec>,
   refName: string,
-  register: UseFormRegister<FieldValues>,
-  errors: DeepMap<FieldValues, FieldError>,
+  register: any,
+  errors: any,
 }
 
 const DictField: React.FC<DictFieldProps> = ({ refName, specs, errors, register }) => {
   return (
     <div>
       {
-        Object.entries(specs).map(
-          ([name, props]) =>  {
+        specs.map(
+          (spec) =>  {
+            const { name, label, defaultValue, required, description, type, checked } = spec;
+
             // Using dot notation allows react-hook-form to parse this into an object
             const fieldRef = `${refName}.${name}`;
-            const { label, defaultValue, required, description } = props;
+
             return (
               <FieldWrapper label={label} description={description} 
                 error={errors[fieldRef]} required={!!required} key={fieldRef}>
                 <Input 
-                  bsSize="sm" defaultValue={defaultValue} 
+                  bsSize="sm" defaultValue={defaultValue} type={type}
                   {...mapInnerRef(register(fieldRef, { required }))}
+                  checked={type === 'checkbox' && checked}
                 />
               </FieldWrapper>
             )

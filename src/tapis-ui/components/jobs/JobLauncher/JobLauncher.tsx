@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useForm } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
+import { useDetail } from 'tapis-hooks/apps';
 import { SubmitWrapper, QueryWrapper } from 'tapis-ui/_wrappers';
 import { Button, Input } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
-import DictField, { Specs } from './DictField';
+import { TapisApp } from '@tapis/tapis-typescript-apps';
+import DictField, { Spec } from './DictField';
 import DictFieldArray from './DictFieldArray';
+import FileInputs from './FileInputs';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -26,8 +29,11 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   name,
   execSystemId,
 }) => {
-  const systemsListHook = useList();
-  const systems: Array<TapisSystem> = systemsListHook.data?.result ?? [];
+  const { data: systemsData, isLoading: systemsLoading, error: systemsError } = useList();
+  const systems: Array<TapisSystem> = systemsData?.result ?? [];
+  const { data: app, isLoading: appLoading, error: appError } = useDetail({
+    appId, appVersion, select: "jobAttributes" 
+  });
 
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
@@ -35,38 +41,38 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     console.log(values);
   };
 
-  const fileInputSpec: Specs = {
-    "sourceUrl": {
-      label: "Source URL",
-      required: "Source URL is required",
-      description: "Input TAPIS file as a pathname, TAPIS URI or web URL"
-    },
-    "target": {
-      label: "Target",
-      required: "Target is required",
-      description: "File mount path inside of running container"
-    }
-  }
 
   const {
+    reset,
     control,
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    setValue('name', name);
-    setValue('appId', appId);
-    setValue('appVersion', appVersion);
-    execSystemId && setValue('execSystemId', execSystemId);
-  }, [setValue, name, appId, appVersion, execSystemId]);
+  const resetCallback = useCallback(
+    () => {
+      const tapisApp = app?.result;
+      if (tapisApp) {
+        const defaultValues = {
+          name,
+          appId: tapisApp.id,
+          appVersion: tapisApp.version,
+          execSystemId,
+          jobAttributes: {
+            fileInputs: tapisApp.jobAttributes?.fileInputs ?? []
+          }
+        }
+        reset(defaultValues);
+      }  
+    },
+    [ reset, app, name, execSystemId ]
+  )
 
   return (
     <QueryWrapper
-      isLoading={systemsListHook.isLoading}
-      error={systemsListHook.error}
+      isLoading={appLoading || systemsLoading}
+      error={appError ?? systemsError}
     >
       <form onSubmit={handleSubmit(formSubmit)}>
         {/* Required fields */}
@@ -133,7 +139,8 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
         </FieldWrapper>
 
         {/* test of dictfield */}
-        <DictFieldArray refName="fileInputs" specs={fileInputSpec} errors={errors} register={register} control={control} />
+        {/*<DictFieldArray refName="fileInputs" specs={fileInputSpec} errors={errors} register={register} control={control} /> */}
+        <FileInputs reset={resetCallback} inputs={app?.result?.jobAttributes?.fileInputs ?? []} register={register} control={control} errors={errors} />
 
         {/* Submit button */}
         <SubmitWrapper
