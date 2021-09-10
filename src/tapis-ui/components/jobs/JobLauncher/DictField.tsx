@@ -5,7 +5,7 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 
 
-export type FieldSpec = {
+export type Specs = {
   [name: string]: {
     label: string,
     tapisFile?: boolean,
@@ -16,25 +16,25 @@ export type FieldSpec = {
 }
 
 export type DictFieldProps = {
-  fields: FieldSpec,
+  specs: Specs,
   refName: string,
   register: UseFormRegister<FieldValues>,
   errors: DeepMap<FieldValues, FieldError>,
 }
 
-const DictField: React.FC<DictFieldProps> = ({ refName, fields, errors, register }) => {
+const DictField: React.FC<DictFieldProps> = ({ refName, specs, errors, register }) => {
   return (
     <div>
       {
-        Object.entries(fields).map(
+        Object.entries(specs).map(
           ([name, props]) =>  {
+            // Using dot notation allows react-hook-form to parse this into an object
             const fieldRef = `${refName}.${name}`;
             const { label, defaultValue, required, description } = props;
             return (
               <FieldWrapper label={label} description={description} 
                 error={errors[fieldRef]} required={!!required} key={fieldRef}>
-
-                                  <Input 
+                <Input 
                   bsSize="sm" defaultValue={defaultValue} 
                   {...mapInnerRef(register(fieldRef, { required }))}
                 />
