@@ -8,6 +8,7 @@ import { Jobs } from '@tapis/tapis-typescript';
 import { SubmitWrapper, QueryWrapper } from 'tapis-ui/_wrappers';
 import { Button, Input } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
+import DictField, { FieldSpec } from './DictField';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
 
@@ -29,10 +30,25 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
 
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
-    submit(values);
+    //submit(values);
+    console.log(values);
   };
 
+  const testField: FieldSpec = {
+    "sourceUrl": {
+      label: "Source URL",
+      required: "Source URL is required",
+      description: "Input TAPIS file as a pathname, TAPIS URI or web URL"
+    },
+    "target": {
+      label: "Target",
+      required: "Target is required",
+      description: "File mount path inside of running container"
+    }
+  }
+
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -114,6 +130,9 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
             ))}
           </Input>
         </FieldWrapper>
+
+        {/* test of dictfield */}
+        <DictField refName="testref" fields={testField} errors={errors} register={register} />
 
         {/* Submit button */}
         <SubmitWrapper
