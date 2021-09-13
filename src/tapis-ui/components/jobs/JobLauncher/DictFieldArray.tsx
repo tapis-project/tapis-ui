@@ -1,33 +1,103 @@
-import React from 'react';
-import { UseFormRegister, FieldValues, FieldError, DeepMap, Control, useFieldArray } from 'react-hook-form';
-import DictField, { Spec } from './DictField';
-import { Button } from 'reactstrap';
+import React, { useEffect } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
+import { Input, Button, Collapse } from 'reactstrap';
+import { mapInnerRef } from 'tapis-ui/utils/forms';
+import styles from './DictFieldArray.module.scss';
 
-type FieldArrayProps = {
+type ReactHookFormProps = {
   refName: string,
-  register: UseFormRegister<FieldValues>,
-  errors: DeepMap<FieldValues, FieldError>,
-  control: Control<FieldValues, object>,
-  specs: Array<Spec>
+  register: any,
+  errors: any
 }
 
-const DictFieldArray: React.FC<FieldArrayProps> = ({ refName, control, specs, ...rest }) => {
+export type FieldComponentProps = {
+  item: {
+    id: string,
+    [name: string]: any
+  }
+} & ReactHookFormProps;
+
+
+export type FieldSpec = {
+  name: string,
+  label: string,
+  tapisFile?: boolean,
+  defaultValue?: string,
+  defaultChecked?: boolean,
+  required?: string,
+  description: string,
+}
+
+
+type DictFieldProps = {
+  fieldSpecs: Array<FieldSpec>,
+} & FieldComponentProps;
+
+export const DictField: React.FC<DictFieldProps> = ({ item, refName, fieldSpecs, errors, register }) => {
+  return (
+    <div key={item.id}>
+      {
+        fieldSpecs.map(
+          (spec) =>  {
+            const { name, label, defaultValue, defaultChecked, required, description } = spec;
+            const type = defaultChecked !== undefined ? 'checkbox' : 'text';
+
+            const value = item[name];
+
+            // Using dot notation allows react-hook-form to parse this into an object
+            const fieldRef = `${refName}.${name}`;
+
+            return (
+              <FieldWrapper label={label} description={description} 
+                error={errors[fieldRef]} required={!!required} key={fieldRef}
+              >
+                <Input 
+                  bsSize="sm" defaultValue={defaultValue} defaultChecked={defaultChecked} type={type}
+                  {...mapInnerRef(register(fieldRef, { required, value }))}
+                  className={styles['form-input-override']}
+                />
+              </FieldWrapper>
+            )
+          }
+        )
+      }
+    </div>
+  )
+}
+
+
+type FieldArrayProps = {
+  // react-hook-form data ref
+  refName: string,
+  // Title for collapse panel
+  title: string,
+  // Custom component to render field
+  component: React.FC<FieldComponentProps>,
+  // Data template when appending new fields
+  template: any,
+  // react-hook-form control hook
+  control: any
+} & ReactHookFormProps;
+
+
+export const DictFieldArray: React.FC<FieldArrayProps> = ({ refName, title, component, template, control, ...rest }) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: refName
   });
 
-  const dictTemplate: any = {};
-  Object.entries(specs).forEach(
-    ([name, props]) => (
-      dictTemplate[name] = props.defaultValue ?? ''
-    )
-  )
-
-  return <div>
-    {fields.map((item, index) => <DictField refName={`${refName}.${index}`} specs={specs} {...rest} />)}
-    <Button onClick={() => append(dictTemplate)}>+</Button>
+  return <div className={styles.inputs}>
+    <h3>{title}</h3>
+    {
+      fields.map(
+        (item, index) => component({
+          item,
+          refName: `${refName}.${index}`,
+          ...rest
+        })
+      )
+    }
+    <Button onClick={() => append(template)}>+</Button>
   </div>
 }
-
-export default DictFieldArray;

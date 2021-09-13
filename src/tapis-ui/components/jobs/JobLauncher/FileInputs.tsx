@@ -1,21 +1,12 @@
 import React, { useEffect } from 'react';
-import { UseFormRegister, FieldValues, FieldError, DeepMap, Control, useFieldArray } from 'react-hook-form';
-import DictField, { Spec } from './DictField';
+import { useFieldArray } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { FileInput } from '@tapis/tapis-typescript-apps';
+import { DictField, DictFieldArray, FieldSpec, FieldComponentProps } from './DictFieldArray';
 import styles from './FileInputs.module.scss';
 
-
-type FileInputFieldProps = {
-  refName: string,
-  item: any,
-  register: any,
-  errors: any,
-  control: any
-}
-
-const FileInputField: React.FC<FileInputFieldProps> = ({ refName, item, ...rest }) => {
-  const specs: Array<Spec> = [
+const FileInputField: React.FC<FieldComponentProps> = ({ refName, item, ...rest }) => {
+  const fieldSpecs: Array<FieldSpec> = [
     {
       name: "sourceUrl",
       label: "Source URL",
@@ -38,8 +29,8 @@ const FileInputField: React.FC<FileInputFieldProps> = ({ refName, item, ...rest 
     }
   ];
   return (
-    <div className={styles.input}>
-      <DictField refName={refName} specs={specs} {...rest} />
+    <div className={styles.input} key={item.id}>
+      <DictField refName={refName} fieldSpecs={fieldSpecs} {...rest} item={item} />
       <i>Some meta information DictField...</i>
     </div>
   )
@@ -50,35 +41,25 @@ type FileInputsProps = {
   register: any,
   errors: any,
   control: any,
-  reset?: any
 }
 
-const FileInputs: React.FC<FileInputsProps> = ({ inputs, reset, control, ...rest }) => {
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'jobAttributes.fileInputs'
-  });
-
-  const dictTemplate: any = {
+const FileInputs: React.FC<FileInputsProps> = ({ inputs, control, ...rest }) => {
+  const template: any = {
     sourceUrl: '',
     targetPath: '',
     inPlace: false
   };
 
-  useEffect(
-    () => {
-      if (reset) {
-        reset()
-      }
-    }, [ reset ]
+  return (
+    <DictFieldArray
+      refName='jobAttributes.fileInputs'
+      title='File Inputs'
+      component={FileInputField}
+      template={template}
+      control={control}
+      {...rest}
+    />
   )
-
-
-  return <div className={styles.inputs}>
-    <h3>File Inputs</h3>
-    {fields.map((item, index) => <FileInputField key={item.id} item={item} refName={`jobAttributes.fileInputs.${index}`} control={control} {...rest} />)}
-    <Button onClick={() => append(dictTemplate)}>+</Button>
-  </div>
 }
 
 export default FileInputs;

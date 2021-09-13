@@ -1,7 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
@@ -9,9 +9,6 @@ import { useDetail } from 'tapis-hooks/apps';
 import { SubmitWrapper, QueryWrapper } from 'tapis-ui/_wrappers';
 import { Button, Input } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { TapisApp } from '@tapis/tapis-typescript-apps';
-import DictField, { Spec } from './DictField';
-import DictFieldArray from './DictFieldArray';
 import FileInputs from './FileInputs';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
@@ -41,7 +38,6 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     console.log(values);
   };
 
-
   const {
     reset,
     control,
@@ -50,11 +46,19 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     formState: { errors },
   } = useForm();
 
-  const resetCallback = useCallback(
+  const reactHookFormProps = {
+    control,
+    register,
+    errors
+  }
+
+  // Populating default values needs to happen as an effect
+  // after initial render of field arrays
+  useEffect(
     () => {
       const tapisApp = app?.result;
       if (tapisApp) {
-        const defaultValues = {
+        reset({
           name,
           appId: tapisApp.id,
           appVersion: tapisApp.version,
@@ -62,8 +66,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
           jobAttributes: {
             fileInputs: tapisApp.jobAttributes?.fileInputs ?? []
           }
-        }
-        reset(defaultValues);
+        });
       }  
     },
     [ reset, app, name, execSystemId ]
@@ -138,7 +141,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
           </Input>
         </FieldWrapper>
 
-        <FileInputs reset={resetCallback} inputs={app?.result?.jobAttributes?.fileInputs ?? []} register={register} control={control} errors={errors} />
+        <FileInputs inputs={app?.result?.jobAttributes?.fileInputs ?? []} {...reactHookFormProps} />
 
         {/* Submit button */}
         <SubmitWrapper
