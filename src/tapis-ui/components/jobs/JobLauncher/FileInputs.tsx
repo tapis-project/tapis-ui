@@ -34,8 +34,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({ refName, item, ...rest 
       name: "inPlace",
       label: "In Place",
       description: "If this is true, the source URL will be mounted from the execution system's local file system",
-      checked: item.inPlace,
-      type: "checkbox"
+      defaultChecked: item.inPlace,
     }
   ];
   return (

@@ -1,19 +1,17 @@
 import React from 'react';
-import { UseFormRegister, FieldValues, FieldError, DeepMap } from 'react-hook-form';
 import { Input } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-
+import styles from './DictField.module.scss';
 
 export type Spec = {
   name: string,
   label: string,
   tapisFile?: boolean,
   defaultValue?: string,
-  checked?: boolean,
+  defaultChecked?: boolean,
   required?: string,
   description: string,
-  type?: 'text' | 'checkbox'
 }
 
 export type DictFieldProps = {
@@ -29,18 +27,20 @@ const DictField: React.FC<DictFieldProps> = ({ refName, specs, errors, register 
       {
         specs.map(
           (spec) =>  {
-            const { name, label, defaultValue, required, description, type, checked } = spec;
+            const { name, label, defaultValue, defaultChecked, required, description } = spec;
+            const type = defaultChecked !== undefined ? 'checkbox' : 'text';
 
             // Using dot notation allows react-hook-form to parse this into an object
             const fieldRef = `${refName}.${name}`;
 
             return (
               <FieldWrapper label={label} description={description} 
-                error={errors[fieldRef]} required={!!required} key={fieldRef}>
+                error={errors[fieldRef]} required={!!required} key={fieldRef}
+              >
                 <Input 
-                  bsSize="sm" defaultValue={defaultValue} type={type}
+                  bsSize="sm" defaultValue={defaultValue} defaultChecked={defaultChecked} type={type}
                   {...mapInnerRef(register(fieldRef, { required }))}
-                  checked={type === 'checkbox' && checked}
+                  className={styles['form-input-override']}
                 />
               </FieldWrapper>
             )
