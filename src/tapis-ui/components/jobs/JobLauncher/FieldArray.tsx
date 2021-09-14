@@ -24,7 +24,6 @@ type FieldArrayProps = {
   template: any;
   // react-hook-form control hook
   addButtonText?: string;
-  values?: Array<any>;
 };
 
 export const FieldArray: React.FC<FieldArrayProps> = ({
