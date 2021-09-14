@@ -45,11 +45,7 @@ const FileInputField: FieldArrayComponent = ({ refName, item, remove }) => {
   );
 };
 
-type FileInputsProps = {
-  inputs: Array<FileInput>;
-};
-
-const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
+const FileInputs: React.FC = () => {
   const refName = 'jobAttributes.fileInputs';
 
   const template: any = {

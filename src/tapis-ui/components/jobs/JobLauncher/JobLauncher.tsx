@@ -146,7 +146,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
             </Input>
           </FieldWrapper>
 
-          <FileInputs inputs={app?.result?.jobAttributes?.fileInputs ?? []} />
+          <FileInputs />
 
           {/* Submit button */}
           <SubmitWrapper
