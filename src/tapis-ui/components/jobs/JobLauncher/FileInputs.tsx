@@ -55,8 +55,8 @@ const FileInputs: React.FC = () => {
     meta: {
       name: '',
       description: '',
-      required: false
-    }
+      required: false,
+    },
   };
 
   return (
