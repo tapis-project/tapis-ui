@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
 import {
   DictField,
@@ -61,16 +62,9 @@ const FileInputField: React.FC<FieldArrayComponentProps> = ({
 
 type FileInputsProps = {
   inputs: Array<FileInput>;
-  register: any;
-  errors: any;
-  control: any;
 };
 
-const FileInputs: React.FC<FileInputsProps> = ({
-  inputs,
-  control,
-  ...rest
-}) => {
+const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   const refName = 'jobAttributes.fileInputs';
 
   const template: any = {
@@ -87,8 +81,6 @@ const FileInputs: React.FC<FileInputsProps> = ({
       addButtonText="Add File Input"
       refName={refName}
       component={FileInputField}
-      control={control}
-      {...rest}
     />
   );
 };

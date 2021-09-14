@@ -1,23 +1,18 @@
 import React from 'react';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Button } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Collapse } from 'tapis-ui/_common';
 import styles from './DictFieldArray.module.scss';
 
-type ReactHookFormProps = {
-  refName: string;
-  register: any;
-  errors: any;
-};
-
 export type FieldComponentProps = {
+  refName: string,
   item: {
     id: string;
     [name: string]: any;
   };
-} & ReactHookFormProps;
+};
 
 export type FieldArrayComponentProps = {
   remove: () => any;
@@ -40,10 +35,9 @@ type DictFieldProps = {
 export const DictField: React.FC<DictFieldProps> = ({
   item,
   refName,
-  fieldSpecs,
-  errors,
-  register,
+  fieldSpecs
 }) => {
+  const { register, formState: { errors } } = useFormContext();
   return (
     <div key={item.id}>
       {fieldSpecs.map((spec) => {
@@ -95,23 +89,23 @@ type FieldArrayProps = {
   // Data template when appending new fields
   template: any;
   // react-hook-form control hook
-  control: any;
   addButtonText?: string;
-} & ReactHookFormProps;
+  values?: Array<any>
+}
 
 export const DictFieldArray: React.FC<FieldArrayProps> = ({
   refName,
   title,
   component,
   template,
-  control,
   addButtonText,
-  ...rest
 }) => {
+  const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: refName,
   });
+
 
   return (
     <div className={styles.array}>
@@ -120,8 +114,7 @@ export const DictFieldArray: React.FC<FieldArrayProps> = ({
           component({
             item,
             refName: `${refName}.${index}`,
-            remove: () => remove(index),
-            ...rest,
+            remove: () => remove(index)
           })
         )}
         <Button onClick={() => append(template)} size="sm">
