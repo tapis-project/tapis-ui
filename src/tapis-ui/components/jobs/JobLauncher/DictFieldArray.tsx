@@ -16,8 +16,12 @@ export type FieldComponentProps = {
   item: {
     id: string,
     [name: string]: any
-  }
+  },
 } & ReactHookFormProps;
+
+export type FieldArrayComponentProps = {
+  remove: () => any,
+} & FieldComponentProps;
 
 
 export type FieldSpec = {
@@ -74,7 +78,7 @@ type FieldArrayProps = {
   // Title for collapse panel
   title: string,
   // Custom component to render field
-  component: React.FC<FieldComponentProps>,
+  component: React.FC<FieldArrayComponentProps>,
   // Data template when appending new fields
   template: any,
   // react-hook-form control hook
@@ -97,6 +101,7 @@ export const DictFieldArray: React.FC<FieldArrayProps> = ({
           (item, index) => component({
             item,
             refName: `${refName}.${index}`,
+            remove: () => remove(index),
             ...rest
           })
         )

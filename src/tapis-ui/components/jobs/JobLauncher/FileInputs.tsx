@@ -1,12 +1,10 @@
 import React from 'react';
 import { FileInput } from '@tapis/tapis-typescript-apps';
-import { useFieldArray } from 'react-hook-form';
-import { DictField, DictFieldArray, FieldSpec, FieldComponentProps } from './DictFieldArray';
+import { DictField, DictFieldArray, FieldSpec, FieldArrayComponentProps } from './DictFieldArray';
 import { Button } from 'reactstrap';
-import { Collapse } from 'tapis-ui/_common';
 import styles from './FileInputs.module.scss';
 
-const FileInputField: React.FC<FieldComponentProps> = ({ refName, item, ...rest }) => {
+const FileInputField: React.FC<FieldArrayComponentProps> = ({ refName, item, remove, ...rest }) => {
   const { sourceUrl, targetPath, inPlace, id } = item;
   const fieldSpecs: Array<FieldSpec> = [
     {
@@ -36,6 +34,9 @@ const FileInputField: React.FC<FieldComponentProps> = ({ refName, item, ...rest 
       {/* Possible metadata implementation
         <DictField refName={`${refName}.meta`} fieldSpecs={metaSpecs} {...rest} item={item.meta} />
       */}
+      {
+        !item?.meta?.required && <Button onClick={remove} size="sm" >Remove</Button>
+      }
     </div>
   )
 }
