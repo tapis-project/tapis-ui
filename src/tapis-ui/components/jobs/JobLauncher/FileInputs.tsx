@@ -1,19 +1,11 @@
 import React from 'react';
 import { FileInput } from '@tapis/tapis-typescript-apps';
-import {
-  DictField,
-  DictFieldArray,
-  FieldSpec,
-  FieldArrayComponentProps,
-} from './DictFieldArray';
+import { FieldArray, FieldArrayComponent } from './FieldArray';
+import { DictField, FieldSpec } from './DictField';
 import { Button } from 'reactstrap';
 import styles from './FileInputs.module.scss';
 
-const FileInputField: React.FC<FieldArrayComponentProps> = ({
-  refName,
-  item,
-  remove,
-}) => {
+const FileInputField: FieldArrayComponent = ({ refName, item, remove }) => {
   const { sourceUrl, targetPath, inPlace, id } = item;
   const fieldSpecs: Array<FieldSpec> = [
     {
@@ -68,7 +60,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   };
 
   return (
-    <DictFieldArray
+    <FieldArray
       title="File Inputs"
       template={template}
       addButtonText="Add File Input"
