@@ -6,17 +6,14 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Collapse } from 'tapis-ui/_common';
 import styles from './DictFieldArray.module.scss';
 
-export type FieldComponentProps = {
+export type FieldArrayComponentProps = {
   refName: string;
   item: {
     id: string;
     [name: string]: any;
   };
-};
-
-export type FieldArrayComponentProps = {
   remove: () => any;
-} & FieldComponentProps;
+};
 
 export type FieldSpec = {
   name: string;
@@ -29,11 +26,11 @@ export type FieldSpec = {
 };
 
 type DictFieldProps = {
+  refName: string;
   fieldSpecs: Array<FieldSpec>;
-} & FieldComponentProps;
+};
 
 export const DictField: React.FC<DictFieldProps> = ({
-  item,
   refName,
   fieldSpecs,
 }) => {
@@ -42,7 +39,7 @@ export const DictField: React.FC<DictFieldProps> = ({
     formState: { errors },
   } = useFormContext();
   return (
-    <div key={item.id}>
+    <div>
       {fieldSpecs.map((spec) => {
         const {
           name,
@@ -53,8 +50,6 @@ export const DictField: React.FC<DictFieldProps> = ({
           description,
         } = spec;
         const type = defaultChecked !== undefined ? 'checkbox' : 'text';
-
-        const value = item[name];
 
         // Using dot notation allows react-hook-form to parse this into an object
         const fieldRef = `${refName}.${name}`;
@@ -72,7 +67,7 @@ export const DictField: React.FC<DictFieldProps> = ({
               defaultValue={defaultValue}
               defaultChecked={defaultChecked}
               type={type}
-              {...mapInnerRef(register(fieldRef, { required, value }))}
+              {...mapInnerRef(register(fieldRef, { required }))}
               className={styles['form-input-override']}
             />
           </FieldWrapper>

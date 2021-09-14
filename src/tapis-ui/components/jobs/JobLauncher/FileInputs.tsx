@@ -13,7 +13,6 @@ const FileInputField: React.FC<FieldArrayComponentProps> = ({
   refName,
   item,
   remove,
-  ...rest
 }) => {
   const { sourceUrl, targetPath, inPlace, id } = item;
   const fieldSpecs: Array<FieldSpec> = [
@@ -41,12 +40,7 @@ const FileInputField: React.FC<FieldArrayComponentProps> = ({
   ];
   return (
     <div className={styles.input} key={id}>
-      <DictField
-        refName={refName}
-        fieldSpecs={fieldSpecs}
-        {...rest}
-        item={item}
-      />
+      <DictField refName={refName} fieldSpecs={fieldSpecs} />
       {/* Possible metadata implementation
         <DictField refName={`${refName}.meta`} fieldSpecs={metaSpecs} {...rest} item={item.meta} />
       */}
