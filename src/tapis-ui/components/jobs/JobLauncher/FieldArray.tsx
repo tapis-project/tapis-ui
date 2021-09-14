@@ -2,7 +2,7 @@ import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { Collapse } from 'tapis-ui/_common';
-import styles from './DictFieldArray.module.scss';
+import styles from './FieldArray.module.scss';
 
 export type FieldArrayComponent = React.FC<{
   refName: string;
