@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input, Button, Collapse } from 'reactstrap';
+import { Input, Button } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
+import { Collapse } from 'tapis-ui/_common';
 import styles from './DictFieldArray.module.scss';
 
 type ReactHookFormProps = {
@@ -77,27 +78,30 @@ type FieldArrayProps = {
   // Data template when appending new fields
   template: any,
   // react-hook-form control hook
-  control: any
+  control: any,
+  addButtonText?: string
 } & ReactHookFormProps;
 
 
-export const DictFieldArray: React.FC<FieldArrayProps> = ({ refName, title, component, template, control, ...rest }) => {
+export const DictFieldArray: React.FC<FieldArrayProps> = ({ 
+  refName, title, component, template, control, addButtonText, ...rest }) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: refName
   });
 
-  return <div className={styles.inputs}>
-    <h3>{title}</h3>
-    {
-      fields.map(
-        (item, index) => component({
-          item,
-          refName: `${refName}.${index}`,
-          ...rest
-        })
-      )
-    }
-    <Button onClick={() => append(template)}>+</Button>
+  return <div className={styles.array}>
+    <Collapse title={title} note={`${fields.length} items`}>
+      {
+        fields.map(
+          (item, index) => component({
+            item,
+            refName: `${refName}.${index}`,
+            ...rest
+          })
+        )
+      }
+      <Button onClick={() => append(template)} size="sm">+ {addButtonText ?? ''}</Button>
+    </Collapse>
   </div>
 }
