@@ -10,6 +10,7 @@ export const tapisApp: Apps.TapisApp = {
     execSystemInputDir: 'scratch/data',
     execSystemOutputDir: 'scratch/output',
     archiveSystemId: 'testuser2.execution',
+    /* eslint-disable-next-line */
     archiveSystemDir: 'jobs/archive/${JobUUID}',
     archiveOnAppError: false,
     parameterSet: {
