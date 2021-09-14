@@ -3,16 +3,3 @@
   padding: 0.5em 0.5em 0.5em 0.5em;
   margin-bottom: 0.5em;
 }
-
-.field {
-  border: 1px dotted gray;
-  padding: 0.5em 0.5em 0.5em 0.5em;
-  margin-bottom: 1em;
-}
-
-// Overrides some nasty absolute positioning from _forms.scss
-.form-input-override {
-  position: inherit !important;
-  margin-top: inherit !important;
-  margin-left: inherit !important;
-}
