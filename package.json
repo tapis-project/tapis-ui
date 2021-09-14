@@ -27,6 +27,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-table": "^7.0.5",
+    "react-transition-group": "^4.4.1",
     "reactstrap": "^8.9.0",
     "sass": "^1.37.5",
     "typescript": "^4.3.5",

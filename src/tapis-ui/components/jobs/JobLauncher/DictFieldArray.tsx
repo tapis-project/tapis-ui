@@ -7,7 +7,7 @@ import { Collapse } from 'tapis-ui/_common';
 import styles from './DictFieldArray.module.scss';
 
 export type FieldComponentProps = {
-  refName: string,
+  refName: string;
   item: {
     id: string;
     [name: string]: any;
@@ -35,9 +35,12 @@ type DictFieldProps = {
 export const DictField: React.FC<DictFieldProps> = ({
   item,
   refName,
-  fieldSpecs
+  fieldSpecs,
 }) => {
-  const { register, formState: { errors } } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
   return (
     <div key={item.id}>
       {fieldSpecs.map((spec) => {
@@ -90,8 +93,8 @@ type FieldArrayProps = {
   template: any;
   // react-hook-form control hook
   addButtonText?: string;
-  values?: Array<any>
-}
+  values?: Array<any>;
+};
 
 export const DictFieldArray: React.FC<FieldArrayProps> = ({
   refName,
@@ -106,7 +109,6 @@ export const DictFieldArray: React.FC<FieldArrayProps> = ({
     name: refName,
   });
 
-
   return (
     <div className={styles.array}>
       <Collapse title={title} note={`${fields.length} items`}>
@@ -114,7 +116,7 @@ export const DictFieldArray: React.FC<FieldArrayProps> = ({
           component({
             item,
             refName: `${refName}.${index}`,
-            remove: () => remove(index)
+            remove: () => remove(index),
           })
         )}
         <Button onClick={() => append(template)} size="sm">

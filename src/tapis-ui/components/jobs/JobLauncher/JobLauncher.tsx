@@ -52,7 +52,6 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   const formMethods = useForm();
   const {
     reset,
-    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -80,7 +79,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
       isLoading={appLoading || systemsLoading}
       error={appError ?? systemsError}
     >
-      <FormProvider {...formMethods} >
+      <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(formSubmit)}>
           {/* Required fields */}
           <FieldWrapper
@@ -92,7 +91,9 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
             <Input
               bsSize="sm"
               defaultValue={name}
-              {...mapInnerRef(register('name', { required: 'Name is required' }))}
+              {...mapInnerRef(
+                register('name', { required: 'Name is required' })
+              )}
             />
           </FieldWrapper>
           <FieldWrapper
@@ -145,9 +146,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
             </Input>
           </FieldWrapper>
 
-          <FileInputs
-            inputs={app?.result?.jobAttributes?.fileInputs ?? []}
-          />
+          <FileInputs inputs={app?.result?.jobAttributes?.fileInputs ?? []} />
 
           {/* Submit button */}
           <SubmitWrapper
