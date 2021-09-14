@@ -1,16 +1,16 @@
-import { Apps } from "@tapis/tapis-typescript";
+import { Apps } from '@tapis/tapis-typescript';
 
 export const tapisApp: Apps.TapisApp = {
-  id: "SleepSeconds",
-  version: "0.0.1",
+  id: 'SleepSeconds',
+  version: '0.0.1',
   jobAttributes: {
     dynamicExecSystem: false,
-    execSystemId: "testuser2.execution",
-    execSystemExecDir: "scratch",
-    execSystemInputDir: "scratch/data",
-    execSystemOutputDir: "scratch/output",
-    archiveSystemId: "testuser2.execution",
-    archiveSystemDir: "jobs/archive/${JobUUID}",
+    execSystemId: 'testuser2.execution',
+    execSystemExecDir: 'scratch',
+    execSystemInputDir: 'scratch/data',
+    execSystemOutputDir: 'scratch/output',
+    archiveSystemId: 'testuser2.execution',
+    archiveSystemDir: 'jobs/archive/${JobUUID}',
     archiveOnAppError: false,
     parameterSet: {
       appArgs: [],
@@ -25,11 +25,11 @@ export const tapisApp: Apps.TapisApp = {
     },
     fileInputs: [
       {
-        sourceUrl: "tapis://testuser2.execution/data.txt",
-        targetPath: "data.txt",
+        sourceUrl: 'tapis://testuser2.execution/data.txt',
+        targetPath: 'data.txt',
         inPlace: false,
         meta: {
-          name: "Data file",
+          name: 'Data file',
           required: true,
           keyValuePairs: [],
         },
@@ -45,9 +45,9 @@ export const tapisApp: Apps.TapisApp = {
 };
 
 export const appsResponse: Apps.RespApps = {
-  status: "success",
-  message: "TAPIS_FOUND Apps found: 1 applications",
-  version: "0.0.1-SNAPSHOT",
+  status: 'success',
+  message: 'TAPIS_FOUND Apps found: 1 applications',
+  version: '0.0.1-SNAPSHOT',
   result: [{ ...tapisApp }],
   metadata: {
     recordCount: 1,

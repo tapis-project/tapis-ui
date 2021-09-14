@@ -26,10 +26,20 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   name,
   execSystemId,
 }) => {
-  const { data: systemsData, isLoading: systemsLoading, error: systemsError } = useList();
+  const {
+    data: systemsData,
+    isLoading: systemsLoading,
+    error: systemsError,
+  } = useList();
   const systems: Array<TapisSystem> = systemsData?.result ?? [];
-  const { data: app, isLoading: appLoading, error: appError } = useDetail({
-    appId, appVersion, select: "jobAttributes" 
+  const {
+    data: app,
+    isLoading: appLoading,
+    error: appError,
+  } = useDetail({
+    appId,
+    appVersion,
+    select: 'jobAttributes',
   });
 
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
@@ -49,28 +59,25 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   const reactHookFormProps = {
     control,
     register,
-    errors
-  }
+    errors,
+  };
 
   // Populating default values needs to happen as an effect
   // after initial render of field arrays
-  useEffect(
-    () => {
-      const tapisApp = app?.result;
-      if (tapisApp) {
-        reset({
-          name,
-          appId: tapisApp.id,
-          appVersion: tapisApp.version,
-          execSystemId,
-          jobAttributes: {
-            fileInputs: tapisApp.jobAttributes?.fileInputs ?? []
-          }
-        });
-      }  
-    },
-    [ reset, app, name, execSystemId ]
-  )
+  useEffect(() => {
+    const tapisApp = app?.result;
+    if (tapisApp) {
+      reset({
+        name,
+        appId: tapisApp.id,
+        appVersion: tapisApp.version,
+        execSystemId,
+        jobAttributes: {
+          fileInputs: tapisApp.jobAttributes?.fileInputs ?? [],
+        },
+      });
+    }
+  }, [reset, app, name, execSystemId]);
 
   return (
     <QueryWrapper
@@ -141,7 +148,10 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
           </Input>
         </FieldWrapper>
 
-        <FileInputs inputs={app?.result?.jobAttributes?.fileInputs ?? []} {...reactHookFormProps} />
+        <FileInputs
+          inputs={app?.result?.jobAttributes?.fileInputs ?? []}
+          {...reactHookFormProps}
+        />
 
         {/* Submit button */}
         <SubmitWrapper
