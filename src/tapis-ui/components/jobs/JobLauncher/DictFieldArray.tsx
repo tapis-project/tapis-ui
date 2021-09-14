@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import React from 'react';
+import { useFieldArray } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Button } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';

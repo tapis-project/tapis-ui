@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useSubmit } from 'tapis-hooks/jobs';
-import { useForm, useFormContext } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { TapisSystem } from '@tapis/tapis-typescript-systems';
 import { Jobs } from '@tapis/tapis-typescript';
@@ -42,6 +42,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     select: 'jobAttributes',
   });
 
+  /* eslint-disable-next-line */
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
     //submit(values);
