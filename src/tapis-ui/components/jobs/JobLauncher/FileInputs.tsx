@@ -91,12 +91,12 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   };
 
   return FieldArray<FileInput>({
-    title: "File Inputs",
-    addButtonText: "Add File Input",
+    title: 'File Inputs',
+    addButtonText: 'Add File Input',
     name,
     render: FileInputField,
     required,
-    appendData
+    appendData,
   });
 };
 

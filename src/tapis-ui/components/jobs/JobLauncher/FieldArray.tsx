@@ -5,12 +5,12 @@ import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
 type FieldItem<T> = {
-  id: string
+  id: string;
 } & T;
 
 export type FieldArrayComponent<T> = React.FC<{
   index: number;
-  item: FieldItem<T>
+  item: FieldItem<T>;
 }>;
 
 type FieldArrayProps<T> = {
@@ -45,7 +45,7 @@ export function FieldArray<T>({
     <div className={styles.array}>
       <Collapse title={title} note={`${fields.length} items`}>
         {fields.map((item, index) => (
-          <div className={styles. item}>
+          <div className={styles.item}>
             {render({
               item: item as FieldItem<T>,
               index,
@@ -67,4 +67,4 @@ export function FieldArray<T>({
       </Collapse>
     </div>
   );
-};
+}
