@@ -3,11 +3,11 @@ import { useFormContext } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Button, Input, Label, FormText, FormGroup } from 'reactstrap';
+import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
-import styles from './FileInputs.module.scss';
 
-const FileInputField: FieldArrayComponent = ({ refName, item, remove }) => {
+
+const FileInputField: FieldArrayComponent = ({ refName, item }) => {
   const {
     register,
     formState: { errors },
@@ -15,7 +15,7 @@ const FileInputField: FieldArrayComponent = ({ refName, item, remove }) => {
   const { sourceUrl, targetPath, inPlace, id } = item;
 
   return (
-    <div className={styles.input} key={id}>
+    <div key={id}>
       <FieldWrapper
         label="Source URL"
         required={true}
@@ -55,7 +55,6 @@ const FileInputField: FieldArrayComponent = ({ refName, item, remove }) => {
             bsSize="sm"
             defaultChecked={inPlace}
             {...mapInnerRef(register(`${refName}.inPlace`))}
-            className={styles['form-input-override']}
           />{' '}
           In Place
         </Label>
@@ -64,20 +63,19 @@ const FileInputField: FieldArrayComponent = ({ refName, item, remove }) => {
           system's local file system
         </FormText>
       </FormGroup>
-      {/* Possible metadata implementation
-        <DictField refName={`${refName}.meta`} fieldSpecs={metaSpecs} {...rest} item={item.meta} />
-      */}
-      {!item?.meta?.required && (
-        <Button onClick={remove} size="sm">
-          Remove
-        </Button>
-      )}
     </div>
   );
 };
 
-const FileInputs: React.FC = () => {
+type FileInputsProps = {
+  inputs: Array<FileInput>
+}
+
+const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   const refName = 'jobAttributes.fileInputs';
+  const required = Array.from(
+    inputs.filter((fileInput) => fileInput?.meta?.required).keys()
+  )
 
   const template: FileInput = {
     sourceUrl: '',
@@ -97,6 +95,7 @@ const FileInputs: React.FC = () => {
       addButtonText="Add File Input"
       refName={refName}
       component={FileInputField}
+      required={required}
     />
   );
 };
