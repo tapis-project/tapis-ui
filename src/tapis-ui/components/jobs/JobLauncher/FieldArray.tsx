@@ -21,7 +21,7 @@ type FieldArrayProps<T> = {
   // Custom component to render field
   render: FieldArrayComponent<T>;
   // Data template when appending new fields
-  appendData: any;
+  appendData: T;
   // react-hook-form control hook
   addButtonText?: string;
   required?: Array<number>;
