@@ -14,7 +14,7 @@ export type FieldArrayComponent = React.FC<{
 
 type FieldArrayProps = {
   // react-hook-form data ref
-  refName: string;
+  name: string;
   // Title for collapse panel
   title: string;
   // Custom component to render field
@@ -27,7 +27,7 @@ type FieldArrayProps = {
 };
 
 export const FieldArray: React.FC<FieldArrayProps> = ({
-  refName,
+  name,
   title,
   render,
   appendData,
@@ -37,7 +37,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: refName,
+    name,
   });
 
   return (
