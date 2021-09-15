@@ -18,7 +18,7 @@ type FieldArrayProps = {
   // Title for collapse panel
   title: string;
   // Custom component to render field
-  component: FieldArrayComponent;
+  render: FieldArrayComponent;
   // Data template when appending new fields
   template: any;
   // react-hook-form control hook
@@ -29,7 +29,7 @@ type FieldArrayProps = {
 export const FieldArray: React.FC<FieldArrayProps> = ({
   refName,
   title,
-  component,
+  render,
   template,
   addButtonText,
   required = [],
@@ -45,7 +45,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
       <Collapse title={title} note={`${fields.length} items`}>
         {fields.map((item, index) => (
           <div className={styles.item}>
-            {component({
+            {render({
               item,
               refName: `${refName}.${index}`,
             })}
