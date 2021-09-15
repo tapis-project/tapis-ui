@@ -4,21 +4,22 @@ import { Button } from 'reactstrap';
 import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
-export type FieldArrayComponent = React.FC<{
+type FieldItem<T> = {
+  id: string
+} & T;
+
+export type FieldArrayComponent<T> = React.FC<{
   index: number;
-  item: {
-    id: string;
-    [name: string]: any;
-  };
+  item: FieldItem<T>
 }>;
 
-type FieldArrayProps = {
+type FieldArrayProps<T> = {
   // react-hook-form data ref
   name: string;
   // Title for collapse panel
   title: string;
   // Custom component to render field
-  render: FieldArrayComponent;
+  render: FieldArrayComponent<T>;
   // Data template when appending new fields
   appendData: any;
   // react-hook-form control hook
@@ -26,14 +27,14 @@ type FieldArrayProps = {
   required?: Array<number>;
 };
 
-export const FieldArray: React.FC<FieldArrayProps> = ({
+export function FieldArray<T>({
   name,
   title,
   render,
   appendData,
   addButtonText,
   required = [],
-}) => {
+}: FieldArrayProps<T>) {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -44,9 +45,9 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
     <div className={styles.array}>
       <Collapse title={title} note={`${fields.length} items`}>
         {fields.map((item, index) => (
-          <div className={styles.item}>
+          <div className={styles. item}>
             {render({
-              item,
+              item: item as FieldItem<T>,
               index,
             })}
             {!(index in required) && (

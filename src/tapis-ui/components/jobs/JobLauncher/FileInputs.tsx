@@ -7,7 +7,7 @@ import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 
-const FileInputField: FieldArrayComponent = ({ item, index }) => {
+const FileInputField: FieldArrayComponent<FileInput> = ({ item, index }) => {
   const {
     register,
     formState: { errors },
@@ -90,16 +90,14 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
     },
   };
 
-  return (
-    <FieldArray
-      title="File Inputs"
-      appendData={appendData}
-      addButtonText="Add File Input"
-      name={name}
-      render={FileInputField}
-      required={required}
-    />
-  );
+  return FieldArray<FileInput>({
+    title: "File Inputs",
+    addButtonText: "Add File Input",
+    name,
+    render: FileInputField,
+    required,
+    appendData
+  });
 };
 
 export default FileInputs;
