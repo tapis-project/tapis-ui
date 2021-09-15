@@ -32,7 +32,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
   component,
   template,
   addButtonText,
-  required = []
+  required = [],
 }) => {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
@@ -43,19 +43,23 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
   return (
     <div className={styles.array}>
       <Collapse title={title} note={`${fields.length} items`}>
-        {fields.map((item, index) =>
+        {fields.map((item, index) => (
           <div className={styles.item}>
             {component({
               item,
-              refName: `${refName}.${index}`
+              refName: `${refName}.${index}`,
             })}
-            {
-              !(index in required) && <Button onClick={() => remove(index)} size="sm" className={styles.remove}>
+            {!(index in required) && (
+              <Button
+                onClick={() => remove(index)}
+                size="sm"
+                className={styles.remove}
+              >
                 Remove
               </Button>
-            }
+            )}
           </div>
-        )}
+        ))}
         <Button onClick={() => append(template)} size="sm">
           + {addButtonText ?? ''}
         </Button>

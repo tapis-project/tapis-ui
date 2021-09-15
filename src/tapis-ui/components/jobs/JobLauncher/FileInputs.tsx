@@ -6,7 +6,6 @@ import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 
-
 const FileInputField: FieldArrayComponent = ({ refName, item }) => {
   const {
     register,
@@ -68,14 +67,14 @@ const FileInputField: FieldArrayComponent = ({ refName, item }) => {
 };
 
 type FileInputsProps = {
-  inputs: Array<FileInput>
-}
+  inputs: Array<FileInput>;
+};
 
 const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   const refName = 'jobAttributes.fileInputs';
   const required = Array.from(
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
-  )
+  );
 
   const template: FileInput = {
     sourceUrl: '',

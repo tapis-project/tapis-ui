@@ -72,7 +72,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
         },
       });
     }
-  }, [reset, app, name, execSystemId]);
+  }, [reset, app?.result?.id]);
 
   return (
     <QueryWrapper
@@ -146,7 +146,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
             </Input>
           </FieldWrapper>
 
-          <FileInputs inputs={app?.result?.jobAttributes?.fileInputs ?? [] }/>
+          <FileInputs inputs={app?.result?.jobAttributes?.fileInputs ?? []} />
 
           {/* Submit button */}
           <SubmitWrapper

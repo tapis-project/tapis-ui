@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery, UseInfiniteQueryOptions } from 'react-query';
 import { list } from 'tapis-api/files';
 import { Files } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
@@ -9,7 +9,10 @@ import {
 import QueryKeys from './queryKeys';
 
 // Does not use defaultParams because systemId and path are required
-const useList = (params: Files.ListFilesRequest) => {
+const useList = (
+  params: Files.ListFilesRequest,
+  options: UseInfiniteQueryOptions<Files.FileListingResponse, Error> = {}
+) => {
   const { accessToken, basePath } = useTapisConfig();
 
   // Set default limit to 100, as per TAPIS OpenAPI spec
@@ -22,6 +25,7 @@ const useList = (params: Files.ListFilesRequest) => {
     ({ pageParam = params }) =>
       list(pageParam, basePath, accessToken?.access_token ?? ''),
     {
+      ...options,
       // getNextPageParam function computes offset, with guarantee that
       // params.limit is set to default of 100
       getNextPageParam: (lastPage, allPages) =>
