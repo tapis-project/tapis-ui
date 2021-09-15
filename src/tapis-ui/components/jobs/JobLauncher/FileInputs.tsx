@@ -71,7 +71,7 @@ type FileInputsProps = {
 };
 
 const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
-  const refName = 'jobAttributes.fileInputs';
+  const refName = 'fileInputs';
   const required = Array.from(
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );

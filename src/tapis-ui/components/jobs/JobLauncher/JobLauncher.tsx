@@ -49,7 +49,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     console.log(values);
   };
 
-  const formMethods = useForm();
+  const formMethods = useForm<Jobs.ReqSubmitJob>();
   const {
     reset,
     register,
@@ -67,9 +67,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
         appId: tapisApp.id,
         appVersion: tapisApp.version,
         execSystemId,
-        jobAttributes: {
-          fileInputs: tapisApp.jobAttributes?.fileInputs ?? [],
-        },
+        fileInputs: tapisApp.jobAttributes?.fileInputs ?? [],
       });
     }
   }, [reset, app?.result?.id]);
