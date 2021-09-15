@@ -70,7 +70,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
         fileInputs: tapisApp.jobAttributes?.fileInputs ?? [],
       });
     }
-  }, [reset, app?.result?.id]);
+  }, [reset, app?.result?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <QueryWrapper

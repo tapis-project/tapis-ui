@@ -3,7 +3,6 @@ import { list } from 'tapis-api/systems';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
-import { System } from 'typescript';
 
 export const defaultParams: Systems.GetSystemsRequest = {};
 
