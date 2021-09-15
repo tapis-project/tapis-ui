@@ -20,7 +20,7 @@ type FieldArrayProps = {
   // Custom component to render field
   render: FieldArrayComponent;
   // Data template when appending new fields
-  template: any;
+  appendData: any;
   // react-hook-form control hook
   addButtonText?: string;
   required?: Array<number>;
@@ -30,7 +30,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
   refName,
   title,
   render,
-  template,
+  appendData,
   addButtonText,
   required = [],
 }) => {
@@ -60,7 +60,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
             )}
           </div>
         ))}
-        <Button onClick={() => append(template)} size="sm">
+        <Button onClick={() => append(appendData)} size="sm">
           + {addButtonText ?? ''}
         </Button>
       </Collapse>

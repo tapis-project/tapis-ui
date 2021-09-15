@@ -76,7 +76,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
 
-  const template: FileInput = {
+  const appendData: FileInput = {
     sourceUrl: '',
     targetPath: '',
     inPlace: false,
@@ -90,10 +90,10 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   return (
     <FieldArray
       title="File Inputs"
-      template={template}
+      appendData={appendData}
       addButtonText="Add File Input"
       refName={refName}
-      component={FileInputField}
+      render={FileInputField}
       required={required}
     />
   );
