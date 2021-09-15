@@ -73,7 +73,8 @@ type FileInputsProps = {
 };
 
 const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
-  const refName: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
+  const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
+
   const required = Array.from(
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
@@ -94,7 +95,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
       title="File Inputs"
       appendData={appendData}
       addButtonText="Add File Input"
-      refName={refName}
+      name={name}
       render={FileInputField}
       required={required}
     />
