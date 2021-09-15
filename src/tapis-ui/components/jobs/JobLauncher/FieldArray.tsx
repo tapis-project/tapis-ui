@@ -1,24 +1,27 @@
 import React from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import {
+  useFieldArray,
+  useFormContext,
+  FieldArrayPath,
+  FieldArrayWithId,
+  ArrayPath,
+} from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
-export type FieldArrayComponent = React.FC<{
+export type FieldArrayComponent<T> = React.FC<{
   refName: string;
-  item: {
-    id: string;
-    [name: string]: any;
-  };
+  item: FieldArrayWithId<T, ArrayPath<T>, 'id'>;
 }>;
 
-type FieldArrayProps = {
+type FieldArrayProps<T> = {
   // react-hook-form data ref
-  refName: string;
+  refName: FieldArrayPath<T>;
   // Title for collapse panel
   title: string;
   // Custom component to render field
-  render: FieldArrayComponent;
+  render: FieldArrayComponent<T>;
   // Data template when appending new fields
   appendData: any;
   // react-hook-form control hook
@@ -26,15 +29,15 @@ type FieldArrayProps = {
   required?: Array<number>;
 };
 
-export const FieldArray: React.FC<FieldArrayProps> = ({
+export function FieldArray<T>({
   refName,
   title,
   render,
   appendData,
   addButtonText,
   required = [],
-}) => {
-  const { control } = useFormContext();
+}: FieldArrayProps<T>) {
+  const { control } = useFormContext<T>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: refName,
@@ -66,4 +69,4 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
       </Collapse>
     </div>
   );
-};
+}
