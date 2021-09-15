@@ -11,8 +11,8 @@ import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
 export type FieldArrayComponent<T> = React.FC<{
-  refName: string;
   item: FieldArrayWithId<T, ArrayPath<T>, 'id'>;
+  index: number;
 }>;
 
 type FieldArrayProps<T> = {
@@ -50,7 +50,7 @@ export function FieldArray<T>({
           <div className={styles.item}>
             {render({
               item,
-              refName: `${refName}.${index}`,
+              index
             })}
             {!(index in required) && (
               <Button

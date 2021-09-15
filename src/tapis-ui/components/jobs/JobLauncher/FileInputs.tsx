@@ -8,14 +8,16 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Jobs } from '@tapis/tapis-typescript';
 
 const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob> = ({
-  refName,
+  index,
   item,
 }) => {
   const {
     register,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<Jobs.ReqSubmitJob>();
   const { sourceUrl, targetPath, inPlace, id } = item;
+
+  const errorObj = errors.fileInputs;
 
   return (
     <div key={id}>
@@ -23,13 +25,13 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob> = ({
         label="Source URL"
         required={true}
         description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-        error={errors['sourceUrl']}
+        error={errorObj && errorObj[index]?.sourceUrl}
       >
         <Input
           bsSize="sm"
           defaultValue={sourceUrl}
           {...mapInnerRef(
-            register(`${refName}.sourceUrl`, {
+            register(`fileInputs.${index}.sourceUrl`, {
               required: 'Source URL is required',
             })
           )}
@@ -39,13 +41,13 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob> = ({
         label="Target Path"
         required={true}
         description="File mount path inside of running container"
-        error={errors['targetPath']}
+        error={errorObj && errorObj[index]?.targetPath}
       >
         <Input
           bsSize="sm"
           defaultValue={targetPath}
           {...mapInnerRef(
-            register(`${refName}.targetPath`, {
+            register(`fileInputs.${index}.targetPath`, {
               required: 'Target Path is required',
             })
           )}
@@ -57,7 +59,7 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob> = ({
             type="checkbox"
             bsSize="sm"
             defaultChecked={inPlace}
-            {...mapInnerRef(register(`${refName}.inPlace`))}
+            {...mapInnerRef(register(`fileInputs.${index}.inPlace`))}
           />{' '}
           In Place
         </Label>
@@ -76,6 +78,7 @@ type FileInputsProps = {
 
 const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
   const refName: FieldArrayPath<Jobs.ReqSubmitJob> = 'fileInputs';
+
   const required = Array.from(
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
