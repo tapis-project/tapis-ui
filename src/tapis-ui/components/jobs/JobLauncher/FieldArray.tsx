@@ -5,7 +5,7 @@ import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
 export type FieldArrayComponent = React.FC<{
-  refName: string;
+  index: number;
   item: {
     id: string;
     [name: string]: any;
@@ -14,7 +14,7 @@ export type FieldArrayComponent = React.FC<{
 
 type FieldArrayProps = {
   // react-hook-form data ref
-  refName: string;
+  name: string;
   // Title for collapse panel
   title: string;
   // Custom component to render field
@@ -27,7 +27,7 @@ type FieldArrayProps = {
 };
 
 export const FieldArray: React.FC<FieldArrayProps> = ({
-  refName,
+  name,
   title,
   render,
   appendData,
@@ -37,7 +37,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: refName,
+    name,
   });
 
   return (
@@ -47,7 +47,7 @@ export const FieldArray: React.FC<FieldArrayProps> = ({
           <div className={styles.item}>
             {render({
               item,
-              refName: `${refName}.${index}`,
+              index,
             })}
             {!(index in required) && (
               <Button

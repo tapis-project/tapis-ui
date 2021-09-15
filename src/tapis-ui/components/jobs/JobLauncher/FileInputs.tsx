@@ -1,17 +1,19 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, FieldArrayPath } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
+import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 
-const FileInputField: FieldArrayComponent = ({ refName, item }) => {
+const FileInputField: FieldArrayComponent = ({ item, index }) => {
   const {
     register,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<ReqSubmitJob>();
   const { sourceUrl, targetPath, inPlace, id } = item;
+  const itemError = errors?.fileInputs && errors.fileInputs[index];
 
   return (
     <div key={id}>
@@ -19,13 +21,13 @@ const FileInputField: FieldArrayComponent = ({ refName, item }) => {
         label="Source URL"
         required={true}
         description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-        error={errors['sourceUrl']}
+        error={itemError?.sourceUrl}
       >
         <Input
           bsSize="sm"
           defaultValue={sourceUrl}
           {...mapInnerRef(
-            register(`${refName}.sourceUrl`, {
+            register(`fileInputs.${index}.sourceUrl`, {
               required: 'Source URL is required',
             })
           )}
@@ -35,13 +37,13 @@ const FileInputField: FieldArrayComponent = ({ refName, item }) => {
         label="Target Path"
         required={true}
         description="File mount path inside of running container"
-        error={errors['targetPath']}
+        error={itemError?.targetPath}
       >
         <Input
           bsSize="sm"
           defaultValue={targetPath}
           {...mapInnerRef(
-            register(`${refName}.targetPath`, {
+            register(`fileInputs.${index}.targetPath`, {
               required: 'Target Path is required',
             })
           )}
@@ -53,7 +55,7 @@ const FileInputField: FieldArrayComponent = ({ refName, item }) => {
             type="checkbox"
             bsSize="sm"
             defaultChecked={inPlace}
-            {...mapInnerRef(register(`${refName}.inPlace`))}
+            {...mapInnerRef(register(`fileInputs.${index}.inPlace`))}
           />{' '}
           In Place
         </Label>
@@ -71,7 +73,8 @@ type FileInputsProps = {
 };
 
 const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
-  const refName = 'fileInputs';
+  const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
+
   const required = Array.from(
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
@@ -92,7 +95,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
       title="File Inputs"
       appendData={appendData}
       addButtonText="Add File Input"
-      refName={refName}
+      name={name}
       render={FileInputField}
       required={required}
     />
