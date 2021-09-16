@@ -70,7 +70,7 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
           system's local file system
         </FormText>
       </FormGroup>
-      {!meta?.required && (
+      {remove && !meta?.required && (
         <Button onClick={() => remove()} size="sm" className={styles.remove}>
           Remove
         </Button>
@@ -79,8 +79,16 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
   );
 };
 
-const FileInputs: React.FC = () => {
+type FileInputsProps = {
+  appInputs: Array<FileInput>;
+};
+
+const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
   const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
+
+  const required = Array.from(
+    appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
+  );
 
   const appendData: FileInput = {
     sourceUrl: '',
@@ -98,6 +106,7 @@ const FileInputs: React.FC = () => {
     addButtonText: 'Add File Input',
     name,
     render: FileInputField,
+    required,
     appendData,
   });
 };

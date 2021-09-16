@@ -11,7 +11,7 @@ type FieldItem<T> = {
 export type FieldArrayComponent<T> = React.FC<{
   index: number;
   item: FieldItem<T>;
-  remove: () => any;
+  remove?: () => any;
 }>;
 
 type FieldArrayProps<T> = {
@@ -25,6 +25,7 @@ type FieldArrayProps<T> = {
   appendData: T;
   // react-hook-form control hook
   addButtonText?: string;
+  required?: Array<number>;
 };
 
 export function FieldArray<T>({
@@ -33,6 +34,7 @@ export function FieldArray<T>({
   render,
   appendData,
   addButtonText,
+  required,
 }: FieldArrayProps<T>) {
   const { control } = useFormContext<Record<typeof name, T[]>>();
   const { fields, append, remove } = useFieldArray({
@@ -48,7 +50,10 @@ export function FieldArray<T>({
             {render({
               item,
               index,
-              remove: () => remove(index),
+              remove:
+                !required || !(index in required)
+                  ? () => remove(index)
+                  : undefined,
             })}
           </div>
         ))}
