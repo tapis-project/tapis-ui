@@ -18,7 +18,7 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
     register,
     formState: { errors },
   } = useFormContext<ReqSubmitJob>();
-  const { sourceUrl, targetPath, inPlace, id } = item;
+  const { sourceUrl, targetPath, inPlace, meta, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
   return (
@@ -70,9 +70,11 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
           system's local file system
         </FormText>
       </FormGroup>
-      <Button onClick={() => remove()} size="sm" className={styles.remove}>
-        Remove
-      </Button>
+      {!meta?.required && (
+        <Button onClick={() => remove()} size="sm" className={styles.remove}>
+          Remove
+        </Button>
+      )}
     </div>
   );
 };
