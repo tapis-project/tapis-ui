@@ -35,10 +35,10 @@ export function FieldArray<T>({
   addButtonText,
   required = [],
 }: FieldArrayProps<T>) {
-  const { control } = useFormContext();
+  const { control } = useFormContext<Record<typeof name, T[]>>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name,
+    name: name as any,
   });
 
   return (
@@ -47,7 +47,7 @@ export function FieldArray<T>({
         {fields.map((item, index) => (
           <div className={styles.item}>
             {render({
-              item: item as FieldItem<T>,
+              item,
               index,
             })}
             {!(index in required) && (
