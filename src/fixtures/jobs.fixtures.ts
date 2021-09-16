@@ -17,46 +17,46 @@ export const jobInfo: Jobs.JobListDTO = {
 };
 
 export const validJobSubmission = {
-  name: "bsf-no-file-inputs-specified",
-  appId: "bsf",
-  appVersion: "1",
-  description: "somedesc"
+  name: 'bsf-no-file-inputs-specified',
+  appId: 'bsf',
+  appVersion: '1',
+  description: 'somedesc',
 };
 
 export const validJobSubmissionAlt = {
-  name: "bsf-conforming-file-inputs",
-  appId: "bsf",
-  appVersion: "1",
-  jobAttributes: {    
+  name: 'bsf-conforming-file-inputs',
+  appId: 'bsf',
+  appVersion: '1',
+  jobAttributes: {
     fileInputs: [
       {
-        sourceUrl: "tapis://testuser2.execution/data.txt",
-        targetPath: "data.txt",
+        sourceUrl: 'tapis://testuser2.execution/data.txt',
+        targetPath: 'data.txt',
         inPlace: false,
         meta: {
-          name: "Data file",
-          required: true
-        }
-      }
-    ]
-  }
+          name: 'Data file',
+          required: true,
+        },
+      },
+    ],
+  },
 };
 
 export const invalidJobSubmission = {
-  name: "bsf-different-meta-name",
-  appId: "bsf",
-  appVersion: "1",
-  jobAttributes: {    
-      fileInputs: [
-          {
-              sourceUrl: "tapis://testuser2.execution/data.txt",
-              targetPath: "data.txt",
-              inPlace: false,
-              meta: {
-                  name: "newmetaname",
-                  required: true
-              }
-          }
-      ]
-  }
+  name: 'bsf-different-meta-name',
+  appId: 'bsf',
+  appVersion: '1',
+  jobAttributes: {
+    fileInputs: [
+      {
+        sourceUrl: 'tapis://testuser2.execution/data.txt',
+        targetPath: 'data.txt',
+        inPlace: false,
+        meta: {
+          name: 'newmetaname',
+          required: true,
+        },
+      },
+    ],
+  },
 };
