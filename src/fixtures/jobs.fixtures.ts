@@ -42,6 +42,9 @@ export const validJobSubmissionAlt = {
   },
 };
 
+// Job submission will fail because fileInputs[0].meta.name does not conform to the
+// app-level definition for this file input. Will pass
+// if fileInputs[0].meta.name == 'Data file'
 export const invalidJobSubmission = {
   name: 'bsf-different-meta-name',
   appId: 'bsf',
