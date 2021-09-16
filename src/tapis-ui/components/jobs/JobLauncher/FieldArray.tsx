@@ -10,7 +10,7 @@ type FieldItem<T> = {
 
 export type FieldArrayComponent<T> = React.FC<{
   index: number;
-  item: T & { id: string};
+  item: FieldItem<T>;
 }>;
 
 type FieldArrayProps<T> = {
