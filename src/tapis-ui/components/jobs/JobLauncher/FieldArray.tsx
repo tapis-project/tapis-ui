@@ -11,6 +11,7 @@ type FieldItem<T> = {
 export type FieldArrayComponent<T> = React.FC<{
   index: number;
   item: FieldItem<T>;
+  remove?: () => any;
 }>;
 
 type FieldArrayProps<T> = {
@@ -49,16 +50,8 @@ export function FieldArray<T>({
             {render({
               item,
               index,
+              remove: !(index in required) ? () => remove(index) : undefined,
             })}
-            {!(index in required) && (
-              <Button
-                onClick={() => remove(index)}
-                size="sm"
-                className={styles.remove}
-              >
-                Remove
-              </Button>
-            )}
           </div>
         ))}
         <Button onClick={() => append(appendData)} size="sm">
