@@ -34,7 +34,7 @@ export function FieldArray<T>({
   render,
   appendData,
   addButtonText,
-  required,
+  required = [],
 }: FieldArrayProps<T>) {
   const { control } = useFormContext<Record<typeof name, T[]>>();
   const { fields, append, remove } = useFieldArray({
@@ -50,10 +50,7 @@ export function FieldArray<T>({
             {render({
               item,
               index,
-              remove:
-                !required || !(index in required)
-                  ? () => remove(index)
-                  : undefined,
+              remove: !(index in required) ? () => remove(index) : undefined,
             })}
           </div>
         ))}
