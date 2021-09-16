@@ -15,3 +15,48 @@ export const jobInfo: Jobs.JobListDTO = {
   appVersion: '0.0.1',
   lastUpdated: 1624465572,
 };
+
+export const validJobSubmission = {
+  name: "bsf-no-file-inputs-specified",
+  appId: "bsf",
+  appVersion: "1",
+  description: "somedesc"
+};
+
+export const validJobSubmissionAlt = {
+  name: "bsf-conforming-file-inputs",
+  appId: "bsf",
+  appVersion: "1",
+  jobAttributes: {    
+    fileInputs: [
+      {
+        sourceUrl: "tapis://testuser2.execution/data.txt",
+        targetPath: "data.txt",
+        inPlace: false,
+        meta: {
+          name: "Data file",
+          required: true
+        }
+      }
+    ]
+  }
+};
+
+export const invalidJobSubmission = {
+  name: "bsf-different-meta-name",
+  appId: "bsf",
+  appVersion: "1",
+  jobAttributes: {    
+      fileInputs: [
+          {
+              sourceUrl: "tapis://testuser2.execution/data.txt",
+              targetPath: "data.txt",
+              inPlace: false,
+              meta: {
+                  name: "newmetaname",
+                  required: true
+              }
+          }
+      ]
+  }
+};
