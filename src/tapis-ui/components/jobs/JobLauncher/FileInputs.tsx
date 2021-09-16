@@ -6,8 +6,14 @@ import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
+import { Button } from 'reactstrap';
+import styles from './FileInputs.module.scss';
 
-const FileInputField: FieldArrayComponent<FileInput> = ({ item, index }) => {
+const FileInputField: FieldArrayComponent<FileInput> = ({
+  item,
+  index,
+  remove,
+}) => {
   const {
     register,
     formState: { errors },
@@ -64,20 +70,15 @@ const FileInputField: FieldArrayComponent<FileInput> = ({ item, index }) => {
           system's local file system
         </FormText>
       </FormGroup>
+      <Button onClick={() => remove()} size="sm" className={styles.remove}>
+        Remove
+      </Button>
     </div>
   );
 };
 
-type FileInputsProps = {
-  inputs: Array<FileInput>;
-};
-
-const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
+const FileInputs: React.FC = () => {
   const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
-
-  const required = Array.from(
-    inputs.filter((fileInput) => fileInput?.meta?.required).keys()
-  );
 
   const appendData: FileInput = {
     sourceUrl: '',
@@ -95,7 +96,6 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
     addButtonText: 'Add File Input',
     name,
     render: FileInputField,
-    required,
     appendData,
   });
 };
