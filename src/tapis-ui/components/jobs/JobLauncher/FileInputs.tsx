@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormContext, FieldArrayPath } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
-import { FieldArray, FieldArrayComponent } from './FieldArray';
+import { FieldArrayComponent } from './FieldArray';
 import { CollapsableFieldArray } from './CollapsableFieldArray'
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
@@ -102,7 +102,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     },
   };
 
-  return FieldArray<FileInput>({
+  return CollapsableFieldArray<FileInput>({
     title: 'File Inputs',
     addButtonText: 'Add File Input',
     name,
