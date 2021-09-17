@@ -2,6 +2,7 @@ import React from 'react';
 import { useFormContext, FieldArrayPath } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
+import { CollapsableFieldArray } from './CollapsableFieldArray'
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
