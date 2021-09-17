@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
-type FieldItem<T> = {
+export type FieldItem<T> = {
   id: string;
 } & T;
 

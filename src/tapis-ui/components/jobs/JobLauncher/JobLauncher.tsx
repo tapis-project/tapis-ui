@@ -9,6 +9,8 @@ import { useDetail } from 'tapis-hooks/apps';
 import { SubmitWrapper, QueryWrapper } from 'tapis-ui/_wrappers';
 import { Button, Input } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
+import { FileInput } from '@tapis/tapis-typescript-apps';
+import { InputSpec } from '@tapis/tapis-typescript-jobs';
 import FileInputs from './FileInputs';
 
 export type OnSubmitCallback = (job: Jobs.Job) => any;
@@ -41,6 +43,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     appVersion,
     select: 'jobAttributes',
   });
+  
 
   /* eslint-disable-next-line */
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
@@ -49,7 +52,36 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     console.log(values);
   };
 
-  const formMethods = useForm<Jobs.ReqSubmitJob>();
+  const mapAppInputs = (appInputs: Array<FileInput>) => {
+    return appInputs.map(
+      (input) => {
+        const { sourceUrl, targetPath, inPlace, meta } = input;
+        const result: InputSpec = {
+          sourceUrl,
+          targetPath,
+          inPlace
+        }
+        if (meta) {
+          const { keyValuePairs, ...rest } = meta;
+          result.meta = {
+            ...rest,
+            kv: keyValuePairs ?? []
+          }
+        }
+        return result;
+      }
+    )
+  }
+
+  const defaultValues: Jobs.ReqSubmitJob = {
+    name,
+    appId,
+    appVersion,
+    execSystemId,
+    fileInputs: mapAppInputs(app?.result?.jobAttributes?.fileInputs ?? []),
+  }
+
+  const formMethods = useForm<Jobs.ReqSubmitJob>({ defaultValues });
   const {
     reset,
     register,
@@ -60,16 +92,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   // Populating default values needs to happen as an effect
   // after initial render of field arrays
   useEffect(() => {
-    const tapisApp = app?.result;
-    if (tapisApp) {
-      reset({
-        name,
-        appId: tapisApp.id,
-        appVersion: tapisApp.version,
-        execSystemId,
-        fileInputs: tapisApp.jobAttributes?.fileInputs ?? [],
-      });
-    }
+    reset(defaultValues);
   }, [reset, app?.result?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

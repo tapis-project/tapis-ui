@@ -1,15 +1,87 @@
-import React from 'react';
-import { useFormContext, FieldArrayPath } from 'react-hook-form';
-import { FileInput } from '@tapis/tapis-typescript-apps';
-import { FieldArray, FieldArrayComponent } from './FieldArray';
-import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input, Label, FormText, FormGroup } from 'reactstrap';
-import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
-import { Button } from 'reactstrap';
-import styles from './FileInputs.module.scss';
+import React from "react";
+import { useFormContext, FieldArrayPath } from "react-hook-form";
+import { FileInput } from "@tapis/tapis-typescript-apps";
+import { FieldItem, FieldArray, FieldArrayComponent } from "./FieldArray";
+import FieldWrapper from "tapis-ui/_common/FieldWrapper";
+import { Input, Label, FormText, FormGroup } from "reactstrap";
+import { mapInnerRef } from "tapis-ui/utils/forms";
+import { ReqSubmitJob, KeyValuePair } from "@tapis/tapis-typescript-jobs";
+import { Button } from "reactstrap";
+import { InputSpec, ArgMetaSpec } from '@tapis/tapis-typescript-jobs';
+import styles from "./FileInputs.module.scss";
 
-const FileInputField: FieldArrayComponent<FileInput> = ({
+type KeyValuePairFieldProps = React.FC<{
+  index: number;
+  item: FieldItem<KeyValuePair>;
+  remove?: () => any;
+  name: string;
+}>;
+
+const KeyValuePairField: KeyValuePairFieldProps = ({
+  item,
+  index,
+  remove,
+  name,
+}) => {
+  // useFormContext without a template type prevents register errors at the risk
+  // of less type and fieldpath safety
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ReqSubmitJob>();
+  const { key, value } = item;
+  return (
+    <div>
+      <Input
+        bsSize="sm"
+        defaultValue={key}
+        {...mapInnerRef(
+          register(
+            `${name}.${index}.key` as any, 
+            // will resolve to fileInputs.${index}.meta.kv.${index}.key but must be typecast to any
+            {       
+              required: "Key required",
+            }
+          )
+        )}
+      />
+      {/* ...also value... */}
+    </div>
+  );
+};
+
+type MetaFieldProps = {
+  name: string,
+  meta?: ArgMetaSpec
+}
+
+const MetaField: React.FC<MetaFieldProps> = ({ name, meta }) => {
+  const render: FieldArrayComponent<KeyValuePair> = ({ ...rest }) =>
+    KeyValuePairField({ name, ...rest });
+
+  const appendData: KeyValuePair = {
+    key: "",
+    value: "",
+  };
+
+  return (
+    <div>
+      {
+        /*... other meta fields... */
+      }
+      {
+        FieldArray<KeyValuePair>({
+          name: `${name}.kv`,
+          title: "Key Value Pairs",
+          appendData,
+          render,
+        })
+      }
+    </div>
+  )
+}
+
+const FileInputField: FieldArrayComponent<InputSpec> = ({
   item,
   index,
   remove,
@@ -34,7 +106,7 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
           defaultValue={sourceUrl}
           {...mapInnerRef(
             register(`fileInputs.${index}.sourceUrl`, {
-              required: 'Source URL is required',
+              required: "Source URL is required",
             })
           )}
         />
@@ -50,7 +122,7 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
           defaultValue={targetPath}
           {...mapInnerRef(
             register(`fileInputs.${index}.targetPath`, {
-              required: 'Target Path is required',
+              required: "Target Path is required",
             })
           )}
         />
@@ -62,7 +134,7 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
             bsSize="sm"
             defaultChecked={inPlace}
             {...mapInnerRef(register(`fileInputs.${index}.inPlace`))}
-          />{' '}
+          />{" "}
           In Place
         </Label>
         <FormText className="form-field__help" color="muted">
@@ -70,6 +142,7 @@ const FileInputField: FieldArrayComponent<FileInput> = ({
           system's local file system
         </FormText>
       </FormGroup>
+      <MetaField name={`fileInputs.${index}.meta`} meta={meta}/>
       {remove && !meta?.required && (
         <Button onClick={() => remove()} size="sm" className={styles.remove}>
           Remove
@@ -84,26 +157,27 @@ type FileInputsProps = {
 };
 
 const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
-  const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
+  const name: FieldArrayPath<ReqSubmitJob> = "fileInputs";
 
   const required = Array.from(
     appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
 
-  const appendData: FileInput = {
-    sourceUrl: '',
-    targetPath: '',
+  const appendData: InputSpec = {
+    sourceUrl: "",
+    targetPath: "",
     inPlace: false,
     meta: {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       required: false,
+      kv: []
     },
   };
 
-  return FieldArray<FileInput>({
-    title: 'File Inputs',
-    addButtonText: 'Add File Input',
+  return FieldArray<InputSpec>({
+    title: "File Inputs",
+    addButtonText: "Add File Input",
     name,
     render: FileInputField,
     required,
