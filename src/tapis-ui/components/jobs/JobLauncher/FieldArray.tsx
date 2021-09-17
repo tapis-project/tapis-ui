@@ -1,7 +1,6 @@
 import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from 'reactstrap';
-import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
 type FieldItem<T> = {
@@ -44,20 +43,18 @@ export function FieldArray<T>({
 
   return (
     <div className={styles.array}>
-      <Collapse title={title} note={`${fields.length} items`}>
-        {fields.map((item, index) => (
-          <div className={styles.item}>
-            {render({
-              item,
-              index,
-              remove: !(index in required) ? () => remove(index) : undefined,
-            })}
-          </div>
-        ))}
-        <Button onClick={() => append(appendData)} size="sm">
-          + {addButtonText ?? ''}
-        </Button>
-      </Collapse>
+      {fields.map((item, index) => (
+        <div className={styles.item}>
+          {render({
+            item,
+            index,
+            remove: !(index in required) ? () => remove(index) : undefined,
+          })}
+        </div>
+      ))}
+      <Button onClick={() => append(appendData)} size="sm">
+        + {addButtonText ?? ''}
+      </Button>
     </div>
   );
 }
