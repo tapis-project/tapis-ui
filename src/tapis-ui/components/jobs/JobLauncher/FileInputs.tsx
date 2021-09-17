@@ -108,14 +108,9 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     render: FileInputField,
     required,
     appendData,
-  })
+  });
 
-  return(
-    <Collapse title="File Inputs">
-      {fieldArray}
-    </Collapse>
-    
-  )
+  return <Collapse title="File Inputs">{fieldArray}</Collapse>;
 };
 
 export default FileInputs;
