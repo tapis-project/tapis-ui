@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormContext, FieldArrayPath } from 'react-hook-form';
-import { FileInput } from '@tapis/tapis-typescript-apps';
+import { FileInput as FileInput } from '@tapis/tapis-typescript-apps';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
@@ -89,7 +89,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
   const required = Array.from(
     appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
-
+  
   const appendData: FileInput = {
     sourceUrl: '',
     targetPath: '',
@@ -108,6 +108,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     render: FileInputField,
     required,
     appendData,
+    isCollapsable: true
   });
 };
 
