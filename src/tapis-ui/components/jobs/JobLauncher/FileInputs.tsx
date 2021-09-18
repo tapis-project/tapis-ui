@@ -89,7 +89,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
   const required = Array.from(
     appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
-  
+
   const appendData: FileInput = {
     sourceUrl: '',
     targetPath: '',
@@ -108,7 +108,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     render: FileInputField,
     required,
     appendData,
-    isCollapsable: true
+    isCollapsable: true,
   });
 };
 
