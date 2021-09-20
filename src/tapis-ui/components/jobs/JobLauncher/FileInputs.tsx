@@ -109,7 +109,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     name,
     render: FileInputField,
     required,
-    appendData
+    appendData,
   });
 };
 
