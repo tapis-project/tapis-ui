@@ -16,6 +16,7 @@ export type FieldArrayComponent<
 > = React.FC<{
   index: number;
   item: FieldArrayWithId<Required<TFieldValues>, TArrayPath>;
+  remove?: () => any;
 }>;
 
 type FieldArrayProps<
@@ -49,7 +50,7 @@ export function FieldArray<
   const { control } = useFormContext<TFieldValues>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name,
+    name: name as any,
   });
 
   return (
@@ -60,16 +61,8 @@ export function FieldArray<
             {render({
               item,
               index,
+              remove: !(index in required) ? () => remove(index) : undefined,
             })}
-            {!(index in required) && (
-              <Button
-                onClick={() => remove(index)}
-                size="sm"
-                className={styles.remove}
-              >
-                Remove
-              </Button>
-            )}
           </div>
         ))}
         <Button onClick={() => append(appendData)} size="sm">
