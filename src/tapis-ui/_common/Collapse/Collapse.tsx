@@ -49,7 +49,7 @@ const Collapse: React.FC<CollapseProperties> = ({
         </div>
       </div>
       {!isCollapsable ? (
-        <div>{ children }</div>
+        <div>{children}</div>
       ) : (
         <BootstrapCollapse isOpen={isOpen}>{children}</BootstrapCollapse>
       )}
