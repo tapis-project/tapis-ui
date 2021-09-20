@@ -50,7 +50,7 @@ export function FieldArray<T>({
         open={required.length > 0}
         title={title}
         note={`${fields.length} items`}
-        isCollapsable={isCollapsable && required.length > 0}
+        isCollapsable={isCollapsable}
       >
         {fields.map((item, index) => (
           <div className={styles.item}>

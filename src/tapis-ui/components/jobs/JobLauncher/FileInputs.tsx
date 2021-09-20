@@ -108,7 +108,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     render: FileInputField,
     required,
     appendData,
-    isCollapsable: true,
+    isCollapsable: required.length > 0,
   });
 };
 

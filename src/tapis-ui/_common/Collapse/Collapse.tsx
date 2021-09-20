@@ -32,9 +32,7 @@ const Collapse: React.FC<CollapseProperties> = ({
         <div className={styles.title}>{title}</div>
         <div className={styles.controls}>
           <div>{note ?? ''}</div>
-          {!isCollapsable ? (
-            ''
-          ) : (
+          {isCollapsable && (
             <Button
               color="link"
               className={styles.expand}
@@ -46,11 +44,9 @@ const Collapse: React.FC<CollapseProperties> = ({
           )}
         </div>
       </div>
-      {!isCollapsable ? (
-        <div>{children}</div>
-      ) : (
-        <BootstrapCollapse isOpen={isOpen}>{children}</BootstrapCollapse>
-      )}
+      <BootstrapCollapse isOpen={isOpen || !isCollapsable}>
+        {children}
+      </BootstrapCollapse>
     </div>
   );
 };
