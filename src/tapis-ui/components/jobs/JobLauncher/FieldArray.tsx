@@ -26,6 +26,7 @@ type FieldArrayProps<T> = {
   // react-hook-form control hook
   addButtonText?: string;
   required?: Array<number>;
+  isCollapsable?: boolean;
 };
 
 export function FieldArray<T>({
@@ -35,6 +36,7 @@ export function FieldArray<T>({
   appendData,
   addButtonText,
   required = [],
+  isCollapsable,
 }: FieldArrayProps<T>) {
   const { control } = useFormContext<Record<typeof name, T[]>>();
   const { fields, append, remove } = useFieldArray({
@@ -44,7 +46,12 @@ export function FieldArray<T>({
 
   return (
     <div className={styles.array}>
-      <Collapse title={title} note={`${fields.length} items`}>
+      <Collapse
+        open={required.length > 0}
+        title={title}
+        note={`${fields.length} items`}
+        isCollapsable={isCollapsable}
+      >
         {fields.map((item, index) => (
           <div className={styles.item}>
             {render({
