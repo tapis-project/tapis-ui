@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFormContext, FieldArrayPath } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
+import { InputSpec } from '@tapis/tapis-typescript-jobs';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
@@ -9,7 +10,7 @@ import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
 import styles from './FileInputs.module.scss';
 
-const FileInputField: FieldArrayComponent<FileInput> = ({
+const FileInputField: FieldArrayComponent<InputSpec> = ({
   item,
   index,
   remove,
@@ -90,7 +91,7 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
 
-  const appendData: FileInput = {
+  const appendData: InputSpec = {
     sourceUrl: '',
     targetPath: '',
     inPlace: false,
@@ -98,10 +99,11 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
       name: '',
       description: '',
       required: false,
+      kv: [],
     },
   };
 
-  return FieldArray<FileInput>({
+  return FieldArray<InputSpec>({
     title: 'File Inputs',
     addButtonText: 'Add File Input',
     name,
