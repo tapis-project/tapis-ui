@@ -8,6 +8,7 @@ type CollapseProperties = React.PropsWithChildren<{
   title: string;
   note?: string;
   open?: boolean;
+  isCollapsable?: boolean;
   className?: string;
 }>;
 
@@ -17,6 +18,7 @@ const Collapse: React.FC<CollapseProperties> = ({
   open,
   className,
   children,
+  isCollapsable = true,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(open ?? false);
   const toggle = useCallback(() => {
@@ -29,17 +31,21 @@ const Collapse: React.FC<CollapseProperties> = ({
         <div className={styles.title}>{title}</div>
         <div className={styles.controls}>
           <div>{note ?? ''}</div>
-          <Button
-            color="link"
-            className={styles.expand}
-            size="sm"
-            onClick={toggle}
-          >
-            <Icon name={isOpen ? 'collapse' : 'expand'} />
-          </Button>
+          {isCollapsable && (
+            <Button
+              color="link"
+              className={styles.expand}
+              size="sm"
+              onClick={toggle}
+            >
+              <Icon name={isOpen ? 'collapse' : 'expand'} />
+            </Button>
+          )}
         </div>
       </div>
-      <BootstrapCollapse isOpen={isOpen}>{children}</BootstrapCollapse>
+      <BootstrapCollapse isOpen={isOpen || !isCollapsable}>
+        {children}
+      </BootstrapCollapse>
     </div>
   );
 };
