@@ -96,11 +96,13 @@ const FileInputs: React.FC<{ appInputs: FileInput[] }> = ({ appInputs }) => {
     },
   };
 
+  const name = 'fileInputs';
+
   return (
-    <FieldArray<ReqSubmitJob, 'fileInputs'>
+    <FieldArray<ReqSubmitJob, typeof name>
       title="File Inputs"
       addButtonText="Add File Input"
-      name="fileInputs"
+      name={name}
       render={FileInputField}
       required={required}
       appendData={appendData}
