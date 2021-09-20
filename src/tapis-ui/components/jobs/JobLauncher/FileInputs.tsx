@@ -11,7 +11,7 @@ import styles from './FileInputs.module.scss';
 const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   item,
   index,
-  remove
+  remove,
 }) => {
   const {
     register,
