@@ -25,7 +25,7 @@ const Collapse: React.FC<CollapseProperties> = ({
     setIsOpen(!isOpen);
   }, [isOpen, setIsOpen]);
 
-  isCollapsable = isCollapsable ? isCollapsable != undefined : false;
+  isCollapsable = isCollapsable ? isCollapsable !== undefined : false;
 
   // Only render collapsable UI if isCollapsable defined and true
   return (
