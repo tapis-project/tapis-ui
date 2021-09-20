@@ -18,14 +18,12 @@ const Collapse: React.FC<CollapseProperties> = ({
   open,
   className,
   children,
-  isCollapsable,
+  isCollapsable = true,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(open ?? false);
   const toggle = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen, setIsOpen]);
-
-  isCollapsable = isCollapsable ? isCollapsable !== undefined : false;
 
   // Only render collapsable UI if isCollapsable defined and true
   return (
