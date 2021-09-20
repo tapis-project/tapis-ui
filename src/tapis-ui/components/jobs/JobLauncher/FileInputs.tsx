@@ -1,13 +1,15 @@
 import React from 'react';
-import { useFormContext, FieldArrayPath } from 'react-hook-form';
-import { FileInput } from '@tapis/tapis-typescript-apps';
+import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 
-const FileInputField: FieldArrayComponent<FileInput> = ({ item, index }) => {
+const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
+  item,
+  index,
+}) => {
   const {
     register,
     formState: { errors },
@@ -68,13 +70,9 @@ const FileInputField: FieldArrayComponent<FileInput> = ({ item, index }) => {
   );
 };
 
-type FileInputsProps = {
-  inputs: Array<FileInput>;
-};
+type FileInput = TFieldArray<Required<ReqSubmitJob>, 'fileInputs'>;
 
-const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
-  const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
-
+const FileInputs: React.FC<{ inputs: FileInput[] }> = ({ inputs }) => {
   const required = Array.from(
     inputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
@@ -90,14 +88,16 @@ const FileInputs: React.FC<FileInputsProps> = ({ inputs }) => {
     },
   };
 
-  return FieldArray<FileInput>({
-    title: 'File Inputs',
-    addButtonText: 'Add File Input',
-    name,
-    render: FileInputField,
-    required,
-    appendData,
-  });
+  return (
+    <FieldArray<ReqSubmitJob, 'fileInputs'>
+      title="File Inputs"
+      addButtonText="Add File Input"
+      name="fileInputs"
+      render={FileInputField}
+      required={required}
+      appendData={appendData}
+    />
+  );
 };
 
 export default FileInputs;
