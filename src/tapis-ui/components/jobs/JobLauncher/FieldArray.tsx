@@ -1,44 +1,55 @@
 import React from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import {
+  useFieldArray,
+  useFormContext,
+  ArrayPath,
+  FieldArrayWithId,
+  FieldArray as TFieldArray,
+} from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { Collapse } from 'tapis-ui/_common';
 import styles from './FieldArray.module.scss';
 
-type FieldItem<T> = {
-  id: string;
-} & T;
-
-export type FieldArrayComponent<T> = React.FC<{
+export type FieldArrayComponent<
+  TFieldValues,
+  TArrayPath extends ArrayPath<TFieldValues>
+> = React.FC<{
   index: number;
-  item: FieldItem<T>;
+  item: FieldArrayWithId<Required<TFieldValues>, TArrayPath>;
   remove?: () => any;
 }>;
 
-type FieldArrayProps<T> = {
+type FieldArrayProps<
+  TFieldValues,
+  TArrayPath extends ArrayPath<TFieldValues>
+> = {
   // react-hook-form data ref
-  name: string;
+  name: TArrayPath;
   // Title for collapse panel
   title: string;
   // Custom component to render field
-  render: FieldArrayComponent<T>;
+  render: FieldArrayComponent<TFieldValues, TArrayPath>;
   // Data template when appending new fields
-  appendData: T;
+  appendData: TFieldArray<TFieldValues, TArrayPath>;
   // react-hook-form control hook
   addButtonText?: string;
   required?: Array<number>;
   isCollapsable?: boolean;
 };
 
-export function FieldArray<T>({
+export function FieldArray<
+  TFieldValues,
+  TArrayPath extends ArrayPath<TFieldValues>
+>({
   name,
   title,
   render,
   appendData,
   addButtonText,
   required = [],
-  isCollapsable,
-}: FieldArrayProps<T>) {
-  const { control } = useFormContext<Record<typeof name, T[]>>();
+  isCollapsable = true,
+}: FieldArrayProps<Required<TFieldValues>, TArrayPath>) {
+  const { control } = useFormContext<TFieldValues>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: name as any,
@@ -46,7 +57,6 @@ export function FieldArray<T>({
 
   let requiredText = required.length > 0 ? `Required (${required.length})` : '';
   console.log(requiredText)
-
 
   return (
     <div className={styles.array}>

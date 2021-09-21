@@ -27,7 +27,6 @@ const Collapse: React.FC<CollapseProperties> = ({
     setIsOpen(!isOpen);
   }, [isOpen, setIsOpen]);
 
-  // Only render collapsable UI if isCollapsable defined and true
   return (
     <div className={className}>
       <div className={styles.header}>

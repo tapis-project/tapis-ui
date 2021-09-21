@@ -1,7 +1,6 @@
 import React from 'react';
-import { useFormContext, FieldArrayPath } from 'react-hook-form';
+import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
 import { FileInput } from '@tapis/tapis-typescript-apps';
-import { InputSpec } from '@tapis/tapis-typescript-jobs';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, Label, FormText, FormGroup } from 'reactstrap';
@@ -10,7 +9,7 @@ import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
 import styles from './FileInputs.module.scss';
 
-const FileInputField: FieldArrayComponent<InputSpec> = ({
+const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   item,
   index,
   remove,
@@ -80,18 +79,12 @@ const FileInputField: FieldArrayComponent<InputSpec> = ({
   );
 };
 
-type FileInputsProps = {
-  appInputs: Array<FileInput>;
-};
-
-const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
-  const name: FieldArrayPath<ReqSubmitJob> = 'fileInputs';
-
+const FileInputs: React.FC<{ appInputs: FileInput[] }> = ({ appInputs }) => {
   const required = Array.from(
     appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
   );
 
-  const appendData: InputSpec = {
+  const appendData: TFieldArray<Required<ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
     targetPath: '',
     inPlace: false,
@@ -103,14 +96,18 @@ const FileInputs: React.FC<FileInputsProps> = ({ appInputs }) => {
     },
   };
 
-  return FieldArray<InputSpec>({
-    title: 'File Inputs',
-    addButtonText: 'Add File Input',
-    name,
-    render: FileInputField,
-    required,
-    appendData,
-  });
+  const name = 'fileInputs';
+
+  return (
+    <FieldArray<ReqSubmitJob, typeof name>
+      title="File Inputs"
+      addButtonText="Add File Input"
+      name={name}
+      render={FileInputField}
+      required={required}
+      appendData={appendData}
+    />
+  );
 };
 
 export default FileInputs;
