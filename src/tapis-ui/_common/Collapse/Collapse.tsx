@@ -33,11 +33,13 @@ const Collapse: React.FC<CollapseProperties> = ({
         <div className={styles.title}>
           {title}
           {requiredText && (
-              <Badge color="danger" style={{ marginLeft: '10px', marginBottom: '10px' }}>
-                {requiredText}
-              </Badge>
-            )
-          }
+            <Badge
+              color="danger"
+              style={{ marginLeft: '10px', marginBottom: '10px' }}
+            >
+              {requiredText}
+            </Badge>
+          )}
         </div>
         <div className={styles.controls}>
           <div>{note ?? ''}</div>

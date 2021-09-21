@@ -56,7 +56,7 @@ export function FieldArray<
   });
 
   let requiredText = required.length > 0 ? `Required (${required.length})` : '';
-  console.log(requiredText)
+  console.log(requiredText);
 
   return (
     <div className={styles.array}>
