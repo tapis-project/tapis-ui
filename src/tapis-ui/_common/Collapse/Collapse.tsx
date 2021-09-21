@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Badge } from 'reactstrap';
 import { Collapse as BootstrapCollapse } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Collapse.module.scss';
@@ -8,6 +8,7 @@ type CollapseProperties = React.PropsWithChildren<{
   title: string;
   note?: string;
   open?: boolean;
+  requiredText?: string;
   isCollapsable?: boolean;
   className?: string;
 }>;
@@ -16,6 +17,7 @@ const Collapse: React.FC<CollapseProperties> = ({
   title,
   note,
   open,
+  requiredText,
   className,
   children,
   isCollapsable = true,
@@ -29,7 +31,15 @@ const Collapse: React.FC<CollapseProperties> = ({
   return (
     <div className={className}>
       <div className={styles.header}>
-        <div className={styles.title}>{title}</div>
+        <div className={styles.title}>
+          {title}
+          {requiredText && (
+              <Badge color="danger" style={{ marginLeft: '10px', marginBottom: '10px' }}>
+                {requiredText}
+              </Badge>
+            )
+          }
+        </div>
         <div className={styles.controls}>
           <div>{note ?? ''}</div>
           {isCollapsable && (

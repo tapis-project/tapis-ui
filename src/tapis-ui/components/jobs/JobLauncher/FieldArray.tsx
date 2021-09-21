@@ -44,15 +44,17 @@ export function FieldArray<T>({
     name: name as any,
   });
 
-  const requiredItemsNote =
-    required.length > 0 ? ` (${required.length} required)` : '';
+  let requiredText = required.length > 0 ? `Required (${required.length})` : '';
+  console.log(requiredText)
+
 
   return (
     <div className={styles.array}>
       <Collapse
         open={required.length > 0}
         title={title}
-        note={`${fields.length} items${requiredItemsNote}`}
+        note={`${fields.length} items`}
+        requiredText={requiredText}
         isCollapsable={isCollapsable}
       >
         {fields.map((item, index) => (
