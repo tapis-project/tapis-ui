@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import "./Layout.scss";
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
-
 const Layout: React.FC<{ projectId: string, siteId: string, instrumentId: string }> = ({
   projectId,
   siteId,
@@ -63,7 +62,7 @@ const Layout: React.FC<{ projectId: string, siteId: string, instrumentId: string
           ? variables.map((variable: string, index: number) => {
             const id = `${index}`;
             let variableMeasurements = measurements[variable];
-            return <Measurements id={id} variable={variable} graphWidth={600} measurements={variableMeasurements} select={select(id)} />
+            return <Measurements key={id} id={id} variable={variable} graphWidth={600} measurements={variableMeasurements} select={select(id)} />
           })
           : <i>No measurements found</i>
         }

@@ -1,6 +1,7 @@
 import React from 'react';
 import Plot from "react-plotly.js";
 import "./Measurements.scss";
+import { v4 as uuidv4 } from "uuid";
 
 const Measurements: React.FC<{ variable: string, graphWidth: number, id: string, measurements: {[datetime: string]: number}, select: () => void }> = ({
   variable,
@@ -33,7 +34,7 @@ const Measurements: React.FC<{ variable: string, graphWidth: number, id: string,
               Object.entries(measurements).map((entry: [string, number]) => {
                 let date = entry[0].replace("T", " ");
                 return (
-                  <div key={""}>
+                  <div key={uuidv4()}>
                     {`${date}: ${entry[1]}`}
                   </div>
                 )

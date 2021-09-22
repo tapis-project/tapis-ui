@@ -1,22 +1,17 @@
-.variable-list {
-    height: 500px;
-    overflow-y: auto;
-}
-
-.variable-list li {
+li {
     padding: 0.5rem 1rem;
     list-style-type: none;
 }
 
-.variable-list li .measurements-list div:nth-child(odd) {
+li .measurements-list div:nth-child(odd) {
     background-color: #f4f4f4;
 }
 
-.variable-list li .measurements-list {
+li .measurements-list {
     padding-left: 20px;
 }
 
-.variable-list li:hover {
+li:hover {
     cursor: pointer;
 }
 
