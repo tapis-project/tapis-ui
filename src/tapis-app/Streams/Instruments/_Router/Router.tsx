@@ -5,28 +5,31 @@ import {
   RouteComponentProps,
   Switch
 } from 'react-router-dom';
-import FileListing from '../FileListing';
 import { SectionMessage } from 'tapis-ui/_common';
+import MeasurementsListing from '../../MeasurementsListing';
 
-const Router: React.FC = () => {
+const Router: React.FC<{ projectId: string, siteId: string }> = ({
+  projectId,
+  siteId
+}) => {
   const { path } = useRouteMatch();
 
   return (
     <Switch>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">
-          Select a system from the list.
+          Select an instrument from the list.
         </SectionMessage>
       </Route>
 
       <Route
-        path={`${path}/:systemId`}
+        path={`${path}/:instrumentId`}
         render={({
           match: {
-            params: { systemId },
-          },
-        }: RouteComponentProps<{ systemId: string }>) => (
-          <FileListing systemId={systemId} path={'/'} />
+            params: { instrumentId }
+          }
+        }: RouteComponentProps<{ instrumentId: string }>) => (
+          <MeasurementsListing projectId={projectId} siteId={siteId} instrumentId={instrumentId} />
         )}
       />
     </Switch>

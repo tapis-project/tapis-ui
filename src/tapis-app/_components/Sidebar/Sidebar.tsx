@@ -27,6 +27,9 @@ const Sidebar: React.FC = () => {
             <NavItem to="/jobs" icon="jobs">
               Jobs
             </NavItem>
+            <NavItem to="/streams" icon="streams">
+              Streams
+            </NavItem>
             <NavItem to="/logout" icon="user">
               Logout
             </NavItem>

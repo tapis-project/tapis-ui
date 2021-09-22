@@ -1,18 +1,18 @@
-import { Systems } from '@tapis/tapis-typescript';
+import { Streams } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const list = (
-  params: Systems.GetSystemsRequest,
+  params: Streams.ListMeasurementsRequest,
   basePath: string,
   jwt: string
 ) => {
-  const api: Systems.SystemsApi = apiGenerator<Systems.SystemsApi>(
-    Systems,
-    Systems.SystemsApi,
+  const api: Streams.MeasurementsApi = apiGenerator<Streams.MeasurementsApi>(
+    Streams,
+    Streams.MeasurementsApi,
     basePath,
     jwt
   );
-  return errorDecoder<Systems.RespSystems>(() => api.getSystems(params));
+  return errorDecoder<Streams.RespListMeasurements>(() => api.listMeasurements(params));
 };
 
 export default list;

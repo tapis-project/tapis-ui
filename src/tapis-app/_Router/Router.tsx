@@ -8,6 +8,7 @@ import Login from '../Login';
 import Dashboard from '../Dashboard';
 import Jobs from '../Jobs';
 import Systems from '../Systems';
+import Streams from "../Streams";
 import UIPatterns from '../UIPatterns';
 
 const Router: React.FC = () => {
@@ -36,6 +37,9 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute path="/jobs">
         <Jobs />
+      </ProtectedRoute>
+      <ProtectedRoute path="/streams">
+        <Streams />
       </ProtectedRoute>
       <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
