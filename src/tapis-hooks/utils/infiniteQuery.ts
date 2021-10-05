@@ -6,7 +6,7 @@ export const concatResults = <T>(pages: ResultPages<T>): T[] =>
     []
   );
 
-export const tapisNextPageParam = <T extends { result?: Array<any> }>(
+export const tapisNextPageParam = <T extends { result?: Array<any> | any }>(
   lastPage: T,
   allPages: T[],
   params: { limit?: number }
