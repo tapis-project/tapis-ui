@@ -8,5 +8,5 @@ export const project: Streams.Project = {
   pi: 'ui_e2e_owner',
   project_url: 'https://tapis-project.org/',
   active: true,
-  metadata: {}
+  metadata: {},
 };

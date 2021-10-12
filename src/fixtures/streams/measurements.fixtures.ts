@@ -12,5 +12,5 @@ export const measurements: Streams.Measurements = {
     '2021-09-18T18:54:17Z': 62.18,
     '2021-09-19T19:54:17Z': 75.47,
     '2021-09-20T09:54:17Z': 72.89,
-  }
+  },
 };

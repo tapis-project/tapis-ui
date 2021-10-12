@@ -9,5 +9,5 @@ export const instrument: Streams.Instrument = {
   site_id: 'ui_e2e_site',
   created: '2021-09-18T18:54:17Z',
   tags: [],
-  metadata: {}
+  metadata: {},
 };

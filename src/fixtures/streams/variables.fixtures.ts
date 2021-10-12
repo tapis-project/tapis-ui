@@ -1,6 +1,5 @@
 import { Streams } from '@tapis/tapis-typescript';
 
-
 export const variables: Array<Streams.Variable> = [
   {
     var_name: 'ui_e2e_var_1',
@@ -25,5 +24,5 @@ export const variables: Array<Streams.Variable> = [
     measured_property: 'humidity',
     chords_id: 0,
     metadata: {},
-  }
+  },
 ];
