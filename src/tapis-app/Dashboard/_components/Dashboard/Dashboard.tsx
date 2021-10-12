@@ -13,7 +13,7 @@ import { useTapisConfig } from 'tapis-hooks';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
 import { useList as useJobsList } from 'tapis-hooks/jobs';
 import { useList as useAppsList } from 'tapis-hooks/apps';
-import { useList as useProjectsList } from "tapis-hooks/streams/projects";
+import { useList as useProjectsList } from 'tapis-hooks/streams/projects';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 
