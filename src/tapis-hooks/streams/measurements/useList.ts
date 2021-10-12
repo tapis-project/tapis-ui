@@ -8,8 +8,8 @@ import { concatResults, tapisNextPageParam } from './infiniteQuery';
 const useList = (params: Streams.ListMeasurementsRequest) => {
   const { accessToken, basePath } = useTapisConfig();
 
-  //limit measurements object to contain 100 measurements by default
-  params.limit = params.limit ?? 100;
+  //limit measurements object to contain 1000 unique datetimes by default
+  params.limit = params.limit ?? 1000;
 
   const result: InfiniteQueryObserverResult<
     Streams.RespListMeasurements,

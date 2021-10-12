@@ -9,20 +9,10 @@ export const tapisNextPageParam = (
   allPages: Streams.RespListMeasurements[],
   params: { limit?: number }
 ) => {
-  const measurements: Streams.Measurements | null = lastPage.result ?? null;
-  //get number of results
-  let results = 0;
-  if (measurements) {
-    //deconstruct to standard props and props referencing streams variables
-    const { instrument, site, measurements_in_file, ...variableProps } =
-      measurements;
-    for (let variable in variableProps) {
-      //get variable measurements
-      let variableMeasurements: { [datetime: string]: number } =
-        measurements[variable];
-      results += Object.keys(variableMeasurements).length;
-    }
-  }
+  //limit represents the maximum number of unique datetimes in the measurements object and measurements_in_file represents the number of unique datetimes,
+  //so this will work for the number of results check
+  const results: number = lastPage.result?.measurements_in_file ?? 0;
+  
   return results < params.limit!
     ? undefined
     : {
@@ -35,9 +25,7 @@ export const tapisNextPageParam = (
 export const concatResults = (
   pages: Streams.RespListMeasurements[]
 ): Streams.Measurements | null => {
-  //measurements_in_file is a representation of the number of unique datetimes not the total measurements
-  //store datetimes in a set for uniqueness
-  let datetimes = new Set<string>();
+  //measurements_in_file is a representation of the number of unique datetimes
 
   //reduce to a single Measurements object
   let reduced: Streams.Measurements | null = pages.reduce(
@@ -58,32 +46,17 @@ export const concatResults = (
             let variableMeasurements: { [datetime: string]: number } =
               measurements[variable];
 
-            //add datetimes to store
-            for (let datetime in variableMeasurements) {
-              datetimes.add(datetime);
-            }
-
-            //get variable measurements from accumulator
-            let accVariableMeasurements = acc[variable];
             //combine objects if accumulator already has a reference to this variable
-            //otherwise just add new variable measurements to accumulator
-            acc[variable] = accVariableMeasurements
-              ? {
-                  ...accVariableMeasurements,
+            acc[variable] = {
+                  ...acc[variable],
                   ...variableMeasurements,
-                }
-              : variableMeasurements;
+                };
           }
+          //measurements_in_file should always be defined in returned measurements
+          acc.measurements_in_file! += measurements_in_file!;
         }
         //otherwise return measurements
         else {
-          //still need to get datetimes
-          for (let variable in variableProps) {
-            //add datetimes to store
-            for (let datetime in measurements[variable]) {
-              datetimes.add(datetime);
-            }
-          }
           //set next to measurements
           next = measurements;
         }
@@ -92,11 +65,6 @@ export const concatResults = (
     },
     null
   );
-
-  //set measurements_in_file to the number of unique datetimes
-  if (reduced) {
-    reduced.measurements_in_file = datetimes.size;
-  }
 
   return reduced;
 };
