@@ -13,6 +13,7 @@ import { useTapisConfig } from 'tapis-hooks';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
 import { useList as useJobsList } from 'tapis-hooks/jobs';
 import { useList as useAppsList } from 'tapis-hooks/apps';
+import { useList as useProjectsList } from "tapis-hooks/streams/projects";
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 
@@ -66,6 +67,7 @@ const Dashboard: React.FC = () => {
   const systems = useSystemsList({});
   const jobs = useJobsList({});
   const apps = useAppsList({ select: 'jobAttributes,version' });
+  const projects = useProjectsList();
 
   return (
     <div>
@@ -106,6 +108,14 @@ const Dashboard: React.FC = () => {
               link="/jobs"
               counter={`${jobs?.data?.result?.length} jobs`}
               loading={jobs?.isLoading}
+            />
+            <DashboardCard
+              icon="project"
+              name="Projects"
+              text="View TAPIS streams projects"
+              link="/streams/projects"
+              counter={`${projects?.data?.result?.length} projects`}
+              loading={projects?.isLoading}
             />
           </>
         ) : (
