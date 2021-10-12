@@ -12,7 +12,7 @@ export const tapisNextPageParam = (
   //limit represents the maximum number of unique datetimes in the measurements object and measurements_in_file represents the number of unique datetimes,
   //so this will work for the number of results check
   const results: number = lastPage.result?.measurements_in_file ?? 0;
-  
+
   return results < params.limit!
     ? undefined
     : {
@@ -48,9 +48,9 @@ export const concatResults = (
 
             //combine objects if accumulator already has a reference to this variable
             acc[variable] = {
-                  ...acc[variable],
-                  ...variableMeasurements,
-                };
+              ...acc[variable],
+              ...variableMeasurements,
+            };
           }
           //measurements_in_file should always be defined in returned measurements
           acc.measurements_in_file! += measurements_in_file!;
