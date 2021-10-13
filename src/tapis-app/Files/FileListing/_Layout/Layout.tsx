@@ -13,33 +13,35 @@ const Layout: React.FC<{ systemId: string; path: string }> = ({
   const history = useHistory();
   const onNavigate = useCallback(
     (file: Files.FileInfo) => {
-      history.push(`${pathname}${file.name}/`)
+      history.push(`${pathname}${file.name}/`);
     },
-    [ pathname, history ]
-  )
+    [pathname, history]
+  );
 
-  const onBack = useCallback(
-    () => {
-      const newPath =`${pathname.split('/').slice(0, -2).join('/')}/`
-      history.push(newPath);
-    },
-    [ pathname, history ]
-  )
+  const onBack = useCallback(() => {
+    const newPath = `${pathname.split('/').slice(0, -2).join('/')}/`;
+    history.push(newPath);
+  }, [pathname, history]);
 
-  const header = <LayoutHeader type={'sub-header'}>
-    <div>Files</div>
-    { 
-      path !== '/' &&
-      <span className={`btn btn-link ${styles.up}`} onClick={onBack}>
-        <Icon name="contract"/>
-        Up
-      </span>
-    }
-  </LayoutHeader>;
+  const header = (
+    <LayoutHeader type={'sub-header'}>
+      <div>Files</div>
+      {path !== '/' && (
+        <span className={`btn btn-link ${styles.up}`} onClick={onBack}>
+          <Icon name="contract" />
+          Up
+        </span>
+      )}
+    </LayoutHeader>
+  );
 
   const body = (
     <div style={{ flex: 1 }}>
-      <FileListing systemId={systemId} path={path} onNavigate={onNavigate}></FileListing>
+      <FileListing
+        systemId={systemId}
+        path={path}
+        onNavigate={onNavigate}
+      ></FileListing>
     </div>
   );
 

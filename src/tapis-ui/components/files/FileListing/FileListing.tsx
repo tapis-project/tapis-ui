@@ -10,24 +10,34 @@ export type OnSelectCallback = (file: Files.FileInfo) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
 
 const FileListingFile: React.FC<{ file: Files.FileInfo }> = ({ file }) => {
-  return <div>
-    <Icon name="file" /> {`${file.name}`} 
-  </div>
-}
+  return (
+    <div>
+      <Icon name="file" /> {`${file.name}`}
+    </div>
+  );
+};
 
 interface FileListingDirProps {
-  file: Files.FileInfo,
-  onNavigate?: OnNavigateCallback
+  file: Files.FileInfo;
+  onNavigate?: OnNavigateCallback;
 }
 
-const FileListingDir: React.FC<FileListingDirProps> = ({ file, onNavigate }) => {
-  return <div>
-    <Icon name="folder" />
-    <span className={`btn btn-link ${styles.dir}`} onClick={() => onNavigate && onNavigate(file)}>
-      {`${file.name}`}
-    </span>
-  </div>
-}
+const FileListingDir: React.FC<FileListingDirProps> = ({
+  file,
+  onNavigate,
+}) => {
+  return (
+    <div>
+      <Icon name="folder" />
+      <span
+        className={`btn btn-link ${styles.dir}`}
+        onClick={() => onNavigate && onNavigate(file)}
+      >
+        {`${file.name}`}
+      </span>
+    </div>
+  );
+};
 
 interface FileListingItemProps {
   file: Files.FileInfo;
@@ -38,15 +48,15 @@ interface FileListingItemProps {
 const FileListingItem: React.FC<FileListingItemProps> = ({
   file,
   onSelect = undefined,
-  onNavigate = undefined
+  onNavigate = undefined,
 }) => {
   return (
     <li onClick={() => (onSelect ? onSelect(file) : null)}>
-      {
-        file.type === 'file'
-          ? <FileListingFile file={file} />
-          : <FileListingDir file={file} onNavigate={onNavigate} />
-      }
+      {file.type === 'file' ? (
+        <FileListingFile file={file} />
+      ) : (
+        <FileListingDir file={file} onNavigate={onNavigate} />
+      )}
     </li>
   );
 };
@@ -62,7 +72,7 @@ const FileListing: React.FC<FileListingProps> = ({
   systemId,
   path,
   onSelect = undefined,
-  onNavigate = undefined
+  onNavigate = undefined,
 }) => {
   const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
     useList({ systemId, path });

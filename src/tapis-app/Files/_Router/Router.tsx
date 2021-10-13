@@ -24,7 +24,7 @@ const Router: React.FC = () => {
           match: {
             params: { systemId, systemPath },
           },
-        }: RouteComponentProps<{ systemId: string, systemPath?: string}>) => (
+        }: RouteComponentProps<{ systemId: string; systemPath?: string }>) => (
           <FileListing systemId={systemId} path={systemPath ?? '/'} />
         )}
       />
