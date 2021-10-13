@@ -21,6 +21,9 @@ const Sidebar: React.FC = () => {
             <NavItem to="/systems" icon="data-files">
               Systems
             </NavItem>
+            <NavItem to="/files" icon="folder">
+              Files
+            </NavItem>
             <NavItem to="/apps" icon="applications">
               Apps
             </NavItem>
