@@ -19,7 +19,7 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/:systemId/:systemPath?`}
+        path={`${path}/:systemId/:systemPath*`}
         render={({
           match: {
             params: { systemId, systemPath },

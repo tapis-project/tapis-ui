@@ -37,8 +37,6 @@ const Layout: React.FC<{ systemId: string; path: string }> = ({
     }
   </LayoutHeader>;
 
-  console.log(path);
-
   const body = (
     <div style={{ flex: 1 }}>
       <FileListing systemId={systemId} path={path} onNavigate={onNavigate}></FileListing>
