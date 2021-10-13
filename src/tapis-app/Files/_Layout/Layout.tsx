@@ -11,7 +11,7 @@ import { Router } from '../_Router';
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <div>My Data</div>
+      <div>Files</div>
     </LayoutHeader>
   );
 
