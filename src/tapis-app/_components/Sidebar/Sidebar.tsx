@@ -27,7 +27,7 @@ const Sidebar: React.FC = () => {
             <NavItem to="/jobs" icon="jobs">
               Jobs
             </NavItem>
-            <NavItem to="/files" icon="data-files">
+            <NavItem to="/files" icon="folder">
               Files
             </NavItem>
             <NavItem to="/logout" icon="user">
