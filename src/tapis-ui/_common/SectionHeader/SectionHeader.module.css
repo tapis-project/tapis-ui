@@ -24,6 +24,12 @@
 
   /* FAQ: It is simpler to do this in CSS than in JavaScript */
   text-transform: capitalize;
+
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: flex-end;
+  align-content: flex-end;
 }
 /* Header actions are always after heading text */
 .heading ~ * {

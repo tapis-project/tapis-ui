@@ -67,6 +67,15 @@ const FileListing: React.FC<FileListingProps> = ({
   const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
     useList({ systemId, path });
 
+  const fileSelectCallback = useCallback<OnSelectCallback>(
+    (file: Files.FileInfo) => {
+      if (onSelect) {
+        onSelect(file);
+      }
+    },
+    [onSelect]
+  );
+
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
   return (
@@ -81,7 +90,7 @@ const FileListing: React.FC<FileListingProps> = ({
             <FileListingItem
               file={file}
               key={file.name}
-              onSelect={onSelect}
+              onSelect={fileSelectCallback}
               onNavigate={onNavigate}
             />
           )
