@@ -1,6 +1,6 @@
 const QueryKeys = {
   list: 'systems/list',
-  details: 'systems/details'
+  details: 'systems/details',
 };
 
 export default QueryKeys;

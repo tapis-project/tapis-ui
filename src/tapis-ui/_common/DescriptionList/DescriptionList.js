@@ -41,7 +41,11 @@ const DescriptionList = ({ className, data, density, direction }) => {
             ))
           ) : (
             <dd className={styles.value} data-testid="value">
-              {value}
+              {typeof value === 'object' ? (
+                <DescriptionList data={value} />
+              ) : (
+                value
+              )}
             </dd>
           )}
         </React.Fragment>
