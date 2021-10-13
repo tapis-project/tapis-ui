@@ -19,8 +19,7 @@ const FileListingItem: React.FC<FileListingItemProps> = ({
 }) => {
   return (
     <li onClick={() => (onSelect ? onSelect(file) : null)}>
-      {/* will need to conditionally set file icon */}
-      <Icon name="file" /> {`${file.name}`}
+      <Icon name={`${file.type === 'dir' ? 'folder' : 'file'}`} /> {`${file.name}`}
     </li>
   );
 };
