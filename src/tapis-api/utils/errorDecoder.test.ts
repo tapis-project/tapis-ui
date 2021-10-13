@@ -11,18 +11,14 @@ describe('Error Decoder', () => {
     const promise = errorDecoder<ResultType>(
       () => new Promise((resolve) => resolve(mockResult))
     );
-    promise.then((result) => {
-      expect(result).toEqual(mockResult);
-    });
+    return expect(promise).resolves.toBe(mockResult);
   });
 
   it('Returns a non json error', () => {
     const promise = errorDecoder<ResultType>(
       () => new Promise((_, reject) => reject('Mock error'))
     );
-    promise.catch((error) => {
-      expect(error).toEqual('Mock error');
-    });
+    return expect(promise).rejects.toBe('Mock error');
   });
 
   it('Returns a json error', () => {
@@ -30,8 +26,6 @@ describe('Error Decoder', () => {
     const promise = errorDecoder<ResultType>(
       () => new Promise((_, reject) => reject(jsonError))
     );
-    promise.catch((error) => {
-      expect(error).toEqual('JSON error');
-    });
+    return expect(promise).rejects.toBe('JSON error');
   });
 });
