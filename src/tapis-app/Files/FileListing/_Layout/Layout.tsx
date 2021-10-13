@@ -7,7 +7,6 @@ const Layout: React.FC<{ systemId: string; path: string }> = ({
   path,
 }) => {
   const params = useParams();
-  console.log(params);
   const header = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
 
   const body = (

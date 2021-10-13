@@ -10,7 +10,6 @@ import { SectionMessage } from 'tapis-ui/_common';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
-
   return (
     <Switch>
       <Route path={`${path}`} exact>
@@ -20,13 +19,13 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/:systemId`}
+        path={`${path}/:systemId/:systemPath?`}
         render={({
           match: {
-            params: { systemId },
+            params: { systemId, systemPath },
           },
-        }: RouteComponentProps<{ systemId: string }>) => (
-          <FileListing systemId={systemId} path={'/'} />
+        }: RouteComponentProps<{ systemId: string, systemPath?: string}>) => (
+          <FileListing systemId={systemId} path={systemPath ?? '/'} />
         )}
       />
     </Switch>
