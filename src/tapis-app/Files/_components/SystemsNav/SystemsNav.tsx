@@ -4,7 +4,6 @@ import { useList } from 'tapis-hooks/systems';
 import { Systems } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import AddButton from '../AddButton';
 
 const SystemsNav: React.FC = () => {
   const { url } = useRouteMatch();
@@ -14,7 +13,6 @@ const SystemsNav: React.FC = () => {
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <AddButton />
       <Navbar>
         {definitions.length ? (
           definitions.map((system) => (

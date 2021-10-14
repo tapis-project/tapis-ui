@@ -65,6 +65,22 @@ const Toolbar: React.FC = () => {
         }}
       />
       <ToolbarButton
+        text="Upload"
+        icon="upload"
+        disabled={true}
+        onClick={() => {
+          console.log('Toolbar button');
+        }}
+      />
+      <ToolbarButton
+        text="Folder"
+        icon="add"
+        disabled={true}
+        onClick={() => {
+          console.log('Toolbar button');
+        }}
+      />
+      <ToolbarButton
         text="Trash"
         icon="trash"
         disabled={true}

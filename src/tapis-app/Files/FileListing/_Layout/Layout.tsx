@@ -1,7 +1,6 @@
 import { FileListing } from 'tapis-ui/components/files';
-import { PageLayout, LayoutHeader, Icon } from 'tapis-ui/_common';
-import { NavLink } from 'react-router-dom';
-import styles from './Layout.module.scss';
+import { PageLayout, LayoutHeader, Breadcrumbs} from 'tapis-ui/_common';
+import Toolbar from '../../_components/Toolbar';
 
 type LayoutProps = {
   systemId: string;
@@ -18,13 +17,10 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const header = (
     <LayoutHeader type={'sub-header'}>
-      <div>Files</div>
-      {backLocation && (
-        <span className={styles.up}>
-          <Icon name="contract" />
-          <NavLink to={backLocation}>Up</NavLink>
-        </span>
-      )}
+      <div>
+        <Breadcrumbs items={['sys-name']} />
+        <Toolbar />
+      </div>
     </LayoutHeader>
   );
 
