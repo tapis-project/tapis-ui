@@ -10,8 +10,9 @@ type BreadcrumbsProps = {
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   return (
     <div className={styles.root}>
+      Files /
       {items.map((item) => {
-        return <span className={styles.root}>{item} / </span>;
+        return <span> {item} /</span>;
       })}
     </div>
   );

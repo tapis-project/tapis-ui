@@ -13,7 +13,7 @@ import Toolbar from '../_components/Toolbar';
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <Breadcrumbs items={['sys-name']} />
+      <Breadcrumbs items={['sys-name', 'dir1', 'file1']} />
       <Toolbar />
     </LayoutHeader>
   );

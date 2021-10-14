@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const header = (
     <LayoutHeader type={'sub-header'}>
-        Files
+      Files
     </LayoutHeader>
   );
 

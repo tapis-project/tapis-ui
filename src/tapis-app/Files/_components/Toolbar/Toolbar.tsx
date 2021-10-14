@@ -18,14 +18,16 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   disabled = true,
 }) => {
   return (
-    <Button
-      disabled={disabled}
-      onClick={onClick}
-      className={styles.toolbar_btn}
-    >
-      <Icon name={icon}></Icon>
-      <span> {text}</span>
-    </Button>
+    <div>
+      <Button
+        disabled={disabled}
+        onClick={onClick}
+        className={styles.toolbar_btn}
+      >
+        <Icon name={icon}></Icon>
+        <span> {text}</span>
+      </Button>
+    </div>
   );
 };
 
