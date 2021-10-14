@@ -1,7 +1,5 @@
 import { FileListing } from 'tapis-ui/components/files';
-import { PageLayout, LayoutHeader, Breadcrumbs} from 'tapis-ui/_common';
-import Toolbar from '../../_components/Toolbar';
-
+import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
 type LayoutProps = {
   systemId: string;
   path: string;
@@ -17,10 +15,7 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const header = (
     <LayoutHeader type={'sub-header'}>
-      <div>
-        <Breadcrumbs items={['sys-name']} />
-        <Toolbar />
-      </div>
+        Files
     </LayoutHeader>
   );
 
