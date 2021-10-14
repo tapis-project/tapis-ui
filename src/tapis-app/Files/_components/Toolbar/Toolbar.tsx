@@ -24,7 +24,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
       className={styles.toolbar_btn}
     >
       <Icon name={icon}></Icon>
-      <span>{text}</span>
+      <span> {text}</span>
     </Button>
   );
 };
@@ -34,7 +34,7 @@ const Toolbar: React.FC = () => {
     <div className={styles.toolbar_wrapper}>
       <ToolbarButton
         text="Rename"
-        icon="edit"
+        icon="rename"
         disabled={false}
         onClick={() => {
           alert('Toolbar button');
