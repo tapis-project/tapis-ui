@@ -4,14 +4,17 @@ import {
   LayoutBody,
   LayoutHeader,
   LayoutNavWrapper,
+  Breadcrumbs,
 } from 'tapis-ui/_common';
 import { SystemsNav } from '../_components';
 import { Router } from '../_Router';
+import Toolbar from '../_components/Toolbar';
 
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <div>Files</div>
+      <Breadcrumbs items={['sys-name', 'dir1', 'file1']} />
+      <Toolbar />
     </LayoutHeader>
   );
 
