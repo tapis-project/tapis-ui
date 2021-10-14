@@ -1,3 +1,3 @@
-import AddButton from './AddButton'
+import AddButton from './AddButton';
 
-export default AddButton
+export default AddButton;

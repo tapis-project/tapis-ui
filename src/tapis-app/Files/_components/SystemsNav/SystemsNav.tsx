@@ -4,10 +4,9 @@ import { useList } from 'tapis-hooks/systems';
 import { Systems } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import AddButton from "../AddButton"
+import AddButton from '../AddButton';
 
 const SystemsNav: React.FC = () => {
-
   const { url } = useRouteMatch();
   // Get a systems listing with default request params
   const { data, isLoading, error } = useList();
