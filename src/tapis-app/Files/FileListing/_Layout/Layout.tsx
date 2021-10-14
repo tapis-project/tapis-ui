@@ -4,14 +4,12 @@ type LayoutProps = {
   systemId: string;
   path: string;
   location: string;
-  backLocation?: string;
 };
 
 const Layout: React.FC<LayoutProps> = ({
   systemId,
   path,
   location,
-  backLocation = undefined,
 }) => {
   const header = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
 
