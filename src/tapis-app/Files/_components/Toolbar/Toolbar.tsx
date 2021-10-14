@@ -37,7 +37,7 @@ const Toolbar: React.FC = () => {
         icon="rename"
         disabled={false}
         onClick={() => {
-          alert('Toolbar button');
+          console.log('Toolbar button');
         }}
       />
       <ToolbarButton
@@ -45,7 +45,7 @@ const Toolbar: React.FC = () => {
         icon="move"
         disabled={true}
         onClick={() => {
-          alert('Toolbar button');
+          console.log('Toolbar button');
         }}
       />
       <ToolbarButton
@@ -53,7 +53,7 @@ const Toolbar: React.FC = () => {
         icon="copy"
         disabled={true}
         onClick={() => {
-          alert('Toolbar button');
+          console.log('Toolbar button');
         }}
       />
       <ToolbarButton
@@ -61,7 +61,7 @@ const Toolbar: React.FC = () => {
         icon="download"
         disabled={true}
         onClick={() => {
-          alert('Toolbar button');
+          console.log('Toolbar button');
         }}
       />
       <ToolbarButton
@@ -69,7 +69,7 @@ const Toolbar: React.FC = () => {
         icon="trash"
         disabled={true}
         onClick={() => {
-          alert('Toolbar button');
+          console.log('Toolbar button');
         }}
       />
     </div>
