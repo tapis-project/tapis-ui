@@ -38,7 +38,6 @@ const Router: React.FC = () => {
               systemId={systemId}
               path={systemPath ?? '/'}
               location={pathname}
-              backLocation={backLocation(systemPath, pathname)}
             />
           );
         }}

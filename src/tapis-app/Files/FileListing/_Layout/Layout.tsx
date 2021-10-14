@@ -6,11 +6,7 @@ type LayoutProps = {
   location: string;
 };
 
-const Layout: React.FC<LayoutProps> = ({
-  systemId,
-  path,
-  location,
-}) => {
+const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
   const header = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
 
   const body = (
