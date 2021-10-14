@@ -1,6 +1,5 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
 import FileListing from './Layout';
 import { useList } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
@@ -20,7 +19,6 @@ describe('FileListing layout', () => {
         systemId="test.system"
         path="dir/"
         location="/files/test.system/dir/"
-        backLocation="/files/test.system/"
       />
     );
   });
