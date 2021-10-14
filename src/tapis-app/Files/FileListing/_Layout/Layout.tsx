@@ -13,11 +13,7 @@ const Layout: React.FC<LayoutProps> = ({
   location,
   backLocation = undefined,
 }) => {
-  const header = (
-    <LayoutHeader type={'sub-header'}>
-      Files
-    </LayoutHeader>
-  );
+  const header = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
 
   const body = (
     <div style={{ flex: 1 }}>

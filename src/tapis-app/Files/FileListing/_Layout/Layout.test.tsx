@@ -23,7 +23,5 @@ describe('FileListing layout', () => {
         backLocation="/files/test.system/"
       />
     );
-    const { getAllByText } = renderComponent(component);
-    expect(getAllByText(/Up/).length).toEqual(1);
   });
 });
