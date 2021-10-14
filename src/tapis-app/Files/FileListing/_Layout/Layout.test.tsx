@@ -15,12 +15,14 @@ describe('FileListing layout', () => {
       error: null,
     });
 
-    const component = <FileListing 
-      systemId="test.system"
-      path="dir/"
-      location="/files/test.system/dir/"
-      backLocation="/files/test.system/"
-    />
+    const component = (
+      <FileListing
+        systemId="test.system"
+        path="dir/"
+        location="/files/test.system/dir/"
+        backLocation="/files/test.system/"
+      />
+    );
     const { getAllByText } = renderComponent(component);
     expect(getAllByText(/Up/).length).toEqual(1);
   });

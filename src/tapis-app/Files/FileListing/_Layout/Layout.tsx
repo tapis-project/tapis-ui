@@ -8,13 +8,13 @@ type LayoutProps = {
   path: string;
   location: string;
   backLocation?: string;
-}
+};
 
 const Layout: React.FC<LayoutProps> = ({
   systemId,
   path,
   location,
-  backLocation = undefined
+  backLocation = undefined,
 }) => {
   const header = (
     <LayoutHeader type={'sub-header'}>

@@ -21,27 +21,29 @@ const FileListingFile: React.FC<{ file: Files.FileInfo }> = ({ file }) => {
 interface FileListingDirProps {
   file: Files.FileInfo;
   onNavigate?: OnNavigateCallback;
-  location?: string
+  location?: string;
 }
 
 const FileListingDir: React.FC<FileListingDirProps> = ({
   file,
   onNavigate,
-  location = undefined
+  location = undefined,
 }) => {
   return (
     <div>
       <Icon name="folder" />
-      {
-        location 
-          ? <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>{file.name}/</NavLink>
-          : <span
-              className={`btn btn-link ${styles.dir}`}
-              onClick={() => onNavigate && onNavigate(file)}
-            >
-              {file.name}/
-            </span>
-      }
+      {location ? (
+        <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
+          {file.name}/
+        </NavLink>
+      ) : (
+        <span
+          className={`btn btn-link ${styles.dir}`}
+          onClick={() => onNavigate && onNavigate(file)}
+        >
+          {file.name}/
+        </span>
+      )}
     </div>
   );
 };
@@ -50,21 +52,25 @@ interface FileListingItemProps {
   file: Files.FileInfo;
   onSelect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
-  location?: string
+  location?: string;
 }
 
 const FileListingItem: React.FC<FileListingItemProps> = ({
   file,
   onSelect = undefined,
   onNavigate = undefined,
-  location = undefined
+  location = undefined,
 }) => {
   return (
     <li onClick={() => (onSelect ? onSelect(file) : null)}>
       {file.type === 'file' ? (
         <FileListingFile file={file} />
       ) : (
-        <FileListingDir file={file} onNavigate={onNavigate} location={location} />
+        <FileListingDir
+          file={file}
+          onNavigate={onNavigate}
+          location={location}
+        />
       )}
     </li>
   );
@@ -83,7 +89,7 @@ const FileListing: React.FC<FileListingProps> = ({
   path,
   onSelect = undefined,
   onNavigate = undefined,
-  location = undefined
+  location = undefined,
 }) => {
   const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
     useList({ systemId, path });
