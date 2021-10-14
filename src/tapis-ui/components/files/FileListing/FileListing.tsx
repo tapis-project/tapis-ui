@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { Icon } from 'tapis-ui/_common';
@@ -12,7 +13,7 @@ export type OnNavigateCallback = (file: Files.FileInfo) => any;
 const FileListingFile: React.FC<{ file: Files.FileInfo }> = ({ file }) => {
   return (
     <div>
-      <Icon name="file" /> {`${file.name}`}
+      <Icon name="file" /> {file.name}
     </div>
   );
 };
@@ -20,21 +21,27 @@ const FileListingFile: React.FC<{ file: Files.FileInfo }> = ({ file }) => {
 interface FileListingDirProps {
   file: Files.FileInfo;
   onNavigate?: OnNavigateCallback;
+  location?: string
 }
 
 const FileListingDir: React.FC<FileListingDirProps> = ({
   file,
   onNavigate,
+  location = undefined
 }) => {
   return (
     <div>
       <Icon name="folder" />
-      <span
-        className={`btn btn-link ${styles.dir}`}
-        onClick={() => onNavigate && onNavigate(file)}
-      >
-        {`${file.name}`}
-      </span>
+      {
+        location 
+          ? <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>{file.name}</NavLink>
+          : <span
+              className={`btn btn-link ${styles.dir}`}
+              onClick={() => onNavigate && onNavigate(file)}
+            >
+              {file.name}
+            </span>
+      }
     </div>
   );
 };
@@ -43,19 +50,21 @@ interface FileListingItemProps {
   file: Files.FileInfo;
   onSelect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
+  location?: string
 }
 
 const FileListingItem: React.FC<FileListingItemProps> = ({
   file,
   onSelect = undefined,
   onNavigate = undefined,
+  location = undefined
 }) => {
   return (
     <li onClick={() => (onSelect ? onSelect(file) : null)}>
       {file.type === 'file' ? (
         <FileListingFile file={file} />
       ) : (
-        <FileListingDir file={file} onNavigate={onNavigate} />
+        <FileListingDir file={file} onNavigate={onNavigate} location={location} />
       )}
     </li>
   );
@@ -66,6 +75,7 @@ interface FileListingProps {
   path: string;
   onSelect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
+  location?: string;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -73,6 +83,7 @@ const FileListing: React.FC<FileListingProps> = ({
   path,
   onSelect = undefined,
   onNavigate = undefined,
+  location = undefined
 }) => {
   const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
     useList({ systemId, path });
@@ -102,6 +113,7 @@ const FileListing: React.FC<FileListingProps> = ({
               key={file.name}
               onSelect={fileSelectCallback}
               onNavigate={onNavigate}
+              location={location}
             />
           )
         );

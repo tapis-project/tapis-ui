@@ -1,13 +1,7 @@
 .up {
   display: flex;
-  margin: 0 0 0 0 !important;
-  padding: 0 0 0 0 !important;
   align-items: center;
   :first-child {
     margin-right: 0.25em;
   }
-}
-
-.up:hover {
-  text-decoration: none;
 }

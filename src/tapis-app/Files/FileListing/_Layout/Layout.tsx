@@ -1,35 +1,28 @@
-import { useCallback } from 'react';
 import { FileListing } from 'tapis-ui/components/files';
 import { PageLayout, LayoutHeader, Icon } from 'tapis-ui/_common';
-import { useLocation, useHistory } from 'react-router';
-import { Files } from '@tapis/tapis-typescript';
+import { NavLink } from 'react-router-dom';
 import styles from './Layout.module.scss';
 
-const Layout: React.FC<{ systemId: string; path: string }> = ({
+type LayoutProps = {
+  systemId: string;
+  path: string;
+  location: string;
+  backLocation?: string;
+}
+
+const Layout: React.FC<LayoutProps> = ({
   systemId,
   path,
+  location,
+  backLocation = undefined
 }) => {
-  const { pathname } = useLocation();
-  const history = useHistory();
-  const onNavigate = useCallback(
-    (file: Files.FileInfo) => {
-      history.push(`${pathname}${file.name}/`);
-    },
-    [pathname, history]
-  );
-
-  const onBack = useCallback(() => {
-    const newPath = `${pathname.split('/').slice(0, -2).join('/')}/`;
-    history.push(newPath);
-  }, [pathname, history]);
-
   const header = (
     <LayoutHeader type={'sub-header'}>
       <div>Files</div>
-      {path !== '/' && (
-        <span className={`btn btn-link ${styles.up}`} onClick={onBack}>
+      {backLocation && (
+        <span className={styles.up}>
           <Icon name="contract" />
-          Up
+          <NavLink to={backLocation}>Up</NavLink>
         </span>
       )}
     </LayoutHeader>
@@ -40,7 +33,7 @@ const Layout: React.FC<{ systemId: string; path: string }> = ({
       <FileListing
         systemId={systemId}
         path={path}
-        onNavigate={onNavigate}
+        location={location}
       ></FileListing>
     </div>
   );
