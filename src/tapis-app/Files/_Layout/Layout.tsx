@@ -13,7 +13,7 @@ import { Router } from '../_Router';
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <Breadcrumbs items={['system-name-here']} />
+      <Breadcrumbs items={['system-name-here', 'nav-item-1', "nav-item-2"]} />
       <Toolbar />
     </LayoutHeader>
   );
