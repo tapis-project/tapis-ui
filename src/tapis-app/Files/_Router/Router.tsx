@@ -4,13 +4,20 @@ import {
   useRouteMatch,
   RouteComponentProps,
   Switch,
+  useLocation,
 } from 'react-router-dom';
 import FileListing from '../FileListing';
 import { SectionMessage } from 'tapis-ui/_common';
 
+export const backLocation = (
+  systemPath: string | undefined,
+  pathname: string
+) =>
+  systemPath ? `${pathname.split('/').slice(0, -2).join('/')}/` : undefined;
+
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
-
+  const { pathname } = useLocation();
   return (
     <Switch>
       <Route path={`${path}`} exact>
@@ -20,14 +27,21 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/:systemId`}
+        path={`${path}/:systemId/:systemPath*`}
         render={({
           match: {
-            params: { systemId },
+            params: { systemId, systemPath },
           },
-        }: RouteComponentProps<{ systemId: string }>) => (
-          <FileListing systemId={systemId} path={'/'} />
-        )}
+        }: RouteComponentProps<{ systemId: string; systemPath?: string }>) => {
+          return (
+            <FileListing
+              systemId={systemId}
+              path={systemPath ?? '/'}
+              location={pathname}
+              backLocation={backLocation(systemPath, pathname)}
+            />
+          );
+        }}
       />
     </Switch>
   );
