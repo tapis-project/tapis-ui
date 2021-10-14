@@ -34,12 +34,12 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
       <Icon name="folder" />
       {
         location 
-          ? <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>{file.name}</NavLink>
+          ? <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>{file.name}/</NavLink>
           : <span
               className={`btn btn-link ${styles.dir}`}
               onClick={() => onNavigate && onNavigate(file)}
             >
-              {file.name}
+              {file.name}/
             </span>
       }
     </div>
