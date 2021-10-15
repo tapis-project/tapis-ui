@@ -6,6 +6,8 @@ import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Row, Column, useTable } from 'react-table';
+import sizeFormat from 'utils/sizeFormat';
+import { formatDateTimeFromValue } from 'utils/timeFormat';
 import styles from './FileListing.module.scss';
 import { type } from 'os';
 
@@ -97,6 +99,16 @@ const FileListing: React.FC<FileListingProps> = ({
     {
       Header: 'Name',
       Cell: (el) => <FileListingName file={el.row.original} onNavigate={onNavigate} location={location} />
+    },
+    {
+      Header: 'Size',
+      accessor: 'size',
+      Cell: (el) => <span>{sizeFormat(el.value)}</span>
+    },
+    {
+      Header: 'Last Modified',
+      accessor: 'lastModified',
+      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>
     }
   ]
 
