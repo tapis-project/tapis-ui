@@ -2,24 +2,18 @@ import React, { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
-import { Icon } from 'tapis-ui/_common';
+import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Row, Column, useTable } from 'react-table';
 import styles from './FileListing.module.scss';
+import { type } from 'os';
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
 
-const FileListingFile: React.FC<{ file: Files.FileInfo }> = ({ file }) => {
-  return (
-    <div>
-      <Icon name="file" /> {file.name}
-    </div>
-  );
-};
-
 interface FileListingDirProps {
-  file: Files.FileInfo;
+  file: Files.FileInfo,
   onNavigate?: OnNavigateCallback;
   location?: string;
 }
@@ -29,51 +23,40 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
   onNavigate,
   location = undefined,
 }) => {
+  if (location) {
+    return (
+      <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
+        {file.name}/
+      </NavLink>
+    )
+  }
   return (
-    <div>
-      <Icon name="folder" />
-      {location ? (
-        <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
-          {file.name}/
-        </NavLink>
-      ) : (
-        <span
-          className={`btn btn-link ${styles.dir}`}
-          onClick={() => onNavigate && onNavigate(file)}
-        >
-          {file.name}/
-        </span>
-      )}
-    </div>
-  );
+    <span
+      className={`btn btn-link ${styles.dir}`}
+      onClick={() => onNavigate && onNavigate(file)}
+    >
+      {file.name}/
+    </span>
+  )
 };
 
 interface FileListingItemProps {
-  file: Files.FileInfo;
-  onSelect?: OnSelectCallback;
+  file: Files.FileInfo,
   onNavigate?: OnNavigateCallback;
   location?: string;
 }
 
-const FileListingItem: React.FC<FileListingItemProps> = ({
+const FileListingName: React.FC<FileListingItemProps> = ({
   file,
-  onSelect = undefined,
   onNavigate = undefined,
   location = undefined,
 }) => {
+  if (file.type === 'file') {
+    return <>{file.name}</>
+  }
   return (
-    <li onClick={() => (onSelect ? onSelect(file) : null)}>
-      {file.type === 'file' ? (
-        <FileListingFile file={file} />
-      ) : (
-        <FileListingDir
-          file={file}
-          onNavigate={onNavigate}
-          location={location}
-        />
-      )}
-    </li>
-  );
+    <FileListingDir file={file} onNavigate={onNavigate} location={location} />
+  )
 };
 
 interface FileListingProps {
@@ -105,13 +88,37 @@ const FileListing: React.FC<FileListingProps> = ({
 
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
+  const tableColumns: Array<Column> = [
+    {
+      Header: '',
+      accessor: 'type',
+      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />
+    },
+    {
+      Header: 'Name',
+      Cell: (el) => <FileListingName file={el.row.original} onNavigate={onNavigate} location={location} />
+    }
+  ]
+
+  // Maps rows to row properties, such as classNames
+  const rowProps = (row: Row) => {}
+
   return (
     <QueryWrapper
       className={styles['file-list']}
       isLoading={isLoading}
       error={error}
     >
-      {files.map((file: Files.FileInfo | null) => {
+      <InfiniteScrollTable
+        tableColumns={tableColumns}
+        tableData={files}
+        onInfiniteScroll={fetchNextPage}
+        isLoading={isLoading}
+        noDataText="No files found"
+        getRowProps={rowProps}
+      />
+      {
+      /*files.map((file: Files.FileInfo | null) => {
         return (
           file && (
             <FileListingItem
@@ -123,7 +130,7 @@ const FileListing: React.FC<FileListingProps> = ({
             />
           )
         );
-      })}
+      })*/}
       {hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>}
     </QueryWrapper>
   );

@@ -9,6 +9,7 @@
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@reduxjs/toolkit": "^1.5.1",
     "@tapis/tapis-typescript": "^0.0.13",
+    "@types/react-table": "^7.7.6",
     "axios": "^0.21.1",
     "babel-plugin-react-css-modules": "^5.2.6",
     "bootstrap": "^4.6.0",

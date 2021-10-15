@@ -7,8 +7,6 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
-  const header = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
-
   const body = (
     <div style={{ flex: 1 }}>
       <FileListing
@@ -19,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
     </div>
   );
 
-  return <PageLayout top={header} right={body}></PageLayout>;
+  return <PageLayout right={body}></PageLayout>;
 };
 
 export default Layout;
