@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { NavLink } from 'react-router-dom';
-import { isTemplateSpan } from 'typescript';
 import styles from './Breadcrumbs.module.scss';
 
 export type BreadcrumbType = {
