@@ -1,19 +1,36 @@
 import React from 'react';
 
-import { NavItem } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
+import { isTemplateSpan } from 'typescript';
 import styles from './Breadcrumbs.module.scss';
 
-type BreadcrumbsProps = {
-  items: Array<string | NavItem>;
+export type BreadcrumbType = {
+  to: string;
+  text: string;
 };
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
+type BreadcrumbsProps = {
+  breadcrumbs: Array<BreadcrumbType>;
+  defaultMessage?: string;
+};
+
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
+  breadcrumbs,
+  defaultMessage,
+}) => {
   return (
     <div className={styles.root}>
-      Files /
-      {items.map((item) => {
-        return <span> {item} /</span>;
-      })}
+      {breadcrumbs.length === 0
+        ? defaultMessage
+        : breadcrumbs.map((item, index) => {
+            return index === breadcrumbs.length - 1 ? (
+              <span> {item.text} /</span>
+            ) : (
+              <span>
+                <NavLink to={item.to}> {item.text}</NavLink> /
+              </span>
+            );
+          })}
     </div>
   );
 };

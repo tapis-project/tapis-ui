@@ -9,11 +9,18 @@ import {
 import { SystemsNav } from '../_components';
 import { Router } from '../_Router';
 import Toolbar from '../_components/Toolbar';
+import { useLocation } from 'react-router';
+import breadcrumbsFromPathname from './breadcrumbsFromPathname';
 
 const Layout: React.FC = () => {
+  const { pathname } = useLocation();
+
   const header = (
     <LayoutHeader>
-      <Breadcrumbs items={['sys-name', 'dir1', 'file1']} />
+      <Breadcrumbs
+        defaultMessage="Select a system to view files"
+        breadcrumbs={breadcrumbsFromPathname(pathname)}
+      />
       <Toolbar />
     </LayoutHeader>
   );
