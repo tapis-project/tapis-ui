@@ -18,7 +18,6 @@ const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
       <Breadcrumbs
-        defaultMessage="Select a system to view files"
         breadcrumbs={breadcrumbsFromPathname(pathname)}
       />
       <Toolbar />
