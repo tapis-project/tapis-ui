@@ -1,7 +1,4 @@
-.up {
-  display: flex;
-  align-items: center;
-  :first-child {
-    margin-right: 0.25em;
-  }
+.body {
+  max-height: 100%;
+  position: relative;
 }

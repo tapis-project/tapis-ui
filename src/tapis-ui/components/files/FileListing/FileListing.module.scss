@@ -1,5 +1,6 @@
 .file-list {
   overflow-y: auto;
+  max-height: inherit;
   td > a {
     width: initial;
   }
