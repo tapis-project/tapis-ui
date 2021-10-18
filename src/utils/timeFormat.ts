@@ -7,7 +7,7 @@ export function formatDate(dateTime: Date) {
   return dateTime.toLocaleDateString('en-US', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric'
+    year: 'numeric',
   });
 }
 
@@ -20,7 +20,7 @@ export function formatTime(dateTime: Date) {
   return dateTime.toLocaleTimeString('en-US', {
     hour12: false,
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 

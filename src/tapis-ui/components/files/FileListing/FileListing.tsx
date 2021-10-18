@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
-import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Row, Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
@@ -14,7 +13,7 @@ export type OnSelectCallback = (file: Files.FileInfo) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
 
 interface FileListingDirProps {
-  file: Files.FileInfo,
+  file: Files.FileInfo;
   onNavigate?: OnNavigateCallback;
   location?: string;
 }
@@ -29,7 +28,7 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
       <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
         {file.name}/
       </NavLink>
-    )
+    );
   }
   return (
     <span
@@ -38,11 +37,11 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
     >
       {file.name}/
     </span>
-  )
+  );
 };
 
 interface FileListingItemProps {
-  file: Files.FileInfo,
+  file: Files.FileInfo;
   onNavigate?: OnNavigateCallback;
   location?: string;
 }
@@ -53,11 +52,11 @@ const FileListingName: React.FC<FileListingItemProps> = ({
   location = undefined,
 }) => {
   if (file.type === 'file') {
-    return <>{file.name}</>
+    return <>{file.name}</>;
   }
   return (
     <FileListingDir file={file} onNavigate={onNavigate} location={location} />
-  )
+  );
 };
 
 interface FileListingProps {
@@ -75,8 +74,14 @@ const FileListing: React.FC<FileListingProps> = ({
   onNavigate = undefined,
   location = undefined,
 }) => {
-  const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
-    useList({ systemId, path });
+  const {
+    hasNextPage,
+    isLoading,
+    error,
+    fetchNextPage,
+    concatenatedResults,
+    isFetchingNextPage,
+  } = useList({ systemId, path });
 
   /* eslint-disable-next-line */
   const fileSelectCallback = useCallback<OnSelectCallback>(
@@ -88,14 +93,11 @@ const FileListing: React.FC<FileListingProps> = ({
     [onSelect]
   );
 
-  const infiniteScrollCallback = useCallback(
-    () => {
-      if (hasNextPage) {
-        fetchNextPage();
-      }
-    },
-    [ hasNextPage, fetchNextPage ]
-  )
+  const infiniteScrollCallback = useCallback(() => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage]);
 
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
@@ -103,26 +105,32 @@ const FileListing: React.FC<FileListingProps> = ({
     {
       Header: '',
       accessor: 'type',
-      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />
+      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
     },
     {
       Header: 'Name',
-      Cell: (el) => <FileListingName file={el.row.original} onNavigate={onNavigate} location={location} />
+      Cell: (el) => (
+        <FileListingName
+          file={el.row.original}
+          onNavigate={onNavigate}
+          location={location}
+        />
+      ),
     },
     {
       Header: 'Size',
       accessor: 'size',
-      Cell: (el) => <span>{sizeFormat(el.value)}</span>
+      Cell: (el) => <span>{sizeFormat(el.value)}</span>,
     },
     {
       Header: 'Last Modified',
       accessor: 'lastModified',
-      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>
-    }
-  ]
+      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>,
+    },
+  ];
 
   // Maps rows to row properties, such as classNames
-  const rowProps = (row: Row) => {}
+  const rowProps = (row: Row) => {};
   return (
     <QueryWrapper
       className={styles['file-list']}
@@ -133,7 +141,7 @@ const FileListing: React.FC<FileListingProps> = ({
         tableColumns={tableColumns}
         tableData={files}
         onInfiniteScroll={infiniteScrollCallback}
-        isLoading={isLoading}
+        isLoading={isFetchingNextPage}
         noDataText="No files found"
         getRowProps={rowProps}
       />
