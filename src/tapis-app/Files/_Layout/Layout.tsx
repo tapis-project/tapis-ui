@@ -17,9 +17,7 @@ const Layout: React.FC = () => {
 
   const header = (
     <LayoutHeader>
-      <Breadcrumbs
-        breadcrumbs={breadcrumbsFromPathname(pathname)}
-      />
+      <Breadcrumbs breadcrumbs={breadcrumbsFromPathname(pathname)} />
       <Toolbar />
     </LayoutHeader>
   );
