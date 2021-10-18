@@ -1,5 +1,8 @@
 .file-list {
   overflow-y: auto;
+  td > a {
+    width: initial;
+  }
 }
 
 /* Dashboard Table */
