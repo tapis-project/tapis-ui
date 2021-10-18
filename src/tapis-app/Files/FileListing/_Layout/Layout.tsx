@@ -9,11 +9,13 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
   const body = (
-    <FileListing
-      systemId={systemId}
-      path={path}
-      location={location}
-    ></FileListing>
+    <div style={{ flex: 1 }}>
+      <FileListing
+        systemId={systemId}
+        path={path}
+        location={location}
+      ></FileListing>
+    </div>
   );
 
   return <PageLayout right={body} constrain></PageLayout>;

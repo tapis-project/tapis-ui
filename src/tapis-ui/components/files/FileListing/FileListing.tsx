@@ -123,7 +123,6 @@ const FileListing: React.FC<FileListingProps> = ({
 
   // Maps rows to row properties, such as classNames
   const rowProps = (row: Row) => {}
-
   return (
     <QueryWrapper
       className={styles['file-list']}
