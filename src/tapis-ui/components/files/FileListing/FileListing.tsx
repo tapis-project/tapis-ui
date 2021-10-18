@@ -78,6 +78,7 @@ const FileListing: React.FC<FileListingProps> = ({
   const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
     useList({ systemId, path });
 
+  /* eslint-disable-next-line */
   const fileSelectCallback = useCallback<OnSelectCallback>(
     (file: Files.FileInfo) => {
       if (onSelect) {
@@ -86,6 +87,15 @@ const FileListing: React.FC<FileListingProps> = ({
     },
     [onSelect]
   );
+
+  const infiniteScrollCallback = useCallback(
+    () => {
+      if (hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    [ hasNextPage, fetchNextPage ]
+  )
 
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
@@ -123,7 +133,7 @@ const FileListing: React.FC<FileListingProps> = ({
       <InfiniteScrollTable
         tableColumns={tableColumns}
         tableData={files}
-        onInfiniteScroll={fetchNextPage}
+        onInfiniteScroll={infiniteScrollCallback}
         isLoading={isLoading}
         noDataText="No files found"
         getRowProps={rowProps}

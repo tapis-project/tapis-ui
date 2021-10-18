@@ -4,6 +4,12 @@
   td > a {
     width: initial;
   }
+  table {
+    height: 868px;
+  }
+  tbody {
+    height: inherit;
+  }
 }
 
 /* Dashboard Table */
