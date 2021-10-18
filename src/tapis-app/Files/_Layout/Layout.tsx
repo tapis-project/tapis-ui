@@ -25,7 +25,7 @@ const Layout: React.FC = () => {
   );
 
   const body = (
-    <LayoutBody>
+    <LayoutBody constrain>
       <Router />
     </LayoutBody>
   );

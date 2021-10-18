@@ -1,17 +1,217 @@
 .file-list {
-  overflow-y: auto;
+  overflow-y: hidden;
+  max-height: inherit;
+  td > a {
+    width: initial;
+  }
+  table {
+    height: 850px;
+  }
+  tbody {
+    height: inherit;
+  }
 }
 
-.file-list li {
-  padding: 0.5rem 1rem;
-  list-style-type: none;
+/* Dashboard Table */
+@media only screen and (min-width: 1680px) {
+  .file-list {
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 3%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 62%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 15%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 20%;
+    }
+  }
+}
+@media only screen and (min-width: 1400px) and (max-width: 1679px) {
+  .file-list {
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 3%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 62%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 15%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 20%;
+    }
+  }
+}
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {
+  .file-list {
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 4%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 57%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 17.5%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 19.5%;
+    }
+  }
+}
+@media only screen and (max-width: 1199px) {
+  .file-list {
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 5%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 62%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 15.5%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 17.5%;
+    }
+  }
 }
 
-.file-list li:nth-child(odd) {
-  background-color: #f4f4f4;
+/* History Table */
+@media only screen and (min-width: 1680px) {
+  .file-list-multiselect {
+    /* check */
+    tr > *:nth-child(1) {
+      width: 3%;
+    }
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 3%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 61%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 14%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 19%;
+    }
+  }
 }
-
-.dir {
-  margin: 0 0 0 4.5px !important;
-  padding: 0 0 0 0 !important;
+@media only screen and (min-width: 1400px) and (max-width: 1679px) {
+  .file-list-multiselect {
+    /* check */
+    tr > *:nth-child(1) {
+      width: 3%;
+    }
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 3%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 61%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 14%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 19%;
+    }
+  }
+}
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {
+  .file-list-multiselect {
+    /* check */
+    tr > *:nth-child(1) {
+      width: 4%;
+    }
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 4%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 57%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 16.5%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 18.5%;
+    }
+  }
+}
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .file-list-multiselect {
+    /* check */
+    tr > *:nth-child(1) {
+      width: 5%;
+    }
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 5%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 59%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 14.5%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 16.5%;
+    }
+  }
+}
+@media only screen and (max-width: 991px) {
+  .file-list-multiselect {
+    /* check */
+    tr > *:nth-child(1) {
+      width: 5%;
+    }
+    /* icon */
+    tr > *:nth-child(1) {
+      width: 5%;
+    }
+    /* name */
+    tr > *:nth-child(2) {
+      width: 59%;
+    }
+    /* size */
+    tr > *:nth-child(3) {
+      width: 14.5%;
+    }
+    /* lastModified */
+    tr > *:nth-child(4) {
+      width: 16.5%;
+    }
+  }
 }
