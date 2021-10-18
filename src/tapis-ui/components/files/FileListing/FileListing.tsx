@@ -5,11 +5,10 @@ import { Files } from '@tapis/tapis-typescript';
 import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Row, Column, useTable } from 'react-table';
+import { Row, Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
 import styles from './FileListing.module.scss';
-import { type } from 'os';
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
@@ -129,21 +128,6 @@ const FileListing: React.FC<FileListingProps> = ({
         noDataText="No files found"
         getRowProps={rowProps}
       />
-      {
-      /*files.map((file: Files.FileInfo | null) => {
-        return (
-          file && (
-            <FileListingItem
-              file={file}
-              key={file.name}
-              onSelect={fileSelectCallback}
-              onNavigate={onNavigate}
-              location={location}
-            />
-          )
-        );
-      })*/}
-      {hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>}
     </QueryWrapper>
   );
 };
