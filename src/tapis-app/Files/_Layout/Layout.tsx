@@ -10,7 +10,7 @@ import { SystemsNav } from '../_components';
 import { Router } from '../_Router';
 import Toolbar from '../_components/Toolbar';
 import { useLocation } from 'react-router';
-import breadcrumbsFromPathname from './breadcrumbsFromPathname';
+import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
