@@ -3,7 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 export type BreadcrumbType = {
-  to?: string | undefined;
+  to: string | undefined;
   text: string;
 };
 
