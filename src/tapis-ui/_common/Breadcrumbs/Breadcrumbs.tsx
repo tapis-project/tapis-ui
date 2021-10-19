@@ -1,9 +1,9 @@
 import React from 'react';
-
 import { NavLink } from 'react-router-dom';
+import { uuid } from 'uuidv4';
 
 export type BreadcrumbType = {
-  to: string | undefined;
+  to?: string;
   text: string;
 };
 
@@ -12,9 +12,10 @@ type BreadcrumbsProps = {
 };
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
+  let truncatedBreadcrumbs = breadcrumbs;
   if (breadcrumbs.length >= 5) {
     // First 2 breadcrumbs
-    let truncatedBreadcrumbs = breadcrumbs.slice(0, 2);
+    truncatedBreadcrumbs = [...breadcrumbs.slice(0, 2)];
 
     // Ellipsis representing truncated breadcrumbs
     truncatedBreadcrumbs.push({ text: '\u2026' });
@@ -23,16 +24,15 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
     truncatedBreadcrumbs.push(
       ...breadcrumbs.slice(breadcrumbs.length - 2, breadcrumbs.length)
     );
-    breadcrumbs = truncatedBreadcrumbs;
   }
 
   return (
     <div>
-      {breadcrumbs.map((item, index) => {
-        return index === breadcrumbs.length - 1 || item.to === undefined ? (
-          <span> {item.text} /</span>
+      {truncatedBreadcrumbs.map((item, index) => {
+        return index === truncatedBreadcrumbs.length - 1 || !item.to ? (
+          <span key={uuid()}> {item.text} /</span>
         ) : (
-          <span>
+          <span key={uuid()}>
             <NavLink to={item.to}> {item.text}</NavLink> /
           </span>
         );
