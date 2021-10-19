@@ -2,21 +2,15 @@ import React, { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
-import { Icon } from 'tapis-ui/_common';
-import { Button } from 'reactstrap';
+import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Row, Column } from 'react-table';
+import sizeFormat from 'utils/sizeFormat';
+import { formatDateTimeFromValue } from 'utils/timeFormat';
 import styles from './FileListing.module.scss';
 
 export type OnSelectCallback = (file: Files.FileInfo) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
-
-const FileListingFile: React.FC<{ file: Files.FileInfo }> = ({ file }) => {
-  return (
-    <div>
-      <Icon name="file" /> {file.name}
-    </div>
-  );
-};
 
 interface FileListingDirProps {
   file: Files.FileInfo;
@@ -29,50 +23,39 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
   onNavigate,
   location = undefined,
 }) => {
+  if (location) {
+    return (
+      <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
+        {file.name}/
+      </NavLink>
+    );
+  }
   return (
-    <div>
-      <Icon name="folder" />
-      {location ? (
-        <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
-          {file.name}/
-        </NavLink>
-      ) : (
-        <span
-          className={`btn btn-link ${styles.dir}`}
-          onClick={() => onNavigate && onNavigate(file)}
-        >
-          {file.name}/
-        </span>
-      )}
-    </div>
+    <span
+      className={`btn btn-link ${styles.dir}`}
+      onClick={() => onNavigate && onNavigate(file)}
+    >
+      {file.name}/
+    </span>
   );
 };
 
 interface FileListingItemProps {
   file: Files.FileInfo;
-  onSelect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
   location?: string;
 }
 
-const FileListingItem: React.FC<FileListingItemProps> = ({
+const FileListingName: React.FC<FileListingItemProps> = ({
   file,
-  onSelect = undefined,
   onNavigate = undefined,
   location = undefined,
 }) => {
+  if (file.type === 'file') {
+    return <>{file.name}</>;
+  }
   return (
-    <li onClick={() => (onSelect ? onSelect(file) : null)}>
-      {file.type === 'file' ? (
-        <FileListingFile file={file} />
-      ) : (
-        <FileListingDir
-          file={file}
-          onNavigate={onNavigate}
-          location={location}
-        />
-      )}
-    </li>
+    <FileListingDir file={file} onNavigate={onNavigate} location={location} />
   );
 };
 
@@ -91,9 +74,16 @@ const FileListing: React.FC<FileListingProps> = ({
   onNavigate = undefined,
   location = undefined,
 }) => {
-  const { hasNextPage, isLoading, error, fetchNextPage, concatenatedResults } =
-    useList({ systemId, path });
+  const {
+    hasNextPage,
+    isLoading,
+    error,
+    fetchNextPage,
+    concatenatedResults,
+    isFetchingNextPage,
+  } = useList({ systemId, path });
 
+  /* eslint-disable-next-line */
   const fileSelectCallback = useCallback<OnSelectCallback>(
     (file: Files.FileInfo) => {
       if (onSelect) {
@@ -103,28 +93,58 @@ const FileListing: React.FC<FileListingProps> = ({
     [onSelect]
   );
 
+  const infiniteScrollCallback = useCallback(() => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage]);
+
   const files: Array<Files.FileInfo> = concatenatedResults ?? [];
 
+  const tableColumns: Array<Column> = [
+    {
+      Header: '',
+      accessor: 'type',
+      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
+    },
+    {
+      Header: 'Name',
+      Cell: (el) => (
+        <FileListingName
+          file={el.row.original}
+          onNavigate={onNavigate}
+          location={location}
+        />
+      ),
+    },
+    {
+      Header: 'Size',
+      accessor: 'size',
+      Cell: (el) => <span>{sizeFormat(el.value)}</span>,
+    },
+    {
+      Header: 'Last Modified',
+      accessor: 'lastModified',
+      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>,
+    },
+  ];
+
+  // Maps rows to row properties, such as classNames
+  const rowProps = (row: Row) => {};
   return (
     <QueryWrapper
       className={styles['file-list']}
       isLoading={isLoading}
       error={error}
     >
-      {files.map((file: Files.FileInfo | null) => {
-        return (
-          file && (
-            <FileListingItem
-              file={file}
-              key={file.name}
-              onSelect={fileSelectCallback}
-              onNavigate={onNavigate}
-              location={location}
-            />
-          )
-        );
-      })}
-      {hasNextPage && <Button onClick={() => fetchNextPage()}>More...</Button>}
+      <InfiniteScrollTable
+        tableColumns={tableColumns}
+        tableData={files}
+        onInfiniteScroll={infiniteScrollCallback}
+        isLoading={isFetchingNextPage}
+        noDataText="No files found"
+        getRowProps={rowProps}
+      />
     </QueryWrapper>
   );
 };

@@ -1,5 +1,7 @@
 import { FileListing } from 'tapis-ui/components/files';
-import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
+import { PageLayout } from 'tapis-ui/_common';
+import styles from './Layout.module.scss';
+
 type LayoutProps = {
   systemId: string;
   path: string;
@@ -7,10 +9,8 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
-  const header = <LayoutHeader type={'sub-header'}>Files</LayoutHeader>;
-
   const body = (
-    <div style={{ flex: 1 }}>
+    <div className={styles.body}>
       <FileListing
         systemId={systemId}
         path={path}
@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
     </div>
   );
 
-  return <PageLayout top={header} right={body}></PageLayout>;
+  return <PageLayout right={body} constrain></PageLayout>;
 };
 
 export default Layout;

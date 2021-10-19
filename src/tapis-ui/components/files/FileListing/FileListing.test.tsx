@@ -19,5 +19,7 @@ describe('Files', () => {
       <FileListing systemId={'system'} path={'/'} />
     );
     expect(getAllByText(/file1/).length).toEqual(1);
+    expect(getAllByText(/01\/01\/2020/).length).toEqual(1);
+    expect(getAllByText(/29.3 kB/).length).toEqual(1);
   });
 });

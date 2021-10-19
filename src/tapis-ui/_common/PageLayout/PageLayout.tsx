@@ -6,11 +6,22 @@ interface LayoutProps {
   right?: React.ReactNode;
   top?: React.ReactNode;
   bottom?: React.ReactNode;
+  constrain?: boolean;
 }
-const Layout: React.FC<LayoutProps> = ({ left, right, top, bottom }) => (
-  <div className={styles['layout-root']}>
+const Layout: React.FC<LayoutProps> = ({
+  left,
+  right,
+  top,
+  bottom,
+  constrain,
+}) => (
+  <div
+    className={`${styles['layout-root']} ${constrain ? styles.constrain : ''}`}
+  >
     {top}
-    <div className={styles['layout-row']}>
+    <div
+      className={`${styles['layout-row']} ${constrain ? styles.constrain : ''}`}
+    >
       {left}
       {right}
     </div>
