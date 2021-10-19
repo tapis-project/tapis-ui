@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { NavLink } from 'react-router-dom';
-import styles from './Breadcrumbs.module.scss';
 
 export type BreadcrumbType = {
   to: string;
@@ -28,7 +27,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   }
 
   return (
-    <div className={styles.root}>
+    <div>
       {breadcrumbs.map((item, index) => {
         return index === breadcrumbs.length - 1 || item.text === '\u2026' ? (
           <span> {item.text} /</span>
