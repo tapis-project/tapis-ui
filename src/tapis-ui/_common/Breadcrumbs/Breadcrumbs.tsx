@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { range } from 'tapis-ui/utils/range';
 import { NavLink } from 'react-router-dom';
 import styles from './Breadcrumbs.module.scss';
 
@@ -14,20 +13,17 @@ type BreadcrumbsProps = {
 };
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
-  let truncatedIndices: Array<number> = [];
 
   if (breadcrumbs.length >= 5) {
-    truncatedIndices = range(breadcrumbs.length - 4, 2);
-    let filtered = breadcrumbs.filter((_, index) => {
-      if (truncatedIndices.includes(index)) {
-        return false;
-      }
+    // First 2 breadcrumbs
+    let truncatedBreadcrumbs = breadcrumbs.slice(0, 2);
 
-      return true;
-    });
-    // \u2026 == &hellip; (horizonal ellipsis)
-    filtered.splice(2, 0, { to: '', text: '\u2026' });
-    breadcrumbs = filtered;
+    // Ellipsis representing truncated breadcrumbs
+    truncatedBreadcrumbs.push({ to: '', text: '\u2026' })
+
+    // Last 2 breadcrumbs
+    truncatedBreadcrumbs.push(...breadcrumbs.slice(breadcrumbs.length - 2, breadcrumbs.length))
+    breadcrumbs = truncatedBreadcrumbs;
   }
 
   return (
