@@ -25,15 +25,15 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
 
       return true;
     });
-
-    filtered.splice(2, 0, { to: '', text: '...' });
+    // \u2026 == &hellip; (horizonal ellipsis)
+    filtered.splice(2, 0, { to: '', text: '\u2026' });
     breadcrumbs = filtered;
   }
 
   return (
     <div className={styles.root}>
       {breadcrumbs.map((item, index) => {
-        return index === breadcrumbs.length - 1 || item.text === '...' ? (
+        return index === breadcrumbs.length - 1 || item.text === '\u2026' ? (
           <span> {item.text} /</span>
         ) : (
           <span>

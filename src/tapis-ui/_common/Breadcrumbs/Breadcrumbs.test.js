@@ -11,14 +11,14 @@ describe('Breadcrumbs', () => {
     const { queryAllByText } = renderComponent(
       <Breadcrumbs breadcrumbs={_4_BREADCRUMBS} />
     )
-
-    expect(queryAllByText(/[\.]{3}/).length).toEqual(0)
+    // \u2026 == &hellip; (horizonal ellipsis)
+    expect(queryAllByText(/\u2026/).length).toEqual(0)
   });
   it('renders Breadcrumbs with an ellipsis', () => {
     const { getAllByText } = renderComponent(
       <Breadcrumbs breadcrumbs={_5_BREADCRUMBS} />
     )
-    
-    expect(getAllByText(/[\.]{3}/).length).toEqual(1)
+    // \u2026 == &hellip; (horizonal ellipsis)
+    expect(getAllByText(/\u2026/).length).toEqual(1)
   });
 });
