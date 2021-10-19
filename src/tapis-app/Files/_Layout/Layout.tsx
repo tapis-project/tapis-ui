@@ -21,7 +21,7 @@ const Layout: React.FC = () => {
       <div className={styles.breadcrumbs}>
         <Breadcrumbs
           breadcrumbs={[
-            { to: undefined, text: 'Files' },
+            { text: 'Files' },
             ...breadcrumbsFromPathname(pathname).splice(1),
           ]}
         />
