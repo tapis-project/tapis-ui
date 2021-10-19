@@ -3,7 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 export type BreadcrumbType = {
-  to: string;
+  to?: string | undefined;
   text: string;
 };
 
@@ -17,7 +17,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
     let truncatedBreadcrumbs = breadcrumbs.slice(0, 2);
 
     // Ellipsis representing truncated breadcrumbs
-    truncatedBreadcrumbs.push({ to: '', text: '\u2026' });
+    truncatedBreadcrumbs.push({ text: '\u2026' });
 
     // Last 2 breadcrumbs
     truncatedBreadcrumbs.push(
@@ -29,7 +29,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
     <div>
       {breadcrumbs.map((item, index) => {
-        return index === breadcrumbs.length - 1 || item.text === '\u2026' ? (
+        return index === breadcrumbs.length - 1 || item.to === undefined ? (
           <span> {item.text} /</span>
         ) : (
           <span>
