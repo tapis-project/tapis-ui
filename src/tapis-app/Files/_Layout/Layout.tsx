@@ -11,13 +11,16 @@ import { Router } from '../_Router';
 import Toolbar from '../_components/Toolbar';
 import { useLocation } from 'react-router';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
+import styles from "./Layout.module.scss"
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
 
   const header = (
     <LayoutHeader>
-      <Breadcrumbs breadcrumbs={breadcrumbsFromPathname(pathname)} />
+      <div className={styles.breadcrumbs}>
+        <Breadcrumbs breadcrumbs={breadcrumbsFromPathname(pathname)} />
+      </div>
       <Toolbar />
     </LayoutHeader>
   );
