@@ -13,16 +13,17 @@ type BreadcrumbsProps = {
 };
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
-
   if (breadcrumbs.length >= 5) {
     // First 2 breadcrumbs
     let truncatedBreadcrumbs = breadcrumbs.slice(0, 2);
 
     // Ellipsis representing truncated breadcrumbs
-    truncatedBreadcrumbs.push({ to: '', text: '\u2026' })
+    truncatedBreadcrumbs.push({ to: '', text: '\u2026' });
 
     // Last 2 breadcrumbs
-    truncatedBreadcrumbs.push(...breadcrumbs.slice(breadcrumbs.length - 2, breadcrumbs.length))
+    truncatedBreadcrumbs.push(
+      ...breadcrumbs.slice(breadcrumbs.length - 2, breadcrumbs.length)
+    );
     breadcrumbs = truncatedBreadcrumbs;
   }
 
