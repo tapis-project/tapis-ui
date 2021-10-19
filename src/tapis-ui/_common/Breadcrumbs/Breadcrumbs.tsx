@@ -12,7 +12,7 @@ type BreadcrumbsProps = {
 };
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
-  let truncatedBreadcrumbs = breadcrumbs
+  let truncatedBreadcrumbs = breadcrumbs;
   if (breadcrumbs.length >= 5) {
     // First 2 breadcrumbs
     truncatedBreadcrumbs = [...breadcrumbs.slice(0, 2)];
