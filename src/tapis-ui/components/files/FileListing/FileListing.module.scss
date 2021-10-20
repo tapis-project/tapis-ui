@@ -1,4 +1,4 @@
-.file-list {
+.file-list, .file-list-multiselect {
   overflow-y: hidden;
   max-height: inherit;
   td > a {
@@ -102,19 +102,19 @@
       width: 3%;
     }
     /* icon */
-    tr > *:nth-child(1) {
+    tr > *:nth-child(2) {
       width: 3%;
     }
     /* name */
-    tr > *:nth-child(2) {
+    tr > *:nth-child(3) {
       width: 61%;
     }
     /* size */
-    tr > *:nth-child(3) {
+    tr > *:nth-child(4) {
       width: 14%;
     }
     /* lastModified */
-    tr > *:nth-child(4) {
+    tr > *:nth-child(5) {
       width: 19%;
     }
   }
@@ -126,19 +126,19 @@
       width: 3%;
     }
     /* icon */
-    tr > *:nth-child(1) {
+    tr > *:nth-child(2) {
       width: 3%;
     }
     /* name */
-    tr > *:nth-child(2) {
+    tr > *:nth-child(3) {
       width: 61%;
     }
     /* size */
-    tr > *:nth-child(3) {
+    tr > *:nth-child(4) {
       width: 14%;
     }
     /* lastModified */
-    tr > *:nth-child(4) {
+    tr > *:nth-child(5) {
       width: 19%;
     }
   }
@@ -150,19 +150,19 @@
       width: 4%;
     }
     /* icon */
-    tr > *:nth-child(1) {
+    tr > *:nth-child(2) {
       width: 4%;
     }
     /* name */
-    tr > *:nth-child(2) {
+    tr > *:nth-child(3) {
       width: 57%;
     }
     /* size */
-    tr > *:nth-child(3) {
+    tr > *:nth-child(4) {
       width: 16.5%;
     }
     /* lastModified */
-    tr > *:nth-child(4) {
+    tr > *:nth-child(5) {
       width: 18.5%;
     }
   }
@@ -174,19 +174,19 @@
       width: 5%;
     }
     /* icon */
-    tr > *:nth-child(1) {
+    tr > *:nth-child(2) {
       width: 5%;
     }
     /* name */
-    tr > *:nth-child(2) {
+    tr > *:nth-child(3) {
       width: 59%;
     }
     /* size */
-    tr > *:nth-child(3) {
+    tr > *:nth-child(4) {
       width: 14.5%;
     }
     /* lastModified */
-    tr > *:nth-child(4) {
+    tr > *:nth-child(5) {
       width: 16.5%;
     }
   }
@@ -198,19 +198,19 @@
       width: 5%;
     }
     /* icon */
-    tr > *:nth-child(1) {
+    tr > *:nth-child(2) {
       width: 5%;
     }
     /* name */
-    tr > *:nth-child(2) {
+    tr > *:nth-child(3) {
       width: 59%;
     }
     /* size */
-    tr > *:nth-child(3) {
+    tr > *:nth-child(4) {
       width: 14.5%;
     }
     /* lastModified */
-    tr > *:nth-child(4) {
+    tr > *:nth-child(5) {
       width: 16.5%;
     }
   }

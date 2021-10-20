@@ -15,6 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
         systemId={systemId}
         path={path}
         location={location}
+        select={{ mode: "multi", files: true, dirs: true}}
       ></FileListing>
     </div>
   );
