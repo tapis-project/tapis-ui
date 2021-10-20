@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
@@ -7,9 +7,15 @@ import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Row, Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckSquare,
+  faSquare as filledSquare,
+} from '@fortawesome/free-solid-svg-icons';
+import { faSquare } from '@fortawesome/free-regular-svg-icons';
 import styles from './FileListing.module.scss';
 
-export type OnSelectCallback = (file: Files.FileInfo) => any;
+export type OnSelectCallback = (files: Array<Files.FileInfo>) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
 
 interface FileListingDirProps {
@@ -40,6 +46,27 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
   );
 };
 
+type FileListingCheckboxCell = {
+  index: number;
+  selectedIndices: Array<number>;
+};
+
+/* eslint-disable-next-line */
+export const FileListingCheckboxCell: React.FC<FileListingCheckboxCell> =
+  React.memo(({ index, selectedIndices }) => {
+    const selected = selectedIndices.some((existing) => existing === index);
+    return (
+      <span className="fa-layers fa-fw">
+        <FontAwesomeIcon icon={filledSquare} color="white" />
+        <FontAwesomeIcon
+          icon={selected ? faCheckSquare : faSquare}
+          color="#9D85EF"
+        />
+        <FontAwesomeIcon icon={faSquare} color="#707070" />
+      </span>
+    );
+  });
+
 interface FileListingItemProps {
   file: Files.FileInfo;
   onNavigate?: OnNavigateCallback;
@@ -59,12 +86,19 @@ const FileListingName: React.FC<FileListingItemProps> = ({
   );
 };
 
+type SelectMode = {
+  mode: 'none' | 'single' | 'multi';
+  // If undefined, allowed selectable file types will be treated as [ "file", "dir" ]
+  types?: Array<string>;
+};
+
 interface FileListingProps {
   systemId: string;
   path: string;
   onSelect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
   location?: string;
+  select?: SelectMode;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -73,6 +107,7 @@ const FileListing: React.FC<FileListingProps> = ({
   onSelect = undefined,
   onNavigate = undefined,
   location = undefined,
+  select = undefined,
 }) => {
   const {
     hasNextPage,
@@ -83,15 +118,7 @@ const FileListing: React.FC<FileListingProps> = ({
     isFetchingNextPage,
   } = useList({ systemId, path });
 
-  /* eslint-disable-next-line */
-  const fileSelectCallback = useCallback<OnSelectCallback>(
-    (file: Files.FileInfo) => {
-      if (onSelect) {
-        onSelect(file);
-      }
-    },
-    [onSelect]
-  );
+  const [selectedIndices, setSelectedIndices] = useState<Array<number>>([]);
 
   const infiniteScrollCallback = useCallback(() => {
     if (hasNextPage) {
@@ -99,7 +126,42 @@ const FileListing: React.FC<FileListingProps> = ({
     }
   }, [hasNextPage, fetchNextPage]);
 
-  const files: Array<Files.FileInfo> = concatenatedResults ?? [];
+  const files: Array<Files.FileInfo> = useMemo(
+    () => concatenatedResults ?? [],
+    [concatenatedResults]
+  );
+
+  const multiSelectCallback = useCallback(
+    (index: number) => {
+      const newIndices = selectedIndices.some((existing) => existing === index)
+        ? // If index is already selected, remove it
+          selectedIndices.filter((existing) => existing !== index)
+        : // If index is not already selected, add it
+          [...selectedIndices, index];
+
+      setSelectedIndices(newIndices);
+
+      if (onSelect) {
+        // Find all files that have been selected and send to callback
+        const selectedFiles = newIndices.map((index) => files[index]);
+        onSelect(selectedFiles);
+      }
+    },
+    [onSelect, selectedIndices, setSelectedIndices, files]
+  );
+
+  const singleSelectCallback = useCallback(
+    (index: number) => {
+      setSelectedIndices([index]);
+      onSelect && onSelect([files[index]]);
+    },
+    [setSelectedIndices, onSelect, files]
+  );
+
+  useEffect(() => {
+    setSelectedIndices([]);
+    onSelect && onSelect([]);
+  }, [setSelectedIndices, systemId, path, onSelect]);
 
   const tableColumns: Array<Column> = [
     {
@@ -129,11 +191,58 @@ const FileListing: React.FC<FileListingProps> = ({
     },
   ];
 
+  if (select?.mode !== 'none') {
+    tableColumns.unshift({
+      Header: '',
+      id: 'multiselect',
+      Cell: (el) => (
+        <FileListingCheckboxCell
+          index={el.row.index}
+          selectedIndices={selectedIndices}
+        />
+      ),
+    });
+  }
+
+  const mapSelectCallback = (
+    index: number,
+    type: string,
+    select?: SelectMode
+  ) => {
+    if (!select) {
+      return undefined;
+    }
+    // If types is undefined, default to allowing file and dir selection
+    if (
+      (select?.types ?? ['file', 'dir']).some((allowed) => allowed === type)
+    ) {
+      if (select?.mode === 'multi') {
+        return () => multiSelectCallback(index);
+      }
+      if (select?.mode === 'single') {
+        return () => singleSelectCallback(index);
+      }
+    }
+    return undefined;
+  };
+
   // Maps rows to row properties, such as classNames
-  const rowProps = (row: Row) => {};
+  const rowProps = (row: Row) => {
+    const file: Files.FileInfo = row.original as Files.FileInfo;
+    return {
+      onClick: mapSelectCallback(
+        row.index,
+        file.type ?? 'unknown_type',
+        select
+      ),
+      'data-testid': file.name,
+    };
+  };
+
+  const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';
   return (
     <QueryWrapper
-      className={styles['file-list']}
+      className={styles[styleName]}
       isLoading={isLoading}
       error={error}
     >

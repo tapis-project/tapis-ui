@@ -1,3 +1,4 @@
+import { Files } from '@tapis/tapis-typescript';
 import React from 'react';
 import { Button } from 'reactstrap';
 
@@ -31,13 +32,15 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
-const Toolbar: React.FC = () => {
+const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
+  selectedFiles,
+}) => {
   return (
     <div className={styles.toolbar_wrapper}>
       <ToolbarButton
         text="Rename"
         icon="rename"
-        disabled={false}
+        disabled={selectedFiles.length !== 1}
         onClick={() => {
           console.log('Toolbar button');
         }}
@@ -45,7 +48,7 @@ const Toolbar: React.FC = () => {
       <ToolbarButton
         text="Move"
         icon="move"
-        disabled={true}
+        disabled={selectedFiles.length === 0}
         onClick={() => {
           console.log('Toolbar button');
         }}
@@ -53,7 +56,7 @@ const Toolbar: React.FC = () => {
       <ToolbarButton
         text="Copy"
         icon="copy"
-        disabled={true}
+        disabled={selectedFiles.length === 0}
         onClick={() => {
           console.log('Toolbar button');
         }}
@@ -61,7 +64,10 @@ const Toolbar: React.FC = () => {
       <ToolbarButton
         text="Download"
         icon="download"
-        disabled={true}
+        disabled={
+          selectedFiles.length !== 1 ||
+          (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
+        }
         onClick={() => {
           console.log('Toolbar button');
         }}
@@ -85,7 +91,7 @@ const Toolbar: React.FC = () => {
       <ToolbarButton
         text="Trash"
         icon="trash"
-        disabled={true}
+        disabled={selectedFiles.length === 0}
         onClick={() => {
           console.log('Toolbar button');
         }}

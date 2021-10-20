@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   PageLayout,
   LayoutBody,
@@ -12,8 +12,16 @@ import Toolbar from '../_components/Toolbar';
 import { useLocation } from 'react-router';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import styles from './Layout.module.scss';
+import { Files } from '@tapis/tapis-typescript';
+import { OnSelectCallback } from 'tapis-ui/components/files/FileListing/FileListing';
 
 const Layout: React.FC = () => {
+  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
+  const onSelect = useCallback<OnSelectCallback>(
+    (files) => setSelectedFiles(files),
+    [setSelectedFiles]
+  );
+
   const { pathname } = useLocation();
 
   const header = (
@@ -26,7 +34,7 @@ const Layout: React.FC = () => {
           ]}
         />
       </div>
-      <Toolbar />
+      <Toolbar selectedFiles={selectedFiles} />
     </LayoutHeader>
   );
 
@@ -38,7 +46,7 @@ const Layout: React.FC = () => {
 
   const body = (
     <LayoutBody constrain>
-      <Router />
+      <Router onSelect={onSelect} />
     </LayoutBody>
   );
 
