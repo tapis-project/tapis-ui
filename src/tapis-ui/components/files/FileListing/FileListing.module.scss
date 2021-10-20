@@ -1,4 +1,4 @@
-.file-list, .file-list-multiselect {
+.file-list, .file-list-select {
   overflow-y: hidden;
   max-height: inherit;
   td > a {
@@ -96,7 +96,7 @@
 
 /* History Table */
 @media only screen and (min-width: 1680px) {
-  .file-list-multiselect {
+  .file-list-select {
     /* check */
     tr > *:nth-child(1) {
       width: 3%;
@@ -120,7 +120,7 @@
   }
 }
 @media only screen and (min-width: 1400px) and (max-width: 1679px) {
-  .file-list-multiselect {
+  .file-list-select {
     /* check */
     tr > *:nth-child(1) {
       width: 3%;
@@ -144,7 +144,7 @@
   }
 }
 @media only screen and (min-width: 1200px) and (max-width: 1399px) {
-  .file-list-multiselect {
+  .file-list-select {
     /* check */
     tr > *:nth-child(1) {
       width: 4%;
@@ -168,7 +168,7 @@
   }
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
-  .file-list-multiselect {
+  .file-list-select {
     /* check */
     tr > *:nth-child(1) {
       width: 5%;
@@ -192,7 +192,7 @@
   }
 }
 @media only screen and (max-width: 991px) {
-  .file-list-multiselect {
+  .file-list-select {
     /* check */
     tr > *:nth-child(1) {
       width: 5%;

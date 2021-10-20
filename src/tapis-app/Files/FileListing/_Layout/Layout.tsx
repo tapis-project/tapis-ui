@@ -7,20 +7,17 @@ type LayoutProps = {
   systemId: string;
   path: string;
   location: string;
+  onSelect?: (files: Array<Files.FileInfo>) => any
 };
 
-const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
-  const onSelect = (files: Array<Files.FileInfo>) => {
-    console.log(files.map(file => file.name));
-  }
-
+const Layout: React.FC<LayoutProps> = ({ systemId, path, location, onSelect }) => {
   const body = (
     <div className={styles.body}>
       <FileListing
         systemId={systemId}
         path={path}
         location={location}
-        select={{ mode: "multi", files: true, dirs: true}}
+        select={{ mode: "single", files: true, dirs: true}}
         onSelect={onSelect}
       ></FileListing>
     </div>

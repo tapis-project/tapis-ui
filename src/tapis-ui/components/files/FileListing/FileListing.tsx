@@ -147,6 +147,14 @@ const FileListing: React.FC<FileListingProps> = ({
     [ onSelect, selectedIndices, setSelectedIndices, files ]
   );
 
+  const singleSelectCallback = useCallback(
+    (index: number) => {
+      setSelectedIndices([ index ]);
+      onSelect && onSelect([ files[index] ])
+    },
+    [ setSelectedIndices, onSelect, files ]
+  )
+
   useEffect(
     () => {
       setSelectedIndices([]);
@@ -183,7 +191,7 @@ const FileListing: React.FC<FileListingProps> = ({
     },
   ];
 
-  if (select?.mode === "multi") {
+  if (select?.mode !== 'none') {
     tableColumns.unshift({
       Header: '',
       id: "multiselect",
@@ -191,13 +199,23 @@ const FileListing: React.FC<FileListingProps> = ({
     });
   }
 
+  const mapSelectCallback = (index: number) => {
+    if (select?.mode === 'multi') {
+      return () => multiSelectCallback(index);
+    }
+    if (select?.mode === 'single') {
+      return () => singleSelectCallback(index);
+    }
+    return undefined;
+  }
+
   // Maps rows to row properties, such as classNames
   const rowProps = (row: Row) => ({
-    onClick: () => multiSelectCallback(row.index),
+    onClick: mapSelectCallback(row.index),
     "data-testid": (row.original as Files.FileInfo).name
   });
 
-  const styleName = select?.mode === 'multi' ? 'file-list-multiselect' : 'file-list';
+  const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';
   return (
     <QueryWrapper
       className={styles[styleName]}
