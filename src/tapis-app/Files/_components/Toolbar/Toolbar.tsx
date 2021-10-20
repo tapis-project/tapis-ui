@@ -2,14 +2,20 @@ import { Files } from '@tapis/tapis-typescript';
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
 
-import { Icon, GenericModal } from 'tapis-ui/_common';
+import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
+import NewFileModal from './NewFileModal'
 
 type ToolbarButtonProps = {
   text: string;
   icon: string;
   onClick: () => void;
   disabled: boolean;
+};
+
+export type ToolbarModalProps = {
+  isOpen: boolean;
+  toggle: () => void;
 };
 
 export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
@@ -93,12 +99,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
           console.log('Toolbar button');
         }}
       />
-      <GenericModal
+      <NewFileModal
         isOpen={modal === "newfolder"}
         toggle={() => {modal === "newfolder" ? setModal(undefined) : setModal("newmodal")}}
-        title="Create folder"
-        body={<Button>Test</Button>}
-        footer={<Button>Test</Button>}
       />
     </div>
   );
