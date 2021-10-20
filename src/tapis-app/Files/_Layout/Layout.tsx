@@ -9,11 +9,23 @@ import {
 import { SystemsNav } from '../_components';
 import { Router } from '../_Router';
 import Toolbar from '../_components/Toolbar';
+import { useLocation } from 'react-router';
+import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
+import styles from './Layout.module.scss';
 
 const Layout: React.FC = () => {
+  const { pathname } = useLocation();
+
   const header = (
     <LayoutHeader>
-      <Breadcrumbs items={['sys-name', 'dir1', 'file1']} />
+      <div className={styles.breadcrumbs}>
+        <Breadcrumbs
+          breadcrumbs={[
+            { text: 'Files' },
+            ...breadcrumbsFromPathname(pathname).splice(1),
+          ]}
+        />
+      </div>
       <Toolbar />
     </LayoutHeader>
   );
