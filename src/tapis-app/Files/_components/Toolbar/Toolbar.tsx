@@ -23,7 +23,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
       <Button
         disabled={disabled}
         onClick={onClick}
-        className={styles.toolbar_btn}
+        className={styles["toolbar-btn"]}
       >
         <Icon name={icon}></Icon>
         <span> {text}</span>
@@ -37,7 +37,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined)
   return (
-    <div className={styles.toolbar_wrapper}>
+    <div className={styles["toolbar-wrapper"]}>
       <ToolbarButton
         text="Rename"
         icon="rename"

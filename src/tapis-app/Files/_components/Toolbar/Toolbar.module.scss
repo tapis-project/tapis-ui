@@ -1,11 +1,11 @@
-.toolbar_wrapper {
+.toolbar-wrapper {
   padding: 0;
   margin: 0;
   margin-top: 0.5em;
   display: flex !important;
 }
 
-.toolbar_btn {
+.toolbar-btn {
   height: 2rem;
   align-items: center;
   margin-left: 0.5em;
@@ -15,6 +15,6 @@
   color: #333333 !important;
 }
 
-.toolbar_btn:disabled {
+.toolbar-btn:disabled {
   color: #999999 !important;
 }
