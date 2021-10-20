@@ -35,22 +35,14 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
   selectedFiles,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [modal, setModal] = useState<string | undefined>(undefined)
   return (
     <div className={styles.toolbar_wrapper}>
-      <GenericModal
-        isOpen={isOpen}
-        toggle={() => {setIsOpen(!isOpen)}}
-        title="Some Title"
-        body={<Button>Test</Button>}
-      />
       <ToolbarButton
         text="Rename"
         icon="rename"
         disabled={selectedFiles.length !== 1}
-        onClick={() => {
-          setIsOpen(!isOpen)
-        }}
+        onClick={() => {}}
       />
       <ToolbarButton
         text="Move"
@@ -90,10 +82,8 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
       <ToolbarButton
         text="Folder"
         icon="add"
-        disabled={true}
-        onClick={() => {
-          console.log('Toolbar button');
-        }}
+        disabled={!(selectedFiles.length === 0)}
+        onClick={() => {setModal("newfolder")}}
       />
       <ToolbarButton
         text="Trash"
@@ -102,6 +92,13 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
         onClick={() => {
           console.log('Toolbar button');
         }}
+      />
+      <GenericModal
+        isOpen={modal === "newfolder"}
+        toggle={() => {modal === "newfolder" ? setModal(undefined) : setModal("newmodal")}}
+        title="Create folder"
+        body={<Button>Test</Button>}
+        footer={<Button>Test</Button>}
       />
     </div>
   );

@@ -1,17 +1,15 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
-import { Icon } from '..';
-import styles from './GenericModal.module.scss'
 
-type ModalProps = {
+export type GenericModalProps = {
   isOpen: boolean;
   toggle: () => void;
   title: string;
-  body: any;
-  footer?: React.PropsWithChildren<{}>;
+  body: React.ReactNode;
+  footer?: React.ReactNode;
 };
 
-const GenericModal: React.FC<ModalProps> = ({
+const GenericModal: React.FC<GenericModalProps> = ({
   isOpen = false,
   toggle,
   title,
@@ -20,16 +18,11 @@ const GenericModal: React.FC<ModalProps> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader>
-        <span className={styles.header}>
-          <span style={{"textAlign": "left"}}>{title}</span>
-          <span style={{"textAlign": "right"}} className={styles.close} onClick={toggle}>
-            <Icon name="close" />
-          </span>
-        </span>
+      <ModalHeader toggle={toggle} charCode="&#x2715;">
+        <span>{title}</span>
       </ModalHeader>
-      <ModalBody>{body.children}</ModalBody>
-      {footer && <ModalFooter>{footer.children}</ModalFooter>}
+      <ModalBody>{body}</ModalBody>
+      {footer && <ModalFooter>{footer}</ModalFooter>}
     </Modal>
   );
 };
