@@ -64,7 +64,10 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
       <ToolbarButton
         text="Download"
         icon="download"
-        disabled={selectedFiles.length !== 1}
+        disabled={
+          selectedFiles.length !== 1 ||
+          (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
+        }
         onClick={() => {
           console.log('Toolbar button');
         }}
