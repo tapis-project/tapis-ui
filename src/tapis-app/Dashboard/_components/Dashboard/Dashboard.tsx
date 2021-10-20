@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
             />
             <DashboardCard
               icon="project"
-              name="Projects"
+              name="Streams"
               text="View TAPIS streams projects"
               link="/streams/projects"
               counter={`${projects?.data?.result?.length} projects`}
