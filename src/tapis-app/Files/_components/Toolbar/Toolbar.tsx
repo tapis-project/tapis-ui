@@ -1,8 +1,8 @@
 import { Files } from '@tapis/tapis-typescript';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'reactstrap';
 
-import { Icon } from 'tapis-ui/_common';
+import { Icon, GenericModal } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 
 type ToolbarButtonProps = {
@@ -35,14 +35,21 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
   selectedFiles,
 }) => {
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <div className={styles.toolbar_wrapper}>
+      <GenericModal
+        isOpen={isOpen}
+        toggle={() => {setIsOpen(!isOpen)}}
+        title="Some Title"
+        body={<Button>Test</Button>}
+      />
       <ToolbarButton
         text="Rename"
         icon="rename"
         disabled={selectedFiles.length !== 1}
         onClick={() => {
-          console.log('Toolbar button');
+          setIsOpen(!isOpen)
         }}
       />
       <ToolbarButton
