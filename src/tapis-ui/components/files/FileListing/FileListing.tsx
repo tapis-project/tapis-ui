@@ -10,7 +10,7 @@ import { formatDateTimeFromValue } from 'utils/timeFormat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckSquare,
-  faSquare as filledSquare
+  faSquare as filledSquare,
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-regular-svg-icons';
 import styles from './FileListing.module.scss';
@@ -47,24 +47,25 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
 };
 
 type FileListingCheckboxCell = {
-  index: number,
-  selectedIndices: Array<number>
-}
+  index: number;
+  selectedIndices: Array<number>;
+};
 
 /* eslint-disable-next-line */
-export const FileListingCheckboxCell: React.FC<FileListingCheckboxCell> = React.memo(({ index, selectedIndices }) => {
-  const selected = selectedIndices.some(existing => existing === index)
-  return (
-    <span className="fa-layers fa-fw">
-      <FontAwesomeIcon icon={filledSquare} color="white" />
-      <FontAwesomeIcon
-        icon={selected ? faCheckSquare : faSquare}
-        color="#9D85EF"
-      />
-      <FontAwesomeIcon icon={faSquare} color="#707070" />
-    </span>
-  );
-});
+export const FileListingCheckboxCell: React.FC<FileListingCheckboxCell> =
+  React.memo(({ index, selectedIndices }) => {
+    const selected = selectedIndices.some((existing) => existing === index);
+    return (
+      <span className="fa-layers fa-fw">
+        <FontAwesomeIcon icon={filledSquare} color="white" />
+        <FontAwesomeIcon
+          icon={selected ? faCheckSquare : faSquare}
+          color="#9D85EF"
+        />
+        <FontAwesomeIcon icon={faSquare} color="#707070" />
+      </span>
+    );
+  });
 
 interface FileListingItemProps {
   file: Files.FileInfo;
@@ -86,10 +87,10 @@ const FileListingName: React.FC<FileListingItemProps> = ({
 };
 
 type SelectMode = {
-  mode: "none" | "single" | "multi";
+  mode: 'none' | 'single' | 'multi';
   // If undefined, allowed selectable file types will be treated as [ "file", "dir" ]
   types?: Array<string>;
-}
+};
 
 interface FileListingProps {
   systemId: string;
@@ -97,7 +98,7 @@ interface FileListingProps {
   onSelect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
   location?: string;
-  select?: SelectMode
+  select?: SelectMode;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -106,7 +107,7 @@ const FileListing: React.FC<FileListingProps> = ({
   onSelect = undefined,
   onNavigate = undefined,
   location = undefined,
-  select = undefined
+  select = undefined,
 }) => {
   const {
     hasNextPage,
@@ -117,7 +118,7 @@ const FileListing: React.FC<FileListingProps> = ({
     isFetchingNextPage,
   } = useList({ systemId, path });
 
-  const [ selectedIndices, setSelectedIndices ] = useState<Array<number>>([]);
+  const [selectedIndices, setSelectedIndices] = useState<Array<number>>([]);
 
   const infiniteScrollCallback = useCallback(() => {
     if (hasNextPage) {
@@ -132,39 +133,35 @@ const FileListing: React.FC<FileListingProps> = ({
 
   const multiSelectCallback = useCallback(
     (index: number) => {
-      const newIndices = selectedIndices.some(existing => existing === index)
-        // If index is already selected, remove it
-        ? selectedIndices.filter(existing => existing !== index)
-        // If index is not already selected, add it
-        : [ ...selectedIndices, index ]
-      
+      const newIndices = selectedIndices.some((existing) => existing === index)
+        ? // If index is already selected, remove it
+          selectedIndices.filter((existing) => existing !== index)
+        : // If index is not already selected, add it
+          [...selectedIndices, index];
+
       setSelectedIndices(newIndices);
 
       if (onSelect) {
         // Find all files that have been selected and send to callback
-        const selectedFiles = newIndices.map(index => files[index])
+        const selectedFiles = newIndices.map((index) => files[index]);
         onSelect(selectedFiles);
       }
-
     },
-    [ onSelect, selectedIndices, setSelectedIndices, files ]
+    [onSelect, selectedIndices, setSelectedIndices, files]
   );
 
   const singleSelectCallback = useCallback(
     (index: number) => {
-      setSelectedIndices([ index ]);
-      onSelect && onSelect([ files[index] ])
+      setSelectedIndices([index]);
+      onSelect && onSelect([files[index]]);
     },
-    [ setSelectedIndices, onSelect, files ]
-  )
+    [setSelectedIndices, onSelect, files]
+  );
 
-  useEffect(
-    () => {
-      setSelectedIndices([]);
-      onSelect && onSelect([]);
-    },
-    [ setSelectedIndices, systemId, path, onSelect ]
-  )
+  useEffect(() => {
+    setSelectedIndices([]);
+    onSelect && onSelect([]);
+  }, [setSelectedIndices, systemId, path, onSelect]);
 
   const tableColumns: Array<Column> = [
     {
@@ -197,17 +194,28 @@ const FileListing: React.FC<FileListingProps> = ({
   if (select?.mode !== 'none') {
     tableColumns.unshift({
       Header: '',
-      id: "multiselect",
-      Cell: (el) => <FileListingCheckboxCell index={el.row.index} selectedIndices={selectedIndices} />
+      id: 'multiselect',
+      Cell: (el) => (
+        <FileListingCheckboxCell
+          index={el.row.index}
+          selectedIndices={selectedIndices}
+        />
+      ),
     });
   }
 
-  const mapSelectCallback = (index: number, type: string, select?: SelectMode) => {
+  const mapSelectCallback = (
+    index: number,
+    type: string,
+    select?: SelectMode
+  ) => {
     if (!select) {
       return undefined;
     }
     // If types is undefined, default to allowing file and dir selection
-    if ((select?.types ?? [ "file", "dir" ]).some(allowed => allowed === type)) {
+    if (
+      (select?.types ?? ['file', 'dir']).some((allowed) => allowed === type)
+    ) {
       if (select?.mode === 'multi') {
         return () => multiSelectCallback(index);
       }
@@ -216,15 +224,19 @@ const FileListing: React.FC<FileListingProps> = ({
       }
     }
     return undefined;
-  }
+  };
 
   // Maps rows to row properties, such as classNames
   const rowProps = (row: Row) => {
-    const file: Files.FileInfo = (row.original as Files.FileInfo);
+    const file: Files.FileInfo = row.original as Files.FileInfo;
     return {
-      onClick: mapSelectCallback(row.index, file.type ?? 'unknown_type', select),
-      "data-testid": file.name
-    }
+      onClick: mapSelectCallback(
+        row.index,
+        file.type ?? 'unknown_type',
+        select
+      ),
+      'data-testid': file.name,
+    };
   };
 
   const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';

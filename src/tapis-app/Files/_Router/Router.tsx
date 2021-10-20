@@ -16,7 +16,7 @@ export const backLocation = (
 ) =>
   systemPath ? `${pathname.split('/').slice(0, -2).join('/')}/` : undefined;
 
-const Router: React.FC<{onSelect: OnSelectCallback}> = ({onSelect}) => {
+const Router: React.FC<{ onSelect: OnSelectCallback }> = ({ onSelect }) => {
   const { path } = useRouteMatch();
   const { pathname } = useLocation();
   return (

@@ -32,7 +32,9 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
-const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({ selectedFiles }) => {
+const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
+  selectedFiles,
+}) => {
   return (
     <div className={styles.toolbar_wrapper}>
       <ToolbarButton

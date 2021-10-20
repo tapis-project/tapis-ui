@@ -16,11 +16,11 @@ import { Files } from '@tapis/tapis-typescript';
 import { OnSelectCallback } from 'tapis-ui/components/files/FileListing/FileListing';
 
 const Layout: React.FC = () => {
-  const [ selectedFiles, setSelectedFiles ] = useState<Array<Files.FileInfo>>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
   const onSelect = useCallback<OnSelectCallback>(
     (files) => setSelectedFiles(files),
-    [ setSelectedFiles ]
-  )
+    [setSelectedFiles]
+  );
 
   const { pathname } = useLocation();
 

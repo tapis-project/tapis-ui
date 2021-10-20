@@ -1,4 +1,3 @@
-import { Files } from '@tapis/tapis-typescript';
 import { FileListing } from 'tapis-ui/components/files';
 import { PageLayout } from 'tapis-ui/_common';
 import { OnSelectCallback } from 'tapis-ui/components/files/FileListing/FileListing';
@@ -8,17 +7,22 @@ type LayoutProps = {
   systemId: string;
   path: string;
   location: string;
-  onSelect: OnSelectCallback
+  onSelect: OnSelectCallback;
 };
 
-const Layout: React.FC<LayoutProps> = ({ systemId, path, location, onSelect }) => {
+const Layout: React.FC<LayoutProps> = ({
+  systemId,
+  path,
+  location,
+  onSelect,
+}) => {
   const body = (
     <div className={styles.body}>
       <FileListing
         systemId={systemId}
         path={path}
         location={location}
-        select={{ mode: "multi" }}
+        select={{ mode: 'multi' }}
         onSelect={onSelect}
       ></FileListing>
     </div>
