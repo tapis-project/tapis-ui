@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
@@ -146,6 +146,14 @@ const FileListing: React.FC<FileListingProps> = ({
     },
     [ onSelect, selectedIndices, setSelectedIndices, files ]
   );
+
+  useEffect(
+    () => {
+      setSelectedIndices([]);
+      onSelect && onSelect([]);
+    },
+    [ setSelectedIndices, systemId, path ]
+  )
 
   const tableColumns: Array<Column> = [
     {

@@ -1,3 +1,4 @@
+import { Files } from '@tapis/tapis-typescript';
 import { FileListing } from 'tapis-ui/components/files';
 import { PageLayout } from 'tapis-ui/_common';
 import styles from './Layout.module.scss';
@@ -9,6 +10,10 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
+  const onSelect = (files: Array<Files.FileInfo>) => {
+    console.log(files.map(file => file.name));
+  }
+
   const body = (
     <div className={styles.body}>
       <FileListing
@@ -16,6 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
         path={path}
         location={location}
         select={{ mode: "multi", files: true, dirs: true}}
+        onSelect={onSelect}
       ></FileListing>
     </div>
   );
