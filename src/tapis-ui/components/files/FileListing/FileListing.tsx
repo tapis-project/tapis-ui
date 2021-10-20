@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
@@ -86,7 +86,7 @@ const FileListingName: React.FC<FileListingItemProps> = ({
 };
 
 type SelectMode = {
-  mode: "single" | "multi";
+  mode: "none" | "single" | "multi";
   files?: boolean;
   dirs?: boolean;
 }
@@ -185,7 +185,8 @@ const FileListing: React.FC<FileListingProps> = ({
 
   // Maps rows to row properties, such as classNames
   const rowProps = (row: Row) => ({
-    onClick: () => multiSelectCallback(row.index)
+    onClick: () => multiSelectCallback(row.index),
+    "data-testid": (row.original as Files.FileInfo).name
   });
 
   const styleName = select?.mode === 'multi' ? 'file-list-multiselect' : 'file-list';
