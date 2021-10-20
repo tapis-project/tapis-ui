@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
-import NewFileModal from './NewFileModal'
+import NewFileModal from './NewFileModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -29,7 +29,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
       <Button
         disabled={disabled}
         onClick={onClick}
-        className={styles["toolbar-btn"]}
+        className={styles['toolbar-btn']}
       >
         <Icon name={icon}></Icon>
         <span> {text}</span>
@@ -41,9 +41,9 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
   selectedFiles,
 }) => {
-  const [modal, setModal] = useState<string | undefined>(undefined)
+  const [modal, setModal] = useState<string | undefined>(undefined);
   return (
-    <div className={styles["toolbar-wrapper"]}>
+    <div className={styles['toolbar-wrapper']}>
       <ToolbarButton
         text="Rename"
         icon="rename"
@@ -89,7 +89,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
         text="Folder"
         icon="add"
         disabled={!(selectedFiles.length === 0)}
-        onClick={() => {setModal("newfolder")}}
+        onClick={() => {
+          setModal('newfolder');
+        }}
       />
       <ToolbarButton
         text="Trash"
@@ -100,8 +102,10 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
         }}
       />
       <NewFileModal
-        isOpen={modal === "newfolder"}
-        toggle={() => {modal === "newfolder" ? setModal(undefined) : setModal("newmodal")}}
+        isOpen={modal === 'newfolder'}
+        toggle={() => {
+          modal === 'newfolder' ? setModal(undefined) : setModal('newmodal');
+        }}
       />
     </div>
   );

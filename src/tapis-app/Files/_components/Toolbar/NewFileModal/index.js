@@ -1,3 +1,3 @@
-import NewFileModal from "./NewFileModal";
+import NewFileModal from './NewFileModal';
 
-export default NewFileModal
+export default NewFileModal;

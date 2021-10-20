@@ -1,10 +1,10 @@
-import { Button } from 'reactstrap'
-import { GenericModal } from "tapis-ui/_common";
+import { Button } from 'reactstrap';
+import { GenericModal } from 'tapis-ui/_common';
 import { ToolbarModalProps } from '../Toolbar';
 
 const NewFileModal: React.FC<ToolbarModalProps> = ({
   toggle,
-  isOpen=false,
+  isOpen = false,
 }) => {
   return (
     <GenericModal
@@ -14,7 +14,7 @@ const NewFileModal: React.FC<ToolbarModalProps> = ({
       body={<Button>Test</Button>}
       footer={<Button>Test</Button>}
     />
-  )
-}
+  );
+};
 
 export default NewFileModal;

@@ -1,3 +1,3 @@
-import GenericModal from "./GenericModal";
+import GenericModal from './GenericModal';
 
-export default GenericModal
+export default GenericModal;
