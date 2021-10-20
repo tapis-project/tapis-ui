@@ -17,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ systemId, path, location, onSelect }) =
         systemId={systemId}
         path={path}
         location={location}
-        select={{ mode: "single", files: true, dirs: true}}
+        select={{ mode: "multi" }}
         onSelect={onSelect}
       ></FileListing>
     </div>

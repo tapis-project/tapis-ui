@@ -34,7 +34,7 @@ describe('Files', () => {
       <FileListing 
         systemId={'system'} 
         path={'/'} 
-        select={{ mode: "multi", files: true, dirs: true }} onSelect={spy}
+        select={{ mode: "multi" }} onSelect={spy}
       />
     )
     // Find the file1.txt and file2.txt rows
@@ -67,7 +67,7 @@ describe('Files', () => {
       <FileListing
         systemId={'system'}
         path={'/'}
-        select={{ mode: "single", files: true, dirs: true }}
+        select={{ mode: "single", types: [ "file" ] }}
         onSelect={spy}
       />
     ) 
@@ -86,4 +86,62 @@ describe('Files', () => {
     file2.click();
     expect(spy).toHaveBeenLastCalledWith([ {  ...fileInfo, name: "file2.txt" } ]) 
   })
+
+  it('should not allow selection of invalid file types', () => {
+    (useList as jest.Mock).mockReturnValue({
+      concatenatedResults: [ {...fileInfo}, {...fileInfo, type: "dir", name: "dir1" }],
+      isLoading: false,
+      error: null,
+    });
+    const spy = jest.fn();
+
+    // Create a FilesListing that disallows selection of any type
+    const { getByTestId } = renderComponent(
+      <FileListing
+        systemId={'system'}
+        path={'/'}
+        select={{ mode: "single", types: [] }}
+        onSelect={spy}
+      />
+    )
+    const file1 = getByTestId("file1.txt");
+    const dir1 = getByTestId("dir1");
+    expect(file1).toBeDefined();
+    expect(dir1).toBeDefined();
+
+    // The only callback should be the initial render when trying to click a disallowed type
+    file1.click();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    dir1.click();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not allow selection of files if select is undefined', () => {
+    (useList as jest.Mock).mockReturnValue({
+      concatenatedResults: [ {...fileInfo}, {...fileInfo, type: "dir", name: "dir1" }],
+      isLoading: false,
+      error: null,
+    });
+    const spy = jest.fn();
+
+    // Create a FilesListing that disallows selection of any type
+    const { getByTestId } = renderComponent(
+      <FileListing
+        systemId={'system'}
+        path={'/'}
+        onSelect={spy}
+      />
+    )
+    const file1 = getByTestId("file1.txt");
+    const dir1 = getByTestId("dir1");
+    expect(file1).toBeDefined();
+    expect(dir1).toBeDefined();
+
+    // The only callback should be the initial render 
+    file1.click();
+    expect(spy).toHaveBeenCalledTimes(1);
+    dir1.click();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 });

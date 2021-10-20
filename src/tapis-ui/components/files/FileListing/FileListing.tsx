@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
@@ -87,8 +87,8 @@ const FileListingName: React.FC<FileListingItemProps> = ({
 
 type SelectMode = {
   mode: "none" | "single" | "multi";
-  files?: boolean;
-  dirs?: boolean;
+  // If undefined, allowed selectable file types will be treated as [ "file", "dir" ]
+  types?: Array<string>;
 }
 
 interface FileListingProps {
@@ -125,7 +125,10 @@ const FileListing: React.FC<FileListingProps> = ({
     }
   }, [hasNextPage, fetchNextPage]);
 
-  const files: Array<Files.FileInfo> = concatenatedResults ?? [];
+  const files: Array<Files.FileInfo> = useMemo(
+    () => concatenatedResults ?? [],
+    [concatenatedResults]
+  );
 
   const multiSelectCallback = useCallback(
     (index: number) => {
@@ -160,7 +163,7 @@ const FileListing: React.FC<FileListingProps> = ({
       setSelectedIndices([]);
       onSelect && onSelect([]);
     },
-    [ setSelectedIndices, systemId, path ]
+    [ setSelectedIndices, systemId, path, onSelect ]
   )
 
   const tableColumns: Array<Column> = [
@@ -199,21 +202,30 @@ const FileListing: React.FC<FileListingProps> = ({
     });
   }
 
-  const mapSelectCallback = (index: number) => {
-    if (select?.mode === 'multi') {
-      return () => multiSelectCallback(index);
+  const mapSelectCallback = (index: number, type: string, select?: SelectMode) => {
+    if (!select) {
+      return undefined;
     }
-    if (select?.mode === 'single') {
-      return () => singleSelectCallback(index);
+    // If types is undefined, default to allowing file and dir selection
+    if ((select?.types ?? [ "file", "dir" ]).some(allowed => allowed === type)) {
+      if (select?.mode === 'multi') {
+        return () => multiSelectCallback(index);
+      }
+      if (select?.mode === 'single') {
+        return () => singleSelectCallback(index);
+      }
     }
     return undefined;
   }
 
   // Maps rows to row properties, such as classNames
-  const rowProps = (row: Row) => ({
-    onClick: mapSelectCallback(row.index),
-    "data-testid": (row.original as Files.FileInfo).name
-  });
+  const rowProps = (row: Row) => {
+    const file: Files.FileInfo = (row.original as Files.FileInfo);
+    return {
+      onClick: mapSelectCallback(row.index, file.type ?? 'unknown_type', select),
+      "data-testid": file.name
+    }
+  };
 
   const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';
   return (
