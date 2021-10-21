@@ -90,7 +90,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
         icon="add"
         disabled={!(selectedFiles.length === 0)}
         onClick={() => {
-          setModal('newfolder');
+          setModal('createdir');
         }}
       />
       <ToolbarButton
@@ -102,9 +102,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
         }}
       />
       <CreateDirModal
-        isOpen={modal === 'newfolder'}
+        isOpen={modal === 'createdir'}
         toggle={() => {
-          modal === 'newfolder' ? setModal(undefined) : setModal('newmodal');
+          modal === 'createdir' ? setModal(undefined) : setModal('newmodal');
         }}
       />
     </div>
