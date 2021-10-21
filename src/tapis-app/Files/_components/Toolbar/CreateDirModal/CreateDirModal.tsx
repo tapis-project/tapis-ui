@@ -22,15 +22,12 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     formState: { errors },
   } = useForm({ defaultValues: { dirname: null } });
 
-  const { ref: dirnameRef, ...dirnameFieldProps } = register(
-    'dirname',
-    {
-      required: 'Folder name is a required field',
-    }
-  );
+  const { ref: dirnameRef, ...dirnameFieldProps } = register('dirname', {
+    required: 'Folder name is a required field',
+  });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
-    mkdir({ systemId, mkdirRequest: { path: currentPath + dirname + "/" } });
+    mkdir({ systemId, mkdirRequest: { path: currentPath + dirname + '/' } });
 
   return (
     <GenericModal
@@ -46,22 +43,14 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
               description={`New folder in ${pathname}`}
               error={errors['dirname']}
             >
-              <Input
-                bsSize="sm"
-                {...dirnameFieldProps}
-                innerRef={dirnameRef}
-              />
+              <Input bsSize="sm" {...dirnameFieldProps} innerRef={dirnameRef} />
             </FieldWrapper>
           </form>
         </div>
       }
       footer={
         <SubmitWrapper isLoading={isLoading} error={error} success={''}>
-          <Button
-            form="newfolder-form"
-            color="primary"
-            disabled={isLoading}
-          >
+          <Button form="newfolder-form" color="primary" disabled={isLoading}>
             Create folder
           </Button>
         </SubmitWrapper>

@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
-import CreateDirModal from './CreateDirModal'
+import CreateDirModal from './CreateDirModal';
 
 type ToolbarButtonProps = {
   text: string;
