@@ -104,7 +104,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
       <CreateDirModal
         isOpen={modal === 'createdir'}
         toggle={() => {
-          modal === 'createdir' ? setModal(undefined) : setModal('newmodal');
+          modal === 'createdir' ? setModal(undefined) : setModal('createdir');
         }}
       />
     </div>
