@@ -42,6 +42,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
   selectedFiles,
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const toggle = (modalName: string) => {
+    modal === modalName ? setModal(undefined) : setModal(modalName);
+  }
   return (
     <div className={styles['toolbar-wrapper']}>
       <ToolbarButton
@@ -103,9 +106,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
       />
       <CreateDirModal
         isOpen={modal === 'createdir'}
-        toggle={() => {
-          modal === 'createdir' ? setModal(undefined) : setModal('createdir');
-        }}
+        toggle={() => { toggle("createdir") }}
       />
     </div>
   );
