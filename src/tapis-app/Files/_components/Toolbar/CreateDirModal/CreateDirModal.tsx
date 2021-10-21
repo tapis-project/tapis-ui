@@ -30,7 +30,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
-    mkdir({ systemId, mkdirRequest: { path: currentPath + dirname + '/' } });
+    mkdir(systemId, `${currentPath}${dirname}`);
 
   return (
     <GenericModal

@@ -2,7 +2,8 @@ import { Files } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const mkdir = (
-  params: Files.MkdirOperationRequest,
+  systemId: string,
+  path: string,
   basePath: string,
   jwt: string
 ) => {
@@ -12,7 +13,7 @@ const mkdir = (
     basePath,
     jwt
   );
-  return errorDecoder<Files.FileStringResponse>(() => api.mkdir(params));
+  return errorDecoder<Files.FileStringResponse>(() => api.mkdir({ systemId, mkdirRequest: { path }}));
 };
 
 export default mkdir;
