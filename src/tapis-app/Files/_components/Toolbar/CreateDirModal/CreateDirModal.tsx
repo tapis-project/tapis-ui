@@ -14,7 +14,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
 
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
-  const { mkdir, isLoading, error } = useMkdir(systemId, currentPath);
+  const { mkdir, isLoading, error } = useMkdir();
 
   const formInitialState = { dirname: null }
 

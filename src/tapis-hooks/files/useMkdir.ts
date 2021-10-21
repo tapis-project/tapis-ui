@@ -5,7 +5,7 @@ import { mkdir } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const useMkdir = (systemId: string, path: string) => {
+const useMkdir = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -15,13 +15,13 @@ const useMkdir = (systemId: string, path: string) => {
   // In this case, mkdir helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, Files.MkdirOperationRequest>(
-      [QueryKeys.mkdir, systemId, path, basePath, jwt],
+      [QueryKeys.mkdir, basePath, jwt],
       (request: Files.MkdirOperationRequest) => mkdir(request, basePath, jwt)
     );
 
   // We want this hook to automatically reset if a different appId or appVersion
   // is passed to it. This eliminates the need to reset it inside the TSX component
-  useEffect(() => reset(), [reset, systemId, path]);
+  useEffect(() => reset(), [reset]);
 
   // Return hook object with loading states and login function
   return {
