@@ -3,30 +3,34 @@ import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
-import { useTapisConfig } from 'tapis-hooks';
 import { useForm } from 'react-hook-form';
+import { useMkdir } from 'tapis-hooks/files';
 
-const NewFileModal: React.FC<ToolbarModalProps> = ({
+const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
   isOpen = false,
 }) => {
-  const { pathname } = useLocation()
-  const { accessToken } = useTapisConfig()
+  const { pathname } = useLocation();
+
+  const systemId = pathname.split('/')[2];
+  const currentPath = pathname.split('/').splice(3).join('/');
+  const { mkdir, isLoading, error } = useMkdir(systemId, currentPath);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: { foldername: null } });
+  } = useForm({ defaultValues: { dirname: null } });
 
-  const { ref: foldernameRef, ...foldernameFieldProps } = register('foldername', {
-    required: 'Folder name is a required field',
-  });
+  const { ref: dirnameRef, ...dirnameFieldProps } = register(
+    'dirname',
+    {
+      required: 'Folder name is a required field',
+    }
+  );
 
-  const onSubmit = ({
-    foldername,
-  }: {
-    foldername: string;
-  }) => alert(foldername);
+  const onSubmit = ({ dirname }: { dirname: string }) =>
+    mkdir({ systemId, mkdirRequest: { path: currentPath + dirname + "/" } });
 
   return (
     <GenericModal
@@ -40,35 +44,30 @@ const NewFileModal: React.FC<ToolbarModalProps> = ({
               label="Folder name"
               required={true}
               description={`New folder in ${pathname}`}
-              error={errors["foldername"]}
+              error={errors['dirname']}
             >
               <Input
                 bsSize="sm"
-                {...foldernameFieldProps}
-                innerRef={foldernameRef}
+                {...dirnameFieldProps}
+                innerRef={dirnameRef}
               />
             </FieldWrapper>
           </form>
         </div>
       }
       footer={
-        <SubmitWrapper
-          isLoading={false}
-          error={null}
-          success={""}
-        >
+        <SubmitWrapper isLoading={isLoading} error={error} success={''}>
           <Button
             form="newfolder-form"
             color="primary"
-            disabled={false}
+            disabled={isLoading}
           >
-              Create folder
+            Create folder
           </Button>
         </SubmitWrapper>
-        
       }
     />
   );
 };
 
-export default NewFileModal;
+export default CreateDirModal;

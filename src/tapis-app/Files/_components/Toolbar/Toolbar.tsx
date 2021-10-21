@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
-import NewFileModal from './NewFileModal';
+import CreateDirModal from './CreateDirModal'
 
 type ToolbarButtonProps = {
   text: string;
@@ -101,7 +101,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
           console.log('Toolbar button');
         }}
       />
-      <NewFileModal
+      <CreateDirModal
         isOpen={modal === 'newfolder'}
         toggle={() => {
           modal === 'newfolder' ? setModal(undefined) : setModal('newmodal');
