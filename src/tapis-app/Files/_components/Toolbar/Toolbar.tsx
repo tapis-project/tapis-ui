@@ -5,6 +5,7 @@ import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
+import { useLocation } from 'react-router-dom';
 
 type ToolbarButtonProps = {
   text: string;
@@ -42,74 +43,79 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
   selectedFiles,
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const { pathname } = useLocation();
   const toggle = (modalName: string) => {
     modal === modalName ? setModal(undefined) : setModal(modalName);
   };
   return (
-    <div className={styles['toolbar-wrapper']}>
-      <ToolbarButton
-        text="Rename"
-        icon="rename"
-        disabled={selectedFiles.length !== 1}
-        onClick={() => {}}
-      />
-      <ToolbarButton
-        text="Move"
-        icon="move"
-        disabled={selectedFiles.length === 0}
-        onClick={() => {
-          console.log('Toolbar button');
-        }}
-      />
-      <ToolbarButton
-        text="Copy"
-        icon="copy"
-        disabled={selectedFiles.length === 0}
-        onClick={() => {
-          console.log('Toolbar button');
-        }}
-      />
-      <ToolbarButton
-        text="Download"
-        icon="download"
-        disabled={
-          selectedFiles.length !== 1 ||
-          (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
-        }
-        onClick={() => {
-          console.log('Toolbar button');
-        }}
-      />
-      <ToolbarButton
-        text="Upload"
-        icon="upload"
-        disabled={true}
-        onClick={() => {
-          console.log('Toolbar button');
-        }}
-      />
-      <ToolbarButton
-        text="Folder"
-        icon="add"
-        disabled={!(selectedFiles.length === 0)}
-        onClick={() => {
-          setModal('createdir');
-        }}
-      />
-      <ToolbarButton
-        text="Trash"
-        icon="trash"
-        disabled={selectedFiles.length === 0}
-        onClick={() => {
-          console.log('Toolbar button');
-        }}
-      />
-      <CreateDirModal
-        isOpen={modal === 'createdir'}
-        toggle={() => {
-          toggle('createdir');
-        }}
-      />
+    <div>
+      {pathname !== '/files' && (
+        <div className={styles['toolbar-wrapper']}>
+          <ToolbarButton
+            text="Rename"
+            icon="rename"
+            disabled={selectedFiles.length !== 1}
+            onClick={() => {}}
+          />
+          <ToolbarButton
+            text="Move"
+            icon="move"
+            disabled={selectedFiles.length === 0}
+            onClick={() => {
+              console.log('Toolbar button');
+            }}
+          />
+          <ToolbarButton
+            text="Copy"
+            icon="copy"
+            disabled={selectedFiles.length === 0}
+            onClick={() => {
+              console.log('Toolbar button');
+            }}
+          />
+          <ToolbarButton
+            text="Download"
+            icon="download"
+            disabled={
+              selectedFiles.length !== 1 ||
+              (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
+            }
+            onClick={() => {
+              console.log('Toolbar button');
+            }}
+          />
+          <ToolbarButton
+            text="Upload"
+            icon="upload"
+            disabled={true}
+            onClick={() => {
+              console.log('Toolbar button');
+            }}
+          />
+          <ToolbarButton
+            text="Folder"
+            icon="add"
+            disabled={!(selectedFiles.length === 0)}
+            onClick={() => {
+              setModal('createdir');
+            }}
+          />
+          <ToolbarButton
+            text="Trash"
+            icon="trash"
+            disabled={selectedFiles.length === 0}
+            onClick={() => {
+              console.log('Toolbar button');
+            }}
+          />
+          <CreateDirModal
+            isOpen={modal === 'createdir'}
+            toggle={() => {
+              toggle('createdir');
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
