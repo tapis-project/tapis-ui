@@ -5,7 +5,8 @@ import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useMkdir, useList } from 'tapis-hooks/files';
+import { useMkdir } from 'tapis-hooks/files';
+import { focusManager } from 'react-query'
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -16,9 +17,14 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
   
-  const { refetch } = useList({systemId, path: currentPath});
-  const onSuccess = useCallback(() => refetch(), [ refetch ] );
-  const { mkdir, isLoading, error } = useMkdir(onSuccess);
+  const onSuccess = useCallback(
+    () => {
+      focusManager.setFocused(true);
+    },
+    [ focusManager ]
+  );
+
+  const { mkdir, isLoading, error } = useMkdir();
 
   const formInitialState = { dirname: null }
 
@@ -34,7 +40,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
-    mkdir(systemId, `${currentPath}${dirname}`);
+    mkdir(systemId, `${currentPath}${dirname}`, { onSuccess });
 
   return (
     <GenericModal
