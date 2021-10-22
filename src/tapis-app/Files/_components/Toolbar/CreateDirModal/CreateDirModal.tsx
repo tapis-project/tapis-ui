@@ -25,7 +25,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     // automatic refetch on window focus
     focusManager.setFocused(true);
     setSuccess(true);
-  }, [focusManager]);
+  }, []);
 
   const { mkdir, isLoading, error } = useMkdir();
 

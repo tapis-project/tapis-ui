@@ -1,4 +1,4 @@
-import { useMutation, useInfiniteQuery, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { mkdir } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
