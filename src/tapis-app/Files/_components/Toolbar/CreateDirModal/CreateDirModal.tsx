@@ -1,10 +1,11 @@
+import { useCallback } from 'react';
 import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useMkdir } from 'tapis-hooks/files';
+import { useMkdir, useList } from 'tapis-hooks/files';
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -14,7 +15,10 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
 
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
-  const { mkdir, isLoading, error } = useMkdir();
+  
+  const { refetch } = useList({systemId, path: currentPath});
+  const onSuccess = useCallback(() => refetch(), [ refetch ] );
+  const { mkdir, isLoading, error } = useMkdir(onSuccess);
 
   const formInitialState = { dirname: null }
 

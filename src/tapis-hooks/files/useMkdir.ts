@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation, useInfiniteQuery } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { mkdir } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
@@ -10,9 +10,10 @@ type MkdirHookParams = {
   path: string;
 }
 
-const useMkdir = () => {
+const useMkdir = ( onSuccess: () => any ) => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
+  useInfiniteQuery({onSuccess});
 
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
@@ -36,7 +37,7 @@ const useMkdir = () => {
     reset,
     mkdir: (systemId: string, path: string) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({systemId, path});
+      return mutate({systemId, path}, { onSuccess });
     },
   };
 };
