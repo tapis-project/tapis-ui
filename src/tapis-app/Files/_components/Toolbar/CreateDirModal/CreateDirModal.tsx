@@ -60,7 +60,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       isOpen={isOpen}
       toggle={() => {
         reset(formInitialState);
-        setSuccess(false)
+        setSuccess(false);
         toggle();
       }}
       title="New Directory"
