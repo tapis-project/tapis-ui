@@ -7,7 +7,7 @@ import QueryKeys from './queryKeys';
 type MkdirHookParams = {
   systemId: string;
   path: string;
-}
+};
 
 const useMkdir = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -20,7 +20,7 @@ const useMkdir = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, MkdirHookParams>(
       [QueryKeys.mkdir, basePath, jwt],
-      ({systemId, path}) => mkdir(systemId, path, basePath, jwt),
+      ({ systemId, path }) => mkdir(systemId, path, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -31,9 +31,14 @@ const useMkdir = () => {
     data,
     error,
     reset,
-    mkdir: (systemId: string, path: string, options?: MutateOptions<Files.FileStringResponse, Error, MkdirHookParams>) => {
+    mkdir: (
+      systemId: string,
+      path: string,
+      // react-query options to allow callbacks such as onSuccess
+      options?: MutateOptions<Files.FileStringResponse, Error, MkdirHookParams>
+    ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({systemId, path}, options);
+      return mutate({ systemId, path }, options);
     },
   };
 };

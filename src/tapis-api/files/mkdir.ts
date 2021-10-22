@@ -13,7 +13,9 @@ const mkdir = (
     basePath,
     jwt
   );
-  return errorDecoder<Files.FileStringResponse>(() => api.mkdir({ systemId, mkdirRequest: { path }}));
+  return errorDecoder<Files.FileStringResponse>(() =>
+    api.mkdir({ systemId, mkdirRequest: { path } })
+  );
 };
 
 export default mkdir;

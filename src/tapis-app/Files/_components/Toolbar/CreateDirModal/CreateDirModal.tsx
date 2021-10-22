@@ -6,7 +6,7 @@ import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMkdir } from 'tapis-hooks/files';
-import { focusManager } from 'react-query'
+import { focusManager } from 'react-query';
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -16,23 +16,22 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
 
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
-  
-  const onSuccess = useCallback(
-    () => {
-      focusManager.setFocused(true);
-    },
-    [ focusManager ]
-  );
+
+  const onSuccess = useCallback(() => {
+    // Calling the focus manager triggers react-query's
+    // automatic refetch on window focus
+    focusManager.setFocused(true);
+  }, [focusManager]);
 
   const { mkdir, isLoading, error } = useMkdir();
 
-  const formInitialState = { dirname: null }
+  const formInitialState = { dirname: null };
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues: formInitialState });
 
   const { ref: dirnameRef, ...dirnameFieldProps } = register('dirname', {
