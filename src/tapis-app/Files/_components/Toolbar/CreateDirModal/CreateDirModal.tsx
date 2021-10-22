@@ -7,11 +7,14 @@ import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMkdir } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
+import { useState } from 'react';
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
   isOpen = false,
 }) => {
+  const [success, setSuccess] = useState(false);
+
   const { pathname } = useLocation();
 
   const systemId = pathname.split('/')[2];
@@ -21,6 +24,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
+    setSuccess(true);
   }, [focusManager]);
 
   const { mkdir, isLoading, error } = useMkdir();
@@ -36,6 +40,16 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
 
   const { ref: dirnameRef, ...dirnameFieldProps } = register('dirname', {
     required: 'Directory name is a required field',
+    maxLength: {
+      value: 255,
+      message: 'Directory name cannot be longer than 255 characters',
+    },
+    pattern: {
+      value: /[a-zA-Z0-9_.-]+/,
+      message:
+        "Must contain only alphanumeric characters and the following: '.', '_', '-'",
+    },
+    disabled: success,
   });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
@@ -46,6 +60,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       isOpen={isOpen}
       toggle={() => {
         reset(formInitialState);
+        setSuccess(false)
         toggle();
       }}
       title="New Directory"
@@ -55,7 +70,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
             <FieldWrapper
               label="Directory name"
               required={true}
-              description={`New directory in ${systemId}/${currentPath}`}
+              description={`Creates a directory in ${systemId}/${currentPath}`}
               error={errors['dirname']}
             >
               <Input bsSize="sm" {...dirnameFieldProps} innerRef={dirnameRef} />
@@ -64,8 +79,16 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
         </div>
       }
       footer={
-        <SubmitWrapper isLoading={isLoading} error={error} success={''}>
-          <Button form="newdirectory-form" color="primary" disabled={isLoading}>
+        <SubmitWrapper
+          isLoading={isLoading}
+          error={error}
+          success={success ? `Successfully created directory` : ''}
+        >
+          <Button
+            form="newdirectory-form"
+            color="primary"
+            disabled={isLoading || success}
+          >
             Create directory
           </Button>
         </SubmitWrapper>
