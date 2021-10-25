@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   useEffect(() => {
     reset();
-  }, []);
+  }, [reset]);
 
   const { pathname } = useLocation();
 
