@@ -22,17 +22,4 @@ describe('GenericModal', () => {
 
     expect(mockToggle).toBeCalledTimes(1);
   });
-
-  it("Doesn't render GenericModal if isOpen set to false", () => {
-    const { queryAllByText } = renderComponent(
-      <GenericModal
-        toggle={() => {}}
-        title="Generic Title"
-        body="Text in body"
-      />
-    );
-
-    expect(queryAllByText(/Generic Title/).length).toEqual(0);
-    expect(queryAllByText(/Text in body/).length).toEqual(0);
-  });
 });
