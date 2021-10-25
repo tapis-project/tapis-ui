@@ -7,10 +7,13 @@ import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMkdir } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
+import { useEffect } from 'react';
 
-const CreateDirModal: React.FC<ToolbarModalProps> = ({
-  toggle
-}) => {
+const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+  useEffect(() => {
+    reset();
+  }, []);
+
   const { pathname } = useLocation();
 
   const systemId = pathname.split('/')[2];
@@ -22,14 +25,13 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { mkdir, isLoading, error, isSuccess, reset: mkdirReset } = useMkdir();
+  const { mkdir, isLoading, error, isSuccess, reset } = useMkdir();
 
   const formInitialState = { dirname: null };
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm({ defaultValues: formInitialState });
 
@@ -52,11 +54,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
 
   return (
     <GenericModal
-      toggle={() => {
-        reset(formInitialState);
-        mkdirReset();
-        toggle();
-      }}
+      toggle={toggle}
       title="Create Directory"
       body={
         <div>
