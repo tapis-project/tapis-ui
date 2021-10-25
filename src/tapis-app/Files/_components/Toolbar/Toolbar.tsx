@@ -44,7 +44,11 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
-  const toggle = (modalName: string) => {
+  const toggle = (modalName: string | undefined) => {
+    if (modalName === undefined) {
+      setModal(undefined);
+      return;
+    }
     modal === modalName ? setModal(undefined) : setModal(modalName);
   };
   return (

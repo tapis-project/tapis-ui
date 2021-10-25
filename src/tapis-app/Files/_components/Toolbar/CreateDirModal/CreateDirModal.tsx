@@ -7,13 +7,11 @@ import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMkdir } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
-import { useState } from 'react';
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
   isOpen = false,
 }) => {
-  const [success, setSuccess] = useState(false);
 
   const { pathname } = useLocation();
 
@@ -24,10 +22,9 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
-    setSuccess(true);
   }, []);
 
-  const { mkdir, isLoading, error } = useMkdir();
+  const { mkdir, isLoading, error, isSuccess, reset: mkdirReset } = useMkdir();
 
   const formInitialState = { dirname: null };
 
@@ -49,7 +46,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       message:
         "Must contain only alphanumeric characters and the following: '.', '_', '-'",
     },
-    disabled: success,
+    disabled: isSuccess,
   });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
@@ -60,10 +57,10 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       isOpen={isOpen}
       toggle={() => {
         reset(formInitialState);
-        setSuccess(false);
+        mkdirReset()
         toggle();
       }}
-      title="New Directory"
+      title="Create Directory"
       body={
         <div>
           <form id="newdirectory-form" onSubmit={handleSubmit(onSubmit)}>
@@ -82,12 +79,12 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
         <SubmitWrapper
           isLoading={isLoading}
           error={error}
-          success={success ? `Successfully created directory` : ''}
+          success={isSuccess ? `Successfully created directory` : ''}
         >
           <Button
             form="newdirectory-form"
             color="primary"
-            disabled={isLoading || success}
+            disabled={isLoading || isSuccess}
           >
             Create directory
           </Button>
