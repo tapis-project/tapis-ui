@@ -12,7 +12,6 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
   isOpen = false,
 }) => {
-
   const { pathname } = useLocation();
 
   const systemId = pathname.split('/')[2];
@@ -57,7 +56,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       isOpen={isOpen}
       toggle={() => {
         reset(formInitialState);
-        mkdirReset()
+        mkdirReset();
         toggle();
       }}
       title="Create Directory"
