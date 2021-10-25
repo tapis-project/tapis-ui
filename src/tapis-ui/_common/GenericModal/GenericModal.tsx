@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export type GenericModalProps = {
-  isOpen: boolean;
   toggle: () => void;
   title: string;
   body: React.ReactNode;
@@ -10,14 +9,13 @@ export type GenericModalProps = {
 };
 
 const GenericModal: React.FC<GenericModalProps> = ({
-  isOpen = false,
   toggle,
   title,
   body,
   footer,
 }) => {
   return (
-    <Modal isOpen={isOpen} toggle={toggle}>
+    <Modal isOpen={true} toggle={toggle}>
       <ModalHeader toggle={toggle} charCode="&#x2715;">
         <span>{title}</span>
       </ModalHeader>

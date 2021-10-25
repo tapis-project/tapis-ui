@@ -9,8 +9,7 @@ import { useMkdir } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
-  toggle,
-  isOpen = false,
+  toggle
 }) => {
   const { pathname } = useLocation();
 
@@ -53,7 +52,6 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
 
   return (
     <GenericModal
-      isOpen={isOpen}
       toggle={() => {
         reset(formInitialState);
         mkdirReset();

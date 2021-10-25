@@ -15,7 +15,6 @@ type ToolbarButtonProps = {
 };
 
 export type ToolbarModalProps = {
-  isOpen: boolean;
   toggle: () => void;
 };
 
@@ -108,7 +107,10 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               console.log('Toolbar button');
             }}
           />
-          <CreateDirModal isOpen={modal === 'createdir'} toggle={toggle} />
+          {
+            modal === 'createdir' &&
+            <CreateDirModal toggle={toggle} />
+          }
         </div>
       )}
     </div>

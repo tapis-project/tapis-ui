@@ -10,7 +10,6 @@ describe('GenericModal', () => {
     const { getAllByText, getByLabelText } = renderComponent(
       <GenericModal
         toggle={mockToggle}
-        isOpen={true}
         title="Generic Title"
         body="Text in body"
       />
@@ -28,7 +27,6 @@ describe('GenericModal', () => {
     const { queryAllByText } = renderComponent(
       <GenericModal
         toggle={() => {}}
-        isOpen={false}
         title="Generic Title"
         body="Text in body"
       />
