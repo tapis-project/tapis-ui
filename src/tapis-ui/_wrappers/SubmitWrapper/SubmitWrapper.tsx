@@ -16,10 +16,12 @@ const SubmitWrapper: React.FC<SubmitWrapperProps> = ({
   success,
   children,
   className = '',
-  reverse = false
+  reverse = false,
 }) => {
   return (
-    <div className={`${className} ${styles.wrapper} ${reverse && styles.reverse}`}>
+    <div
+      className={`${className} ${styles.wrapper} ${reverse && styles.reverse}`}
+    >
       {children}
       {isLoading && (
         <LoadingSpinner
