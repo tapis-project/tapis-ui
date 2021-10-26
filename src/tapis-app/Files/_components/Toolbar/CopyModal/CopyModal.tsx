@@ -82,6 +82,14 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
     console.log('COPY');
   };
 
+  const breadcrumbs: Array<BreadcrumbType> = [
+    { text: 'Files', to: '/', onClick: () => onSystemNavigate(null) }
+  ];
+
+  if (destinationSystem) {
+    breadcrumbs.push(...destinationBreadcrumbs);
+  }
+
   const body = (
     <div className="row h-100">
       <div className="col-md-6 d-flex flex-column">
@@ -109,10 +117,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
           Copying {selectedFiles.length} files
         </div>
         <Breadcrumbs
-          breadcrumbs={[
-            { text: 'Files', to: '/', onClick: () => onSystemNavigate(null) },
-            ...destinationBreadcrumbs,
-          ]}
+          breadcrumbs={breadcrumbs}
         />
         <div>
           {destinationSystem ? (
