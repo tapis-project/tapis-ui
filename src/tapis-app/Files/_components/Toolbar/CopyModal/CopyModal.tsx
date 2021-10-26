@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper, Breadcrumbs } from 'tapis-ui/_common';
+import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import FileListing from 'tapis-ui/components/files/FileListing';
 import {
@@ -17,9 +18,6 @@ import { useList } from 'tapis-hooks/systems';
 import { Systems } from '@tapis/tapis-typescript';
 import styles from './CopyModal.module.scss';
 
-
-
-
 const CopyModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId = '',
@@ -28,25 +26,45 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
 }) => {
   const { pathname } = useLocation();
 
-  const [destinationSystem, setDestinationSystem] = useState<string | undefined>(systemId);
+  const [destinationSystem, setDestinationSystem] = useState<string | null>(
+    systemId
+  );
   const [destinationPath, setDestinationPath] = useState(path);
-
+  const [destinationBreadcrumbs, setDestinationBreadcrumbs] = useState<
+    Array<BreadcrumbType>
+  >([]);
 
   const onNavigate = useCallback<OnNavigateCallback>(
     (file) => {
-      const newPath = `${destinationPath}/${file.name ?? '/'}`
-      console.log(newPath);
+      const normalizedFilename = file.name?.startsWith('/') ? file.name?.slice(1) : file.name;
+      const newPath = `${destinationPath}${destinationPath.endsWith('/') ? '' : '/'}${normalizedFilename}/`;
       setDestinationPath(newPath);
     },
-    [setDestinationPath, destinationPath]
+    [setDestinationPath, destinationPath, setDestinationBreadcrumbs]
   );
 
-  const onSelectRoot = useCallback(
-    () => {
+  const onSystemNavigate = useCallback(
+    (system: Systems.TapisSystem | null) => {
+      setDestinationSystem(system?.id ?? null);
       setDestinationPath('/');
-      setDestinationSystem(undefined);
     },
-    [ setDestinationPath, setDestinationSystem ]
+    [setDestinationPath, setDestinationSystem]
+  );
+
+  useEffect(
+    () => {
+      console.log("CALCULATING BREADCRUMBS FOR", destinationPath);
+      const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(destinationPath);
+      const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map(
+        (breadcrumb) => ({
+          ...breadcrumb, 
+          onClick: (to: string) => { console.log("going to ", to); setDestinationPath(to) },
+        })
+      );
+      setDestinationBreadcrumbs(newCrumbs);
+      console.log(newCrumbs);
+    },
+    [setDestinationBreadcrumbs, destinationPath, setDestinationPath]
   )
 
   const onSuccess = useCallback(() => {
@@ -59,6 +77,8 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
     console.log('COPY');
   };
 
+  console.log('Destination breadcrumbs', destinationBreadcrumbs);
+
   const body = (
     <div className="row h-100">
       <div className="col-md-6 d-flex flex-column">
@@ -68,7 +88,6 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
         </div>
         <Breadcrumbs
           breadcrumbs={[
-            { text: 'Files' },
             ...breadcrumbsFromPathname(pathname)
               .splice(1)
               .map((fragment) => ({ text: fragment.text })),
@@ -88,28 +107,22 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
         </div>
         <Breadcrumbs
           breadcrumbs={[
-            { text: 'Files' },
-            ...breadcrumbsFromPathname(pathname)
-              .splice(1)
-              .map((fragment) => ({ text: fragment.text })),
+            { text: 'Files', onClick: () => onSystemNavigate(null) },
+            ...destinationBreadcrumbs,
           ]}
         />
         <div>
-          {
-            destinationSystem 
-              ? (
-                <FileListing
-                  className={`${styles.listing}`}
-                  systemId={destinationSystem}
-                  path={destinationPath}
-                  select={{ mode: 'none' }}
-                  onNavigate={onNavigate}
-                />
-              )
-              : (
-                <SystemListing />
-              )
-          }
+          {destinationSystem ? (
+            <FileListing
+              className={`${styles.listing}`}
+              systemId={destinationSystem}
+              path={destinationPath}
+              select={{ mode: 'none' }}
+              onNavigate={onNavigate}
+            />
+          ) : (
+            <SystemListing />
+          )}
         </div>
       </div>
     </div>

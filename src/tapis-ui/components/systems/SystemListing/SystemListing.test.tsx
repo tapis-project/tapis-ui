@@ -14,9 +14,7 @@ describe('System Listing', () => {
       isLoading: false,
       error: null,
     });
-    const { getAllByText } = renderComponent(
-      <SystemListing />
-    );
+    const { getAllByText } = renderComponent(<SystemListing />);
     expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
   });
 
@@ -55,6 +53,6 @@ describe('System Listing', () => {
 
     // Click on file1.txt and expect the callback to have run
     system.click();
-    expect(mockOnNavigate).toHaveBeenLastCalledWith(tapisSystem); 
+    expect(mockOnNavigate).toHaveBeenLastCalledWith(tapisSystem);
   });
 });

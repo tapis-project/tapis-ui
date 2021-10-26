@@ -4,24 +4,40 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type BreadcrumbType = {
   to?: string;
-  onClick?: () => void;
+  onClick?: (to: string) => void;
   text: string;
 };
 
-const BreadcrumbFragment: React.FC<BreadcrumbType> = ({ to, onClick, text }) => {
-  if (to) {
-    return (           <span >
-    <NavLink to={to}> {text}</NavLink> /
-  </span>
+const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
+  to,
+  onClick,
+  text,
+}) => {
+  if (onClick) {
+    return (
+      <span>
+        {' '}
+        <a href="#" onClick={(e) => { e.preventDefault(); to && onClick(to); }}>
+          {text}
+        </a>
+        {' '}
+        /
+      </span>
     )
   }
-  if (onClick) {
-    return <a href="#" onClick={(e) => { e.preventDefault(); onClick() }}> {text } /</a>
+  if (to) {
+    return (
+      <span>
+        {' '}
+        <NavLink to={to}>{text}</NavLink>
+        {' '}
+        /
+      </span>
+    );
   }
-  return (
-    <span> {text} /</span>
-  )
-}
+
+  return <span> {text} {`${text !== '...' ? '/' : ''}`}</span>;
+};
 
 type BreadcrumbsProps = {
   breadcrumbs: Array<BreadcrumbType>;
@@ -47,9 +63,16 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
       {truncatedBreadcrumbs.map((item, index) => {
         const { text, to, onClick } = item;
         if (index === truncatedBreadcrumbs.length - 1) {
-          return <BreadcrumbFragment text={text} key={uuidv4()} />
+          return <BreadcrumbFragment text={text} key={uuidv4()} />;
         }
-        return <BreadcrumbFragment text={text} to={to} onClick={onClick} key={uuidv4()} />
+        return (
+          <BreadcrumbFragment
+            text={text}
+            to={to}
+            onClick={onClick}
+            key={uuidv4()}
+          />
+        );
       })}
     </div>
   );
