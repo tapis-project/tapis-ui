@@ -1,0 +1,14 @@
+.system-list {
+  /* icon */
+  tr > *:nth-child(1) {
+    width: 5%;
+  }
+  /* name */
+  tr > *:nth-child(2) {
+    width: 95%;
+  }
+}
+
+.selected {
+  background-color: var(--global-color-accent--normal);
+}

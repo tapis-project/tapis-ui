@@ -1,0 +1,91 @@
+import React, { useState, useCallback } from 'react';
+import { Systems } from '@tapis/tapis-typescript';
+import { useList } from 'tapis-hooks/systems';
+import { Column, Row } from 'react-table';
+import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
+import { QueryWrapper } from 'tapis-ui/_wrappers';
+import styles from './SystemListing.module.scss';
+
+type SystemListItemProps = {
+  system: Systems.TapisSystem;
+  onNavigate?: (system: Systems.TapisSystem) => void;
+}
+
+const SystemListingItem: React.FC<SystemListItemProps> = ({ system, onNavigate }) => {
+  if (onNavigate) {
+    return (
+      <a 
+        href="#"
+        onClick={(e) => { e.preventDefault(); onNavigate(system) }}
+        data-testid={`href-${system.id}`}
+      >
+        {system.id}
+      </a>
+    )
+  }
+  return (
+    <span>{system.id}</span>
+  )
+}
+
+type SystemListingProps = {
+  onSelect?: (system: Systems.TapisSystem) => void;
+  onNavigate?: (system: Systems.TapisSystem) => void;
+  className?: string;
+}
+
+const SystemListing: React.FC<SystemListingProps> = ({ onSelect, onNavigate, className }) => {
+  const { data, isLoading, error } = useList();
+  const [ selectedSystem, setSelectedSystem ] = useState<Systems.TapisSystem | null>(null);
+  const selectWrapper = useCallback(
+    (system: Systems.TapisSystem) => {
+      if (onSelect) {
+        setSelectedSystem(system);
+        onSelect(system);  
+      }
+    },
+    [ setSelectedSystem ]
+  )
+  const systems: Array<Systems.TapisSystem> = data?.result ?? [];
+
+  const tableColumns: Array<Column> = [
+    {
+      Header: '',
+      id: 'icon',
+      Cell: (el) => <Icon name='data-files' />,
+    },
+    {
+      Header: 'System',
+      id: 'name',
+      Cell: (el) => <SystemListingItem system={el.row.original as Systems.TapisSystem} onNavigate={onNavigate} />
+    },
+  ];
+
+  // Maps rows to row properties, such as classNames
+  const getRowProps = (row: Row) => {
+    const system = row.original as Systems.TapisSystem;
+    return {
+      className: selectedSystem?.id === system.id ? styles.selected : '',
+      onClick: () => selectWrapper(system),
+      'data-testid': system.id,
+    };
+  };
+  
+  return (
+    <QueryWrapper
+      isLoading={isLoading}
+      error={error}
+    >
+      <InfiniteScrollTable
+        className={`${styles['system-list']} ${className ?? ''}`}
+        tableColumns={tableColumns}
+        tableData={systems}
+        isLoading={isLoading}
+        noDataText="No systems found"
+        getRowProps={getRowProps}
+      />
+    </QueryWrapper>
+  );
+}
+
+export default SystemListing;

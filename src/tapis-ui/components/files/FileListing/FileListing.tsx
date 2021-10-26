@@ -38,8 +38,12 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
   }
   if (onNavigate) {
     return (
-      <a href="#"
-        onClick={(e) => { e.preventDefault(); onNavigate(file); }}
+      <a
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          onNavigate(file);
+        }}
       >
         {file.name}/
       </a>
@@ -107,61 +111,66 @@ type FileListingTableProps = {
   select?: SelectMode;
 };
 
-export const FileListingTable: React.FC<FileListingTableProps> = ({
-  files,
-  prependColumns = [],
-  appendColumns = [],
-  getRowProps,
-  onInfiniteScroll,
-  isLoading,
-  onNavigate,
-  location,
-  className,
-  select,
-}) => {
-  const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';
+export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
+  ({
+    files,
+    prependColumns = [],
+    appendColumns = [],
+    getRowProps,
+    onInfiniteScroll,
+    isLoading,
+    onNavigate,
+    location,
+    className,
+    select,
+  }) => {
+    const styleName =
+      select?.mode !== 'none' ? 'file-list-select' : 'file-list';
 
-  const tableColumns: Array<Column> = [
-    ...prependColumns,
-    {
-      Header: '',
-      accessor: 'type',
-      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
-    },
-    {
-      Header: 'Name',
-      Cell: (el) => (
-        <FileListingName
-          file={el.row.original}
-          onNavigate={onNavigate}
-          location={location}
-        />
-      ),
-    },
-    {
-      Header: 'Size',
-      accessor: 'size',
-      Cell: (el) => <span>{sizeFormat(el.value)}</span>,
-    },
-    {
-      Header: 'Last Modified',
-      accessor: 'lastModified',
-      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>,
-    },
-    ...appendColumns,
-  ];
-  return (
-    <InfiniteScrollTable
-      className={`${styles[styleName]} ${className ?? ''}`}
-      tableColumns={tableColumns}
-      tableData={files}
-      onInfiniteScroll={onInfiniteScroll}
-      isLoading={isLoading}
-      noDataText="No files found"
-      getRowProps={getRowProps}
-    />
-  );
-};
+    const tableColumns: Array<Column> = [
+      ...prependColumns,
+      {
+        Header: '',
+        accessor: 'type',
+        Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
+      },
+      {
+        Header: 'Name',
+        Cell: (el) => (
+          <FileListingName
+            file={el.row.original}
+            onNavigate={onNavigate}
+            location={location}
+          />
+        ),
+      },
+      {
+        Header: 'Size',
+        accessor: 'size',
+        Cell: (el) => <span>{sizeFormat(el.value)}</span>,
+      },
+      {
+        Header: 'Last Modified',
+        accessor: 'lastModified',
+        Cell: (el) => (
+          <span>{formatDateTimeFromValue(new Date(el.value))}</span>
+        ),
+      },
+      ...appendColumns,
+    ];
+    return (
+      <InfiniteScrollTable
+        className={`${styles[styleName]} ${className ?? ''}`}
+        tableColumns={tableColumns}
+        tableData={files}
+        onInfiniteScroll={onInfiniteScroll}
+        isLoading={isLoading}
+        noDataText="No files found"
+        getRowProps={getRowProps}
+      />
+    );
+  }
+);
 
 interface FileListingProps {
   systemId: string;

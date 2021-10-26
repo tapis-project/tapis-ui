@@ -7,13 +7,18 @@ import {
   FileListingTable,
   OnNavigateCallback,
 } from 'tapis-ui/components/files/FileListing/FileListing';
+import { SystemListing } from 'tapis-ui/components/systems';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
+import { useList } from 'tapis-hooks/systems';
+import { Systems } from '@tapis/tapis-typescript';
 import styles from './CopyModal.module.scss';
-import { string } from 'prop-types';
+
+
+
 
 const CopyModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -23,15 +28,26 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
 }) => {
   const { pathname } = useLocation();
 
-  const [destinationSystem, setDestinationSystem] = useState(systemId);
+  const [destinationSystem, setDestinationSystem] = useState<string | undefined>(systemId);
   const [destinationPath, setDestinationPath] = useState(path);
+
 
   const onNavigate = useCallback<OnNavigateCallback>(
     (file) => {
-      setDestinationPath(file.name ?? '/');
+      const newPath = `${destinationPath}/${file.name ?? '/'}`
+      console.log(newPath);
+      setDestinationPath(newPath);
     },
-    [setDestinationPath]
+    [setDestinationPath, destinationPath]
   );
+
+  const onSelectRoot = useCallback(
+    () => {
+      setDestinationPath('/');
+      setDestinationSystem(undefined);
+    },
+    [ setDestinationPath, setDestinationSystem ]
+  )
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -42,8 +58,6 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
   const onSubmit = () => {
     console.log('COPY');
   };
-
-  const selectMode = {};
 
   const body = (
     <div className="row h-100">
@@ -81,13 +95,21 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
           ]}
         />
         <div>
-          <FileListing
-            className={`${styles.listing}`}
-            systemId={systemId}
-            path={destinationPath}
-            select={{ mode: 'none' }}
-            onNavigate={onNavigate}
-          />
+          {
+            destinationSystem 
+              ? (
+                <FileListing
+                  className={`${styles.listing}`}
+                  systemId={destinationSystem}
+                  path={destinationPath}
+                  select={{ mode: 'none' }}
+                  onNavigate={onNavigate}
+                />
+              )
+              : (
+                <SystemListing />
+              )
+          }
         </div>
       </div>
     </div>

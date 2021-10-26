@@ -4,8 +4,24 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type BreadcrumbType = {
   to?: string;
+  onClick?: () => void;
   text: string;
 };
+
+const BreadcrumbFragment: React.FC<BreadcrumbType> = ({ to, onClick, text }) => {
+  if (to) {
+    return (           <span >
+    <NavLink to={to}> {text}</NavLink> /
+  </span>
+    )
+  }
+  if (onClick) {
+    return <a href="#" onClick={(e) => { e.preventDefault(); onClick() }}> {text } /</a>
+  }
+  return (
+    <span> {text} /</span>
+  )
+}
 
 type BreadcrumbsProps = {
   breadcrumbs: Array<BreadcrumbType>;
@@ -29,13 +45,11 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
     <div>
       {truncatedBreadcrumbs.map((item, index) => {
-        return index === truncatedBreadcrumbs.length - 1 || !item.to ? (
-          <span key={uuidv4()}> {item.text} /</span>
-        ) : (
-          <span key={uuidv4()}>
-            <NavLink to={item.to}> {item.text}</NavLink> /
-          </span>
-        );
+        const { text, to, onClick } = item;
+        if (index === truncatedBreadcrumbs.length - 1) {
+          return <BreadcrumbFragment text={text} key={uuidv4()} />
+        }
+        return <BreadcrumbFragment text={text} to={to} onClick={onClick} key={uuidv4()} />
       })}
     </div>
   );
