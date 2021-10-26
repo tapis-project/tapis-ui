@@ -85,6 +85,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"
+            type="submit"
           >
             Create directory
           </Button>
