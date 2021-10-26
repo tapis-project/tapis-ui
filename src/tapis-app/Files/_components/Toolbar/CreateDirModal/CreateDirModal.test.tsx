@@ -1,12 +1,11 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
-import CreateDirModal from './CreateDirModal'
-import { useMkdir } from 'tapis-hooks/files'
+import CreateDirModal from './CreateDirModal';
+import { useMkdir } from 'tapis-hooks/files';
 
-jest.mock("tapis-hooks/files/useMkdir")
+jest.mock('tapis-hooks/files/useMkdir');
 
 describe('CreateDirModal', () => {
-
   it('fires the onSubmit function', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
@@ -15,33 +14,27 @@ describe('CreateDirModal', () => {
       isLoading: false,
       error: null,
       isSuccess: false,
-      reset: resetMock
+      reset: resetMock,
     });
 
-    renderComponent(
-      <CreateDirModal
-        toggle={() => {}}
-      />
-    );
-    
-    const input = screen.getByLabelText("Input")
+    renderComponent(<CreateDirModal toggle={() => {}} />);
+
+    const input = screen.getByLabelText('Input');
     await act(async () => {
       fireEvent.change(input, {
         target: {
-          value: "testdir"
-        }
+          value: 'testdir',
+        },
       });
-      
-    })
+    });
 
-    const button = screen.getByLabelText("Submit");
+    const button = screen.getByLabelText('Submit');
     await act(async () => {
       fireEvent.click(button);
+    });
 
-    })
-
-    expect(mkdirMock).toBeCalledTimes(1)
-    expect(resetMock).toBeCalledTimes(1)
+    expect(mkdirMock).toBeCalledTimes(1);
+    expect(resetMock).toBeCalledTimes(1);
   });
 
   it('submits with valid inputs', async () => {
@@ -52,33 +45,27 @@ describe('CreateDirModal', () => {
       isLoading: false,
       error: null,
       isSuccess: false,
-      reset: resetMock
+      reset: resetMock,
     });
 
-    renderComponent(
-      <CreateDirModal
-        toggle={() => {}}
-      />
-    );
-    
-    const input = screen.getByLabelText("Input")
+    renderComponent(<CreateDirModal toggle={() => {}} />);
+
+    const input = screen.getByLabelText('Input');
     await act(async () => {
       fireEvent.change(input, {
         target: {
-          value: "testdir"
-        }
+          value: 'testdir',
+        },
       });
-      
-    })
+    });
 
-    const button = screen.getByLabelText("Submit");
+    const button = screen.getByLabelText('Submit');
     await act(async () => {
       fireEvent.click(button);
+    });
 
-    })
-
-    expect(mkdirMock).toBeCalledTimes(1)
-    expect(resetMock).toBeCalledTimes(1)
+    expect(mkdirMock).toBeCalledTimes(1);
+    expect(resetMock).toBeCalledTimes(1);
   });
 
   it('fails with invalid inputs', async () => {
@@ -89,33 +76,27 @@ describe('CreateDirModal', () => {
       isLoading: false,
       error: null,
       isSuccess: false,
-      reset: resetMock
+      reset: resetMock,
     });
 
-    renderComponent(
-      <CreateDirModal
-        toggle={() => {}}
-      />
-    );
-    
-    const input = screen.getByLabelText("Input")
-    await act( async () => {
+    renderComponent(<CreateDirModal toggle={() => {}} />);
+
+    const input = screen.getByLabelText('Input');
+    await act(async () => {
       fireEvent.change(input, {
         target: {
           // * is an invalid value
-          value: "*"
-        }
+          value: '*',
+        },
       });
-      
-    })
+    });
 
-    const button = screen.getByLabelText("Submit");
-    await act( async () => {
+    const button = screen.getByLabelText('Submit');
+    await act(async () => {
       fireEvent.click(button);
+    });
 
-    })
-
-    expect(mkdirMock).toBeCalledTimes(0)
-    expect(resetMock).toBeCalledTimes(1)
-  })
+    expect(mkdirMock).toBeCalledTimes(0);
+    expect(resetMock).toBeCalledTimes(1);
+  });
 });
