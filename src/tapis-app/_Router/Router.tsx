@@ -9,6 +9,7 @@ import Dashboard from '../Dashboard';
 import Jobs from '../Jobs';
 import Systems from '../Systems';
 import UIPatterns from '../UIPatterns';
+import Streams from '../Streams';
 
 const Router: React.FC = () => {
   const { logout } = useLogin();
@@ -36,6 +37,9 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute path="/jobs">
         <Jobs />
+      </ProtectedRoute>
+      <ProtectedRoute path="/streams">
+        <Streams />
       </ProtectedRoute>
       <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
