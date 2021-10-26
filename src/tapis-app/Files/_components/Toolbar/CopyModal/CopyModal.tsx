@@ -53,18 +53,23 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
 
   useEffect(
     () => {
-      console.log("CALCULATING BREADCRUMBS FOR", destinationPath);
       const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(destinationPath);
       const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map(
         (breadcrumb) => ({
           ...breadcrumb, 
-          onClick: (to: string) => { console.log("going to ", to); setDestinationPath(to) },
+          onClick: (to: string) => { setDestinationPath(to) },
         })
       );
+      newCrumbs.unshift(
+        {
+          text: destinationSystem ?? '',
+          to: '/',
+          onClick: (to: string) => { setDestinationPath(to) }
+        }
+      )
       setDestinationBreadcrumbs(newCrumbs);
-      console.log(newCrumbs);
     },
-    [setDestinationBreadcrumbs, destinationPath, setDestinationPath]
+    [setDestinationBreadcrumbs, destinationPath, setDestinationPath, destinationSystem ]
   )
 
   const onSuccess = useCallback(() => {
@@ -76,8 +81,6 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
   const onSubmit = () => {
     console.log('COPY');
   };
-
-  console.log('Destination breadcrumbs', destinationBreadcrumbs);
 
   const body = (
     <div className="row h-100">
@@ -107,7 +110,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
         </div>
         <Breadcrumbs
           breadcrumbs={[
-            { text: 'Files', onClick: () => onSystemNavigate(null) },
+            { text: 'Files', to: '/', onClick: () => onSystemNavigate(null) },
             ...destinationBreadcrumbs,
           ]}
         />
