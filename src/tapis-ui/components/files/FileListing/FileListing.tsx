@@ -4,7 +4,7 @@ import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Row, Column } from 'react-table';
+import { Row, Column, CellProps } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,7 +26,7 @@ interface FileListingDirProps {
 
 const FileListingDir: React.FC<FileListingDirProps> = ({
   file,
-  onNavigate,
+  onNavigate = undefined,
   location = undefined,
 }) => {
   if (location) {
@@ -36,14 +36,15 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
       </NavLink>
     );
   }
-  return (
+  if (onNavigate) {
     <span
       className={`btn btn-link ${styles.dir}`}
-      onClick={() => onNavigate && onNavigate(file)}
+      onClick={() => onNavigate(file)}
     >
       {file.name}/
-    </span>
-  );
+    </span>;
+  }
+  return <span>{file.name}/</span>;
 };
 
 type FileListingCheckboxCell = {
@@ -90,6 +91,75 @@ type SelectMode = {
   mode: 'none' | 'single' | 'multi';
   // If undefined, allowed selectable file types will be treated as [ "file", "dir" ]
   types?: Array<string>;
+};
+
+type FileListingTableProps = {
+  files: Array<Files.FileInfo>;
+  prependColumns?: Array<Column>;
+  appendColumns?: Array<Column>;
+  getRowProps?: (row: Row) => any;
+  onInfiniteScroll?: () => any;
+  isLoading?: boolean;
+  onNavigate?: OnNavigateCallback;
+  location?: string;
+  className?: string;
+  select?: SelectMode;
+};
+
+export const FileListingTable: React.FC<FileListingTableProps> = ({
+  files,
+  prependColumns = [],
+  appendColumns = [],
+  getRowProps,
+  onInfiniteScroll,
+  isLoading,
+  onNavigate,
+  location,
+  className,
+  select,
+}) => {
+  const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';
+
+  const tableColumns: Array<Column> = [
+    ...prependColumns,
+    {
+      Header: '',
+      accessor: 'type',
+      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
+    },
+    {
+      Header: 'Name',
+      Cell: (el) => (
+        <FileListingName
+          file={el.row.original}
+          onNavigate={onNavigate}
+          location={location}
+        />
+      ),
+    },
+    {
+      Header: 'Size',
+      accessor: 'size',
+      Cell: (el) => <span>{sizeFormat(el.value)}</span>,
+    },
+    {
+      Header: 'Last Modified',
+      accessor: 'lastModified',
+      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>,
+    },
+    ...appendColumns,
+  ];
+  return (
+    <InfiniteScrollTable
+      className={`${styles[styleName]} ${className}`}
+      tableColumns={tableColumns}
+      tableData={files}
+      onInfiniteScroll={onInfiniteScroll}
+      isLoading={isLoading}
+      noDataText="No files found"
+      getRowProps={getRowProps}
+    />
+  );
 };
 
 interface FileListingProps {
@@ -163,46 +233,21 @@ const FileListing: React.FC<FileListingProps> = ({
     onSelect && onSelect([]);
   }, [setSelectedIndices, systemId, path, onSelect]);
 
-  const tableColumns: Array<Column> = [
-    {
-      Header: '',
-      accessor: 'type',
-      Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
-    },
-    {
-      Header: 'Name',
-      Cell: (el) => (
-        <FileListingName
-          file={el.row.original}
-          onNavigate={onNavigate}
-          location={location}
-        />
-      ),
-    },
-    {
-      Header: 'Size',
-      accessor: 'size',
-      Cell: (el) => <span>{sizeFormat(el.value)}</span>,
-    },
-    {
-      Header: 'Last Modified',
-      accessor: 'lastModified',
-      Cell: (el) => <span>{formatDateTimeFromValue(new Date(el.value))}</span>,
-    },
-  ];
-
-  if (select?.mode !== 'none') {
-    tableColumns.unshift({
-      Header: '',
-      id: 'multiselect',
-      Cell: (el) => (
-        <FileListingCheckboxCell
-          index={el.row.index}
-          selectedIndices={selectedIndices}
-        />
-      ),
-    });
-  }
+  const prependColumns =
+    select?.mode !== 'none'
+      ? [
+          {
+            Header: '',
+            id: 'multiselect',
+            Cell: (el: React.PropsWithChildren<CellProps<{}, any>>) => (
+              <FileListingCheckboxCell
+                index={el.row.index}
+                selectedIndices={selectedIndices}
+              />
+            ),
+          },
+        ]
+      : [];
 
   const mapSelectCallback = (
     index: number,
@@ -227,7 +272,7 @@ const FileListing: React.FC<FileListingProps> = ({
   };
 
   // Maps rows to row properties, such as classNames
-  const rowProps = (row: Row) => {
+  const getRowProps = (row: Row) => {
     const file: Files.FileInfo = row.original as Files.FileInfo;
     return {
       onClick: mapSelectCallback(
@@ -239,20 +284,16 @@ const FileListing: React.FC<FileListingProps> = ({
     };
   };
 
-  const styleName = select?.mode !== 'none' ? 'file-list-select' : 'file-list';
   return (
-    <QueryWrapper
-      className={styles[styleName]}
-      isLoading={isLoading}
-      error={error}
-    >
-      <InfiniteScrollTable
-        tableColumns={tableColumns}
-        tableData={files}
+    <QueryWrapper isLoading={isLoading} error={error}>
+      <FileListingTable
+        files={files}
+        prependColumns={prependColumns}
         onInfiniteScroll={infiniteScrollCallback}
         isLoading={isFetchingNextPage}
-        noDataText="No files found"
-        getRowProps={rowProps}
+        getRowProps={getRowProps}
+        location={location}
+        onNavigate={onNavigate}
       />
     </QueryWrapper>
   );
