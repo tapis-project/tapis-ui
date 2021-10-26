@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId,
-  currentPath,
+  path,
 }) => {
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -46,7 +46,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
-    mkdir(systemId ?? '', `${currentPath ?? '/'}${dirname}`, { onSuccess });
+    mkdir(systemId ?? '', `${path ?? '/'}${dirname}`, { onSuccess });
 
   return (
     <GenericModal
@@ -58,7 +58,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
             <FieldWrapper
               label="Directory name"
               required={true}
-              description={`Creates a directory in ${systemId}/${currentPath}`}
+              description={`Creates a directory in ${systemId}/${path}`}
               error={errors['dirname']}
             >
               <Input bsSize="sm" {...dirnameFieldProps} innerRef={dirnameRef} />

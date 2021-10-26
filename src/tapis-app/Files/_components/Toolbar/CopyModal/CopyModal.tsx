@@ -1,8 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper, Breadcrumbs } from 'tapis-ui/_common';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
-import { FileListingTable } from 'tapis-ui/components/files/FileListing';
+import FileListing from 'tapis-ui/components/files/FileListing';
+import {
+  FileListingTable,
+  OnNavigateCallback,
+} from 'tapis-ui/components/files/FileListing/FileListing';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
@@ -14,10 +18,20 @@ import { string } from 'prop-types';
 const CopyModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId = '',
-  currentPath = '/',
+  path = '/',
   selectedFiles = [],
 }) => {
   const { pathname } = useLocation();
+
+  const [destinationSystem, setDestinationSystem] = useState(systemId);
+  const [destinationPath, setDestinationPath] = useState(path);
+
+  const onNavigate = useCallback<OnNavigateCallback>(
+    (file) => {
+      setDestinationPath(file.name ?? '/');
+    },
+    [setDestinationPath]
+  );
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -28,6 +42,8 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
   const onSubmit = () => {
     console.log('COPY');
   };
+
+  const selectMode = {};
 
   const body = (
     <div className="row h-100">
@@ -44,10 +60,33 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
               .map((fragment) => ({ text: fragment.text })),
           ]}
         />
-        <div className="filesListing">
+        <div>
           <FileListingTable
             files={selectedFiles}
             className={`${styles.listing}`}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 d-flex flex-column">
+        {/* Table of selected files */}
+        <div className={`${styles['col-header']}`}>
+          Copying {selectedFiles.length} files
+        </div>
+        <Breadcrumbs
+          breadcrumbs={[
+            { text: 'Files' },
+            ...breadcrumbsFromPathname(pathname)
+              .splice(1)
+              .map((fragment) => ({ text: fragment.text })),
+          ]}
+        />
+        <div>
+          <FileListing
+            className={`${styles.listing}`}
+            systemId={systemId}
+            path={destinationPath}
+            select={{ mode: 'none' }}
+            onNavigate={onNavigate}
           />
         </div>
       </div>
@@ -58,7 +97,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
     <GenericModal
       toggle={toggle}
       title="Copy Files"
-      size="lg"
+      size="xl"
       body={body}
       footer={<div>Footer</div>}
     />

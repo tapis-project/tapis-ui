@@ -37,12 +37,13 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
     );
   }
   if (onNavigate) {
-    <span
-      className={`btn btn-link ${styles.dir}`}
-      onClick={() => onNavigate(file)}
-    >
-      {file.name}/
-    </span>;
+    return (
+      <a href="#"
+        onClick={(e) => { e.preventDefault(); onNavigate(file); }}
+      >
+        {file.name}/
+      </a>
+    );
   }
   return <span>{file.name}/</span>;
 };
@@ -151,7 +152,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = ({
   ];
   return (
     <InfiniteScrollTable
-      className={`${styles[styleName]} ${className}`}
+      className={`${styles[styleName]} ${className ?? ''}`}
       tableColumns={tableColumns}
       tableData={files}
       onInfiniteScroll={onInfiniteScroll}
@@ -169,6 +170,7 @@ interface FileListingProps {
   onNavigate?: OnNavigateCallback;
   location?: string;
   select?: SelectMode;
+  className?: string;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -178,6 +180,7 @@ const FileListing: React.FC<FileListingProps> = ({
   onNavigate = undefined,
   location = undefined,
   select = undefined,
+  className,
 }) => {
   const {
     hasNextPage,
@@ -287,6 +290,7 @@ const FileListing: React.FC<FileListingProps> = ({
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <FileListingTable
+        className={className}
         files={files}
         prependColumns={prependColumns}
         onInfiniteScroll={infiniteScrollCallback}

@@ -19,7 +19,7 @@ export type ToolbarModalProps = {
   toggle: () => void;
   selectedFiles?: Array<Files.FileInfo>;
   systemId?: string;
-  currentPath?: string;
+  path?: string;
 };
 
 export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
@@ -113,14 +113,14 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             <CreateDirModal
               toggle={toggle}
               systemId={systemId}
-              currentPath={currentPath}
+              path={currentPath}
             />
           )}
           {modal === 'copy' && (
             <CopyModal
               toggle={toggle}
               systemId={systemId}
-              currentPath={currentPath}
+              path={currentPath}
               selectedFiles={selectedFiles}
             />
           )}
