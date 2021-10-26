@@ -73,6 +73,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           isLoading={isLoading}
           error={error}
           success={isSuccess ? `Successfully created directory` : ''}
+          reverse={true}
         >
           <Button
             form="newdirectory-form"
