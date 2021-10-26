@@ -63,7 +63,12 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
               description={`Creates a directory in ${systemId}/${currentPath}`}
               error={errors['dirname']}
             >
-              <Input bsSize="sm" {...dirnameFieldProps} innerRef={dirnameRef} />
+              <Input
+                bsSize="sm"
+                {...dirnameFieldProps}
+                innerRef={dirnameRef}
+                aria-label="Input"
+              />
             </FieldWrapper>
           </form>
         </div>
@@ -73,11 +78,14 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           isLoading={isLoading}
           error={error}
           success={isSuccess ? `Successfully created directory` : ''}
+          reverse={true}
         >
           <Button
             form="newdirectory-form"
             color="primary"
             disabled={isLoading || isSuccess}
+            aria-label="Submit"
+            type="submit"
           >
             Create directory
           </Button>
