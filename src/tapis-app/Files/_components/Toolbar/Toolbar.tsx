@@ -5,6 +5,7 @@ import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
+import RenameModal from './RenameModal'
 import { useLocation } from 'react-router-dom';
 
 type ToolbarButtonProps = {
@@ -16,6 +17,9 @@ type ToolbarButtonProps = {
 
 export type ToolbarModalProps = {
   toggle: () => void;
+  selectedFiles?: Array<Files.FileInfo>;
+  systemId?: string;
+  path?: string;
 };
 
 export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
@@ -54,7 +58,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             text="Rename"
             icon="rename"
             disabled={selectedFiles.length !== 1}
-            onClick={() => {}}
+            onClick={() => {
+              setModal('rename')
+            }}
           />
           <ToolbarButton
             text="Move"
@@ -108,6 +114,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             }}
           />
           {modal === 'createdir' && <CreateDirModal toggle={toggle} />}
+          {modal === 'rename' && <RenameModal toggle={toggle} />}
         </div>
       )}
     </div>
