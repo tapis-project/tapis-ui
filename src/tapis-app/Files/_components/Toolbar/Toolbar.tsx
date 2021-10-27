@@ -114,7 +114,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             }}
           />
           {modal === 'createdir' && <CreateDirModal toggle={toggle} />}
-          {modal === 'rename' && <RenameModal toggle={toggle} />}
+          {modal === 'rename' && <RenameModal toggle={toggle} selectedFiles={selectedFiles}/>}
         </div>
       )}
     </div>

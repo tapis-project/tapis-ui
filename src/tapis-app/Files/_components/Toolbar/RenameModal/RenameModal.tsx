@@ -3,13 +3,14 @@ import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
-import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useMkdir } from 'tapis-hooks/files';
+import { useRename } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 
-const RenameModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+const RenameModal: React.FC<ToolbarModalProps> = ({ toggle, systemId, path, selectedFiles }) => {
+
+  const file = selectedFiles![0]
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -17,11 +18,11 @@ const RenameModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     focusManager.setFocused(true);
   }, []);
 
-  // const { mkdir, isLoading, error, isSuccess, reset } = useMkdir();
+  const { rename, isLoading, error, isSuccess, reset } = useRename();
 
-  // useEffect(() => {
-  //   reset();
-  // }, [reset]);
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   const {
     register,
@@ -29,43 +30,46 @@ const RenameModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     formState: { errors },
   } = useForm();
 
-  const { ref: nameRef, ...nameFieldProps } = register('name', {
-    required: 'Name is a required field',
+  const { ref: newnameRef, ...newnameFieldProps } = register('newname', {
+    required: '\'newname\' is a required field',
     maxLength: {
       value: 255,
-      message: 'Name cannot be longer than 255 characters',
+      message: '\'newname\' cannot be longer than 255 characters',
     },
     pattern: {
       value: /[a-zA-Z0-9_.-]+/,
       message:
         "Must contain only alphanumeric characters and the following: '.', '_', '-'",
     },
-    disabled: false/** isSuccess */,
+    disabled: isSuccess,
   });
 
-  const onSubmit = ({ name }: { name: string }) => {
-    /**
-     * @TODO Call rename function returned from rename hook
-     */
+  const onSubmit = ({ newname }: { newname: string }) => {
+    console.log("Submitted")
+    // rename(systemId!, `${path}${file.name!}`, `${path}${newname}`, { onSuccess });
+  }
+
+  const dirOrFile = (type: string) => {
+    return type === "dir" ? "directory" : type
   }
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Rename"
+      title={`Rename ${dirOrFile(file.type!)}`}
       body={
         <div>
           <form id="rename-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldWrapper
-              label="Name"
+              label={`${dirOrFile(file.type!).charAt(0).toUpperCase() + dirOrFile(file.type!).slice(1)} Name`}
               required={true}
-              description={`Renames a file or directory`}
-              error={errors['name']}
+              description={`Rename ${dirOrFile(file.type!)} ${path}${file.name!}`}
+              error={errors['newpath']}
             >
               <Input
                 bsSize="sm"
-                {...nameFieldProps}
-                innerRef={nameRef}
+                {...newnameFieldProps}
+                innerRef={newnameRef}
                 aria-label="Input"
               />
             </FieldWrapper>
@@ -75,14 +79,14 @@ const RenameModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       footer={
         <SubmitWrapper
           isLoading={false}
-          error={null}
-          success={false ? `Successfully renamed` : ''}
+          error={error}
+          success={isSuccess ? `Successfully renamed` : ''}
           reverse={true}
         >
           <Button
             form="rename-form"
             color="primary"
-            disabled={false/*isLoading || isSuccess*/}
+            disabled={isLoading || isSuccess}
             aria-label="Submit"
             type="submit"
           >
