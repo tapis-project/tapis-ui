@@ -54,24 +54,24 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     });
   };
 
-  const dirOrFile = (type: string) => {
-    return type === 'dir' ? 'directory' : type;
+  const dirOrFile = (type: string | undefined) => {
+    return type === 'dir' ? 'directory' : 'file';
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title={`Rename ${dirOrFile(file.type!)}`}
+      title={`Rename ${dirOrFile(file.type)}`}
       body={
         <div>
           <form id="rename-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldWrapper
               label={`${
-                dirOrFile(file.type!).charAt(0).toUpperCase() +
-                dirOrFile(file.type!).slice(1)
+                dirOrFile(file.type).charAt(0).toUpperCase() +
+                dirOrFile(file.type).slice(1)
               } Name`}
               required={true}
-              description={`Rename ${dirOrFile(file.type!)} '${
+              description={`Rename ${dirOrFile(file.type)} '${
                 file.name
               }' in path '${path === '' ? '/' : path}'`}
               error={errors['newname']}
