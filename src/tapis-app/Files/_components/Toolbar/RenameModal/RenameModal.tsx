@@ -49,8 +49,10 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ newname }: { newname: string }) => {
-    console.log('Submitted');
-    // rename(systemId!, `${path}${file.name}`, `${path}${newname}`, { onSuccess });
+    console.log("path", path)
+    console.log("systemId", systemId)
+    console.log("new path", `${path}${newname}`)
+    rename(systemId!, `${path}${file.name}`, `${path}${newname}`, { onSuccess });
   };
 
   const dirOrFile = (type: string) => {
@@ -72,7 +74,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
               required={true}
               description={`Rename ${dirOrFile(
                 file.type!
-              )} '${file.name}' in path '${path}'`}
+              )} '${file.name}' in path '${path === '' ? '/' : path}'`}
               error={errors['newname']}
             >
               <Input
