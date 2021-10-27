@@ -7,16 +7,31 @@ import {
 } from 'react-router-dom';
 import { SitesNav } from '../_components';
 import Instruments from "../../Instruments";
+import {
+  PageLayout,
+  LayoutHeader
+} from 'tapis-ui/_common';
 
 const Router: React.FC<{ projectId: string }> = ({
   projectId
 }) => {
+
+  const header = (
+    <LayoutHeader>
+      <div>Sites</div>
+    </LayoutHeader>
+  );
+  
+  const body = (
+    <SitesNav projectId={projectId} />
+  );
+
   const { path } = useRouteMatch();
 
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <SitesNav projectId={projectId} />
+        <PageLayout top={header} left={body} />;
       </Route>
 
       <Route

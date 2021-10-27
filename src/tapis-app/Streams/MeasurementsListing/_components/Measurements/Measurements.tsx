@@ -1,7 +1,11 @@
 import React from 'react';
-import Plot from "react-plotly.js";
+import Plotly from "plotly.js"
+import createPlotlyComponent from 'react-plotly.js/factory';
 import "./Measurements.scss";
 import { v4 as uuidv4 } from "uuid";
+
+//prevent Plotly memory issues with certain versions of node by using createPlotlyComponent instead of importing Plot from react-plotly.js directly
+const Plot = createPlotlyComponent(Plotly);
 
 const Measurements: React.FC<{ variable: string, graphWidth: number, id: string, measurements: {[datetime: string]: number}, select: () => void }> = ({
   variable,
