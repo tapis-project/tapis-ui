@@ -16,7 +16,7 @@ const rename = (
     jwt
   );
   return errorDecoder<Files.FileStringResponse>(() =>
-    api.moveCopy({ systemId, path, moveCopyRequest: { operation, newPath }})
+    api.moveCopy({ systemId, path, moveCopyRequest: { operation, newPath } })
   );
 };
 

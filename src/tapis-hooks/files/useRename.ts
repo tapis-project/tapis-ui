@@ -21,14 +21,15 @@ const useRename = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, RenameHookParams>(
       [QueryKeys.rename, basePath, jwt],
-      ({ systemId, path, newPath }) => rename(
-        systemId,
-        path,
-        newPath,
-        Files.MoveCopyRequestOperationEnum.Move,
-        basePath,
-        jwt
-      )
+      ({ systemId, path, newPath }) =>
+        rename(
+          systemId,
+          path,
+          newPath,
+          Files.MoveCopyRequestOperationEnum.Move,
+          basePath,
+          jwt
+        )
     );
 
   // Return hook object with loading states and login function

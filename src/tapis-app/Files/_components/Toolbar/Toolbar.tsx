@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
-import RenameModal from './RenameModal'
+import RenameModal from './RenameModal';
 import { useLocation } from 'react-router-dom';
 
 type ToolbarButtonProps = {
@@ -47,11 +47,12 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
+  const systemId = pathname.split('/')[2];
   const toggle = () => {
     setModal(undefined);
   };
   return (
-    <div>
+    <div id="file-operation-toolbar">
       {pathname !== '/files' && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
@@ -59,7 +60,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             icon="rename"
             disabled={selectedFiles.length !== 1}
             onClick={() => {
-              setModal('rename')
+              setModal('rename');
             }}
           />
           <ToolbarButton
@@ -114,7 +115,14 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             }}
           />
           {modal === 'createdir' && <CreateDirModal toggle={toggle} />}
-          {modal === 'rename' && <RenameModal toggle={toggle} selectedFiles={selectedFiles}/>}
+          {modal === 'rename' && (
+            <RenameModal
+              toggle={toggle}
+              selectedFiles={selectedFiles}
+              systemId={systemId}
+              path={pathname}
+            />
+          )}
         </div>
       )}
     </div>

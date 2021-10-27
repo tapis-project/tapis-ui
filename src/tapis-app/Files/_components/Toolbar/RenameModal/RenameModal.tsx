@@ -8,9 +8,13 @@ import { useRename } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 
-const RenameModal: React.FC<ToolbarModalProps> = ({ toggle, systemId, path, selectedFiles }) => {
-
-  const file = selectedFiles![0]
+const RenameModal: React.FC<ToolbarModalProps> = ({
+  toggle,
+  systemId,
+  path,
+  selectedFiles,
+}) => {
+  const file = selectedFiles![0];
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -31,10 +35,10 @@ const RenameModal: React.FC<ToolbarModalProps> = ({ toggle, systemId, path, sele
   } = useForm();
 
   const { ref: newnameRef, ...newnameFieldProps } = register('newname', {
-    required: '\'newname\' is a required field',
+    required: "'newname' is a required field",
     maxLength: {
       value: 255,
-      message: '\'newname\' cannot be longer than 255 characters',
+      message: "'newname' cannot be longer than 255 characters",
     },
     pattern: {
       value: /[a-zA-Z0-9_.-]+/,
@@ -45,13 +49,13 @@ const RenameModal: React.FC<ToolbarModalProps> = ({ toggle, systemId, path, sele
   });
 
   const onSubmit = ({ newname }: { newname: string }) => {
-    console.log("Submitted")
-    // rename(systemId!, `${path}${file.name!}`, `${path}${newname}`, { onSuccess });
-  }
+    console.log('Submitted');
+    // rename(systemId!, `${path}${file.name}`, `${path}${newname}`, { onSuccess });
+  };
 
   const dirOrFile = (type: string) => {
-    return type === "dir" ? "directory" : type
-  }
+    return type === 'dir' ? 'directory' : type;
+  };
 
   return (
     <GenericModal
@@ -61,10 +65,15 @@ const RenameModal: React.FC<ToolbarModalProps> = ({ toggle, systemId, path, sele
         <div>
           <form id="rename-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldWrapper
-              label={`${dirOrFile(file.type!).charAt(0).toUpperCase() + dirOrFile(file.type!).slice(1)} Name`}
+              label={`${
+                dirOrFile(file.type!).charAt(0).toUpperCase() +
+                dirOrFile(file.type!).slice(1)
+              } Name`}
               required={true}
-              description={`Rename ${dirOrFile(file.type!)} ${path}${file.name!}`}
-              error={errors['newpath']}
+              description={`Rename ${dirOrFile(
+                file.type!
+              )} '${file.name}' in path '${path}'`}
+              error={errors['newname']}
             >
               <Input
                 bsSize="sm"
