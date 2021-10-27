@@ -49,7 +49,9 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ newname }: { newname: string }) => {
-    rename(systemId!, `${path}${file.name}`, `${path}${newname}`, { onSuccess });
+    rename(systemId!, `${path}${file.name}`, `${path}${newname}`, {
+      onSuccess,
+    });
   };
 
   const dirOrFile = (type: string) => {
@@ -69,9 +71,9 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
                 dirOrFile(file.type!).slice(1)
               } Name`}
               required={true}
-              description={`Rename ${dirOrFile(
-                file.type!
-              )} '${file.name}' in path '${path === '' ? '/' : path}'`}
+              description={`Rename ${dirOrFile(file.type!)} '${
+                file.name
+              }' in path '${path === '' ? '/' : path}'`}
               error={errors['newname']}
             >
               <Input
