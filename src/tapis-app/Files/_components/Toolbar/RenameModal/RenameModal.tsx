@@ -4,7 +4,7 @@ import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useForm } from 'react-hook-form';
-import { useRename } from 'tapis-hooks/files';
+import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 
@@ -22,7 +22,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { rename, isLoading, error, isSuccess, reset } = useRename();
+  const { move, isLoading, error, isSuccess, reset } = useMove();
 
   useEffect(() => {
     reset();
@@ -49,7 +49,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ newname }: { newname: string }) => {
-    rename(systemId!, `${path}${file.name}`, `${path}${newname}`, {
+    move(systemId!, `${path}${file.name}`, `${path}${newname}`, {
       onSuccess,
     });
   };

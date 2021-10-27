@@ -1,28 +1,28 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { rename } from 'tapis-api/files';
+import { moveCopy} from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type RenameHookParams = {
+type MoveHookParams = {
   systemId: string;
   path: string;
   newPath: string;
 };
 
-const useRename = () => {
+const useMove = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
   //
-  // In this case, rename helper is called to perform the operation
+  // In this case, move helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Files.FileStringResponse, Error, RenameHookParams>(
-      [QueryKeys.rename, basePath, jwt],
+    useMutation<Files.FileStringResponse, Error, MoveHookParams>(
+      [QueryKeys.move, basePath, jwt],
       ({ systemId, path, newPath }) =>
-        rename(
+        moveCopy(
           systemId,
           path,
           newPath,
@@ -40,12 +40,12 @@ const useRename = () => {
     data,
     error,
     reset,
-    rename: (
+    move: (
       systemId: string,
       path: string,
       newPath: string,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Files.FileStringResponse, Error, RenameHookParams>
+      options?: MutateOptions<Files.FileStringResponse, Error, MoveHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate({ systemId, path, newPath }, options);
@@ -53,4 +53,4 @@ const useRename = () => {
   };
 };
 
-export default useRename;
+export default useMove;

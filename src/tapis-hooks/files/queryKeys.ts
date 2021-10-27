@@ -1,7 +1,7 @@
 const QueryKeys = {
   list: 'files/list',
   mkdir: 'files/mkdir',
-  rename: 'files/rename',
+  move: 'files/move',
 };
 
 export default QueryKeys;

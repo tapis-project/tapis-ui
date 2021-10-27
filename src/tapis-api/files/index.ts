@@ -1,3 +1,3 @@
 export { default as list } from './list';
 export { default as mkdir } from './mkdir';
-export { default as rename } from './rename';
+export { default as moveCopy } from './moveCopy';

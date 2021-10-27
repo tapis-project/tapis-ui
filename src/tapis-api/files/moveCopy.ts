@@ -1,7 +1,7 @@
 import { Files } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
-const rename = (
+const moveCopy = (
   systemId: string,
   path: string,
   newPath: string,
@@ -20,4 +20,4 @@ const rename = (
   );
 };
 
-export default rename;
+export default moveCopy;
