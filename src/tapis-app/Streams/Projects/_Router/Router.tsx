@@ -5,24 +5,18 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-import Sites from "../../Sites";
+import Sites from '../../Sites';
 import { ProjectsNav } from '../_components';
-import {
-  PageLayout,
-  LayoutHeader
-} from 'tapis-ui/_common';
+import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
 
 const Router: React.FC = () => {
-
   const header = (
     <LayoutHeader>
       <div>Projects</div>
     </LayoutHeader>
   );
-  
-  const body = (
-    <ProjectsNav />
-  );
+
+  const body = <ProjectsNav />;
 
   const { path } = useRouteMatch();
 

@@ -3,14 +3,14 @@ import {
   PageLayout,
   LayoutHeader,
   LayoutNavWrapper,
-  LayoutBody
+  LayoutBody,
 } from 'tapis-ui/_common';
 import { InstrumentsNav } from '../_components';
 import { Router } from '../_Router';
 
-const Layout: React.FC<{ projectId: string, siteId: string }> = ({
+const Layout: React.FC<{ projectId: string; siteId: string }> = ({
   projectId,
-  siteId
+  siteId,
 }) => {
   const header = (
     <LayoutHeader>

@@ -1,29 +1,29 @@
 li {
-    padding: 0.5rem 1rem;
-    list-style-type: none;
+  padding: 0.5rem 1rem;
+  list-style-type: none;
 }
 
 li .measurements-list div:nth-child(odd) {
-    background-color: #f4f4f4;
+  background-color: #f4f4f4;
 }
 
 li .measurements-list {
-    padding-left: 20px;
+  padding-left: 20px;
 }
 
 li:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .graph-container {
-    max-height: 0;
-    opacity: 0;
-    overflow-y: hidden;
-    transition: all 1s ease-out;
+  max-height: 0;
+  opacity: 0;
+  overflow-y: hidden;
+  transition: all 1s ease-out;
 }
 
 .graph-container.graph-container-expand {
-    max-height: 400px;
-    opacity: 1;
-    transition: all 1s ease-in;
+  max-height: 400px;
+  opacity: 1;
+  transition: all 1s ease-in;
 }

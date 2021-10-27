@@ -3,14 +3,14 @@ import {
   Route,
   useRouteMatch,
   RouteComponentProps,
-  Switch
+  Switch,
 } from 'react-router-dom';
 import { SectionMessage } from 'tapis-ui/_common';
 import MeasurementsListing from '../../MeasurementsListing';
 
-const Router: React.FC<{ projectId: string, siteId: string }> = ({
+const Router: React.FC<{ projectId: string; siteId: string }> = ({
   projectId,
-  siteId
+  siteId,
 }) => {
   const { path } = useRouteMatch();
 
@@ -26,10 +26,14 @@ const Router: React.FC<{ projectId: string, siteId: string }> = ({
         path={`${path}/:instrumentId`}
         render={({
           match: {
-            params: { instrumentId }
-          }
+            params: { instrumentId },
+          },
         }: RouteComponentProps<{ instrumentId: string }>) => (
-          <MeasurementsListing projectId={projectId} siteId={siteId} instrumentId={instrumentId} />
+          <MeasurementsListing
+            projectId={projectId}
+            siteId={siteId}
+            instrumentId={instrumentId}
+          />
         )}
       />
     </Switch>

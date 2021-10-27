@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import SitesNav from './SitesNav';
 import { project } from 'fixtures/streams/projects.fixtures';
-import { site } from "fixtures/streams/sites.fixtures";
+import { site } from 'fixtures/streams/sites.fixtures';
 import { useList } from 'tapis-hooks/streams/sites';
 
 jest.mock('tapis-hooks/streams/sites');
@@ -18,7 +18,9 @@ describe('SitesList', () => {
       error: null,
     });
 
-    const { getAllByText } = renderComponent(<SitesNav projectId={project.project_name!} />);
+    const { getAllByText } = renderComponent(
+      <SitesNav projectId={project.project_name!} />
+    );
     expect(getAllByText(site.site_name!).length).toEqual(1);
   });
 });

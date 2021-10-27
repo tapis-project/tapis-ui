@@ -5,12 +5,10 @@ import { Streams } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
-const SitesNav: React.FC<{ projectId: string }> = ({
-  projectId
-}) => {
+const SitesNav: React.FC<{ projectId: string }> = ({ projectId }) => {
   const { url } = useRouteMatch();
   const { data, isLoading, error } = useList({
-    projectId
+    projectId,
   });
   const definitions: Array<Streams.Site> = data?.result ?? [];
 

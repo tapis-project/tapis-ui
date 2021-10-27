@@ -5,15 +5,15 @@ import { Streams } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
-const InstrumentsNav: React.FC<{ projectId: string, siteId: string }> = ({
+const InstrumentsNav: React.FC<{ projectId: string; siteId: string }> = ({
   projectId,
-  siteId
+  siteId,
 }) => {
   const { url } = useRouteMatch();
   // Get a systems listing with default request params
   const { data, isLoading, error } = useList({
     projectId,
-    siteId
+    siteId,
   });
   const definitions: Array<Streams.Instrument> = data?.result ?? [];
 
