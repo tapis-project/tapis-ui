@@ -32,7 +32,11 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      newname: file.name,
+    },
+  });
 
   const { ref: newnameRef, ...newnameFieldProps } = register('newname', {
     required: "'newname' is a required field",
