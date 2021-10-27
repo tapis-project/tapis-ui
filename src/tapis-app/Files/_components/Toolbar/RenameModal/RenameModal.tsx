@@ -49,9 +49,6 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = ({ newname }: { newname: string }) => {
-    console.log("path", path)
-    console.log("systemId", systemId)
-    console.log("new path", `${path}${newname}`)
     rename(systemId!, `${path}${file.name}`, `${path}${newname}`, { onSuccess });
   };
 
