@@ -1,9 +1,9 @@
+import { useList } from 'tapis-hooks/streams/measurements';
 import Measurements from '../_components/Measurements';
 import { Streams } from '@tapis/tapis-typescript';
 import React, { useState } from 'react';
 import './Layout.scss';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { measurements as m } from 'fixtures/streams/measurements.fixtures';
 
 const Layout: React.FC<{
   projectId: string;
@@ -42,13 +42,11 @@ const Layout: React.FC<{
     };
   };
 
-  const { data, isLoading, error } = {
-    data: {
-      result: m,
-    },
-    isLoading: false,
-    error: null,
-  };
+  const { data, isLoading, error } = useList({
+    projectId,
+    siteId,
+    instId: instrumentId,
+  });
   const measurements: Streams.Measurements = data?.result || {};
 
   const nonDataKeys = ['instrument', 'site', 'measurements_in_file'];
