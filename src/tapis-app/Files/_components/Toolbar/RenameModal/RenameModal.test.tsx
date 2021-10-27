@@ -1,20 +1,20 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import RenameModal from './RenameModal';
-import { useRename } from 'tapis-hooks/files';
+import { useMove } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-hooks/files/useRename');
+jest.mock('tapis-hooks/files/useMove');
 
 const selectedFiles: Array<Files.FileInfo> = [fileInfo];
 
 describe('RenameModal', () => {
   it('submits with valid inputs', async () => {
-    const renameMock = jest.fn();
+    const moveMock = jest.fn();
     const resetMock = jest.fn();
-    (useRename as jest.Mock).mockReturnValue({
-      rename: renameMock,
+    (useMove as jest.Mock).mockReturnValue({
+      move: moveMock,
       isLoading: false,
       error: null,
       isSuccess: false,
@@ -44,15 +44,15 @@ describe('RenameModal', () => {
       fireEvent.click(button);
     });
 
-    expect(renameMock).toBeCalledTimes(1);
+    expect(moveMock).toBeCalledTimes(1);
     expect(resetMock).toBeCalledTimes(1);
   });
 
   it('fails with invalid inputs', async () => {
-    const renameMock = jest.fn();
+    const moveMock = jest.fn();
     const resetMock = jest.fn();
-    (useRename as jest.Mock).mockReturnValue({
-      rename: renameMock,
+    (useMove as jest.Mock).mockReturnValue({
+      move: moveMock,
       isLoading: false,
       error: null,
       isSuccess: false,
@@ -83,7 +83,7 @@ describe('RenameModal', () => {
       fireEvent.click(button);
     });
 
-    expect(renameMock).toBeCalledTimes(0);
+    expect(moveMock).toBeCalledTimes(0);
     expect(resetMock).toBeCalledTimes(1);
   });
 });
