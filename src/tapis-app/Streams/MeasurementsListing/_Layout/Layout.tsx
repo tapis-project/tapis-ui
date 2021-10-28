@@ -26,8 +26,9 @@ const Layout: React.FC<{
       return () => {
         setSelected(selected === index ? -1 : index);
       };
-      //only need to update select function if measurements changed (only time indexes will change)
     },
+    //only need to update select function if measurements changed (only time indexes will change)
+    /* eslint-disable-next-line */
     [measurements]
   );
 
