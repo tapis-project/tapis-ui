@@ -9,7 +9,8 @@ const Measurements: React.FC<{
   id: string;
   measurements: { [datetime: string]: number };
   select: () => void;
-}> = ({ variable, graphWidth, id, measurements, select }) => {
+  selected: boolean
+}> = ({ variable, graphWidth, id, measurements, select, selected }) => {
   let plotlyLayout: Partial<Plotly.Layout> = {
     width: graphWidth,
     height: 400,
@@ -24,7 +25,7 @@ const Measurements: React.FC<{
           return <div key={uuidv4()}>{`${date}: ${entry[1]}`}</div>;
         })}
       </div>
-      <div id={id} className={styles['graph-container']}>
+      <div id={id} className={styles['graph-container'] + (selected ? ` ${styles['graph-container-expand']}`: "")}>
         <div id={`${id}_size_wrapper`}>
           <MeasurementsPlot measurements={measurements} layout={plotlyLayout} />
         </div>
