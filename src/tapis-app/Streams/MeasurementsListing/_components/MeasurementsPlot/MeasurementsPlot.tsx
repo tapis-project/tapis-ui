@@ -7,7 +7,7 @@ const Plot = createPlotlyComponent(Plotly);
 
 const MeasurementsPlot: React.FC<{
   measurements: { [datetime: string]: number };
-  layout: Partial<Plotly.Layout>
+  layout: Partial<Plotly.Layout>;
 }> = ({ measurements, layout }) => {
   let data: any = [
     {

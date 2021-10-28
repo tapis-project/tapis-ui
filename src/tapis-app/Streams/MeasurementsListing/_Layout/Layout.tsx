@@ -29,7 +29,9 @@ const Layout: React.FC<{
       //select the variable
       else {
         //expand graph on selected element
-        document.getElementById(id)?.classList.add(measurementStyles['graph-container-expand']);
+        document
+          .getElementById(id)
+          ?.classList.add(measurementStyles['graph-container-expand']);
         //if another element previously selected remove the expand style
         if (selected) {
           document
@@ -48,13 +50,14 @@ const Layout: React.FC<{
     instId: instrumentId,
   });
 
-  const { instrument, site, measurements_in_file, ...measurements } = data?.result ?? {};
+  const { instrument, site, measurements_in_file, ...measurements } =
+    data?.result ?? {};
 
   const variables = Object.keys(measurements);
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <div className={styles["variable-list"]}>
+      <div className={styles['variable-list']}>
         {variables.length ? (
           variables.map((variable: string, index: number) => {
             const id = `${index}`;
