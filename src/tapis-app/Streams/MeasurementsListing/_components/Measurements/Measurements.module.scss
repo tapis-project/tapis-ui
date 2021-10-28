@@ -1,17 +1,17 @@
-li {
+.li {
   padding: 0.5rem 1rem;
   list-style-type: none;
 }
 
-li .measurements-list div:nth-child(odd) {
+.li .measurements-list div:nth-child(odd) {
   background-color: #f4f4f4;
 }
 
-li .measurements-list {
+.li .measurements-list {
   padding-left: 20px;
 }
 
-li:hover {
+.li:hover {
   cursor: pointer;
 }
 

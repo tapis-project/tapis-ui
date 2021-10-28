@@ -1,9 +1,9 @@
 import { useList } from 'tapis-hooks/streams/measurements';
 import Measurements from '../_components/Measurements';
-import { Streams } from '@tapis/tapis-typescript';
 import React, { useState } from 'react';
-import './Layout.scss';
+import styles from './Layout.module.scss';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
+import measurementStyles from '../_components/Measurements/Measurements.module.scss';
 
 const Layout: React.FC<{
   projectId: string;
@@ -21,7 +21,7 @@ const Layout: React.FC<{
         if (selected) {
           document
             .getElementById(selected!)
-            ?.classList.remove('graph-container-expand');
+            ?.classList.remove(measurementStyles['graph-container-expand']);
         }
         //set selector to null
         setSelected(null);
@@ -29,12 +29,12 @@ const Layout: React.FC<{
       //select the variable
       else {
         //expand graph on selected element
-        document.getElementById(id)?.classList.add('graph-container-expand');
+        document.getElementById(id)?.classList.add(measurementStyles['graph-container-expand']);
         //if another element previously selected remove the expand style
         if (selected) {
           document
             .getElementById(selected!)
-            ?.classList.remove('graph-container-expand');
+            ?.classList.remove(measurementStyles['graph-container-expand']);
         }
         //update selector
         setSelected(id);
@@ -47,19 +47,14 @@ const Layout: React.FC<{
     siteId,
     instId: instrumentId,
   });
-  const measurements: Streams.Measurements = data?.result || {};
 
-  const nonDataKeys = ['instrument', 'site', 'measurements_in_file'];
-  //delete non-data keys
-  for (let key of nonDataKeys) {
-    delete measurements[key];
-  }
+  const { instrument, site, measurements_in_file, ...measurements } = data?.result ?? {};
 
   const variables = Object.keys(measurements);
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <div className="variable-list">
+      <div className={styles["variable-list"]}>
         {variables.length ? (
           variables.map((variable: string, index: number) => {
             const id = `${index}`;

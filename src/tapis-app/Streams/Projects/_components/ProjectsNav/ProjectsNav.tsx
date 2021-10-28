@@ -7,7 +7,7 @@ import { QueryWrapper } from 'tapis-ui/_wrappers';
 
 const ProjectsNav: React.FC = () => {
   const { url } = useRouteMatch();
-  // Get a systems listing with default request params
+  // Get a projects listing with default request params
   const { data, isLoading, error } = useList();
   const definitions: Array<Streams.Project> = data?.result ?? [];
   return (
