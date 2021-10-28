@@ -9,7 +9,6 @@ const Layout: React.FC<{
   siteId: string;
   instrumentId: string;
 }> = ({ projectId, siteId, instrumentId }) => {
-
   const { data, isLoading, error } = useList({
     projectId,
     siteId,
@@ -22,15 +21,15 @@ const Layout: React.FC<{
   const variables = Object.keys(measurements);
   const [selected, setSelected] = useState<number>(-1);
 
-
-
-  let select = useCallback((index: number) => {
-    return () => {
-      setSelected(selected === index ? -1 : index);
-    }
-  //only need to update select function if measurements changed (only time indexes will change)
-  }, [measurements]);
-  
+  let select = useCallback(
+    (index: number) => {
+      return () => {
+        setSelected(selected === index ? -1 : index);
+      };
+      //only need to update select function if measurements changed (only time indexes will change)
+    },
+    [measurements]
+  );
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -39,7 +38,7 @@ const Layout: React.FC<{
           variables.map((variable: string, index: number) => {
             const id = `${index}`;
             let variableMeasurements = measurements[variable];
-            
+
             return (
               <Measurements
                 key={id}
@@ -48,7 +47,7 @@ const Layout: React.FC<{
                 graphWidth={600}
                 measurements={variableMeasurements}
                 select={select(index)}
-                selected={selected===index}
+                selected={selected === index}
               />
             );
           })
