@@ -6,6 +6,7 @@ import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import RenameModal from './RenameModal';
+import UploadModal from './UploadModal';
 import { useLocation } from 'react-router-dom';
 
 type ToolbarButtonProps = {
@@ -94,9 +95,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
           <ToolbarButton
             text="Upload"
             icon="upload"
-            disabled={true}
+            disabled={!(selectedFiles.length === 0)}
             onClick={() => {
-              console.log('Toolbar button');
+              setModal('upload');
             }}
           />
           <ToolbarButton
@@ -124,6 +125,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               path={currentPath}
             />
           )}
+          {modal === 'upload' && <UploadModal toggle={toggle} path={currentPath}/>}
         </div>
       )}
     </div>
