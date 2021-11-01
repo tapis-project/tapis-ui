@@ -19,6 +19,7 @@ const Layout: React.FC<LayoutProps> = ({
   const body = (
     <div className={styles.body}>
       <FileListing
+        className={styles.container}
         systemId={systemId}
         path={path}
         location={location}

@@ -107,7 +107,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
         <div>
           <FileListingTable
             files={selectedFiles}
-            className={`${styles.listing}`}
+            className={styles['file-list']}
           />
         </div>
       </div>
@@ -122,14 +122,14 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
         <div>
           {destinationSystem ? (
             <FileListing
-              className={`${styles.listing}`}
+              className={`${styles['file-list']} ${styles['nav-list']}`}
               systemId={destinationSystem}
               path={destinationPath}
               select={{ mode: 'none' }}
               onNavigate={onNavigate}
             />
           ) : (
-            <SystemListing />
+            <SystemListing className={styles['nav-list']} />
           )}
         </div>
       </div>

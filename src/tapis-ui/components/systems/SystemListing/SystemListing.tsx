@@ -88,7 +88,7 @@ const SystemListing: React.FC<SystemListingProps> = ({
   return (
     <QueryWrapper isLoading={isLoading} error={error} className={className}>
       <InfiniteScrollTable
-        className={`${styles['system-list']} ${className ?? ''}`}
+        className={styles['system-list']}
         tableColumns={tableColumns}
         tableData={systems}
         isLoading={isLoading}

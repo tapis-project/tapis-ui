@@ -160,7 +160,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
     ];
     return (
       <InfiniteScrollTable
-        className={`${styles[styleName]} ${className ?? ''}`}
+        className={`${className} ${styles[styleName]}`}
         tableColumns={tableColumns}
         tableData={files}
         onInfiniteScroll={onInfiniteScroll}
@@ -212,6 +212,7 @@ const FileListing: React.FC<FileListingProps> = ({
     () => concatenatedResults ?? [],
     [concatenatedResults]
   );
+
 
   const multiSelectCallback = useCallback(
     (index: number) => {
@@ -297,9 +298,8 @@ const FileListing: React.FC<FileListingProps> = ({
   };
 
   return (
-    <QueryWrapper isLoading={isLoading} error={error}>
+    <QueryWrapper isLoading={isLoading} error={error} className={className}>
       <FileListingTable
-        className={className}
         files={files}
         prependColumns={prependColumns}
         onInfiniteScroll={infiniteScrollCallback}
