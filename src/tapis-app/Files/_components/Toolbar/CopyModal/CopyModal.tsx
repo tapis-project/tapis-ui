@@ -70,7 +70,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
       setDestinationBreadcrumbs(newCrumbs);
     },
     [setDestinationBreadcrumbs, destinationPath, setDestinationPath, destinationSystem ]
-  )
+  );
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -129,7 +129,10 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
               onNavigate={onNavigate}
             />
           ) : (
-            <SystemListing className={styles['nav-list']} />
+            <SystemListing 
+              className={styles['nav-list']} 
+              onNavigate={onSystemNavigate}
+            />
           )}
         </div>
       </div>
