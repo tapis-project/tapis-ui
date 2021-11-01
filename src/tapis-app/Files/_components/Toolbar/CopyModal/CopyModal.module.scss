@@ -5,7 +5,7 @@
 
 .file-list {
   table {
-    height: 400px;
+    height: 350px;
   }
   /* icon */
   tr > *:nth-child(1) {
@@ -26,8 +26,9 @@
 }
 
 .nav-list {
-  height: 40vh;
+  height: 372px;
   width: 100%;
   border: 1px solid gray;
   margin-top: 0.25em;
+  box-sizing: border-box;
 }

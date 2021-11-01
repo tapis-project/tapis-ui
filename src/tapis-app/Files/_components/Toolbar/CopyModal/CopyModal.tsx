@@ -104,10 +104,10 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
               .map((fragment) => ({ text: fragment.text })),
           ]}
         />
-        <div>
+        <div className={styles['nav-list']}>
           <FileListingTable
             files={selectedFiles}
-            className={styles['file-list']}
+            className={`${styles['file-list']} `}
           />
         </div>
       </div>
