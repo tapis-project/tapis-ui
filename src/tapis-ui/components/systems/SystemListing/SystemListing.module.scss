@@ -1,4 +1,6 @@
 .system-list {
+  overflow-y: scroll;
+  max-height: inherit;
   /* icon */
   tr > *:nth-child(1) {
     width: 5%;
