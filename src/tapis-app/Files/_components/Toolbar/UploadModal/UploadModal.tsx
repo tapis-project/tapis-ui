@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -6,8 +6,6 @@ import { ToolbarModalProps } from '../Toolbar';
 import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
-import { useEffect, useState } from 'react';
-import { filter } from 'lodash';
 
 const UploadModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -15,6 +13,12 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
 }) => {
 
   const [ files, setFiles ] = useState<Array<File>>([])
+
+  const selectFile = useCallback((selectedFile: File) => {
+    if ( fileIsUnique(files, selectedFile) ) {
+      setFiles([...files, selectedFile])
+    }
+  }, [files])
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -42,9 +46,9 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
     console.log(files)
   };
 
-  const fileIsUnique = (file: File) => {
+  const fileIsUnique = (filesArr: Array<File>, file: File) => {
     for (let i; i = 0; i++) {
-      if (files[i].name === file.name) return false
+      if (filesArr[i].name === file.name) return false
     }
     return true
   }
@@ -71,7 +75,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
                 onChange={(e) => {
                   if ( e.target.files !== null ) {
                     const file = e.target.files[0];
-                    fileIsUnique(file) && setFiles([...files, file])
+                    selectFile(file)
                   }
                 }}
               />
@@ -81,7 +85,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
             <div>
               {files.map((item) => {
                 return(
-                  <div>
+                  <div key={item.name}>
                     {item.name} {(item.size/10000).toFixed(2)}mb
                   </div>
                 )
@@ -100,7 +104,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
           <Button
             form="upload-form"
             color="primary"
-            disabled={isLoading || isSuccess}
+            disabled={isLoading || isSuccess || files.length === 0}
             aria-label="Submit"
           >
             Upload
