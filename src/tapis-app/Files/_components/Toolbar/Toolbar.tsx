@@ -1,11 +1,11 @@
 import { Files } from '@tapis/tapis-typescript';
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
-
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import CopyModal from './CopyModal';
+import RenameModal from './RenameModal';
 import { useLocation } from 'react-router-dom';
 
 type ToolbarButtonProps = {
@@ -53,14 +53,16 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
     setModal(undefined);
   };
   return (
-    <div>
+    <div id="file-operation-toolbar">
       {pathname !== '/files' && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
             text="Rename"
             icon="rename"
             disabled={selectedFiles.length !== 1}
-            onClick={() => {}}
+            onClick={() => {
+              setModal('rename');
+            }}
           />
           <ToolbarButton
             text="Move"
@@ -122,6 +124,14 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               systemId={systemId}
               path={currentPath}
               selectedFiles={selectedFiles}
+            />
+          )}
+          {modal === 'rename' && (
+            <RenameModal
+              toggle={toggle}
+              selectedFiles={selectedFiles}
+              systemId={systemId}
+              path={currentPath}
             />
           )}
         </div>

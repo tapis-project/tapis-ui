@@ -4,22 +4,25 @@ import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useForm } from 'react-hook-form';
-import { useMkdir } from 'tapis-hooks/files';
+import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 
-const CreateDirModal: React.FC<ToolbarModalProps> = ({
+const RenameModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId,
   path,
+  selectedFiles,
 }) => {
+  const file = selectedFiles![0];
+
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
   }, []);
 
-  const { mkdir, isLoading, error, isSuccess, reset } = useMkdir();
+  const { move, isLoading, error, isSuccess, reset } = useMove();
 
   useEffect(() => {
     reset();
@@ -29,13 +32,17 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      newname: file.name,
+    },
+  });
 
-  const { ref: dirnameRef, ...dirnameFieldProps } = register('dirname', {
-    required: 'Directory name is a required field',
+  const { ref: newnameRef, ...newnameFieldProps } = register('newname', {
+    required: "'newname' is a required field",
     maxLength: {
       value: 255,
-      message: 'Directory name cannot be longer than 255 characters',
+      message: "'newname' cannot be longer than 255 characters",
     },
     pattern: {
       value: /[a-zA-Z0-9_.-]+/,
@@ -45,26 +52,38 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     disabled: isSuccess,
   });
 
-  const onSubmit = ({ dirname }: { dirname: string }) =>
-    mkdir(systemId ?? '', `${path ?? '/'}${dirname}`, { onSuccess });
+  const onSubmit = ({ newname }: { newname: string }) => {
+    move(systemId!, `${path}${file.name}`, `${path}${newname}`, {
+      onSuccess,
+    });
+  };
+
+  const dirOrFile = (type: string | undefined) => {
+    return type === 'dir' ? 'directory' : 'file';
+  };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Create Directory"
+      title={`Rename ${dirOrFile(file.type)}`}
       body={
         <div>
-          <form id="newdirectory-form" onSubmit={handleSubmit(onSubmit)}>
+          <form id="rename-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldWrapper
-              label="Directory name"
+              label={`${
+                dirOrFile(file.type).charAt(0).toUpperCase() +
+                dirOrFile(file.type).slice(1)
+              } Name`}
               required={true}
-              description={`Creates a directory in ${systemId}/${path}`}
-              error={errors['dirname']}
+              description={`Rename ${dirOrFile(file.type)} '${
+                file.name
+              }' in path '${path === '' ? '/' : path}'`}
+              error={errors['newname']}
             >
               <Input
                 bsSize="sm"
-                {...dirnameFieldProps}
-                innerRef={dirnameRef}
+                {...newnameFieldProps}
+                innerRef={newnameRef}
                 aria-label="Input"
               />
             </FieldWrapper>
@@ -73,19 +92,19 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       }
       footer={
         <SubmitWrapper
-          isLoading={isLoading}
+          isLoading={false}
           error={error}
-          success={isSuccess ? `Successfully created directory` : ''}
+          success={isSuccess ? `Successfully renamed` : ''}
           reverse={true}
         >
           <Button
-            form="newdirectory-form"
+            form="rename-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"
             type="submit"
           >
-            Create directory
+            Rename
           </Button>
         </SubmitWrapper>
       }
@@ -93,4 +112,4 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   );
 };
 
-export default CreateDirModal;
+export default RenameModal;
