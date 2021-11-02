@@ -47,9 +47,8 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
           setIsFinished(true);
           onComplete && onComplete();
         }
-      );  
-  }
-
+      );
+  };
 
   return {
     isRunning,
