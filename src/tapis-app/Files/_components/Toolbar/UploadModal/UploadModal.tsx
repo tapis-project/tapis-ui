@@ -1,16 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Button, Input } from 'reactstrap';
-import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
+import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
+import { useDropzone } from 'react-dropzone';
+import styles from './UploadModal.module.scss'
 
 const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
-  const selectFiles = useCallback(
+  const onDrop = useCallback(
     (selectedFiles: Array<File>) => {
       const uniqueFiles = [];
       for (let i = 0; i < selectedFiles.length; i++) {
@@ -23,6 +25,13 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path }) => {
     },
     [files]
   );
+
+  const {
+    getRootProps,
+    getInputProps
+  } = useDropzone({
+    onDrop
+  });
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -67,37 +76,27 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path }) => {
       body={
         <div>
           <form id="upload-form" onSubmit={handleSubmit(onSubmit)}>
-            <FieldWrapper
-              label={'Select files for upload'}
-              required={true}
-              description={`Upload files to '${path === '' ? '/' : path}'`}
-              error={errors['files']}
-            >
-              <Input
-                bsSize="sm"
-                {...filesFieldProps}
-                innerRef={filesRef}
-                aria-label="Input"
-                type="file"
-                onChange={(e) => {
-                  if (e.target.files !== null) {
-                    selectFiles([...Array.from(e.target.files)]);
-                  }
-                }}
-              />
-            </FieldWrapper>
-          </form>
-          {files.length > 0 && (
-            <div>
-              {files.map((item) => {
-                return (
-                  <div key={item.name}>
-                    {item.name} {(item.size / 10000).toFixed(2)}mb
-                  </div>
-                );
-              })}
+            <div className={styles["file-dropzone"]} {...getRootProps()}>
+              <input ref={filesRef} {...filesFieldProps} {...getInputProps()} />
+              <Button>Select files</Button>
+              <div>or drag and drop</div>
             </div>
-          )}
+          </form>
+          <h3>Uploading to '/{path}'</h3>
+          <div className={styles["files-list"]}>
+            {files.length > 0 ? (
+              <div>
+                {files.map((item) => {
+                  return (
+                    <div key={item.name}>
+                      {item.name} {(item.size / 10000).toFixed(2)}mb
+                    </div>
+                  );
+                })}
+              </div>
+            ) : <p>No files selected</p>
+            }
+          </div>
         </div>
       }
       footer={
