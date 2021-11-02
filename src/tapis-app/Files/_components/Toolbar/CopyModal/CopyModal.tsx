@@ -1,21 +1,17 @@
 import { useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
-import { GenericModal, FieldWrapper, Breadcrumbs } from 'tapis-ui/_common';
-import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
-import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
-import FileListing from 'tapis-ui/components/files/FileListing';
-import {
-  FileListingTable,
-  OnNavigateCallback,
-} from 'tapis-ui/components/files/FileListing/FileListing';
-import { SystemListing } from 'tapis-ui/components/systems';
+import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
+import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
+import { FileExplorer } from '../_components';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { focusManager } from 'react-query';
-import { useEffect } from 'react';
-import { useList } from 'tapis-hooks/systems';
-import { Systems } from '@tapis/tapis-typescript';
+import { useCopy } from 'tapis-hooks/files';
+import { CopyHookParams } from 'tapis-hooks/files/useCopy';
+import { Files } from'@tapis/tapis-typescript';
+import { useMutations } from 'tapis-hooks/utils';
 import styles from './CopyModal.module.scss';
 
 const CopyModal: React.FC<ToolbarModalProps> = ({
@@ -25,70 +21,56 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
   selectedFiles = [],
 }) => {
   const { pathname } = useLocation();
+  const [ copyError, setCopyError ] = useState<Error | null>(null);
 
-  const [destinationSystem, setDestinationSystem] = useState<string | null>(
-    systemId
-  );
-  const [destinationPath, setDestinationPath] = useState(path);
-  const [destinationBreadcrumbs, setDestinationBreadcrumbs] = useState<
-    Array<BreadcrumbType>
-  >([]);
-
-  const onNavigate = useCallback<OnNavigateCallback>(
-    (file) => {
-      const normalizedFilename = file.name?.startsWith('/') ? file.name?.slice(1) : file.name;
-      const newPath = `${destinationPath}${destinationPath.endsWith('/') ? '' : '/'}${normalizedFilename}/`;
-      setDestinationPath(newPath);
+  const [ destinationPath, setDestinationPath ] = useState<string | null>(path);
+  const { copyAsync } = useCopy();
+  const onFileCopySuccess = useCallback(
+    (operation: CopyHookParams, data: Files.FileStringResponse) => {
+      console.log("SUCCESS CALLBACK", operation, data);
     },
-    [setDestinationPath, destinationPath, setDestinationBreadcrumbs]
+    []
   );
-
-  const onSystemNavigate = useCallback(
-    (system: Systems.TapisSystem | null) => {
-      setDestinationSystem(system?.id ?? null);
-      setDestinationPath('/');
+  const onFileCopyError = useCallback(
+    (operation: CopyHookParams, error: Error) => {
+      setCopyError(error);
     },
-    [setDestinationPath, setDestinationSystem]
-  );
-
-  useEffect(
-    () => {
-      const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(destinationPath);
-      const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map(
-        (breadcrumb) => ({
-          ...breadcrumb, 
-          onClick: (to: string) => { setDestinationPath(to) },
-        })
-      );
-      newCrumbs.unshift(
-        {
-          text: destinationSystem ?? '',
-          to: '/',
-          onClick: (to: string) => { setDestinationPath(to) }
-        }
-      )
-      setDestinationBreadcrumbs(newCrumbs);
-    },
-    [setDestinationBreadcrumbs, destinationPath, setDestinationPath, destinationSystem ]
-  );
-
-  const onSuccess = useCallback(() => {
+    []
+  )
+  const onComplete = useCallback(() => {
+    console.log("ON COMPLETE CALLBACK")
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
   }, []);
 
-  const onSubmit = () => {
-    console.log('COPY');
-  };
+  const { run, isRunning, isFinished, current } = useMutations<CopyHookParams, Files.FileStringResponse>({
+    fn: copyAsync,
+    onSuccess: onFileCopySuccess,
+    onError: onFileCopyError,
+    onComplete
+  });
 
-  const breadcrumbs: Array<BreadcrumbType> = [
-    { text: 'Files', to: '/', onClick: () => onSystemNavigate(null) }
-  ];
+  const onNavigate = useCallback(
+    (systemId: string | null, path: string | null) => {
+      setDestinationPath(path);
+    },
+    [ setDestinationPath ]
+  )
 
-  if (destinationSystem) {
-    breadcrumbs.push(...destinationBreadcrumbs);
-  }
+  const onSubmit = useCallback(
+    () => {
+      const operations: Array<CopyHookParams> = selectedFiles.map(
+        (file) => ({ 
+          systemId,
+          newPath: destinationPath!,
+          path: file.path!
+        })
+      )
+      run(operations);
+    },
+    [ selectedFiles, destinationPath, run ]
+  );
 
   const body = (
     <div className="row h-100">
@@ -116,28 +98,33 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
         <div className={`${styles['col-header']}`}>
           Copying {selectedFiles.length} files
         </div>
-        <Breadcrumbs
-          breadcrumbs={breadcrumbs}
+        <FileExplorer 
+          systemId={systemId}
+          path={path}
+          onNavigate={onNavigate}
         />
-        <div>
-          {destinationSystem ? (
-            <FileListing
-              className={`${styles['file-list']} ${styles['nav-list']}`}
-              systemId={destinationSystem}
-              path={destinationPath}
-              select={{ mode: 'none' }}
-              onNavigate={onNavigate}
-            />
-          ) : (
-            <SystemListing 
-              className={styles['nav-list']} 
-              onNavigate={onSystemNavigate}
-            />
-          )}
-        </div>
       </div>
     </div>
   );
+
+  const footer = (
+    <SubmitWrapper
+      isLoading={isRunning}
+      error={copyError}
+      success={isFinished && !copyError ? `Successfully renamed` : ''}
+      reverse={true}
+    >
+      <Button
+        color="primary"
+        disabled={!destinationPath || isFinished || isRunning}
+        aria-label="Submit"
+        type="submit"
+        onClick={onSubmit}
+      >
+        Copy
+      </Button>
+    </SubmitWrapper>
+  ) 
 
   return (
     <GenericModal
@@ -145,7 +132,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
       title="Copy Files"
       size="xl"
       body={body}
-      footer={<div>Footer</div>}
+      footer={footer}
     />
   );
 };

@@ -1,6 +1,6 @@
 
 import { useCallback, useState, useEffect } from 'react';
-import { GenericModal, FieldWrapper, Breadcrumbs } from 'tapis-ui/_common';
+import { Breadcrumbs } from 'tapis-ui/_common';
 import { Systems } from '@tapis/tapis-typescript';
 import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
@@ -20,7 +20,7 @@ type FileExplorerProps = {
   onNavigate?: (systemId: string | null, path: string | null) => void;
 }
 
-const FileExplorer: React.FC<FileExplorerProps> = ({ systemId, path, className, onNavigate }) => {
+const FileExplorer: React.FC<FileExplorerProps> = ({ systemId, path, className, onNavigate, allowSystemChange }) => {
   const [currentSystem, setCurrentSystem] = useState(systemId);
   const [currentPath, setCurrentPath] = useState(path);
   const [targetBreadcrumbs, setTargetBreadcrumbs] = useState<
@@ -70,9 +70,10 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ systemId, path, className, 
     [setTargetBreadcrumbs, currentPath, setCurrentPath, currentSystem ]
   );
 
-  const breadcrumbs: Array<BreadcrumbType> = [
-    { text: 'Files', to: '/', onClick: () => onSystemNavigate(null) }
-  ];
+  const breadcrumbs: Array<BreadcrumbType> = []
+  if (allowSystemChange) {
+    breadcrumbs.push({ text: 'Files', to: '/', onClick: () => onSystemNavigate(null) })
+  }
 
   if (currentSystem) {
     breadcrumbs.push(...targetBreadcrumbs);
