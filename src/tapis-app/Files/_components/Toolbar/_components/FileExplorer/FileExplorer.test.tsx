@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import FileExplorer from './FileExplorer';
 import { useList as useSystemsList } from 'tapis-hooks/systems';

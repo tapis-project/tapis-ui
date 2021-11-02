@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom/extend-expect';
 import { renderHook } from '@testing-library/react-hooks';
 import { act } from '@testing-library/react';
-import { of } from 'rxjs';
 import useMutations from './useMutations';
 
 jest.mock('tapis-hooks/systems');
