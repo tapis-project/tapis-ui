@@ -33,16 +33,11 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
           fn(item)
             .then((data) => {
               onSuccess && onSuccess(item, data);
-              return { item, data };
             })
             .catch((error) => {
-              throw { item, error };
+              onError && onError(item, error);
             })
-        ),
-        catchError(({ item, error }) => {
-          onError && onError(item, error);
-          return of({ item, error });
-        })
+        )
       )
       .subscribe(
         () => {},
