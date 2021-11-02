@@ -5,9 +5,6 @@
   td > a {
     width: initial;
   }
-  table {
-    height: 850px;
-  }
   tbody {
     height: inherit;
   }
@@ -215,4 +212,11 @@
       width: 16.5%;
     }
   }
+}
+
+.link {
+  padding-top: 0 !important;
+  padding-left: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 1em !important;
 }

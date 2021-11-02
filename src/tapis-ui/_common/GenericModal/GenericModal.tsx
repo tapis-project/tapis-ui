@@ -6,7 +6,7 @@ export type GenericModalProps = {
   title: string;
   body: React.ReactNode;
   footer?: React.ReactNode;
-  contentClassName?: string;
+  [key: string]: any;
 };
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -14,15 +14,10 @@ const GenericModal: React.FC<GenericModalProps> = ({
   title,
   body,
   footer,
-  /**
-   * @NOTE contentClassName is the means by which you can change the style
-   * of the modal content of a reactstrap Modal. However, it is not found in the
-   * documentation.
-   */
-  contentClassName,
+  ...props
 }) => {
   return (
-    <Modal isOpen={true} toggle={toggle} contentClassName={contentClassName}>
+    <Modal isOpen={true} toggle={toggle} {...props}>
       <ModalHeader toggle={toggle} charCode="&#x2715;">
         <span>{title}</span>
       </ModalHeader>
