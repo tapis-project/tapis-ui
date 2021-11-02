@@ -18,20 +18,28 @@ const useCopy = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, move helper is called to perform the operation
-  const { mutate, mutateAsync, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Files.FileStringResponse, Error, CopyHookParams>(
-      [QueryKeys.move, basePath, jwt],
-      ({ systemId, path, newPath }) =>
-        moveCopy(
-          systemId,
-          path,
-          newPath,
-          Files.MoveCopyRequestOperationEnum.Copy,
-          basePath,
-          jwt
-        )
-    );
-  
+  const {
+    mutate,
+    mutateAsync,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+    reset,
+  } = useMutation<Files.FileStringResponse, Error, CopyHookParams>(
+    [QueryKeys.move, basePath, jwt],
+    ({ systemId, path, newPath }) =>
+      moveCopy(
+        systemId,
+        path,
+        newPath,
+        Files.MoveCopyRequestOperationEnum.Copy,
+        basePath,
+        jwt
+      )
+  );
+
   // Return hook object with loading states and login function
   return {
     isLoading,
@@ -47,8 +55,8 @@ const useCopy = () => {
     ) => mutate(params, options),
     copyAsync: (
       params: CopyHookParams,
-      options?: MutateOptions<Files.FileStringResponse, Error, CopyHookParams> 
-    ) => mutateAsync(params, options)
+      options?: MutateOptions<Files.FileStringResponse, Error, CopyHookParams>
+    ) => mutateAsync(params, options),
   };
 };
 

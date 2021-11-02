@@ -17,26 +17,34 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
     return (
       <span>
         {' '}
-        <a href="#" onClick={(e) => { e.preventDefault(); to && onClick(to); }}>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            to && onClick(to);
+          }}
+        >
           {text}
-        </a>
-        {' '}
+        </a>{' '}
         /
       </span>
-    )
+    );
   }
   if (to) {
     return (
       <span>
         {' '}
-        <NavLink to={to}>{text}</NavLink>
-        {' '}
-        /
+        <NavLink to={to}>{text}</NavLink> /
       </span>
     );
   }
 
-  return <span> {text} {`${text !== '...' ? '/' : ''}`}</span>;
+  return (
+    <span>
+      {' '}
+      {text} {`${text !== '...' ? '/' : ''}`}
+    </span>
+  );
 };
 
 type BreadcrumbsProps = {

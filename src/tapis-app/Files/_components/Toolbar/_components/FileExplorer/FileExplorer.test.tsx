@@ -18,7 +18,9 @@ describe('File Explorer', () => {
       isLoading: false,
       error: null,
     });
-    const { getAllByText } = renderComponent(<FileExplorer allowSystemChange={true} />);
+    const { getAllByText } = renderComponent(
+      <FileExplorer allowSystemChange={true} />
+    );
     expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
   });
   it('performs system navigation', async () => {
@@ -36,7 +38,9 @@ describe('File Explorer', () => {
       isLoading: false,
       error: null,
     });
-    const { getByTestId } = renderComponent(<FileExplorer allowSystemChange={true} onNavigate={mockOnNavigate}/>);
+    const { getByTestId } = renderComponent(
+      <FileExplorer allowSystemChange={true} onNavigate={mockOnNavigate} />
+    );
     const system = getByTestId('href-testuser8-e2e');
     await act(async () => {
       fireEvent.click(system);

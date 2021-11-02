@@ -124,7 +124,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
     location,
     className,
     select,
-    fields
+    fields,
   }) => {
     const styleName =
       select?.mode !== 'none' ? 'file-list-select' : 'file-list';
@@ -148,7 +148,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
       },
     ];
 
-    if (fields?.some(field => field === 'size')) {
+    if (fields?.some((field) => field === 'size')) {
       tableColumns.push({
         Header: 'Size',
         accessor: 'size',
@@ -156,14 +156,14 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
       });
     }
 
-    if (fields?.some(field => field === 'lastModified')) {
+    if (fields?.some((field) => field === 'lastModified')) {
       tableColumns.push({
         Header: 'Last Modified',
         accessor: 'lastModified',
         Cell: (el) => (
           <span>{formatDateTimeFromValue(new Date(el.value))}</span>
-        )
-      })
+        ),
+      });
     }
 
     tableColumns.push(...appendColumns);
@@ -201,7 +201,7 @@ const FileListing: React.FC<FileListingProps> = ({
   location = undefined,
   select = undefined,
   className,
-  fields = ['size', 'lastModified']
+  fields = ['size', 'lastModified'],
 }) => {
   const {
     hasNextPage,
@@ -224,7 +224,6 @@ const FileListing: React.FC<FileListingProps> = ({
     () => concatenatedResults ?? [],
     [concatenatedResults]
   );
-
 
   const multiSelectCallback = useCallback(
     (index: number) => {
