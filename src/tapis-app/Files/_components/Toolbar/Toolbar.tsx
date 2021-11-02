@@ -1,10 +1,10 @@
 import { Files } from '@tapis/tapis-typescript';
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
-
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
+import CopyModal from './CopyModal';
 import RenameModal from './RenameModal';
 import { useLocation } from 'react-router-dom';
 
@@ -47,8 +47,8 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
-  const currentPath = pathname.split('/').splice(3).join('/');
   const systemId = pathname.split('/')[2];
+  const currentPath = pathname.split('/').splice(3).join('/');
   const toggle = () => {
     setModal(undefined);
   };
@@ -76,9 +76,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             text="Copy"
             icon="copy"
             disabled={selectedFiles.length === 0}
-            onClick={() => {
-              console.log('Toolbar button');
-            }}
+            onClick={() => setModal('copy')}
           />
           <ToolbarButton
             text="Download"
@@ -103,9 +101,7 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             text="Folder"
             icon="add"
             disabled={!(selectedFiles.length === 0)}
-            onClick={() => {
-              setModal('createdir');
-            }}
+            onClick={() => setModal('createdir')}
           />
           <ToolbarButton
             text="Trash"
@@ -115,7 +111,21 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               console.log('Toolbar button');
             }}
           />
-          {modal === 'createdir' && <CreateDirModal toggle={toggle} />}
+          {modal === 'createdir' && (
+            <CreateDirModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
+          )}
+          {modal === 'copy' && (
+            <CopyModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+              selectedFiles={selectedFiles}
+            />
+          )}
           {modal === 'rename' && (
             <RenameModal
               toggle={toggle}

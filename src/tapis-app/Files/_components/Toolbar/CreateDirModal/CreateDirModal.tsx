@@ -3,18 +3,16 @@ import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
-import { useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMkdir } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 
-const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  const { pathname } = useLocation();
-
-  const systemId = pathname.split('/')[2];
-  const currentPath = pathname.split('/').splice(3).join('/');
-
+const CreateDirModal: React.FC<ToolbarModalProps> = ({
+  toggle,
+  systemId,
+  path,
+}) => {
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
@@ -48,7 +46,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   });
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
-    mkdir(systemId, `${currentPath}${dirname}`, { onSuccess });
+    mkdir(systemId ?? '', `${path ?? '/'}${dirname}`, { onSuccess });
 
   return (
     <GenericModal
@@ -60,7 +58,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             <FieldWrapper
               label="Directory name"
               required={true}
-              description={`Creates a directory in ${systemId}/${currentPath}`}
+              description={`Creates a directory in ${systemId}/${path}`}
               error={errors['dirname']}
             >
               <Input
