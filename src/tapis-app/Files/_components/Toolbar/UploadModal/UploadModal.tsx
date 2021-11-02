@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Button, Input } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
@@ -9,7 +9,7 @@ import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
 import styles from './UploadModal.module.scss'
 
-const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path }) => {
+const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path, systemId }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
   const onDrop = useCallback(
@@ -77,12 +77,12 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path }) => {
         <div>
           <form id="upload-form" onSubmit={handleSubmit(onSubmit)}>
             <div className={styles["file-dropzone"]} {...getRootProps()}>
-              <input ref={filesRef} {...filesFieldProps} {...getInputProps()} />
+              <input ref={filesRef} {...getInputProps()} />
               <Button>Select files</Button>
               <div>or drag and drop</div>
             </div>
           </form>
-          <h3>Uploading to '/{path}'</h3>
+          <h3 className={styles["files-list-header"]}>Uploading to {systemId}/{path}</h3>
           <div className={styles["files-list"]}>
             {files.length > 0 ? (
               <div>

@@ -6,6 +6,7 @@ export type GenericModalProps = {
   title: string;
   body: React.ReactNode;
   footer?: React.ReactNode;
+  contentClassName?: string;
 };
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -13,9 +14,10 @@ const GenericModal: React.FC<GenericModalProps> = ({
   title,
   body,
   footer,
+  contentClassName,
 }) => {
   return (
-    <Modal isOpen={true} toggle={toggle}>
+    <Modal isOpen={true} toggle={toggle} contentClassName={contentClassName}>
       <ModalHeader toggle={toggle} charCode="&#x2715;">
         <span>{title}</span>
       </ModalHeader>

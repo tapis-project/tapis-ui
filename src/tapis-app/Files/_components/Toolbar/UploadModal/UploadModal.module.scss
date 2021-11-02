@@ -1,11 +1,14 @@
 .file-dropzone {
     background: #EEEEEE;
-    border: 1px solid #888888;
     text-align: center;
     padding: 2em;
     cursor: pointer;
 }
 
+.files-list-header {
+    padding-top: .5em;
+}
+
 .files-list {
-    border: 1px solid #888888;
+    border: 1px solid #111111;
 }
