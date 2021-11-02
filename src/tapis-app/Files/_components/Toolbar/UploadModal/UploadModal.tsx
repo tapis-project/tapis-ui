@@ -13,12 +13,20 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
 }) => {
 
   const [ files, setFiles ] = useState<Array<File>>([])
+  const [ selectedFiles, setSelectedFiles ] = useState<Array<File>>([])
 
-  const selectFile = useCallback((selectedFile: File) => {
-    if ( fileIsUnique(files, selectedFile) ) {
-      setFiles([...files, selectedFile])
+  useEffect(() => {
+    console.log("Files", files)
+    const uniqueFiles = []
+    for (let i = 0; i < selectedFiles.length; i++) {
+      if (fileIsUnique(files, selectedFiles[i])) {
+        uniqueFiles.push(selectedFiles[i])
+      }
     }
-  }, [files])
+
+    console.log("Unique Files:", uniqueFiles)
+    setFiles([...files, ...uniqueFiles])
+  }, [selectedFiles])
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -47,9 +55,11 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
   };
 
   const fileIsUnique = (filesArr: Array<File>, file: File) => {
-    for (let i; i = 0; i++) {
-      if (filesArr[i].name === file.name) return false
+    for (let i = 0; i < filesArr.length; i++) {
+      console.log("Files Compared: ", filesArr[i].name, "->", file.name)
+      if (filesArr[i].name == file.name) { return false }
     }
+
     return true
   }
 
@@ -73,9 +83,8 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
                 aria-label="Input"
                 type="file"
                 onChange={(e) => {
-                  if ( e.target.files !== null ) {
-                    const file = e.target.files[0];
-                    selectFile(file)
+                  if (e.target.files !== null) {
+                    setSelectedFiles([...Array.from(e.target.files)]);
                   }
                 }}
               />
