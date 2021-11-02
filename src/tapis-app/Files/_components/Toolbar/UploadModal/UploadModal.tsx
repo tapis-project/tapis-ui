@@ -7,26 +7,22 @@ import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 
-const UploadModal: React.FC<ToolbarModalProps> = ({
-  toggle,
-  path,
-}) => {
+const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path }) => {
+  const [files, setFiles] = useState<Array<File>>([]);
 
-  const [ files, setFiles ] = useState<Array<File>>([])
-  const [ selectedFiles, setSelectedFiles ] = useState<Array<File>>([])
-
-  useEffect(() => {
-    console.log("Files", files)
-    const uniqueFiles = []
-    for (let i = 0; i < selectedFiles.length; i++) {
-      if (fileIsUnique(files, selectedFiles[i])) {
-        uniqueFiles.push(selectedFiles[i])
+  const selectFiles = useCallback(
+    (selectedFiles: Array<File>) => {
+      const uniqueFiles = [];
+      for (let i = 0; i < selectedFiles.length; i++) {
+        if (fileIsUnique(files, selectedFiles[i])) {
+          uniqueFiles.push(selectedFiles[i]);
+        }
       }
-    }
 
-    console.log("Unique Files:", uniqueFiles)
-    setFiles([...files, ...uniqueFiles])
-  }, [selectedFiles])
+      setFiles([...files, ...uniqueFiles]);
+    },
+    [files]
+  );
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -47,21 +43,22 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
   } = useForm();
 
   const { ref: filesRef, ...filesFieldProps } = register('files', {
-    required: "Must select at least one file for upload"
+    required: 'Must select at least one file for upload',
   });
 
   const onSubmit = () => {
-    console.log(files)
+    console.log(files);
   };
 
   const fileIsUnique = (filesArr: Array<File>, file: File) => {
     for (let i = 0; i < filesArr.length; i++) {
-      console.log("Files Compared: ", filesArr[i].name, "->", file.name)
-      if (filesArr[i].name == file.name) { return false }
+      if (filesArr[i].name === file.name) {
+        return false;
+      }
     }
 
-    return true
-  }
+    return true;
+  };
 
   return (
     <GenericModal
@@ -71,7 +68,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
         <div>
           <form id="upload-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldWrapper
-              label={"Select files for upload"}
+              label={'Select files for upload'}
               required={true}
               description={`Upload files to '${path === '' ? '/' : path}'`}
               error={errors['files']}
@@ -84,23 +81,23 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
                 type="file"
                 onChange={(e) => {
                   if (e.target.files !== null) {
-                    setSelectedFiles([...Array.from(e.target.files)]);
+                    selectFiles([...Array.from(e.target.files)]);
                   }
                 }}
               />
             </FieldWrapper>
           </form>
-          {files.length > 0 &&
+          {files.length > 0 && (
             <div>
               {files.map((item) => {
-                return(
+                return (
                   <div key={item.name}>
-                    {item.name} {(item.size/10000).toFixed(2)}mb
+                    {item.name} {(item.size / 10000).toFixed(2)}mb
                   </div>
-                )
+                );
               })}
             </div>
-          }
+          )}
         </div>
       }
       footer={

@@ -125,7 +125,9 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               path={currentPath}
             />
           )}
-          {modal === 'upload' && <UploadModal toggle={toggle} path={currentPath}/>}
+          {modal === 'upload' && (
+            <UploadModal toggle={toggle} path={currentPath} />
+          )}
         </div>
       )}
     </div>
