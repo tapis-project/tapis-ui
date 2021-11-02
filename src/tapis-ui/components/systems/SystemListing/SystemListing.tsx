@@ -4,6 +4,7 @@ import { useList } from 'tapis-hooks/systems';
 import { Column, Row } from 'react-table';
 import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Button } from 'reactstrap';
 import styles from './SystemListing.module.scss';
 
 type SystemListItemProps = {
@@ -17,8 +18,9 @@ const SystemListingItem: React.FC<SystemListItemProps> = ({
 }) => {
   if (onNavigate) {
     return (
-      <a
-        href="#"
+      <Button
+        color="link"
+        className={styles.link}
         onClick={(e) => {
           e.preventDefault();
           onNavigate(system);
@@ -26,7 +28,7 @@ const SystemListingItem: React.FC<SystemListItemProps> = ({
         data-testid={`href-${system.id}`}
       >
         {system.id}
-      </a>
+      </Button>
     );
   }
   return <span>{system.id}</span>;
@@ -53,7 +55,7 @@ const SystemListing: React.FC<SystemListingProps> = ({
         onSelect(system);
       }
     },
-    [setSelectedSystem]
+    [setSelectedSystem, onSelect]
   );
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 

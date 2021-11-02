@@ -40,7 +40,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       setCurrentPath(newPath);
       onNavigate && onNavigate(currentSystem ?? null, newPath);
     },
-    [setCurrentPath, currentPath, setTargetBreadcrumbs, currentSystem]
+    [setCurrentPath, currentPath, onNavigate, currentSystem]
   );
 
   const onSystemNavigate = useCallback(
@@ -52,7 +52,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       setCurrentPath('/');
       onNavigate && onNavigate(system?.id ?? null, '/');
     },
-    [setCurrentPath, setCurrentSystem]
+    [setCurrentPath, setCurrentSystem, onNavigate]
   );
 
   useEffect(() => {

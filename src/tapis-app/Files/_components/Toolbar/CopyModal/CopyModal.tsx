@@ -1,5 +1,5 @@
-import { useCallback, useState, useReducer, useEffect } from 'react';
-import { Button, Input } from 'reactstrap';
+import { useCallback, useState, useReducer } from 'react';
+import { Button } from 'reactstrap';
 import {
   GenericModal,
   Breadcrumbs,
@@ -17,7 +17,7 @@ import { useCopy } from 'tapis-hooks/files';
 import { CopyHookParams } from 'tapis-hooks/files/useCopy';
 import { Files } from '@tapis/tapis-typescript';
 import { useMutations } from 'tapis-hooks/utils';
-import { Row, Column, CellProps } from 'react-table';
+import { Column } from 'react-table';
 import styles from './CopyModal.module.scss';
 
 const CopyModal: React.FC<ToolbarModalProps> = ({
@@ -95,7 +95,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
       path: file.path!,
     }));
     run(operations);
-  }, [selectedFiles, run, destinationPath]);
+  }, [selectedFiles, run, destinationPath, systemId]);
 
   const statusColumns: Array<Column> = [
     {

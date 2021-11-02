@@ -1,7 +1,7 @@
 import { MutateOptions } from 'react-query';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { from, of } from 'rxjs';
-import { concatMap, catchError } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 
 type UseMutationsParams<T, ResponseType> = {
   fn: (

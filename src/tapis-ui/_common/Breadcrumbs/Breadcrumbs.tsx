@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { Button } from 'reactstrap';
+import styles from './Breadcrumbs.module.scss';
 
 export type BreadcrumbType = {
   to?: string;
@@ -17,15 +19,16 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
     return (
       <span>
         {' '}
-        <a
-          href="#"
+        <Button
+          color="link"
+          className={styles.link}
           onClick={(e) => {
             e.preventDefault();
             to && onClick(to);
           }}
         >
           {text}
-        </a>{' '}
+        </Button>{' '}
         /
       </span>
     );

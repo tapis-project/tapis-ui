@@ -6,34 +6,34 @@
 .file-list {
   /* icon */
   tr > *:nth-child(1) {
-    width: 7%;
+    width: 7% !important;
   }
   /* name */
   tr > *:nth-child(2) {
-    width: 73%;
+    width: 73% !important;
   }
   /* size */
   tr > *:nth-child(3) {
-    width: 20%;
+    width: 20% !important;
   }
 }
 
 .file-list-origin {
   /* icon */
   tr > *:nth-child(1) {
-    width: 7%;
+    width: 7% !important;
   }
   /* name */
   tr > *:nth-child(2) {
-    width: 63%;
+    width: 63% !important;
   }
   /* size */
   tr > *:nth-child(3) {
-    width: 20%;
+    width: 20% !important;
   }
   /* status */
   tr > *:nth-child(4) {
-    width: 10%;
+    width: 10% !important;
     justify-content: center;
   }
 }

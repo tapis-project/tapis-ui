@@ -6,6 +6,7 @@ import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Row, Column, CellProps } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
+import { Button } from 'reactstrap';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -38,15 +39,16 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
   }
   if (onNavigate) {
     return (
-      <a
-        href="#"
+      <Button
+        color="link"
+        className={styles.link}
         onClick={(e) => {
           e.preventDefault();
           onNavigate(file);
         }}
       >
         {file.name}/
-      </a>
+      </Button>
     );
   }
   return <span>{file.name}/</span>;
