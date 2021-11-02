@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -104,7 +104,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
                 })}
               </div>
             ) : (
-              <p>No files selected</p>
+              <p>No files selected for upload</p>
             )}
           </div>
         </div>
