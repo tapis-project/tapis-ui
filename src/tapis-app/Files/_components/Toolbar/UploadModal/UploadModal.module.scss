@@ -1,14 +1,23 @@
 .file-dropzone {
-    background: #EEEEEE;
-    text-align: center;
-    padding: 2em;
-    cursor: pointer;
+  background: #eeeeee;
+  text-align: center;
+  padding: 2em;
+  cursor: pointer;
 }
 
 .files-list-header {
-    padding-top: .5em;
+  padding-top: 0.5em;
 }
 
 .files-list {
-    border: 1px solid #111111;
+  border: 1px solid #111111;
+}
+
+.upload-error {
+  color: red;
+}
+
+.remove-file {
+  cursor: pointer;
+  color: red;
 }

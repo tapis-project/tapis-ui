@@ -7,9 +7,13 @@ import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
-import styles from './UploadModal.module.scss'
+import styles from './UploadModal.module.scss';
 
-const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path, systemId }) => {
+const UploadModal: React.FC<ToolbarModalProps> = ({
+  toggle,
+  path,
+  systemId,
+}) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
   const onDrop = useCallback(
@@ -26,12 +30,18 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path, systemId }) =>
     [files]
   );
 
-  const {
-    getRootProps,
-    getInputProps
-  } = useDropzone({
-    onDrop
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
   });
+
+  const removeFile = useCallback(
+    (index: number) => {
+      const modifiedFiles = files;
+      modifiedFiles.splice(index, 1);
+      setFiles([...modifiedFiles]);
+    },
+    [files]
+  );
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -44,16 +54,6 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path, systemId }) =>
   useEffect(() => {
     reset();
   }, [reset]);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const { ref: filesRef, ...filesFieldProps } = register('files', {
-    required: 'Must select at least one file for upload',
-  });
 
   const onSubmit = () => {
     console.log(files);
@@ -75,27 +75,37 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path, systemId }) =>
       title={`Upload files`}
       body={
         <div>
-          <form id="upload-form" onSubmit={handleSubmit(onSubmit)}>
-            <div className={styles["file-dropzone"]} {...getRootProps()}>
-              <input ref={filesRef} {...getInputProps()} />
-              <Button>Select files</Button>
-              <div>or drag and drop</div>
-            </div>
-          </form>
-          <h3 className={styles["files-list-header"]}>Uploading to {systemId}/{path}</h3>
-          <div className={styles["files-list"]}>
+          <div className={styles['file-dropzone']} {...getRootProps()}>
+            <input {...getInputProps()} />
+            <Button>Select files</Button>
+            <div>or drag and drop</div>
+          </div>
+          <h3 className={styles['files-list-header']}>
+            Uploading to {systemId}/{path}
+          </h3>
+          {error && <p className={styles['upload-error']}>{error}</p>}
+          <div className={styles['files-list']}>
             {files.length > 0 ? (
               <div>
-                {files.map((item) => {
+                {files.map((item, index) => {
                   return (
                     <div key={item.name}>
-                      {item.name} {(item.size / 10000).toFixed(2)}mb
+                      {item.name} {(item.size / 10000).toFixed(2)}mb{' '}
+                      <span
+                        className={styles['remove-file']}
+                        onClick={() => {
+                          removeFile(index);
+                        }}
+                      >
+                        &#x2715;
+                      </span>
                     </div>
                   );
                 })}
               </div>
-            ) : <p>No files selected</p>
-            }
+            ) : (
+              <p>No files selected</p>
+            )}
           </div>
         </div>
       }
@@ -107,10 +117,10 @@ const UploadModal: React.FC<ToolbarModalProps> = ({ toggle, path, systemId }) =>
           reverse={true}
         >
           <Button
-            form="upload-form"
             color="primary"
             disabled={isLoading || isSuccess || files.length === 0}
             aria-label="Submit"
+            onClick={onSubmit}
           >
             Upload
           </Button>

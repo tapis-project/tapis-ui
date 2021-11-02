@@ -14,6 +14,11 @@ const GenericModal: React.FC<GenericModalProps> = ({
   title,
   body,
   footer,
+  /**
+   * @NOTE contentClassName is the means by which you can change the style
+   * of the modal content of a reactstrap Modal. However, it is not found in the
+   * documentation.
+   */
   contentClassName,
 }) => {
   return (
