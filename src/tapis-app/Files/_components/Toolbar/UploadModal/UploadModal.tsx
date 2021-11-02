@@ -1,9 +1,8 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
-import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
