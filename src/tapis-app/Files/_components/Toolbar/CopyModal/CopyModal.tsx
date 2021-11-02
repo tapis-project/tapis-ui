@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
-import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
+import { GenericModal, Breadcrumbs, Icon, LoadingSpinner } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
@@ -12,7 +12,9 @@ import { useCopy } from 'tapis-hooks/files';
 import { CopyHookParams } from 'tapis-hooks/files/useCopy';
 import { Files } from'@tapis/tapis-typescript';
 import { useMutations } from 'tapis-hooks/utils';
+import { Row, Column, CellProps } from 'react-table';
 import styles from './CopyModal.module.scss';
+import { string } from 'prop-types';
 
 const CopyModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -23,31 +25,43 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
   const { pathname } = useLocation();
   const [ copyError, setCopyError ] = useState<Error | null>(null);
 
+  const [ copyStatus, setCopyStatus ] = useState<{ [id: string]: string }>({});
+
   const [ destinationPath, setDestinationPath ] = useState<string | null>(path);
   const { copyAsync } = useCopy();
   const onFileCopySuccess = useCallback(
     (operation: CopyHookParams, data: Files.FileStringResponse) => {
-      console.log("SUCCESS CALLBACK", operation, data);
+      const newStatus = { ...copyStatus, [operation.path]: 'success' };
+      setCopyStatus(newStatus);
     },
-    []
+    [ copyStatus, setCopyStatus ]
   );
   const onFileCopyError = useCallback(
     (operation: CopyHookParams, error: Error) => {
       setCopyError(error);
+      const newStatus = {...copyStatus, [operation.path]: 'error' };
+      setCopyStatus(newStatus);
     },
-    []
+    [ copyStatus, setCopyStatus ]
+  )
+  const onFileCopyStart = useCallback(
+    (operation: CopyHookParams) => {
+      const newStatus = {...copyStatus, [operation.path]: 'loading' };
+      setCopyStatus(newStatus);
+    },
+    [ copyStatus, setCopyStatus ]
   )
   const onComplete = useCallback(() => {
-    console.log("ON COMPLETE CALLBACK")
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
   }, []);
 
-  const { run, isRunning, isFinished, current } = useMutations<CopyHookParams, Files.FileStringResponse>({
+  const { run, isRunning, isFinished } = useMutations<CopyHookParams, Files.FileStringResponse>({
     fn: copyAsync,
     onSuccess: onFileCopySuccess,
     onError: onFileCopyError,
+    onStart: onFileCopyStart,
     onComplete
   });
 
@@ -72,6 +86,24 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
     [ selectedFiles, destinationPath, run ]
   );
 
+  const statusColumns: Array<Column> = [
+    {
+      Header: '',
+      id: 'copyStatus',
+      Cell: (el) => {
+        const path = (el.row.original as Files.FileInfo).path;
+        const status = path && copyStatus[path];
+        if (status) {
+          if (status === 'loading') {
+            return <LoadingSpinner placement="inline" />
+          }
+          return <Icon name={status} />
+        }
+        return null;
+      }
+    }
+  ]
+
   const body = (
     <div className="row h-100">
       <div className="col-md-6 d-flex flex-column">
@@ -90,6 +122,7 @@ const CopyModal: React.FC<ToolbarModalProps> = ({
           <FileListingTable
             files={selectedFiles}
             className={`${styles['file-list']} `}
+            appendColumns={statusColumns}
           />
         </div>
       </div>

@@ -92,6 +92,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ systemId, path, className, 
             path={currentPath ?? '/'}
             select={{ mode: 'none' }}
             onNavigate={onFileNavigate}
+            fields={['size']}
           />
         ) : (
           <SystemListing 

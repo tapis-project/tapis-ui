@@ -5,24 +5,23 @@ import { concatMap, catchError } from 'rxjs/operators';
 
 type UseMutationsParams<T, ResponseType> = {
   fn: (item: T,  options?: MutateOptions<ResponseType, Error, T>) => Promise<ResponseType>;
+  onStart?: (item: T) => void;
   onSuccess?: (item: T, response: ResponseType) => void;
   onError?: (item: T, error: Error) => void;
   onComplete?: () => void;
 }
 
 const useMutations = <T extends unknown, ResponseType extends unknown>(params: UseMutationsParams<T, ResponseType>) => {
-  const { fn, onSuccess, onError, onComplete } = params;
-  const [ current, setCurrent ] = useState<T | null>(null);
+  const { fn, onSuccess, onError, onComplete, onStart } = params;
   const [ isRunning, setIsRunning ] = useState(false); 
   const [ isFinished, setIsFinished ] = useState(false);
-
 
   const run = useCallback(
     (items: Array<T>) => {
       setIsRunning(true);
       from(items).pipe(
         concatMap(
-          (item, index) => { setCurrent(item); return of(item); }
+          (item) => { onStart && onStart(item); return of(item); }
         ),
         concatMap(
           item => fn(item).then(
@@ -51,11 +50,10 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(params: U
           onComplete && onComplete();
         }
       );
-    }, [setCurrent, setIsRunning, setIsFinished]
+    }, [onStart, onSuccess, onError, setIsRunning, setIsFinished]
   );
 
   return {
-    current,
     isRunning,
     isFinished,
     run

@@ -109,6 +109,7 @@ type FileListingTableProps = {
   location?: string;
   className?: string;
   select?: SelectMode;
+  fields?: Array<'size' | 'lastModified'>;
 };
 
 export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
@@ -123,6 +124,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
     location,
     className,
     select,
+    fields
   }) => {
     const styleName =
       select?.mode !== 'none' ? 'file-list-select' : 'file-list';
@@ -144,20 +146,28 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
           />
         ),
       },
-      {
+    ];
+
+    if (fields?.some(field => field === 'size')) {
+      tableColumns.push({
         Header: 'Size',
         accessor: 'size',
         Cell: (el) => <span>{sizeFormat(el.value)}</span>,
-      },
-      {
+      });
+    }
+
+    if (fields?.some(field => field === 'lastModified')) {
+      tableColumns.push({
         Header: 'Last Modified',
         accessor: 'lastModified',
         Cell: (el) => (
           <span>{formatDateTimeFromValue(new Date(el.value))}</span>
-        ),
-      },
-      ...appendColumns,
-    ];
+        )
+      })
+    }
+
+    tableColumns.push(...appendColumns);
+
     return (
       <InfiniteScrollTable
         className={`${className} ${styles[styleName]}`}
@@ -180,6 +190,7 @@ interface FileListingProps {
   location?: string;
   select?: SelectMode;
   className?: string;
+  fields?: Array<'size' | 'lastModified'>;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -190,6 +201,7 @@ const FileListing: React.FC<FileListingProps> = ({
   location = undefined,
   select = undefined,
   className,
+  fields = ['size', 'lastModified']
 }) => {
   const {
     hasNextPage,
@@ -307,6 +319,7 @@ const FileListing: React.FC<FileListingProps> = ({
         getRowProps={getRowProps}
         location={location}
         onNavigate={onNavigate}
+        fields={fields}
       />
     </QueryWrapper>
   );

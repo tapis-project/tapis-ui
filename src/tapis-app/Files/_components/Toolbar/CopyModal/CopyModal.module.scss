@@ -16,10 +16,25 @@
   tr > *:nth-child(3) {
     width: 20%;
   }
-  /* lastModified */
-  tr > *:nth-child(4) {
-    display: none;
+}
+
+.file-list-origin {
+  /* icon */
+  tr > *:nth-child(1) {
+    width: 7%;
   }
+  /* name */
+  tr > *:nth-child(2) {
+    width: 63%;
+  }
+  /* size */
+  tr > *:nth-child(3) {
+    width: 20%;
+  }
+  /* status */
+  tr > *:nth-child(4) {
+    width: 10%;
+  } 
 }
 
 .nav-list {
