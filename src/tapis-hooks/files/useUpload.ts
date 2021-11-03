@@ -17,7 +17,7 @@ const useUpload = () => {
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
   //
-  // In this case, move helper is called to perform the operation
+  // In this case, upload helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, InsertParams>(
       [QueryKeys.insert, basePath, jwt],
@@ -39,7 +39,7 @@ const useUpload = () => {
     data,
     error,
     reset,
-    insert: (
+    upload: (
       systemId: string,
       path: string,
       file: Blob,

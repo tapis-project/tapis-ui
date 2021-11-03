@@ -3,7 +3,7 @@ import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
-import { useMove } from 'tapis-hooks/files';
+import { useUpload } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
 import styles from './UploadModal.module.scss';
@@ -57,14 +57,14 @@ const UploadModal: React.FC<UploadModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { move, isLoading, error, isSuccess, reset } = useMove();
+  const { upload, isLoading, error, isSuccess, reset } = useUpload();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const onSubmit = () => {
-    console.log(files);
+    upload(systemId!, path!, files[0])
   };
 
   const isValidFile = (filesArr: Array<File>, file: File) => {
@@ -91,10 +91,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
         return (
           <span
             className={styles['remove-file']}
-            onClick={() => {
-              console.log('Removed index: ', el.row.index);
-              removeFile(el.row.index);
-            }}
+            onClick={() => removeFile(el.row.index)}
           >
             &#x2715;
           </span>
@@ -120,7 +117,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
           <h3 className={styles['files-list-header']}>
             Uploading to {systemId}/{path}
           </h3>
-          {error && <p className={styles['upload-error']}>{error}</p>}
+          {error && <p className={styles['upload-error']}>{error.message}</p>}
           <div className={styles['files-list-container']}>
             <FileListingTable
               files={filesToFileInfo(files)}
