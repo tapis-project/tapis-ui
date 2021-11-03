@@ -1,14 +1,9 @@
+import { CopyMoveHookParams } from '.';
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { moveCopy } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
-
-type MoveHookParams = {
-  systemId: string;
-  path: string;
-  newPath: string;
-};
 
 const useMove = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -18,8 +13,8 @@ const useMove = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, move helper is called to perform the operation
-  const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Files.FileStringResponse, Error, MoveHookParams>(
+  const { mutate, mutateAsync, isLoading, isError, isSuccess, data, error, reset } =
+    useMutation<Files.FileStringResponse, Error, CopyMoveHookParams>(
       [QueryKeys.move, basePath, jwt],
       ({ systemId, path, newPath }) =>
         moveCopy(
@@ -41,15 +36,17 @@ const useMove = () => {
     error,
     reset,
     move: (
-      systemId: string,
-      path: string,
-      newPath: string,
+      params: CopyMoveHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Files.FileStringResponse, Error, MoveHookParams>
+      options?: MutateOptions<Files.FileStringResponse, Error, CopyMoveHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({ systemId, path, newPath }, options);
+      return mutate(params, options);
     },
+    moveAsync: (
+      params: CopyMoveHookParams,
+      options?: MutateOptions<Files.FileStringResponse, Error, CopyMoveHookParams>
+    ) => mutateAsync(params, options),
   };
 };
 

@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
-import CopyModal from './CopyModal';
+import CopyMoveModal from './CopyMoveModal';
 import RenameModal from './RenameModal';
 import { useLocation } from 'react-router-dom';
 
@@ -60,17 +60,13 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             text="Rename"
             icon="rename"
             disabled={selectedFiles.length !== 1}
-            onClick={() => {
-              setModal('rename');
-            }}
+            onClick={() => setModal('rename')}
           />
           <ToolbarButton
             text="Move"
             icon="move"
             disabled={selectedFiles.length === 0}
-            onClick={() => {
-              console.log('Toolbar button');
-            }}
+            onClick={() => setModal('move')}
           />
           <ToolbarButton
             text="Copy"
@@ -119,11 +115,21 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
             />
           )}
           {modal === 'copy' && (
-            <CopyModal
+            <CopyMoveModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
               selectedFiles={selectedFiles}
+              operation={Files.MoveCopyRequestOperationEnum.Copy}
+            />
+          )}
+          {modal === 'move' && (
+            <CopyMoveModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+              selectedFiles={selectedFiles}
+              operation={Files.MoveCopyRequestOperationEnum.Move}
             />
           )}
           {modal === 'rename' && (
