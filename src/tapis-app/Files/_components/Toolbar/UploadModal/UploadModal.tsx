@@ -72,10 +72,10 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
   };
 
   const filesToFileInfo = (filesArr: Array<File>): Array<File.FileInfo> => {
-    return filesArr.map((file, index) => {
-      return {name: file.name, size: file.size, type: "file"}
-    })
-  }
+    return filesArr.map((file) => {
+      return { name: file.name, size: file.size, type: 'file' };
+    });
+  };
 
   const appendColumns: Array<Column> = [
     {
@@ -86,16 +86,16 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
           <span
             className={styles['remove-file']}
             onClick={() => {
-              console.log("Removed index: ", el.row.index)
+              console.log('Removed index: ', el.row.index);
               removeFile(el.row.index);
             }}
           >
             &#x2715;
           </span>
-        )
+        );
       },
-    }
-  ]
+    },
+  ];
 
   return (
     <GenericModal
@@ -115,9 +115,9 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
           <div className={styles['files-list-container']}>
             <FileListingTable
               files={filesToFileInfo(files)}
-              fields={["size"]}
+              fields={['size']}
               appendColumns={appendColumns}
-              className={styles["file-list-table"]}
+              className={styles['file-list-table']}
             />
           </div>
         </div>
