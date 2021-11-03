@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -7,6 +7,9 @@ import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
 import styles from './UploadModal.module.scss';
+import { FileListingTable } from 'tapis-ui/components/files/FileListing';
+import File from '@tapis/tapis-typescript-files';
+import { Column } from 'react-table';
 
 const UploadModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -26,7 +29,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
 
       setFiles([...files, ...uniqueFiles]);
     },
-    [files]
+    [files, setFiles]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -68,6 +71,32 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
     return true;
   };
 
+  const filesToFileInfo = (filesArr: Array<File>): Array<File.FileInfo> => {
+    return filesArr.map((file, index) => {
+      return {name: file.name, size: file.size, type: "file"}
+    })
+  }
+
+  const appendColumns: Array<Column> = [
+    {
+      Header: '',
+      accessor: '-',
+      Cell: (el) => {
+        return (
+          <span
+            className={styles['remove-file']}
+            onClick={() => {
+              console.log("Removed index: ", el.row.index)
+              removeFile(el.row.index);
+            }}
+          >
+            &#x2715;
+          </span>
+        )
+      },
+    }
+  ]
+
   return (
     <GenericModal
       toggle={toggle}
@@ -83,28 +112,13 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
             Uploading to {systemId}/{path}
           </h3>
           {error && <p className={styles['upload-error']}>{error}</p>}
-          <div className={styles['files-list']}>
-            {files.length > 0 ? (
-              <div>
-                {files.map((item, index) => {
-                  return (
-                    <div key={item.name}>
-                      {item.name} {(item.size / 10000).toFixed(2)}mb{' '}
-                      <span
-                        className={styles['remove-file']}
-                        onClick={() => {
-                          removeFile(index);
-                        }}
-                      >
-                        &#x2715;
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p>No files selected for upload</p>
-            )}
+          <div className={styles['files-list-container']}>
+            <FileListingTable
+              files={filesToFileInfo(files)}
+              fields={["size"]}
+              appendColumns={appendColumns}
+              className={styles["file-list-table"]}
+            />
           </div>
         </div>
       }
