@@ -21,14 +21,7 @@ const useUpload = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, InsertParams>(
       [QueryKeys.insert, basePath, jwt],
-      ({ systemId, path, file }) =>
-        insert(
-          systemId,
-          path,
-          file,
-          basePath,
-          jwt
-        )
+      ({ systemId, path, file }) => insert(systemId, path, file, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

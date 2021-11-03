@@ -13,14 +13,14 @@ import { Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
 
 type UploadModalProps = ToolbarModalProps & {
-  maxFileSizeBytes?: number
-}
+  maxFileSizeBytes?: number;
+};
 
 const UploadModal: React.FC<UploadModalProps> = ({
   toggle,
   path,
   systemId,
-  maxFileSizeBytes = 524288000
+  maxFileSizeBytes = 524288000,
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
@@ -64,7 +64,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }, [reset]);
 
   const onSubmit = () => {
-    upload(systemId!, path!, files[0])
+    upload(systemId!, path!, files[0]);
   };
 
   const isValidFile = (filesArr: Array<File>, file: File) => {
