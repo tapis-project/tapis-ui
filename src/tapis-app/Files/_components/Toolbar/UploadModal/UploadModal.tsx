@@ -10,16 +10,17 @@ import styles from './UploadModal.module.scss';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing';
 import File from '@tapis/tapis-typescript-files';
 import { Column } from 'react-table';
+import sizeFormat from 'utils/sizeFormat';
 
 type UploadModalProps = ToolbarModalProps & {
-  maxFileSize?: number
+  maxFileSizeBytes?: number
 }
 
 const UploadModal: React.FC<UploadModalProps> = ({
   toggle,
   path,
   systemId,
-  maxFileSize = 5*10**8
+  maxFileSizeBytes = 524288000
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
@@ -68,7 +69,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const isValidFile = (filesArr: Array<File>, file: File) => {
     for (let i = 0; i < filesArr.length; i++) {
-      if (filesArr[i].name === file.name || file.size > maxFileSize) {
+      if (filesArr[i].name === file.name || file.size > maxFileSizeBytes) {
         return false;
       }
     }
@@ -111,7 +112,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
           <div className={styles['file-dropzone']} {...getRootProps()}>
             <input {...getInputProps()} />
             <Button>Select files</Button>
-            <div>or drag and drop</div>
+            <div>
+              <p>or drag and drop</p>
+              <b>Max file size: {sizeFormat(maxFileSizeBytes)}</b>
+            </div>
           </div>
           <h3 className={styles['files-list-header']}>
             Uploading to {systemId}/{path}
