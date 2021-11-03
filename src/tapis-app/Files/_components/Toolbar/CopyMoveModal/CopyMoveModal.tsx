@@ -21,7 +21,7 @@ import { Column } from 'react-table';
 import styles from './CopyMoveModal.module.scss';
 
 type CopyMoveModalProps = {
-  operation: Files.MoveCopyRequestOperationEnum
+  operation: Files.MoveCopyRequestOperationEnum;
 } & ToolbarModalProps;
 
 const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
@@ -29,7 +29,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   systemId = '',
   path = '/',
   selectedFiles = [],
-  operation
+  operation,
 }) => {
   const { pathname } = useLocation();
   const [copyMoveError, setCopyMoveError] = useState<Error | null>(null);
@@ -51,7 +51,10 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
 
   const { copyAsync } = useCopy();
   const { moveAsync } = useMove();
-  const fn = operation === Files.MoveCopyRequestOperationEnum.Copy ? copyAsync : moveAsync;
+  const fn =
+    operation === Files.MoveCopyRequestOperationEnum.Copy
+      ? copyAsync
+      : moveAsync;
 
   const onFileCopyMoveSuccess = useCallback(
     (operation: CopyMoveHookParams, data: Files.FileStringResponse) => {
@@ -128,7 +131,11 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>
-          {`${operation === Files.MoveCopyRequestOperationEnum.Copy ? 'Copying ' : 'Moving '}`}
+          {`${
+            operation === Files.MoveCopyRequestOperationEnum.Copy
+              ? 'Copying '
+              : 'Moving '
+          }`}
           {selectedFiles.length} files
         </div>
         <Breadcrumbs

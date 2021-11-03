@@ -54,10 +54,10 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
 
   const onSubmit = ({ newname }: { newname: string }) => {
     move(
-      { 
+      {
         systemId: systemId!,
         path: `${path}${file.name}`,
-        newPath: `${path}${newname}` 
+        newPath: `${path}${newname}`,
       },
       { onSuccess }
     );

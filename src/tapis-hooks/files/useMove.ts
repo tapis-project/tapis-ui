@@ -13,19 +13,27 @@ const useMove = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, move helper is called to perform the operation
-  const { mutate, mutateAsync, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Files.FileStringResponse, Error, CopyMoveHookParams>(
-      [QueryKeys.move, basePath, jwt],
-      ({ systemId, path, newPath }) =>
-        moveCopy(
-          systemId,
-          path,
-          newPath,
-          Files.MoveCopyRequestOperationEnum.Move,
-          basePath,
-          jwt
-        )
-    );
+  const {
+    mutate,
+    mutateAsync,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+    reset,
+  } = useMutation<Files.FileStringResponse, Error, CopyMoveHookParams>(
+    [QueryKeys.move, basePath, jwt],
+    ({ systemId, path, newPath }) =>
+      moveCopy(
+        systemId,
+        path,
+        newPath,
+        Files.MoveCopyRequestOperationEnum.Move,
+        basePath,
+        jwt
+      )
+  );
 
   // Return hook object with loading states and login function
   return {
@@ -38,14 +46,22 @@ const useMove = () => {
     move: (
       params: CopyMoveHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Files.FileStringResponse, Error, CopyMoveHookParams>
+      options?: MutateOptions<
+        Files.FileStringResponse,
+        Error,
+        CopyMoveHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);
     },
     moveAsync: (
       params: CopyMoveHookParams,
-      options?: MutateOptions<Files.FileStringResponse, Error, CopyMoveHookParams>
+      options?: MutateOptions<
+        Files.FileStringResponse,
+        Error,
+        CopyMoveHookParams
+      >
     ) => mutateAsync(params, options),
   };
 };

@@ -46,11 +46,19 @@ const useCopy = () => {
     copy: (
       params: CopyMoveHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Files.FileStringResponse, Error, CopyMoveHookParams>
+      options?: MutateOptions<
+        Files.FileStringResponse,
+        Error,
+        CopyMoveHookParams
+      >
     ) => mutate(params, options),
     copyAsync: (
       params: CopyMoveHookParams,
-      options?: MutateOptions<Files.FileStringResponse, Error, CopyMoveHookParams>
+      options?: MutateOptions<
+        Files.FileStringResponse,
+        Error,
+        CopyMoveHookParams
+      >
     ) => mutateAsync(params, options),
   };
 };
