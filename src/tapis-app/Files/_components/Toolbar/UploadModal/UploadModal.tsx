@@ -11,10 +11,15 @@ import { FileListingTable } from 'tapis-ui/components/files/FileListing';
 import File from '@tapis/tapis-typescript-files';
 import { Column } from 'react-table';
 
-const UploadModal: React.FC<ToolbarModalProps> = ({
+type UploadModalProps = ToolbarModalProps & {
+  maxFileSize?: number
+}
+
+const UploadModal: React.FC<UploadModalProps> = ({
   toggle,
   path,
   systemId,
+  maxFileSize = 5*10**8
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
@@ -22,7 +27,7 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
     (selectedFiles: Array<File>) => {
       const uniqueFiles = [];
       for (let i = 0; i < selectedFiles.length; i++) {
-        if (fileIsUnique(files, selectedFiles[i])) {
+        if (isValidFile(files, selectedFiles[i])) {
           uniqueFiles.push(selectedFiles[i]);
         }
       }
@@ -61,9 +66,9 @@ const UploadModal: React.FC<ToolbarModalProps> = ({
     console.log(files);
   };
 
-  const fileIsUnique = (filesArr: Array<File>, file: File) => {
+  const isValidFile = (filesArr: Array<File>, file: File) => {
     for (let i = 0; i < filesArr.length; i++) {
-      if (filesArr[i].name === file.name) {
+      if (filesArr[i].name === file.name || file.size > maxFileSize) {
         return false;
       }
     }
