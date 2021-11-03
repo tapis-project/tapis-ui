@@ -62,7 +62,7 @@ describe('CopyMoveModal', () => {
     expect((useMutations as jest.Mock).mock.calls[0][0].fn).toEqual(mockCopyAsync);
     expect((mockRun.mock.calls[0][0][0].path)).toEqual("/file1.txt");
   });
-  it('performs copy operations', async () => {
+  it('performs move operations', async () => {
     (useList as jest.Mock).mockReturnValue({
       concatenatedResults: [
         { ...fileInfo, type: 'dir' },
