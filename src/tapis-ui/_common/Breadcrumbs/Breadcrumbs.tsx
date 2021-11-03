@@ -17,7 +17,7 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
 }) => {
   if (onClick) {
     return (
-      <span>
+      <span className={styles.fragment}>
         {' '}
         <Button
           color="link"
@@ -28,24 +28,22 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
           }}
         >
           {text}
-        </Button>{' '}
-        /
+        </Button>
+        &nbsp;/&nbsp;
       </span>
     );
   }
   if (to) {
     return (
-      <span>
-        {' '}
-        <NavLink to={to}>{text}</NavLink> /
+      <span className={styles.fragment}>
+        <NavLink to={to}>{text}</NavLink>&nbsp;/&nbsp;
       </span>
     );
   }
 
   return (
-    <span>
-      {' '}
-      {text} {`${text !== '...' ? '/' : ''}`}
+    <span className={styles.fragment}>
+      {text}&nbsp;{`${text !== '...' ? '/' : ''}`}&nbsp;
     </span>
   );
 };
@@ -70,7 +68,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   }
 
   return (
-    <div>
+    <div className={styles.box}>
       {truncatedBreadcrumbs.map((item, index) => {
         const { text, to, onClick } = item;
         if (index === truncatedBreadcrumbs.length - 1) {
