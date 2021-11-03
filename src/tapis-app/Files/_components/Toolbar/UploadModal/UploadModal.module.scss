@@ -11,6 +11,10 @@
   cursor: pointer;
 }
 
+.file-dropzone:focus {
+  cursor: pointer;
+}
+
 .files-list-header {
   padding-top: 0.5em;
 }
