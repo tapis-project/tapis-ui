@@ -4,7 +4,7 @@ export { default as useMove } from './useMove';
 export { default as useCopy } from './useCopy';
 export { default as useUpload } from './useUpload';
 
-export type CopyMoveHookParams = {
+export type MoveCopyHookParams = {
   systemId: string;
   path: string;
   newPath: string;
