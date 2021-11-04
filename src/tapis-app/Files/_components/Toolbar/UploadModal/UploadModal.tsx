@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -64,7 +64,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }, [reset]);
 
   const onSubmit = () => {
-    upload(systemId!, path!, files[0]);
+    upload(systemId!, path || "/", files[0]);
   };
 
   const isValidFile = (filesArr: Array<File>, file: File) => {

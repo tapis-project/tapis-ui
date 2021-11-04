@@ -1,13 +1,13 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { insert } from 'tapis-api/files';
+import { insertAxios as insert } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
 type InsertParams = {
   systemId: string;
   path: string;
-  file: Blob;
+  file: File;
 };
 
 const useUpload = () => {
@@ -20,7 +20,7 @@ const useUpload = () => {
   // In this case, upload helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, InsertParams>(
-      [QueryKeys.insert, basePath, jwt],
+      [QueryKeys.insertAxios, basePath, jwt],
       ({ systemId, path, file }) => insert(systemId, path, file, basePath, jwt)
     );
 
@@ -35,7 +35,7 @@ const useUpload = () => {
     upload: (
       systemId: string,
       path: string,
-      file: Blob,
+      file: File,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<Files.FileStringResponse, Error, InsertParams>
     ) => {
