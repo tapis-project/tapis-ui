@@ -1,4 +1,3 @@
-import React from 'react';
 import { Files } from '@tapis/tapis-typescript';
 
 export type FilesContextType = {

@@ -9,7 +9,6 @@ jest.mock('tapis-hooks/files/useMove');
 jest.mock('tapis-app/Files/_components/FilesContext');
 
 describe('RenameModal', () => {
-
   it('submits with valid inputs', async () => {
     const moveMock = jest.fn();
     const resetMock = jest.fn();
@@ -21,15 +20,11 @@ describe('RenameModal', () => {
       reset: resetMock,
     });
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo]
-    })
+      selectedFiles: [fileInfo],
+    });
 
     renderComponent(
-      <RenameModal
-        toggle={() => {}}
-        systemId={'system-id'}
-        path={'/'}
-      />
+      <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
     );
 
     const input = screen.getByLabelText('Input');
@@ -61,15 +56,11 @@ describe('RenameModal', () => {
       reset: resetMock,
     });
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo]
-    })
+      selectedFiles: [fileInfo],
+    });
 
     renderComponent(
-      <RenameModal
-        toggle={() => {}}
-        systemId={'system-id'}
-        path={'/'}
-      />
+      <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
     );
 
     const input = screen.getByLabelText('Input');

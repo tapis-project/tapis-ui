@@ -11,10 +11,6 @@ jest.mock('tapis-hooks/utils');
 jest.mock('tapis-hooks/files');
 jest.mock('tapis-app/Files/_components/FilesContext');
 
-const selectedFiles: Array<Files.FileInfo> = [
-  { ...fileInfo, name: 'targetFile.txt' },
-];
-
 describe('CopyMoveModal', () => {
   it('performs copy operations', async () => {
     (useList as jest.Mock).mockReturnValue({
@@ -39,8 +35,8 @@ describe('CopyMoveModal', () => {
     });
 
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo]
-    })
+      selectedFiles: [fileInfo],
+    });
 
     renderComponent(
       <CopyMoveModal
@@ -90,8 +86,8 @@ describe('CopyMoveModal', () => {
     });
 
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo]
-    })
+      selectedFiles: [fileInfo],
+    });
 
     renderComponent(
       <CopyMoveModal

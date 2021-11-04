@@ -34,7 +34,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   const { pathname } = useLocation();
   const [copyMoveError, setCopyMoveError] = useState<Error | null>(null);
   const [destinationPath, setDestinationPath] = useState<string | null>(path);
-  const { selectedFiles } = useFilesSelect();
+  const { selectedFiles, unselect } = useFilesSelect();
 
   type CopyMoveState = {
     [path: string]: string;
@@ -60,8 +60,14 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   const onFileCopyMoveSuccess = useCallback(
     (operation: CopyMoveHookParams, data: Files.FileStringResponse) => {
       dispatch({ path: operation.path, icon: 'approved-reverse' });
+      const fileInfo = selectedFiles.find(
+        (file) => file.path === operation.path
+      );
+      if (fileInfo) {
+        unselect([fileInfo]);
+      }
     },
-    [dispatch]
+    [dispatch, selectedFiles, unselect]
   );
   const onFileCopyMoveError = useCallback(
     (operation: CopyMoveHookParams, error: Error) => {

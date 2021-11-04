@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
@@ -183,6 +183,36 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
   }
 );
 
+type FileSelectHeaderProps = {
+  onSelectAll: () => void;
+  onUnselectAll: () => void;
+};
+
+const FileSelectHeader: React.FC<FileSelectHeaderProps> = ({
+  onSelectAll,
+  onUnselectAll,
+}) => {
+  const [checked, setChecked] = useState(false);
+  const onClick = useCallback(() => {
+    if (checked) {
+      setChecked(false);
+      onUnselectAll();
+    } else {
+      setChecked(true);
+      onSelectAll();
+    }
+  }, [checked, setChecked, onSelectAll, onUnselectAll]);
+  return (
+    <span
+      className={styles['select-all']}
+      onClick={onClick}
+      data-testid="select-all"
+    >
+      <FileListingCheckboxCell selected={checked} />
+    </span>
+  );
+};
+
 interface FileListingProps {
   systemId: string;
   path: string;
@@ -193,7 +223,7 @@ interface FileListingProps {
   selectTypes?: Array<'dir' | 'file'>;
   className?: string;
   fields?: Array<'size' | 'lastModified'>;
-  selectedFiles?: Array<Files.FileInfo>
+  selectedFiles?: Array<Files.FileInfo>;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -206,7 +236,7 @@ const FileListing: React.FC<FileListingProps> = ({
   selectTypes = [],
   className,
   fields = ['size', 'lastModified'],
-  selectedFiles = []
+  selectedFiles = [],
 }) => {
   const {
     hasNextPage,
@@ -228,53 +258,56 @@ const FileListing: React.FC<FileListingProps> = ({
     [concatenatedResults]
   );
 
-  const selectedFileDict: { [path: string]: boolean } = React.useMemo(
-    () => {
-      const result: { [path: string]: boolean } = {};
-      const selectedDict: { [path: string]: boolean } = {}
-      selectedFiles.forEach(
-        (file) => {
-          selectedDict[file.path ?? ''] = true;
-        }
-      );
-      concatenatedResults?.forEach(
-        (file) => {
-          result[file.path ?? ''] = selectedDict[file.path ?? ''] ?? false;
-        }
-      )
-      return result;
-    },
-    [ selectedFiles, concatenatedResults ]
-  )
+  const selectedFileDict: { [path: string]: boolean } = React.useMemo(() => {
+    const result: { [path: string]: boolean } = {};
+    const selectedDict: { [path: string]: boolean } = {};
+    selectedFiles.forEach((file) => {
+      selectedDict[file.path ?? ''] = true;
+    });
+    concatenatedResults?.forEach((file) => {
+      result[file.path ?? ''] = selectedDict[file.path ?? ''] ?? false;
+    });
+    return result;
+  }, [selectedFiles, concatenatedResults]);
 
-  const prependColumns =
-    selectTypes.length
-      ? [
-          {
-            Header: '',
-            id: 'multiselect',
-            Cell: (el: React.PropsWithChildren<CellProps<{}, any>>) => (
-              <FileListingCheckboxCell
-                selected={selectedFileDict[(el.row.original as Files.FileInfo).path ?? '']}
-              />
-            ),
-          },
-        ]
-      : [];
-    
+  const prependColumns = selectTypes.length
+    ? [
+        {
+          Header: (
+            <FileSelectHeader
+              onSelectAll={() =>
+                onSelect && onSelect(concatenatedResults ?? [])
+              }
+              onUnselectAll={() =>
+                onUnselect && onUnselect(concatenatedResults ?? [])
+              }
+            />
+          ),
+          id: 'multiselect',
+          Cell: (el: React.PropsWithChildren<CellProps<{}, any>>) => (
+            <FileListingCheckboxCell
+              selected={
+                selectedFileDict[(el.row.original as Files.FileInfo).path ?? '']
+              }
+            />
+          ),
+        },
+      ]
+    : [];
+
   const fileSelectCallback = useCallback(
     (file: Files.FileInfo) => {
       if (!selectTypes.some((allowed) => allowed === file.type)) {
         return;
       }
-      if (selectedFileDict[ file.path ?? '' ] && onUnselect) {
-        onUnselect([ file ]);
+      if (selectedFileDict[file.path ?? ''] && onUnselect) {
+        onUnselect([file]);
       } else {
-        onSelect && onSelect([ file ]);
+        onSelect && onSelect([file]);
       }
     },
-    [ selectTypes, onUnselect, selectedFileDict, onSelect ]
-  )
+    [selectTypes, onUnselect, selectedFileDict, onSelect]
+  );
 
   // Maps rows to row properties, such as classNames
   const getRowProps = (row: Row) => {
@@ -282,6 +315,7 @@ const FileListing: React.FC<FileListingProps> = ({
     return {
       onClick: () => fileSelectCallback(file),
       'data-testid': file.name,
+      className: selectedFileDict[file.path ?? ''] ? styles.selected : '',
     };
   };
 

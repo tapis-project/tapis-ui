@@ -4,13 +4,13 @@ import { FilesContextType } from '.';
 import FilesContext from './FilesContext';
 
 const FilesProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  const [ selectedFiles, setSelectedFiles ] = useState<Array<Files.FileInfo>>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
 
   // Provide a context state for the rest of the application, including
   // a way of modifying the state
   const contextValue: FilesContextType = {
     selectedFiles,
-    setSelectedFiles
+    setSelectedFiles,
   };
 
   return (

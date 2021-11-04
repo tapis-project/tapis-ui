@@ -14,14 +14,15 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   systemId,
   path,
 }) => {
-  const { selectedFiles } = useFilesSelect();
+  const { selectedFiles, clear } = useFilesSelect();
   const file = selectedFiles![0];
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
+    clear();
     focusManager.setFocused(true);
-  }, []);
+  }, [clear]);
 
   const { move, isLoading, error, isSuccess, reset } = useMove();
 

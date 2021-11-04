@@ -3,7 +3,7 @@ import { FilesContextType } from '.';
 
 export const filesContext: FilesContextType = {
   selectedFiles: [],
-  setSelectedFiles: () => {}
+  setSelectedFiles: () => {},
 };
 
 const FilesContext: React.Context<FilesContextType> =
