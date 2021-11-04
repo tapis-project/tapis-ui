@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 import FileListing from '../FileListing';
 import { SectionMessage } from 'tapis-ui/_common';
-import { useFilesSelect } from '../_components/FilesContext';
 
 export const backLocation = (
   systemPath: string | undefined,
@@ -19,7 +18,6 @@ export const backLocation = (
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
   const { pathname } = useLocation();
-  const { select } = useFilesSelect();
 
   return (
     <Switch>
@@ -41,7 +39,6 @@ const Router: React.FC = () => {
               systemId={systemId}
               path={systemPath ?? '/'}
               location={pathname}
-              onSelect={select}
             />
           );
         }}

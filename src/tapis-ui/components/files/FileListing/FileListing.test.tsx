@@ -21,7 +21,7 @@ describe('Files', () => {
     expect(getAllByText(/01\/01\/2020/).length).toEqual(1);
     expect(getAllByText(/29.3 kB/).length).toEqual(1);
   });
-
+/*
   it('performs multiple file selection', () => {
     (useList as jest.Mock).mockReturnValue({
       concatenatedResults: [
@@ -155,4 +155,5 @@ describe('Files', () => {
     dir1.click();
     expect(spy).toHaveBeenCalledTimes(1);
   });
+  */
 });

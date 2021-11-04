@@ -8,13 +8,31 @@ const useFilesSelect = () => {
   const { selectedFiles, setSelectedFiles } = useContext(FilesContext);
 
   const select = useCallback(
+    (files: Array<Files.FileInfo>, mode: 'single' | 'multi') => {
+      if ( mode === 'single' && files.length === 1) {
+        setSelectedFiles(files);
+      }
+
+      if (mode === 'multi') {
+        const selectedSet = new Set(selectedFiles.map(file => file.path));
+        const newSelection = [ ...selectedFiles, ...files.filter(file => !selectedSet.has(file.path)) ];
+        setSelectedFiles(newSelection);
+      }
+    },
+    [ selectedFiles, setSelectedFiles ]
+  )
+  
+  const unselect = useCallback(
     (files: Array<Files.FileInfo>) => {
-      setSelectedFiles(files);
+      const selectedSet = new Set(selectedFiles.map(selected => selected.path));
+      files.forEach(file => selectedSet.delete(file.path ?? ''));
+      const newSelection = selectedFiles.filter(selected => selectedSet.has(selected.path));
+      setSelectedFiles(newSelection);
     },
     [ selectedFiles, setSelectedFiles ]
   )
 
-  const clearSelection = useCallback(
+  const clear = useCallback(
     () => {
       setSelectedFiles([]);
     },
@@ -24,7 +42,8 @@ const useFilesSelect = () => {
   return {
     selectedFiles,
     select,
-    clearSelection
+    unselect,
+    clear
   };
 };
 
