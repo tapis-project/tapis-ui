@@ -21,6 +21,60 @@ describe('Files', () => {
     expect(getAllByText(/01\/01\/2020/).length).toEqual(1);
     expect(getAllByText(/29.3 kB/).length).toEqual(1);
   });
+
+  it('performs file selection', () => {
+    (useList as jest.Mock).mockReturnValue({
+      concatenatedResults: [
+        { ...fileInfo }
+      ],
+      isLoading: false,
+      error: null,
+    });
+    const mockOnSelect = jest.fn();
+    const { getByTestId } = renderComponent(
+      <FileListing
+        systemId={'system'}
+        path={'/'}
+        selectTypes={['dir', 'file']}
+        onSelect={mockOnSelect}
+      />
+    ); 
+    // Find the file1.txt and file2.txt rows
+    const file1 = getByTestId('file1.txt');
+    expect(file1).toBeDefined();
+
+    // Click on file1.txt and expect the select callback to have run
+    file1.click();
+    expect(mockOnSelect).toHaveBeenLastCalledWith([fileInfo]);
+  });
+
+  it('performs file unselection', () => {
+    (useList as jest.Mock).mockReturnValue({
+      concatenatedResults: [
+        { ...fileInfo }
+      ],
+      isLoading: false,
+      error: null,
+    });
+    const mockOnUnselect = jest.fn();
+    const { getByTestId } = renderComponent(
+      <FileListing
+        systemId={'system'}
+        path={'/'}
+        selectTypes={['dir', 'file']}
+        selectedFiles={[fileInfo]}
+        onUnselect={mockOnUnselect}
+      />
+    ); 
+    // Find the file1.txt and file2.txt rows
+    const file1 = getByTestId('file1.txt');
+    expect(file1).toBeDefined();
+
+    // Click on file1.txt and expect the unselect callback to have run
+    file1.click();
+    expect(mockOnUnselect).toHaveBeenLastCalledWith([fileInfo]);
+  });
+
 /*
   it('performs multiple file selection', () => {
     (useList as jest.Mock).mockReturnValue({

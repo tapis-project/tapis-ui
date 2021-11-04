@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { FileListing } from 'tapis-ui/components/files';
 import { PageLayout } from 'tapis-ui/_common';
-import { OnSelectCallback } from 'tapis-ui/components/files/FileListing/FileListing';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 import styles from './Layout.module.scss';
 
