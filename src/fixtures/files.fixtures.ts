@@ -2,7 +2,7 @@ import { Files } from '@tapis/tapis-typescript';
 
 export const fileInfo: Files.FileInfo = {
   name: 'file1.txt',
-  path: '/',
+  path: '/file1.txt',
   size: 30000,
   type: 'file',
   lastModified: new Date('2020-01-01T12:00:00'),

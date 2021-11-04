@@ -46,6 +46,7 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
           e.preventDefault();
           onNavigate(file);
         }}
+        data-testid={`btn-link-${file.name}`}
       >
         {file.name}/
       </Button>
