@@ -14,7 +14,7 @@ import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { focusManager } from 'react-query';
 import { useCopy, useMove } from 'tapis-hooks/files';
-import { CopyMoveHookParams } from 'tapis-hooks/files';
+import { MoveCopyHookParams } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { useMutations } from 'tapis-hooks/utils';
 import { Column } from 'react-table';
@@ -57,20 +57,20 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       : moveAsync;
 
   const onFileCopyMoveSuccess = useCallback(
-    (operation: CopyMoveHookParams, data: Files.FileStringResponse) => {
+    (operation: MoveCopyHookParams, data: Files.FileStringResponse) => {
       dispatch({ path: operation.path, icon: 'approved-reverse' });
     },
     [dispatch]
   );
   const onFileCopyMoveError = useCallback(
-    (operation: CopyMoveHookParams, error: Error) => {
+    (operation: MoveCopyHookParams, error: Error) => {
       dispatch({ path: operation.path, icon: 'alert' });
       setCopyMoveError(error);
     },
     [dispatch, setCopyMoveError]
   );
   const onFileCopyMoveStart = useCallback(
-    (operation: CopyMoveHookParams) => {
+    (operation: MoveCopyHookParams) => {
       dispatch({ path: operation.path, icon: 'loading' });
     },
     [dispatch]
@@ -89,7 +89,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   );
 
   const { run, isRunning, isFinished } = useMutations<
-    CopyMoveHookParams,
+    MoveCopyHookParams,
     Files.FileStringResponse
   >({
     fn,
@@ -100,7 +100,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   });
 
   const onSubmit = useCallback(() => {
-    const operations: Array<CopyMoveHookParams> = selectedFiles.map((file) => ({
+    const operations: Array<MoveCopyHookParams> = selectedFiles.map((file) => ({
       systemId,
       newPath: destinationPath!,
       path: file.path!,
