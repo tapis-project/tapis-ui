@@ -5,9 +5,11 @@ import { useCopy, useMove, useList } from 'tapis-hooks/files';
 import { useMutations } from 'tapis-hooks/utils';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
+import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 
 jest.mock('tapis-hooks/utils');
 jest.mock('tapis-hooks/files');
+jest.mock('tapis-app/Files/_components/FilesContext');
 
 const selectedFiles: Array<Files.FileInfo> = [
   { ...fileInfo, name: 'targetFile.txt' },
@@ -36,12 +38,15 @@ describe('CopyMoveModal', () => {
       moveAsync: mockMoveAsync,
     });
 
+    (useFilesSelect as jest.Mock).mockReturnValue({
+      selectedFiles: [fileInfo]
+    })
+
     renderComponent(
       <CopyMoveModal
         toggle={() => {}}
         systemId={'system-id'}
         path={'/'}
-        selectedFiles={selectedFiles}
         operation={Files.MoveCopyRequestOperationEnum.Copy}
       />
     );
@@ -84,12 +89,15 @@ describe('CopyMoveModal', () => {
       moveAsync: mockMoveAsync,
     });
 
+    (useFilesSelect as jest.Mock).mockReturnValue({
+      selectedFiles: [fileInfo]
+    })
+
     renderComponent(
       <CopyMoveModal
         toggle={() => {}}
         systemId={'system-id'}
         path={'/'}
-        selectedFiles={selectedFiles}
         operation={Files.MoveCopyRequestOperationEnum.Move}
       />
     );

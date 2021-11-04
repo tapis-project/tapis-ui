@@ -7,13 +7,14 @@ import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
+import { useFilesSelect } from '../../FilesContext';
 
 const RenameModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId,
   path,
-  selectedFiles,
 }) => {
+  const { selectedFiles } = useFilesSelect();
   const file = selectedFiles![0];
 
   const onSuccess = useCallback(() => {

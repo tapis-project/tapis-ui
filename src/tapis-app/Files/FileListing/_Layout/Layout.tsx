@@ -17,6 +17,7 @@ const Layout: React.FC<LayoutProps> = ({
   onSelect,
 }) => {
   const body = (
+
     <div className={styles.body}>
       <FileListing
         className={styles.container}
