@@ -3,6 +3,7 @@ const QueryKeys = {
   mkdir: 'files/mkdir',
   move: 'files/move',
   copy: 'files/copy',
+  delete: 'files/delete',
 };
 
 export default QueryKeys;
