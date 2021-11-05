@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -15,7 +15,8 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   path,
 }) => {
   const { selectedFiles, clear } = useFilesSelect();
-  const file = selectedFiles![0];
+  const [inputName, setInputName] = useState<string>();
+  const file = selectedFiles ? selectedFiles[0] : undefined;
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -36,7 +37,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      newname: file.name,
+      newname: file?.name ?? inputName ?? '',
     },
   });
 
@@ -54,16 +55,23 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     disabled: isSuccess,
   });
 
-  const onSubmit = ({ newname }: { newname: string }) => {
-    move(
-      {
-        systemId: systemId!,
-        path: `${path}${file.name}`,
-        newPath: `${path}${newname}`,
-      },
-      { onSuccess }
-    );
-  };
+  const onSubmit = useCallback(
+    ({ newname }: { newname: string }) => {
+      setInputName(newname);
+      if (!file?.name) {
+        return;
+      }
+      move(
+        {
+          systemId: systemId!,
+          path: `${path}${file!.name}`,
+          newPath: `${path}${newname}`,
+        },
+        { onSuccess }
+      );
+    },
+    [setInputName, file, move, onSuccess, systemId, path]
+  );
 
   const dirOrFile = (type: string | undefined) => {
     return type === 'dir' ? 'directory' : 'file';
@@ -72,19 +80,17 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   return (
     <GenericModal
       toggle={toggle}
-      title={`Rename ${dirOrFile(file.type)}`}
+      title={`Rename ${dirOrFile(file?.type)}`}
       body={
         <div>
           <form id="rename-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldWrapper
               label={`${
-                dirOrFile(file.type).charAt(0).toUpperCase() +
-                dirOrFile(file.type).slice(1)
+                dirOrFile(file?.type).charAt(0).toUpperCase() +
+                dirOrFile(file?.type).slice(1)
               } Name`}
               required={true}
-              description={`Rename ${dirOrFile(file.type)} '${
-                file.name
-              }' in path '${path === '' ? '/' : path}'`}
+              description="Rename File"
               error={errors['newname']}
             >
               <Input
