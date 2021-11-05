@@ -220,3 +220,14 @@
   padding-bottom: 0 !important;
   font-size: 1em !important;
 }
+
+.selected {
+  background-color: var(--global-color-accent--weak) !important;
+}
+
+.select-all {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 2px;
+}

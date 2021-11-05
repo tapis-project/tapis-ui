@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useList } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
@@ -56,14 +56,12 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
 };
 
 type FileListingCheckboxCell = {
-  index: number;
-  selectedIndices: Array<number>;
+  selected: boolean;
 };
 
 /* eslint-disable-next-line */
 export const FileListingCheckboxCell: React.FC<FileListingCheckboxCell> =
-  React.memo(({ index, selectedIndices }) => {
-    const selected = selectedIndices.some((existing) => existing === index);
+  React.memo(({ selected }) => {
     return (
       <span className="fa-layers fa-fw">
         <FontAwesomeIcon icon={filledSquare} color="white" />
@@ -111,7 +109,7 @@ type FileListingTableProps = {
   onNavigate?: OnNavigateCallback;
   location?: string;
   className?: string;
-  select?: SelectMode;
+  selectMode?: SelectMode;
   fields?: Array<'size' | 'lastModified'>;
 };
 
@@ -126,11 +124,11 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
     onNavigate,
     location,
     className,
-    select,
+    selectMode,
     fields,
   }) => {
     const styleName =
-      select?.mode !== 'none' ? 'file-list-select' : 'file-list';
+      selectMode?.mode !== 'none' ? 'file-list-select' : 'file-list';
 
     const tableColumns: Array<Column> = [
       ...prependColumns,
@@ -185,26 +183,60 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
   }
 );
 
+type FileSelectHeaderProps = {
+  onSelectAll: () => void;
+  onUnselectAll: () => void;
+};
+
+const FileSelectHeader: React.FC<FileSelectHeaderProps> = ({
+  onSelectAll,
+  onUnselectAll,
+}) => {
+  const [checked, setChecked] = useState(false);
+  const onClick = useCallback(() => {
+    if (checked) {
+      setChecked(false);
+      onUnselectAll();
+    } else {
+      setChecked(true);
+      onSelectAll();
+    }
+  }, [checked, setChecked, onSelectAll, onUnselectAll]);
+  return (
+    <span
+      className={styles['select-all']}
+      onClick={onClick}
+      data-testid="select-all"
+    >
+      <FileListingCheckboxCell selected={checked} />
+    </span>
+  );
+};
+
 interface FileListingProps {
   systemId: string;
   path: string;
   onSelect?: OnSelectCallback;
+  onUnselect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
   location?: string;
-  select?: SelectMode;
+  selectTypes?: Array<'dir' | 'file'>;
   className?: string;
   fields?: Array<'size' | 'lastModified'>;
+  selectedFiles?: Array<Files.FileInfo>;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
   systemId,
   path,
   onSelect = undefined,
+  onUnselect = undefined,
   onNavigate = undefined,
   location = undefined,
-  select = undefined,
+  selectTypes = [],
   className,
   fields = ['size', 'lastModified'],
+  selectedFiles = [],
 }) => {
   const {
     hasNextPage,
@@ -214,8 +246,6 @@ const FileListing: React.FC<FileListingProps> = ({
     concatenatedResults,
     isFetchingNextPage,
   } = useList({ systemId, path });
-
-  const [selectedIndices, setSelectedIndices] = useState<Array<number>>([]);
 
   const infiniteScrollCallback = useCallback(() => {
     if (hasNextPage) {
@@ -228,86 +258,64 @@ const FileListing: React.FC<FileListingProps> = ({
     [concatenatedResults]
   );
 
-  const multiSelectCallback = useCallback(
-    (index: number) => {
-      const newIndices = selectedIndices.some((existing) => existing === index)
-        ? // If index is already selected, remove it
-          selectedIndices.filter((existing) => existing !== index)
-        : // If index is not already selected, add it
-          [...selectedIndices, index];
+  const selectedFileDict: { [path: string]: boolean } = React.useMemo(() => {
+    const result: { [path: string]: boolean } = {};
+    const selectedDict: { [path: string]: boolean } = {};
+    selectedFiles.forEach((file) => {
+      selectedDict[file.path ?? ''] = true;
+    });
+    concatenatedResults?.forEach((file) => {
+      result[file.path ?? ''] = selectedDict[file.path ?? ''] ?? false;
+    });
+    return result;
+  }, [selectedFiles, concatenatedResults]);
 
-      setSelectedIndices(newIndices);
+  const prependColumns = selectTypes.length
+    ? [
+        {
+          Header: (
+            <FileSelectHeader
+              onSelectAll={() =>
+                onSelect && onSelect(concatenatedResults ?? [])
+              }
+              onUnselectAll={() =>
+                onUnselect && onUnselect(concatenatedResults ?? [])
+              }
+            />
+          ),
+          id: 'multiselect',
+          Cell: (el: React.PropsWithChildren<CellProps<{}, any>>) => (
+            <FileListingCheckboxCell
+              selected={
+                selectedFileDict[(el.row.original as Files.FileInfo).path ?? '']
+              }
+            />
+          ),
+        },
+      ]
+    : [];
 
-      if (onSelect) {
-        // Find all files that have been selected and send to callback
-        const selectedFiles = newIndices.map((index) => files[index]);
-        onSelect(selectedFiles);
+  const fileSelectCallback = useCallback(
+    (file: Files.FileInfo) => {
+      if (!selectTypes.some((allowed) => allowed === file.type)) {
+        return;
+      }
+      if (selectedFileDict[file.path ?? ''] && onUnselect) {
+        onUnselect([file]);
+      } else {
+        onSelect && onSelect([file]);
       }
     },
-    [onSelect, selectedIndices, setSelectedIndices, files]
+    [selectTypes, onUnselect, selectedFileDict, onSelect]
   );
-
-  const singleSelectCallback = useCallback(
-    (index: number) => {
-      setSelectedIndices([index]);
-      onSelect && onSelect([files[index]]);
-    },
-    [setSelectedIndices, onSelect, files]
-  );
-
-  useEffect(() => {
-    setSelectedIndices([]);
-    onSelect && onSelect([]);
-  }, [setSelectedIndices, systemId, path, onSelect]);
-
-  const prependColumns =
-    select?.mode !== 'none'
-      ? [
-          {
-            Header: '',
-            id: 'multiselect',
-            Cell: (el: React.PropsWithChildren<CellProps<{}, any>>) => (
-              <FileListingCheckboxCell
-                index={el.row.index}
-                selectedIndices={selectedIndices}
-              />
-            ),
-          },
-        ]
-      : [];
-
-  const mapSelectCallback = (
-    index: number,
-    type: string,
-    select?: SelectMode
-  ) => {
-    if (!select) {
-      return undefined;
-    }
-    // If types is undefined, default to allowing file and dir selection
-    if (
-      (select?.types ?? ['file', 'dir']).some((allowed) => allowed === type)
-    ) {
-      if (select?.mode === 'multi') {
-        return () => multiSelectCallback(index);
-      }
-      if (select?.mode === 'single') {
-        return () => singleSelectCallback(index);
-      }
-    }
-    return undefined;
-  };
 
   // Maps rows to row properties, such as classNames
   const getRowProps = (row: Row) => {
     const file: Files.FileInfo = row.original as Files.FileInfo;
     return {
-      onClick: mapSelectCallback(
-        row.index,
-        file.type ?? 'unknown_type',
-        select
-      ),
+      onClick: () => fileSelectCallback(file),
       'data-testid': file.name,
+      className: selectedFileDict[file.path ?? ''] ? styles.selected : '',
     };
   };
 
