@@ -5,9 +5,9 @@ import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
 type DeleteHookParams = {
-  systemId: string,
-  path: string
-}
+  systemId: string;
+  path: string;
+};
 
 const useMove = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -28,13 +28,7 @@ const useMove = () => {
     reset,
   } = useMutation<Files.FileStringResponse, Error, DeleteHookParams>(
     [QueryKeys.delete, basePath, jwt],
-    ({ systemId, path }) =>
-      _delete(
-        systemId,
-        path,
-        basePath,
-        jwt
-      )
+    ({ systemId, path }) => _delete(systemId, path, basePath, jwt)
   );
 
   // Return hook object with loading states and login function
@@ -48,22 +42,14 @@ const useMove = () => {
     _delete: (
       params: DeleteHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<
-        Files.FileStringResponse,
-        Error,
-        DeleteHookParams
-      >
+      options?: MutateOptions<Files.FileStringResponse, Error, DeleteHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);
     },
     _deleteAsync: (
       params: DeleteHookParams,
-      options?: MutateOptions<
-        Files.FileStringResponse,
-        Error,
-        DeleteHookParams
-      >
+      options?: MutateOptions<Files.FileStringResponse, Error, DeleteHookParams>
     ) => mutateAsync(params, options),
   };
 };

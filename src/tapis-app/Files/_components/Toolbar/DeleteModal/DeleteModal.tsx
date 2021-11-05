@@ -1,10 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
-import {
-  GenericModal,
-  Icon,
-  LoadingSpinner,
-} from 'tapis-ui/_common';
+import { GenericModal, Icon, LoadingSpinner } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
 import { ToolbarModalProps } from '../Toolbar';
@@ -17,19 +13,19 @@ import { useFilesSelect } from '../../FilesContext';
 const CopyMoveModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId = '',
-  path = "/"
+  path = '/',
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
 
-  const { _delete, isSuccess, isLoading, error, reset } = useDelete()
+  const { _delete, isSuccess, isLoading, error, reset } = useDelete();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const onSubmit = () => {
-    _delete({systemId, path: selectedFiles[0].path!})
-  }
+    _delete({ systemId, path: selectedFiles[0].path! });
+  };
 
   const removeFile = useCallback(
     (index: number) => {
@@ -48,7 +44,6 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
     reset();
   }, [reset]);
 
-
   const appendColumns: Array<Column> = [
     {
       Header: '',
@@ -57,7 +52,9 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
         return (
           <span
             className={styles['remove-file']}
-            onClick={() => {removeFile(el.row.index)}}
+            onClick={() => {
+              removeFile(el.row.index);
+            }}
           >
             &#x2715;
           </span>
@@ -68,11 +65,16 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
 
   return (
     <GenericModal
-      toggle={() => {toggle(); unselect(selectedFiles)}}
+      toggle={() => {
+        toggle();
+        unselect(selectedFiles);
+      }}
       title={`Delete files and folders`}
       body={
         <div>
-          <h3>{systemId}/{path}</h3>
+          <h3>
+            {systemId}/{path}
+          </h3>
           <div className={styles['files-list-container']}>
             <FileListingTable
               files={selectedFiles}
