@@ -9,6 +9,7 @@ import { useDelete } from 'tapis-hooks/files';
 import { Column } from 'react-table';
 import styles from './DeleteModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
+import { Files } from '@tapis/tapis-typescript';
 
 const CopyMoveModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -17,32 +18,34 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
 
-  const { _delete, isSuccess, isLoading, error, reset } = useDelete();
+  const { _deleteAsync, isSuccess, isLoading, error, reset } = useDelete();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const onSubmit = () => {
-    _delete({ systemId, path: selectedFiles[0].path! });
+    selectedFiles.forEach((file) => {
+      _deleteAsync(
+        { systemId, path: file.path! },
+        { onSuccess: () => { onSuccess(file) }}
+      );
+    })
   };
 
   const removeFile = useCallback(
-    (index: number) => {
-      unselect([selectedFiles[index]]);
+    (file: Files.FileInfo) => {
+      unselect([file]);
     },
     [selectedFiles]
   );
 
-  const onSuccess = useCallback(() => {
+  const onSuccess = useCallback((selectedFileIndex) => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
-  }, []);
-
-  useEffect(() => {
-    reset();
-  }, [reset]);
+    removeFile(selectedFileIndex)
+  }, [selectedFiles]);
 
   const appendColumns: Array<Column> = [
     {
@@ -53,7 +56,7 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
           <span
             className={styles['remove-file']}
             onClick={() => {
-              removeFile(el.row.index);
+              removeFile(selectedFiles[el.row.index]);
             }}
           >
             &#x2715;
