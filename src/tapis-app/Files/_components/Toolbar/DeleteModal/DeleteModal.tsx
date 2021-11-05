@@ -2,7 +2,6 @@ import { useEffect, useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
 import {
   GenericModal,
-  Breadcrumbs,
   Icon,
   LoadingSpinner,
 } from 'tapis-ui/_common';
@@ -18,7 +17,7 @@ import { useFilesSelect } from '../../FilesContext';
 const CopyMoveModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId = '',
-  path,
+  path = "/"
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
 
@@ -29,7 +28,7 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
   }, [reset]);
 
   const onSubmit = () => {
-    console.log(selectedFiles)
+    _delete({systemId, path: selectedFiles[0].path!})
   }
 
   const removeFile = useCallback(
@@ -58,7 +57,7 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
         return (
           <span
             className={styles['remove-file']}
-            onClick={() => {console.log(el);removeFile(el.row.index)}}
+            onClick={() => {removeFile(el.row.index)}}
           >
             &#x2715;
           </span>

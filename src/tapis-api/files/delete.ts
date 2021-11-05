@@ -13,7 +13,7 @@ const _delete = (
     basePath,
     jwt
   );
-  return errorDecoder<Files.FileStringResponse>(() =>
+  return errorDecoder<Files.FileStringResponse>(() => 
     api._delete({ systemId, path })
   );
 };
