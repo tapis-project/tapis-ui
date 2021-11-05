@@ -19,6 +19,7 @@ import { Files } from '@tapis/tapis-typescript';
 import { useMutations } from 'tapis-hooks/utils';
 import { Column } from 'react-table';
 import styles from './CopyMoveModal.module.scss';
+import { useFilesSelect } from '../../FilesContext';
 
 type CopyMoveModalProps = {
   operation: Files.MoveCopyRequestOperationEnum;
@@ -28,12 +29,12 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   toggle,
   systemId = '',
   path = '/',
-  selectedFiles = [],
   operation,
 }) => {
   const { pathname } = useLocation();
   const [copyMoveError, setCopyMoveError] = useState<Error | null>(null);
   const [destinationPath, setDestinationPath] = useState<string | null>(path);
+  const { selectedFiles, unselect } = useFilesSelect();
 
   type CopyMoveState = {
     [path: string]: string;
@@ -59,8 +60,14 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   const onFileCopyMoveSuccess = useCallback(
     (operation: MoveCopyHookParams, data: Files.FileStringResponse) => {
       dispatch({ path: operation.path, icon: 'approved-reverse' });
+      const fileInfo = selectedFiles.find(
+        (file) => file.path === operation.path
+      );
+      if (fileInfo) {
+        unselect([fileInfo]);
+      }
     },
-    [dispatch]
+    [dispatch, selectedFiles, unselect]
   );
   const onFileCopyMoveError = useCallback(
     (operation: MoveCopyHookParams, error: Error) => {

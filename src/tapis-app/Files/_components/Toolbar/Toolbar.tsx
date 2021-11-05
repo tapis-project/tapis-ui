@@ -8,6 +8,7 @@ import CopyMoveModal from './CopyMoveModal';
 import RenameModal from './RenameModal';
 import UploadModal from './UploadModal';
 import { useLocation } from 'react-router-dom';
+import { useFilesSelect } from '../FilesContext';
 
 type ToolbarButtonProps = {
   text: string;
@@ -18,7 +19,6 @@ type ToolbarButtonProps = {
 
 export type ToolbarModalProps = {
   toggle: () => void;
-  selectedFiles?: Array<Files.FileInfo>;
   systemId?: string;
   path?: string;
 };
@@ -43,10 +43,9 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
-const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
-  selectedFiles,
-}) => {
+const Toolbar: React.FC = () => {
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const { selectedFiles } = useFilesSelect();
   const { pathname } = useLocation();
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
@@ -120,7 +119,6 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
-              selectedFiles={selectedFiles}
               operation={Files.MoveCopyRequestOperationEnum.Copy}
             />
           )}
@@ -129,14 +127,12 @@ const Toolbar: React.FC<{ selectedFiles: Array<Files.FileInfo> }> = ({
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
-              selectedFiles={selectedFiles}
               operation={Files.MoveCopyRequestOperationEnum.Move}
             />
           )}
           {modal === 'rename' && (
             <RenameModal
               toggle={toggle}
-              selectedFiles={selectedFiles}
               systemId={systemId}
               path={currentPath}
             />
