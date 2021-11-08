@@ -1,27 +1,13 @@
-import React, { useCallback, useState, useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useList } from 'tapis-hooks/files';
+import React, { useCallback, useEffect } from 'react';
+import { useNativeOp } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
-import { Icon, InfiniteScrollTable } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Row, Column, CellProps } from 'react-table';
-import sizeFormat from 'utils/sizeFormat';
-import { Button } from 'reactstrap';
-import { formatDateTimeFromValue } from 'utils/timeFormat';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheckSquare,
-  faSquare as filledSquare,
-} from '@fortawesome/free-solid-svg-icons';
-import { faSquare } from '@fortawesome/free-regular-svg-icons';
-import { useStat, usePermissions } from 'tapis-hooks/files';
-import { useTapisConfig } from 'tapis-hooks';
-import { DescriptionList } from 'tapis-ui/_common';
+import { Button, FormGroup, Label } from 'reactstrap';
 import { useForm } from 'react-hook-form';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { Input } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
-import styles from './FileStat.module.scss';
+import { NativeOpParams } from 'tapis-hooks/files';
+import { focusManager } from 'react-query';
 
 type FileOperationProps = {
   systemId: string;
@@ -39,25 +25,39 @@ const FileOperation: React.FC<FileOperationProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Files.RunLinuxNativeOpRequest>({
+  } = useForm<NativeOpParams>({
     defaultValues: {
       systemId,
       path,
-      nativeLinuxOpRequest: {
-        operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
-        argument: ''
-      },
+      recursive: false,
+      operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
+      argument: ''
     },
   });
 
-  const { ref: operationRef, ...operationFieldProps } = register('nativeLinuxOpRequest.operation');
-  const { ref: argumentRef, ...argumentFieldProps } = register('nativeLinuxOpRequest.argument');
-
-  const onSubmit = useCallback(
-    (data: Files.RunLinuxNativeOpRequest) => {
-      console.log(data);
+  const onSuccess = useCallback(
+    () => {
+      focusManager.setFocused(true);
     },
     []
+  )
+
+  const { nativeOp, isLoading, error, isSuccess, reset } = useNativeOp();
+
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
+
+  const { ref: recursiveRef, ...recursiveFieldProps } = register('recursive');
+  const { ref: operationRef, ...operationFieldProps } = register('operation');
+  const { ref: argumentRef, ...argumentFieldProps } = register('argument');
+
+  const onSubmit = useCallback(
+    (data: NativeOpParams) => {
+      nativeOp(data, { onSuccess })
+    },
+    [ nativeOp ]
   );
 
   return (
@@ -66,7 +66,7 @@ const FileOperation: React.FC<FileOperationProps> = ({
         label="Linux Operation"
         required={true}
         description="Native operation to execute"
-        error={errors.nativeLinuxOpRequest?.operation}
+        error={errors.operation}
       >
         <Input bsSize="sm" type="select" id="operationSelect"
           {...operationFieldProps}
@@ -82,23 +82,31 @@ const FileOperation: React.FC<FileOperationProps> = ({
         label="Arguments"
         required={false}
         description="Arguments for the native file operation"
-        error={errors.nativeLinuxOpRequest?.operation}
+        error={errors.argument}
       >
         <Input bsSize="sm" id="argumentInput"
           {...argumentFieldProps}
           innerRef={argumentRef}
           aria-label="Arguments" />
       </FieldWrapper>
+      <FormGroup check>
+        <Label check>
+          <Input type="checkbox" id="recursive"
+            {...recursiveFieldProps}
+            innerRef={recursiveRef}
+            aria-label="Recursive"/>{' '}
+          Run operation recursively
+        </Label>
+      </FormGroup>
       <SubmitWrapper
-          isLoading={false}
-          error={null}
-          success={true ? `Successfully submitted operation` : ''}
-          reverse={true}
+          isLoading={isLoading}
+          error={error}
+          success={isSuccess ? `Successfully submitted operation` : ''}
         >
           <Button
             form="nativeoperation-form"
             color="primary"
-            disabled={false}
+            disabled={isLoading || isSuccess }
             aria-label="Submit"
             type="submit"
           >
