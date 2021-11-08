@@ -8,7 +8,7 @@ import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 import { useFilesSelect } from '../../FilesContext';
 import { usePermissions } from 'tapis-hooks/files';
-import { FileStat } from 'tapis-ui/components/files';
+import { FileStat, FileOperation } from 'tapis-ui/components/files';
 import { useTapisConfig } from 'tapis-hooks';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Files } from '@tapis/tapis-typescript';
@@ -19,6 +19,8 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
   path,
 }) => {
   const { selectedFiles } = useFilesSelect();
+  const [ operation, setOperation ] = useState<Files.NativeLinuxOpRequestOperationEnum>(Files.NativeLinuxOpRequestOperationEnum.Chmod);
+
 
   const file = selectedFiles[0];
 
@@ -30,15 +32,19 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
     path: filePath,
     username
   }
-  const { data, isLoading, error} = usePermissions(permsRequest)
+  
+  const { data, isLoading, error} = usePermissions(permsRequest);
+
   const write: boolean = data?.result?.permission === Files.FilePermissionPermissionEnum.Modify;
 
   const body = (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <FileStat systemId={systemId!} path={filePath} write={write} />
+      <FileStat systemId={systemId!} path={filePath} />
+      {
+        write && <FileOperation systemId={systemId!} path={filePath} />
+      }
     </QueryWrapper>
   )
-
 
   return (
     <GenericModal

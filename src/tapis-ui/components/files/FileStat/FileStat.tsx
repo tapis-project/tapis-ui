@@ -23,18 +23,17 @@ type FileStatProps = {
   systemId: string;
   path: string;
   className?: string;
-  write?: boolean
 }
 
 const FileStat: React.FC<FileStatProps> = ({
   systemId,
   path,
-  className = '',
-  write = false
+  className = ''
 }) => {
   const { data, isLoading, error } = useStat({ systemId, path });
 
   const stat = data?.result;
+  console.log(stat);
 
   return (
     <QueryWrapper isLoading={isLoading} error={error} className={className}>
