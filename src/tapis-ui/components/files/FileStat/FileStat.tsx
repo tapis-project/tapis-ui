@@ -15,6 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-regular-svg-icons';
 import { useStat, usePermissions } from 'tapis-hooks/files';
+import { useTapisConfig } from 'tapis-hooks';
 import { DescriptionList } from 'tapis-ui/_common';
 import styles from './FileStat.module.scss';
 
@@ -22,12 +23,14 @@ type FileStatProps = {
   systemId: string;
   path: string;
   className?: string;
+  write?: boolean
 }
 
 const FileStat: React.FC<FileStatProps> = ({
   systemId,
   path,
-  className = ''
+  className = '',
+  write = false
 }) => {
   const { data, isLoading, error } = useStat({ systemId, path });
 
