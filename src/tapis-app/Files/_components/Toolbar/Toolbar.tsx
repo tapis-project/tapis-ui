@@ -85,6 +85,12 @@ const Toolbar: React.FC = () => {
             }}
           />
           <ToolbarButton
+            text="Permissions"
+            icon="download"
+            disabled={selectedFiles.length !== 1}
+            onClick={() => setModal('permissions')}
+          />
+          <ToolbarButton
             text="Upload"
             icon="upload"
             disabled={true}
