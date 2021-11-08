@@ -13,14 +13,13 @@ type FileOperationProps = {
   systemId: string;
   path: string;
   className?: string;
-}
+};
 
 const FileOperation: React.FC<FileOperationProps> = ({
   systemId,
   path,
-  className = ''
+  className = '',
 }) => {
-
   const {
     register,
     handleSubmit,
@@ -31,16 +30,13 @@ const FileOperation: React.FC<FileOperationProps> = ({
       path,
       recursive: false,
       operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
-      argument: ''
+      argument: '',
     },
   });
 
-  const onSuccess = useCallback(
-    () => {
-      focusManager.setFocused(true);
-    },
-    []
-  )
+  const onSuccess = useCallback(() => {
+    focusManager.setFocused(true);
+  }, []);
 
   const { nativeOp, isLoading, error, isSuccess, reset } = useNativeOp();
 
@@ -48,34 +44,46 @@ const FileOperation: React.FC<FileOperationProps> = ({
     reset();
   }, [reset]);
 
-
   const { ref: recursiveRef, ...recursiveFieldProps } = register('recursive');
   const { ref: operationRef, ...operationFieldProps } = register('operation');
   const { ref: argumentRef, ...argumentFieldProps } = register('argument');
 
   const onSubmit = useCallback(
     (data: NativeOpParams) => {
-      nativeOp(data, { onSuccess })
+      nativeOp(data, { onSuccess });
     },
-    [ nativeOp ]
+    [nativeOp, onSuccess]
   );
 
   return (
-    <form id="nativeoperation-form" onSubmit={handleSubmit(onSubmit)} className={className}>
+    <form
+      id="nativeoperation-form"
+      onSubmit={handleSubmit(onSubmit)}
+      className={className}
+    >
       <FieldWrapper
         label="Linux Operation"
         required={true}
         description="Native operation to execute"
         error={errors.operation}
       >
-        <Input bsSize="sm" type="select" id="operationSelect"
+        <Input
+          bsSize="sm"
+          type="select"
+          id="operationSelect"
           {...operationFieldProps}
           innerRef={operationRef}
           aria-label="Operation"
         >
-          <option value={Files.NativeLinuxOpRequestOperationEnum.Chmod}>CHMOD</option>
-          <option value={Files.NativeLinuxOpRequestOperationEnum.Chown}>CHOWN</option>
-          <option value={Files.NativeLinuxOpRequestOperationEnum.Chgrp}>CHGRP</option>
+          <option value={Files.NativeLinuxOpRequestOperationEnum.Chmod}>
+            CHMOD
+          </option>
+          <option value={Files.NativeLinuxOpRequestOperationEnum.Chown}>
+            CHOWN
+          </option>
+          <option value={Files.NativeLinuxOpRequestOperationEnum.Chgrp}>
+            CHGRP
+          </option>
         </Input>
       </FieldWrapper>
       <FieldWrapper
@@ -84,38 +92,43 @@ const FileOperation: React.FC<FileOperationProps> = ({
         description="Arguments for the native file operation"
         error={errors.argument}
       >
-        <Input bsSize="sm" id="argumentInput"
+        <Input
+          bsSize="sm"
+          id="argumentInput"
           {...argumentFieldProps}
           innerRef={argumentRef}
-          aria-label="Arguments" />
+          aria-label="Arguments"
+        />
       </FieldWrapper>
       <FormGroup check>
         <Label check>
-          <Input type="checkbox" id="recursive"
+          <Input
+            type="checkbox"
+            id="recursive"
             {...recursiveFieldProps}
             innerRef={recursiveRef}
-            aria-label="Recursive"/>{' '}
+            aria-label="Recursive"
+          />{' '}
           Run operation recursively
         </Label>
       </FormGroup>
       <SubmitWrapper
-          isLoading={isLoading}
-          error={error}
-          success={isSuccess ? `Successfully submitted operation` : ''}
+        isLoading={isLoading}
+        error={error}
+        success={isSuccess ? `Successfully submitted operation` : ''}
+      >
+        <Button
+          form="nativeoperation-form"
+          color="primary"
+          disabled={isLoading || isSuccess}
+          aria-label="Submit"
+          type="submit"
         >
-          <Button
-            form="nativeoperation-form"
-            color="primary"
-            disabled={isLoading || isSuccess }
-            aria-label="Submit"
-            type="submit"
-          >
-            Run Operation
-          </Button>
-        </SubmitWrapper>
+          Run Operation
+        </Button>
+      </SubmitWrapper>
     </form>
-  )
-
+  );
 };
 
 export default FileOperation;

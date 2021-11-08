@@ -9,13 +9,13 @@ export const fileInfo: Files.FileInfo = {
 };
 
 export const fileStatInfo: Files.FileStatInfo = {
-  absolutePath: "/home/testuser2/.viminfo",
+  absolutePath: '/home/testuser2/.viminfo',
   uid: 1003,
   gid: 1003,
   size: 14759,
-  perms: "rw-------",
-  accessTime: new Date("2021-09-17T21:15:40Z").getTime() / 1000,
-  modifyTime: new Date("2021-09-17T21:15:40Z").getTime() / 1000,
+  perms: 'rw-------',
+  accessTime: new Date('2021-09-17T21:15:40Z').getTime() / 1000,
+  modifyTime: new Date('2021-09-17T21:15:40Z').getTime() / 1000,
   dir: false,
-  link: false
-}
+  link: false,
+};

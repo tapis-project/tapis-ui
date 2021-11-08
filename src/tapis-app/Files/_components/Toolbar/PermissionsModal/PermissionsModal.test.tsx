@@ -1,84 +1,44 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
-import RenameModal from './PermissionsModal';
-import { useMove } from 'tapis-hooks/files';
+import PermissionsModal from './PermissionsModal';
+import { usePermissions } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { FileStat, FileOperation } from 'tapis-ui/components/files';
+import { Files } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-hooks/files/useMove');
+jest.mock('tapis-hooks/files');
 jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-ui/components/files');
 
 describe('RenameModal', () => {
   it('submits with valid inputs', async () => {
-    const moveMock = jest.fn();
-    const resetMock = jest.fn();
-    (useMove as jest.Mock).mockReturnValue({
-      move: moveMock,
-      isLoading: false,
-      error: null,
-      isSuccess: false,
-      reset: resetMock,
-    });
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo],
     });
-
-    renderComponent(
-      <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
-    );
-
-    const input = screen.getByLabelText('Input');
-    await act(async () => {
-      fireEvent.change(input, {
-        target: {
-          value: 'testdir',
+    (usePermissions as jest.Mock).mockReturnValue({
+      data: {
+        result: {
+          permission: Files.FilePermissionPermissionEnum.Modify,
         },
-      });
-    });
-
-    const button = screen.getByLabelText('Submit');
-    await act(async () => {
-      fireEvent.click(button);
-    });
-
-    expect(moveMock).toBeCalledTimes(1);
-    expect(resetMock).toBeCalledTimes(1);
-  });
-
-  it('fails with invalid inputs', async () => {
-    const moveMock = jest.fn();
-    const resetMock = jest.fn();
-    (useMove as jest.Mock).mockReturnValue({
-      move: moveMock,
+      },
       isLoading: false,
       error: null,
-      isSuccess: false,
-      reset: resetMock,
     });
-    (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
-    });
+    (FileStat as jest.Mock).mockReturnValue(<div></div>);
+    (FileOperation as jest.Mock).mockReturnValue(<div></div>);
 
     renderComponent(
-      <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
+      <PermissionsModal toggle={() => {}} systemId={'mockSystem'} path={'/'} />
     );
 
-    const input = screen.getByLabelText('Input');
-    await act(async () => {
-      fireEvent.change(input, {
-        target: {
-          // * is an invalid value
-          value: '*',
-        },
-      });
-    });
+    const nativeOpTab = screen.getByTestId('nativeop-tab');
+    expect(nativeOpTab).toBeDefined();
 
-    const button = screen.getByLabelText('Submit');
     await act(async () => {
-      fireEvent.click(button);
+      fireEvent.click(nativeOpTab);
     });
-
-    expect(moveMock).toBeCalledTimes(0);
-    expect(resetMock).toBeCalledTimes(1);
+    expect(FileStat as jest.Mock).toHaveBeenCalled();
+    expect(FileOperation as jest.Mock).toHaveBeenCalled();
   });
 });

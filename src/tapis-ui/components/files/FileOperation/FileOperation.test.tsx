@@ -1,112 +1,55 @@
-import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
+import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
-import FileListing from './FileOperation';
-import { useStat } from 'tapis-hooks/files';
-import { fileInfo } from 'fixtures/files.fixtures';
+import FileOperation from './FileOperation';
+import { useNativeOp } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('tapis-hooks/files');
 
-describe('Files', () => {
-  it('renders File Listing component', () => {
-    (useStat as jest.Mock).mockReturnValue({
-      data: {
-        result: {
-          gid: 1003
-        }
-      },
+describe('FileOperation', () => {
+  it('submits with valid inputs', async () => {
+    const nativeOpMock = jest.fn();
+    const resetMock = jest.fn();
+    (useNativeOp as jest.Mock).mockReturnValue({
+      nativeOp: nativeOpMock,
       isLoading: false,
       error: null,
+      isSuccess: false,
+      reset: resetMock,
     });
-    const { getAllByText } = renderComponent(
-      <FileListing systemId={'system'} path={'/'} />
-    );
-    expect(getAllByText(/file1/).length).toEqual(1);
-    expect(getAllByText(/01\/01\/2020/).length).toEqual(1);
-    expect(getAllByText(/29.3 kB/).length).toEqual(1);
-  });
 
-  it('performs file selection', () => {
-    (useList as jest.Mock).mockReturnValue({
-      concatenatedResults: [{ ...fileInfo }],
-      isLoading: false,
-      error: null,
+    renderComponent(
+      <FileOperation systemId={'mockSystem'} path={'/file1.txt'} />
+    );
+
+    const input = screen.getByLabelText('Arguments');
+    await act(async () => {
+      fireEvent.change(input, {
+        target: {
+          value: '600',
+        },
+      });
     });
-    const mockOnSelect = jest.fn();
-    const { getByTestId } = renderComponent(
-      <FileListing
-        systemId={'system'}
-        path={'/'}
-        selectTypes={['dir', 'file']}
-        onSelect={mockOnSelect}
-      />
-    );
-    // Find the file1.txt and file2.txt rows
-    const file1 = getByTestId('file1.txt');
-    expect(file1).toBeDefined();
 
-    // Click on file1.txt and expect the select callback to have run
-    file1.click();
-    expect(mockOnSelect).toHaveBeenLastCalledWith([fileInfo]);
-  });
-
-  it('performs file unselection', () => {
-    (useList as jest.Mock).mockReturnValue({
-      concatenatedResults: [{ ...fileInfo }],
-      isLoading: false,
-      error: null,
+    const check = screen.getByLabelText('Recursive');
+    await act(async () => {
+      fireEvent.click(check);
     });
-    const mockOnUnselect = jest.fn();
-    const { getByTestId } = renderComponent(
-      <FileListing
-        systemId={'system'}
-        path={'/'}
-        selectTypes={['dir', 'file']}
-        selectedFiles={[fileInfo]}
-        onUnselect={mockOnUnselect}
-      />
-    );
-    // Find the file1.txt and file2.txt rows
-    const file1 = getByTestId('file1.txt');
-    expect(file1).toBeDefined();
 
-    // Click on file1.txt and expect the unselect callback to have run
-    file1.click();
-    expect(mockOnUnselect).toHaveBeenLastCalledWith([fileInfo]);
-  });
-
-  it('performs select all', () => {
-    const concatenatedResults: Array<Files.FileInfo> = [
-      { ...fileInfo },
-      { ...fileInfo, name: 'file2.txt' },
-    ];
-    (useList as jest.Mock).mockReturnValue({
-      concatenatedResults,
-      isLoading: false,
-      error: null,
+    const button = screen.getByLabelText('Submit');
+    await act(async () => {
+      fireEvent.click(button);
     });
-    const mockOnSelect = jest.fn();
-    const mockOnUnselect = jest.fn();
-    const { getByTestId } = renderComponent(
-      <FileListing
-        systemId={'system'}
-        path={'/'}
-        selectTypes={['dir', 'file']}
-        selectedFiles={[fileInfo]}
-        onSelect={mockOnSelect}
-        onUnselect={mockOnUnselect}
-      />
-    );
-    // Find the file1.txt and file2.txt rows
-    const selectAll = getByTestId('select-all');
-    expect(selectAll).toBeDefined();
 
-    // Click on file1.txt and expect the unselect callback to have run
-    selectAll.click();
-    expect(mockOnSelect).toHaveBeenCalledWith(concatenatedResults);
+    const callParams = nativeOpMock.mock.calls[0];
 
-    selectAll.click();
-    expect(mockOnUnselect).toHaveBeenCalledWith(concatenatedResults);
+    expect(callParams[0]).toEqual({
+      systemId: 'mockSystem',
+      path: '/file1.txt',
+      recursive: true,
+      operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
+      argument: '600',
+    });
+    expect(resetMock).toBeCalledTimes(1);
   });
 });

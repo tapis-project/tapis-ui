@@ -5,7 +5,7 @@ const QueryKeys = {
   copy: 'files/copy',
   nativeOp: 'files/nativeOp',
   permissions: 'files/permissions',
-  stat: 'files/stat'
+  stat: 'files/stat',
 };
 
 export default QueryKeys;

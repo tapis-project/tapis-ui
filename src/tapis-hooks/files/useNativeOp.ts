@@ -1,4 +1,3 @@
-import { CopyMoveHookParams } from '.';
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { nativeOp } from 'tapis-api/files';

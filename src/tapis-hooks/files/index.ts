@@ -21,4 +21,3 @@ export type NativeOpParams = {
   operation: Files.NativeLinuxOpRequestOperationEnum;
   argument?: string;
 };
-

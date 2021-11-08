@@ -12,7 +12,9 @@ const permissions = (
     basePath,
     jwt
   );
-  return errorDecoder<Files.FilePermissionResponse>(() => api.getPermissions(params));
+  return errorDecoder<Files.FilePermissionResponse>(() =>
+    api.getPermissions(params)
+  );
 };
 
 export default permissions;

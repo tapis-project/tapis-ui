@@ -22,9 +22,9 @@ const nativeOp = (
     recursive,
     nativeLinuxOpRequest: {
       operation,
-      argument
-    }
-  }
+      argument,
+    },
+  };
   return errorDecoder<Files.NativeLinuxOpResultResponse>(() =>
     api.runLinuxNativeOp(params)
   );

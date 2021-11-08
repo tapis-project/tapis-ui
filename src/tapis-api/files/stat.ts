@@ -12,7 +12,9 @@ const stat = (
     basePath,
     jwt
   );
-  return errorDecoder<Files.FileStatInfoResponse>(() => api.getStatInfo(params));
+  return errorDecoder<Files.FileStatInfoResponse>(() =>
+    api.getStatInfo(params)
+  );
 };
 
 export default stat;
