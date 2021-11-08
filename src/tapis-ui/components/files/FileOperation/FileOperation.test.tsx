@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import FileListing from './FileStat';
+import FileListing from './FileOperation';
 import { useStat } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';

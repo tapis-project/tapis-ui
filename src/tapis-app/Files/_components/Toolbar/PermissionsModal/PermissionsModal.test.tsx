@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
-import RenameModal from './RenameModal';
+import RenameModal from './PermissionsModal';
 import { useMove } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
