@@ -75,6 +75,12 @@ const Toolbar: React.FC = () => {
             onClick={() => setModal('copy')}
           />
           <ToolbarButton
+            text="Permissions"
+            icon="toolbox"
+            disabled={selectedFiles.length !== 1}
+            onClick={() => setModal('permissions')}
+          />
+          <ToolbarButton
             text="Download"
             icon="download"
             disabled={
@@ -84,12 +90,6 @@ const Toolbar: React.FC = () => {
             onClick={() => {
               console.log('Toolbar button');
             }}
-          />
-          <ToolbarButton
-            text="Permissions"
-            icon="download"
-            disabled={selectedFiles.length !== 1}
-            onClick={() => setModal('permissions')}
           />
           <ToolbarButton
             text="Upload"
