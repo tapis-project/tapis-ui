@@ -12,30 +12,39 @@ const downloadStream = (
   const url = `${basePath}/v3/files/content/${systemId}/${path}`;
 
   const config = {
-      headers: {
-          "X-Tapis-Token": jwt
+    headers: {
+      'X-Tapis-Token': jwt,
+    },
+  };
+
+  return errorDecoder<Response>(() =>
+    fetch(url, config).then((res) => {
+      if (!res.body) {
+        throw new Error('Download response had no body!');
       }
-  }
+      const readableStream = res.body;
 
-  return errorDecoder<Response>(() => fetch(url, config).then(res => {
-    const readableStream = res.body
+      // more optimized
+      if (window.WritableStream && readableStream?.pipeTo) {
+        return readableStream.pipeTo(fileStream);
+        //.then(() => console.log('done writing'));
+      }
 
-    // more optimized
-    if (window.WritableStream && readableStream?.pipeTo) {
-      return readableStream.pipeTo(fileStream)
-        .then(() => console.log('done writing'));
-    }
+      (window as any).writer = fileStream.getWriter();
 
-    (window as any).writer = fileStream.getWriter();
+      const reader = res.body!.getReader();
+      const pump = () =>
+        reader
+          .read()
+          .then((res) =>
+            res.done
+              ? (window as any).writer.close()
+              : (window as any).writer.write(res.value).then(pump)
+          );
 
-    const reader = res.body!.getReader();
-    const pump = () => reader.read()
-      .then(res => res.done
-        ? (window as any).writer.close()
-        : (window as any).writer.write(res.value).then(pump))
-
-    return pump();
-  }));
-}
+      return pump();
+    })
+  );
+};
 
 export default downloadStream;

@@ -7,7 +7,7 @@ type DownloadStreamParams = {
   systemId: string;
   path: string;
   destination: string;
-}
+};
 
 const useMove = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -29,13 +29,7 @@ const useMove = () => {
   } = useMutation<Response, Error, DownloadStreamParams>(
     [QueryKeys.download, basePath, jwt],
     ({ systemId, path, destination }) =>
-      downloadStream(
-        systemId,
-        path,
-        destination,
-        basePath,
-        jwt
-      )
+      downloadStream(systemId, path, destination, basePath, jwt)
   );
 
   // Return hook object with loading states and login function
@@ -49,22 +43,14 @@ const useMove = () => {
     download: (
       params: DownloadStreamParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<
-        Response,
-        Error,
-        DownloadStreamParams
-      >
+      options?: MutateOptions<Response, Error, DownloadStreamParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);
     },
     downloadAsync: (
       params: DownloadStreamParams,
-      options?: MutateOptions<
-        Response,
-        Error,
-        DownloadStreamParams
-      >
+      options?: MutateOptions<Response, Error, DownloadStreamParams>
     ) => mutateAsync(params, options),
   };
 };

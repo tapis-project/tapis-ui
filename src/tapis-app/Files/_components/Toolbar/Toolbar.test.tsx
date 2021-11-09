@@ -3,6 +3,7 @@ import renderComponent from 'utils/testing';
 import Toolbar from './Toolbar';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useDownload } from 'tapis-hooks/files';
 import RenameModal from 'tapis-app/Files/_components/Toolbar/RenameModal';
 
 jest.mock('tapis-hooks/files');
@@ -10,6 +11,12 @@ jest.mock('tapis-app/Files/_components/FilesContext');
 jest.mock('tapis-app/Files/_components/Toolbar/RenameModal');
 
 describe('Toolbar', () => {
+  beforeEach(() => {
+    (useDownload as jest.Mock).mockReturnValue({
+      downloadAsync: jest.fn(),
+      download: jest.fn(),
+    });
+  });
   it('enables rename and download buttons', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo],
