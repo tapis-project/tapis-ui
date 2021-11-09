@@ -49,15 +49,15 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   }, []);
 
   const { run } = useMutations<DeleteHookParams, Files.FileStringResponse>({
-    deleteFileAsync,
-    onStart: (file) => {
-      dispatch({ path: file.path!, status: FileOpEventStatus.loading });
+    fn: deleteFileAsync,
+    onStart: (item) => {
+      dispatch({ path: item.path!, status: FileOpEventStatus.loading });
     },
-    onSuccess: (file) => {
-      onDeletionEvent(file, FileOpEventStatus.success);
+    onSuccess: (item) => {
+      dispatch({ path: item.path!, status: FileOpEventStatus.success });
     },
-    onError: (file) => {
-      onDeletionEvent(file, FileOpEventStatus.error);
+    onError: (item) => {
+      dispatch({ path: item.path!, status: FileOpEventStatus.error });
     },
     onComplete,
   });
@@ -90,7 +90,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
       id: 'copyStatus',
       Cell: (el) => {
         const file = selectedFiles[el.row.index];
-        switch (deleteState[file.name!]) {
+        switch (deleteState[file.path!]) {
           case 'loading':
             return <LoadingSpinner placement="inline" />;
           case 'success':
