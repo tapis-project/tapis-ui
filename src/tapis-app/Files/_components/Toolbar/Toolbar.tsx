@@ -100,7 +100,7 @@ const Toolbar: React.FC = () => {
             onClick={() => setModal('createdir')}
           />
           <ToolbarButton
-            text="Trash"
+            text="Delete"
             icon="trash"
             disabled={selectedFiles.length === 0}
             onClick={() => setModal('delete')}

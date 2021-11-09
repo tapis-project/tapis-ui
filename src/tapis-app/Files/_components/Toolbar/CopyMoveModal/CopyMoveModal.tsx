@@ -58,7 +58,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       : moveAsync;
 
   const onFileCopyMoveSuccess = useCallback(
-    (operation: CopyMoveHookParams, data: Files.FileStringResponse) => {
+    (operation: CopyMoveHookParams, _: Files.FileStringResponse) => {
       dispatch({ path: operation.path, icon: 'approved-reverse' });
       const fileInfo = selectedFiles.find(
         (file) => file.path === operation.path
@@ -89,7 +89,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   }, []);
 
   const onNavigate = useCallback(
-    (systemId: string | null, path: string | null) => {
+    (_: string | null, path: string | null) => {
       setDestinationPath(path);
     },
     [setDestinationPath]

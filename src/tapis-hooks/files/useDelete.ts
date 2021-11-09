@@ -4,12 +4,12 @@ import { _delete } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type DeleteHookParams = {
+export type DeleteHookParams = {
   systemId: string;
   path: string;
 };
 
-const useMove = () => {
+const useDelete = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -39,7 +39,7 @@ const useMove = () => {
     data,
     error,
     reset,
-    _delete: (
+    deleteFile: (
       params: DeleteHookParams,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<Files.FileStringResponse, Error, DeleteHookParams>
@@ -47,11 +47,11 @@ const useMove = () => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);
     },
-    _deleteAsync: (
+    deleteFileAsync: (
       params: DeleteHookParams,
       options?: MutateOptions<Files.FileStringResponse, Error, DeleteHookParams>
     ) => mutateAsync(params, options),
   };
 };
 
-export default useMove;
+export default useDelete;

@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useReducer } from 'react';
 import { Button } from 'reactstrap';
 import { GenericModal, Icon, LoadingSpinner } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -10,68 +10,109 @@ import { Column } from 'react-table';
 import styles from './DeleteModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Files } from '@tapis/tapis-typescript';
+import { useMutations } from 'tapis-hooks/utils';
+import { DeleteHookParams } from 'tapis-hooks/files/useDelete';
 
-const CopyMoveModal: React.FC<ToolbarModalProps> = ({
+enum FileOpEventStatus {
+  loading = "loading",
+  error = "error",
+  success = "success"
+}
+
+type DeleteState = {
+  [path: string]: FileOpEventStatus,
+}
+
+const DeleteModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId = '',
   path = '/',
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
+  const { deleteFileAsync, isSuccess, isLoading, error, reset } = useDelete();
+  
+  const reducer = (
+      state: DeleteState,
+      action: {path: string, status: FileOpEventStatus}
+  ) => ({...state, [action.path]: action.status})
 
-  const { _deleteAsync, isSuccess, isLoading, error, reset } = useDelete();
+  const [deleteState, dispatch] = useReducer(reducer, {} as DeleteState)
 
   useEffect(() => {
     reset();
   }, [reset]);
 
-  const onSubmit = () => {
-    selectedFiles.forEach((file) => {
-      _deleteAsync(
-        { systemId, path: file.path! },
-        { onSuccess: () => { onSuccess(file) }}
-      );
-    })
+  const onComplete = useCallback(() => {
+    // Calling the focus manager triggers react-query's
+    // automatic refetch on window focus
+    focusManager.setFocused(true);
+  }, []);
+
+  const { run } = useMutations<
+    DeleteHookParams,
+    Files.FileStringResponse
+  >({
+    deleteFileAsync,
+    onStart: (file) => { dispatch({path: file.path!, status: FileOpEventStatus.loading}) },
+    onSuccess: (file) => { onDeletionEvent(file, FileOpEventStatus.success) },
+    onError: (file) => { onDeletionEvent(file, FileOpEventStatus.error) },
+    onComplete
+  });
+
+  const onSubmit = useCallback(() => {
+    const operations: Array<DeleteHookParams> = selectedFiles.map((file) => ({
+      systemId,
+      path: file.path!,
+    }));
+    run(operations);
+  }, [selectedFiles, run, systemId]);
+
+  const onDeletionEvent = (file: Files.FileInfo, status: FileOpEventStatus) => {
+    dispatch({path: file.name!, status})
   };
 
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       unselect([file]);
+      if ( selectedFiles.length === 1 ) {
+        toggle()
+      }
     },
     [selectedFiles]
   );
 
-  const onSuccess = useCallback((selectedFileIndex) => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-    removeFile(selectedFileIndex)
-  }, [selectedFiles]);
-
-  const appendColumns: Array<Column> = [
+  const statusColumn: Array<Column> = [
     {
       Header: '',
-      accessor: '-',
+      id: "copyStatus",
       Cell: (el) => {
-        return (
-          <span
-            className={styles['remove-file']}
-            onClick={() => {
-              removeFile(selectedFiles[el.row.index]);
-            }}
-          >
-            &#x2715;
-          </span>
-        );
+        const file = selectedFiles[el.row.index];
+        switch (deleteState[file.name!]) {
+          case "loading":
+            return <LoadingSpinner placement="inline" />
+          case "success":
+            return <Icon name="approved-reverse" />
+          case "error":
+            return <Icon name="alert" />
+          case undefined:
+            return (
+              <span
+                className={styles['remove-file']}
+                onClick={() => {
+                  removeFile(selectedFiles[el.row.index]);
+                }}
+              >
+                &#x2715;
+              </span>
+            );
+        }
       },
     },
   ];
 
   return (
     <GenericModal
-      toggle={() => {
-        toggle();
-        unselect(selectedFiles);
-      }}
+      toggle={toggle}
       title={`Delete files and folders`}
       body={
         <div>
@@ -82,7 +123,7 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
             <FileListingTable
               files={selectedFiles}
               fields={['size']}
-              appendColumns={appendColumns}
+              appendColumns={statusColumn}
               className={styles['file-list-table']}
             />
           </div>
@@ -101,12 +142,23 @@ const CopyMoveModal: React.FC<ToolbarModalProps> = ({
             aria-label="Submit"
             onClick={onSubmit}
           >
-            Delete
+            Confirm delete ({selectedFiles.length})
           </Button>
+          {
+            !isSuccess &&
+            <Button
+              color="danger"
+              disabled={isLoading || isSuccess || selectedFiles.length === 0}
+              aria-label="Cancel"
+              onClick={() => { toggle() }}
+            >
+              Cancel
+            </Button>
+          }
         </SubmitWrapper>
       }
     />
   );
 };
 
-export default CopyMoveModal;
+export default DeleteModal;
