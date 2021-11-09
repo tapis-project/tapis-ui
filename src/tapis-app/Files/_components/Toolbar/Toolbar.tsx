@@ -6,6 +6,7 @@ import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import CopyMoveModal from './CopyMoveModal';
 import RenameModal from './RenameModal';
+import DeleteModal from './DeleteModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 
@@ -107,13 +108,11 @@ const Toolbar: React.FC = () => {
             aria-label="Add"
           />
           <ToolbarButton
-            text="Trash"
+            text="Delete"
             icon="trash"
             disabled={selectedFiles.length === 0}
-            onClick={() => {
-              console.log('Toolbar button');
-            }}
-            aria-label="Trash"
+            onClick={() => setModal('delete')}
+            aria-label="Delete"
           />
           {modal === 'createdir' && (
             <CreateDirModal
@@ -140,6 +139,13 @@ const Toolbar: React.FC = () => {
           )}
           {modal === 'rename' && (
             <RenameModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
+          )}
+          {modal === 'delete' && (
+            <DeleteModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
