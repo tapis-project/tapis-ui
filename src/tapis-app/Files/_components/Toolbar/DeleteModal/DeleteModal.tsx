@@ -111,7 +111,10 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
 
   return (
     <GenericModal
-      toggle={toggle}
+      toggle={() => {
+        toggle();
+        unselect(selectedFiles);
+      }}
       title={`Delete files and folders`}
       body={
         <div>
