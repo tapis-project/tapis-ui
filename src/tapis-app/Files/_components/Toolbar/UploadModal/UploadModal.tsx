@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useReducer } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
+import { GenericModal, LoadingSpinner, Icon } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useUpload } from 'tapis-hooks/files';
@@ -8,9 +8,21 @@ import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
 import styles from './UploadModal.module.scss';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing';
-import File from '@tapis/tapis-typescript-files';
+import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
+import { useMutations } from 'tapis-hooks/utils';
+import { InsertHookParams } from 'tapis-hooks/files/useUpload';
+
+export enum FileOpEventStatus {
+  loading = 'loading',
+  error = 'error',
+  success = 'success',
+}
+
+export type FileOpState = {
+  [key: string]: FileOpEventStatus;
+};
 
 type UploadModalProps = ToolbarModalProps & {
   maxFileSizeBytes?: number;
@@ -42,30 +54,63 @@ const UploadModal: React.FC<UploadModalProps> = ({
     onDrop,
   });
 
-  const removeFile = useCallback(
-    (index: number) => {
-      const modifiedFiles = files;
-      modifiedFiles.splice(index, 1);
-      setFiles([...modifiedFiles]);
-    },
-    [files]
-  );
+  const reducer = (
+    state: FileOpState,
+    action: { key: string; status: FileOpEventStatus }
+  ) => ({ ...state, [action.key]: action.status });
 
-  const onSuccess = useCallback(() => {
+  const [fileOpState, dispatch] = useReducer(reducer, {} as FileOpState);
+
+  const onComplete = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
   }, []);
 
-  const { upload, isLoading, error, isSuccess, reset } = useUpload();
+  const removeFile = useCallback(
+    (file: Files.FileInfo) => {
+      setFiles([...files.filter((checkFile) => file.name !== checkFile.name)]);
+      if (files.length === 1) {
+        toggle();
+      }
+    },
+    [files, setFiles, toggle]
+  );
+
+  const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
+
+  const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
+    fn: uploadAsync,
+    onStart: (item) => {
+      dispatch({ key: item.file.name!, status: FileOpEventStatus.loading });
+    },
+    onSuccess: (item) => {
+      dispatch({ key: item.file.name!, status: FileOpEventStatus.success });
+    },
+    onError: (item) => {
+      dispatch({ key: item.file.name!, status: FileOpEventStatus.error });
+    },
+    onComplete,
+  });
 
   useEffect(() => {
     reset();
   }, [reset]);
 
-  const onSubmit = () => {
-    upload(systemId!, path || "/", files[0]);
-  };
+  // const onSubmit = () => {
+  //   files.map((file) => {
+  //     uploadAsync({systemId: systemId!, path: (path || "/"), file});
+  //   })
+  // };
+
+  const onSubmit = useCallback(() => {
+    const operations: Array<InsertHookParams> = files.map((file) => ({
+      systemId: systemId!,
+      path: path!,
+      file,
+    }));
+    run(operations);
+  }, [files, run, systemId]);
 
   const isValidFile = (filesArr: Array<File>, file: File) => {
     for (let i = 0; i < filesArr.length; i++) {
@@ -77,25 +122,37 @@ const UploadModal: React.FC<UploadModalProps> = ({
     return true;
   };
 
-  const filesToFileInfo = (filesArr: Array<File>): Array<File.FileInfo> => {
+  const filesToFileInfo = (filesArr: Array<File>): Array<Files.FileInfo> => {
     return filesArr.map((file) => {
       return { name: file.name, size: file.size, type: 'file' };
     });
   };
 
-  const appendColumns: Array<Column> = [
+  const statusColumn: Array<Column> = [
     {
       Header: '',
-      accessor: '-',
+      id: 'deleteStatus',
       Cell: (el) => {
-        return (
-          <span
-            className={styles['remove-file']}
-            onClick={() => removeFile(el.row.index)}
-          >
-            &#x2715;
-          </span>
-        );
+        const file = files[el.row.index];
+        switch (fileOpState[file.name!]) {
+          case 'loading':
+            return <LoadingSpinner placement="inline" />;
+          case 'success':
+            return <Icon name="approved-reverse" />;
+          case 'error':
+            return <Icon name="alert" />;
+          case undefined:
+            return (
+              <span
+                className={styles['remove-file']}
+                onClick={() => {
+                  removeFile(filesToFileInfo(files)[el.row.index]);
+                }}
+              >
+                &#x2715;
+              </span>
+            );
+        }
       },
     },
   ];
@@ -122,7 +179,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             <FileListingTable
               files={filesToFileInfo(files)}
               fields={['size']}
-              appendColumns={appendColumns}
+              appendColumns={statusColumn}
               className={styles['file-list-table']}
             />
           </div>
@@ -141,7 +198,14 @@ const UploadModal: React.FC<UploadModalProps> = ({
             aria-label="Submit"
             onClick={onSubmit}
           >
-            Upload
+            {!isLoading ? (
+              'Upload'
+            ) : (
+              <span>
+                <LoadingSpinner placement="inline" />
+                Uploading
+              </span>
+            )}
           </Button>
         </SubmitWrapper>
       }

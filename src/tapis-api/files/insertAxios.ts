@@ -11,20 +11,20 @@ const insert = (
 ): Promise<Files.FileStringResponse> => {
   const url = `${basePath}/v3/files/ops/${systemId}/${path}${file.name}`;
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append('file', file);
 
   const config = {
-      headers: {
-          "content-type": "multipart/form-data",
-          "X-Tapis-Token": jwt
-      }
-  }
+    headers: {
+      'content-type': 'multipart/form-data',
+      'X-Tapis-Token': jwt,
+    },
+  };
 
-  console.log("Response", axios.post(url, formData, config))
+  console.log('Response', axios.post(url, formData, config));
 
   return errorDecoder<Files.FileStringResponse>(() =>
     axios.post(url, formData, config)
   );
-}
+};
 
 export default insert;

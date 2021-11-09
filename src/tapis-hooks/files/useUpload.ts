@@ -4,7 +4,7 @@ import { insertAxios as insert } from 'tapis-api/files';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type InsertParams = {
+export type InsertHookParams = {
   systemId: string;
   path: string;
   file: File;
@@ -18,11 +18,19 @@ const useUpload = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, upload helper is called to perform the operation
-  const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Files.FileStringResponse, Error, InsertParams>(
-      [QueryKeys.insertAxios, basePath, jwt],
-      ({ systemId, path, file }) => insert(systemId, path, file, basePath, jwt)
-    );
+  const {
+    mutate,
+    mutateAsync,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+    reset,
+  } = useMutation<Files.FileStringResponse, Error, InsertHookParams>(
+    [QueryKeys.insertAxios, basePath, jwt],
+    ({ systemId, path, file }) => insert(systemId, path, file, basePath, jwt)
+  );
 
   // Return hook object with loading states and login function
   return {
@@ -32,16 +40,18 @@ const useUpload = () => {
     data,
     error,
     reset,
-    upload: (
-      systemId: string,
-      path: string,
-      file: File,
+    uploadFile: (
+      params: InsertHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Files.FileStringResponse, Error, InsertParams>
+      options?: MutateOptions<Files.FileStringResponse, Error, InsertHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({ systemId, path, file }, options);
+      return mutate(params, options);
     },
+    uploadAsync: (
+      params: InsertHookParams,
+      options?: MutateOptions<Files.FileStringResponse, Error, InsertHookParams>
+    ) => mutateAsync(params, options),
   };
 };
 
