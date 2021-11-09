@@ -14,14 +14,14 @@ import { useMutations } from 'tapis-hooks/utils';
 import { DeleteHookParams } from 'tapis-hooks/files/useDelete';
 
 enum FileOpEventStatus {
-  loading = "loading",
-  error = "error",
-  success = "success"
+  loading = 'loading',
+  error = 'error',
+  success = 'success',
 }
 
 type DeleteState = {
-  [path: string]: FileOpEventStatus,
-}
+  [path: string]: FileOpEventStatus;
+};
 
 const DeleteModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -30,13 +30,13 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
   const { deleteFileAsync, isSuccess, isLoading, error, reset } = useDelete();
-  
-  const reducer = (
-      state: DeleteState,
-      action: {path: string, status: FileOpEventStatus}
-  ) => ({...state, [action.path]: action.status})
 
-  const [deleteState, dispatch] = useReducer(reducer, {} as DeleteState)
+  const reducer = (
+    state: DeleteState,
+    action: { path: string; status: FileOpEventStatus }
+  ) => ({ ...state, [action.path]: action.status });
+
+  const [deleteState, dispatch] = useReducer(reducer, {} as DeleteState);
 
   useEffect(() => {
     reset();
@@ -48,15 +48,18 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { run } = useMutations<
-    DeleteHookParams,
-    Files.FileStringResponse
-  >({
+  const { run } = useMutations<DeleteHookParams, Files.FileStringResponse>({
     deleteFileAsync,
-    onStart: (file) => { dispatch({path: file.path!, status: FileOpEventStatus.loading}) },
-    onSuccess: (file) => { onDeletionEvent(file, FileOpEventStatus.success) },
-    onError: (file) => { onDeletionEvent(file, FileOpEventStatus.error) },
-    onComplete
+    onStart: (file) => {
+      dispatch({ path: file.path!, status: FileOpEventStatus.loading });
+    },
+    onSuccess: (file) => {
+      onDeletionEvent(file, FileOpEventStatus.success);
+    },
+    onError: (file) => {
+      onDeletionEvent(file, FileOpEventStatus.error);
+    },
+    onComplete,
   });
 
   const onSubmit = useCallback(() => {
@@ -68,14 +71,14 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   }, [selectedFiles, run, systemId]);
 
   const onDeletionEvent = (file: Files.FileInfo, status: FileOpEventStatus) => {
-    dispatch({path: file.name!, status})
+    dispatch({ path: file.name!, status });
   };
 
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       unselect([file]);
-      if ( selectedFiles.length === 1 ) {
-        toggle()
+      if (selectedFiles.length === 1) {
+        toggle();
       }
     },
     [selectedFiles]
@@ -84,16 +87,16 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   const statusColumn: Array<Column> = [
     {
       Header: '',
-      id: "copyStatus",
+      id: 'copyStatus',
       Cell: (el) => {
         const file = selectedFiles[el.row.index];
         switch (deleteState[file.name!]) {
-          case "loading":
-            return <LoadingSpinner placement="inline" />
-          case "success":
-            return <Icon name="approved-reverse" />
-          case "error":
-            return <Icon name="alert" />
+          case 'loading':
+            return <LoadingSpinner placement="inline" />;
+          case 'success':
+            return <Icon name="approved-reverse" />;
+          case 'error':
+            return <Icon name="alert" />;
           case undefined:
             return (
               <span
@@ -144,17 +147,18 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
           >
             Confirm delete ({selectedFiles.length})
           </Button>
-          {
-            !isSuccess &&
+          {!isSuccess && (
             <Button
               color="danger"
               disabled={isLoading || isSuccess || selectedFiles.length === 0}
               aria-label="Cancel"
-              onClick={() => { toggle() }}
+              onClick={() => {
+                toggle();
+              }}
             >
               Cancel
             </Button>
-          }
+          )}
         </SubmitWrapper>
       }
     />
