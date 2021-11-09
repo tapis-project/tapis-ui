@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useReducer } from 'react';
+import { useEffect, useCallback, useReducer } from 'react';
 import { Button } from 'reactstrap';
 import { GenericModal, Icon, LoadingSpinner } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -77,7 +77,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
         toggle();
       }
     },
-    [selectedFiles]
+    [selectedFiles, toggle, unselect]
   );
 
   const statusColumn: Array<Column> = [
