@@ -1,7 +1,7 @@
 import { Files } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
-const _delete = (
+const deleteFile = (
   systemId: string,
   path: string,
   basePath: string,
@@ -18,4 +18,4 @@ const _delete = (
   );
 };
 
-export default _delete;
+export default deleteFile;
