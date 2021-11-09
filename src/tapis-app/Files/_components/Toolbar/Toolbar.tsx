@@ -112,6 +112,7 @@ const Toolbar: React.FC = () => {
             icon="trash"
             disabled={selectedFiles.length === 0}
             onClick={() => setModal('delete')}
+            aria-label="Delete"
           />
           {modal === 'createdir' && (
             <CreateDirModal

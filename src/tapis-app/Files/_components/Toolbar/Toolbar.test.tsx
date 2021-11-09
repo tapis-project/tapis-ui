@@ -73,8 +73,8 @@ describe('Toolbar', () => {
     expect(copyBtn).toBeDefined();
     expect(copyBtn.closest('button')).not.toHaveAttribute('disabled');
 
-    const trashBtn = getByLabelText('Trash');
-    expect(trashBtn).toBeDefined();
-    expect(trashBtn.closest('button')).not.toHaveAttribute('disabled');
+    const deleteBtn = getByLabelText('Delete');
+    expect(deleteBtn).toBeDefined();
+    expect(deleteBtn.closest('button')).not.toHaveAttribute('disabled');
   });
 });
