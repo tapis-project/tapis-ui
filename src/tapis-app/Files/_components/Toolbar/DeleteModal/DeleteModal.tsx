@@ -70,10 +70,6 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
     run(operations);
   }, [selectedFiles, run, systemId]);
 
-  const onDeletionEvent = (file: Files.FileInfo, status: FileOpEventStatus) => {
-    dispatch({ path: file.name!, status });
-  };
-
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       unselect([file]);

@@ -28,6 +28,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   icon,
   onClick,
   disabled = true,
+  ...rest
 }) => {
   return (
     <div>
@@ -35,6 +36,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
         disabled={disabled}
         onClick={onClick}
         className={styles['toolbar-btn']}
+        {...rest}
       >
         <Icon name={icon}></Icon>
         <span> {text}</span>
@@ -61,18 +63,21 @@ const Toolbar: React.FC = () => {
             icon="rename"
             disabled={selectedFiles.length !== 1}
             onClick={() => setModal('rename')}
+            aria-label="Rename"
           />
           <ToolbarButton
             text="Move"
             icon="move"
             disabled={selectedFiles.length === 0}
             onClick={() => setModal('move')}
+            aria-label="Move"
           />
           <ToolbarButton
             text="Copy"
             icon="copy"
             disabled={selectedFiles.length === 0}
             onClick={() => setModal('copy')}
+            aria-label="Copy"
           />
           <ToolbarButton
             text="Download"
@@ -84,20 +89,23 @@ const Toolbar: React.FC = () => {
             onClick={() => {
               console.log('Toolbar button');
             }}
+            aria-label="Download"
           />
           <ToolbarButton
             text="Upload"
             icon="upload"
-            disabled={true}
+            disabled={false}
             onClick={() => {
               console.log('Toolbar button');
             }}
+            aria-label="Upload"
           />
           <ToolbarButton
             text="Folder"
             icon="add"
-            disabled={!(selectedFiles.length === 0)}
+            disabled={false}
             onClick={() => setModal('createdir')}
+            aria-label="Add"
           />
           <ToolbarButton
             text="Delete"
