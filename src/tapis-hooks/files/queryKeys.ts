@@ -4,7 +4,8 @@ const QueryKeys = {
   move: 'files/move',
   copy: 'files/copy',
   insert: 'files/insert',
-  insertAxios: 'files/insertAxios'
+  insertAxios: 'files/insertAxios',
+  delete: 'files/delete',
 };
 
 export default QueryKeys;
