@@ -7,6 +7,7 @@ import CreateDirModal from './CreateDirModal';
 import CopyMoveModal from './CopyMoveModal';
 import RenameModal from './RenameModal';
 import UploadModal from './UploadModal';
+import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
@@ -81,6 +82,12 @@ const Toolbar: React.FC = () => {
             aria-label="Copy"
           />
           <ToolbarButton
+            text="Permissions"
+            icon="toolbox"
+            disabled={selectedFiles.length !== 1}
+            onClick={() => setModal('permissions')}
+          />
+          <ToolbarButton
             text="Download"
             icon="download"
             disabled={
@@ -150,6 +157,13 @@ const Toolbar: React.FC = () => {
               toggle={toggle}
               path={currentPath}
               systemId={systemId}
+            />
+          )}
+          {modal === 'permissions' && (
+            <PermissionsModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
             />
           )}
           {modal === 'delete' && (

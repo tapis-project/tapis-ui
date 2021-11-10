@@ -5,6 +5,9 @@ const QueryKeys = {
   copy: 'files/copy',
   insert: 'files/insert',
   insertAxios: 'files/insertAxios',
+  nativeOp: 'files/nativeOp',
+  permissions: 'files/permissions',
+  stat: 'files/stat',
   delete: 'files/delete',
 };
 
