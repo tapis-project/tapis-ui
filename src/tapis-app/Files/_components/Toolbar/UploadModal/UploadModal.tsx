@@ -37,6 +37,16 @@ const UploadModal: React.FC<UploadModalProps> = ({
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
+  const isValidFile = (filesArr: Array<File>, file: File) => {
+    for (let i = 0; i < filesArr.length; i++) {
+      if (filesArr[i].name === file.name || file.size > maxFileSizeBytes) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const onDrop = useCallback(
     (selectedFiles: Array<File>) => {
       const uniqueFiles = [];
@@ -48,7 +58,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
       setFiles([...files, ...uniqueFiles]);
     },
-    [files, setFiles]
+    [files, setFiles, isValidFile]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -93,7 +103,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   useEffect(() => {
     reset();
-  }, [reset]);
+  }, [reset, path]);
 
   const onSubmit = useCallback(() => {
     const operations: Array<InsertHookParams> = files.map((file) => ({
@@ -103,16 +113,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
     }));
     run(operations);
   }, [files, run, systemId]);
-
-  const isValidFile = (filesArr: Array<File>, file: File) => {
-    for (let i = 0; i < filesArr.length; i++) {
-      if (filesArr[i].name === file.name || file.size > maxFileSizeBytes) {
-        return false;
-      }
-    }
-
-    return true;
-  };
 
   const filesToFileInfo = (filesArr: Array<File>): Array<Files.FileInfo> => {
     return filesArr.map((file) => {

@@ -25,7 +25,7 @@ const useUpload = () => {
       file: uploadingFile,
       progress,
     };
-  }, [progress]);
+  }, [progress, uploadingFile]);
 
   const progressCallback = (uploadProgress: number, file: File) => {
     setUploadingFile(file);
