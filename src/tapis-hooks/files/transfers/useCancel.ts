@@ -4,7 +4,6 @@ import { cancel } from 'tapis-api/files/transfers';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-
 const useMove = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
@@ -24,12 +23,7 @@ const useMove = () => {
     reset,
   } = useMutation<Files.FileStringResponse, Error, string>(
     [QueryKeys.cancel, basePath, jwt],
-    (transferTaskId) =>
-      cancel(
-        transferTaskId,
-        basePath,
-        jwt
-      )
+    (transferTaskId) => cancel(transferTaskId, basePath, jwt)
   );
 
   // Return hook object with loading states and login function
@@ -43,22 +37,14 @@ const useMove = () => {
     cancel: (
       transferTaskId: string,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<
-        Files.StringResponse,
-        Error,
-        string
-      >
+      options?: MutateOptions<Files.StringResponse, Error, string>
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(transferTaskId, options);
     },
     cancelAsync: (
       transferTaskId: string,
-      options?: MutateOptions<
-        Files.FileStringResponse,
-        Error,
-        string
-      >
+      options?: MutateOptions<Files.FileStringResponse, Error, string>
     ) => mutateAsync(transferTaskId, options),
   };
 };

@@ -10,7 +10,7 @@ jest.mock('tapis-hooks/files/transfers');
 describe('Transfer Listing', () => {
   it('renders Transfer Listing component', () => {
     (useList as jest.Mock).mockReturnValue({
-      concatenatedResults: [ transferTask ],
+      concatenatedResults: [transferTask],
       isLoading: false,
       error: null,
     });
@@ -20,7 +20,7 @@ describe('Transfer Listing', () => {
 
   it('performs transfer selection', () => {
     (useList as jest.Mock).mockReturnValue({
-      concatenatedResults: [ transferTask ],
+      concatenatedResults: [transferTask],
       isLoading: false,
       error: null,
     });

@@ -6,12 +6,10 @@ describe('Tabs', () => {
   it('Renders tabs', async () => {
     const tabs = {
       'Tab 1': <div>Content 1</div>,
-      'Tab 2': <div>Content 2</div>
-    }
+      'Tab 2': <div>Content 2</div>,
+    };
 
-    renderComponent(
-      <Tabs tabs={tabs} />
-    );
+    renderComponent(<Tabs tabs={tabs} />);
 
     const tab2 = screen.getByTestId('tab-Tab 2');
     expect(tab2).toBeDefined();

@@ -1,4 +1,3 @@
-import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import PermissionsModal from './PermissionsModal';
 import { usePermissions } from 'tapis-hooks/files';

@@ -23,12 +23,7 @@ const useCreate = () => {
     reset,
   } = useMutation<Files.TransferTaskResponse, Error, Files.TransferTaskRequest>(
     [QueryKeys.create, basePath, jwt],
-    (request) =>
-      create(
-        request,
-        basePath,
-        jwt
-      )
+    (request) => create(request, basePath, jwt)
   );
 
   // Return hook object with loading states and login function

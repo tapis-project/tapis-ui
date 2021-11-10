@@ -14,7 +14,11 @@ const FileOperation: React.FC<TransferCancelProps> = ({
   transferTaskId,
   className = '',
 }) => {
-  const { data, isLoading: detailsIsLoading, error: detailsError } = useDetails(transferTaskId);
+  const {
+    data,
+    isLoading: detailsIsLoading,
+    error: detailsError,
+  } = useDetails(transferTaskId);
 
   const transfer: Files.TransferTask | undefined = data?.result;
   const cancelableStatuses = [
@@ -24,25 +28,27 @@ const FileOperation: React.FC<TransferCancelProps> = ({
     Files.TransferTaskStatusEnum.Staged,
     Files.TransferTaskStatusEnum.Staging,
   ];
-  const cancelable = cancelableStatuses.some((status) => status === transfer?.status);
+  const cancelable = cancelableStatuses.some(
+    (status) => status === transfer?.status
+  );
 
   const { cancel, isLoading, error, isSuccess, reset } = useCancel();
 
-  const onClick = useCallback(
-    () => {
-      cancel(transferTaskId);
-      focusManager.setFocused(true);
-    },
-    [cancel, transferTaskId]
-  )
+  const onClick = useCallback(() => {
+    cancel(transferTaskId);
+    focusManager.setFocused(true);
+  }, [cancel, transferTaskId]);
 
   useEffect(() => {
     reset();
   }, [reset]);
 
-
   return (
-    <QueryWrapper isLoading={detailsIsLoading} error={detailsError} className={className}>
+    <QueryWrapper
+      isLoading={detailsIsLoading}
+      error={detailsError}
+      className={className}
+    >
       <div>
         Transfer task {transferTaskId} is {transfer?.status}
       </div>

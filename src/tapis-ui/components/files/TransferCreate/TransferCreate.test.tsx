@@ -18,12 +18,11 @@ describe('TransferCreate', () => {
       reset: resetMock,
     });
 
-
     renderComponent(
-      <TransferCancel 
+      <TransferCancel
         sourceSystemId="source"
         destinationSystemId="destination"
-        destinationPath="/dest" 
+        destinationPath="/dest"
         files={[fileInfo]}
       />
     );
@@ -39,9 +38,8 @@ describe('TransferCreate', () => {
       });
     });
 
-
     const submit = screen.getByLabelText('Submit');
-    await act(async() => {
+    await act(async () => {
       submit.click();
     });
 
@@ -49,10 +47,12 @@ describe('TransferCreate', () => {
 
     expect(callParams[0]).toEqual({
       tag: 'mytag',
-      elements: [{
-        destinationURI: 'tapis://destination/dest',
-        sourceURI: 'tapis://source/file1.txt'
-      }]
+      elements: [
+        {
+          destinationURI: 'tapis://destination/dest',
+          sourceURI: 'tapis://source/file1.txt',
+        },
+      ],
     });
   });
 });

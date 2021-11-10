@@ -20,15 +20,13 @@ describe('TransferCancel', () => {
     });
     (useDetails as jest.Mock).mockReturnValue({
       data: {
-        result: transferTask
+        result: transferTask,
       },
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
 
-    renderComponent(
-      <TransferCancel transferTaskId={transferTask.uuid!} />
-    );
+    renderComponent(<TransferCancel transferTaskId={transferTask.uuid!} />);
 
     const cancel = screen.getByLabelText('Cancel');
     expect(cancel).toHaveAttribute('disabled');
@@ -48,16 +46,14 @@ describe('TransferCancel', () => {
       data: {
         result: {
           ...transferTask,
-          status: Files.TransferTaskStatusEnum.InProgress
-        }
+          status: Files.TransferTaskStatusEnum.InProgress,
+        },
       },
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
 
-    renderComponent(
-      <TransferCancel transferTaskId={transferTask.uuid!} />
-    );
+    renderComponent(<TransferCancel transferTaskId={transferTask.uuid!} />);
 
     const cancel = screen.getByLabelText('Cancel');
     expect(cancel).not.toHaveAttribute('disabled');

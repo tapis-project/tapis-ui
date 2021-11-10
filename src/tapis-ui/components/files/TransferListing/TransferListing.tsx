@@ -15,7 +15,8 @@ const TransferListing: React.FC<TransferListingProps> = ({
   onSelect,
   className,
 }) => {
-  const { concatenatedResults, isLoading, error, hasNextPage, fetchNextPage } = useList({});
+  const { concatenatedResults, isLoading, error, hasNextPage, fetchNextPage } =
+    useList({});
 
   const infiniteScrollCallback = useCallback(() => {
     if (hasNextPage) {
@@ -47,27 +48,30 @@ const TransferListing: React.FC<TransferListingProps> = ({
       Header: 'Transfer',
       id: 'name',
       Cell: (el) => {
-        const transfer: Files.TransferTask = el.row.original as Files.TransferTask;
+        const transfer: Files.TransferTask = el.row
+          .original as Files.TransferTask;
         return (
           <span>
             {transfer.tag ?? transfer.uuid ?? 'Unidentified transfer'}
           </span>
-        ) 
-      }
+        );
+      },
     },
     {
       Header: 'Status',
       id: 'status',
       accessor: 'status',
-      Cell: (el) => <span>{el.value}</span>
-    }
+      Cell: (el) => <span>{el.value}</span>,
+    },
   ];
 
   // Maps rows to row properties, such as classNames
   const getRowProps = (row: Row) => {
     const transfer = row.original as Files.TransferTask;
     return {
-      className: `${selectedTransfer?.id === transfer.id ? styles.selected : ''} ${onSelect ? styles.selectable : ''}`,
+      className: `${
+        selectedTransfer?.id === transfer.id ? styles.selected : ''
+      } ${onSelect ? styles.selectable : ''}`,
       onClick: () => selectWrapper(transfer),
       'data-testid': transfer.id,
     };

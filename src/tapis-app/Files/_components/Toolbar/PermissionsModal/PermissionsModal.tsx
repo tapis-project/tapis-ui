@@ -33,19 +33,19 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
     data?.result?.permission === Files.FilePermissionPermissionEnum.Modify;
 
   const tabs: { [name: string]: React.ReactNode } = {
-    'Info': (
+    Info: (
       <FileStat
         systemId={systemId!}
         path={filePath}
         className={styles['list-content']}
       />
-    )
+    ),
   };
 
   if (write) {
     tabs['Linux Native Operations'] = (
       <FileOperation systemId={systemId!} path={filePath} />
-    )
+    );
   }
 
   const body = (

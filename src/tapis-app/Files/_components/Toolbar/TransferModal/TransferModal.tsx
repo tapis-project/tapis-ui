@@ -1,8 +1,5 @@
-import React, { useCallback, useState, useReducer } from 'react';
-import {
-  GenericModal,
-  Breadcrumbs,
-} from 'tapis-ui/_common';
+import React, { useCallback, useState } from 'react';
+import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
 import { FileExplorer } from '../_components';
@@ -12,7 +9,12 @@ import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
-import { TransferListing, TransferDetails, TransferCreate, TransferCancel } from 'tapis-ui/components/files';
+import {
+  TransferListing,
+  TransferDetails,
+  TransferCreate,
+  TransferCancel,
+} from 'tapis-ui/components/files';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -20,14 +22,17 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   path = '/',
 }) => {
   const { pathname } = useLocation();
-  const [destination, setDestination] = useState<{ systemId: string, path: string}>({ systemId, path });
-  const [ transfer, setTransfer ] = useState<Files.TransferTask | null>(null);
+  const [destination, setDestination] = useState<{
+    systemId: string;
+    path: string;
+  }>({ systemId, path });
+  const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
 
   const onNavigate = useCallback(
     (systemId: string | null, path: string | null) => {
       if (!!systemId && !!path) {
-        setDestination({ systemId, path })
+        setDestination({ systemId, path });
       }
     },
     [setDestination]
@@ -38,8 +43,8 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       console.log(transfer);
       setTransfer(transfer);
     },
-    [ setTransfer ]
-  )
+    [setTransfer]
+  );
 
   const createTransferTab = (
     <div className={`row h-100 ${styles.pane}`}>
@@ -66,11 +71,16 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>Destination</div>
-        <FileExplorer systemId={systemId} path={path} onNavigate={onNavigate} allowSystemChange />
-        <TransferCreate 
+        <FileExplorer
+          systemId={systemId}
+          path={path}
+          onNavigate={onNavigate}
+          allowSystemChange
+        />
+        <TransferCreate
           sourceSystemId={systemId}
-          destinationSystemId={destination.systemId}
-          destinationPath={destination.path}
+          destinationSystemId={destination?.systemId ?? ''}
+          destinationPath={destination?.path ?? ''}
           files={selectedFiles}
         />
       </div>
@@ -86,29 +96,32 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       </div>
       <div className="col-md-6 d-flex flex-column">
         <div>
-          {transfer 
-            ? <div>
-                <TransferDetails transferTaskId={transfer?.uuid!} className={styles['transfer-detail']} />
-                <TransferCancel transferTaskId={transfer?.uuid!} className={styles['transfer-cancel']} />
-              </div>
-            : <i>Select a file transfer to view details</i>}
+          {transfer ? (
+            <div>
+              <TransferDetails
+                transferTaskId={transfer?.uuid!}
+                className={styles['transfer-detail']}
+              />
+              <TransferCancel
+                transferTaskId={transfer?.uuid!}
+                className={styles['transfer-cancel']}
+              />
+            </div>
+          ) : (
+            <i>Select a file transfer to view details</i>
+          )}
         </div>
-      </div> 
+      </div>
     </div>
-  )
+  );
 
-  const tabs: { [name: string]: React.ReactNode } = { };
+  const tabs: { [name: string]: React.ReactNode } = {};
   if (selectedFiles.length > 0) {
     tabs['Start a Transfer'] = createTransferTab;
   }
   tabs['Recent Transfers'] = listTransfersTab;
 
-  const body = (
-    <Tabs 
-      tabs={tabs} 
-      className={styles.body}
-    />
-  )
+  const body = <Tabs tabs={tabs} className={styles.body} />;
 
   return (
     <GenericModal
