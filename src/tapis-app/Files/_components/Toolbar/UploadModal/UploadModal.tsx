@@ -47,7 +47,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
       return true;
     },
-    [files]
+    [files, maxFileSizeBytes]
   );
 
   const onDrop = useCallback(
