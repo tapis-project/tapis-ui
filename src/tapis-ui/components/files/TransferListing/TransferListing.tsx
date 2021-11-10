@@ -50,7 +50,7 @@ const TransferListing: React.FC<TransferListingProps> = ({
         const transfer: Files.TransferTask = el.row.original as Files.TransferTask;
         return (
           <span>
-            {transfer.tag ?? transfer.id ?? 'Unidentified transfer'}
+            {transfer.tag ?? transfer.uuid ?? 'Unidentified transfer'}
           </span>
         ) 
       }

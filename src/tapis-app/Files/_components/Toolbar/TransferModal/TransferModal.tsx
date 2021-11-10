@@ -1,22 +1,18 @@
 import React, { useCallback, useState, useReducer } from 'react';
-import { Button } from 'reactstrap';
 import {
   GenericModal,
   Breadcrumbs,
 } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
 import { FileExplorer } from '../_components';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
-import { useCreate, useList, useCancel } from 'tapis-hooks/files/transfers';
 import { Files } from '@tapis/tapis-typescript';
-import { Column } from 'react-table';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
-import { TransferListing, TransferDetails, TransferCancel } from 'tapis-ui/components/files';
+import { TransferListing, TransferDetails, TransferCreate, TransferCancel } from 'tapis-ui/components/files';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -27,7 +23,6 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const [destination, setDestination] = useState<{ systemId: string, path: string}>({ systemId, path });
   const [ transfer, setTransfer ] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
-  const { create, isLoading: createIsLoading, error: createError } = useCreate(); 
 
   const onNavigate = useCallback(
     (systemId: string | null, path: string | null) => {
@@ -45,10 +40,6 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     },
     [ setTransfer ]
   )
-
-  const onSubmit = useCallback(() => {
-    // Create transfer
-  }, [selectedFiles, create, destination]);
 
   const createTransferTab = (
     <div className={`row h-100 ${styles.pane}`}>
@@ -76,6 +67,12 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>Destination</div>
         <FileExplorer systemId={systemId} path={path} onNavigate={onNavigate} allowSystemChange />
+        <TransferCreate 
+          sourceSystemId={systemId}
+          destinationSystemId={destination.systemId}
+          destinationPath={destination.path}
+          files={selectedFiles}
+        />
       </div>
     </div>
   );
@@ -83,7 +80,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const listTransfersTab = (
     <div className={`row h-100 ${styles.pane}`}>
       <div className="col-md-6 d-flex flex-column">
-        <div className={styles['nav-list']}>
+        <div className={`${styles['nav-list']} ${styles['transfer-list']}`}>
           <TransferListing onSelect={onSelect} />
         </div>
       </div>

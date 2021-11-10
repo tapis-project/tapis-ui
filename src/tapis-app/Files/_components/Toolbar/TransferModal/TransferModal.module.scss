@@ -50,16 +50,25 @@
   box-sizing: border-box;
 }
 
+.transfer-list {
+  table {
+    height: 492px;
+    max-height: 492px;
+  }
+  height: 516px;
+}
+
 .body {
   min-height: 30em;
 }
 
 .pane {
   padding-top: 0.5em;
+  min-height: 38em;
 }
 
 .transfer-detail {
-  max-height: 31em;
+  max-height: 43em;
   border: 1px solid gray;
   margin-top: 4px;
   overflow-y: scroll;
