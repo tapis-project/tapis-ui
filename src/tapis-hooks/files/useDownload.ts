@@ -9,7 +9,7 @@ type DownloadStreamParams = {
   destination: string;
 };
 
-const useMove = () => {
+const useDownload = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -55,4 +55,4 @@ const useMove = () => {
   };
 };
 
-export default useMove;
+export default useDownload;
