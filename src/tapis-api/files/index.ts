@@ -5,3 +5,4 @@ export { default as stat } from './stat';
 export { default as permissions } from './permissions';
 export { default as nativeOp } from './nativeOp';
 export { default as deleteFile } from './delete';
+export { default as downloadStream } from './downloadStream';

@@ -8,6 +8,7 @@ export { default as useStat } from './useStat';
 export { default as usePermissions } from './usePermissions';
 export { default as useNativeOp } from './useNativeOp';
 export { default as useDelete } from './useDelete';
+export { default as useDownload } from './useDownload';
 
 export type CopyMoveHookParams = {
   systemId: string;
