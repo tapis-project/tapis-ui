@@ -19,11 +19,7 @@ import { Column } from 'react-table';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 
-type CopyMoveModalProps = {
-  operation: Files.MoveCopyRequestOperationEnum;
-} & ToolbarModalProps;
-
-const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
+const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId = '',
   path = '/',
@@ -74,7 +70,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       </div>
     </div>
   );
-  
+
   return (
     <GenericModal
       toggle={toggle}
@@ -85,4 +81,4 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   );
 };
 
-export default CopyMoveModal;
+export default TransferModal;

@@ -11,7 +11,7 @@ jest.mock('tapis-hooks/files');
 jest.mock('tapis-app/Files/_components/FilesContext');
 jest.mock('tapis-ui/components/files');
 
-describe('RenameModal', () => {
+describe('Permissions Modal', () => {
   it('submits with valid inputs', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo],
@@ -32,12 +32,6 @@ describe('RenameModal', () => {
       <PermissionsModal toggle={() => {}} systemId={'mockSystem'} path={'/'} />
     );
 
-    const nativeOpTab = screen.getByTestId('nativeop-tab');
-    expect(nativeOpTab).toBeDefined();
-
-    await act(async () => {
-      fireEvent.click(nativeOpTab);
-    });
     expect(FileStat as jest.Mock).toHaveBeenCalled();
     expect(FileOperation as jest.Mock).toHaveBeenCalled();
   });
