@@ -4,8 +4,6 @@ import { create } from 'tapis-api/files/transfers';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type TransferTaskParams = Array<Files.TransferTaskRequestElement>;
-
 const useCreate = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
@@ -23,11 +21,11 @@ const useCreate = () => {
     data,
     error,
     reset,
-  } = useMutation<Files.TransferTaskResponse, Error, TransferTaskParams>(
+  } = useMutation<Files.TransferTaskResponse, Error, Files.TransferTaskRequest>(
     [QueryKeys.create, basePath, jwt],
-    (elements) =>
+    (request) =>
       create(
-        elements,
+        request,
         basePath,
         jwt
       )
@@ -42,25 +40,25 @@ const useCreate = () => {
     error,
     reset,
     create: (
-      elements: TransferTaskParams,
+      request: Files.TransferTaskRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
         Files.TransferTaskResponse,
         Error,
-        TransferTaskParams
+        Files.TransferTaskRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate(elements, options);
+      return mutate(request, options);
     },
     moveAsync: (
-      elements: TransferTaskParams,
+      request: Files.TransferTaskRequest,
       options?: MutateOptions<
         Files.TransferTaskResponse,
         Error,
-        TransferTaskParams
+        Files.TransferTaskRequest
       >
-    ) => mutateAsync(elements, options),
+    ) => mutateAsync(request, options),
   };
 };
 
