@@ -182,9 +182,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
               files={filesToFileInfo(files)}
               fields={['size']}
               appendColumns={statusColumn}
-              className={
-                styles[`file-list-table${isLoading ? '-with-progress' : ''}`]
-              }
+              className={styles['file-list-table']}
             />
           </div>
         </div>
