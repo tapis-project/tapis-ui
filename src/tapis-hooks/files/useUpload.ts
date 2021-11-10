@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { insertAxios as insert } from 'tapis-api/files';
@@ -14,6 +15,21 @@ const useUpload = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
+  const [progress, setProgress] = useState<number>(0)
+  const [uploadingFile, setUploadingFile] = useState<File | undefined>(undefined)
+
+  const getProgress = useCallback(() => {
+    return {
+      file: uploadingFile,
+      progress
+    }
+  }, [progress])
+
+  const progressCallback = (uploadProgress: number, file: File) => {
+    setUploadingFile(file)
+    setProgress(uploadProgress)
+  }
+
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
   //
@@ -29,7 +45,7 @@ const useUpload = () => {
     reset,
   } = useMutation<Files.FileStringResponse, Error, InsertHookParams>(
     [QueryKeys.insertAxios, basePath, jwt],
-    ({ systemId, path, file }) => insert(systemId, path, file, basePath, jwt)
+    ({ systemId, path, file }) => insert(systemId, path, file, basePath, jwt, progressCallback)
   );
 
   // Return hook object with loading states and login function
@@ -40,6 +56,7 @@ const useUpload = () => {
     data,
     error,
     reset,
+    getProgress,
     uploadFile: (
       params: InsertHookParams,
       // react-query options to allow callbacks such as onSuccess

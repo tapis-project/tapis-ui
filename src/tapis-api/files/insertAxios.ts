@@ -7,7 +7,8 @@ const insert = (
   path: string,
   file: File,
   basePath: string,
-  jwt: string
+  jwt: string,
+  progressCallback: (progress: number, file: File) => void,
 ): Promise<Files.FileStringResponse> => {
   const url = `${basePath}/v3/files/ops/${systemId}/${path}${file.name}`;
   const formData = new FormData();
@@ -18,9 +19,11 @@ const insert = (
       'content-type': 'multipart/form-data',
       'X-Tapis-Token': jwt,
     },
+    onUploadProgress: (progressEvent: any) => {
+      let progress: number = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+      progressCallback(progress, file)
+    }
   };
-
-  console.log('Response', axios.post(url, formData, config));
 
   return errorDecoder<Files.FileStringResponse>(() =>
     axios.post(url, formData, config)

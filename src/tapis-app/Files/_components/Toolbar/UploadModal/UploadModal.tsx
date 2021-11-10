@@ -13,6 +13,7 @@ import { Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
 import { useMutations } from 'tapis-hooks/utils';
 import { InsertHookParams } from 'tapis-hooks/files/useUpload';
+import Progress from 'tapis-ui/_common/Progress';
 
 export enum FileOpEventStatus {
   loading = 'loading',
@@ -77,7 +78,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles, toggle]
   );
 
-  const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
+  const { uploadAsync, isLoading, error, isSuccess, reset, getProgress } = useUpload();
 
   const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
     fn: uploadAsync,
@@ -96,12 +97,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
   useEffect(() => {
     reset();
   }, [reset]);
-
-  // const onSubmit = () => {
-  //   files.map((file) => {
-  //     uploadAsync({systemId: systemId!, path: (path || "/"), file});
-  //   })
-  // };
 
   const onSubmit = useCallback(() => {
     const operations: Array<InsertHookParams> = files.map((file) => ({
@@ -136,9 +131,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
         const file = files[el.row.index];
         switch (fileOpState[file.name!]) {
           case 'loading':
-            return <LoadingSpinner placement="inline" />;
+            const uploadingFile = getProgress().file;
+            if (uploadingFile && uploadingFile.name === files[el.row.index].name) {
+              return <Progress value={getProgress().progress} />
+            }
+            return <Progress value={0} />
           case 'success':
-            return <Icon name="approved-reverse" />;
+            return <Icon name="approved-reverse" className="success" />;
           case 'error':
             return <Icon name="alert" />;
           case undefined:
@@ -180,7 +179,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
               files={filesToFileInfo(files)}
               fields={['size']}
               appendColumns={statusColumn}
-              className={styles['file-list-table']}
+              className={styles[`file-list-table${isLoading ? "-with-progress" : ""}`]}
             />
           </div>
         </div>
