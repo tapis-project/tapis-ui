@@ -66,3 +66,10 @@
   font-size: 0.75em;
   padding: 0.5em 0.5em 0.5em 0.5em;
 }
+
+.transfer-cancel {
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-end;
+}

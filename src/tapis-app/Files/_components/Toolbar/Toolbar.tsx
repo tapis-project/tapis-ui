@@ -88,9 +88,9 @@ const Toolbar: React.FC = () => {
             onClick={() => setModal('permissions')}
           />
           <ToolbarButton
-            text="Transfer"
+            text="Transfers"
             icon="globe"
-            disabled={selectedFiles.length === 0}
+            disabled={false}
             onClick={() => setModal('transfer')}
           />
           <ToolbarButton

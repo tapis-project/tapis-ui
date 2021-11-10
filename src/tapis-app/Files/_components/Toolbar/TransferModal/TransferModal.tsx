@@ -3,8 +3,6 @@ import { Button } from 'reactstrap';
 import {
   GenericModal,
   Breadcrumbs,
-  Icon,
-  LoadingSpinner,
 } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
@@ -12,14 +10,13 @@ import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileList
 import { FileExplorer } from '../_components';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
-import { focusManager } from 'react-query';
 import { useCreate, useList, useCancel } from 'tapis-hooks/files/transfers';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
-import { TransferListing, TransferDetails } from 'tapis-ui/components/files';
+import { TransferListing, TransferDetails, TransferCancel } from 'tapis-ui/components/files';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -86,29 +83,32 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const listTransfersTab = (
     <div className={`row h-100 ${styles.pane}`}>
       <div className="col-md-6 d-flex flex-column">
-        {/* Table of selected files */}
-        <div className={`${styles['col-header']}`}>
-          Recent Transfers
-        </div>
         <div className={styles['nav-list']}>
           <TransferListing onSelect={onSelect} />
         </div>
       </div>
       <div className="col-md-6 d-flex flex-column">
-        {/* Table of selected files */}
-        <div className={`${styles['col-header']}`}>
-          { transfer ? 'Transfer details' : 'Select a transfer to view details' }
-        </div>
         <div>
-          {transfer && <TransferDetails transferTaskId={transfer?.uuid!} className={styles['transfer-detail']} />}
+          {transfer 
+            ? <div>
+                <TransferDetails transferTaskId={transfer?.uuid!} className={styles['transfer-detail']} />
+                <TransferCancel transferTaskId={transfer?.uuid!} className={styles['transfer-cancel']} />
+              </div>
+            : <i>Select a file transfer to view details</i>}
         </div>
       </div> 
     </div>
   )
 
+  const tabs: { [name: string]: React.ReactNode } = { };
+  if (selectedFiles.length > 0) {
+    tabs['Start a Transfer'] = createTransferTab;
+  }
+  tabs['Recent Transfers'] = listTransfersTab;
+
   const body = (
     <Tabs 
-      tabs={{'Start a Transfer': createTransferTab, 'Recent Transfers': listTransfersTab }} 
+      tabs={tabs} 
       className={styles.body}
     />
   )
