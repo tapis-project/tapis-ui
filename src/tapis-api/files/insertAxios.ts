@@ -8,7 +8,7 @@ const insert = (
   file: File,
   basePath: string,
   jwt: string,
-  progressCallback: (progress: number, file: File) => void,
+  progressCallback: (progress: number, file: File) => void
 ): Promise<Files.FileStringResponse> => {
   const url = `${basePath}/v3/files/ops/${systemId}/${path}${file.name}`;
   const formData = new FormData();
@@ -20,9 +20,11 @@ const insert = (
       'X-Tapis-Token': jwt,
     },
     onUploadProgress: (progressEvent: any) => {
-      let progress: number = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-      progressCallback(progress, file)
-    }
+      let progress: number = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+      progressCallback(progress, file);
+    },
   };
 
   return errorDecoder<Files.FileStringResponse>(() =>

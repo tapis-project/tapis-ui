@@ -62,12 +62,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const [fileOpState, dispatch] = useReducer(reducer, {} as FileOpState);
 
-  const onComplete = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
-
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       setFiles([...files.filter((checkFile) => file.name !== checkFile.name)]);
@@ -78,7 +72,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles, toggle]
   );
 
-  const { uploadAsync, isLoading, error, isSuccess, reset, getProgress } = useUpload();
+  const { uploadAsync, isLoading, error, isSuccess, reset, getProgress } =
+    useUpload();
 
   const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
     fn: uploadAsync,
@@ -87,11 +82,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
     },
     onSuccess: (item) => {
       dispatch({ key: item.file.name!, status: FileOpEventStatus.success });
+      // Calling the focus manager triggers react-query's
+      // automatic refetch on window focus
+      focusManager.setFocused(true);
     },
     onError: (item) => {
       dispatch({ key: item.file.name!, status: FileOpEventStatus.error });
     },
-    onComplete,
   });
 
   useEffect(() => {
@@ -132,10 +129,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
         switch (fileOpState[file.name!]) {
           case 'loading':
             const uploadingFile = getProgress().file;
-            if (uploadingFile && uploadingFile.name === files[el.row.index].name) {
-              return <Progress value={getProgress().progress} />
+            if (
+              uploadingFile &&
+              uploadingFile.name === files[el.row.index].name
+            ) {
+              return <Progress value={getProgress().progress} />;
             }
-            return <Progress value={0} />
+            return <Progress value={0} />;
           case 'success':
             return <Icon name="approved-reverse" className="success" />;
           case 'error':
@@ -179,7 +179,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
               files={filesToFileInfo(files)}
               fields={['size']}
               appendColumns={statusColumn}
-              className={styles[`file-list-table${isLoading ? "-with-progress" : ""}`]}
+              className={
+                styles[`file-list-table${isLoading ? '-with-progress' : ''}`]
+              }
             />
           </div>
         </div>
