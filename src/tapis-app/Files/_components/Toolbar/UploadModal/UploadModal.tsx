@@ -37,15 +37,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
-  const isValidFile = (filesArr: Array<File>, file: File) => {
-    for (let i = 0; i < filesArr.length; i++) {
-      if (filesArr[i].name === file.name || file.size > maxFileSizeBytes) {
-        return false;
+  const isValidFile = useCallback(
+    (filesArr: Array<File>, file: File) => {
+      for (let i = 0; i < filesArr.length; i++) {
+        if (filesArr[i].name === file.name || file.size > maxFileSizeBytes) {
+          return false;
+        }
       }
-    }
 
-    return true;
-  };
+      return true;
+    },
+    [files]
+  );
 
   const onDrop = useCallback(
     (selectedFiles: Array<File>) => {
@@ -112,7 +115,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       file,
     }));
     run(operations);
-  }, [files, run, systemId]);
+  }, [files, run, systemId, path]);
 
   const filesToFileInfo = (filesArr: Array<File>): Array<Files.FileInfo> => {
     return filesArr.map((file) => {
