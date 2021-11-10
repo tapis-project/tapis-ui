@@ -19,7 +19,7 @@ import { Column } from 'react-table';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
-import { TransferListing } from 'tapis-ui/components/files';
+import { TransferListing, TransferDetails } from 'tapis-ui/components/files';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -97,9 +97,11 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>
-          Details
+          { transfer ? 'Transfer details' : 'Select a transfer to view details' }
         </div>
-        PLACEHOLDER: TRANSFER DETAILS
+        <div>
+          {transfer && <TransferDetails transferTaskId={transfer?.uuid!} className={styles['transfer-detail']} />}
+        </div>
       </div> 
     </div>
   )

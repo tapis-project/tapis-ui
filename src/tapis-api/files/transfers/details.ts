@@ -1,7 +1,7 @@
 import { Files } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
-export const detail = (
+export const details = (
   transferTaskId: string,
   basePath: string,
   jwt: string
@@ -17,4 +17,4 @@ export const detail = (
   );
 };
 
-export default detail;
+export default details;

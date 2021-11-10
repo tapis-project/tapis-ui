@@ -57,3 +57,12 @@
 .pane {
   padding-top: 0.5em;
 }
+
+.transfer-detail {
+  max-height: 31em;
+  border: 1px solid gray;
+  margin-top: 4px;
+  overflow-y: scroll;
+  font-size: 0.75em;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+}
