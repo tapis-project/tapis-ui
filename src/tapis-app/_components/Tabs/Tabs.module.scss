@@ -5,12 +5,16 @@
   border-left: 1px dotted var(--global-color-primary--dark);
   border-bottom: 1px dotted var(--global-color-primary-dark);
   background-color: var(--global-color-primary--normal);
+  padding-bottom: 0.5em;
   a {
     color: var(--global-color-primary--xx-dark);
+    height: 2em;
+    font-size: 0.8em;
   }
   :hover {
     cursor: pointer;
   }
+  margin-right: 2px;
 }
 
 .active {

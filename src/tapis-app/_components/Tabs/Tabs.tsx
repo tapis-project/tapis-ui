@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
-import styles from './Tab.module.scss';
+import styles from './Tabs.module.scss';
 
 type TabsProps = {
   tabs: { [name: string]: React.ReactNode },

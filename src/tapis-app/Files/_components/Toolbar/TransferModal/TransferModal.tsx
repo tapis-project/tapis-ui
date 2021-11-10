@@ -1,4 +1,4 @@
-import { useCallback, useState, useReducer } from 'react';
+import React, { useCallback, useState, useReducer } from 'react';
 import { Button } from 'reactstrap';
 import {
   GenericModal,
@@ -18,6 +18,7 @@ import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
+import { Tabs } from 'tapis-app/_components';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -41,8 +42,8 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     // Create transfer
   }, [selectedFiles, create, destination]);
 
-  const body = (
-    <div className="row h-100">
+  const createTransferTab = (
+    <div className={`row h-100 ${styles.pane}`}>
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>
@@ -70,6 +71,34 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       </div>
     </div>
   );
+
+  const listTransfersTab = (
+    <div className={`row h-100 ${styles.pane}`}>
+      <div className="col-md-6 d-flex flex-column">
+        {/* Table of selected files */}
+        <div className={`${styles['col-header']}`}>
+          Recent Transfers
+        </div>
+        <div className={styles['nav-list']}>
+          PLACEHOLDER: TRANSFER LIST
+        </div>
+      </div>
+      <div className="col-md-6 d-flex flex-column">
+        {/* Table of selected files */}
+        <div className={`${styles['col-header']}`}>
+          Details
+        </div>
+        PLACEHOLDER: TRANSFER DETAILS
+      </div> 
+    </div>
+  )
+
+  const body = (
+    <Tabs 
+      tabs={{'Start a Transfer': createTransferTab, 'Recent Transfers': listTransfersTab }} 
+      className={styles.body}
+    />
+  )
 
   return (
     <GenericModal

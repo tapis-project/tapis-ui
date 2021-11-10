@@ -48,7 +48,6 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
     )
   }
 
-
   const body = (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Tabs tabs={tabs} />
