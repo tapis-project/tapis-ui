@@ -36,7 +36,7 @@ const useList = (params: Files.GetRecentTransferTasksRequest) => {
 
   // If there are result pages, concatenate the results
   const concatenatedResults = result.data?.pages
-    ? concatResults<Files.TransferTaskListResponse>(result.data.pages)
+    ? concatResults<Files.TransferTask>(result.data.pages)
     : null;
 
   return {

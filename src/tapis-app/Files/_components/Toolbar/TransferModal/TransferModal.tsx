@@ -19,6 +19,7 @@ import { Column } from 'react-table';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
+import { TransferListing } from 'tapis-ui/components/files';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -27,6 +28,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
 }) => {
   const { pathname } = useLocation();
   const [destination, setDestination] = useState<{ systemId: string, path: string}>({ systemId, path });
+  const [ transfer, setTransfer ] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
   const { create, isLoading: createIsLoading, error: createError } = useCreate(); 
 
@@ -38,6 +40,15 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     },
     [setDestination]
   );
+
+  const onSelect = useCallback(
+    (transfer: Files.TransferTask) => {
+      console.log(transfer);
+      setTransfer(transfer);
+    },
+    [ setTransfer ]
+  )
+
   const onSubmit = useCallback(() => {
     // Create transfer
   }, [selectedFiles, create, destination]);
@@ -67,7 +78,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>Destination</div>
-        <FileExplorer systemId={systemId} path={path} onNavigate={onNavigate} />
+        <FileExplorer systemId={systemId} path={path} onNavigate={onNavigate} allowSystemChange />
       </div>
     </div>
   );
@@ -80,7 +91,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
           Recent Transfers
         </div>
         <div className={styles['nav-list']}>
-          PLACEHOLDER: TRANSFER LIST
+          <TransferListing onSelect={onSelect} />
         </div>
       </div>
       <div className="col-md-6 d-flex flex-column">
@@ -103,7 +114,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   return (
     <GenericModal
       toggle={toggle}
-      title="Copy Files"
+      title="Transfer Files"
       size="xl"
       body={body}
     />
