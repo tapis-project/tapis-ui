@@ -6,6 +6,7 @@ const QueryKeys = {
   nativeOp: 'files/nativeOp',
   permissions: 'files/permissions',
   stat: 'files/stat',
+  delete: 'files/delete',
 };
 
 export default QueryKeys;
