@@ -29,4 +29,5 @@ export type DownloadStreamParams = {
   path: string;
   destination: string;
   zip?: boolean;
+  onStart?: (response: Response) => void;
 };

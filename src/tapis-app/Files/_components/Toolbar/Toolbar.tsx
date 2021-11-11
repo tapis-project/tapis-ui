@@ -101,6 +101,7 @@ const Toolbar: React.FC = () => {
               if (selectedFiles[0].type === 'dir') {
                 params.zip = true;
                 params.destination = `${params.destination}.zip`;
+                params.onStart = (response: Response) => { console.log("Download started", response) };
               }
               download(params);
             }}

@@ -23,8 +23,8 @@ const useDownload = () => {
     reset,
   } = useMutation<Response, Error, DownloadStreamParams>(
     [QueryKeys.download, basePath, jwt],
-    ({ systemId, path, destination, zip = false }) =>
-      downloadStream(systemId, path, destination, zip, basePath, jwt)
+    ({ systemId, path, destination, zip = false, onStart = null }) =>
+      downloadStream(systemId, path, destination, zip, onStart, basePath, jwt)
   );
 
   // Return hook object with loading states and login function
