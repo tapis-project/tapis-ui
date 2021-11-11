@@ -9,7 +9,7 @@ export type InsertHookParams = {
   systemId: string;
   path: string;
   file: File;
-  progressCallback?: (progress: number, file: File) => void
+  progressCallback?: (progress: number, file: File) => void;
 };
 
 const useUpload = () => {

@@ -20,13 +20,13 @@ export enum FileOpEventStatus {
   progress = 'progress',
   error = 'error',
   success = 'success',
-  none = 'none'
+  none = 'none',
 }
 
 export type FileOpState = {
   [key: string]: {
-    status: FileOpEventStatus,
-    progress?: number
+    status: FileOpEventStatus;
+    progress?: number;
   };
 };
 
@@ -43,7 +43,11 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const [files, setFiles] = useState<Array<File>>([]);
 
   const onProgress = (uploadProgress: number, file: File) => {
-    dispatch({ key: file.name, status: FileOpEventStatus.progress, progress: uploadProgress });
+    dispatch({
+      key: file.name,
+      status: FileOpEventStatus.progress,
+      progress: uploadProgress,
+    });
   };
 
   const isValidFile = useCallback(
@@ -79,8 +83,11 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const reducer = (
     state: FileOpState,
-    action: { key: string; status: FileOpEventStatus, progress?: number }
-  ) => ({ ...state, [action.key]: {status: action.status, progress: action.progress }});
+    action: { key: string; status: FileOpEventStatus; progress?: number }
+  ) => ({
+    ...state,
+    [action.key]: { status: action.status, progress: action.progress },
+  });
 
   const [fileOpState, dispatch] = useReducer(reducer, {} as FileOpState);
 
@@ -94,13 +101,16 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles, toggle]
   );
 
-  const { uploadAsync, isLoading, error, isSuccess, reset } =
-    useUpload();
+  const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
 
   const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
     fn: uploadAsync,
     onStart: (item) => {
-      dispatch({ key: item.file.name!, status: FileOpEventStatus.progress, progress: 0 });
+      dispatch({
+        key: item.file.name!,
+        status: FileOpEventStatus.progress,
+        progress: 0,
+      });
     },
     onSuccess: (item) => {
       dispatch({ key: item.file.name!, status: FileOpEventStatus.success });
@@ -111,7 +121,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
     onError: (item) => {
       dispatch({ key: item.file.name!, status: FileOpEventStatus.error });
     },
-
   });
 
   useEffect(() => {
@@ -123,7 +132,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       systemId: systemId!,
       path: path!,
       file,
-      progressCallback: onProgress
+      progressCallback: onProgress,
     }));
     run(operations);
   }, [files, run, systemId, path]);
@@ -140,12 +149,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
       id: 'deleteStatus',
       Cell: (el) => {
         const file = files[el.row.index];
-        const status = fileOpState[file.name] !== undefined
-          ? fileOpState[file.name].status
-          : undefined
+        const status =
+          fileOpState[file.name] !== undefined
+            ? fileOpState[file.name].status
+            : undefined;
         switch (status) {
           case 'loading':
-            return <LoadingSpinner placement="inline" />
+            return <LoadingSpinner placement="inline" />;
           case 'progress':
             return <Progress value={fileOpState[file.name!].progress!} />;
           case 'success':
@@ -174,9 +184,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
       title={`Upload files`}
       body={
         <div>
-          <div className={styles['file-dropzone']} {...getRootProps()}>
-            <input {...getInputProps()} />
-            <Button>Select files</Button>
+          <div
+            aria-label="Dropzone"
+            className={styles['file-dropzone']}
+            {...getRootProps()}
+          >
+            <input aria-label="File Input" {...getInputProps()} />
+            <Button aria-label="File Select">Select files</Button>
             <div>
               <p>or drag and drop</p>
               <b>Max file size: {sizeFormat(maxFileSizeBytes)}</b>

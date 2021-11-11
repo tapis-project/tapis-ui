@@ -20,7 +20,7 @@ const insert = (
       'X-Tapis-Token': jwt,
     },
     onUploadProgress: (progressEvent: any) => {
-      if ( progressCallback ) {
+      if (progressCallback) {
         let progress: number = Math.round(
           (progressEvent.loaded * 100) / progressEvent.total
         );
