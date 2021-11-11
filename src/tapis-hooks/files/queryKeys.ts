@@ -9,6 +9,7 @@ const QueryKeys = {
   permissions: 'files/permissions',
   stat: 'files/stat',
   delete: 'files/delete',
+  download: 'files/download',
 };
 
 export default QueryKeys;

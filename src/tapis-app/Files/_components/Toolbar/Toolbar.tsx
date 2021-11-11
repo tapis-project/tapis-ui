@@ -9,8 +9,10 @@ import RenameModal from './RenameModal';
 import UploadModal from './UploadModal';
 import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
+import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
+import { useDownload } from 'tapis-hooks/files';
 
 type ToolbarButtonProps = {
   text: string;
@@ -53,6 +55,7 @@ const Toolbar: React.FC = () => {
   const { pathname } = useLocation();
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
+  const { download } = useDownload();
   const toggle = () => {
     setModal(undefined);
   };
@@ -83,9 +86,15 @@ const Toolbar: React.FC = () => {
           />
           <ToolbarButton
             text="Permissions"
-            icon="toolbox"
+            icon="gear"
             disabled={selectedFiles.length !== 1}
             onClick={() => setModal('permissions')}
+          />
+          <ToolbarButton
+            text="Transfers"
+            icon="globe"
+            disabled={false}
+            onClick={() => setModal('transfer')}
           />
           <ToolbarButton
             text="Download"
@@ -94,9 +103,13 @@ const Toolbar: React.FC = () => {
               selectedFiles.length !== 1 ||
               (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
             }
-            onClick={() => {
-              console.log('Toolbar button');
-            }}
+            onClick={() =>
+              download({
+                systemId,
+                path: selectedFiles[0].path ?? '',
+                destination: selectedFiles[0].name ?? 'tapisfile',
+              })
+            }
             aria-label="Download"
           />
           <ToolbarButton
@@ -147,6 +160,13 @@ const Toolbar: React.FC = () => {
           )}
           {modal === 'rename' && (
             <RenameModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
+          )}
+          {modal === 'transfer' && (
+            <TransferModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
