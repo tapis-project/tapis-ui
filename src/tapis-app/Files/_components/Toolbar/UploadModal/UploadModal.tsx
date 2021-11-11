@@ -17,12 +17,17 @@ import Progress from 'tapis-ui/_common/Progress';
 
 export enum FileOpEventStatus {
   loading = 'loading',
+  progress = 'progress',
   error = 'error',
   success = 'success',
+  none = 'none'
 }
 
 export type FileOpState = {
-  [key: string]: FileOpEventStatus;
+  [key: string]: {
+    status: FileOpEventStatus,
+    progress?: number
+  };
 };
 
 type UploadModalProps = ToolbarModalProps & {
@@ -36,6 +41,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
   maxFileSizeBytes = 524288000,
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
+
+  const onProgress = (uploadProgress: number, file: File) => {
+    dispatch({ key: file.name, status: FileOpEventStatus.progress, progress: uploadProgress });
+  };
 
   const isValidFile = useCallback(
     (filesArr: Array<File>, file: File) => {
@@ -70,8 +79,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const reducer = (
     state: FileOpState,
-    action: { key: string; status: FileOpEventStatus }
-  ) => ({ ...state, [action.key]: action.status });
+    action: { key: string; status: FileOpEventStatus, progress?: number }
+  ) => ({ ...state, [action.key]: {status: action.status, progress: action.progress }});
 
   const [fileOpState, dispatch] = useReducer(reducer, {} as FileOpState);
 
@@ -85,13 +94,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles, toggle]
   );
 
-  const { uploadAsync, isLoading, error, isSuccess, reset, getProgress } =
+  const { uploadAsync, isLoading, error, isSuccess, reset } =
     useUpload();
 
   const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
     fn: uploadAsync,
     onStart: (item) => {
-      dispatch({ key: item.file.name!, status: FileOpEventStatus.loading });
+      dispatch({ key: item.file.name!, status: FileOpEventStatus.progress, progress: 0 });
     },
     onSuccess: (item) => {
       dispatch({ key: item.file.name!, status: FileOpEventStatus.success });
@@ -102,6 +111,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
     onError: (item) => {
       dispatch({ key: item.file.name!, status: FileOpEventStatus.error });
     },
+
   });
 
   useEffect(() => {
@@ -113,6 +123,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       systemId: systemId!,
       path: path!,
       file,
+      progressCallback: onProgress
     }));
     run(operations);
   }, [files, run, systemId, path]);
@@ -129,16 +140,14 @@ const UploadModal: React.FC<UploadModalProps> = ({
       id: 'deleteStatus',
       Cell: (el) => {
         const file = files[el.row.index];
-        switch (fileOpState[file.name!]) {
+        const status = fileOpState[file.name] !== undefined
+          ? fileOpState[file.name].status
+          : undefined
+        switch (status) {
           case 'loading':
-            const uploadingFile = getProgress().file;
-            if (
-              uploadingFile &&
-              uploadingFile.name === files[el.row.index].name
-            ) {
-              return <Progress value={getProgress().progress} />;
-            }
-            return <Progress value={0} />;
+            return <LoadingSpinner placement="inline" />
+          case 'progress':
+            return <Progress value={fileOpState[file.name!].progress!} />;
           case 'success':
             return <Icon name="approved-reverse" className="success" />;
           case 'error':
