@@ -58,30 +58,32 @@ const Toolbar: React.FC = () => {
   const { add } = useNotifications();
 
   const onDownload = useCallback(() => {
-    const params: DownloadStreamParams = {
-      systemId,
-      path: selectedFiles[0].path ?? '',
-      destination: selectedFiles[0].name ?? 'tapisfile',
-    };
-    const isZip = selectedFiles[0].type === 'dir';
-    if (isZip) {
-      params.zip = true;
-      params.destination = `${params.destination}.zip`;
-      add({ icon: 'data-files', message: `Preparing download` });
-      params.onStart = (response: Response) => {
-        add({ icon: 'data-files', message: `Starting download` });
+    selectedFiles.forEach((file) => {
+      const params: DownloadStreamParams = {
+        systemId,
+        path: file.path ?? '',
+        destination: file.name ?? 'tapisfile',
       };
-    }
-    download(params, {
-      onError: isZip
-        ? () => {
-            add({
-              icon: 'data-files',
-              message: `Download failed`,
-              status: 'ERROR',
-            });
-          }
-        : undefined,
+      const isZip = file.type === 'dir';
+      if (isZip) {
+        params.zip = true;
+        params.destination = `${params.destination}.zip`;
+        add({ icon: 'data-files', message: `Preparing download` });
+        params.onStart = (response: Response) => {
+          add({ icon: 'data-files', message: `Starting download` });
+        };
+      }
+      download(params, {
+        onError: isZip
+          ? () => {
+              add({
+                icon: 'data-files',
+                message: `Download failed`,
+                status: 'ERROR',
+              });
+            }
+          : undefined,
+      });
     });
   }, [selectedFiles, add, download, systemId]);
 
@@ -122,7 +124,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Download"
             icon="download"
-            disabled={selectedFiles.length !== 1}
+            disabled={selectedFiles.length === 0}
             onClick={onDownload}
             aria-label="Download"
           />
