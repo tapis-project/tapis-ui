@@ -1,5 +1,5 @@
 import { Files } from '@tapis/tapis-typescript';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
@@ -56,6 +56,35 @@ const Toolbar: React.FC = () => {
   const currentPath = pathname.split('/').splice(3).join('/');
   const { download } = useDownload();
   const { add } = useNotifications();
+
+  const onDownload = useCallback(() => {
+    const params: DownloadStreamParams = {
+      systemId,
+      path: selectedFiles[0].path ?? '',
+      destination: selectedFiles[0].name ?? 'tapisfile',
+    };
+    const isZip = selectedFiles[0].type === 'dir';
+    if (isZip) {
+      params.zip = true;
+      params.destination = `${params.destination}.zip`;
+      add({ icon: 'data-files', message: `Preparing download` });
+      params.onStart = (response: Response) => {
+        add({ icon: 'data-files', message: `Starting download` });
+      };
+    }
+    download(params, {
+      onError: isZip
+        ? () => {
+            add({
+              icon: 'data-files',
+              message: `Download failed`,
+              status: 'ERROR',
+            });
+          }
+        : undefined,
+    });
+  }, [selectedFiles, add, download, systemId]);
+
   const toggle = () => {
     setModal(undefined);
   };
@@ -94,36 +123,7 @@ const Toolbar: React.FC = () => {
             text="Download"
             icon="download"
             disabled={selectedFiles.length !== 1}
-            onClick={() => {
-              const params: DownloadStreamParams = {
-                systemId,
-                path: selectedFiles[0].path ?? '',
-                destination: selectedFiles[0].name ?? 'tapisfile',
-              }
-              const isZip = selectedFiles[0].type === 'dir';
-              if (isZip) {
-                params.zip = true;
-                params.destination = `${params.destination}.zip`;
-                const notificationId = add({ icon: 'data-files', message: `Preparing download`});
-                params.onStart = (response: Response) => { 
-                  add({ icon: 'data-files', message: `Starting download`});
-                };
-              }
-              download(
-                params,
-                {
-                  onError: isZip
-                    ? () => {
-                        add({
-                          icon: 'data-files',
-                          message: `Download failed`,
-                          status: 'ERROR'
-                        })
-                      }
-                    : undefined
-                }
-              );
-            }}
+            onClick={onDownload}
             aria-label="Download"
           />
           <ToolbarButton

@@ -1,52 +1,62 @@
 import React, { useReducer } from 'react';
-import { NotificationsContextType, NotificationRecord, Notification, NotificationToast } from '.';
+import {
+  NotificationsContextType,
+  NotificationRecord,
+  Notification,
+  NotificationToast,
+} from '.';
 import NotificationsContext from './NotificationsContext';
 
-const NotificationsProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  const reducer = (
-    state: Array<NotificationRecord>,
-    action: { 
-      operation: 'add' | 'markread' | 'remove' | 'set',
-      notification?: Notification,
-      id: string
+export const reducer = (
+  state: Array<NotificationRecord>,
+  action: {
+    operation: 'add' | 'markread' | 'remove' | 'set';
+    notification?: Notification;
+    id: string;
+  }
+): Array<NotificationRecord> => {
+  const { operation, notification, id } = action;
+  if (operation === 'add') {
+    if (!notification) {
+      throw new Error('notification field missing');
     }
-  ): Array<NotificationRecord> => {
-    const { operation, notification, id } = action;
-    if (operation === 'add') {
-      if (!notification) {
-        throw new Error('notification field missing');
-      }
-      return [ { notification, id, read: false }, ...state ];
+    return [{ notification, id, read: false }, ...state];
+  }
+  const index = state.findIndex((existing) => existing.id === id);
+  if (index === -1) {
+    throw new Error(`Could not find notification with id ${id}`);
+  }
+  if (operation === 'markread') {
+    state[index].read = true;
+    return [...state];
+  }
+  if (operation === 'set') {
+    if (!notification) {
+      throw new Error('notification field missing');
     }
-    const index = state.findIndex(existing => existing.id === id);
-    if (index === -1) {
-      throw new Error(`Could not find notification with id ${id}`)
-    }
-    if (operation === 'markread') {
-      state[index].read = true;
-      return [ ...state ];
-    }
-    if (operation === 'set') {
-      if (!notification) {
-        throw new Error('notification field missing');
-      }
-      state[index].notification = { ...notification! };
-      return [ ...state ];
-    }
-    if (operation === 'remove') {
-      return [ ...state.splice(index, 1) ];
-    }
-    return state;
-  };
+    state[index].notification = { ...notification! };
+    return [...state];
+  }
+  if (operation === 'remove') {
+    state.splice(index, 1);
+    return [...state];
+  }
+  return state;
+};
 
-  const [notifications, dispatch] = useReducer(reducer, [] as Array<NotificationRecord>);
-
+const NotificationsProvider: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => {
+  const [notifications, dispatch] = useReducer(
+    reducer,
+    [] as Array<NotificationRecord>
+  );
 
   // Provide a context state for the rest of the application, including
   // a way of modifying the state
   const contextValue: NotificationsContextType = {
     notifications,
-    dispatch
+    dispatch,
   };
 
   return (

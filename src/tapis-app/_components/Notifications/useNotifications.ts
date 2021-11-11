@@ -1,4 +1,4 @@
-import { useContext, useCallback } from 'react';
+import { useContext } from 'react';
 import NotificationsContext from './NotificationsContext';
 import { Notification } from '.';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,36 +6,30 @@ import { v4 as uuidv4 } from 'uuid';
 const useNotifications = () => {
   const { notifications, dispatch } = useContext(NotificationsContext);
 
-  const add = useCallback(
-    (notification: Notification) => {
-      const id = uuidv4();
-      dispatch({ operation: 'add', notification, id });
-      return id;
-    },
-    [ dispatch ]
-  )
+  const add = (notification: Notification) => {
+    const id = uuidv4();
+    dispatch({ operation: 'add', notification, id });
+    return id;
+  };
 
-  const markread = useCallback(
-    (id: string) => {
-      dispatch({ operation: 'markread', id });
-    },
-    [ dispatch ]
-  )
+  const markread = (id: string) => {
+    dispatch({ operation: 'markread', id });
+  };
 
   const remove = (id: string) => {
     dispatch({ operation: 'remove', id });
-  }
+  };
 
   const set = (id: string, notification: Notification) => {
     dispatch({ operation: 'set', id, notification });
-  }
+  };
 
   return {
     notifications,
     add,
     markread,
     remove,
-    set
+    set,
   };
 };
 

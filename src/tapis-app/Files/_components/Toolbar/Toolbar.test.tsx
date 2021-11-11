@@ -41,18 +41,6 @@ describe('Toolbar', () => {
     expect(RenameModal as jest.Mock).toHaveBeenCalled();
   });
 
-  it('disables download button for directories', async () => {
-    (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [{ ...fileInfo, type: 'dir' }],
-    });
-
-    const { getByLabelText } = renderComponent(<Toolbar />);
-
-    const downloadBtn = getByLabelText('Download');
-    expect(downloadBtn).toBeDefined();
-    expect(downloadBtn.closest('button')).toHaveAttribute('disabled');
-  });
-
   it('disables download button for multiple file selection', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo, fileInfo],

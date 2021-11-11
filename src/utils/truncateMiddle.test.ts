@@ -1,6 +1,5 @@
 import truncateMiddle from './truncateMiddle';
 
-
 describe('truncateMiddle', () => {
   it('returns middle-truncated string', () => {
     const longString = 'thisIsSomeTestJobName-10-12-2020 01:01:01Z';

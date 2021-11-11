@@ -9,31 +9,31 @@
     - Evaluate introduction of CSS grid (may be over-engineering) */
 
 .notification-toast-container {
-    --toast-width: 40em;
-    /* NOTE: Seems unnecessary and superfluously used:
+  --toast-width: 40em;
+  /* NOTE: Seems unnecessary and superfluously used:
              - Removing all instances causes no UI change.
              - Browser calculation already reaches ~42px. */
 
-    max-width: var(--toast-width);
+  max-width: var(--toast-width);
 }
 .MuiSnackbar-anchorOriginBottomLeft.notification-toast-container {
-    /* Without `display: block`+`right: …px`, notification width is too short */
-    display: block;
-    right: 40px;
+  /* Without `display: block`+`right: …px`, notification width is too short */
+  display: block;
+  right: 40px;
 
-    left: 40px;
-    bottom: 40px;
-    max-width: var(--toast-width);
+  left: 40px;
+  bottom: 40px;
+  max-width: var(--toast-width);
 }
 
 .notification-toast {
-    height: var(--toast-height);
+  height: var(--toast-height);
 }
 .MuiSnackbarContent-root.notification-toast {
-    background-color: var(--global-color-accent--x-light);
-    border-radius: 0;
-    color: var(--global-color-primary--x-dark);
-    padding: 0;
+  background-color: var(--global-color-accent--x-light);
+  border-radius: 0;
+  color: var(--global-color-primary--x-dark);
+  padding: 0;
 }
 
 .toast-is-error {
@@ -42,30 +42,30 @@
 }
 
 .notification-toast-body {
-    height: var(--toast-height);
-    display: grid;
-    grid-template-columns: minmax(15px, 16%) 1fr;
-    width: 100%;
+  height: var(--toast-height);
+  display: grid;
+  grid-template-columns: minmax(15px, 16%) 1fr;
+  width: 100%;
 }
 .MuiSnackbarContent-message.notification-toast-body {
-    padding: 0;
+  padding: 0;
 }
 
 .notification-toast-icon-wrapper {
-    display: grid;
-    place-items: center;
-    border-right: 1px solid var(--global-color-primary--normal);
+  display: grid;
+  place-items: center;
+  border-right: 1px solid var(--global-color-primary--normal);
 }
 
 .notification-toast-content {
-    padding: 10px 15px;
-    height: var(--toast-height);
-    font-weight: bold;
-    display: grid;
-    place-items: center left;
-    span {
-        @include truncate-with-ellipsis;
-        width: 100%;
-        font-size: 1.1em;
-    }
+  padding: 10px 15px;
+  height: var(--toast-height);
+  font-weight: bold;
+  display: grid;
+  place-items: center left;
+  span {
+    @include truncate-with-ellipsis;
+    width: 100%;
+    font-size: 1.1em;
+  }
 }
