@@ -30,6 +30,7 @@ const NotificationToast = () => {
     } else if (notifications.length && notificationRecord && open) {
       // Close an active toast when a new one is added
       setOpen(false);
+      markread(notificationRecord?.id!);
       setNotificationRecord({ ...notifications[0] });
       setTransition(() => (props: SlideProps) => (
         <Slide {...props} direction="right" />
