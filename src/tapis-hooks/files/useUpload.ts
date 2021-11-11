@@ -1,4 +1,3 @@
-import { useState, useCallback } from 'react';
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { insertAxios as insert } from 'tapis-api/files';
