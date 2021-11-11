@@ -8,6 +8,7 @@ import CopyMoveModal from './CopyMoveModal';
 import RenameModal from './RenameModal';
 import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
+import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import { useDownload } from 'tapis-hooks/files';
@@ -84,9 +85,15 @@ const Toolbar: React.FC = () => {
           />
           <ToolbarButton
             text="Permissions"
-            icon="toolbox"
+            icon="gear"
             disabled={selectedFiles.length !== 1}
             onClick={() => setModal('permissions')}
+          />
+          <ToolbarButton
+            text="Transfers"
+            icon="globe"
+            disabled={false}
+            onClick={() => setModal('transfer')}
           />
           <ToolbarButton
             text="Download"
@@ -152,6 +159,13 @@ const Toolbar: React.FC = () => {
           )}
           {modal === 'rename' && (
             <RenameModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
+          )}
+          {modal === 'transfer' && (
+            <TransferModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}

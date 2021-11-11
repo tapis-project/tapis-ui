@@ -19,3 +19,19 @@ export const fileStatInfo: Files.FileStatInfo = {
   dir: false,
   link: false,
 };
+
+export const transferTask: Files.TransferTask = {
+  id: 165,
+  username: 'cicsvc',
+  tenantId: 'tacc',
+  tag: 'transfer-1',
+  uuid: '52404c37-5bc1-45d8-8a6c-43f175d952e2',
+  status: Files.TransferTaskStatusEnum.Completed,
+  estimatedTotalBytes: 0,
+  totalBytesTransferred: 0,
+  totalTransfers: 0,
+  completeTransfers: 0,
+  created: new Date('2021-10-21T17:26:44.639Z'),
+  startTime: new Date('2021-10-21T17:26:44.665Z'),
+  endTime: new Date('2021-10-21T17:26:45.479Z'),
+};

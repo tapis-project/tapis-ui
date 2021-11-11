@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { GenericModal } from 'tapis-ui/_common';
 import { ToolbarModalProps } from '../Toolbar';
 import { useFilesSelect } from '../../FilesContext';
@@ -7,8 +6,9 @@ import { FileStat, FileOperation } from 'tapis-ui/components/files';
 import { useTapisConfig } from 'tapis-hooks';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Files } from '@tapis/tapis-typescript';
-import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { Tabs } from 'tapis-app/_components';
 import styles from './PermissionsModal.module.scss';
+import React from 'react';
 
 const PermissionsModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -16,7 +16,7 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
   path,
 }) => {
   const { selectedFiles } = useFilesSelect();
-  const [activeTab, setActiveTab] = useState('stat');
+
   const file = selectedFiles[0];
   const { claims } = useTapisConfig();
   const username = claims['tapis/username'];
@@ -32,43 +32,25 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
   const write: boolean =
     data?.result?.permission === Files.FilePermissionPermissionEnum.Modify;
 
-  const getTabClassname = (tabName: string) => {
-    return `${styles.tab} ${activeTab === tabName ? styles.active : ''}`;
+  const tabs: { [name: string]: React.ReactNode } = {
+    Info: (
+      <FileStat
+        systemId={systemId!}
+        path={filePath}
+        className={styles['list-content']}
+      />
+    ),
   };
+
+  if (write) {
+    tabs['Linux Native Operations'] = (
+      <FileOperation systemId={systemId!} path={filePath} />
+    );
+  }
 
   const body = (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <Nav tabs>
-        <NavItem className={getTabClassname('stat')}>
-          <NavLink onClick={() => setActiveTab('stat')} data-testid="stat-tab">
-            Info
-          </NavLink>
-        </NavItem>
-        {write && (
-          <NavItem className={getTabClassname('nativeop')}>
-            <NavLink
-              onClick={() => setActiveTab('nativeop')}
-              data-testid="nativeop-tab"
-            >
-              Linux Native Operations
-            </NavLink>
-          </NavItem>
-        )}
-      </Nav>
-      <TabContent activeTab={activeTab} className={styles['tab-content']}>
-        <TabPane tabId="stat">
-          <FileStat
-            systemId={systemId!}
-            path={filePath}
-            className={styles['list-content']}
-          />
-        </TabPane>
-        {write && (
-          <TabPane tabId="nativeop">
-            <FileOperation systemId={systemId!} path={filePath} />
-          </TabPane>
-        )}
-      </TabContent>
+      <Tabs tabs={tabs} />
     </QueryWrapper>
   );
 
