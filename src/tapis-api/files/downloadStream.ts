@@ -5,11 +5,12 @@ const downloadStream = (
   systemId: string,
   path: string,
   destination: string,
+  zip: boolean,
   basePath: string,
   jwt: string
 ): Promise<Response> => {
   const fileStream = StreamSaver.createWriteStream(destination);
-  const url = `${basePath}/v3/files/content/${systemId}/${path}`;
+  const url = `${basePath}/v3/files/content/${systemId}/${path}${zip ? '?zip=true' : ''}`;
 
   const config = {
     headers: {

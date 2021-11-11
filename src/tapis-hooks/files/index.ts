@@ -23,3 +23,10 @@ export type NativeOpParams = {
   operation: Files.NativeLinuxOpRequestOperationEnum;
   argument?: string;
 };
+
+export type DownloadStreamParams = {
+  systemId: string;
+  path: string;
+  destination: string;
+  zip?: boolean;
+};

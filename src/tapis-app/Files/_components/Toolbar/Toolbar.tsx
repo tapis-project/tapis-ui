@@ -10,7 +10,7 @@ import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
-import { useDownload } from 'tapis-hooks/files';
+import { useDownload, DownloadStreamParams } from 'tapis-hooks/files';
 
 type ToolbarButtonProps = {
   text: string;
@@ -91,17 +91,19 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Download"
             icon="download"
-            disabled={
-              selectedFiles.length !== 1 ||
-              (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
-            }
-            onClick={() =>
-              download({
+            disabled={selectedFiles.length !== 1}
+            onClick={() => {
+              const params: DownloadStreamParams = {
                 systemId,
                 path: selectedFiles[0].path ?? '',
                 destination: selectedFiles[0].name ?? 'tapisfile',
-              })
-            }
+              }
+              if (selectedFiles[0].type === 'dir') {
+                params.zip = true;
+                params.destination = `${params.destination}.zip`;
+              }
+              download(params);
+            }}
             aria-label="Download"
           />
           <ToolbarButton
