@@ -11,6 +11,7 @@ import DeleteModal from './DeleteModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import { useDownload, DownloadStreamParams } from 'tapis-hooks/files';
+import { useNotifications } from 'tapis-app/_components/Notifications';
 
 type ToolbarButtonProps = {
   text: string;
@@ -54,6 +55,7 @@ const Toolbar: React.FC = () => {
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
   const { download } = useDownload();
+  const { add } = useNotifications();
   const toggle = () => {
     setModal(undefined);
   };
@@ -98,12 +100,29 @@ const Toolbar: React.FC = () => {
                 path: selectedFiles[0].path ?? '',
                 destination: selectedFiles[0].name ?? 'tapisfile',
               }
-              if (selectedFiles[0].type === 'dir') {
+              const isZip = selectedFiles[0].type === 'dir';
+              if (isZip) {
                 params.zip = true;
                 params.destination = `${params.destination}.zip`;
-                params.onStart = (response: Response) => { console.log("Download started", response) };
+                const notificationId = add({ icon: 'data-files', message: `Preparing download`});
+                params.onStart = (response: Response) => { 
+                  add({ icon: 'data-files', message: `Starting download`});
+                };
               }
-              download(params);
+              download(
+                params,
+                {
+                  onError: isZip
+                    ? () => {
+                        add({
+                          icon: 'data-files',
+                          message: `Download failed`,
+                          status: 'ERROR'
+                        })
+                      }
+                    : undefined
+                }
+              );
             }}
             aria-label="Download"
           />
