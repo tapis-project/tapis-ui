@@ -5,11 +5,15 @@ const downloadStream = (
   systemId: string,
   path: string,
   destination: string,
+  zip: boolean,
+  onStart: null | ((response: Response) => void),
   basePath: string,
   jwt: string
 ): Promise<Response> => {
   const fileStream = StreamSaver.createWriteStream(destination);
-  const url = `${basePath}/v3/files/content/${systemId}/${path}`;
+  const url = `${basePath}/v3/files/content/${systemId}/${path}${
+    zip ? '?zip=true' : ''
+  }`;
 
   const config = {
     headers: {
@@ -18,11 +22,12 @@ const downloadStream = (
   };
 
   return errorDecoder<Response>(() =>
-    fetch(url, config).then((res) => {
-      if (!res.body) {
+    fetch(url, config).then((response) => {
+      onStart && onStart(response);
+      if (!response.body) {
         throw new Error('Download response had no body!');
       }
-      const readableStream = res.body;
+      const readableStream = response.body;
 
       // more optimized
       if (window.WritableStream && readableStream?.pipeTo) {
@@ -32,7 +37,7 @@ const downloadStream = (
 
       (window as any).writer = fileStream.getWriter();
 
-      const reader = res.body!.getReader();
+      const reader = response.body!.getReader();
       const pump = () =>
         reader
           .read()
