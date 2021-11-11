@@ -1,5 +1,5 @@
 import { Files } from '@tapis/tapis-typescript';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
@@ -12,7 +12,8 @@ import DeleteModal from './DeleteModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
-import { useDownload } from 'tapis-hooks/files';
+import { useDownload, DownloadStreamParams } from 'tapis-hooks/files';
+import { useNotifications } from 'tapis-app/_components/Notifications';
 
 type ToolbarButtonProps = {
   text: string;
@@ -56,6 +57,38 @@ const Toolbar: React.FC = () => {
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
   const { download } = useDownload();
+  const { add } = useNotifications();
+
+  const onDownload = useCallback(() => {
+    selectedFiles.forEach((file) => {
+      const params: DownloadStreamParams = {
+        systemId,
+        path: file.path ?? '',
+        destination: file.name ?? 'tapisfile',
+      };
+      const isZip = file.type === 'dir';
+      if (isZip) {
+        params.zip = true;
+        params.destination = `${params.destination}.zip`;
+        add({ icon: 'data-files', message: `Preparing download` });
+        params.onStart = (response: Response) => {
+          add({ icon: 'data-files', message: `Starting download` });
+        };
+      }
+      download(params, {
+        onError: isZip
+          ? () => {
+              add({
+                icon: 'data-files',
+                message: `Download failed`,
+                status: 'ERROR',
+              });
+            }
+          : undefined,
+      });
+    });
+  }, [selectedFiles, add, download, systemId]);
+
   const toggle = () => {
     setModal(undefined);
   };
@@ -99,17 +132,8 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Download"
             icon="download"
-            disabled={
-              selectedFiles.length !== 1 ||
-              (selectedFiles.length === 1 && selectedFiles[0].type !== 'file')
-            }
-            onClick={() =>
-              download({
-                systemId,
-                path: selectedFiles[0].path ?? '',
-                destination: selectedFiles[0].name ?? 'tapisfile',
-              })
-            }
+            disabled={selectedFiles.length === 0}
+            onClick={onDownload}
             aria-label="Download"
           />
           <ToolbarButton
