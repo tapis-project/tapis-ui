@@ -6,8 +6,8 @@ const errorDecoder = async <T>(func: () => Promise<T>) => {
   } catch (error) {
     // If an exception occurred, try to decode the json response from it and
     // rethrow it
-    if (error.json) {
-      const decoded = await error.json();
+    if ((error as any).json) {
+      const decoded = await (error as any).json();
       throw decoded;
     } else {
       throw error;
