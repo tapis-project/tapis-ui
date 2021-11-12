@@ -52,8 +52,14 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const onDrop = useCallback(
     (selectedFiles: Array<File>) => {
+      // Create an array of files unique File objects. This prevents
+      // a user from trying to upload 2 or more of the same file.
       const uniqueFiles = selectedFiles.filter(
         (selectedFile) =>
+          // The some function contains the selection logic for
+          // the filter function. All files that have the same name
+          // as any file in the uniqueFiles array or exceeds the max
+          // file size will not be added to the final array.
           !files.some(
             (existingFile) =>
               existingFile.name === selectedFile.name ||
@@ -143,10 +149,12 @@ const UploadModal: React.FC<UploadModalProps> = ({
             ? fileOpState[file.name].status
             : undefined;
         switch (status) {
-          case 'loading':
-            return <LoadingSpinner placement="inline" />;
           case 'progress':
-            return <Progress value={fileOpState[file.name!].progress!} />;
+            return (
+              <div className={styles['progress-bar-container']}>
+                <Progress value={fileOpState[file.name!].progress!} />
+              </div>
+            );
           case 'success':
             return <Icon name="approved-reverse" className="success" />;
           case 'error':
@@ -173,18 +181,20 @@ const UploadModal: React.FC<UploadModalProps> = ({
       title={`Upload files`}
       body={
         <div>
-          <div
-            aria-label="Dropzone"
-            className={styles['file-dropzone']}
-            {...getRootProps()}
-          >
-            <input aria-label="File Input" {...getInputProps()} />
-            <Button aria-label="File Select">Select files</Button>
-            <div>
-              <p>or drag and drop</p>
-              <b>Max file size: {sizeFormat(maxFileSizeBytes)}</b>
+          {!(isLoading || isSuccess) && (
+            <div
+              aria-label="Dropzone"
+              className={styles['file-dropzone']}
+              {...getRootProps()}
+            >
+              <input aria-label="File Input" {...getInputProps()} />
+              <Button aria-label="File Select">Select files</Button>
+              <div>
+                <p>or drag and drop</p>
+                <b>Max file size: {sizeFormat(maxFileSizeBytes)}</b>
+              </div>
             </div>
-          </div>
+          )}
           <h3 className={styles['files-list-header']}>
             Uploading to {systemId}/{path}
           </h3>

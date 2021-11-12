@@ -1,7 +1,8 @@
+import styles from './Progress.module.scss';
+
 type ProgressProps = {
   value: number;
   color?: string;
-  height?: number;
   styles?: { [name: string]: string };
   showProgress?: boolean;
 };
@@ -9,41 +10,19 @@ type ProgressProps = {
 const Progress: React.FC<ProgressProps> = ({
   value,
   color,
-  height = 20,
-  styles,
   showProgress = true,
 }) => {
+  const style = {
+    '--width': `${value}%`,
+    '--color': `${color ? color : '#44D130'}`,
+  } as React.CSSProperties;
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        border: '1px solid #DDDDDD',
-        width: '100%',
-        height: `${height}px`,
-        lineHeight: `${height - 3}px`,
-        ...styles,
-      }}
-    >
-      <div
-        style={{
-          width: `${value}%`,
-          height: '100%',
-          backgroundColor: `${color ? color : '#44D130'}`,
-          position: 'relative',
-        }}
-      />
+    <div className={styles['progress-bar']}>
+      <div className={styles['inner-bar']} style={style} />
       {showProgress && (
-        <div
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            top: 0,
-            left: 0,
-            backgroundColor: 'transparent',
-          }}
-        >
-          <p style={{ textAlign: 'center' }}>{value}%</p>
+        <div className={styles['overlay']}>
+          <p>{value}%</p>
         </div>
       )}
     </div>
