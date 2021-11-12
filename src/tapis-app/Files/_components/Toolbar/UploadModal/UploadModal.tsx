@@ -63,7 +63,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
       setFiles([...files, ...uniqueFiles]);
     },
-    [files, setFiles]
+    [files, setFiles, maxFileSizeBytes]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
