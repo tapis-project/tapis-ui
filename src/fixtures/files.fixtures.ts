@@ -8,6 +8,10 @@ export const fileInfo: Files.FileInfo = {
   lastModified: new Date('2020-01-01T12:00:00'),
 };
 
+export const fileBlob: File = new File(['(⌐□_□)'], 'file.png', {
+  type: 'image/png',
+});
+
 export const fileStatInfo: Files.FileStatInfo = {
   absolutePath: '/home/testuser2/.viminfo',
   uid: 1003,

@@ -6,6 +6,7 @@ import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import CopyMoveModal from './CopyMoveModal';
 import RenameModal from './RenameModal';
+import UploadModal from './UploadModal';
 import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import TransferModal from './TransferModal';
@@ -140,7 +141,7 @@ const Toolbar: React.FC = () => {
             icon="upload"
             disabled={false}
             onClick={() => {
-              console.log('Toolbar button');
+              setModal('upload');
             }}
             aria-label="Upload"
           />
@@ -193,6 +194,13 @@ const Toolbar: React.FC = () => {
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
+            />
+          )}
+          {modal === 'upload' && (
+            <UploadModal
+              toggle={toggle}
+              path={currentPath}
+              systemId={systemId}
             />
           )}
           {modal === 'permissions' && (

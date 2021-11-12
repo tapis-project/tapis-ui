@@ -1,4 +1,4 @@
-import { CopyMoveHookParams } from '.';
+import { MoveCopyHookParams } from '.';
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
 import { moveCopy } from 'tapis-api/files';
@@ -22,7 +22,7 @@ const useCopy = () => {
     data,
     error,
     reset,
-  } = useMutation<Files.FileStringResponse, Error, CopyMoveHookParams>(
+  } = useMutation<Files.FileStringResponse, Error, MoveCopyHookParams>(
     [QueryKeys.move, basePath, jwt],
     ({ systemId, path, newPath }) =>
       moveCopy(
@@ -44,20 +44,20 @@ const useCopy = () => {
     error,
     reset,
     copy: (
-      params: CopyMoveHookParams,
+      params: MoveCopyHookParams,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
         Files.FileStringResponse,
         Error,
-        CopyMoveHookParams
+        MoveCopyHookParams
       >
     ) => mutate(params, options),
     copyAsync: (
-      params: CopyMoveHookParams,
+      params: MoveCopyHookParams,
       options?: MutateOptions<
         Files.FileStringResponse,
         Error,
-        CopyMoveHookParams
+        MoveCopyHookParams
       >
     ) => mutateAsync(params, options),
   };

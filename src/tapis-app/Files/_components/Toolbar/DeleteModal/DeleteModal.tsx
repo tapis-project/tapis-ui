@@ -13,14 +13,14 @@ import { Files } from '@tapis/tapis-typescript';
 import { useMutations } from 'tapis-hooks/utils';
 import { DeleteHookParams } from 'tapis-hooks/files/useDelete';
 
-enum FileOpEventStatus {
+export enum FileOpEventStatus {
   loading = 'loading',
   error = 'error',
   success = 'success',
 }
 
-type DeleteState = {
-  [path: string]: FileOpEventStatus;
+export type FileOpState = {
+  [key: string]: FileOpEventStatus;
 };
 
 const DeleteModal: React.FC<ToolbarModalProps> = ({
@@ -32,11 +32,11 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   const { deleteFileAsync, isSuccess, isLoading, error, reset } = useDelete();
 
   const reducer = (
-    state: DeleteState,
-    action: { path: string; status: FileOpEventStatus }
-  ) => ({ ...state, [action.path]: action.status });
+    state: FileOpState,
+    action: { key: string; status: FileOpEventStatus }
+  ) => ({ ...state, [action.key]: action.status });
 
-  const [deleteState, dispatch] = useReducer(reducer, {} as DeleteState);
+  const [deleteState, dispatch] = useReducer(reducer, {} as FileOpState);
 
   useEffect(() => {
     reset();
@@ -51,13 +51,13 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   const { run } = useMutations<DeleteHookParams, Files.FileStringResponse>({
     fn: deleteFileAsync,
     onStart: (item) => {
-      dispatch({ path: item.path!, status: FileOpEventStatus.loading });
+      dispatch({ key: item.path!, status: FileOpEventStatus.loading });
     },
     onSuccess: (item) => {
-      dispatch({ path: item.path!, status: FileOpEventStatus.success });
+      dispatch({ key: item.path!, status: FileOpEventStatus.success });
     },
     onError: (item) => {
-      dispatch({ path: item.path!, status: FileOpEventStatus.error });
+      dispatch({ key: item.path!, status: FileOpEventStatus.error });
     },
     onComplete,
   });
@@ -83,7 +83,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   const statusColumn: Array<Column> = [
     {
       Header: '',
-      id: 'copyStatus',
+      id: 'deleteStatus',
       Cell: (el) => {
         const file = selectedFiles[el.row.index];
         switch (deleteState[file.path!]) {
