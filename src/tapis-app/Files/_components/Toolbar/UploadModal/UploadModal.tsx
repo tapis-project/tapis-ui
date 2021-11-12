@@ -50,27 +50,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
     });
   };
 
-  const isValidFile = useCallback(
-    (filesArr: Array<File>, file: File) => {
-      for (let i = 0; i < filesArr.length; i++) {
-        if (filesArr[i].name === file.name || file.size > maxFileSizeBytes) {
-          return false;
-        }
-      }
-
-      return true;
-    },
-    [maxFileSizeBytes]
-  );
-
+  const isValidFile = 
+    (filesArr: Array<File>, file: File) => 
+      !filesArr.some(
+        (existingFile) =>
+          existingFile.name === file.name || file.size > maxFileSizeBytes
+      )
+ 
   const onDrop = useCallback(
     (selectedFiles: Array<File>) => {
-      const uniqueFiles = [];
-      for (let i = 0; i < selectedFiles.length; i++) {
-        if (isValidFile(files, selectedFiles[i])) {
-          uniqueFiles.push(selectedFiles[i]);
-        }
-      }
+      const uniqueFiles = selectedFiles.filter(
+        selectedFile => isValidFile(files, selectedFile)
+      )
 
       setFiles([...files, ...uniqueFiles]);
     },
