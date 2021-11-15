@@ -90,7 +90,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
     (file: Files.FileInfo) => {
       setFiles([...files.filter((checkFile) => file.name !== checkFile.name)]);
     },
-    [files, setFiles, toggle]
+    [files, setFiles]
   );
 
   const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
