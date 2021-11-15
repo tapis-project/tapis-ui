@@ -196,7 +196,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   return (
     <GenericModal
       toggle={toggle}
-      title="Copy Files"
+      title={`${operation.charAt(0) + operation.slice(1).toLowerCase()} Files`}
       size="xl"
       body={body}
       footer={footer}
