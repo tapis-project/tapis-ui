@@ -186,16 +186,15 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
 type FileSelectHeaderProps = {
   onSelectAll: () => void;
   onUnselectAll: () => void;
-  selectedFiles: Array<Files.FileInfo>
+  allSelected: boolean
 };
 
 const FileSelectHeader: React.FC<FileSelectHeaderProps> = ({
   onSelectAll,
   onUnselectAll,
-  selectedFiles,
+  allSelected
 }) => {
   const [checked, setChecked] = useState(false);
-  const handleChecked = () => checked && selectedFiles.length > 0;
 
   const onClick = useCallback(() => {
     if (checked) {
@@ -205,14 +204,15 @@ const FileSelectHeader: React.FC<FileSelectHeaderProps> = ({
       setChecked(true);
       onSelectAll();
     }
-  }, [checked, setChecked, onSelectAll, onUnselectAll]);
+  }, [checked, setChecked, onSelectAll, onUnselectAll, allSelected]);
+
   return (
     <span
       className={styles['select-all']}
       onClick={onClick}
       data-testid="select-all"
     >
-      <FileListingCheckboxCell selected={handleChecked()} />
+      <FileListingCheckboxCell selected={checked && !allSelected} />
     </span>
   );
 };
@@ -285,7 +285,7 @@ const FileListing: React.FC<FileListingProps> = ({
               onUnselectAll={() =>
                 onUnselect && onUnselect(concatenatedResults ?? [])
               }
-              selectedFiles={selectedFiles}
+              allSelected={Object.values(selectedFileDict).some((value) => value === false)}
             />
           ),
           id: 'multiselect',
