@@ -197,7 +197,7 @@ const FileSelectHeader: React.FC<FileSelectHeaderProps> = ({
   const [checked, setChecked] = useState(false);
 
   const onClick = useCallback(() => {
-    if (checked) {
+    if (checked && !allSelected) {
       setChecked(false);
       onUnselectAll();
     } else {
