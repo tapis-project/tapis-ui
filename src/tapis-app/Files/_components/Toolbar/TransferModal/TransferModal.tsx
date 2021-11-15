@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
@@ -9,6 +9,7 @@ import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
+import { focusManager } from 'react-query';
 import {
   TransferListing,
   TransferDetails,
@@ -28,6 +29,13 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   }>({ systemId, path });
   const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      focusManager.setFocused(true);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [])
 
   const onNavigate = useCallback(
     (systemId: string | null, path: string | null) => {
