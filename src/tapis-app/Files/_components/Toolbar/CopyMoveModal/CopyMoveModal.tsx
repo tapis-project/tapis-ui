@@ -29,7 +29,7 @@ export enum FileOpEventStatus {
   loading = 'loading',
   error = 'error',
   success = 'success',
-  progress = 'progress'
+  progress = 'progress',
 }
 
 export type FileOpState = {
@@ -56,12 +56,31 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
 
   const [copyMoveState, dispatch] = useReducer(reducer, {} as FileOpState);
 
-  const { copyAsync, error: copyError, isLoading: moveIsLoading, isSuccess: moveIsSuccess } = useCopy();
-  const { moveAsync, error: moveError, isLoading: copyIsLoading, isSuccess: copyIsSuccess } = useMove();
+  const {
+    copyAsync,
+    error: copyError,
+    isLoading: moveIsLoading,
+    isSuccess: moveIsSuccess,
+  } = useCopy();
+  const {
+    moveAsync,
+    error: moveError,
+    isLoading: copyIsLoading,
+    isSuccess: copyIsSuccess,
+  } = useMove();
 
-  const error = operation === Files.MoveCopyRequestOperationEnum.Move ? moveError : copyError;
-  const isLoading = operation === Files.MoveCopyRequestOperationEnum.Move ? moveIsLoading : copyIsLoading;
-  const isSuccess = operation === Files.MoveCopyRequestOperationEnum.Move ? moveIsSuccess : copyIsSuccess;
+  const error =
+    operation === Files.MoveCopyRequestOperationEnum.Move
+      ? moveError
+      : copyError;
+  const isLoading =
+    operation === Files.MoveCopyRequestOperationEnum.Move
+      ? moveIsLoading
+      : copyIsLoading;
+  const isSuccess =
+    operation === Files.MoveCopyRequestOperationEnum.Move
+      ? moveIsSuccess
+      : copyIsSuccess;
 
   const fn =
     operation === Files.MoveCopyRequestOperationEnum.Copy
@@ -81,10 +100,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     [setDestinationPath]
   );
 
-  const { run } = useMutations<
-    MoveCopyHookParams,
-    Files.FileStringResponse
-  >({
+  const { run } = useMutations<MoveCopyHookParams, Files.FileStringResponse>({
     fn,
     onStart: (item) => {
       dispatch({ key: item.path!, status: FileOpEventStatus.loading });
@@ -186,7 +202,14 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     <SubmitWrapper
       isLoading={isLoading}
       error={error}
-      success={isSuccess && !error ? "Successfully " + (operation === Files.MoveCopyRequestOperationEnum.Move ? "moved" : "copied") : ''}
+      success={
+        isSuccess && !error
+          ? 'Successfully ' +
+            (operation === Files.MoveCopyRequestOperationEnum.Move
+              ? 'moved'
+              : 'copied')
+          : ''
+      }
       reverse={true}
     >
       <Button
@@ -194,7 +217,9 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
         disabled={
           !destinationPath ||
           destinationPath === path ||
-          isLoading || isSuccess || !!error
+          isLoading ||
+          isSuccess ||
+          !!error
         }
         aria-label="Submit"
         type="submit"

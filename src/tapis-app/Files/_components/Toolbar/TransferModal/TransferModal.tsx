@@ -35,7 +35,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       focusManager.setFocused(true);
     }, 5000);
     return () => clearInterval(interval);
-  }, [])
+  }, []);
 
   const onNavigate = useCallback(
     (systemId: string | null, path: string | null) => {

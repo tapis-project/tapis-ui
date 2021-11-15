@@ -120,7 +120,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Permissions"
             icon="gear"
-            disabled={true/*selectedFiles.length !== 1*/}
+            disabled={true /*selectedFiles.length !== 1*/}
             onClick={() => setModal('permissions')}
           />
           <ToolbarButton
