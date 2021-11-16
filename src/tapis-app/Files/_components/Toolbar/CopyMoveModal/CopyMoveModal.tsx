@@ -98,7 +98,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
         toggle();
       }
     },
-    [selectedFiles, toggle]
+    [selectedFiles, toggle, unselect]
   );
 
   const { run, isRunning, isFinished } = useMutations<
