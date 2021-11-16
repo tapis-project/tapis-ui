@@ -89,11 +89,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       setFiles([...files.filter((checkFile) => file.name !== checkFile.name)]);
-      if (files.length === 1) {
-        toggle();
-      }
     },
-    [files, setFiles, toggle]
+    [files, setFiles]
   );
 
   const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
@@ -218,7 +215,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
         >
           <Button
             color="primary"
-            disabled={isLoading || isSuccess || files.length === 0}
+            disabled={isLoading || isSuccess || !!error || files.length === 0}
             aria-label="Submit"
             onClick={onSubmit}
           >

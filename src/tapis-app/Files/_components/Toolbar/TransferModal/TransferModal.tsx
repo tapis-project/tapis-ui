@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
@@ -15,6 +15,7 @@ import {
   TransferCreate,
   TransferCancel,
 } from 'tapis-ui/components/files';
+import { useList } from 'tapis-hooks/files/transfers';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -29,6 +30,15 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
 
+  const { refetch } = useList({});
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [refetch]);
+
   const onNavigate = useCallback(
     (systemId: string | null, path: string | null) => {
       if (!!systemId && !!path) {
@@ -40,7 +50,6 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
 
   const onSelect = useCallback(
     (transfer: Files.TransferTask) => {
-      console.log(transfer);
       setTransfer(transfer);
     },
     [setTransfer]
