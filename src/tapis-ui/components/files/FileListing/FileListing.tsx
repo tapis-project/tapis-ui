@@ -186,16 +186,20 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
 type FileSelectHeaderProps = {
   onSelectAll: () => void;
   onUnselectAll: () => void;
-  allSelected: boolean;
+  selectedFileDict: SelectFileDictType;
 };
+
+type SelectFileDictType = { [path: string]: boolean };
 
 const FileSelectHeader: React.FC<FileSelectHeaderProps> = ({
   onSelectAll,
   onUnselectAll,
-  allSelected,
+  selectedFileDict,
 }) => {
   const [checked, setChecked] = useState(false);
-
+  const allSelected = Object.values(selectedFileDict).some(
+    (value) => value === false
+  );
   const onClick = useCallback(() => {
     if (checked && !allSelected) {
       setChecked(false);
@@ -262,9 +266,9 @@ const FileListing: React.FC<FileListingProps> = ({
     [concatenatedResults]
   );
 
-  const selectedFileDict: { [path: string]: boolean } = React.useMemo(() => {
-    const result: { [path: string]: boolean } = {};
-    const selectedDict: { [path: string]: boolean } = {};
+  const selectedFileDict: SelectFileDictType = React.useMemo(() => {
+    const result: SelectFileDictType = {};
+    const selectedDict: SelectFileDictType = {};
     selectedFiles.forEach((file) => {
       selectedDict[file.path ?? ''] = true;
     });
@@ -285,9 +289,7 @@ const FileListing: React.FC<FileListingProps> = ({
               onUnselectAll={() =>
                 onUnselect && onUnselect(concatenatedResults ?? [])
               }
-              allSelected={Object.values(selectedFileDict).some(
-                (value) => value === false
-              )}
+              selectedFileDict={selectedFileDict}
             />
           ),
           id: 'multiselect',
