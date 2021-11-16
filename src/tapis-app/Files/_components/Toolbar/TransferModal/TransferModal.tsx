@@ -31,8 +31,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
 
-  const { refetch } = useList({})
-  
+  const { refetch } = useList({});
 
   useEffect(() => {
     const interval = setInterval(() => {

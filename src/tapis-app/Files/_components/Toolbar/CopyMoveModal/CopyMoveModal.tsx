@@ -95,7 +95,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     (file: Files.FileInfo) => {
       unselect([file]);
       if (selectedFiles.length === 1) {
-        toggle()
+        toggle();
       }
     },
     [selectedFiles]
@@ -188,7 +188,15 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     <SubmitWrapper
       isLoading={isRunning}
       error={copyMoveError}
-      success={isFinished && !copyMoveError ? "Successfully " + (operation === Files.MoveCopyRequestOperationEnum.Move ? "moved" : "copied") + " files" : ''}
+      success={
+        isFinished && !copyMoveError
+          ? 'Successfully ' +
+            (operation === Files.MoveCopyRequestOperationEnum.Move
+              ? 'moved'
+              : 'copied') +
+            ' files'
+          : ''
+      }
       reverse={true}
     >
       <Button
