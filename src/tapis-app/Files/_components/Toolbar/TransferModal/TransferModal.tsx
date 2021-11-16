@@ -16,6 +16,7 @@ import {
   TransferCreate,
   TransferCancel,
 } from 'tapis-ui/components/files';
+import { useList } from 'tapis-hooks/files/transfers';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -30,9 +31,12 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
 
+  const { refetch } = useList({})
+  
+
   useEffect(() => {
     const interval = setInterval(() => {
-      focusManager.setFocused(true);
+      refetch();
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -48,7 +52,6 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
 
   const onSelect = useCallback(
     (transfer: Files.TransferTask) => {
-      console.log(transfer);
       setTransfer(transfer);
     },
     [setTransfer]
