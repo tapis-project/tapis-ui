@@ -63,7 +63,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     (operation: MoveCopyHookParams, _: Files.FileStringResponse) => {
       dispatch({ path: operation.path, icon: 'approved-reverse' });
     },
-    [dispatch, selectedFiles]
+    [dispatch]
   );
   const onFileCopyMoveError = useCallback(
     (operation: MoveCopyHookParams, error: Error) => {
@@ -98,7 +98,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
         toggle();
       }
     },
-    [selectedFiles]
+    [selectedFiles, toggle]
   );
 
   const { run, isRunning, isFinished } = useMutations<

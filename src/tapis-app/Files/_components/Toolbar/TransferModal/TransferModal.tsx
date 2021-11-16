@@ -9,7 +9,6 @@ import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Tabs } from 'tapis-app/_components';
-import { focusManager } from 'react-query';
 import {
   TransferListing,
   TransferDetails,
@@ -38,7 +37,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       refetch();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [refetch]);
 
   const onNavigate = useCallback(
     (systemId: string | null, path: string | null) => {
