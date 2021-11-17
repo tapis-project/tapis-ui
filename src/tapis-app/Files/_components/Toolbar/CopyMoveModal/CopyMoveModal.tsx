@@ -1,25 +1,20 @@
-import { useCallback, useState, useReducer } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
-import {
-  GenericModal,
-  Breadcrumbs,
-  Icon,
-  LoadingSpinner,
-} from 'tapis-ui/_common';
+import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
-import { FileExplorer } from '../_components';
+import { FileExplorer, FileOperationStatus } from '../_components';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { focusManager } from 'react-query';
 import { useCopy, useMove } from 'tapis-hooks/files';
 import { MoveCopyHookParams } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
-import { useMutations } from 'tapis-hooks/utils';
 import { Column } from 'react-table';
 import styles from './CopyMoveModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
+import { useFileOperations } from '../_hooks';
 
 type CopyMoveModalProps = {
   operation: Files.MoveCopyRequestOperationEnum;
@@ -32,25 +27,10 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   operation,
 }) => {
   const { pathname } = useLocation();
-  const [copyMoveError, setCopyMoveError] = useState<Error | null>(null);
   const [destinationPath, setDestinationPath] = useState<string | null>(path);
   const { selectedFiles, unselect } = useFilesSelect();
 
   const opFormatted = operation.charAt(0) + operation.toLowerCase().slice(1);
-
-  type CopyMoveState = {
-    [path: string]: string;
-  };
-  const reducer = (
-    state: CopyMoveState,
-    action: { path: string; icon: string }
-  ) => {
-    return {
-      ...state,
-      [action.path]: action.icon,
-    };
-  };
-  const [copyMoveState, dispatch] = useReducer(reducer, {} as CopyMoveState);
 
   const { copyAsync } = useCopy();
   const { moveAsync } = useMove();
@@ -59,25 +39,6 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       ? copyAsync
       : moveAsync;
 
-  const onFileCopyMoveSuccess = useCallback(
-    (operation: MoveCopyHookParams, _: Files.FileStringResponse) => {
-      dispatch({ path: operation.path, icon: 'approved-reverse' });
-    },
-    [dispatch]
-  );
-  const onFileCopyMoveError = useCallback(
-    (operation: MoveCopyHookParams, error: Error) => {
-      dispatch({ path: operation.path, icon: 'alert' });
-      setCopyMoveError(error);
-    },
-    [dispatch, setCopyMoveError]
-  );
-  const onFileCopyMoveStart = useCallback(
-    (operation: MoveCopyHookParams) => {
-      dispatch({ path: operation.path, icon: 'loading' });
-    },
-    [dispatch]
-  );
   const onComplete = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
@@ -101,16 +62,11 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     [selectedFiles, toggle, unselect]
   );
 
-  const { run, isRunning, isFinished } = useMutations<
-    MoveCopyHookParams,
-    Files.FileStringResponse
-  >({
-    fn,
-    onSuccess: onFileCopyMoveSuccess,
-    onError: onFileCopyMoveError,
-    onStart: onFileCopyMoveStart,
-    onComplete,
-  });
+  const { run, state, isLoading, isFinished, isSuccess, error } =
+    useFileOperations<MoveCopyHookParams, Files.FileStringResponse>({
+      fn,
+      onComplete,
+    });
 
   const onSubmit = useCallback(() => {
     const operations: Array<MoveCopyHookParams> = selectedFiles.map((file) => ({
@@ -126,24 +82,20 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       Header: '',
       id: 'moveCopyStatus',
       Cell: (el) => {
-        const path = (el.row.original as Files.FileInfo).path;
-        const status = path && copyMoveState[path];
-        if (status) {
-          if (status === 'loading') {
-            return <LoadingSpinner placement="inline" />;
-          }
-          return <Icon name={status} />;
+        const path = (el.row.original as Files.FileInfo).path!;
+        if (!state[path]) {
+          return (
+            <span
+              className={styles['remove-file']}
+              onClick={() => {
+                removeFile(selectedFiles[el.row.index]);
+              }}
+            >
+              &#x2715;
+            </span>
+          );
         }
-        return (
-          <span
-            className={styles['remove-file']}
-            onClick={() => {
-              removeFile(selectedFiles[el.row.index]);
-            }}
-          >
-            &#x2715;
-          </span>
-        );
+        return <FileOperationStatus status={state[path].status} />;
       },
     },
   ];
@@ -186,10 +138,10 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
 
   const footer = (
     <SubmitWrapper
-      isLoading={isRunning}
-      error={copyMoveError}
+      isLoading={isLoading}
+      error={error}
       success={
-        isFinished && !copyMoveError
+        isSuccess
           ? 'Successfully ' +
             (operation === Files.MoveCopyRequestOperationEnum.Move
               ? 'moved'
@@ -204,8 +156,8 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
         disabled={
           !destinationPath ||
           destinationPath === path ||
-          isRunning ||
-          (isFinished && !copyMoveError)
+          isLoading ||
+          (isFinished && !error)
         }
         aria-label="Submit"
         type="submit"

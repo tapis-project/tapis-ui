@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useReducer } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal, LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useUpload } from 'tapis-hooks/files';
@@ -11,9 +11,11 @@ import { FileListingTable } from 'tapis-ui/components/files/FileListing';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
-import { useMutations } from 'tapis-hooks/utils';
+import { useFileOperations } from '../_hooks';
 import { InsertHookParams } from 'tapis-hooks/files/useUpload';
 import Progress from 'tapis-ui/_common/Progress';
+import { FileOpEventStatusEnum } from '../_hooks/useFileOperations';
+import { FileOperationStatus } from '../_components';
 
 export enum FileOpEventStatus {
   loading = 'loading',
@@ -23,11 +25,8 @@ export enum FileOpEventStatus {
   none = 'none',
 }
 
-export type FileOpState = {
-  [key: string]: {
-    status: FileOpEventStatus;
-    progress?: number;
-  };
+export type FileProgressState = {
+  [name: string]: number;
 };
 
 type UploadModalProps = ToolbarModalProps & {
@@ -42,10 +41,25 @@ const UploadModal: React.FC<UploadModalProps> = ({
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
+  const reducer = (
+    state: FileProgressState,
+    action: { name: string; progress: number }
+  ) => {
+    const { name, progress } = action;
+    return {
+      ...state,
+      [name]: progress,
+    };
+  };
+
+  const [fileProgressState, dispatch] = useReducer(
+    reducer,
+    {} as FileProgressState
+  );
+
   const onProgress = (uploadProgress: number, file: File) => {
     dispatch({
-      key: file.name,
-      status: FileOpEventStatus.progress,
+      name: file.name,
       progress: uploadProgress,
     });
   };
@@ -76,16 +90,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
     onDrop,
   });
 
-  const reducer = (
-    state: FileOpState,
-    action: { key: string; status: FileOpEventStatus; progress?: number }
-  ) => ({
-    ...state,
-    [action.key]: { status: action.status, progress: action.progress },
-  });
-
-  const [fileOpState, dispatch] = useReducer(reducer, {} as FileOpState);
-
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       setFiles([...files.filter((checkFile) => file.name !== checkFile.name)]);
@@ -93,26 +97,20 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles]
   );
 
-  const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
+  const { uploadAsync, reset } = useUpload();
 
-  const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
+  const key = (params: InsertHookParams) => params.file.name;
+  const onComplete = useCallback(() => {
+    focusManager.setFocused(true);
+  }, []);
+
+  const { state, run, isLoading, isSuccess, error } = useFileOperations<
+    InsertHookParams,
+    Files.FileStringResponse
+  >({
     fn: uploadAsync,
-    onStart: (item) => {
-      dispatch({
-        key: item.file.name!,
-        status: FileOpEventStatus.progress,
-        progress: 0,
-      });
-    },
-    onSuccess: (item) => {
-      dispatch({ key: item.file.name!, status: FileOpEventStatus.success });
-      // Calling the focus manager triggers react-query's
-      // automatic refetch on window focus
-      focusManager.setFocused(true);
-    },
-    onError: (item) => {
-      dispatch({ key: item.file.name!, status: FileOpEventStatus.error });
-    },
+    key,
+    onComplete,
   });
 
   useEffect(() => {
@@ -140,34 +138,31 @@ const UploadModal: React.FC<UploadModalProps> = ({
       Header: '',
       id: 'deleteStatus',
       Cell: (el) => {
-        const file = files[el.row.index];
-        const status =
-          fileOpState[file.name] !== undefined
-            ? fileOpState[file.name].status
-            : undefined;
-        switch (status) {
-          case 'progress':
-            return (
-              <div className={styles['progress-bar-container']}>
-                <Progress value={fileOpState[file.name!].progress!} />
-              </div>
-            );
-          case 'success':
-            return <Icon name="approved-reverse" className="success" />;
-          case 'error':
-            return <Icon name="alert" />;
-          case undefined:
-            return (
-              <span
-                className={styles['remove-file']}
-                onClick={() => {
-                  removeFile(filesToFileInfo(files)[el.row.index]);
-                }}
-              >
-                &#x2715;
-              </span>
-            );
+        const file = el.row.original as Files.FileInfo;
+        const status = state[file.name!]?.status;
+        if (!status) {
+          return (
+            <span
+              className={styles['remove-file']}
+              onClick={() => {
+                removeFile(filesToFileInfo(files)[el.row.index]);
+              }}
+            >
+              &#x2715;
+            </span>
+          );
         }
+        if (
+          status === FileOpEventStatusEnum.loading &&
+          fileProgressState[file.name!] !== undefined
+        ) {
+          return (
+            <div className={styles['progress-bar-container']}>
+              <Progress value={fileProgressState[file.name!]} />
+            </div>
+          );
+        }
+        return <FileOperationStatus status={status} />;
       },
     },
   ];
@@ -208,7 +203,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       }
       footer={
         <SubmitWrapper
-          isLoading={false}
+          isLoading={isLoading}
           error={error}
           success={isSuccess ? `Successfully uploaded files` : ''}
           reverse={true}
@@ -219,14 +214,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             aria-label="Submit"
             onClick={onSubmit}
           >
-            {!isLoading ? (
-              'Upload'
-            ) : (
-              <span>
-                <LoadingSpinner placement="inline" />
-                Uploading
-              </span>
-            )}
+            Upload ({files.length})
           </Button>
         </SubmitWrapper>
       }

@@ -14,7 +14,6 @@ const Progress: React.FC<ProgressProps> = ({
 }) => {
   const style = {
     '--width': `${value}%`,
-    '--color': `${color ? color : '#44D130'}`,
   } as React.CSSProperties;
 
   return (
