@@ -104,7 +104,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
     []
   )
 
-  const { state, run, isRunning, isSuccess, error } = useFileOperations<InsertHookParams, Files.FileStringResponse>({
+  const { state, run, isLoading, isSuccess, error } = useFileOperations<InsertHookParams, Files.FileStringResponse>({
     fn: uploadAsync,
     key,
     onComplete
@@ -168,7 +168,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       title={`Upload files`}
       body={
         <div>
-          {!(isRunning || isSuccess) && (
+          {!(isLoading || isSuccess) && (
             <div
               aria-label="Dropzone"
               className={styles['file-dropzone']}
@@ -198,18 +198,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
       }
       footer={
         <SubmitWrapper
-          isLoading={isRunning}
+          isLoading={isLoading}
           error={error}
           success={isSuccess ? `Successfully uploaded files` : ''}
           reverse={true}
         >
           <Button
             color="primary"
-            disabled={isRunning || isSuccess || !!error || files.length === 0}
+            disabled={isLoading || isSuccess || !!error || files.length === 0}
             aria-label="Submit"
             onClick={onSubmit}
           >
-            Upload
+            Upload ({files.length})
           </Button>
         </SubmitWrapper>
       }

@@ -52,7 +52,7 @@ const useFileOperations = <T extends FileParamType, ResponseType extends unknown
     error
   })
 
-  const { run, isRunning, isFinished } = useMutations<T, ResponseType>({
+  const { run, isLoading, isFinished } = useMutations<T, ResponseType>({
     fn,
     onStart,
     onSuccess,
@@ -62,11 +62,11 @@ const useFileOperations = <T extends FileParamType, ResponseType extends unknown
 
   const errorEntry = Object.entries(state).find(([ _, state ]) => state.error);
   const error = errorEntry ? errorEntry[1].error! : null;
-  const isSuccess = !isRunning && !error && started;
+  const isSuccess = !isLoading && !error && started;
 
   return {
     run: (items: T[]) => { setStarted(true); return run(items) },
-    isRunning,
+    isLoading,
     isFinished,
     isSuccess,
     error,

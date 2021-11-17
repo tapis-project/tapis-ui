@@ -20,11 +20,11 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
   params: UseMutationsParams<T, ResponseType>
 ) => {
   const { fn, onSuccess, onError, onComplete, onStart } = params;
-  const [isRunning, setIsRunning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
   const run = (items: Array<T>) => {
-    setIsRunning(true);
+    setIsLoading(true);
     from(items)
       .pipe(
         concatMap((item) => {
@@ -45,7 +45,7 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
         () => {},
         () => {},
         () => {
-          setIsRunning(false);
+          setIsLoading(false);
           setIsFinished(true);
           onComplete && onComplete();
         }
@@ -53,7 +53,7 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
   };
 
   return {
-    isRunning,
+    isLoading,
     isFinished,
     run,
   };

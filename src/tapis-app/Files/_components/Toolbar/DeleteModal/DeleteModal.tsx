@@ -10,18 +10,9 @@ import { Column } from 'react-table';
 import styles from './DeleteModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Files } from '@tapis/tapis-typescript';
-import { useMutations } from 'tapis-hooks/utils';
 import { DeleteHookParams } from 'tapis-hooks/files/useDelete';
-
-export enum FileOpEventStatus {
-  loading = 'loading',
-  error = 'error',
-  success = 'success',
-}
-
-export type FileOpState = {
-  [key: string]: FileOpEventStatus;
-};
+import { useFileOperations } from '../_hooks';
+import { FileOperationStatus } from '../_components';
 
 const DeleteModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -29,14 +20,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   path = '/',
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
-  const { deleteFileAsync, isSuccess, isLoading, error, reset } = useDelete();
-
-  const reducer = (
-    state: FileOpState,
-    action: { key: string; status: FileOpEventStatus }
-  ) => ({ ...state, [action.key]: action.status });
-
-  const [deleteState, dispatch] = useReducer(reducer, {} as FileOpState);
+  const { deleteFileAsync, reset } = useDelete();
 
   useEffect(() => {
     reset();
@@ -48,18 +32,9 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { run } = useMutations<DeleteHookParams, Files.FileStringResponse>({
+  const { run, state, isLoading, isSuccess, error, isFinished } = useFileOperations<DeleteHookParams, Files.FileStringResponse>({
     fn: deleteFileAsync,
-    onStart: (item) => {
-      dispatch({ key: item.path!, status: FileOpEventStatus.loading });
-    },
-    onSuccess: (item) => {
-      dispatch({ key: item.path!, status: FileOpEventStatus.success });
-    },
-    onError: (item) => {
-      dispatch({ key: item.path!, status: FileOpEventStatus.error });
-    },
-    onComplete,
+    onComplete
   });
 
   const onSubmit = useCallback(() => {
@@ -86,25 +61,19 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
       id: 'deleteStatus',
       Cell: (el) => {
         const file = selectedFiles[el.row.index];
-        switch (deleteState[file.path!]) {
-          case 'loading':
-            return <LoadingSpinner placement="inline" />;
-          case 'success':
-            return <Icon name="approved-reverse" />;
-          case 'error':
-            return <Icon name="alert" />;
-          case undefined:
-            return (
-              <span
-                className={styles['remove-file']}
-                onClick={() => {
-                  removeFile(selectedFiles[el.row.index]);
-                }}
-              >
-                &#x2715;
-              </span>
-            );
+        if (!state[file.path!]) {
+          return (
+            <span
+              className={styles['remove-file']}
+              onClick={() => {
+                removeFile(selectedFiles[el.row.index]);
+              }}
+            >
+              &#x2715;
+            </span>
+          );
         }
+        return <FileOperationStatus status={state[file.path!].status} />
       },
     },
   ];
