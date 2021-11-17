@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { from, of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 
+export type MutationFunction<T, ResponseType> = (
+  item: T,
+  options?: MutateOptions<ResponseType, Error, T>
+) => Promise<ResponseType>;
+
 type UseMutationsParams<T, ResponseType> = {
-  fn: (
-    item: T,
-    options?: MutateOptions<ResponseType, Error, T>
-  ) => Promise<ResponseType>;
+  fn: MutationFunction<T, ResponseType>;
   onStart?: (item: T) => void;
   onSuccess?: (item: T, response: ResponseType) => void;
   onError?: (item: T, error: Error) => void;
@@ -18,11 +20,11 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
   params: UseMutationsParams<T, ResponseType>
 ) => {
   const { fn, onSuccess, onError, onComplete, onStart } = params;
-  const [isRunning, setIsRunning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
   const run = (items: Array<T>) => {
-    setIsRunning(true);
+    setIsLoading(true);
     from(items)
       .pipe(
         concatMap((item) => {
@@ -43,7 +45,7 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
         () => {},
         () => {},
         () => {
-          setIsRunning(false);
+          setIsLoading(false);
           setIsFinished(true);
           onComplete && onComplete();
         }
@@ -51,7 +53,7 @@ const useMutations = <T extends unknown, ResponseType extends unknown>(
   };
 
   return {
-    isRunning,
+    isLoading,
     isFinished,
     run,
   };
