@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useReducer } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal, LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
 import { useUpload } from 'tapis-hooks/files';
@@ -14,6 +14,8 @@ import sizeFormat from 'utils/sizeFormat';
 import { useFileOperations } from '../_hooks';
 import { InsertHookParams } from 'tapis-hooks/files/useUpload';
 import Progress from 'tapis-ui/_common/Progress';
+import { FileOpEventStatusEnum } from '../_hooks/useFileOperations';
+import { FileOperationStatus } from '../_components';
 
 export enum FileOpEventStatus {
   loading = 'loading',
@@ -136,35 +138,26 @@ const UploadModal: React.FC<UploadModalProps> = ({
       Cell: (el) => {
         const file = (el.row.original as Files.FileInfo);
         const status = state[file.name!]?.status;
-        switch (status) {
-          case 'loading':
-            return (
-              fileProgressState[file.name!] !== undefined
-                ? (
-                  <div className={styles['progress-bar-container']}>
-                    <Progress value={fileProgressState[file.name!]} />
-                  </div>
-                )
-                : (
-                  <LoadingSpinner placement="inline" />
-                )
-            )
-          case 'success':
-            return <Icon name="approved-reverse" className="success" />;
-          case 'error':
-            return <Icon name="alert" />;
-          case undefined:
-            return (
-              <span
-                className={styles['remove-file']}
-                onClick={() => {
-                  removeFile(filesToFileInfo(files)[el.row.index]);
-                }}
-              >
-                &#x2715;
-              </span>
-            );
+        if (!status) {
+          return (
+            <span
+              className={styles['remove-file']}
+              onClick={() => {
+                removeFile(filesToFileInfo(files)[el.row.index]);
+              }}
+            >
+              &#x2715;
+            </span>
+          );
         }
+        if (status === FileOpEventStatusEnum.loading && fileProgressState[file.name!] !== undefined) {
+          return (
+            <div className={styles['progress-bar-container']}>
+              <Progress value={fileProgressState[file.name!]} />
+            </div>
+          )
+        }
+        return <FileOperationStatus status={status} />
       },
     },
   ];

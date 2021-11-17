@@ -1,7 +1,7 @@
 import { useMutations } from 'tapis-hooks/utils';
 import { useReducer, useState } from 'react';
 import { MutationFunction } from 'tapis-hooks/utils/useMutations';
-import { FileOpEventStatus, FileOpState } from '.';
+import { FileOpEventStatusEnum, FileOpState } from '.';
 
 type UseFileOperationsParams<T, ResponseType> = {
   fn: MutationFunction<T, ResponseType>;
@@ -27,7 +27,7 @@ const useFileOperations = <T extends FileParamType, ResponseType extends unknown
 
   const reducer = (
     state: FileOpState,
-    action: { item: T, status: FileOpEventStatus; error?: Error }
+    action: { item: T, status: FileOpEventStatusEnum; error?: Error }
   ) => {
     const { item, status, error } = action; 
     return {
@@ -40,15 +40,15 @@ const useFileOperations = <T extends FileParamType, ResponseType extends unknown
 
   const onStart = (item: T) => dispatch({
     item,
-    status: FileOpEventStatus.loading
+    status: FileOpEventStatusEnum.loading
   });
   const onSuccess = (item: T) => dispatch({
     item,
-    status: FileOpEventStatus.success
+    status: FileOpEventStatusEnum.success
   });
   const onError = (item: T, error: Error) => dispatch({
     item,
-    status: FileOpEventStatus.error,
+    status: FileOpEventStatusEnum.error,
     error
   })
 

@@ -1,6 +1,6 @@
 import useFileOperations from './useFileOperations';
 
-export enum FileOpEventStatus {
+export enum FileOpEventStatusEnum {
   waiting = 'waiting',
   loading = 'loading',
   error = 'error',
@@ -10,7 +10,7 @@ export enum FileOpEventStatus {
 
 export type FileOpState = {
   [path: string]: {
-    status: FileOpEventStatus;
+    status: FileOpEventStatusEnum;
     error?: Error;
   };
 };
