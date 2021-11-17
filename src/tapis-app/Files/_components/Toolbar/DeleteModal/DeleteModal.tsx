@@ -1,6 +1,6 @@
-import { useEffect, useCallback, useReducer } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal, Icon, LoadingSpinner } from 'tapis-ui/_common';
+import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
 import { ToolbarModalProps } from '../Toolbar';
@@ -32,9 +32,12 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { run, state, isLoading, isSuccess, error, isFinished } = useFileOperations<DeleteHookParams, Files.FileStringResponse>({
+  const { run, state, isLoading, isSuccess, error } = useFileOperations<
+    DeleteHookParams,
+    Files.FileStringResponse
+  >({
     fn: deleteFileAsync,
-    onComplete
+    onComplete,
   });
 
   const onSubmit = useCallback(() => {
@@ -73,7 +76,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
             </span>
           );
         }
-        return <FileOperationStatus status={state[file.path!].status} />
+        return <FileOperationStatus status={state[file.path!].status} />;
       },
     },
   ];

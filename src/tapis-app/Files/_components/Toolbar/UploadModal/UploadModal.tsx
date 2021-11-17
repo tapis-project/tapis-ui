@@ -49,10 +49,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
     return {
       ...state,
       [name]: progress,
-    }
+    };
   };
 
-  const [fileProgressState, dispatch] = useReducer(reducer, {} as FileProgressState);
+  const [fileProgressState, dispatch] = useReducer(
+    reducer,
+    {} as FileProgressState
+  );
 
   const onProgress = (uploadProgress: number, file: File) => {
     dispatch({
@@ -97,19 +100,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const { uploadAsync, reset } = useUpload();
 
   const key = (params: InsertHookParams) => params.file.name;
-  const onComplete = useCallback(
-    () => {
-      focusManager.setFocused(true);
-    },
-    []
-  )
+  const onComplete = useCallback(() => {
+    focusManager.setFocused(true);
+  }, []);
 
-  const { state, run, isLoading, isSuccess, error } = useFileOperations<InsertHookParams, Files.FileStringResponse>({
+  const { state, run, isLoading, isSuccess, error } = useFileOperations<
+    InsertHookParams,
+    Files.FileStringResponse
+  >({
     fn: uploadAsync,
     key,
-    onComplete
+    onComplete,
   });
-
 
   useEffect(() => {
     reset();
@@ -136,7 +138,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       Header: '',
       id: 'deleteStatus',
       Cell: (el) => {
-        const file = (el.row.original as Files.FileInfo);
+        const file = el.row.original as Files.FileInfo;
         const status = state[file.name!]?.status;
         if (!status) {
           return (
@@ -150,14 +152,17 @@ const UploadModal: React.FC<UploadModalProps> = ({
             </span>
           );
         }
-        if (status === FileOpEventStatusEnum.loading && fileProgressState[file.name!] !== undefined) {
+        if (
+          status === FileOpEventStatusEnum.loading &&
+          fileProgressState[file.name!] !== undefined
+        ) {
           return (
             <div className={styles['progress-bar-container']}>
               <Progress value={fileProgressState[file.name!]} />
             </div>
-          )
+          );
         }
-        return <FileOperationStatus status={status} />
+        return <FileOperationStatus status={status} />;
       },
     },
   ];

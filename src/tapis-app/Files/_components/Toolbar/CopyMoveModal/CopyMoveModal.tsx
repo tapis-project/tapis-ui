@@ -1,11 +1,6 @@
-import { useCallback, useState, useReducer } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
-import {
-  GenericModal,
-  Breadcrumbs,
-  Icon,
-  LoadingSpinner,
-} from 'tapis-ui/_common';
+import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
@@ -44,7 +39,6 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
       ? copyAsync
       : moveAsync;
 
-
   const onComplete = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
@@ -68,10 +62,11 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
     [selectedFiles, toggle, unselect]
   );
 
-  const { run, state, isLoading, isFinished, isSuccess, error } = useFileOperations<MoveCopyHookParams, Files.FileStringResponse>({
-    fn,
-    onComplete
-  })
+  const { run, state, isLoading, isFinished, isSuccess, error } =
+    useFileOperations<MoveCopyHookParams, Files.FileStringResponse>({
+      fn,
+      onComplete,
+    });
 
   const onSubmit = useCallback(() => {
     const operations: Array<MoveCopyHookParams> = selectedFiles.map((file) => ({
@@ -100,7 +95,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
             </span>
           );
         }
-        return <FileOperationStatus status={state[path].status} />
+        return <FileOperationStatus status={state[path].status} />;
       },
     },
   ];
