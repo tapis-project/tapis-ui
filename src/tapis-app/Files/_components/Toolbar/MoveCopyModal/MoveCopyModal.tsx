@@ -18,14 +18,14 @@ import { MoveCopyHookParams } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { useMutations } from 'tapis-hooks/utils';
 import { Column } from 'react-table';
-import styles from './CopyMoveModal.module.scss';
+import styles from './MoveCopyModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 
-type CopyMoveModalProps = {
+type MoveCopyModalProps = {
   operation: Files.MoveCopyRequestOperationEnum;
 } & ToolbarModalProps;
 
-const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
+const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
   toggle,
   systemId = '',
   path = '/',
@@ -227,4 +227,4 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   );
 };
 
-export default CopyMoveModal;
+export default MoveCopyModal;

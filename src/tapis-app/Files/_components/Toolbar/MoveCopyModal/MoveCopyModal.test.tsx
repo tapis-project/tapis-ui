@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import renderComponent from 'utils/testing';
-import CopyMoveModal from './CopyMoveModal';
+import MoveCopyModal from './MoveCopyModal';
 import { useCopy, useMove, useList } from 'tapis-hooks/files';
 import { useMutations } from 'tapis-hooks/utils';
 import { fileInfo } from 'fixtures/files.fixtures';
@@ -11,7 +11,7 @@ jest.mock('tapis-hooks/utils');
 jest.mock('tapis-hooks/files');
 jest.mock('tapis-app/Files/_components/FilesContext');
 
-describe('CopyMoveModal', () => {
+describe('MoveCopyModal', () => {
   it('performs copy operations', async () => {
     (useList as jest.Mock).mockReturnValue({
       concatenatedResults: [{ ...fileInfo, type: 'dir' }],
@@ -39,7 +39,7 @@ describe('CopyMoveModal', () => {
     });
 
     renderComponent(
-      <CopyMoveModal
+      <MoveCopyModal
         toggle={() => {}}
         systemId={'system-id'}
         path={'/'}
@@ -90,7 +90,7 @@ describe('CopyMoveModal', () => {
     });
 
     renderComponent(
-      <CopyMoveModal
+      <MoveCopyModal
         toggle={() => {}}
         systemId={'system-id'}
         path={'/'}

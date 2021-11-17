@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
-import CopyMoveModal from './CopyMoveModal';
+import MoveCopyModal from './MoveCopyModal';
 import RenameModal from './RenameModal';
 import UploadModal from './UploadModal';
 import PermissionsModal from './PermissionsModal';
@@ -167,7 +167,7 @@ const Toolbar: React.FC = () => {
             />
           )}
           {modal === 'copy' && (
-            <CopyMoveModal
+            <MoveCopyModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
@@ -175,7 +175,7 @@ const Toolbar: React.FC = () => {
             />
           )}
           {modal === 'move' && (
-            <CopyMoveModal
+            <MoveCopyModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}
