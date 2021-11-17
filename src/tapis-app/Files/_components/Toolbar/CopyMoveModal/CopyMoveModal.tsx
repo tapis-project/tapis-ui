@@ -115,7 +115,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   const onSubmit = useCallback(() => {
     const operations: Array<MoveCopyHookParams> = selectedFiles.map((file) => ({
       systemId,
-      newPath: destinationPath!,
+      newPath: `${destinationPath!}/${file.name!}`,
       path: file.path!,
     }));
     run(operations);
