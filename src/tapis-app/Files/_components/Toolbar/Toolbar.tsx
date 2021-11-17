@@ -117,12 +117,14 @@ const Toolbar: React.FC = () => {
             onClick={() => setModal('copy')}
             aria-label="Copy"
           />
-          <ToolbarButton
-            text="Permissions"
-            icon="gear"
-            disabled={true /*selectedFiles.length !== 1*/}
-            onClick={() => setModal('permissions')}
-          />
+          {/*
+              <ToolbarButton
+                text="Permissions"
+                icon="gear"
+                disabled={selectedFiles.length !== 1}
+                onClick={() => setModal('permissions')}
+              />
+            */}
           <ToolbarButton
             text="Transfers"
             icon="globe"
