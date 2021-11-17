@@ -12,15 +12,15 @@ import { useCopy, useMove } from 'tapis-hooks/files';
 import { MoveCopyHookParams } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
-import styles from './CopyMoveModal.module.scss';
+import styles from './MoveCopyModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { useFileOperations } from '../_hooks';
 
-type CopyMoveModalProps = {
+type MoveCopyModalProps = {
   operation: Files.MoveCopyRequestOperationEnum;
 } & ToolbarModalProps;
 
-const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
+const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
   toggle,
   systemId = '',
   path = '/',
@@ -71,7 +71,7 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   const onSubmit = useCallback(() => {
     const operations: Array<MoveCopyHookParams> = selectedFiles.map((file) => ({
       systemId,
-      newPath: destinationPath!,
+      newPath: `${destinationPath!}/${file.name!}`,
       path: file.path!,
     }));
     run(operations);
@@ -179,4 +179,4 @@ const CopyMoveModal: React.FC<CopyMoveModalProps> = ({
   );
 };
 
-export default CopyMoveModal;
+export default MoveCopyModal;
