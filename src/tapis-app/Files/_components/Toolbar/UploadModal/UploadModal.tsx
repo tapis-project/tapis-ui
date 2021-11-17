@@ -11,7 +11,7 @@ import { FileListingTable } from 'tapis-ui/components/files/FileListing';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
-import { useMutations } from 'tapis-hooks/utils';
+import { useFileOperations } from '../_hooks';
 import { InsertHookParams } from 'tapis-hooks/files/useUpload';
 import Progress from 'tapis-ui/_common/Progress';
 
@@ -23,11 +23,8 @@ export enum FileOpEventStatus {
   none = 'none',
 }
 
-export type FileOpState = {
-  [key: string]: {
-    status: FileOpEventStatus;
-    progress?: number;
-  };
+export type FileProgressState = {
+  [name: string]: number;
 };
 
 type UploadModalProps = ToolbarModalProps & {
@@ -42,10 +39,22 @@ const UploadModal: React.FC<UploadModalProps> = ({
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 
+  const reducer = (
+    state: FileProgressState,
+    action: { name: string; progress: number }
+  ) => {
+    const { name, progress } = action;
+    return {
+      ...state,
+      [name]: progress,
+    }
+  };
+
+  const [fileProgressState, dispatch] = useReducer(reducer, {} as FileProgressState);
+
   const onProgress = (uploadProgress: number, file: File) => {
     dispatch({
-      key: file.name,
-      status: FileOpEventStatus.progress,
+      name: file.name,
       progress: uploadProgress,
     });
   };
@@ -76,16 +85,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
     onDrop,
   });
 
-  const reducer = (
-    state: FileOpState,
-    action: { key: string; status: FileOpEventStatus; progress?: number }
-  ) => ({
-    ...state,
-    [action.key]: { status: action.status, progress: action.progress },
-  });
-
-  const [fileOpState, dispatch] = useReducer(reducer, {} as FileOpState);
-
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       setFiles([...files.filter((checkFile) => file.name !== checkFile.name)]);
@@ -93,27 +92,22 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles]
   );
 
-  const { uploadAsync, isLoading, error, isSuccess, reset } = useUpload();
+  const { uploadAsync, reset } = useUpload();
 
-  const { run } = useMutations<InsertHookParams, Files.FileStringResponse>({
-    fn: uploadAsync,
-    onStart: (item) => {
-      dispatch({
-        key: item.file.name!,
-        status: FileOpEventStatus.progress,
-        progress: 0,
-      });
-    },
-    onSuccess: (item) => {
-      dispatch({ key: item.file.name!, status: FileOpEventStatus.success });
-      // Calling the focus manager triggers react-query's
-      // automatic refetch on window focus
+  const key = (params: InsertHookParams) => params.file.name;
+  const onComplete = useCallback(
+    () => {
       focusManager.setFocused(true);
     },
-    onError: (item) => {
-      dispatch({ key: item.file.name!, status: FileOpEventStatus.error });
-    },
+    []
+  )
+
+  const { state, run, isRunning, isSuccess, error } = useFileOperations<InsertHookParams, Files.FileStringResponse>({
+    fn: uploadAsync,
+    key,
+    onComplete
   });
+
 
   useEffect(() => {
     reset();
@@ -140,18 +134,21 @@ const UploadModal: React.FC<UploadModalProps> = ({
       Header: '',
       id: 'deleteStatus',
       Cell: (el) => {
-        const file = files[el.row.index];
-        const status =
-          fileOpState[file.name] !== undefined
-            ? fileOpState[file.name].status
-            : undefined;
+        const file = (el.row.original as Files.FileInfo);
+        const status = state[file.name!]?.status;
         switch (status) {
-          case 'progress':
+          case 'loading':
             return (
-              <div className={styles['progress-bar-container']}>
-                <Progress value={fileOpState[file.name!].progress!} />
-              </div>
-            );
+              fileProgressState[file.name!] !== undefined
+                ? (
+                  <div className={styles['progress-bar-container']}>
+                    <Progress value={fileProgressState[file.name!]} />
+                  </div>
+                )
+                : (
+                  <LoadingSpinner placement="inline" />
+                )
+            )
           case 'success':
             return <Icon name="approved-reverse" className="success" />;
           case 'error':
@@ -178,7 +175,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       title={`Upload files`}
       body={
         <div>
-          {!(isLoading || isSuccess) && (
+          {!(isRunning || isSuccess) && (
             <div
               aria-label="Dropzone"
               className={styles['file-dropzone']}
@@ -208,25 +205,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
       }
       footer={
         <SubmitWrapper
-          isLoading={false}
+          isLoading={isRunning}
           error={error}
           success={isSuccess ? `Successfully uploaded files` : ''}
           reverse={true}
         >
           <Button
             color="primary"
-            disabled={isLoading || isSuccess || !!error || files.length === 0}
+            disabled={isRunning || isSuccess || !!error || files.length === 0}
             aria-label="Submit"
             onClick={onSubmit}
           >
-            {!isLoading ? (
-              'Upload'
-            ) : (
-              <span>
-                <LoadingSpinner placement="inline" />
-                Uploading
-              </span>
-            )}
+            Upload
           </Button>
         </SubmitWrapper>
       }

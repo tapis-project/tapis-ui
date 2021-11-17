@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { from, of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 
+export type MutationFunction<T, ResponseType> = (
+  item: T,
+  options?: MutateOptions<ResponseType, Error, T>
+) => Promise<ResponseType>;
+
 type UseMutationsParams<T, ResponseType> = {
-  fn: (
-    item: T,
-    options?: MutateOptions<ResponseType, Error, T>
-  ) => Promise<ResponseType>;
+  fn: MutationFunction<T, ResponseType>;
   onStart?: (item: T) => void;
   onSuccess?: (item: T, response: ResponseType) => void;
   onError?: (item: T, error: Error) => void;
