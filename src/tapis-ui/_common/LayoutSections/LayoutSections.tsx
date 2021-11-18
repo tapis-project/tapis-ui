@@ -18,11 +18,11 @@ export const LayoutNavWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   return <div className={styles.nav}>{children}</div>;
 };
 
-export const LayoutBody: React.FC<React.PropsWithChildren<{}>> = ({
-  children,
-}) => {
+export const LayoutBody: React.FC<
+  React.PropsWithChildren<{ constrain?: boolean }>
+> = ({ children, constrain }) => {
   return (
-    <div className={styles.body}>
+    <div className={`${styles.body} ${constrain ? styles.constrain : ''}`}>
       <div className={styles.detail}>{children}</div>
     </div>
   );
