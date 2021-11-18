@@ -16,16 +16,11 @@ import { FilesProvider } from '../_components/FilesContext';
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
-
+  const crumbs = breadcrumbsFromPathname(pathname).splice(1);
   const header = (
     <LayoutHeader>
       <div className={styles.breadcrumbs}>
-        <Breadcrumbs
-          breadcrumbs={[
-            { text: 'Files' },
-            ...breadcrumbsFromPathname(pathname).splice(1),
-          ]}
-        />
+        <Breadcrumbs breadcrumbs={[{ text: 'Files' }, ...crumbs]} />
       </div>
       <Toolbar />
     </LayoutHeader>
