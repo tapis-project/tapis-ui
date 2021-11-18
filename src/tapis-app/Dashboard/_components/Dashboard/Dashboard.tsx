@@ -86,9 +86,17 @@ const Dashboard: React.FC = () => {
             <DashboardCard
               icon="data-files"
               name="Systems"
-              text="Access TAPIS systems and files"
+              text="View TAPIS systems"
               link="/systems"
               counter={`${systems?.data?.result?.length} systems`}
+              loading={systems?.isLoading}
+            />
+            <DashboardCard
+              icon="folder"
+              name="Files"
+              text="Access files available on TAPIS systems"
+              link="/files"
+              counter={`Files available on ${systems?.data?.result?.length} systems`}
               loading={systems?.isLoading}
             />
             <DashboardCard
