@@ -6,6 +6,7 @@ import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFro
 import FileListing from 'tapis-ui/components/files/FileListing';
 import { OnNavigateCallback } from 'tapis-ui/components/files/FileListing/FileListing';
 import { SystemListing } from 'tapis-ui/components/systems';
+import { normalize } from 'path';
 import styles from './FileExplorer.module.scss';
 
 type FileExplorerProps = {
@@ -31,12 +32,15 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
 
   const onFileNavigate = useCallback<OnNavigateCallback>(
     (file) => {
+      /*
       const normalizedFilename = file.name?.startsWith('/')
         ? file.name?.slice(1)
         : file.name;
       const newPath = `${currentPath}${
         currentPath?.endsWith('/') ? '' : '/'
       }${normalizedFilename}/`;
+      */
+      const newPath = normalize(`${currentPath}/${file.name!}`);
       setCurrentPath(newPath);
       onNavigate && onNavigate(currentSystem ?? null, newPath);
     },
@@ -57,7 +61,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
 
   useEffect(() => {
     const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(
-      currentPath ?? ''
+      `${currentPath ?? ''}`
     );
     const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map((breadcrumb) => ({
       ...breadcrumb,

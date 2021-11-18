@@ -14,7 +14,7 @@ describe('Breadcrumbs component', () => {
     const { queryAllByText } = renderComponent(
       <Breadcrumbs breadcrumbs={_1_DIRS} />
     )
-    expect(queryAllByText(/files/).length).toEqual(0)
+    expect(queryAllByText(/files/).length).toEqual(1)
   });
 
   it('renders 1 Breadcrumb without an ellipsis', () => {
