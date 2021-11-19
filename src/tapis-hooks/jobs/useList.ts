@@ -1,6 +1,6 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
 import { list } from 'tapis-api/jobs';
-import { Jobs } from '@tapis/tapis-typescript';
+import * as Jobs from '@tapis/tapis-typescript-jobs';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 

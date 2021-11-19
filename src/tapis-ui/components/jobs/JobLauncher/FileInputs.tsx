@@ -1,9 +1,9 @@
 import React from 'react';
 import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
-import { FileInput } from '@tapis/tapis-typescript-apps';
+import { AppFileInput, FileInputModeEnum } from '@tapis/tapis-typescript-apps';
 import { FieldArray, FieldArrayComponent } from './FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input, Label, FormText, FormGroup } from 'reactstrap';
+import { Input, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
@@ -18,7 +18,7 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
     register,
     formState: { errors },
   } = useFormContext<ReqSubmitJob>();
-  const { sourceUrl, targetPath, inPlace, meta, id } = item;
+  const { sourceUrl, targetPath, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
   return (
@@ -56,21 +56,24 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
         />
       </FieldWrapper>
       <FormGroup check>
-        <Label check className="form-field__label" size="sm">
-          <Input
-            type="checkbox"
-            bsSize="sm"
-            defaultChecked={inPlace}
-            {...mapInnerRef(register(`fileInputs.${index}.inPlace`))}
-          />{' '}
-          In Place
-        </Label>
+        {/*
+          <Label check className="form-field__label" size="sm">
+            <Input
+              type="checkbox"
+              bsSize="sm"
+              defaultChecked={inPlace}
+              {...mapInnerRef(register(`fileInputs.${index}.inPlace`))}
+            />{' '}
+            In Place
+          </Label>
+        */}
+
         <FormText className="form-field__help" color="muted">
           If this is true, the source URL will be mounted from the execution
           system's local file system
         </FormText>
       </FormGroup>
-      {remove && !meta?.required && (
+      {remove && (
         <Button onClick={() => remove()} size="sm" className={styles.remove}>
           Remove
         </Button>
@@ -79,21 +82,14 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   );
 };
 
-const FileInputs: React.FC<{ appInputs: FileInput[] }> = ({ appInputs }) => {
+const FileInputs: React.FC<{ appInputs: AppFileInput[] }> = ({ appInputs }) => {
   const required = Array.from(
-    appInputs.filter((fileInput) => fileInput?.meta?.required).keys()
+    appInputs.filter((fileInput) => fileInput?.inputMode === FileInputModeEnum.Required).keys()
   );
 
   const appendData: TFieldArray<Required<ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
     targetPath: '',
-    inPlace: false,
-    meta: {
-      name: '',
-      description: '',
-      required: false,
-      kv: [],
-    },
   };
 
   const name = 'fileInputs';

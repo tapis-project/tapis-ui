@@ -1,4 +1,4 @@
-import { Jobs } from '@tapis/tapis-typescript';
+import * as Jobs from '@tapis/tapis-typescript-jobs';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const details = (params: Jobs.GetJobRequest, basePath: string, jwt: string) => {

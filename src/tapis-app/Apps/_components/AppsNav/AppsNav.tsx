@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useList } from 'tapis-hooks/apps';
-import { Apps } from '@tapis/tapis-typescript';
+import * as Apps from '@tapis/tapis-typescript-apps';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
