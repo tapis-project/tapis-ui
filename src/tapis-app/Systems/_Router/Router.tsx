@@ -5,7 +5,7 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-import FileListing from '../FileListing';
+import SystemDetail from '../SystemDetail';
 import { SectionMessage } from 'tapis-ui/_common';
 
 const Router: React.FC = () => {
@@ -26,7 +26,7 @@ const Router: React.FC = () => {
             params: { systemId },
           },
         }: RouteComponentProps<{ systemId: string }>) => (
-          <FileListing systemId={systemId} path={'/'} />
+          <SystemDetail systemId={systemId} />
         )}
       />
     </Switch>

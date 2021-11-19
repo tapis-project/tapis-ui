@@ -1,3 +1,5 @@
+export { default as Breadcrumbs } from './Breadcrumbs';
+export { default as GenericModal } from './GenericModal';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Section } from './Section';
 export { default as SectionHeader } from './SectionHeader';

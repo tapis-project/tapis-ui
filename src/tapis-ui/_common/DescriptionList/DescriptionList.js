@@ -36,12 +36,16 @@ const DescriptionList = ({ className, data, density, direction }) => {
           {Array.isArray(value) ? (
             value.map((val) => (
               <dd className={styles.value} data-testid="value" key={uuidv4()}>
-                {val}
+                {typeof val === 'object' ? <DescriptionList data={val} /> : val}
               </dd>
             ))
           ) : (
             <dd className={styles.value} data-testid="value">
-              {value}
+              {typeof value === 'object' ? (
+                <DescriptionList data={value} />
+              ) : (
+                value
+              )}
             </dd>
           )}
         </React.Fragment>

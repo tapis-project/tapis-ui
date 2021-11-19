@@ -40,3 +40,7 @@ Styleguide Components.Bootstrap.Modal
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.modal-xl {
+  width: 95%;
+}
