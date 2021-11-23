@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useDetail } from 'tapis-hooks/apps';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
@@ -10,13 +10,10 @@ import * as Apps from '@tapis/tapis-typescript-apps';
 import AppSelectStep from './AppSelectStep';
 import FileInputsStep from './FileInputsStep';
 
-type StepWrapperProps = React.PropsWithChildren<{
-  dispatch: React.Dispatch<Partial<Jobs.ReqSubmitJob>>;
-}> &
+type StepWrapperProps = React.PropsWithChildren<{}> &
   Partial<StepWizardChildProps>;
 
 const StepWrapper: React.FC<StepWrapperProps> = ({
-  dispatch,
   children,
   previousStep,
   nextStep,
@@ -24,7 +21,7 @@ const StepWrapper: React.FC<StepWrapperProps> = ({
   const formMethods = useFormContext<Jobs.ReqSubmitJob>();
   const { handleSubmit } = formMethods;
   return (
-    <form onSubmit={handleSubmit(dispatch)}>
+    <form onSubmit={handleSubmit(() => {})}>
       {children}
       <Button className="btn btn-secondary" onClick={previousStep}>
         Previous
@@ -68,7 +65,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
   const systems = respSystems?.result ?? [];
 
   const formMethods = useForm<Jobs.ReqSubmitJob>();
-  const { reset } = formMethods;
+  const { reset, getValues } = formMethods;
 
   // Utility function to map an app spec's file inputs to a job's fileInput
   const mapAppInputs = (appInputs: Array<Apps.AppFileInput>) => {
@@ -84,7 +81,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     });
   };
 
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = {
+  const defaultValues: Jobs.ReqSubmitJob = {
     appId,
     appVersion,
     name,
@@ -98,14 +95,8 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     reset(defaultValues);
   }, [reset, app?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const reducer = (
-    state: Partial<Jobs.ReqSubmitJob>,
-    fragment: Partial<Jobs.ReqSubmitJob>
-  ) => {
-    return { ...state, ...fragment };
-  };
-  const [jobSubmission, dispatch] = useReducer(reducer, defaultValues);
-  console.log('Current job submission state', jobSubmission);
+
+  console.log('Current job submission state', getValues());
 
   return (
     <QueryWrapper
@@ -114,7 +105,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     >
       <FormProvider {...formMethods}>
         <StepWizard>
-          <StepWrapper dispatch={dispatch}>
+          <StepWrapper>
             <AppSelectStep
               app={app}
               name={name}
@@ -122,7 +113,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
               execSystemId={execSystemId}
             />
           </StepWrapper>
-          <StepWrapper dispatch={dispatch}>
+          <StepWrapper>
             <FileInputsStep app={app} systems={systems} />
           </StepWrapper>
         </StepWizard>
