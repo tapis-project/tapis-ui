@@ -1,0 +1,114 @@
+import React, { useEffect } from 'react';
+import { Button, Input } from 'reactstrap';
+import { useForm, FormProvider } from 'react-hook-form';
+import { mapInnerRef } from 'tapis-ui/utils/forms';
+import { TapisSystem } from '@tapis/tapis-typescript-systems';
+import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
+import { JobStepProps } from '.';
+import * as Jobs from '@tapis/tapis-typescript-jobs';
+
+type AppSelectStepProps = {
+  name: string;
+  execSystemId?: string;
+} & JobStepProps
+
+const AppSelectStep: React.FC<AppSelectStepProps> = ({ 
+  app, name, systems, execSystemId, dispatch, previousStep, nextStep }) => {
+
+  const formMethods = useForm<Jobs.ReqSubmitJob>();
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = formMethods;
+
+  const defaultValues: Partial<Jobs.ReqSubmitJob> = {
+    name,
+    appId: app?.id,
+    appVersion: app?.version,
+    execSystemId,
+  };
+
+  // Populating default values needs to happen as an effect
+  // after initial render of field arrays
+  useEffect(() => {
+    reset(defaultValues);
+  }, [reset, app]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  return (
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit(dispatch)}>
+      <FieldWrapper
+            description="A name for this job"
+            label="Name"
+            required={true}
+            error={errors['name']}
+          >
+            <Input
+              bsSize="sm"
+              defaultValue={name}
+              {...mapInnerRef(
+                register('name', { required: 'Name is required' })
+              )}
+            />
+          </FieldWrapper>
+          <FieldWrapper
+            description="The ID of the TAPIS application to run"
+            label="App ID"
+            required={true}
+            error={errors['appId']}
+          >
+            <Input
+              bsSize="sm"
+              data-testid="appId"
+              defaultValue={app?.id ?? ''}
+              {...mapInnerRef(
+                register('appId', { required: 'App ID is required' })
+              )}
+            />
+          </FieldWrapper>
+          <FieldWrapper
+            description="The version of the application to run"
+            label="App Version"
+            required={true}
+            error={errors['appVersion']}
+          >
+            <Input
+              bsSize="sm"
+              defaultValue={app?.version ?? '1'}
+              {...mapInnerRef(
+                register('appVersion', { required: 'App version is required ' })
+              )}
+            />
+          </FieldWrapper>
+          <FieldWrapper
+            description="A TAPIS system that can run this application"
+            label="Execution System"
+            required={true}
+            error={errors['execSystemId']}
+          >
+            <Input
+              type="select"
+              defaultValue={execSystemId}
+              {...mapInnerRef(
+                register('execSystemId', {
+                  required: 'An execution system is required ',
+                })
+              )}
+            >
+              {systems.map((system: TapisSystem) => (
+                <option key={system.id}>{system.id}</option>
+              ))}
+            </Input>
+          </FieldWrapper>
+        <Button className="btn btn-secondary" onClick={previousStep}>Previous</Button>
+        <Button type="submit"
+              className="btn btn-primary" onClick={nextStep}>Next</Button>
+      </form>
+    </FormProvider>
+  )
+}
+
+export default AppSelectStep;
