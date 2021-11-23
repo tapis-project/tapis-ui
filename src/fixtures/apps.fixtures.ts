@@ -1,4 +1,4 @@
-import { Apps } from '@tapis/tapis-typescript';
+import * as Apps from '@tapis/tapis-typescript-apps';
 
 export const tapisApp: Apps.TapisApp = {
   id: 'SleepSeconds',
@@ -26,14 +26,26 @@ export const tapisApp: Apps.TapisApp = {
     },
     fileInputs: [
       {
-        sourceUrl: 'tapis://testuser2.execution/data.txt',
-        targetPath: 'data.txt',
-        inPlace: false,
-        meta: {
-          name: 'Data file',
-          required: true,
-          keyValuePairs: [],
-        },
+        name: 'requiredInput',
+        description: 'Required file input',
+        inputMode: Apps.FileInputModeEnum.Required,
+        autoMountLocal: true,
+        targetPath: 'required.txt',
+      },
+      {
+        name: 'optionalInput',
+        description: 'Optional file input',
+        inputMode: Apps.FileInputModeEnum.Optional,
+        autoMountLocal: true,
+        targetPath: 'optional.txt',
+      },
+      {
+        name: 'fixedInput',
+        description: 'Fixed file input',
+        inputMode: Apps.FileInputModeEnum.Fixed,
+        autoMountLocal: true,
+        sourceUrl: 'tapis://system/fixed-input.txt',
+        targetPath: 'fixed.txt',
       },
     ],
     nodeCount: 1,

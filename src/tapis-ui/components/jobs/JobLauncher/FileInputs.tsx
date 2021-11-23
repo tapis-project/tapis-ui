@@ -84,7 +84,11 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
 
 const FileInputs: React.FC<{ appInputs: AppFileInput[] }> = ({ appInputs }) => {
   const required = Array.from(
-    appInputs.filter((fileInput) => fileInput?.inputMode === FileInputModeEnum.Required).keys()
+    appInputs
+      .filter(
+        (fileInput) => fileInput?.inputMode === FileInputModeEnum.Required
+      )
+      .keys()
   );
 
   const appendData: TFieldArray<Required<ReqSubmitJob>, 'fileInputs'> = {

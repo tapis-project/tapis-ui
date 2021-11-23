@@ -67,7 +67,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
         sourceUrl,
         targetPath,
         description,
-        name
+        name,
       };
       return result;
     });
