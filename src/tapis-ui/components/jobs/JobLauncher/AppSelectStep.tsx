@@ -20,23 +20,9 @@ const AppSelectStep: React.FC<AppSelectStepProps> = ({
 }) => {
   const formMethods = useFormContext<Jobs.ReqSubmitJob>();
   const {
-    reset,
     register,
     formState: { errors },
   } = formMethods;
-
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = {
-    name,
-    appId: app?.id,
-    appVersion: app?.version,
-    execSystemId,
-  };
-
-  // Populating default values needs to happen as an effect
-  // after initial render of field arrays
-  useEffect(() => {
-    reset(defaultValues);
-  }, [reset, app]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>
