@@ -5,6 +5,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Wizard, useWizard } from 'react-use-wizard';
+import { motion } from 'framer-motion';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import * as Apps from '@tapis/tapis-typescript-apps';
 import AppSelectStep from './AppSelectStep';
@@ -19,14 +20,42 @@ type StepInfo = {
   complete: boolean;
 }
 
+const variants = {
+  enter: (direction: number) => {
+    return {
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    };
+  },
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+};
 
-const StepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
+const StepWrapper: React.FC<React.PropsWithChildren<{
+  previousStep: React.MutableRefObject<number>;
+}>> = ({
   children,
+  previousStep
 }) => {
+  const { activeStep } = useWizard();
+  useEffect(() => {
+    previousStep.current = activeStep;
+  }, [activeStep, previousStep]);
+
   return (
-    <form >
-      {children}
-    </form>
+    <motion.div
+      custom={activeStep - previousStep.current}
+      variants={variants}
+      initial="enter"
+      animate="center"
+    >
+      <form>
+        {children}
+      </form>
+    </motion.div>
   );
 };
 
@@ -158,6 +187,8 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     reset(defaultValues);
   }, [reset, app?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const previousStep = React.useRef<number>(0);
+
   const jobSubmission = getValues();
 
   const steps: Array<StepInfo> = [
@@ -191,7 +222,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
         <Wizard header={<StepHeader steps={steps} />} footer={<StepFooter />}>
           {steps.map(
             (step, index) => (
-              <StepWrapper>
+              <StepWrapper previousStep={previousStep}>
                 {step.component}
               </StepWrapper>
             )
