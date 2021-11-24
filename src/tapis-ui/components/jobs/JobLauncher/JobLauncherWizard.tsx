@@ -4,8 +4,7 @@ import { useDetail } from 'tapis-hooks/apps';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Icon } from 'tapis-ui/_common';
-import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
+import { Wizard, useWizard } from 'react-use-wizard';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import * as Apps from '@tapis/tapis-typescript-apps';
 import AppSelectStep from './AppSelectStep';
@@ -20,59 +19,14 @@ type StepInfo = {
   complete: boolean;
 }
 
-const StepHeader: React.FC<{
-  steps: Array<StepInfo>,
-  currentStep: number,
-  goToNamedStep: (step: string) => void;
-}> = ({ steps, currentStep, goToNamedStep }) => {
-  return (
-    <div className={styles.header}>
-      {steps.map(
-        (step, index) => (
-          <Button color="link" onClick={() => goToNamedStep(step.stepName)}>
-            {`${index + 1}. ${step.stepName}`}
-          </Button>
-        )
-      )}
-    </div>
-  )
-}
 
-type StepWrapperProps = React.PropsWithChildren<{
-  steps: Array<StepInfo>;
-}> & 
-  Partial<StepWizardChildProps>;
-
-const StepWrapper: React.FC<StepWrapperProps> = ({
+const StepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   children,
-  steps,
-  currentStep,
-  nextStep,
-  previousStep,
-  goToNamedStep,
 }) => {
-  const formMethods = useFormContext<Jobs.ReqSubmitJob>();
-  const { handleSubmit } = formMethods;
-  
-  // currentStep is ordinally 1 based. (First step is 1)
-  const hasNext = currentStep! < steps.length;
-  const hasPrevious = currentStep! > 1;
-
   return (
-    <div>
-      <StepHeader steps={steps} currentStep={currentStep!} goToNamedStep={goToNamedStep!} />
-      <form onSubmit={handleSubmit(() => {})}>
-        {children}
-      </form>
-      <div>
-        <Button className="btn btn-secondary" onClick={previousStep} disabled={!hasPrevious}>
-          Previous
-        </Button>
-        <Button type="submit" className="btn btn-primary" onClick={nextStep} disabled={!hasNext}>
-          Next
-        </Button>
-      </div>
-    </div>
+    <form >
+      {children}
+    </form>
   );
 };
 
@@ -116,6 +70,37 @@ interface JobLauncherProps {
   appVersion: string;
   name: string;
   execSystemId?: string;
+}
+
+const StepHeader: React.FC<{
+  steps: Array<StepInfo>
+}> = ({ steps }) => {
+  const { goToStep, activeStep } = useWizard();
+  return (
+    <div className={styles.header}>
+      {steps.map(
+        (step, index) => (
+          <Button color="link" onClick={() => goToStep(index)}>
+            {`${index + 1}. ${step.stepName}`}
+          </Button>
+        )
+      )}
+    </div>
+  )
+}
+
+const StepFooter: React.FC = () => {
+  const { nextStep, previousStep, isFirstStep, isLastStep } = useWizard();
+  return (
+    <div>
+      <Button className="btn btn-secondary" onClick={previousStep} disabled={isFirstStep}>
+        Previous
+      </Button>
+      <Button type="submit" className="btn btn-primary" onClick={nextStep} disabled={isLastStep}>
+        Next
+      </Button>
+    </div>
+  )
 }
 
 const JobLauncherWizard: React.FC<JobLauncherProps> = ({
@@ -195,7 +180,6 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     }
   ]
 
-
   console.log('Current job submission state', getValues());
 
   return (
@@ -204,19 +188,15 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
       error={appError ?? systemsError}
     >
       <FormProvider {...formMethods}>
-        <StepWizard>
+        <Wizard header={<StepHeader steps={steps} />} footer={<StepFooter />}>
           {steps.map(
             (step, index) => (
-              <StepWrapper 
-
-                stepName={step.stepName}
-                steps={steps}
-              >
+              <StepWrapper>
                 {step.component}
               </StepWrapper>
             )
           )}
-        </StepWizard>
+        </Wizard>
       </FormProvider>
     </QueryWrapper>
   );
