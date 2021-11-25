@@ -1,6 +1,6 @@
 import { useList } from 'tapis-hooks/streams/measurements';
 import Measurements from '../_components/Measurements';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './Layout.module.scss';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
@@ -21,17 +21,6 @@ const Layout: React.FC<{
   const variables = Object.keys(measurements);
   const [selected, setSelected] = useState<number>(-1);
 
-  let select = useCallback(
-    (index: number) => {
-      return () => {
-        setSelected(selected === index ? -1 : index);
-      };
-    },
-    //only need to update select function if measurements changed (only time indexes will change)
-    /* eslint-disable-next-line */
-    [measurements]
-  );
-
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <div className={styles['variable-list']}>
@@ -47,7 +36,9 @@ const Layout: React.FC<{
                 variable={variable}
                 graphWidth={600}
                 measurements={variableMeasurements}
-                select={select(index)}
+                select={() => {
+                  setSelected(selected === index ? -1 : index);
+                }}
                 selected={selected === index}
               />
             );
