@@ -17,7 +17,7 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   const {
     register,
     formState: { errors },
-    trigger
+    trigger,
   } = useFormContext<ReqSubmitJob>();
   const { sourceUrl, targetPath, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];

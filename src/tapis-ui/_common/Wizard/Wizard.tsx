@@ -17,7 +17,7 @@ const variants = {
       x = -1000;
     }
     return {
-      x
+      x,
     };
   },
   center: {
@@ -27,12 +27,11 @@ const variants = {
   },
 };
 
-const StepWrapper: React.FC<React.PropsWithChildren<{
-  previousStep: React.MutableRefObject<number>;
-}>> = ({
-  children,
-  previousStep
-}) => {
+const StepWrapper: React.FC<
+  React.PropsWithChildren<{
+    previousStep: React.MutableRefObject<number>;
+  }>
+> = ({ children, previousStep }) => {
   const { activeStep } = useWizard();
   useEffect(() => {
     previousStep.current = activeStep;
@@ -45,114 +44,112 @@ const StepWrapper: React.FC<React.PropsWithChildren<{
       initial="enter"
       animate="center"
     >
-      <form>
-        {children}
-      </form>
+      <form>{children}</form>
     </motion.div>
   );
 };
 
 const StepHeader: React.FC<{
-  steps: Array<Step>,
-  onStep?: () => void,
+  steps: Array<Step>;
+  onStep?: () => void;
 }> = ({ steps, onStep }) => {
   const { goToStep, activeStep } = useWizard();
   return (
     <div className={styles.header}>
-      {steps.map(
-        (step, index) => (
-          <div className={styles.step} key={uuidv4()}>
-            <Button 
-              color="link" 
-              onClick={
-                () => {
-                  goToStep(index);
-                  onStep && onStep()
-                }
-              } 
-              className={`${styles['step-name']} ${activeStep === index ? styles['active-step'] : ''}`}>
-              {`${index + 1}. ${step.name}`}
-            </Button>
-            {
-              step.complete
-                ? <Icon name="approved-reverse" className={`${styles['step-icon']} ${styles.complete}`} />
-                : <Icon name="approved" className={`${styles['step-icon']} ${styles.complete}`} />
-            }
-          </div>
-
-        )
-      )}
+      {steps.map((step, index) => (
+        <div className={styles.step} key={uuidv4()}>
+          <Button
+            color="link"
+            onClick={() => {
+              goToStep(index);
+              onStep && onStep();
+            }}
+            className={`${styles['step-name']} ${
+              activeStep === index ? styles['active-step'] : ''
+            }`}
+          >
+            {`${index + 1}. ${step.name}`}
+          </Button>
+          {step.complete ? (
+            <Icon
+              name="approved-reverse"
+              className={`${styles['step-icon']} ${styles.complete}`}
+            />
+          ) : (
+            <Icon
+              name="approved"
+              className={`${styles['step-icon']} ${styles.complete}`}
+            />
+          )}
+        </div>
+      ))}
     </div>
-  )
-}
+  );
+};
 
 type WizardProps = {
   steps: Array<Step>;
   onStep?: () => void;
-  finish?: React.ReactNode
-}
+  finish?: React.ReactNode;
+};
 
 const StepFooter: React.FC<WizardProps> = ({ steps, onStep, finish }) => {
-  const { nextStep, previousStep, isFirstStep, isLastStep, activeStep } = useWizard();
+  const { nextStep, previousStep, isFirstStep, isLastStep, activeStep } =
+    useWizard();
   const currentStep = steps[activeStep];
-  return ( 
+  return (
     <div className={styles.footer}>
       <div>
         {!isFirstStep && (
-          <Button 
-            color="secondary" 
+          <Button
+            color="secondary"
             onClick={() => {
               previousStep();
               onStep && onStep();
-            }} 
+            }}
             disabled={isFirstStep}
             className={styles.control}
-            data-testid="previous">
+            data-testid="previous"
+          >
             Previous
           </Button>
         )}
       </div>
       <div>
         {!isLastStep && (
-          <Button 
+          <Button
             color="primary"
             onClick={() => {
               nextStep();
               onStep && onStep();
             }}
             disabled={isLastStep || (currentStep && !currentStep.complete)}
-            data-testid="next">
+            data-testid="next"
+          >
             Next
           </Button>
         )}
-        {
-          currentStep.complete && isLastStep && finish && (
-            <>
-              {finish}
-            </>
-          )
-        }
+        {currentStep.complete && isLastStep && finish && <>{finish}</>}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const Wizard: React.FC<WizardProps> = ({ ...props }) => {
   const previousStep = useRef<number>(0);
   const { steps } = props;
   return (
-    <WizardLibrary 
-      header={<StepHeader {...props} />} 
-      footer={<StepFooter {...props} />}>
-      {steps.map(
-        (step) => (
-          <StepWrapper previousStep={previousStep} key={uuidv4()}>
-            {step.component}
-          </StepWrapper>
-        )
-      )}
+    <WizardLibrary
+      header={<StepHeader {...props} />}
+      footer={<StepFooter {...props} />}
+    >
+      {steps.map((step) => (
+        <StepWrapper previousStep={previousStep} key={uuidv4()}>
+          {step.component}
+        </StepWrapper>
+      ))}
     </WizardLibrary>
-  )
-}
+  );
+};
 
 export default Wizard;

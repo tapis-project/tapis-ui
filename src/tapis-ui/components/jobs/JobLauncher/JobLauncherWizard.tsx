@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useDetail } from 'tapis-hooks/apps';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -11,41 +11,48 @@ import * as Apps from '@tapis/tapis-typescript-apps';
 import AppSelectStep from './AppSelectStep';
 import FileInputsStep from './FileInputsStep';
 import { useSubmit } from 'tapis-hooks/jobs';
-import styles from './JobLauncherWizard.module.scss';
 
 const jobInputComplete = (jobInput: Jobs.JobFileInput) => {
-  return !!jobInput.name?.length && !!jobInput.sourceUrl?.length && !!jobInput.targetPath?.length;
-}
+  return (
+    !!jobInput.name?.length &&
+    !!jobInput.sourceUrl?.length &&
+    !!jobInput.targetPath?.length
+  );
+};
 
 const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) => {
-  const required = app.jobAttributes?.fileInputs?.filter(input => input.inputMode === Apps.FileInputModeEnum.Required) ?? [];
-  if (job.fileInputs?.some(jobInput => !jobInputComplete(jobInput))) {
+  const required =
+    app.jobAttributes?.fileInputs?.filter(
+      (input) => input.inputMode === Apps.FileInputModeEnum.Required
+    ) ?? [];
+  if (job.fileInputs?.some((jobInput) => !jobInputComplete(jobInput))) {
     return false;
   }
-  const incomplete = required.some(
-    input => {
-      const matchingJobInput = job.fileInputs?.find(jobInput => jobInput.name === input.name)
-      if (!matchingJobInput) {
-        // Required input was missing from job submission
-        if (!!input.sourceUrl) {
-          // The app input specifies a sourceUrl, so it's not required in the job submission
-          return true;
-        }
-        return false;
+  const incomplete = required.some((input) => {
+    const matchingJobInput = job.fileInputs?.find(
+      (jobInput) => jobInput.name === input.name
+    );
+    if (!matchingJobInput) {
+      // Required input was missing from job submission
+      if (!!input.sourceUrl) {
+        // The app input specifies a sourceUrl, so it's not required in the job submission
+        return true;
       }
-      if (matchingJobInput) {
-        // Required input was found in job submission, Check to see if it's complete
-        return !jobInputComplete(matchingJobInput);
-      }
+      return false;
     }
-  )
+    if (matchingJobInput) {
+      // Required input was found in job submission, Check to see if it's complete
+      return !jobInputComplete(matchingJobInput);
+    }
+    return false;
+  });
   if (incomplete) {
     // One or more job submissions file inputs was incomplete, yet required in app inputs
     // without having a sourceUrl specified in the app
     return false;
   }
   return true;
-}
+};
 
 interface JobLauncherProps {
   appId: string;
@@ -108,8 +115,11 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     reset(defaultValues);
   }, [reset, app?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   const jobSubmission = getValues();
+
+  const infoComplete = !!jobSubmission.execSystemId && !!jobSubmission.name;
+  const inputsComplete = !!(app && fileInputsComplete(app, jobSubmission));
+  const summaryComplete = infoComplete && inputsComplete;
 
   const steps: Array<Step> = [
     {
@@ -122,32 +132,29 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
           execSystemId={execSystemId}
         />
       ),
-      complete: !!jobSubmission.execSystemId && !!jobSubmission.name
+      complete: infoComplete,
     },
     {
       name: 'File Inputs',
       component: <FileInputsStep app={app} systems={systems} />,
-      complete: !!(app && fileInputsComplete(app, jobSubmission))
+      complete: inputsComplete,
     },
     {
       name: 'Summary',
       component: <DescriptionList data={jobSubmission} />,
-      complete: true
-    }
-  ]
+      complete: summaryComplete,
+    },
+  ];
 
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
 
-  const finish = <SubmitWrapper isLoading={isLoading} error={error} success={data?.message}>
-    <Button
-      color="primary"
-      onClick={() => submit(jobSubmission)}
-    >
-      Submit Job
-    </Button>
-  </SubmitWrapper>
-
-  console.log('Current job submission state', getValues());
+  const finish = (
+    <SubmitWrapper isLoading={isLoading} error={error} success={data?.message}>
+      <Button color="primary" onClick={() => submit(jobSubmission)}>
+        Submit Job
+      </Button>
+    </SubmitWrapper>
+  );
 
   return (
     <QueryWrapper
