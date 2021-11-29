@@ -24,10 +24,6 @@ describe('Wizard', () => {
     );
 
     expect(screen.getAllByText(/First Step Name/).length).toBe(1);
-
-    const previous = screen.getByTestId('previous');
-    expect(previous).toHaveAttribute("disabled");
-
     const next = screen.getByTestId('next');
     await act(async () => {
       fireEvent.click(next)

@@ -17,6 +17,7 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   const {
     register,
     formState: { errors },
+    trigger
   } = useFormContext<ReqSubmitJob>();
   const { sourceUrl, targetPath, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
@@ -37,6 +38,7 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
               required: 'Source URL is required',
             })
           )}
+          onBlur={() => trigger()}
         />
       </FieldWrapper>
       <FieldWrapper
@@ -53,6 +55,7 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
               required: 'Target Path is required',
             })
           )}
+          onBlur={() => trigger()}
         />
       </FieldWrapper>
       <FormGroup check>

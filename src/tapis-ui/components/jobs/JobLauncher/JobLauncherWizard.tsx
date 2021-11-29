@@ -1,17 +1,20 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useDetail } from 'tapis-hooks/apps';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { FormProvider, useForm } from 'react-hook-form';
+import { QueryWrapper, SubmitWrapper } from 'tapis-ui/_wrappers';
 import Wizard, { Step } from 'tapis-ui/_common/Wizard';
+import { Button } from 'reactstrap';
+import { DescriptionList } from 'tapis-ui/_common';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import * as Apps from '@tapis/tapis-typescript-apps';
 import AppSelectStep from './AppSelectStep';
 import FileInputsStep from './FileInputsStep';
-
+import { useSubmit } from 'tapis-hooks/jobs';
+import styles from './JobLauncherWizard.module.scss';
 
 const jobInputComplete = (jobInput: Jobs.JobFileInput) => {
-  return !!jobInput.name && !!jobInput.sourceUrl && !!jobInput.targetPath;
+  return !!jobInput.name?.length && !!jobInput.sourceUrl?.length && !!jobInput.targetPath?.length;
 }
 
 const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) => {
@@ -44,14 +47,12 @@ const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) => {
   return true;
 }
 
-
 interface JobLauncherProps {
   appId: string;
   appVersion: string;
   name: string;
   execSystemId?: string;
 }
-
 
 const JobLauncherWizard: React.FC<JobLauncherProps> = ({
   appId,
@@ -76,9 +77,8 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
 
   const app = respApp?.result;
   const systems = respSystems?.result ?? [];
-
-  const formMethods = useForm<Jobs.ReqSubmitJob>();
-  const { reset, getValues } = formMethods;
+  const formMethods = useForm<Jobs.ReqSubmitJob>({ reValidateMode: 'onBlur' });
+  const { reset, getValues, trigger } = formMethods;
 
   // Utility function to map an app spec's file inputs to a job's fileInput
   const mapAppInputs = (appInputs: Array<Apps.AppFileInput>) => {
@@ -125,11 +125,27 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
       complete: !!jobSubmission.execSystemId && !!jobSubmission.name
     },
     {
-      name: 'File inputs',
+      name: 'File Inputs',
       component: <FileInputsStep app={app} systems={systems} />,
       complete: !!(app && fileInputsComplete(app, jobSubmission))
+    },
+    {
+      name: 'Summary',
+      component: <DescriptionList data={jobSubmission} />,
+      complete: true
     }
   ]
+
+  const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
+
+  const finish = <SubmitWrapper isLoading={isLoading} error={error} success={data?.message}>
+    <Button
+      color="primary"
+      onClick={() => submit(jobSubmission)}
+    >
+      Submit Job
+    </Button>
+  </SubmitWrapper>
 
   console.log('Current job submission state', getValues());
 
@@ -139,7 +155,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
       error={appError ?? systemsError}
     >
       <FormProvider {...formMethods}>
-        <Wizard steps={steps} />
+        <Wizard steps={steps} onStep={trigger} finish={finish} />
       </FormProvider>
     </QueryWrapper>
   );

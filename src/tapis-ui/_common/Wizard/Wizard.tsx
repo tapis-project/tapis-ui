@@ -9,9 +9,15 @@ import styles from './Wizard.module.scss';
 
 const variants = {
   enter: (direction: number) => {
+    let x = 0;
+    if (direction < 0) {
+      x = 1000;
+    }
+    if (direction > 0) {
+      x = -1000;
+    }
     return {
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
+      x
     };
   },
   center: {
@@ -47,8 +53,9 @@ const StepWrapper: React.FC<React.PropsWithChildren<{
 };
 
 const StepHeader: React.FC<{
-  steps: Array<Step>
-}> = ({ steps }) => {
+  steps: Array<Step>,
+  onStep?: () => void,
+}> = ({ steps, onStep }) => {
   const { goToStep, activeStep } = useWizard();
   return (
     <div className={styles.header}>
@@ -57,7 +64,12 @@ const StepHeader: React.FC<{
           <div className={styles.step} key={uuidv4()}>
             <Button 
               color="link" 
-              onClick={() => goToStep(index)} 
+              onClick={
+                () => {
+                  goToStep(index);
+                  onStep && onStep()
+                }
+              } 
               className={`${styles['step-name']} ${activeStep === index ? styles['active-step'] : ''}`}>
               {`${index + 1}. ${step.name}`}
             </Button>
@@ -74,37 +86,66 @@ const StepHeader: React.FC<{
   )
 }
 
-const StepFooter: React.FC = () => {
-  const { nextStep, previousStep, isFirstStep, isLastStep } = useWizard();
-  return (
-    <div>
-      <Button 
-        color="primary" 
-        onClick={previousStep} 
-        disabled={isFirstStep}
-        className={styles.control}
-        data-testid="previous">
-        Previous
-      </Button>
-      <Button 
-        type="submit"
-        color="secondary"
-        onClick={nextStep}
-        disabled={isLastStep}
-        data-testid="next">
-        Next
-      </Button>
+type WizardProps = {
+  steps: Array<Step>;
+  onStep?: () => void;
+  finish?: React.ReactNode
+}
+
+const StepFooter: React.FC<WizardProps> = ({ steps, onStep, finish }) => {
+  const { nextStep, previousStep, isFirstStep, isLastStep, activeStep } = useWizard();
+  const currentStep = steps[activeStep];
+  return ( 
+    <div className={styles.footer}>
+      <div>
+        {!isFirstStep && (
+          <Button 
+            color="secondary" 
+            onClick={() => {
+              previousStep();
+              onStep && onStep();
+            }} 
+            disabled={isFirstStep}
+            className={styles.control}
+            data-testid="previous">
+            Previous
+          </Button>
+        )}
+      </div>
+      <div>
+        {!isLastStep && (
+          <Button 
+            color="primary"
+            onClick={() => {
+              nextStep();
+              onStep && onStep();
+            }}
+            disabled={isLastStep || (currentStep && !currentStep.complete)}
+            data-testid="next">
+            Next
+          </Button>
+        )}
+        {
+          currentStep.complete && isLastStep && finish && (
+            <>
+              {finish}
+            </>
+          )
+        }
+      </div>
     </div>
   )
 }
 
-const Wizard: React.FC<{steps: Array<Step>}> = ({ steps }) => {
+const Wizard: React.FC<WizardProps> = ({ ...props }) => {
   const previousStep = useRef<number>(0);
-
+  const { steps } = props;
   return (
-    <WizardLibrary header={<StepHeader steps={steps} />} footer={<StepFooter />}>
+    <WizardLibrary 
+      header={<StepHeader {...props} />} 
+      footer={<StepFooter {...props} />}>
       {steps.map(
-        (step, index) => (
+        (step) => (
           <StepWrapper previousStep={previousStep} key={uuidv4()}>
             {step.component}
           </StepWrapper>
