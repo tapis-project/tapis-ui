@@ -29,3 +29,4 @@ export { default as FieldWrapper } from './FieldWrapper';
 export { default as PageLayout } from './PageLayout';
 export { LayoutBody, LayoutHeader, LayoutNavWrapper } from './LayoutSections';
 export { Collapse } from './Collapse';
+export { default as Wizard } from './Wizard';

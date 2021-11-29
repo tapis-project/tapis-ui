@@ -2,62 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useList } from 'tapis-hooks/systems';
 import { useDetail } from 'tapis-hooks/apps';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
-import { Button } from 'reactstrap';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Wizard, useWizard } from 'react-use-wizard';
-import { motion } from 'framer-motion';
+import Wizard, { Step } from 'tapis-ui/_common/Wizard';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import * as Apps from '@tapis/tapis-typescript-apps';
 import AppSelectStep from './AppSelectStep';
 import FileInputsStep from './FileInputsStep';
-import styles from './JobLauncherWizard.module.scss';
 
-
-
-type StepInfo = {
-  stepName: string;
-  component: React.ReactNode;
-  complete: boolean;
-}
-
-const variants = {
-  enter: (direction: number) => {
-    return {
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    };
-  },
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-  },
-};
-
-const StepWrapper: React.FC<React.PropsWithChildren<{
-  previousStep: React.MutableRefObject<number>;
-}>> = ({
-  children,
-  previousStep
-}) => {
-  const { activeStep } = useWizard();
-  useEffect(() => {
-    previousStep.current = activeStep;
-  }, [activeStep, previousStep]);
-
-  return (
-    <motion.div
-      custom={activeStep - previousStep.current}
-      variants={variants}
-      initial="enter"
-      animate="center"
-    >
-      <form>
-        {children}
-      </form>
-    </motion.div>
-  );
-};
 
 const jobInputComplete = (jobInput: Jobs.JobFileInput) => {
   return !!jobInput.name && !!jobInput.sourceUrl && !!jobInput.targetPath;
@@ -101,36 +52,6 @@ interface JobLauncherProps {
   execSystemId?: string;
 }
 
-const StepHeader: React.FC<{
-  steps: Array<StepInfo>
-}> = ({ steps }) => {
-  const { goToStep, activeStep } = useWizard();
-  return (
-    <div className={styles.header}>
-      {steps.map(
-        (step, index) => (
-          <Button color="link" onClick={() => goToStep(index)}>
-            {`${index + 1}. ${step.stepName}`}
-          </Button>
-        )
-      )}
-    </div>
-  )
-}
-
-const StepFooter: React.FC = () => {
-  const { nextStep, previousStep, isFirstStep, isLastStep } = useWizard();
-  return (
-    <div>
-      <Button className="btn btn-secondary" onClick={previousStep} disabled={isFirstStep}>
-        Previous
-      </Button>
-      <Button type="submit" className="btn btn-primary" onClick={nextStep} disabled={isLastStep}>
-        Next
-      </Button>
-    </div>
-  )
-}
 
 const JobLauncherWizard: React.FC<JobLauncherProps> = ({
   appId,
@@ -187,13 +108,12 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
     reset(defaultValues);
   }, [reset, app?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const previousStep = React.useRef<number>(0);
 
   const jobSubmission = getValues();
 
-  const steps: Array<StepInfo> = [
+  const steps: Array<Step> = [
     {
-      stepName: 'Job Info',
+      name: 'Job Info',
       component: (
         <AppSelectStep
           app={app}
@@ -205,7 +125,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
       complete: !!jobSubmission.execSystemId && !!jobSubmission.name
     },
     {
-      stepName: 'File inputs',
+      name: 'File inputs',
       component: <FileInputsStep app={app} systems={systems} />,
       complete: !!(app && fileInputsComplete(app, jobSubmission))
     }
@@ -219,15 +139,7 @@ const JobLauncherWizard: React.FC<JobLauncherProps> = ({
       error={appError ?? systemsError}
     >
       <FormProvider {...formMethods}>
-        <Wizard header={<StepHeader steps={steps} />} footer={<StepFooter />}>
-          {steps.map(
-            (step, index) => (
-              <StepWrapper previousStep={previousStep}>
-                {step.component}
-              </StepWrapper>
-            )
-          )}
-        </Wizard>
+        <Wizard steps={steps} />
       </FormProvider>
     </QueryWrapper>
   );
