@@ -149,7 +149,12 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
 
   const finish = (
-    <SubmitWrapper isLoading={isLoading} error={error} success={data?.message} reverse>
+    <SubmitWrapper
+      isLoading={isLoading}
+      error={error}
+      success={data?.message}
+      reverse
+    >
       <Button color="primary" onClick={() => submit(jobSubmission)}>
         Submit Job
       </Button>
