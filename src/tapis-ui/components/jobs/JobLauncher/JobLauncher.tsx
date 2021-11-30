@@ -1,19 +1,58 @@
 import React, { useEffect } from 'react';
 import { useList } from 'tapis-hooks/systems';
-import { useSubmit } from 'tapis-hooks/jobs';
-import { useForm, FormProvider } from 'react-hook-form';
-import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { TapisSystem } from '@tapis/tapis-typescript-systems';
-import { Jobs } from '@tapis/tapis-typescript';
 import { useDetail } from 'tapis-hooks/apps';
-import { SubmitWrapper, QueryWrapper } from 'tapis-ui/_wrappers';
-import { Button, Input } from 'reactstrap';
-import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { AppFileInput } from '@tapis/tapis-typescript-apps';
-import { JobFileInput } from '@tapis/tapis-typescript-jobs';
-import FileInputs from './FileInputs';
+import { FormProvider, useForm } from 'react-hook-form';
+import { QueryWrapper, SubmitWrapper } from 'tapis-ui/_wrappers';
+import Wizard, { Step } from 'tapis-ui/_common/Wizard';
+import { Button } from 'reactstrap';
+import { DescriptionList } from 'tapis-ui/_common';
+import * as Jobs from '@tapis/tapis-typescript-jobs';
+import * as Apps from '@tapis/tapis-typescript-apps';
+import AppSelectStep from './AppSelectStep';
+import FileInputsStep from './FileInputsStep';
+import { useSubmit } from 'tapis-hooks/jobs';
 
-export type OnSubmitCallback = (job: Jobs.Job) => any;
+const jobInputComplete = (jobInput: Jobs.JobFileInput) => {
+  return (
+    !!jobInput.name?.length &&
+    !!jobInput.sourceUrl?.length &&
+    !!jobInput.targetPath?.length
+  );
+};
+
+const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) => {
+  const required =
+    app.jobAttributes?.fileInputs?.filter(
+      (input) => input.inputMode === Apps.FileInputModeEnum.Required
+    ) ?? [];
+  if (job.fileInputs?.some((jobInput) => !jobInputComplete(jobInput))) {
+    return false;
+  }
+  const incomplete = required.some((input) => {
+    const matchingJobInput = job.fileInputs?.find(
+      (jobInput) => jobInput.name === input.name
+    );
+    if (!matchingJobInput) {
+      // Required input was missing from job submission
+      if (!!input.sourceUrl) {
+        // The app input specifies a sourceUrl, so it's not required in the job submission
+        return true;
+      }
+      return false;
+    }
+    if (matchingJobInput) {
+      // Required input was found in job submission, Check to see if it's complete
+      return !jobInputComplete(matchingJobInput);
+    }
+    return false;
+  });
+  if (incomplete) {
+    // One or more job submissions file inputs was incomplete, yet required in app inputs
+    // without having a sourceUrl specified in the app
+    return false;
+  }
+  return true;
+};
 
 interface JobLauncherProps {
   appId: string;
@@ -29,13 +68,12 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   execSystemId,
 }) => {
   const {
-    data: systemsData,
+    data: respSystems,
     isLoading: systemsLoading,
     error: systemsError,
   } = useList();
-  const systems: Array<TapisSystem> = systemsData?.result ?? [];
   const {
-    data: app,
+    data: respApp,
     isLoading: appLoading,
     error: appError,
   } = useDetail({
@@ -44,26 +82,16 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     select: 'jobAttributes',
   });
 
-  /* eslint-disable-next-line */
-  const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
-  const formSubmit = (values: Jobs.ReqSubmitJob) => {
-    //submit(values);
-    console.log(values);
-  };
-
-  const formMethods = useForm<Jobs.ReqSubmitJob>();
-  const {
-    reset,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = formMethods;
+  const app = respApp?.result;
+  const systems = respSystems?.result ?? [];
+  const formMethods = useForm<Jobs.ReqSubmitJob>({ reValidateMode: 'onBlur' });
+  const { reset, getValues, trigger } = formMethods;
 
   // Utility function to map an app spec's file inputs to a job's fileInput
-  const mapAppInputs = (appInputs: Array<AppFileInput>) => {
+  const mapAppInputs = (appInputs: Array<Apps.AppFileInput>) => {
     return appInputs.map((input) => {
       const { sourceUrl, targetPath, description, name } = input;
-      const result: JobFileInput = {
+      const result: Jobs.JobFileInput = {
         sourceUrl,
         targetPath,
         description,
@@ -74,18 +102,59 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   };
 
   const defaultValues: Jobs.ReqSubmitJob = {
-    name,
     appId,
     appVersion,
+    name,
     execSystemId,
-    fileInputs: mapAppInputs(app?.result?.jobAttributes?.fileInputs ?? []),
+    fileInputs: mapAppInputs(app?.jobAttributes?.fileInputs ?? []),
   };
 
   // Populating default values needs to happen as an effect
   // after initial render of field arrays
   useEffect(() => {
     reset(defaultValues);
-  }, [reset, app?.result?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reset, app?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const jobSubmission = getValues();
+
+  const infoComplete = !!jobSubmission.execSystemId && !!jobSubmission.name;
+  const inputsComplete = !!(app && fileInputsComplete(app, jobSubmission));
+  const summaryComplete = infoComplete && inputsComplete;
+
+  const steps: Array<Step> = [
+    {
+      name: 'Job Info',
+      component: (
+        <AppSelectStep
+          app={app}
+          name={name}
+          systems={systems}
+          execSystemId={execSystemId}
+        />
+      ),
+      complete: infoComplete,
+    },
+    {
+      name: 'File Inputs',
+      component: <FileInputsStep app={app} systems={systems} />,
+      complete: inputsComplete,
+    },
+    {
+      name: 'Summary',
+      component: <DescriptionList data={jobSubmission} />,
+      complete: summaryComplete,
+    },
+  ];
+
+  const { submit, isLoading, error, data } = useSubmit(appId, appVersion);
+
+  const finish = (
+    <SubmitWrapper isLoading={isLoading} error={error} success={data?.message} reverse>
+      <Button color="primary" onClick={() => submit(jobSubmission)}>
+        Submit Job
+      </Button>
+    </SubmitWrapper>
+  );
 
   return (
     <QueryWrapper
@@ -93,93 +162,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
       error={appError ?? systemsError}
     >
       <FormProvider {...formMethods}>
-        <form onSubmit={handleSubmit(formSubmit)}>
-          {/* Required fields */}
-          <FieldWrapper
-            description="A name for this job"
-            label="Name"
-            required={true}
-            error={errors['name']}
-          >
-            <Input
-              bsSize="sm"
-              defaultValue={name}
-              {...mapInnerRef(
-                register('name', { required: 'Name is required' })
-              )}
-            />
-          </FieldWrapper>
-          <FieldWrapper
-            description="The ID of the TAPIS application to run"
-            label="App ID"
-            required={true}
-            error={errors['appId']}
-          >
-            <Input
-              bsSize="sm"
-              data-testid="appId"
-              defaultValue={appId}
-              {...mapInnerRef(
-                register('appId', { required: 'App ID is required' })
-              )}
-            />
-          </FieldWrapper>
-          <FieldWrapper
-            description="The version of the application to run"
-            label="App Version"
-            required={true}
-            error={errors['appVersion']}
-          >
-            <Input
-              bsSize="sm"
-              defaultValue={appVersion}
-              {...mapInnerRef(
-                register('appVersion', { required: 'App version is required ' })
-              )}
-            />
-          </FieldWrapper>
-          <FieldWrapper
-            description="A TAPIS system that can run this application"
-            label="Execution System"
-            required={true}
-            error={errors['execSystemId']}
-          >
-            <Input
-              type="select"
-              defaultValue={execSystemId}
-              {...mapInnerRef(
-                register('execSystemId', {
-                  required: 'An execution system is required ',
-                })
-              )}
-            >
-              {systems.map((system: TapisSystem) => (
-                <option key={system.id}>{system.id}</option>
-              ))}
-            </Input>
-          </FieldWrapper>
-
-          <FileInputs
-            appInputs={app?.result?.jobAttributes?.fileInputs ?? []}
-          />
-
-          {/* Submit button */}
-          <SubmitWrapper
-            error={error}
-            isLoading={isLoading}
-            success={
-              data && `Successfully submitted job ${data?.result?.uuid ?? ''}`
-            }
-          >
-            <Button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isLoading || !!error}
-            >
-              Submit Job
-            </Button>
-          </SubmitWrapper>
-        </form>
+        <Wizard steps={steps} onStep={trigger} finish={finish} />
       </FormProvider>
     </QueryWrapper>
   );
