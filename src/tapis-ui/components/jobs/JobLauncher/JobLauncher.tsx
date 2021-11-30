@@ -161,7 +161,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
       <Button
         color="primary"
         onClick={() => submit(jobSubmission)}
-        disabled={!summaryComplete}
+        disabled={!summaryComplete || !!data}
       >
         Submit Job
       </Button>
