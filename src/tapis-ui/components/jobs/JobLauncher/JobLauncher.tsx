@@ -115,6 +115,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
     reset(defaultValues);
   }, [reset, app?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  
   const jobSubmission = getValues();
 
   const infoComplete =
