@@ -155,7 +155,11 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
       success={data?.message}
       reverse
     >
-      <Button color="primary" onClick={() => submit(jobSubmission)} disabled={!summaryComplete}>
+      <Button
+        color="primary"
+        onClick={() => submit(jobSubmission)}
+        disabled={!summaryComplete}
+      >
         Submit Job
       </Button>
     </SubmitWrapper>
