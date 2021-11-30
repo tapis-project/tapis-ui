@@ -27,6 +27,13 @@ const variants = {
   },
 };
 
+type WizardProps = {
+  steps: Array<Step>;
+  onStep?: () => void;
+  finish?: React.ReactNode;
+  requireComplete?: boolean;
+};
+
 const StepWrapper: React.FC<
   React.PropsWithChildren<{
     previousStep: React.MutableRefObject<number>;
@@ -49,11 +56,13 @@ const StepWrapper: React.FC<
   );
 };
 
-const StepHeader: React.FC<{
-  steps: Array<Step>;
-  onStep?: () => void;
-}> = ({ steps, onStep }) => {
+const StepHeader: React.FC<WizardProps> = ({
+  steps,
+  onStep,
+  requireComplete,
+}) => {
   const { goToStep, activeStep } = useWizard();
+  const firstIncomplete = steps.findIndex((step) => !step.complete);
   return (
     <div className={styles.header}>
       {steps.map((step, index) => (
@@ -67,6 +76,9 @@ const StepHeader: React.FC<{
             className={`${styles['step-name']} ${
               activeStep === index ? styles['active-step'] : ''
             }`}
+            disabled={
+              requireComplete && firstIncomplete > -1 && index > firstIncomplete
+            }
           >
             {`${index + 1}. ${step.name}`}
           </Button>
@@ -87,13 +99,12 @@ const StepHeader: React.FC<{
   );
 };
 
-type WizardProps = {
-  steps: Array<Step>;
-  onStep?: () => void;
-  finish?: React.ReactNode;
-};
-
-const StepFooter: React.FC<WizardProps> = ({ steps, onStep, finish }) => {
+const StepFooter: React.FC<WizardProps> = ({
+  steps,
+  onStep,
+  finish,
+  requireComplete,
+}) => {
   const { nextStep, previousStep, isFirstStep, isLastStep, activeStep } =
     useWizard();
   const currentStep = steps[activeStep];
@@ -123,13 +134,13 @@ const StepFooter: React.FC<WizardProps> = ({ steps, onStep, finish }) => {
               nextStep();
               onStep && onStep();
             }}
-            disabled={isLastStep || (currentStep && !currentStep.complete)}
+            disabled={requireComplete && currentStep && !currentStep.complete}
             data-testid="next"
           >
             Next
           </Button>
         )}
-        {currentStep.complete && isLastStep && finish && <>{finish}</>}
+        {isLastStep && finish && <>{finish}</>}
       </div>
     </div>
   );

@@ -85,7 +85,7 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
   const app = respApp?.result;
   const systems = respSystems?.result ?? [];
   const formMethods = useForm<Jobs.ReqSubmitJob>({ reValidateMode: 'onBlur' });
-  const { reset, getValues, trigger } = formMethods;
+  const { reset, getValues, trigger, watch } = formMethods;
 
   // Utility function to map an app spec's file inputs to a job's fileInput
   const mapAppInputs = (appInputs: Array<Apps.AppFileInput>) => {
@@ -117,7 +117,10 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
 
   const jobSubmission = getValues();
 
-  const infoComplete = !!jobSubmission.execSystemId && !!jobSubmission.name;
+  const infoComplete =
+    !!watch('execSystemId') &&
+    !!jobSubmission.execSystemId?.length &&
+    !!jobSubmission.name?.length;
   const inputsComplete = !!(app && fileInputsComplete(app, jobSubmission));
   const summaryComplete = infoComplete && inputsComplete;
 
@@ -171,7 +174,12 @@ const JobLauncher: React.FC<JobLauncherProps> = ({
       error={appError ?? systemsError}
     >
       <FormProvider {...formMethods}>
-        <Wizard steps={steps} onStep={trigger} finish={finish} />
+        <Wizard
+          steps={steps}
+          onStep={trigger}
+          finish={finish}
+          requireComplete
+        />
       </FormProvider>
     </QueryWrapper>
   );
