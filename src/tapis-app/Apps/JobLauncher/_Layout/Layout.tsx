@@ -1,3 +1,4 @@
+
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { JobLauncher } from 'tapis-ui/components/jobs';
 import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
@@ -21,8 +22,6 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
         <JobLauncher
           appId={appId}
           appVersion={appVersion}
-          name={name}
-          execSystemId={execSystemId}
         />
       )}
     </div>
