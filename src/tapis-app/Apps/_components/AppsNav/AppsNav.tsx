@@ -16,7 +16,7 @@ const AppsNav: React.FC = () => {
         {appList.length ? (
           appList.map((app) => (
             <NavItem
-              to={`${url}/${app.id}/${app.version}`}
+              to={`${url}/${app.id}/${app.version}/launcher/step1`}
               icon="applications"
               key={app.id}
             >

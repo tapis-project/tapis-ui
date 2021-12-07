@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Wizard, Steps, Step, WithWizard, withWizard, WizardComponentProps, WizardProps } from 'react-albus';
 import { Button } from 'reactstrap';
-import { useDetail as useAppDetail } from 'tapis-hooks/apps';
+
 
 type StepWrapperProps = {
 
@@ -17,7 +17,8 @@ const StepWrapper: React.FC<StepWrapperProps> = ({ wizard }) => {
 const Navigation: React.FC = () => {
   return (
     <WithWizard
-      render={({next, previous, steps, step}) => {
+      render={({next, previous, steps, step, history}) => {
+        console.log("HISTORY", step, history);
         return (
           <div>
             {steps.indexOf(step) < steps.length - 1 && (
@@ -57,22 +58,15 @@ type JobLauncherWizardProps = {
   appVersion: string;
 } & WizardProps;
 
-const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ appId, appVersion }) => {
-  const { data: appData } = useAppDetail({ appId, appVersion });
-  const appDetails = appData?.result;
-  const execSystemId = appDetails?.jobAttributes?.execSystemId ?? '';
-  const name = `${appId}-${appVersion}-${new Date()
-    .toISOString()
-    .slice(0, -5)}`;
-  console.log(appId, appVersion);
+const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ appId, appVersion, history, basename }) => {
+  console.log("Wizard", history, basename);
   return (
-    <Wizard>
-      {withWizard(({ wizard }) => <Resetter appId={appId} appVersion={appVersion} wizard={wizard} />)}
+    <Wizard history={history} basename={basename}>
       <Steps>
-        <Step id="step 1">
+        <Step id="step1">
           <h1>Step 1</h1>
         </Step>
-        <Step id="step 2">
+        <Step id="step2">
           <h1>Step 2</h1> 
         </Step>
       </Steps>

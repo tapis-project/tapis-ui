@@ -19,15 +19,17 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/:appId/:appVersion`}
+        path={`${path}/:appId/:appVersion/launcher`}
         render={({
+          history,
           match: {
+            url,
             params: { appVersion, appId },
           },
         }: RouteComponentProps<{
           appId: string;
           appVersion: string;
-        }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
+        }>) => <JobLauncher appId={appId} appVersion={appVersion} history={history} url={url} />}
       />
     </Switch>
   );
