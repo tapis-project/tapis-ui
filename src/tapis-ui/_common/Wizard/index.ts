@@ -7,4 +7,5 @@ export type WizardStep = {
   render: React.ReactNode
 }
 
+export { useWizard } from './Wizard';
 export default Wizard;
