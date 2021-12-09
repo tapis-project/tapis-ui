@@ -1,7 +1,6 @@
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { JobLauncher } from 'tapis-ui/components/jobs';
 import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
-import JobLauncherProvider from 'tapis-ui/components/jobs/JobLauncher/JobLauncherProvider';
 
 const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,
@@ -19,14 +18,12 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   const body = (
     <div style={{ flex: 1 }}>
       {appDetails && (
-        <JobLauncherProvider>
-          <JobLauncher
-            appId={appId}
-            appVersion={appVersion}
-            name={name}
-            execSystemId={execSystemId}
-          />
-        </JobLauncherProvider>
+        <JobLauncher
+          appId={appId}
+          appVersion={appVersion}
+          name={name}
+          execSystemId={execSystemId}
+        />
       )}
     </div>
   );

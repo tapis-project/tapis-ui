@@ -3,27 +3,16 @@ import { WizardStep, useWizard } from 'tapis-ui/_common/Wizard';
 import { Wizard } from 'tapis-ui/_common';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { Input, Button } from 'reactstrap';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormContext, FormProvider } from 'react-hook-form';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
-import { useJobLauncher } from './JobLauncherProvider';
+import JobLauncherProvider, { useJobLauncher } from './JobLauncherProvider';
 
 type JobLauncherWizardProps = {
   appId: string;
   appVersion: string;
   execSystemId: string;
   name: string;
-};
-
-const JobWizardNavigation: React.FC = () => {
-  const props = useWizard();
-  return (
-    <div>
-      <Button type="submit" onClick={props.nextStep}>
-        Next
-      </Button>
-    </div>
-  );
 };
 
 type JobBasicsProps = {
@@ -33,23 +22,12 @@ type JobBasicsProps = {
   execSystemId: string;
 };
 
-const JobBasics: React.FC<JobBasicsProps> = ({
-  name,
-  appId,
-  appVersion
-}) => {
-  const { nextStep } = useWizard();
-  const { register, formState, handleSubmit } = useForm<Jobs.ReqSubmitJob>();
+const JobBasics: React.FC<JobBasicsProps> = ({ name, appId, appVersion }) => {
+  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
-  const { dispatch } = useJobLauncher();
-
-  const formSubmit = (values: Jobs.ReqSubmitJob) => {
-    dispatch(values);
-    nextStep && nextStep();
-  };
 
   return (
-    <form onSubmit={handleSubmit(formSubmit)}>
+    <div>
       <FieldWrapper
         description="A name for this job"
         label="Name"
@@ -91,9 +69,37 @@ const JobBasics: React.FC<JobBasicsProps> = ({
           )}
         />
       </FieldWrapper>
-      <Button type="submit">Next</Button>
-    </form>
+    </div>
   );
+};
+
+const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => {
+  const { nextStep } = useWizard();
+  const methods = useForm<Jobs.ReqSubmitJob>();
+  const { handleSubmit } = methods;
+  const { jobSubmission, dispatch } = useJobLauncher();
+
+  console.log('Current job submission', jobSubmission);
+
+  const formSubmit = (values: Jobs.ReqSubmitJob) => {
+    dispatch(values);
+    nextStep && nextStep();
+  };
+
+  return (
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(formSubmit)}>
+        {children}
+        <Button type="submit">Next</Button>
+      </form>
+    </FormProvider>
+  );
+};
+
+const withJobWizardStep = (step: React.ReactNode): React.ReactNode => {
+  return <JobWizardStepWrapper>{step}</JobWizardStepWrapper>;
 };
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
@@ -106,7 +112,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'step1',
       name: 'Job Stuff',
-      render: (
+      render: withJobWizardStep(
         <JobBasics
           name={name}
           appId={appId}
@@ -118,13 +124,15 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'step2',
       name: 'File Stuff',
-      render: <div>File Stuff</div>,
+      render: withJobWizardStep(<div>File Stuff</div>),
     },
   ];
 
-  const { jobSubmission } = useJobLauncher();
-
-  return <Wizard steps={steps} />;
+  return (
+    <JobLauncherProvider>
+      <Wizard steps={steps} />
+    </JobLauncherProvider>
+  );
 };
 
 export default JobLauncherWizard;
