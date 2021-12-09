@@ -1,11 +1,12 @@
-import React from "react";
-import { WizardStep, useWizard } from "tapis-ui/_common/Wizard";
-import { Wizard } from "tapis-ui/_common";
-import { FieldWrapper } from "tapis-ui/_common";
-import { Input, Button } from "reactstrap";
-import { useForm, useFormContext, FormProvider } from "react-hook-form";
-import { mapInnerRef } from "tapis-ui/utils/forms";
-import * as Jobs from "@tapis/tapis-typescript-jobs";
+import React from 'react';
+import { WizardStep, useWizard } from 'tapis-ui/_common/Wizard';
+import { Wizard } from 'tapis-ui/_common';
+import { FieldWrapper } from 'tapis-ui/_common';
+import { Input, Button } from 'reactstrap';
+import { useForm } from 'react-hook-form';
+import { mapInnerRef } from 'tapis-ui/utils/forms';
+import * as Jobs from '@tapis/tapis-typescript-jobs';
+import { useJobLauncher } from './JobLauncherProvider';
 
 type JobLauncherWizardProps = {
   appId: string;
@@ -14,16 +15,16 @@ type JobLauncherWizardProps = {
   name: string;
 };
 
-
-
 const JobWizardNavigation: React.FC = () => {
   const props = useWizard();
   return (
     <div>
-      <Button type="submit" onClick={props.nextStep}>Next</Button>
+      <Button type="submit" onClick={props.nextStep}>
+        Next
+      </Button>
     </div>
-  )
-}
+  );
+};
 
 type JobBasicsProps = {
   name: string;
@@ -35,44 +36,44 @@ type JobBasicsProps = {
 const JobBasics: React.FC<JobBasicsProps> = ({
   name,
   appId,
-  appVersion,
-  execSystemId,
+  appVersion
 }) => {
   const { nextStep } = useWizard();
   const { register, formState, handleSubmit } = useForm<Jobs.ReqSubmitJob>();
   const { errors } = formState;
+  const { dispatch } = useJobLauncher();
 
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
-    console.log(values);
+    dispatch(values);
     nextStep && nextStep();
-  }
-  
+  };
+
   return (
     <form onSubmit={handleSubmit(formSubmit)}>
       <FieldWrapper
         description="A name for this job"
         label="Name"
         required={true}
-        error={errors["name"]}
+        error={errors['name']}
       >
         <Input
           bsSize="sm"
           defaultValue={name}
-          {...mapInnerRef(register("name", { required: "Name is required" }))}
+          {...mapInnerRef(register('name', { required: 'Name is required' }))}
         />
       </FieldWrapper>
       <FieldWrapper
         description="The ID of the TAPIS application to run"
         label="App ID"
         required={true}
-        error={errors["appId"]}
+        error={errors['appId']}
       >
         <Input
           bsSize="sm"
           data-testid="appId"
           defaultValue={appId}
           {...mapInnerRef(
-            register("appId", { required: "App ID is required" })
+            register('appId', { required: 'App ID is required' })
           )}
         />
       </FieldWrapper>
@@ -80,13 +81,13 @@ const JobBasics: React.FC<JobBasicsProps> = ({
         description="The version of the application to run"
         label="App Version"
         required={true}
-        error={errors["appVersion"]}
+        error={errors['appVersion']}
       >
         <Input
           bsSize="sm"
           defaultValue={appVersion}
           {...mapInnerRef(
-            register("appVersion", { required: "App version is required " })
+            register('appVersion', { required: 'App version is required ' })
           )}
         />
       </FieldWrapper>
@@ -99,24 +100,31 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   name,
   appId,
   appVersion,
-  execSystemId
+  execSystemId,
 }) => {
   const steps: Array<WizardStep> = [
     {
-      id: "step1",
-      name: "Job Stuff",
-      render: <JobBasics name={name} appId={appId} appVersion={appVersion} execSystemId={execSystemId} />,
+      id: 'step1',
+      name: 'Job Stuff',
+      render: (
+        <JobBasics
+          name={name}
+          appId={appId}
+          appVersion={appVersion}
+          execSystemId={execSystemId}
+        />
+      ),
     },
     {
-      id: "step2",
-      name: "File Stuff",
+      id: 'step2',
+      name: 'File Stuff',
       render: <div>File Stuff</div>,
     },
   ];
 
-  return (
-    <Wizard steps={steps} />
-  );
+  const { jobSubmission } = useJobLauncher();
+
+  return <Wizard steps={steps} />;
 };
 
 export default JobLauncherWizard;
