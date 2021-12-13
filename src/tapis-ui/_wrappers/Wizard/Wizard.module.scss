@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+}
+
+.steps {
+  flex: 50%;
+  border: 1px solid black;
+}
+.summary {
+  flex: 50%;
+  border: 1px solid black;
+}

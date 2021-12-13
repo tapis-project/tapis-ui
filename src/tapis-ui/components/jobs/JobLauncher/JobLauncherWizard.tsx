@@ -1,6 +1,6 @@
 import React from 'react';
-import { WizardStep, useWizard } from 'tapis-ui/_common/Wizard';
-import { Wizard } from 'tapis-ui/_common';
+import { WizardStep, useWizard } from 'tapis-ui/_wrappers/Wizard';
+import { Wizard } from 'tapis-ui/_wrappers';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { Input, Button } from 'reactstrap';
 import { useForm, useFormContext, FormProvider } from 'react-hook-form';
@@ -80,8 +80,6 @@ const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   const methods = useForm<Jobs.ReqSubmitJob>();
   const { handleSubmit } = methods;
   const { jobSubmission, dispatch } = useJobLauncher();
-
-  console.log('Current job submission', jobSubmission);
 
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
     dispatch(values);
