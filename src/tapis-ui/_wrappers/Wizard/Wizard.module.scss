@@ -2,11 +2,26 @@
   display: flex;
 }
 
-.steps {
+.container > * {
   flex: 50%;
-  border: 1px solid black;
+  background-color: var(--global-color-primary--x-light);
+  border: 1px solid var(--global-color-primary--light);
+  margin-right: 1em;
+  padding: 1em 1em 1em 1em;
 }
-.summary {
-  flex: 50%;
-  border: 1px solid black;
+
+.step-summary {
+  padding-bottom: 1em;
+  .name {
+    display: flex;
+    justify-content: space-between;
+  }
+  .content {
+    font-size: smaller;
+    padding-left: 1em;
+  }
+  .edit {
+    padding: 0 0 0 0 !important;
+  }
 }
+

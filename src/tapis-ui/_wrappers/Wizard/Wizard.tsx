@@ -1,5 +1,6 @@
 import React, { useState, useContext, useCallback } from 'react';
 import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
+import { Button } from 'reactstrap';
 import { WizardStep } from '.';
 import styles from './Wizard.module.scss';
 
@@ -31,15 +32,28 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   steps,
   ...stepWizardProps
 }) => {
-
+  const { goToNamedStep } = stepWizardProps;
+  const editCallback = useCallback(
+    (stepId: string) => goToNamedStep && goToNamedStep(stepId),
+    [ goToNamedStep ]
+  )
   return (
     <div className={styles.summary}>
       {
         steps.map(
           (step) => (
-            <div>
-              <h4>{step.name}</h4>
-              <div>
+            <div className={styles['step-summary']}>
+              <div className={styles.name}>
+                <b>{step.name}</b>
+                <Button
+                  color="link"
+                  onClick={() => editCallback(step.id)}
+                  className={styles.edit}
+                >
+                  edit
+                </Button>
+              </div>
+              <div className={styles.content}>
                 {step.summary}
               </div>
             </div>
@@ -52,14 +66,15 @@ const WizardSummary: React.FC<WizardControlProps> = ({
 
 const WizardProgress: React.FC<WizardControlProps> = ({ steps, ...stepWizardProps }) => {
   const { currentStep } = stepWizardProps;
+  if (currentStep === undefined) { 
+    return null;
+  }
   return (
     <div>
-      Step {currentStep} of {steps.length}
+      {steps[currentStep - 1].name}
     </div>
   )
 }
-
-
 
 const Wizard: React.FC<WizardProps> = ({ steps }) => {
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -70,6 +85,7 @@ const Wizard: React.FC<WizardProps> = ({ steps }) => {
     (props: Partial<StepWizardChildProps>) => {
       setStepWizardProps({
         currentStep: 1,
+        totalSteps: steps.length,
         ...props
       })
     },
@@ -94,6 +110,7 @@ const Wizard: React.FC<WizardProps> = ({ steps }) => {
           instance={instanceCallback}
           className={styles.steps}
           onStepChange={stepChangeCallback}
+          transitions={{}}
         >
           {steps.map((step) => (
             <StepContainer stepName={step.id} step={step} />

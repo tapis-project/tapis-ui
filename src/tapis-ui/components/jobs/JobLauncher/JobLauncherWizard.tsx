@@ -8,6 +8,7 @@ import { useForm, useFormContext, FormProvider } from 'react-hook-form';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import JobLauncherProvider, { useJobLauncher } from './JobLauncherProvider';
+import styles from './JobLauncherWizard.module.scss';
 
 type JobLauncherWizardProps = {
   appId: string;
@@ -85,12 +86,12 @@ const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
 const JobBasicsSummary: React.FC = () => {
   const { jobSubmission } = useJobLauncher();
   const { name, appId, appVersion } = jobSubmission;
-  console.log(jobSubmission);
   return (
     <div>
       {name && appId && appVersion
         ? <div>
-            <h5>{name}</h5>
+            <div>{name}</div>
+            <div>{appId} v{appVersion}</div>
           </div>
         : <i>Incomplete</i>
       }
@@ -101,13 +102,12 @@ const JobBasicsSummary: React.FC = () => {
 const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
-  const { nextStep } = useWizard();
+  const { nextStep, previousStep, currentStep, totalSteps } = useWizard();
   const methods = useForm<Jobs.ReqSubmitJob>();
   const { handleSubmit } = methods;
-  const { jobSubmission, set, reset } = useJobLauncher();
+  const { set, reset } = useJobLauncher();
 
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
-    console.log("SETTING", values);
     set(values);
     nextStep && nextStep();
   };
@@ -116,7 +116,14 @@ const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(formSubmit)}>
         {children}
-        <Button type="submit">Next</Button>
+        <div className={styles.controls}>
+          {!!currentStep && currentStep > 1 && (
+            <Button onClick={previousStep} type="submit">Back</Button>
+          )}
+          {!!currentStep && !!totalSteps && currentStep < totalSteps && (
+            <Button type="submit" color="primary">Continue</Button>
+          )}
+        </div>        
       </form>
     </FormProvider>
   );
