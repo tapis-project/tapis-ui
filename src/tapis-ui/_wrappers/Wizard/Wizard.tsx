@@ -1,6 +1,11 @@
 import React, { useState, useContext, useCallback } from 'react';
 import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
-import { useForm, useFormContext, FormProvider, SubmitHandler } from 'react-hook-form';
+import {
+  useForm,
+  useFormContext,
+  FormProvider,
+  SubmitHandler,
+} from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { WizardStep } from '.';
 import styles from './Wizard.module.scss';
@@ -28,18 +33,22 @@ function StepContainer<T>(props: StepContainerProps) {
   const { nextStep, currentStep, previousStep, totalSteps, step } = props;
   const formSubmit: SubmitHandler<T> = () => {
     nextStep && nextStep();
-  }
+  };
   return (
     <form onSubmit={handleSubmit<T>(formSubmit)}>
       {step.render}
       <div className={styles.controls}>
         {!!currentStep && currentStep > 1 && (
-          <Button onClick={previousStep} type="submit">Back</Button>
+          <Button onClick={previousStep} type="submit">
+            Back
+          </Button>
         )}
         {!!currentStep && !!totalSteps && currentStep < totalSteps && (
-          <Button type="submit" color="primary">Continue</Button>
+          <Button type="submit" color="primary">
+            Continue
+          </Button>
         )}
-      </div>        
+      </div>
     </form>
   );
 }
@@ -53,51 +62,44 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   const { goToNamedStep } = stepWizardProps;
   const editCallback = useCallback(
     (stepId: string) => goToNamedStep && goToNamedStep(stepId),
-    [ goToNamedStep ]
-  )
+    [goToNamedStep]
+  );
   return (
     <div className={styles.summary}>
-      {
-        steps.map(
-          (step) => (
-            <div className={styles['step-summary']}>
-              <div className={styles.name}>
-                <b>{step.name}</b>
-                <Button
-                  color="link"
-                  onClick={() => editCallback(step.id)}
-                  className={styles.edit}
-                >
-                  edit
-                </Button>
-              </div>
-              <div className={styles.content}>
-                {step.summary}
-              </div>
-            </div>
-          )
-        )
-      }
+      {steps.map((step) => (
+        <div className={styles['step-summary']}>
+          <div className={styles.name}>
+            <b>{step.name}</b>
+            <Button
+              color="link"
+              onClick={() => editCallback(step.id)}
+              className={styles.edit}
+            >
+              edit
+            </Button>
+          </div>
+          <div className={styles.content}>{step.summary}</div>
+        </div>
+      ))}
     </div>
   );
 };
 
-const WizardProgress: React.FC<WizardControlProps> = ({ steps, ...stepWizardProps }) => {
+const WizardProgress: React.FC<WizardControlProps> = ({
+  steps,
+  ...stepWizardProps
+}) => {
   const { currentStep } = stepWizardProps;
-  if (currentStep === undefined) { 
+  if (currentStep === undefined) {
     return null;
   }
-  return (
-    <div>
-      {steps[currentStep - 1].name}
-    </div>
-  )
-}
+  return <div>{steps[currentStep - 1].name}</div>;
+};
 
 function Wizard<T>(props: WizardProps) {
   const { steps } = props;
   const methods = useForm<T>();
- 
+
   const [stepWizardProps, setStepWizardProps] = useState<
     Partial<StepWizardChildProps>
   >({});
@@ -107,21 +109,21 @@ function Wizard<T>(props: WizardProps) {
       setStepWizardProps({
         currentStep: 1,
         totalSteps: steps.length,
-        ...props
-      })
+        ...props,
+      });
     },
-    [ setStepWizardProps, steps ]
-  )
+    [setStepWizardProps, steps]
+  );
 
   const stepChangeCallback = useCallback(
-    ({ activeStep }: { previousStep: number, activeStep: number }) => {
+    ({ activeStep }: { previousStep: number; activeStep: number }) => {
       setStepWizardProps({
         ...stepWizardProps,
-        currentStep: activeStep
-      })
+        currentStep: activeStep,
+      });
     },
-    [ setStepWizardProps, stepWizardProps ]
-  )
+    [setStepWizardProps, stepWizardProps]
+  );
 
   return (
     <FormProvider {...methods}>
@@ -142,7 +144,7 @@ function Wizard<T>(props: WizardProps) {
         </div>
       </WizardContext.Provider>
     </FormProvider>
-  )
+  );
 }
 
 export default Wizard;

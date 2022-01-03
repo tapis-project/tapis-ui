@@ -9,10 +9,7 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
 
   const body = (
     <div style={{ flex: 1 }}>
-      <JobLauncher
-        appId={appId}
-        appVersion={appVersion}
-      />
+      <JobLauncher appId={appId} appVersion={appVersion} />
     </div>
   );
 

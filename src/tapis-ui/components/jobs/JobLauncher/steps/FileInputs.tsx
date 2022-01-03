@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
-import { AppFileInput, FileInputModeEnum } from '@tapis/tapis-typescript-apps';
+import { FileInputModeEnum } from '@tapis/tapis-typescript-apps';
 import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup } from 'reactstrap';
@@ -9,7 +9,6 @@ import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import styles from './FileInputs.module.scss';
-import { Jobs } from '@tapis/tapis-typescript';
 
 const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   item,
@@ -84,7 +83,10 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   );
 };
 
-export const FileInputs: React.FC<{ appId: string; appVersion: string; }> = ({ appId, appVersion }) => {
+export const FileInputs: React.FC<{ appId: string; appVersion: string }> = ({
+  appId,
+  appVersion,
+}) => {
   const { data: appData } = useAppDetail({ appId, appVersion });
   const appDetails = appData?.result;
   const appInputs = appDetails?.jobAttributes?.fileInputs ?? [];
@@ -116,7 +118,5 @@ export const FileInputs: React.FC<{ appId: string; appVersion: string; }> = ({ a
 };
 
 export const FileInputsSummary: React.FC = () => {
-  return (
-    <div>Files</div>
-  )
-}
+  return <div>Files</div>;
+};

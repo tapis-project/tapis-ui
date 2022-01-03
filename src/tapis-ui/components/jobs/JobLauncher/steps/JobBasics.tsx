@@ -17,19 +17,14 @@ export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
   const { errors } = formState;
 
   // Reset to step 1 upon appId and appVersion change
-  useEffect(
-    () => {
-      reset({ 
-        name: `${appId}-${appVersion}-${new Date()
-          .toISOString()
-          .slice(0, -5)}`,
-        appId,
-        appVersion
-      });
-      goToStep && goToStep(1);
-    },
-    [ reset, goToStep, appId, appVersion ]
-  )
+  useEffect(() => {
+    reset({
+      name: `${appId}-${appVersion}-${new Date().toISOString().slice(0, -5)}`,
+      appId,
+      appVersion,
+    });
+    goToStep && goToStep(1);
+  }, [reset, goToStep, appId, appVersion]);
   return (
     <div>
       <FieldWrapper
@@ -82,13 +77,16 @@ export const JobBasicsSummary: React.FC = () => {
   const { name, appId, appVersion } = values;
   return (
     <div>
-      {name && appId && appVersion
-        ? <div>
-            <div>{name}</div>
-            <div>{appId} v{appVersion}</div>
+      {name && appId && appVersion ? (
+        <div>
+          <div>{name}</div>
+          <div>
+            {appId} v{appVersion}
           </div>
-        : <i>Incomplete</i>
-      }
+        </div>
+      ) : (
+        <i>Incomplete</i>
+      )}
     </div>
-  )
-}
+  );
+};
