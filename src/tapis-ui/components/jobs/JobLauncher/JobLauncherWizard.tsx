@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { WizardStep, useWizard } from 'tapis-ui/_wrappers/Wizard';
 import { Wizard } from 'tapis-ui/_wrappers';
 import { FieldWrapper } from 'tapis-ui/_common';
@@ -23,9 +23,14 @@ type JobBasicsProps = {
 };
 
 const JobBasics: React.FC<JobBasicsProps> = ({ name, appId, appVersion }) => {
-  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
+  const { register, reset, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
-
+  useEffect(
+    () => {
+      reset({ name, appId, appVersion });
+    },
+    [ reset, name, appId, appVersion ]
+  )
   return (
     <div>
       <FieldWrapper
