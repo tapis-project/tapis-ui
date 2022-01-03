@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { WizardStep, useWizard } from 'tapis-ui/_wrappers/Wizard';
 import { Wizard } from 'tapis-ui/_wrappers';
 import { FieldWrapper } from 'tapis-ui/_common';
@@ -11,27 +12,29 @@ import JobLauncherProvider, { useJobLauncher } from './JobLauncherProvider';
 type JobLauncherWizardProps = {
   appId: string;
   appVersion: string;
-  execSystemId: string;
-  name: string;
 };
 
 type JobBasicsProps = {
-  name: string;
   appId: string;
   appVersion: string;
-  execSystemId: string;
 };
 
-const JobBasics: React.FC<JobBasicsProps> = ({ name, appId, appVersion }) => {
+const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
   const { register, reset, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { goToStep } = useWizard();
   const { errors } = formState;
   useEffect(
     () => {
-      reset({ name, appId, appVersion });
+      reset({ 
+        name: `${appId}-${appVersion}-${new Date()
+          .toISOString()
+          .slice(0, -5)}`,
+        appId,
+        appVersion
+      });
       goToStep && goToStep(1);
     },
-    [ reset, goToStep, name, appId, appVersion ]
+    [ reset, goToStep, appId, appVersion ]
   )
   return (
     <div>
@@ -43,7 +46,6 @@ const JobBasics: React.FC<JobBasicsProps> = ({ name, appId, appVersion }) => {
       >
         <Input
           bsSize="sm"
-          defaultValue={name}
           {...mapInnerRef(register('name', { required: 'Name is required' }))}
         />
       </FieldWrapper>
@@ -141,21 +143,20 @@ const withJobStepWizard = (step: React.ReactNode) => {
 }
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
-  name,
   appId,
   appVersion,
-  execSystemId,
 }) => {
+  const { data: appData } = useAppDetail({ appId, appVersion });
+  const appDetails = appData?.result;
+
   const steps: Array<WizardStep> = [
     {
       id: 'step1',
       name: 'Job Stuff',
       render: withJobStepWizard(
         <JobBasics
-          name={name}
           appId={appId}
           appVersion={appVersion}
-          execSystemId={execSystemId}
         />
       ),
       summary: <JobBasicsSummary />
