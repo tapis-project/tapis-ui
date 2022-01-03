@@ -89,7 +89,7 @@ const Wizard: React.FC<WizardProps> = ({ steps }) => {
         ...props
       })
     },
-    [ setStepWizardProps, stepWizardProps ]
+    [ setStepWizardProps, steps ]
   )
 
   const stepChangeCallback = useCallback(
