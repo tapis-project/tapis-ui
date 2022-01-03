@@ -4,7 +4,6 @@ import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { useWizard } from 'tapis-ui/_wrappers/Wizard';
-import { useJobLauncher } from '../JobLauncherProvider';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 
 type JobBasicsProps = {
@@ -78,8 +77,9 @@ export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
 };
 
 export const JobBasicsSummary: React.FC = () => {
-  const { jobSubmission } = useJobLauncher();
-  const { name, appId, appVersion } = jobSubmission;
+  const { getValues } = useFormContext<Jobs.ReqSubmitJob>();
+  const values = getValues();
+  const { name, appId, appVersion } = values;
   return (
     <div>
       {name && appId && appVersion
