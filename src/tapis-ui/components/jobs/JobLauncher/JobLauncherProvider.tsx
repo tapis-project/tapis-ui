@@ -4,10 +4,11 @@ import withFragment from 'tapis-hooks/utils/withFragment';
 const { useFragmentContext, Provider } = withFragment<ReqSubmitJob>();
 
 export const useJobLauncher = () => {
-  const { data, dispatch } = useFragmentContext();
+  const { data, set, reset } = useFragmentContext();
   return {
     jobSubmission: data,
-    dispatch,
+    set,
+    reset
   };
 };
 

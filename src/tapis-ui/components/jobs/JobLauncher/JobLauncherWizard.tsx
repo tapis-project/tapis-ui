@@ -86,10 +86,10 @@ const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   const { nextStep } = useWizard();
   const methods = useForm<Jobs.ReqSubmitJob>();
   const { handleSubmit } = methods;
-  const { jobSubmission, dispatch } = useJobLauncher();
+  const { jobSubmission, set, reset } = useJobLauncher();
 
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
-    dispatch(values);
+    set(values);
     nextStep && nextStep();
   };
 
@@ -106,6 +106,17 @@ const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
 const withJobWizardStep = (step: React.ReactNode): React.ReactNode => {
   return <JobWizardStepWrapper>{step}</JobWizardStepWrapper>;
 };
+
+const JobLauncherReset: React.FC<Partial<JobBasicsProps>> = ({ appId, appVersion }) => {
+  const { reset } = useJobLauncher();
+  useEffect(
+    () => {
+      reset();
+    },
+    [ appId, appVersion ]
+  )
+  return null;
+}
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   name,
@@ -135,6 +146,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
 
   return (
     <JobLauncherProvider>
+      <JobLauncherReset appId={appId} appVersion={appVersion} />
       <Wizard steps={steps} />
     </JobLauncherProvider>
   );
