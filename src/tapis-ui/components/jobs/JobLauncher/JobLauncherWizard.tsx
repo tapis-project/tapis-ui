@@ -24,12 +24,14 @@ type JobBasicsProps = {
 
 const JobBasics: React.FC<JobBasicsProps> = ({ name, appId, appVersion }) => {
   const { register, reset, formState } = useFormContext<Jobs.ReqSubmitJob>();
+  const { goToStep } = useWizard();
   const { errors } = formState;
   useEffect(
     () => {
       reset({ name, appId, appVersion });
+      goToStep && goToStep(1);
     },
-    [ reset, name, appId, appVersion ]
+    [ reset, goToStep, name, appId, appVersion ]
   )
   return (
     <div>
