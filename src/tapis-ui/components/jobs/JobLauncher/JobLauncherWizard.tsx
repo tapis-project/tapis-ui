@@ -80,6 +80,22 @@ const JobBasics: React.FC<JobBasicsProps> = ({ name, appId, appVersion }) => {
   );
 };
 
+const JobBasicsSummary: React.FC = () => {
+  const { jobSubmission } = useJobLauncher();
+  const { name, appId, appVersion } = jobSubmission;
+  console.log(jobSubmission);
+  return (
+    <div>
+      {name && appId && appVersion
+        ? <div>
+            <h5>{name}</h5>
+          </div>
+        : <i>Incomplete</i>
+      }
+    </div>
+  )
+}
+
 const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
@@ -89,6 +105,7 @@ const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   const { jobSubmission, set, reset } = useJobLauncher();
 
   const formSubmit = (values: Jobs.ReqSubmitJob) => {
+    console.log("SETTING", values);
     set(values);
     nextStep && nextStep();
   };
@@ -103,10 +120,11 @@ const JobWizardStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   );
 };
 
-const withJobWizardStep = (step: React.ReactNode): React.ReactNode => {
-  return <JobWizardStepWrapper>{step}</JobWizardStepWrapper>;
-};
-
+/**
+ * A component that tracks appId and appVersion changes and resets the job submission value
+ * @param dependencies  Dependencies for trigger jobSubmission context reset
+ * @returns null
+ */
 const JobLauncherReset: React.FC<Partial<JobBasicsProps>> = ({ appId, appVersion }) => {
   const { reset } = useJobLauncher();
   useEffect(
@@ -116,6 +134,10 @@ const JobLauncherReset: React.FC<Partial<JobBasicsProps>> = ({ appId, appVersion
     [ appId, appVersion ]
   )
   return null;
+}
+
+const withJobStepWizard = (step: React.ReactNode) => {
+  return <JobWizardStepWrapper>{step}</JobWizardStepWrapper>
 }
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
@@ -128,7 +150,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'step1',
       name: 'Job Stuff',
-      render: withJobWizardStep(
+      render: withJobStepWizard(
         <JobBasics
           name={name}
           appId={appId}
@@ -136,11 +158,13 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
           execSystemId={execSystemId}
         />
       ),
+      summary: <JobBasicsSummary />
     },
     {
       id: 'step2',
       name: 'File Stuff',
-      render: withJobWizardStep(<div>File Stuff</div>),
+      render: withJobStepWizard(<div>File Stuff</div>),
+      summary: <div />
     },
   ];
 

@@ -5,6 +5,7 @@ export type WizardStep = {
   id: string;
   name: string;
   render: React.ReactNode;
+  summary: React.ReactNode;
 };
 
 export { useWizard } from './Wizard';

@@ -27,17 +27,39 @@ const StepContainer: React.FC<StepContainerProps> = ({ step }) => {
 
 type WizardControlProps = WizardProps & Partial<StepWizardChildProps>;
 
-const WizardProgress: React.FC<WizardControlProps> = ({
+const WizardSummary: React.FC<WizardControlProps> = ({
   steps,
   ...stepWizardProps
 }) => {
-  const { currentStep } = stepWizardProps;
+
   return (
     <div className={styles.summary}>
-      PROGRESS BAR {`${currentStep} of ${steps.length}`}
+      {
+        steps.map(
+          (step) => (
+            <div>
+              <h4>{step.name}</h4>
+              <div>
+                {step.summary}
+              </div>
+            </div>
+          )
+        )
+      }
     </div>
   );
 };
+
+const WizardProgress: React.FC<WizardControlProps> = ({ steps, ...stepWizardProps }) => {
+  const { currentStep } = stepWizardProps;
+  return (
+    <div>
+      Step {currentStep} of {steps.length}
+    </div>
+  )
+}
+
+
 
 const Wizard: React.FC<WizardProps> = ({ steps }) => {
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -77,7 +99,7 @@ const Wizard: React.FC<WizardProps> = ({ steps }) => {
             <StepContainer stepName={step.id} step={step} />
           ))}
         </StepWizard>
-        <WizardProgress steps={steps} {...stepWizardProps} />
+        <WizardSummary steps={steps} {...stepWizardProps} />
       </div>
     </WizardContext.Provider>
   );
