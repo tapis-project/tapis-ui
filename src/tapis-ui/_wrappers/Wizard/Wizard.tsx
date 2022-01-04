@@ -1,10 +1,12 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
 import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
 import {
   useForm,
   useFormContext,
   FormProvider,
   SubmitHandler,
+  UnpackNestedValue,
+  DeepPartial,
 } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { WizardStep } from '.';
@@ -15,8 +17,10 @@ export type WizardContextType = Partial<StepWizardChildProps>;
 const WizardContext: React.Context<WizardContextType> =
   React.createContext<WizardContextType>({});
 
-type WizardProps = {
+type WizardProps<T> = {
   steps: Array<WizardStep>;
+  memo?: Array<any>;
+  defaultValues?: Partial<T>;
 };
 
 export const useWizard = () => {
@@ -53,7 +57,9 @@ function StepContainer<T>(props: StepContainerProps) {
   );
 }
 
-type WizardControlProps = WizardProps & Partial<StepWizardChildProps>;
+type WizardControlProps = {
+  steps: Array<WizardStep>;
+} & Partial<StepWizardChildProps>;
 
 const WizardSummary: React.FC<WizardControlProps> = ({
   steps,
@@ -96,8 +102,8 @@ const WizardProgress: React.FC<WizardControlProps> = ({
   return <div>{steps[currentStep - 1].name}</div>;
 };
 
-function Wizard<T>(props: WizardProps) {
-  const { steps } = props;
+function Wizard<T>(props: WizardProps<T>) {
+  const { steps, memo, defaultValues } = props;
   const methods = useForm<T>();
 
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -125,6 +131,21 @@ function Wizard<T>(props: WizardProps) {
     [setStepWizardProps, stepWizardProps]
   );
 
+  const { goToStep } = stepWizardProps;
+  const { reset } = methods;
+
+  useEffect(
+    () => {
+      const resetValue: UnpackNestedValue<DeepPartial<T>> =
+        (defaultValues as UnpackNestedValue<DeepPartial<T>>) ??
+        ({} as UnpackNestedValue<DeepPartial<T>>);
+      reset && reset(resetValue);
+      goToStep && goToStep(1);
+    },
+    /* eslint-disable-nextline */
+    [memo]
+  );
+
   return (
     <FormProvider {...methods}>
       <WizardContext.Provider value={stepWizardProps}>
@@ -147,4 +168,4 @@ function Wizard<T>(props: WizardProps) {
   );
 }
 
-export default Wizard;
+export default React.memo(Wizard) as typeof Wizard;

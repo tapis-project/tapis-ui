@@ -4,32 +4,42 @@ import { Wizard } from 'tapis-ui/_wrappers';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import { JobBasics, JobBasicsSummary } from './steps/JobBasics';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
+import * as Apps from '@tapis/tapis-typescript-apps';
 
 type JobLauncherWizardProps = {
-  appId: string;
-  appVersion: string;
+  app: Apps.TapisApp;
 };
 
-const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
-  appId,
-  appVersion,
-}) => {
+const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app }) => {
   const steps: Array<WizardStep> = [
     {
       id: 'step1',
       name: 'Job Stuff',
-      render: <JobBasics appId={appId} appVersion={appVersion} />,
+      render: <JobBasics appId={app.id} appVersion={app.version} />,
       summary: <JobBasicsSummary />,
     },
+
     {
       id: 'step2',
       name: 'File Stuff',
-      render: <FileInputs appId={appId} appVersion={appVersion} />,
+      render: <FileInputs app={app} />,
       summary: <FileInputsSummary />,
     },
   ];
 
-  return <Wizard<Jobs.ReqSubmitJob> steps={steps} />;
+  const defaultValues: Partial<Jobs.ReqSubmitJob> = {
+    name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
+    appId: app.id,
+    appVersion: app.version,
+  };
+
+  return (
+    <Wizard<Jobs.ReqSubmitJob>
+      steps={steps}
+      defaultValues={defaultValues}
+      memo={[app.id, app.version]}
+    />
+  );
 };
 
-export default JobLauncherWizard;
+export default React.memo(JobLauncherWizard);

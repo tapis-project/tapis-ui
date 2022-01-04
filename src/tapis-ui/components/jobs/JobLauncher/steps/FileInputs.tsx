@@ -7,7 +7,7 @@ import { Input, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
-import { useDetail as useAppDetail } from 'tapis-hooks/apps';
+import * as Apps from '@tapis/tapis-typescript-apps';
 import styles from './FileInputs.module.scss';
 
 const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
@@ -83,13 +83,8 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   );
 };
 
-export const FileInputs: React.FC<{ appId: string; appVersion: string }> = ({
-  appId,
-  appVersion,
-}) => {
-  const { data: appData } = useAppDetail({ appId, appVersion });
-  const appDetails = appData?.result;
-  const appInputs = appDetails?.jobAttributes?.fileInputs ?? [];
+export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
+  const appInputs = app?.jobAttributes?.fileInputs ?? [];
   const required = Array.from(
     appInputs
       .filter(

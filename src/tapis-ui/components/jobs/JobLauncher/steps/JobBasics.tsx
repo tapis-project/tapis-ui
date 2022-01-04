@@ -1,30 +1,18 @@
-import { useEffect } from 'react';
 import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
-import { useWizard } from 'tapis-ui/_wrappers/Wizard';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 
 type JobBasicsProps = {
-  appId: string;
-  appVersion: string;
+  appId?: string;
+  appVersion?: string;
 };
 
 export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
-  const { register, reset, formState } = useFormContext<Jobs.ReqSubmitJob>();
-  const { goToStep } = useWizard();
+  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
 
-  // Reset to step 1 upon appId and appVersion change
-  useEffect(() => {
-    reset({
-      name: `${appId}-${appVersion}-${new Date().toISOString().slice(0, -5)}`,
-      appId,
-      appVersion,
-    });
-    goToStep && goToStep(1);
-  }, [reset, goToStep, appId, appVersion]);
   return (
     <div>
       <FieldWrapper
@@ -51,6 +39,7 @@ export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
           {...mapInnerRef(
             register('appId', { required: 'App ID is required' })
           )}
+          disabled
         />
       </FieldWrapper>
       <FieldWrapper
@@ -65,6 +54,7 @@ export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
           {...mapInnerRef(
             register('appVersion', { required: 'App version is required ' })
           )}
+          disabled
         />
       </FieldWrapper>
     </div>
