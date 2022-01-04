@@ -142,7 +142,7 @@ function Wizard<T>(props: WizardProps<T>) {
       reset && reset(resetValue);
       goToStep && goToStep(1);
     },
-    /* eslint-disable-nextline */
+    /* eslint-disable-next-line */
     [memo]
   );
 
