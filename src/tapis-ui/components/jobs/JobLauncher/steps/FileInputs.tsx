@@ -1,12 +1,13 @@
 import React from 'react';
 import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
-import { AppFileInput, FileInputModeEnum } from '@tapis/tapis-typescript-apps';
-import { FieldArray, FieldArrayComponent } from './FieldArray';
+import { FileInputModeEnum } from '@tapis/tapis-typescript-apps';
+import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
+import * as Apps from '@tapis/tapis-typescript-apps';
 import styles from './FileInputs.module.scss';
 
 const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
@@ -82,7 +83,8 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   );
 };
 
-const FileInputs: React.FC<{ appInputs: AppFileInput[] }> = ({ appInputs }) => {
+export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
+  const appInputs = app?.jobAttributes?.fileInputs ?? [];
   const required = Array.from(
     appInputs
       .filter(
@@ -110,4 +112,6 @@ const FileInputs: React.FC<{ appInputs: AppFileInput[] }> = ({ appInputs }) => {
   );
 };
 
-export default FileInputs;
+export const FileInputsSummary: React.FC = () => {
+  return <div>Files</div>;
+};
