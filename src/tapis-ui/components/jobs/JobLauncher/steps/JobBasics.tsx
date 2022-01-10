@@ -1,15 +1,18 @@
 import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
+import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
+import { useList } from 'tapis-hooks/systems';
+import * as Systems from '@tapis/tapis-typescript-systems';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
+import * as Apps from '@tapis/tapis-typescript-apps';
 
 type JobBasicsProps = {
-  appId?: string;
-  appVersion?: string;
+  app: Apps.TapisApp
 };
 
-export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
+export const JobBasics: React.FC<JobBasicsProps> = ({ app }) => {
   const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
 
@@ -35,7 +38,7 @@ export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
         <Input
           bsSize="sm"
           data-testid="appId"
-          defaultValue={appId}
+          defaultValue={app.id}
           {...mapInnerRef(
             register('appId', { required: 'App ID is required' })
           )}
@@ -50,13 +53,14 @@ export const JobBasics: React.FC<JobBasicsProps> = ({ appId, appVersion }) => {
       >
         <Input
           bsSize="sm"
-          defaultValue={appVersion}
+          defaultValue={app.version}
           {...mapInnerRef(
-            register('appVersion', { required: 'App version is required ' })
+            register('appVersion', { required: 'App version is required' })
           )}
           disabled
         />
       </FieldWrapper>
+      
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { Wizard } from 'tapis-ui/_wrappers';
 import * as Jobs from '@tapis/tapis-typescript-jobs';
 import { JobBasics, JobBasicsSummary } from './steps/JobBasics';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
+import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import * as Apps from '@tapis/tapis-typescript-apps';
 
 type JobLauncherWizardProps = {
@@ -13,18 +14,23 @@ type JobLauncherWizardProps = {
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app }) => {
   const steps: Array<WizardStep> = [
     {
-      id: 'step1',
+      id: 'required',
       name: 'Job Stuff',
-      render: <JobBasics appId={app.id} appVersion={app.version} />,
+      render: <JobBasics app={app} />,
       summary: <JobBasicsSummary />,
     },
-
     {
-      id: 'step2',
+      id: 'fileInputs',
       name: 'File Stuff',
       render: <FileInputs app={app} />,
       summary: <FileInputsSummary />,
     },
+    {
+      id: 'execSystem',
+      name: 'Execution System',
+      render: <ExecSystem app={app} />,
+      summary: <ExecSystemSummary />
+    }
   ];
 
   const defaultValues: Partial<Jobs.ReqSubmitJob> = {

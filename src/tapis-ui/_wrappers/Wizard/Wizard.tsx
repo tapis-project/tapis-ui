@@ -43,7 +43,7 @@ function StepContainer<T>(props: StepContainerProps) {
       {step.render}
       <div className={styles.controls}>
         {!!currentStep && currentStep > 1 && (
-          <Button onClick={previousStep} type="submit">
+          <Button onClick={previousStep}>
             Back
           </Button>
         )}
