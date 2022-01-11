@@ -5,7 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
 
 type JobStartProps = {
-  app: Apps.TapisApp
+  app: Apps.TapisApp;
 };
 
 export const JobStart: React.FC<JobStartProps> = ({ app }) => {
@@ -15,7 +15,9 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
   return (
     <div>
       <div>
-        <i>Launching {app.id} v{app.version}</i>
+        <i>
+          Launching {app.id} v{app.version}
+        </i>
       </div>
       <FieldWrapper
         description="A name for this job"
@@ -42,7 +44,9 @@ export const JobStartSummary: React.FC = () => {
         <div>
           <div>{name}</div>
           <div>
-            <i>{appId} v{appVersion}</i>
+            <i>
+              {appId} v{appVersion}
+            </i>
           </div>
         </div>
       ) : (

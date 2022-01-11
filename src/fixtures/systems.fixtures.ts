@@ -1,30 +1,33 @@
-import { Systems } from "@tapis/tapis-typescript";
+import { Systems } from '@tapis/tapis-typescript';
 
 export const dockerRuntime: Systems.JobRuntime = {
   runtimeType: Systems.RuntimeTypeEnum.Docker,
-  version: "0.0.1"
-}
+  version: '0.0.1',
+};
 
 export const singularityRuntime: Systems.JobRuntime = {
   runtimeType: Systems.RuntimeTypeEnum.Singularity,
-  version: "0.0.1"
-}
+  version: '0.0.1',
+};
 
-export const jobRuntimes: Set<Systems.JobRuntime> = new Set([ {...dockerRuntime}, {...singularityRuntime} ]);
+export const jobRuntimes: Set<Systems.JobRuntime> = new Set([
+  { ...dockerRuntime },
+  { ...singularityRuntime },
+]);
 
 export const tapisSystem: Systems.TapisSystem = {
-  tenant: "tacc",
-  id: "testuser2.execution",
-  description: "Tapis v3 execution system - patched",
+  tenant: 'tacc',
+  id: 'testuser2.execution',
+  description: 'Tapis v3 execution system - patched',
   systemType: Systems.SystemTypeEnum.Linux,
-  owner: "nathandf",
-  host: "129.114.17.113",
+  owner: 'nathandf',
+  host: '129.114.17.113',
   enabled: true,
-  effectiveUserId: "testuser2",
+  effectiveUserId: 'testuser2',
   defaultAuthnMethod: Systems.AuthnEnum.PkiKeys,
   authnCredential: undefined,
   bucketName: undefined,
-  rootDir: "/home/testuser2/prod/",
+  rootDir: '/home/testuser2/prod/',
   port: -1,
   useProxy: false,
   proxyHost: undefined,
@@ -36,15 +39,15 @@ export const tapisSystem: Systems.TapisSystem = {
   canExec: true,
   canRunBatch: true,
   jobRuntimes: jobRuntimes,
-  jobWorkingDir: "work",
+  jobWorkingDir: 'work',
   jobEnvVariables: [],
   jobMaxJobs: 2147483647,
   jobMaxJobsPerUser: 2147483647,
   batchScheduler: Systems.SchedulerTypeEnum.Slurm,
   batchLogicalQueues: [
     {
-      name: "tapisNormal",
-      hpcQueueName: "debug",
+      name: 'tapisNormal',
+      hpcQueueName: 'debug',
       maxJobs: 50,
       maxJobsPerUser: 10,
       minNodeCount: 1,
@@ -57,14 +60,14 @@ export const tapisSystem: Systems.TapisSystem = {
       maxMinutes: 60,
     },
   ],
-  batchDefaultLogicalQueue: "tapisNormal",
+  batchDefaultLogicalQueue: 'tapisNormal',
   batchSchedulerProfile: undefined,
   jobCapabilities: [],
   tags: [],
   notes: {},
   importRefId: undefined,
-  uuid: "f398646d-b4f5-4c8a-89be-182def19de1e",
+  uuid: 'f398646d-b4f5-4c8a-89be-182def19de1e',
   deleted: false,
-  created: "2021-11-29T19:09:37.535745Z",
-  updated: "2021-12-06T17:18:05.625441Z",
+  created: '2021-11-29T19:09:37.535745Z',
+  updated: '2021-12-06T17:18:05.625441Z',
 };

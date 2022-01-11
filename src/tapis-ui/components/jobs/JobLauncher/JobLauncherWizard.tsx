@@ -22,21 +22,21 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app }) => {
       id: 'execSystem',
       name: 'Execution System',
       render: <ExecSystem app={app} />,
-      summary: <ExecSystemSummary />
+      summary: <ExecSystemSummary />,
     },
     {
       id: 'fileInputs',
       name: 'File Stuff',
       render: <FileInputs app={app} />,
       summary: <FileInputsSummary />,
-    }
+    },
   ];
 
   const defaultValues: Partial<Jobs.ReqSubmitJob> = {
     name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
     appId: app.id,
     appVersion: app.version,
-    execSystemId: app.jobAttributes?.execSystemId
+    execSystemId: app.jobAttributes?.execSystemId,
   };
 
   return (
