@@ -21,7 +21,7 @@ describe('File Explorer', () => {
     const { getAllByText } = renderComponent(
       <FileExplorer allowSystemChange={true} />
     );
-    expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
+    expect(getAllByText(/testuser2\.execution/).length).toEqual(1);
   });
   it('performs system navigation', async () => {
     const mockOnNavigate = jest.fn();
@@ -41,10 +41,10 @@ describe('File Explorer', () => {
     const { getByTestId } = renderComponent(
       <FileExplorer allowSystemChange={true} onNavigate={mockOnNavigate} />
     );
-    const system = getByTestId('href-testuser8-e2e');
+    const system = getByTestId('href-testuser2.execution');
     await act(async () => {
       fireEvent.click(system);
     });
-    expect(mockOnNavigate).toBeCalledWith('testuser8-e2e', '/');
+    expect(mockOnNavigate).toBeCalledWith('testuser2.execution', '/');
   });
 });

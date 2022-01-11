@@ -1,4 +1,4 @@
-import * as Jobs from '@tapis/tapis-typescript-jobs';
+import { Jobs } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const list = (

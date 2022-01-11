@@ -6,9 +6,7 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { useFormContext } from 'react-hook-form';
 import { useDetails, useList } from 'tapis-hooks/systems';
-import * as Systems from '@tapis/tapis-typescript-systems';
-import * as Jobs from '@tapis/tapis-typescript-jobs';
-import * as Apps from '@tapis/tapis-typescript-apps';
+import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 
 type ExecSystemDetailProps = {
   app: Apps.TapisApp;

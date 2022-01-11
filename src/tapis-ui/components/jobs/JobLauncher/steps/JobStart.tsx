@@ -2,8 +2,7 @@ import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
-import * as Jobs from '@tapis/tapis-typescript-jobs';
-import * as Apps from '@tapis/tapis-typescript-apps';
+import { Jobs, Apps } from '@tapis/tapis-typescript';
 
 type JobStartProps = {
   app: Apps.TapisApp

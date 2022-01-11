@@ -1,11 +1,10 @@
 import React from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { Wizard } from 'tapis-ui/_wrappers';
-import * as Jobs from '@tapis/tapis-typescript-jobs';
+import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
-import * as Apps from '@tapis/tapis-typescript-apps';
 
 type JobLauncherWizardProps = {
   app: Apps.TapisApp;
@@ -15,7 +14,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app }) => {
   const steps: Array<WizardStep> = [
     {
       id: 'start',
-      name: `App Selection`,
+      name: `Job Name`,
       render: <JobStart app={app} />,
       summary: <JobStartSummary />,
     },
