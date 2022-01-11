@@ -103,8 +103,19 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app }) => {
 export const ExecSystemSummary: React.FC = () => {
   const { getValues } = useFormContext<Jobs.ReqSubmitJob>();
   const values = getValues();
-  const { execSystemId } = values;
+  const { execSystemId, execSystemLogicalQueue } = values;
   return (
-    <div>{execSystemId ? <div>{execSystemId}</div> : <i>Incomplete</i>}</div>
+    <div>
+      {execSystemId ? (
+        <div>
+          {execSystemId}
+          {execSystemLogicalQueue && (
+            <i>&nbsp;({execSystemLogicalQueue} queue)</i>
+          )}
+        </div>
+      ) : (
+        <i>Incomplete</i>
+      )}
+    </div>
   );
 };
