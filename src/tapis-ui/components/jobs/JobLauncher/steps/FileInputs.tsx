@@ -1,16 +1,14 @@
 import React from 'react';
 import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
-import { FileInputModeEnum } from '@tapis/tapis-typescript-apps';
+import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { ReqSubmitJob } from '@tapis/tapis-typescript-jobs';
 import { Button } from 'reactstrap';
-import * as Apps from '@tapis/tapis-typescript-apps';
 import styles from './FileInputs.module.scss';
 
-const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
+const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   item,
   index,
   remove,
@@ -18,7 +16,7 @@ const FileInputField: FieldArrayComponent<ReqSubmitJob, 'fileInputs'> = ({
   const {
     register,
     formState: { errors },
-  } = useFormContext<ReqSubmitJob>();
+  } = useFormContext<Jobs.ReqSubmitJob>();
   const { sourceUrl, targetPath, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
@@ -88,12 +86,12 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
   const required = Array.from(
     appInputs
       .filter(
-        (fileInput) => fileInput?.inputMode === FileInputModeEnum.Required
+        (fileInput) => fileInput?.inputMode === Apps.FileInputModeEnum.Required
       )
       .keys()
   );
 
-  const appendData: TFieldArray<Required<ReqSubmitJob>, 'fileInputs'> = {
+  const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
     targetPath: '',
   };
@@ -101,7 +99,7 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
   const name = 'fileInputs';
 
   return (
-    <FieldArray<ReqSubmitJob, typeof name>
+    <FieldArray<Jobs.ReqSubmitJob, typeof name>
       title="File Inputs"
       addButtonText="Add File Input"
       name={name}

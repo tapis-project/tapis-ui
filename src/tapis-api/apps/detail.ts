@@ -1,4 +1,4 @@
-import * as Apps from '@tapis/tapis-typescript-apps';
+import { Apps } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const detail = (params: Apps.GetAppRequest, basePath: string, jwt: string) => {
