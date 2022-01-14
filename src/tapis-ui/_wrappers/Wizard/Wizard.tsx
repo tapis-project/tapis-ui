@@ -21,7 +21,7 @@ type WizardProps<T> = {
   steps: Array<WizardStep>;
   memo?: Array<any>;
   defaultValues?: Partial<T>;
-  isComplete?: (values: Partial<T>) => boolean;
+  renderSubmit?: React.ReactNode;
 };
 
 export const useWizard = () => {
@@ -58,12 +58,12 @@ function StepContainer<T>(props: StepContainerProps) {
 
 type WizardControlProps = {
   steps: Array<WizardStep>;
-  formComplete: boolean;
+  renderSubmit?: React.ReactNode;
 } & Partial<StepWizardChildProps>;
 
 const WizardSummary: React.FC<WizardControlProps> = ({
   steps,
-  formComplete,
+  renderSubmit,
   ...stepWizardProps
 }) => {
   const { goToNamedStep } = stepWizardProps;
@@ -73,9 +73,7 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
   return (
     <div className={styles.summary}>
-      <div>
-        <Button disabled={!formComplete}>Submit</Button>
-      </div>
+      {!!renderSubmit && <div className={styles.submit}>{renderSubmit}</div>}
       {steps.map((step) => (
         <div className={styles['step-summary']}>
           <div className={styles.name}>
@@ -95,6 +93,7 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
 };
 
+/* eslint-disable-next-line */
 const WizardProgress: React.FC<WizardControlProps> = ({
   steps,
   ...stepWizardProps
@@ -106,8 +105,12 @@ const WizardProgress: React.FC<WizardControlProps> = ({
   return <div>{steps[currentStep - 1].name}</div>;
 };
 
-function Wizard<T>(props: WizardProps<T>) {
-  const { steps, memo, defaultValues, isComplete } = props;
+function Wizard<T>({
+  steps,
+  memo,
+  defaultValues,
+  renderSubmit,
+}: WizardProps<T>) {
   const methods = useForm<T>();
 
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -136,7 +139,7 @@ function Wizard<T>(props: WizardProps<T>) {
   );
 
   const { goToStep } = stepWizardProps;
-  const { reset, getValues } = methods;
+  const { reset } = methods;
 
   useEffect(
     () => {
@@ -149,8 +152,6 @@ function Wizard<T>(props: WizardProps<T>) {
     /* eslint-disable-next-line */
     [memo]
   );
-
-  const formComplete = !!isComplete ? isComplete(getValues() as Partial<T>) : false;
 
   return (
     <FormProvider {...methods}>
@@ -166,7 +167,11 @@ function Wizard<T>(props: WizardProps<T>) {
               <StepContainer stepName={step.id} step={step} />
             ))}
           </StepWizard>
-          <WizardSummary steps={steps} {...stepWizardProps} formComplete={formComplete} />
+          <WizardSummary
+            steps={steps}
+            {...stepWizardProps}
+            renderSubmit={renderSubmit}
+          />
         </div>
       </WizardContext.Provider>
     </FormProvider>
