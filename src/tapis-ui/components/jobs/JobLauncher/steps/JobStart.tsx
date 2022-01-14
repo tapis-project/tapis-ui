@@ -1,5 +1,5 @@
 import { Input } from 'reactstrap';
-import { FieldWrapper } from 'tapis-ui/_common';
+import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
@@ -40,18 +40,18 @@ export const JobStartSummary: React.FC = () => {
   const { name, appId, appVersion } = values;
   return (
     <div>
-      {name && appId && appVersion ? (
-        <div>
-          <div>{name}</div>
-          <div>
-            <i>
-              {appId} v{appVersion}
-            </i>
-          </div>
-        </div>
+      {name ? (
+        <div>{name}</div>
       ) : (
-        <i>Incomplete</i>
+        <Message type="error" canDismiss={false} scope="inline">
+          A job name is required
+        </Message>
       )}
+      <div>
+        <i>
+          Application: {appId} v{appVersion}
+        </i>
+      </div>
     </div>
   );
 };
