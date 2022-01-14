@@ -21,6 +21,7 @@ type WizardProps<T> = {
   steps: Array<WizardStep>;
   memo?: Array<any>;
   defaultValues?: Partial<T>;
+  isComplete?: (values: Partial<T>) => boolean;
 };
 
 export const useWizard = () => {
@@ -57,10 +58,12 @@ function StepContainer<T>(props: StepContainerProps) {
 
 type WizardControlProps = {
   steps: Array<WizardStep>;
+  formComplete: boolean;
 } & Partial<StepWizardChildProps>;
 
 const WizardSummary: React.FC<WizardControlProps> = ({
   steps,
+  formComplete,
   ...stepWizardProps
 }) => {
   const { goToNamedStep } = stepWizardProps;
@@ -70,6 +73,9 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
   return (
     <div className={styles.summary}>
+      <div>
+        <Button disabled={!formComplete}>Submit</Button>
+      </div>
       {steps.map((step) => (
         <div className={styles['step-summary']}>
           <div className={styles.name}>
@@ -101,7 +107,7 @@ const WizardProgress: React.FC<WizardControlProps> = ({
 };
 
 function Wizard<T>(props: WizardProps<T>) {
-  const { steps, memo, defaultValues } = props;
+  const { steps, memo, defaultValues, isComplete } = props;
   const methods = useForm<T>();
 
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -130,7 +136,7 @@ function Wizard<T>(props: WizardProps<T>) {
   );
 
   const { goToStep } = stepWizardProps;
-  const { reset } = methods;
+  const { reset, getValues } = methods;
 
   useEffect(
     () => {
@@ -144,12 +150,13 @@ function Wizard<T>(props: WizardProps<T>) {
     [memo]
   );
 
+  const formComplete = !!isComplete ? isComplete(getValues() as Partial<T>) : false;
+
   return (
     <FormProvider {...methods}>
       <WizardContext.Provider value={stepWizardProps}>
         <div className={styles.container}>
           <StepWizard
-            nav={<WizardProgress steps={steps} {...stepWizardProps} />}
             instance={instanceCallback}
             className={styles.steps}
             onStepChange={stepChangeCallback}
@@ -159,7 +166,7 @@ function Wizard<T>(props: WizardProps<T>) {
               <StepContainer stepName={step.id} step={step} />
             ))}
           </StepWizard>
-          <WizardSummary steps={steps} {...stepWizardProps} />
+          <WizardSummary steps={steps} {...stepWizardProps} formComplete={formComplete} />
         </div>
       </WizardContext.Provider>
     </FormProvider>

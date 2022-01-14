@@ -39,7 +39,7 @@ describe('Job File Inputs utils', () => {
   });
 
   it('detects a complete job request that satisfies an app with fully formed required inputs', () => {
-    expect(fileInputsComplete(tapisApp, job)).toEqual(true);
+    expect(fileInputsComplete(tapisApp, [])).toEqual(true);
   });
 
   it('detects an incomplete job request with required inputs lacking a source url', () => {
@@ -47,13 +47,8 @@ describe('Job File Inputs utils', () => {
     const modifiedApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));;
     modifiedApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
 
-    const incompleteJob: Jobs.ReqSubmitJob = {
-      ...job
-    }
-    expect(fileInputsComplete(modifiedApp, incompleteJob)).toEqual(false);
-
-    incompleteJob.fileInputs = [ { name: "Data file" } ];
-    expect(fileInputsComplete(modifiedApp, incompleteJob)).toEqual(false);
+    expect(fileInputsComplete(modifiedApp, [])).toEqual(false);
+    expect(fileInputsComplete(modifiedApp, [ { name: "Data file" } ])).toEqual(false);
   });
 
   it('detects an incomplete job request with optional inputs lacking a source url', () => {
@@ -63,28 +58,19 @@ describe('Job File Inputs utils', () => {
     modifiedApp.jobAttributes!.fileInputs![0].inputMode = Apps.FileInputModeEnum.Optional;
 
     // The default job with no specified inputs is complete, because the OPTIONAL file input is not included
-    expect(fileInputsComplete(modifiedApp, job)).toEqual(true);
+    expect(fileInputsComplete(modifiedApp, [])).toEqual(true);
 
     // A job that includes an incomplete OPTIONAL file input but does not specify sourceUrl is not complete
-    const incompleteJob: Jobs.ReqSubmitJob = {
-      ...job,
-      fileInputs: [ { name: "Data file" } ]
-    }
-    expect(fileInputsComplete(modifiedApp, incompleteJob)).toEqual(false);
+    expect(fileInputsComplete(modifiedApp, [ { name: "Data file" } ])).toEqual(false);
 
     // A job that includes an complete OPTIONAL file input should be fine
-    const completeJob: Jobs.ReqSubmitJob = {
-      ...job,
-      fileInputs: [ { name: "Data file", sourceUrl: "tapis://system/file.txt" } ]
-    }
-    expect(fileInputsComplete(modifiedApp, completeJob)).toEqual(true);;
+    expect(fileInputsComplete(
+      modifiedApp, 
+      [{ name: "Data file", sourceUrl: "tapis://system/file.txt" }]
+    )).toEqual(true);;
   });
 
   it('detects incomplete job file inputs that are unspecified in the app', () => {
-    const incompleteJob: Jobs.ReqSubmitJob = {
-      ...job,
-      fileInputs: [ { name: "Other file" } ]
-    }
-    expect(fileInputsComplete(tapisApp, incompleteJob)).toEqual(false);
+    expect(fileInputsComplete(tapisApp, [ { name: "Other file" } ])).toEqual(false);
   });
 });

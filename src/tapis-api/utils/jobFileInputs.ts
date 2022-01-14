@@ -22,13 +22,13 @@ export const generateRequiredFileInputsFromApp = (app: Apps.TapisApp): Array<Job
   return fileInputs;
 }
 
-export const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) => {
+export const fileInputsComplete = (app: Apps.TapisApp, fileInputs: Array<Jobs.JobFileInput>) => {
   // Check to make sure job has filled in all REQUIRED app inputs that are missing sourceUrl
   const incompleteRequiredInputs: Array<Apps.AppFileInput> = getIncompleteAppInputsOfType(app, Apps.FileInputModeEnum.Required);
   const hasIncompleteRequiredInput: boolean = incompleteRequiredInputs.some(
     (requiredInput) => {
       // Find JobFileInput with name matching the required input
-      const jobFileInput: Jobs.JobFileInput | undefined = job.fileInputs?.find(
+      const jobFileInput: Jobs.JobFileInput | undefined = fileInputs.find(
         jobFileInput => jobFileInput.name === requiredInput.name
       );
       if (!jobFileInput) {
@@ -49,7 +49,7 @@ export const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) =
     appFileInput => !appFileInput.sourceUrl
   )
   // get any optional app file input that was included in the job.
-  const optionalJobInputs: Array<Jobs.JobFileInput> = job.fileInputs?.filter(
+  const optionalJobInputs: Array<Jobs.JobFileInput> = fileInputs.filter(
     jobFileInput => optionalAppInputs.some(optionalAppInput => jobFileInput.name === optionalAppInput.name)
   ) ?? [];
   const hasIncompleteOptionalInput: boolean = optionalJobInputs.some(jobInput => !jobInput.sourceUrl);
@@ -60,7 +60,7 @@ export const fileInputsComplete = (app: Apps.TapisApp, job: Jobs.ReqSubmitJob) =
  
   // Check to see if any app inputs that did not exist
   const namedInputs = app.jobAttributes?.fileInputs?.map(input => input.name) ?? [];
-  const otherInputs: Array<Jobs.JobFileInput> = job.fileInputs?.filter(
+  const otherInputs: Array<Jobs.JobFileInput> = fileInputs.filter(
     (jobInput) => !namedInputs.some(name => name === jobInput.name)
   ) ?? [];
   if (otherInputs.some(otherInput => !otherInput.sourceUrl || !otherInput.targetPath)) {
