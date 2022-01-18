@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Input } from 'reactstrap';
 import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
@@ -10,90 +10,87 @@ import { v4 as uuidv4 } from 'uuid';
 
 type ExecSystemDetailProps = {
   app: Apps.TapisApp;
-  execSystemId: string;
+  system: Systems.TapisSystem;
 };
 
 export const ExecSystemDetail: React.FC<ExecSystemDetailProps> = ({
   app,
-  execSystemId,
+  system,
 }) => {
-  const { data, isLoading, error } = useDetails(execSystemId);
   const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
-  const system = data?.result;
   const queues: Array<Systems.LogicalQueue> = system?.batchLogicalQueues ?? [];
   return (
-    <QueryWrapper isLoading={isLoading} error={error}>
-      {system && (
-        <FieldWrapper
-          description="The batch queue on this execution system"
-          label="Batch Logical Queue"
-          required={false}
-          error={errors['execSystemLogicalQueue']}
-        >
-          <Input
-            bsSize="sm"
-            defaultValue={system.batchDefaultLogicalQueue}
-            {...mapInnerRef(register('execSystemLogicalQueue'))}
-            type="select"
-          >
-            {queues.map((queue) => (
-              <option value={queue.name} key={uuidv4()}>
-                {queue.name}
-              </option>
-            ))}
-          </Input>
-        </FieldWrapper>
-      )}
-    </QueryWrapper>
+    <FieldWrapper
+      description="The batch queue on this execution system"
+      label="Batch Logical Queue"
+      required={false}
+      error={errors['execSystemLogicalQueue']}
+    >
+      <Input
+        bsSize="sm"
+        defaultValue={system.batchDefaultLogicalQueue}
+        {...mapInnerRef(register('execSystemLogicalQueue'))}
+        type="select"
+      >
+        {queues.map((queue) => (
+          <option value={queue.name} key={uuidv4()}>
+            {queue.name}
+          </option>
+        ))}
+      </Input>
+    </FieldWrapper>
   );
 };
 
 type ExecSystemProps = {
   app: Apps.TapisApp;
+  systems: Array<Systems.TapisSystem>;
 };
 
-export const ExecSystem: React.FC<ExecSystemProps> = ({ app }) => {
+export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const { register, formState, getValues } =
     useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
   const { execSystemId } = getValues();
-  const { data, isLoading, error } = useList();
-  const [selectedSystem, setSelectedSystem] = useState(
-    execSystemId ?? app.jobAttributes?.execSystemId
+  const [selectedSystem, setSelectedSystem] = useState<Systems.TapisSystem | undefined>(
+    systems.find(system => system.id === execSystemId)
   );
-  const systems: Array<Systems.TapisSystem> = data?.result ?? [];
+  const selectSystemCallback = useCallback(
+    (systemId: string) => {
+      setSelectedSystem(systems.find(system => system.id === systemId))
+    },
+    [ systems, setSelectedSystem ]
+  )
   return (
     <div>
-      <QueryWrapper isLoading={isLoading} error={error}>
-        <FieldWrapper
-          description="The execution system for this job"
-          label="Execution System"
-          required={true}
-          error={errors['execSystemId']}
+      <FieldWrapper
+        description="The execution system for this job"
+        label="Execution System"
+        required={true}
+        error={errors['execSystemId']}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={app?.jobAttributes?.execSystemId}
+          {...mapInnerRef(
+            register('execSystemId', {
+              required: 'An execution system is required',
+            })
+          )}
+          type="select"
+          onChange={(event) => selectSystemCallback(event.target.value)}
         >
-          <Input
-            bsSize="sm"
-            defaultValue={app?.jobAttributes?.execSystemId}
-            {...mapInnerRef(
-              register('execSystemId', {
-                required: 'An execution system is required',
-              })
-            )}
-            type="select"
-            onChange={(event) => setSelectedSystem(event.target.value)}
-          >
-            {systems.map((system) => (
-              <option value={system.id} key={uuidv4()}>
-                {system.id}
-              </option>
-            ))}
-          </Input>
-        </FieldWrapper>
-      </QueryWrapper>
+          {systems.map((system) => (
+            <option value={system.id} key={uuidv4()}>
+              {system.id}
+            </option>
+          ))}
+        </Input>
+      </FieldWrapper>
       <div>
         {selectedSystem && (
-          <ExecSystemDetail app={app} execSystemId={selectedSystem} />
+          <ExecSystemDetail app={app} system={selectedSystem} />
         )}
       </div>
     </div>

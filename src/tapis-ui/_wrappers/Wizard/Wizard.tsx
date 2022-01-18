@@ -40,7 +40,7 @@ function StepContainer<T>(props: StepContainerProps) {
     nextStep && nextStep();
   };
   return (
-    <form onSubmit={handleSubmit<T>(formSubmit)}>
+    <form onSubmit={handleSubmit<T>(formSubmit)} key={step.id}>
       <div className={styles.step}>{step.render}</div>
       <div className={styles.controls}>
         {!!currentStep && currentStep > 1 && (

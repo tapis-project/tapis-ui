@@ -27,14 +27,26 @@ describe('Job File Inputs utils', () => {
     ]);
   });
   it('generates required file inputs from incomplete app required file inputs', () => {
-    // The supplied app fixture bsf1 has no incomplete required file inputs
-    expect(generateRequiredFileInputsFromApp(tapisApp)).toEqual([]);
+    // The supplied app fixture bsf1 has one required file input
+    expect(
+      generateRequiredFileInputsFromApp(
+        JSON.parse(JSON.stringify(tapisApp))
+      )
+    ).toEqual([
+      {
+        name: 'Data file',
+        targetPath: 'data.txt'
+      }
+    ]);
 
     // Remove a required sourceUrl from the app fixture
     const modifiedApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
     modifiedApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     expect(generateRequiredFileInputsFromApp(modifiedApp)).toEqual([
-      { name: 'Data file' },
+      { 
+        name: 'Data file',
+        targetPath: 'data.txt'
+      },
     ]);
 
     // An app with optional inputs should not generate required file inputs

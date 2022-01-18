@@ -17,11 +17,23 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
     register,
     formState: { errors },
   } = useFormContext<Jobs.ReqSubmitJob>();
-  const { sourceUrl, targetPath, id } = item;
+  const { sourceUrl, targetPath, name } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
   return (
-    <div key={id}>
+    <div key={name}>
+      <FieldWrapper
+        label="Name"
+        required={false}
+        description="Name of this file input"
+        error={itemError?.name}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={name}
+          {...mapInnerRef(register(`fileInputs.${index}.name`))}
+        />
+      </FieldWrapper>
       <FieldWrapper
         label="Source URL"
         required={true}

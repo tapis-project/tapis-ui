@@ -22,14 +22,15 @@ export const getIncompleteAppInputsOfType = (
 export const generateRequiredFileInputsFromApp = (
   app: Apps.TapisApp
 ): Array<Jobs.JobFileInput> => {
-  const requiredInputs: Array<Apps.AppFileInput> = getIncompleteAppInputsOfType(
-    app,
-    Apps.FileInputModeEnum.Required
-  );
+  const requiredInputs: Array<Apps.AppFileInput> =
+    app.jobAttributes?.fileInputs?.filter(
+      (fileInput) => fileInput.inputMode === Apps.FileInputModeEnum.Required
+    ) ?? [];
   const fileInputs: Array<Jobs.JobFileInput> = requiredInputs.map(
     (appFileInput) => {
       return {
         name: appFileInput.name,
+        targetPath: appFileInput.targetPath
       };
     }
   );
