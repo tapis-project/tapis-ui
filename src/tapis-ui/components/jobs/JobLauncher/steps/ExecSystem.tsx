@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Input } from 'reactstrap';
-import { FieldWrapper } from 'tapis-ui/_common';
+import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { useFormContext } from 'react-hook-form';
@@ -114,7 +114,9 @@ export const ExecSystemSummary: React.FC = () => {
           )}
         </div>
       ) : (
-        <i>Incomplete</i>
+        <Message type="error" canDismiss={false} scope="inline">
+          An execution system is required
+        </Message>
       )}
     </div>
   );

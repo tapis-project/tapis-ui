@@ -37,3 +37,9 @@
 .controls > * {
   padding-left: 0.5em;
 }
+
+.submit {
+  border-bottom: 1px solid var(--global-color-primary--normal);
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+}

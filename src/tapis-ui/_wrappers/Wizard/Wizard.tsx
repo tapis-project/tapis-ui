@@ -21,6 +21,7 @@ type WizardProps<T> = {
   steps: Array<WizardStep>;
   memo?: Array<any>;
   defaultValues?: Partial<T>;
+  renderSubmit?: React.ReactNode;
 };
 
 export const useWizard = () => {
@@ -57,10 +58,12 @@ function StepContainer<T>(props: StepContainerProps) {
 
 type WizardControlProps = {
   steps: Array<WizardStep>;
+  renderSubmit?: React.ReactNode;
 } & Partial<StepWizardChildProps>;
 
 const WizardSummary: React.FC<WizardControlProps> = ({
   steps,
+  renderSubmit,
   ...stepWizardProps
 }) => {
   const { goToNamedStep } = stepWizardProps;
@@ -70,6 +73,7 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
   return (
     <div className={styles.summary}>
+      {!!renderSubmit && <div className={styles.submit}>{renderSubmit}</div>}
       {steps.map((step) => (
         <div className={styles['step-summary']}>
           <div className={styles.name}>
@@ -89,6 +93,7 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
 };
 
+/* eslint-disable-next-line */
 const WizardProgress: React.FC<WizardControlProps> = ({
   steps,
   ...stepWizardProps
@@ -100,8 +105,12 @@ const WizardProgress: React.FC<WizardControlProps> = ({
   return <div>{steps[currentStep - 1].name}</div>;
 };
 
-function Wizard<T>(props: WizardProps<T>) {
-  const { steps, memo, defaultValues } = props;
+function Wizard<T>({
+  steps,
+  memo,
+  defaultValues,
+  renderSubmit,
+}: WizardProps<T>) {
   const methods = useForm<T>();
 
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -149,7 +158,6 @@ function Wizard<T>(props: WizardProps<T>) {
       <WizardContext.Provider value={stepWizardProps}>
         <div className={styles.container}>
           <StepWizard
-            nav={<WizardProgress steps={steps} {...stepWizardProps} />}
             instance={instanceCallback}
             className={styles.steps}
             onStepChange={stepChangeCallback}
@@ -159,7 +167,11 @@ function Wizard<T>(props: WizardProps<T>) {
               <StepContainer stepName={step.id} step={step} />
             ))}
           </StepWizard>
-          <WizardSummary steps={steps} {...stepWizardProps} />
+          <WizardSummary
+            steps={steps}
+            {...stepWizardProps}
+            renderSubmit={renderSubmit}
+          />
         </div>
       </WizardContext.Provider>
     </FormProvider>

@@ -9,4 +9,5 @@ export type WizardStep = {
 };
 
 export { useWizard } from './Wizard';
+export { default as WizardSubmitWrapper } from './WizardSubmitWrapper';
 export default Wizard;
