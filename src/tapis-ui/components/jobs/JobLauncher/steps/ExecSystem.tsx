@@ -64,9 +64,8 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const { register, formState, reset, getValues } = methods;
   const { errors } = formState;
 
-  const { execSystemId } = job;
   const [selectedSystem, setSelectedSystem] = useState(
-    execSystemId ?? app.jobAttributes?.execSystemId ?? ''
+    job.execSystemId ?? app.jobAttributes?.execSystemId ?? ''
   );
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
     findLogicalQueues(systems, selectedSystem)
@@ -79,7 +78,6 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
     },
     [setSelectedSystem, setQueues]
   )
-  console.log(selectedSystem);
 
   return (
     <FormProvider {...methods} >
@@ -92,7 +90,6 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
         >
           <Input
             bsSize="sm"
-            defaultValue={selectedSystem}
             {...mapInnerRef(
               register('execSystemId', {
                 required: 'An execution system is required',
@@ -100,9 +97,10 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
             )}
             type="select"
             onChange={(event) => setSystem(event.target.value)}
+            value={selectedSystem}
           >
             {systems.map((system) => (
-              <option value={system.id} key={uuidv4()} selected={system.id === selectedSystem} >
+              <option value={system.id} key={uuidv4()}  >
                 {system.id}
               </option>
             ))}
