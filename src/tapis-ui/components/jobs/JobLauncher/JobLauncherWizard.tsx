@@ -15,11 +15,13 @@ import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { useFormContext } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
+import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
+import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 
 type JobLauncherWizardProps = {
-  app: Apps.TapisApp;
-  systems: Array<Systems.TapisSystem>;
+  appId: string;
+  appVersion: string;
 };
 
 const generateDefaultValues = (
@@ -69,7 +71,12 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app, systems }) => {
+type JobLauncherWrapperProps = {
+  app: Apps.TapisApp;
+  systems: Array<Systems.TapisSystem>;
+}
+
+const JobLauncherWrapper: React.FC<JobLauncherWrapperProps> = ({app, systems}) => {
   const steps: Array<WizardStep> = [
     {
       id: 'start',
@@ -83,14 +90,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app, systems }) =
       render: <ExecSystem app={app} systems={systems}/>,
       summary: <ExecSystemSummary />,
     },
-/*
     {
       id: 'fileInputs',
       name: 'File Stuff',
       render: <FileInputs app={app} />,
       summary: <FileInputsSummary />,
     },
-    */
   ];
 
   const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(app, systems);
@@ -103,6 +108,28 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ app, systems }) =
       renderSubmit={<JobLauncherWizardSubmit app={app} />}
     />
   );
+}
+
+const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ appId, appVersion }) => {
+  const { data, isLoading, error } = useAppDetail(
+    { appId, appVersion },
+    { refetchOnWindowFocus: false }
+  );
+  const { 
+    data: systemsData, 
+    isLoading: systemsIsLoading, 
+    error: systemsError
+  } = useSystemsList(
+    { select: "allAttributes" },
+    { refetchOnWindowFocus: false }
+  );
+  const app = data?.result;
+  const systems = systemsData?.result ?? [];
+  return (
+    <QueryWrapper isLoading={isLoading || systemsIsLoading } error={error ?? systemsError}>
+      <JobLauncherWrapper app={app!} systems={systems} />
+    </QueryWrapper>
+  )
 };
 
 export default React.memo(JobLauncherWizard);
