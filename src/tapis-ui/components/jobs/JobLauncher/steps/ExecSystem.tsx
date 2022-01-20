@@ -55,25 +55,32 @@ type ExecSystemProps = {
   systems: Array<Systems.TapisSystem>;
 };
 
+const findLogicalQueues = (systems: Array<Systems.TapisSystem>, systemId: string) =>
+  systems.find(system => system.id === systemId)?.batchLogicalQueues ?? [];
+
 export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const { job } = useJobLauncher();
   const methods = useForm<Jobs.ReqSubmitJob>({ defaultValues: job });
-  const { register, formState, reset } = methods;
+  const { register, formState, reset, getValues } = methods;
   const { errors } = formState;
 
   const { execSystemId } = job;
   const [selectedSystem, setSelectedSystem] = useState(
-    execSystemId ?? app.jobAttributes?.execSystemId
+    execSystemId ?? app.jobAttributes?.execSystemId ?? ''
   );
-  const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>([]);
+  const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
+    findLogicalQueues(systems, selectedSystem)
+  );
   const batchDefaultLogicalQueue = systems.find(system => system.id === selectedSystem)?.batchDefaultLogicalQueue;
   const setSystem = useCallback(
     (systemId: string) => {
       setSelectedSystem(systemId);
-      setQueues(systems.find(system => system.id === systemId)?.batchLogicalQueues ?? []);
+      setQueues(findLogicalQueues(systems, systemId));
     },
-    []
+    [setSelectedSystem, setQueues]
   )
+  console.log(selectedSystem);
+
   return (
     <FormProvider {...methods} >
       <form>
@@ -85,17 +92,17 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
         >
           <Input
             bsSize="sm"
-            defaultValue={app?.jobAttributes?.execSystemId}
+            defaultValue={selectedSystem}
             {...mapInnerRef(
               register('execSystemId', {
                 required: 'An execution system is required',
               })
             )}
             type="select"
-            onChange={(event) => setSelectedSystem(event.target.value)}
+            onChange={(event) => setSystem(event.target.value)}
           >
             {systems.map((system) => (
-              <option value={system.id} key={uuidv4()}>
+              <option value={system.id} key={uuidv4()} selected={system.id === selectedSystem} >
                 {system.id}
               </option>
             ))}

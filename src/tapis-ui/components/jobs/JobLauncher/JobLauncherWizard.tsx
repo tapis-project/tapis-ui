@@ -66,7 +66,11 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-const JobLauncherRender: React.FC<{ app: Apps.TapisApp; systems: Array<Systems.TapisSystem>}> = ({ app, systems }) => {
+
+const JobLauncherRender: React.FC<{ 
+  app: Apps.TapisApp; 
+  systems: Array<Systems.TapisSystem>;
+}> = React.memo(({ app, systems }) => {
   const steps: Array<WizardStep> = [
     {
       id: 'start',
@@ -92,9 +96,7 @@ const JobLauncherRender: React.FC<{ app: Apps.TapisApp; systems: Array<Systems.T
   ];
 
   const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(app);
-  return (
-
-    <JobLauncherProvider value={defaultValues}>
+  return (    <JobLauncherProvider value={defaultValues}>
       <Wizard<Jobs.ReqSubmitJob>
         steps={steps}
         memo={[app.id, app.version]}
@@ -102,7 +104,7 @@ const JobLauncherRender: React.FC<{ app: Apps.TapisApp; systems: Array<Systems.T
       />
     </JobLauncherProvider>
   );
-}
+});
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ appId, appVersion }) => {
   const { data, isLoading, error } = useAppDetail({ appId, appVersion}, { refetchOnWindowFocus: false });
@@ -114,8 +116,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ appId, appVersion
     <QueryWrapper isLoading={isLoading || systemsIsLoading} error={error || systemsError}>
       <JobLauncherRender app={app!} systems={systems} />
     </QueryWrapper>
-  )
-  
+  ) 
 };
 
 export default React.memo(JobLauncherWizard);

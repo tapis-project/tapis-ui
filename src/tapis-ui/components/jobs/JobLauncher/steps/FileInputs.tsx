@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormContext, FieldArray as TFieldArray } from 'react-hook-form';
+import { useForm, FieldArray as TFieldArray } from 'react-hook-form';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
@@ -16,7 +16,7 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   const {
     register,
     formState: { errors },
-  } = useFormContext<Jobs.ReqSubmitJob>();
+  } = useForm<Jobs.ReqSubmitJob>();
   const { sourceUrl, targetPath, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
