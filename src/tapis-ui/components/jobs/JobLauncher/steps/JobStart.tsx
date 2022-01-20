@@ -1,19 +1,34 @@
+import { useCallback } from 'react';
 import { Input } from 'reactstrap';
 import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { useFormContext } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
+import { useJobLauncher } from '../JobLauncherContext';
+import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 
 type JobStartProps = {
   app: Apps.TapisApp;
 };
 
 export const JobStart: React.FC<JobStartProps> = ({ app }) => {
-  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
+  const { job, add } = useJobLauncher();
+  const { nextStep } = useWizard();
+  const { register, formState, handleSubmit } = useForm<Jobs.ReqSubmitJob>({
+    defaultValues: job
+  });
   const { errors } = formState;
 
+  const formSubmit = useCallback(
+    (value: Jobs.ReqSubmitJob) => {
+      add(value);
+      nextStep && nextStep();
+    },
+    [nextStep, add]
+  );
+
   return (
-    <div>
+    <form onSubmit={handleSubmit(formSubmit)}>
       <div>
         <i>
           Launching {app.id} v{app.version}
@@ -30,14 +45,14 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
           {...mapInnerRef(register('name', { required: 'Name is required' }))}
         />
       </FieldWrapper>
-    </div>
+      <WizardNavigation />
+    </form>
   );
 };
 
 export const JobStartSummary: React.FC = () => {
-  const { getValues } = useFormContext<Jobs.ReqSubmitJob>();
-  const values = getValues();
-  const { name, appId, appVersion } = values;
+  const { job } = useJobLauncher();
+  const { name, appId, appVersion } = job;
   return (
     <div>
       {name ? (

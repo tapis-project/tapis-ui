@@ -13,12 +13,12 @@ const useJobLauncher = () => {
     dispatch({ operation: 'set', fragment });
   };
 
-  const reset = () => dispatch({ operation: 'clear' });
+  const clear = () => dispatch({ operation: 'clear' });
 
   return {
     add,
     set,
-    reset,
+    clear,
     job
   };
 };

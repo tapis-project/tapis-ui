@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Input } from 'reactstrap';
 import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { useFormContext } from 'react-hook-form';
+import { useForm, useFormContext, FormProvider } from 'react-hook-form';
 import { useDetails, useList } from 'tapis-hooks/systems';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
+import { useJobLauncher } from '../JobLauncherContext';
 import { v4 as uuidv4 } from 'uuid';
 
 type ExecSystemDetailProps = {
@@ -51,21 +52,31 @@ export const ExecSystemDetail: React.FC<ExecSystemDetailProps> = ({
 
 type ExecSystemProps = {
   app: Apps.TapisApp;
+  systems: Array<Systems.TapisSystem>;
 };
 
-export const ExecSystem: React.FC<ExecSystemProps> = ({ app }) => {
-  const { register, formState, getValues } =
-    useFormContext<Jobs.ReqSubmitJob>();
+export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
+  const { job } = useJobLauncher();
+  const methods = useForm<Jobs.ReqSubmitJob>({ defaultValues: job });
+  const { register, formState, reset } = methods;
   const { errors } = formState;
-  const { execSystemId } = getValues();
-  const { data, isLoading, error } = useList();
+
+  const { execSystemId } = job;
   const [selectedSystem, setSelectedSystem] = useState(
     execSystemId ?? app.jobAttributes?.execSystemId
   );
-  const systems: Array<Systems.TapisSystem> = data?.result ?? [];
+  const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>([]);
+  const batchDefaultLogicalQueue = systems.find(system => system.id === selectedSystem)?.batchDefaultLogicalQueue;
+  const setSystem = useCallback(
+    (systemId: string) => {
+      setSelectedSystem(systemId);
+      setQueues(systems.find(system => system.id === systemId)?.batchLogicalQueues ?? []);
+    },
+    []
+  )
   return (
-    <div>
-      <QueryWrapper isLoading={isLoading} error={error}>
+    <FormProvider {...methods} >
+      <form>
         <FieldWrapper
           description="The execution system for this job"
           label="Execution System"
@@ -90,20 +101,35 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app }) => {
             ))}
           </Input>
         </FieldWrapper>
-      </QueryWrapper>
-      <div>
         {selectedSystem && (
-          <ExecSystemDetail app={app} execSystemId={selectedSystem} />
+          <FieldWrapper
+            description="The batch queue on this execution system"
+            label="Batch Logical Queue"
+            required={false}
+            error={errors['execSystemLogicalQueue']}
+          >
+            <Input
+              bsSize="sm"
+              defaultValue={batchDefaultLogicalQueue}
+              {...mapInnerRef(register('execSystemLogicalQueue'))}
+              type="select"
+            >
+              {queues.map((queue) => (
+                <option value={queue.name} key={uuidv4()}>
+                  {queue.name}
+                </option>
+              ))}
+            </Input>
+          </FieldWrapper>
         )}
-      </div>
-    </div>
+      </form>
+    </FormProvider>
   );
 };
 
 export const ExecSystemSummary: React.FC = () => {
-  const { getValues } = useFormContext<Jobs.ReqSubmitJob>();
-  const values = getValues();
-  const { execSystemId, execSystemLogicalQueue } = values;
+  const { job } = useJobLauncher(); 
+  const { execSystemId, execSystemLogicalQueue } = job;
   return (
     <div>
       {execSystemId ? (

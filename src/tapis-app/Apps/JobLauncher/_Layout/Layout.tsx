@@ -8,16 +8,12 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,
   appVersion,
 }) => {
-  const { data, isLoading, error } = useDetail({ appId, appVersion });
-  const app = data?.result;
 
   const header = <LayoutHeader type={'sub-header'}>Job Launcher</LayoutHeader>;
 
   const body = (
     <div style={{ flex: 1 }}>
-      <QueryWrapper isLoading={isLoading} error={error}>
-        <JobLauncher app={app!} />
-      </QueryWrapper>
+        <JobLauncher appId={appId} appVersion={appVersion} />
     </div>
   );
 

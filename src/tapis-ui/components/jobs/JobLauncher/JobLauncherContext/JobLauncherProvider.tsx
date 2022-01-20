@@ -32,12 +32,13 @@ export const reducer = (
   return state;
 };
 
-const JobLauncherProvider: React.FC<React.PropsWithChildren<{}>> = ({
+const JobLauncherProvider: React.FC<React.PropsWithChildren<{ value?: Partial<Jobs.ReqSubmitJob>} >> = ({
   children,
+  value
 }) => {
   const [job, dispatch] = useReducer(
     reducer,
-    {}
+    { ...value }
   );
 
   // Provide a context state for the rest of the application, including

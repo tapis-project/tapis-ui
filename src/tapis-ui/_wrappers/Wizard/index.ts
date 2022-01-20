@@ -8,6 +8,6 @@ export type WizardStep = {
   summary: React.ReactNode;
 };
 
-export { useWizard } from './Wizard';
+export { useWizard, WizardNavigation } from './Wizard';
 export { default as WizardSubmitWrapper } from './WizardSubmitWrapper';
 export default Wizard;
