@@ -6,7 +6,7 @@ import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { useForm, useFormContext, FormProvider } from 'react-hook-form';
 import { useDetails } from 'tapis-hooks/systems';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { useJobLauncher } from '../JobLauncherContext';
+import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import { v4 as uuidv4 } from 'uuid';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 

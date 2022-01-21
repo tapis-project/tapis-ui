@@ -13,6 +13,6 @@ describe('withFragment', () => {
     const hook = renderHook(() => useFragmentContext());
     expect(Provider).toBeDefined();
     expect(hook.result.current.data).toBeDefined();
-    expect(hook.result.current.dispatch).toBeDefined();
+    expect(hook.result.current.add).toBeDefined();
   });
 });

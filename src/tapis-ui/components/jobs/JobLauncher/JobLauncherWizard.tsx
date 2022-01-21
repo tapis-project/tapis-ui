@@ -13,9 +13,11 @@ import {
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
-import { JobLauncherProvider, useJobLauncher } from './JobLauncherContext';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
+import useJobLauncher, {
+  JobLauncherProvider,
+} from 'tapis-hooks/jobs/useJobLauncher';
 
 type JobLauncherWizardProps = {
   appId: string;

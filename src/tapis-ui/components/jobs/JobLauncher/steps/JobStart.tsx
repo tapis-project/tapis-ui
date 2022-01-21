@@ -4,7 +4,7 @@ import { FieldWrapper, Message } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useForm } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
-import { useJobLauncher } from '../JobLauncherContext';
+import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 
 type JobStartProps = {

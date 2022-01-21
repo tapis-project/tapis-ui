@@ -11,7 +11,7 @@ import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Button } from 'reactstrap';
-import { useJobLauncher } from '../JobLauncherContext';
+import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import { WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 import styles from './FileInputs.module.scss';
 
