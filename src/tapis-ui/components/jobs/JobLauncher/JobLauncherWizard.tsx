@@ -11,7 +11,6 @@ import {
   fileInputsComplete,
 } from 'tapis-api/utils/jobFileInputs';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
-import { useFormContext } from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { JobLauncherProvider, useJobLauncher } from './JobLauncherContext';
@@ -66,9 +65,8 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-
-const JobLauncherRender: React.FC<{ 
-  app: Apps.TapisApp; 
+const JobLauncherRender: React.FC<{
+  app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
 }> = React.memo(({ app, systems }) => {
   const steps: Array<WizardStep> = [
@@ -78,26 +76,25 @@ const JobLauncherRender: React.FC<{
       render: <JobStart app={app} />,
       summary: <JobStartSummary />,
     },
-    
+
     {
       id: 'execSystem',
       name: 'Execution System',
       render: <ExecSystem app={app} systems={systems} />,
       summary: <ExecSystemSummary />,
     },
-    /*
     {
       id: 'fileInputs',
       name: 'File Stuff',
       render: <FileInputs app={app} />,
       summary: <FileInputsSummary />,
     },
-    */
   ];
 
   const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(app);
-  return (    <JobLauncherProvider value={defaultValues}>
-      <Wizard<Jobs.ReqSubmitJob>
+  return (
+    <JobLauncherProvider value={defaultValues}>
+      <Wizard
         steps={steps}
         memo={[app.id, app.version]}
         renderSubmit={<JobLauncherWizardSubmit app={app} />}
@@ -106,17 +103,32 @@ const JobLauncherRender: React.FC<{
   );
 });
 
-const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({ appId, appVersion }) => {
-  const { data, isLoading, error } = useAppDetail({ appId, appVersion}, { refetchOnWindowFocus: false });
-  const { data: systemsData, isLoading: systemsIsLoading, error: systemsError } = 
-    useSystemsList(  { select: "allAttributes" }, { refetchOnWindowFocus: false})
+const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
+  appId,
+  appVersion,
+}) => {
+  const { data, isLoading, error } = useAppDetail(
+    { appId, appVersion },
+    { refetchOnWindowFocus: false }
+  );
+  const {
+    data: systemsData,
+    isLoading: systemsIsLoading,
+    error: systemsError,
+  } = useSystemsList(
+    { select: 'allAttributes' },
+    { refetchOnWindowFocus: false }
+  );
   const app = data?.result;
   const systems = systemsData?.result ?? [];
   return (
-    <QueryWrapper isLoading={isLoading || systemsIsLoading} error={error || systemsError}>
+    <QueryWrapper
+      isLoading={isLoading || systemsIsLoading}
+      error={error || systemsError}
+    >
       <JobLauncherRender app={app!} systems={systems} />
     </QueryWrapper>
-  ) 
+  );
 };
 
 export default React.memo(JobLauncherWizard);

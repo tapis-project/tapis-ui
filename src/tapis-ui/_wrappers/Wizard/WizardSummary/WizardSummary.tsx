@@ -24,7 +24,10 @@ function WizardSummary({
       {renderSubmit && <div className={styles.submit}>{renderSubmit}</div>}
       {steps.map((step) => {
         return (
-          <div className={styles['step-summary']}>
+          <div
+            className={styles['step-summary']}
+            key={`wizard-summary-${step.id}`}
+          >
             <div className={styles.name}>
               <div>
                 <b>{step.name}</b>

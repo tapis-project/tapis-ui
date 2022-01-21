@@ -1,11 +1,18 @@
 import React from 'react';
-import { useForm, FieldArray as TFieldArray } from 'react-hook-form';
+import {
+  useForm,
+  FieldArray as TFieldArray,
+  FormProvider,
+  useFormContext,
+} from 'react-hook-form';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Button } from 'reactstrap';
+import { useJobLauncher } from '../JobLauncherContext';
+import { WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 import styles from './FileInputs.module.scss';
 
 const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
@@ -16,7 +23,7 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   const {
     register,
     formState: { errors },
-  } = useForm<Jobs.ReqSubmitJob>();
+  } = useFormContext<Jobs.ReqSubmitJob>();
   const { sourceUrl, targetPath, id } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
@@ -82,6 +89,8 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
 };
 
 export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
+  const { job } = useJobLauncher();
+  const methods = useForm<Jobs.ReqSubmitJob>({ defaultValues: job });
   const appInputs = app?.jobAttributes?.fileInputs ?? [];
   const required = Array.from(
     appInputs
@@ -99,14 +108,19 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
   const name = 'fileInputs';
 
   return (
-    <FieldArray<Jobs.ReqSubmitJob, typeof name>
-      title="File Inputs"
-      addButtonText="Add File Input"
-      name={name}
-      render={FileInputField}
-      required={required}
-      appendData={appendData}
-    />
+    <FormProvider {...methods}>
+      <form>
+        <FieldArray<Jobs.ReqSubmitJob, typeof name>
+          title="File Inputs"
+          addButtonText="Add File Input"
+          name={name}
+          render={FileInputField}
+          required={required}
+          appendData={appendData}
+        />
+        <WizardNavigation />
+      </form>
+    </FormProvider>
   );
 };
 

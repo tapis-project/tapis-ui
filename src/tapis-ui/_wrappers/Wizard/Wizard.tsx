@@ -9,10 +9,10 @@ export type WizardContextType = Partial<StepWizardChildProps>;
 const WizardContext: React.Context<WizardContextType> =
   React.createContext<WizardContextType>({});
 
-type WizardProps<T> = {
+type WizardProps = {
   steps: Array<WizardStep>;
   memo?: Array<any>;
-  renderSubmit?: React.ReactNode
+  renderSubmit?: React.ReactNode;
 };
 
 export const useWizard = () => {
@@ -33,8 +33,8 @@ export const WizardNavigation: React.FC = () => {
         </Button>
       )}
     </div>
-  ) 
-}
+  );
+};
 
 type WizardControlProps = {
   steps: Array<WizardStep>;
@@ -73,17 +73,13 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
 };
 
-
 type StepContainerProps = {
   step: WizardStep;
 } & Partial<StepWizardChildProps>;
 
-const StepContainer: React.FC<StepContainerProps> = ({step}) => {
-  return (
-    <div className={styles.step}>{step.render}</div>
-
-  );
-}
+const StepContainer: React.FC<StepContainerProps> = ({ step }) => {
+  return <div className={styles.step}>{step.render}</div>;
+};
 
 /* eslint-disable-next-line */
 const WizardProgress: React.FC<WizardControlProps> = ({
@@ -97,11 +93,7 @@ const WizardProgress: React.FC<WizardControlProps> = ({
   return <div>{steps[currentStep - 1].name}</div>;
 };
 
-function Wizard<T>({
-  steps,
-  memo,
-  renderSubmit,
-}: WizardProps<T>) {
+function Wizard({ steps, memo, renderSubmit }: WizardProps) {
   const [stepWizardProps, setStepWizardProps] = useState<
     Partial<StepWizardChildProps>
   >({});
@@ -146,11 +138,11 @@ function Wizard<T>({
           onStepChange={stepChangeCallback}
           transitions={{}}
         >
-          {steps.map((step) => 
-            <StepContainer step={step}>
+          {steps.map((step) => (
+            <StepContainer step={step} key={`wizard-step-${step.id}`}>
               {step.render}
             </StepContainer>
-          )}
+          ))}
         </StepWizard>
         <WizardSummary
           steps={steps}

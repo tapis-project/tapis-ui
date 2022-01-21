@@ -15,7 +15,7 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
   const { job, add } = useJobLauncher();
   const { nextStep } = useWizard();
   const { register, formState, handleSubmit } = useForm<Jobs.ReqSubmitJob>({
-    defaultValues: job
+    defaultValues: job,
   });
   const { errors } = formState;
 
