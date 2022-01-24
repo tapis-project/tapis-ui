@@ -89,8 +89,7 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
 };
 
 export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
-  const { job } = useJobLauncher();
-  const methods = useForm<Jobs.ReqSubmitJob>({ defaultValues: job });
+  const methods = useFormContext<Jobs.ReqSubmitJob>();
   const appInputs = app?.jobAttributes?.fileInputs ?? [];
   const required = Array.from(
     appInputs
@@ -124,6 +123,6 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-export const FileInputsSummary: React.FC = () => {
+export const FileInputsSummary: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   return <div>Files</div>;
 };

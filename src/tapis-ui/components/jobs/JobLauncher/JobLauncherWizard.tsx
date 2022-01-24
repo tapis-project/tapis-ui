@@ -18,6 +18,7 @@ import { useList as useSystemsList } from 'tapis-hooks/systems';
 import useJobLauncher, {
   JobLauncherProvider,
 } from 'tapis-hooks/jobs/useJobLauncher';
+import { withJobStepWrapper } from './components';
 
 type JobLauncherWizardProps = {
   appId: string;
@@ -75,21 +76,21 @@ const JobLauncherRender: React.FC<{
     {
       id: 'start',
       name: `Job Name`,
-      render: <JobStart app={app} />,
+      render: withJobStepWrapper(<JobStart app={app} />),
       summary: <JobStartSummary />,
     },
 
     {
       id: 'execSystem',
       name: 'Execution System',
-      render: <ExecSystem app={app} systems={systems} />,
+      render: withJobStepWrapper(<ExecSystem app={app} systems={systems} />),
       summary: <ExecSystemSummary />,
     },
     {
       id: 'fileInputs',
       name: 'File Stuff',
-      render: <FileInputs app={app} />,
-      summary: <FileInputsSummary />,
+      render: withJobStepWrapper(<FileInputs app={app} />),
+      summary: <FileInputsSummary app={app}/>,
     },
   ];
 
