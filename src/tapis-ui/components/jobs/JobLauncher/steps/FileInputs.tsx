@@ -1,17 +1,15 @@
 import React from 'react';
 import {
   FieldArray as TFieldArray,
-  FormProvider,
   useFormContext,
 } from 'react-hook-form';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input, FormText, FormGroup } from 'reactstrap';
+import { Input, FormText, FormGroup, Label } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Button } from 'reactstrap';
 import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
-import { WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 import styles from './FileInputs.module.scss';
 import { getIncompleteJobInputs, getAppInputsIncludedByDefault } from 'tapis-api/utils/jobFileInputs';
 import { StepSummaryField } from '../components';
@@ -26,11 +24,28 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
     register,
     formState: { errors },
   } = useFormContext<Jobs.ReqSubmitJob>();
-  const { sourceUrl, targetPath, id } = item;
+  const { name, description, sourceUrl, targetPath, id, autoMountLocal } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
 
   return (
     <div key={id}>
+      <FieldWrapper
+        label="Name"
+        required={!remove}
+        description="Name of this input"
+        error={itemError?.name}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={name}
+          {...mapInnerRef(
+            register(`fileInputs.${index}.name`, {
+              required: !remove ? 'This input is required and cannot be renamed' : undefined
+            })
+          )}
+          disabled={!remove}
+        />
+      </FieldWrapper>
       <FieldWrapper
         label="Source URL"
         required={true}
@@ -63,20 +78,31 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
           )}
         />
       </FieldWrapper>
+      <FieldWrapper
+        label="Description"
+        required={false}
+        description="Description of this input"
+        error={itemError?.description}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={description}
+          {...mapInnerRef(
+            register(`fileInputs.${index}.description`)
+          )}
+        />
+      </FieldWrapper>
       <FormGroup check>
-        {/*
-          <Label check className="form-field__label" size="sm">
-            <Input
-              type="checkbox"
-              bsSize="sm"
-              defaultChecked={inPlace}
-              {...mapInnerRef(register(`fileInputs.${index}.inPlace`))}
-            />{' '}
-            In Place
-          </Label>
-        */}
-
-        <FormText className="form-field__help" color="muted">
+        <Label check className={`form-field__label ${styles.nospace}`} size="sm">
+          <Input
+            type="checkbox"
+            bsSize="sm"
+            defaultChecked={autoMountLocal}
+            {...mapInnerRef(register(`fileInputs.${index}.autoMountLocal`))}
+          />{' '}
+          Auto-mount Local 
+        </Label>
+        <FormText className={`form-field__help ${styles.nospace}`} color="muted">
           If this is true, the source URL will be mounted from the execution
           system's local file system
         </FormText>
@@ -103,6 +129,7 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
     targetPath: '',
+    autoMountLocal: true
   };
 
   const name = 'fileInputs';

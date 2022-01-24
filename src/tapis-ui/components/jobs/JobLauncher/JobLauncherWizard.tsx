@@ -6,6 +6,7 @@ import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
+import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
 import {
   generateRequiredFileInputsFromApp,
   fileInputsComplete,
@@ -92,6 +93,12 @@ const JobLauncherRender: React.FC<{
       render: withJobStepWrapper(<FileInputs app={app} />),
       summary: <FileInputsSummary app={app}/>,
     },
+    {
+      id: 'jobSubmission',
+      name: 'Job Submission',
+      render: withJobStepWrapper(<JobSubmission app={app} />),
+      summary: <JobSubmissionSummary />
+    }
   ];
 
   const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(app);
