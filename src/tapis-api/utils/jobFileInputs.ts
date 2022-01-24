@@ -40,6 +40,20 @@ export const generateRequiredFileInputsFromApp = (
   return fileInputs;
 };
 
+export const getAppInputsIncludedByDefault = (
+  appFileInputs: Array<Apps.AppFileInput>,
+  jobFileInputs: Array<Jobs.JobFileInput>
+) => {
+    return appFileInputs.filter(
+      appFileInput => {
+        const includedInJob = jobFileInputs.some(jobFileInput => jobFileInput.name === appFileInput.name);
+        return appFileInput.inputMode === Apps.FileInputModeEnum.Required &&
+          !!appFileInput.sourceUrl &&
+          !includedInJob;
+      }
+    )
+}
+
 /**
  * @param appFileInputs 
  * @param jobFileInputs 

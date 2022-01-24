@@ -5,7 +5,8 @@ import {
   getIncompleteAppInputsOfType,
   generateRequiredFileInputsFromApp,
   fileInputsComplete,
-  getIncompleteJobInputs
+  getIncompleteJobInputs,
+  getAppInputsIncludedByDefault
 } from './jobFileInputs';
 
 describe('Job File Inputs utils', () => {
@@ -90,7 +91,7 @@ describe('Job File Inputs utils', () => {
     );
   });
 
-  it('finds incomplete job inputs', () => {
+  it('getIncompleteJobInputs', () => {
     // A job should not have to specify complete Required inputs or Optional inputs
     expect(getIncompleteJobInputs(
       [
@@ -190,5 +191,46 @@ describe('Job File Inputs utils', () => {
         targetPath: 'userdefined2.txt'
       }
     ]);
+  });
+
+  it('getAppInputsIncludedByDefault', () => {
+    // Required app inputs that are completely specified are included by default
+    expect(getAppInputsIncludedByDefault(
+      [
+        {
+          name: 'Required',
+          sourceUrl: 'required.txt',
+          targetPath: 'required.txt',
+          inputMode: Apps.FileInputModeEnum.Required
+        }
+      ],
+      []
+    )).toEqual([
+      {
+        name: 'Required',
+        sourceUrl: 'required.txt',
+        targetPath: 'required.txt',
+        inputMode: Apps.FileInputModeEnum.Required
+      }
+    ]);
+    // Required app inputs that are completely specified but overwritten in job inputs are not 
+    // included by default
+    expect(getAppInputsIncludedByDefault(
+      [
+        {
+          name: 'Required',
+          sourceUrl: 'required.txt',
+          targetPath: 'required.txt',
+          inputMode: Apps.FileInputModeEnum.Required
+        }
+      ],
+      [
+        {
+          name: 'Required',
+          sourceUrl: 'overwritten.txt',
+          targetPath: 'overwritten.txt',
+        }
+      ]
+    )).toEqual([]);
   });
 });

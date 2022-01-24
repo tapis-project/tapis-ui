@@ -88,7 +88,7 @@ const JobLauncherRender: React.FC<{
     },
     {
       id: 'fileInputs',
-      name: 'File Stuff',
+      name: 'File Inputs',
       render: withJobStepWrapper(<FileInputs app={app} />),
       summary: <FileInputsSummary app={app}/>,
     },
