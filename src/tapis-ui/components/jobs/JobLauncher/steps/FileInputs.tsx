@@ -117,14 +117,14 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
 };
 
 export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
+  const { job } = useJobLauncher();
   const appInputs = app?.jobAttributes?.fileInputs ?? [];
-  const required = Array.from(
-    appInputs
-      .filter(
-        (fileInput) => fileInput?.inputMode === Apps.FileInputModeEnum.Required
-      )
-      .keys()
-  );
+  const jobInputsFromRequired = job.fileInputs?.filter(
+    jobFileInput => appInputs.some(
+      appInput => appInput.name === jobFileInput.name && appInput.inputMode === Apps.FileInputModeEnum.Required
+    )
+  ) ?? [];
+  const required = Array.from(jobInputsFromRequired.keys());
 
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
