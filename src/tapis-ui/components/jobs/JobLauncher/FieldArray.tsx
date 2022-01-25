@@ -37,6 +37,7 @@ type FieldArrayProps<
   isCollapsable?: boolean;
 };
 
+// TODO: add optional items to add
 export function FieldArray<
   TFieldValues,
   TArrayPath extends ArrayPath<TFieldValues>

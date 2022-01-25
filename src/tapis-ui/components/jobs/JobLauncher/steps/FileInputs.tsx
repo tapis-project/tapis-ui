@@ -13,8 +13,11 @@ import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import styles from './FileInputs.module.scss';
 import { getIncompleteJobInputs, getAppInputsIncludedByDefault } from 'tapis-api/utils/jobFileInputs';
 import { StepSummaryField } from '../components';
+import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
 
+
+// TODO: Make this collapsible
 const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   item,
   index,
@@ -26,93 +29,94 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   } = useFormContext<Jobs.ReqSubmitJob>();
   const { name, description, sourceUrl, targetPath, id, autoMountLocal } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
-
   return (
-    <div key={id}>
-      <FieldWrapper
-        label="Name"
-        required={!remove}
-        description="Name of this input"
-        error={itemError?.name}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={name}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.name`, {
-              required: !remove ? 'This input is required and cannot be renamed' : undefined
-            })
-          )}
-          disabled={!remove}
-        />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Source URL"
-        required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-        error={itemError?.sourceUrl}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={sourceUrl}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.sourceUrl`, {
-              required: 'Source URL is required',
-            })
-          )}
-        />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Target Path"
-        required={true}
-        description="File mount path inside of running container"
-        error={itemError?.targetPath}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={targetPath}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.targetPath`, {
-              required: 'Target Path is required',
-            })
-          )}
-        />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Description"
-        required={false}
-        description="Description of this input"
-        error={itemError?.description}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={description}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.description`)
-          )}
-        />
-      </FieldWrapper>
-      <FormGroup check>
-        <Label check className={`form-field__label ${styles.nospace}`} size="sm">
+    <Collapse open={!sourceUrl} key={uuidv4()} title={ name ?? 'File Input'}>
+      <div key={id}>
+        <FieldWrapper
+          label="Name"
+          required={!remove}
+          description="Name of this input"
+          error={itemError?.name}
+        >
           <Input
-            type="checkbox"
             bsSize="sm"
-            defaultChecked={autoMountLocal}
-            {...mapInnerRef(register(`fileInputs.${index}.autoMountLocal`))}
-          />{' '}
-          Auto-mount Local 
-        </Label>
-        <FormText className={`form-field__help ${styles.nospace}`} color="muted">
-          If this is true, the source URL will be mounted from the execution
-          system's local file system
-        </FormText>
-      </FormGroup>
-      {remove && (
-        <Button onClick={() => remove()} size="sm" className={styles.remove}>
-          Remove
-        </Button>
-      )}
-    </div>
+            defaultValue={name}
+            {...mapInnerRef(
+              register(`fileInputs.${index}.name`, {
+                required: !remove ? 'This input is required and cannot be renamed' : undefined
+              })
+            )}
+            disabled={!remove}
+          />
+        </FieldWrapper>
+        <FieldWrapper
+          label="Source URL"
+          required={true}
+          description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+          error={itemError?.sourceUrl}
+        >
+          <Input
+            bsSize="sm"
+            defaultValue={sourceUrl}
+            {...mapInnerRef(
+              register(`fileInputs.${index}.sourceUrl`, {
+                required: 'Source URL is required',
+              })
+            )}
+          />
+        </FieldWrapper>
+        <FieldWrapper
+          label="Target Path"
+          required={true}
+          description="File mount path inside of running container"
+          error={itemError?.targetPath}
+        >
+          <Input
+            bsSize="sm"
+            defaultValue={targetPath}
+            {...mapInnerRef(
+              register(`fileInputs.${index}.targetPath`, {
+                required: 'Target Path is required',
+              })
+            )}
+          />
+        </FieldWrapper>
+        <FieldWrapper
+          label="Description"
+          required={false}
+          description="Description of this input"
+          error={itemError?.description}
+        >
+          <Input
+            bsSize="sm"
+            defaultValue={description}
+            {...mapInnerRef(
+              register(`fileInputs.${index}.description`)
+            )}
+          />
+        </FieldWrapper>
+        <FormGroup check>
+          <Label check className={`form-field__label ${styles.nospace}`} size="sm">
+            <Input
+              type="checkbox"
+              bsSize="sm"
+              defaultChecked={autoMountLocal}
+              {...mapInnerRef(register(`fileInputs.${index}.autoMountLocal`))}
+            />{' '}
+            Auto-mount Local 
+          </Label>
+          <FormText className={`form-field__help ${styles.nospace}`} color="muted">
+            If this is true, the source URL will be mounted from the execution
+            system's local file system
+          </FormText>
+        </FormGroup>
+        {remove && (
+          <Button onClick={() => remove()} size="sm" className={styles.remove}>
+            Remove
+          </Button>
+        )}
+      </div>
+    </Collapse>
   );
 };
 
