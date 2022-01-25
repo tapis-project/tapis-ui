@@ -6,7 +6,7 @@ import {
   generateRequiredFileInputsFromApp,
   fileInputsComplete,
   getIncompleteJobInputs,
-  getAppInputsIncludedByDefault
+  getAppInputsIncludedByDefault,
 } from './jobFileInputs';
 
 describe('Job File Inputs utils', () => {
@@ -93,144 +93,156 @@ describe('Job File Inputs utils', () => {
 
   it('getIncompleteJobInputs', () => {
     // A job should not have to specify complete Required inputs or Optional inputs
-    expect(getIncompleteJobInputs(
-      [
-        {
-          name: 'Required',
-          sourceUrl: 'required.txt',
-          targetPath: 'required.txt',
-          inputMode: Apps.FileInputModeEnum.Required
-        },
-        {
-          name: 'Optional',
-          sourceUrl: 'optional.txt',
-          targetPath: 'optional.txt',
-          inputMode: Apps.FileInputModeEnum.Optional
-        }
-      ],
-      []
-    )).toEqual([]);
+    expect(
+      getIncompleteJobInputs(
+        [
+          {
+            name: 'Required',
+            sourceUrl: 'required.txt',
+            targetPath: 'required.txt',
+            inputMode: Apps.FileInputModeEnum.Required,
+          },
+          {
+            name: 'Optional',
+            sourceUrl: 'optional.txt',
+            targetPath: 'optional.txt',
+            inputMode: Apps.FileInputModeEnum.Optional,
+          },
+        ],
+        []
+      )
+    ).toEqual([]);
 
     // A job that partially specifies Required or Optional inputs that are fully
     // specified in the app are not considered incomplete
-    expect(getIncompleteJobInputs(
-      [
-        {
-          name: 'Required',
-          targetPath: 'required.txt',
-          inputMode: Apps.FileInputModeEnum.Required
-        },
-        {
-          name: 'Optional',
-          targetPath: 'optional.txt',
-          inputMode: Apps.FileInputModeEnum.Optional
-        }
-      ],
-      [
-        {
-          name: 'Required'
-        },
-        {
-          name: 'Optional'
-        }
-      ]
-    )).toEqual([
+    expect(
+      getIncompleteJobInputs(
+        [
+          {
+            name: 'Required',
+            targetPath: 'required.txt',
+            inputMode: Apps.FileInputModeEnum.Required,
+          },
+          {
+            name: 'Optional',
+            targetPath: 'optional.txt',
+            inputMode: Apps.FileInputModeEnum.Optional,
+          },
+        ],
+        [
+          {
+            name: 'Required',
+          },
+          {
+            name: 'Optional',
+          },
+        ]
+      )
+    ).toEqual([
       {
-        name: 'Required'
+        name: 'Required',
       },
       {
-        name: 'Optional'
-      }
+        name: 'Optional',
+      },
     ]);
 
     // A job that partially specifies Required or Optional inputs that are NOT fully
     // specified in the app are considered incomplete
-    expect(getIncompleteJobInputs(
-      [
-        {
-          name: 'Required',
-          targetPath: 'required.txt',
-          inputMode: Apps.FileInputModeEnum.Required
-        },
-        {
-          name: 'Optional',
-          targetPath: 'optional.txt',
-          inputMode: Apps.FileInputModeEnum.Optional
-        }
-      ],
-      [
-        {
-          name: 'Required'
-        },
-        {
-          name: 'Optional'
-        }
-      ]
-    )).toEqual([{ name: 'Required' }, { name: 'Optional' }]);
-    
-    // A job that partially specifies user defined inputs considers those to be incomplete 
-    expect(getIncompleteJobInputs(
-      [],
-      [
-        {
-          name: 'User Defined 1',
-          sourceUrl: 'userdefined1.txt',
-        },
-        {
-          name: 'User Defined 2',
-          targetPath: 'userdefined2.txt'
-        }
-      ]
-    )).toEqual([
+    expect(
+      getIncompleteJobInputs(
+        [
+          {
+            name: 'Required',
+            targetPath: 'required.txt',
+            inputMode: Apps.FileInputModeEnum.Required,
+          },
+          {
+            name: 'Optional',
+            targetPath: 'optional.txt',
+            inputMode: Apps.FileInputModeEnum.Optional,
+          },
+        ],
+        [
+          {
+            name: 'Required',
+          },
+          {
+            name: 'Optional',
+          },
+        ]
+      )
+    ).toEqual([{ name: 'Required' }, { name: 'Optional' }]);
+
+    // A job that partially specifies user defined inputs considers those to be incomplete
+    expect(
+      getIncompleteJobInputs(
+        [],
+        [
+          {
+            name: 'User Defined 1',
+            sourceUrl: 'userdefined1.txt',
+          },
+          {
+            name: 'User Defined 2',
+            targetPath: 'userdefined2.txt',
+          },
+        ]
+      )
+    ).toEqual([
       {
         name: 'User Defined 1',
         sourceUrl: 'userdefined1.txt',
       },
       {
         name: 'User Defined 2',
-        targetPath: 'userdefined2.txt'
-      }
+        targetPath: 'userdefined2.txt',
+      },
     ]);
   });
 
   it('getAppInputsIncludedByDefault', () => {
     // Required app inputs that are completely specified are included by default
-    expect(getAppInputsIncludedByDefault(
-      [
-        {
-          name: 'Required',
-          sourceUrl: 'required.txt',
-          targetPath: 'required.txt',
-          inputMode: Apps.FileInputModeEnum.Required
-        }
-      ],
-      []
-    )).toEqual([
+    expect(
+      getAppInputsIncludedByDefault(
+        [
+          {
+            name: 'Required',
+            sourceUrl: 'required.txt',
+            targetPath: 'required.txt',
+            inputMode: Apps.FileInputModeEnum.Required,
+          },
+        ],
+        []
+      )
+    ).toEqual([
       {
         name: 'Required',
         sourceUrl: 'required.txt',
         targetPath: 'required.txt',
-        inputMode: Apps.FileInputModeEnum.Required
-      }
+        inputMode: Apps.FileInputModeEnum.Required,
+      },
     ]);
-    // Required app inputs that are completely specified but overwritten in job inputs are not 
+    // Required app inputs that are completely specified but overwritten in job inputs are not
     // included by default
-    expect(getAppInputsIncludedByDefault(
-      [
-        {
-          name: 'Required',
-          sourceUrl: 'required.txt',
-          targetPath: 'required.txt',
-          inputMode: Apps.FileInputModeEnum.Required
-        }
-      ],
-      [
-        {
-          name: 'Required',
-          sourceUrl: 'overwritten.txt',
-          targetPath: 'overwritten.txt',
-        }
-      ]
-    )).toEqual([]);
+    expect(
+      getAppInputsIncludedByDefault(
+        [
+          {
+            name: 'Required',
+            sourceUrl: 'required.txt',
+            targetPath: 'required.txt',
+            inputMode: Apps.FileInputModeEnum.Required,
+          },
+        ],
+        [
+          {
+            name: 'Required',
+            sourceUrl: 'overwritten.txt',
+            targetPath: 'overwritten.txt',
+          },
+        ]
+      )
+    ).toEqual([]);
   });
 });

@@ -14,10 +14,10 @@ describe('FileInputsSummary step', () => {
         fileInputs: [
           {
             name: 'Data file',
-          }
-        ]
-      }
-    })
+          },
+        ],
+      },
+    });
     const { getAllByText } = renderComponent(
       <FileInputsSummary app={tapisApp} />
     );
@@ -28,27 +28,31 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [
           {
-            name: 'Data file'
+            name: 'Data file',
           },
           {
-            sourceUrl: 'userspecified'
-          }
-        ]
-      }
+            sourceUrl: 'userspecified',
+          },
+        ],
+      },
     });
     const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
     incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     const { getAllByText } = renderComponent(
       <FileInputsSummary app={incompleteApp} />
-    )
-    expect(getAllByText(/Data file is missing required information/).length).toEqual(1);
-    expect(getAllByText(/userspecified is missing required information/).length).toEqual(1);
+    );
+    expect(
+      getAllByText(/Data file is missing required information/).length
+    ).toEqual(1);
+    expect(
+      getAllByText(/userspecified is missing required information/).length
+    ).toEqual(1);
   });
   it('Shows fileInputs that are included by default', () => {
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
-        fileInputs: []
-      }
+        fileInputs: [],
+      },
     });
     const { getAllByText } = renderComponent(
       <FileInputsSummary app={tapisApp} />
@@ -58,8 +62,8 @@ describe('FileInputsSummary step', () => {
   it('Shows fileInputs that do not include underspecified required app inputs', () => {
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
-        fileInputs: []
-      }
+        fileInputs: [],
+      },
     });
     const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
     incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;

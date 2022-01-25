@@ -5,18 +5,18 @@ import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 
 export const withJobStepWrapper = (render: React.ReactNode) => (
-  <JobStepWrapper>
-    {render}
-  </JobStepWrapper>
-)
+  <JobStepWrapper>{render}</JobStepWrapper>
+);
 
-const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => {
   const { job, add } = useJobLauncher();
   const { nextStep } = useWizard();
   const methods = useForm<Jobs.ReqSubmitJob>({
     defaultValues: job,
   });
-  const { handleSubmit } = methods; 
+  const { handleSubmit } = methods;
 
   const formSubmit = useCallback(
     (value: Jobs.ReqSubmitJob) => {

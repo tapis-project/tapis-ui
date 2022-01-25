@@ -27,13 +27,19 @@ type JobLauncherWizardProps = {
 };
 
 const generateDefaultValues = (
-  app: Apps.TapisApp
+  app: Apps.TapisApp,
+  systems: Array<Systems.TapisSystem>
 ): Partial<Jobs.ReqSubmitJob> => {
+  const systemDefaultQueue = systems.find(
+    (system) => system.id === app.jobAttributes?.execSystemId
+  )?.batchDefaultLogicalQueue;
   const defaultValues: Partial<Jobs.ReqSubmitJob> = {
     name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
     appId: app.id,
     appVersion: app.version,
     execSystemId: app.jobAttributes?.execSystemId,
+    execSystemLogicalQueue:
+      app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
     fileInputs: generateRequiredFileInputsFromApp(app),
   };
   return defaultValues;
@@ -91,17 +97,20 @@ const JobLauncherRender: React.FC<{
       id: 'fileInputs',
       name: 'File Inputs',
       render: withJobStepWrapper(<FileInputs app={app} />),
-      summary: <FileInputsSummary app={app}/>,
+      summary: <FileInputsSummary app={app} />,
     },
     {
       id: 'jobSubmission',
       name: 'Job Submission',
       render: withJobStepWrapper(<JobSubmission app={app} />),
-      summary: <JobSubmissionSummary />
-    }
+      summary: <JobSubmissionSummary />,
+    },
   ];
 
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(app);
+  const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
+    app,
+    systems
+  );
   return (
     <JobLauncherProvider value={defaultValues}>
       <Wizard

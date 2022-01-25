@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
 import { Input } from 'reactstrap';
-import { FieldWrapper, Message } from 'tapis-ui/_common';
+import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { useForm, useFormContext, FormProvider } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import { v4 as uuidv4 } from 'uuid';
 import { StepSummaryField } from '../components';
-
 
 type ExecSystemProps = {
   app: Apps.TapisApp;
@@ -38,15 +37,31 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const setSystem = useCallback(
     (systemId: string) => {
       setSelectedSystem(systemId);
-      const queues = findLogicalQueues(systems, systemId);
+      add({ execSystemId: systemId });
+      setValue('execSystemId', systemId);
+      const systemDetail = systems.find((system) => system.id === systemId)!;
+      const queues = systemDetail.batchLogicalQueues ?? [];
       setQueues(queues);
-      if (!app.jobAttributes?.execSystemLogicalQueue ||
-          !queues.find(queue => queue.name === app.jobAttributes?.execSystemLogicalQueue)) {
-        add({ execSystemLogicalQueue: undefined });
-        setValue("execSystemLogicalQueue", undefined);
+      const selectedSystemHasJobQueue = queues.some(
+        (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
+      );
+      if (selectedSystemHasJobQueue) {
+        add({
+          execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
+        });
+        setValue(
+          'execSystemLogicalQueue',
+          app.jobAttributes?.execSystemLogicalQueue
+        );
+      } else {
+        add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
+        setValue(
+          'execSystemLogicalQueue',
+          systemDetail.batchDefaultLogicalQueue
+        );
       }
     },
-    [setSelectedSystem, setQueues, systems]
+    [setSelectedSystem, setQueues, systems, add, setValue, app]
   );
 
   return (
@@ -104,11 +119,16 @@ export const ExecSystemSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const { execSystemId, execSystemLogicalQueue } = job;
   const summary = execSystemId
-    ? `${execSystemId} ${execSystemLogicalQueue ? '(' + execSystemLogicalQueue + ')' : ''}`
+    ? `${execSystemId} ${
+        execSystemLogicalQueue ? '(' + execSystemLogicalQueue + ')' : ''
+      }`
     : undefined;
   return (
     <div>
-      <StepSummaryField field={summary} error="An execution system is required" />
+      <StepSummaryField
+        field={summary}
+        error="An execution system is required"
+      />
     </div>
   );
 };
