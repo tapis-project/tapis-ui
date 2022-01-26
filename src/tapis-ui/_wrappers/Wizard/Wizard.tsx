@@ -139,7 +139,11 @@ function Wizard({ steps, memo, renderSubmit }: WizardProps) {
           transitions={{}}
         >
           {steps.map((step) => (
-            <StepContainer step={step} key={`wizard-step-${step.id}`} stepName={step.id}>
+            <StepContainer
+              step={step}
+              key={`wizard-step-${step.id}`}
+              stepName={step.id}
+            >
               {step.render}
             </StepContainer>
           ))}
