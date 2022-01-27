@@ -4,10 +4,9 @@ import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { useJobLauncher, add } from 'tapis-hooks/jobs/jobLauncher';
+import { useJobLauncher, useJobLauncherActions } from 'tapis-hooks/jobs/jobLauncher';
 import { v4 as uuidv4 } from 'uuid';
 import { StepSummaryField } from '../components';
-import { useDispatch } from 'react-redux';
 
 type ExecSystemProps = {
   app: Apps.TapisApp;
@@ -21,7 +20,7 @@ const findLogicalQueues = (
 
 export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const job = useJobLauncher();
-  const dispatch = useDispatch();
+  const { add } = useJobLauncherActions();
   const methods = useFormContext<Jobs.ReqSubmitJob>();
   const { register, formState, setValue } = methods;
   const { errors } = formState;
@@ -39,7 +38,7 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const setSystem = useCallback(
     (systemId: string) => {
       setSelectedSystem(systemId);
-      dispatch(add({ execSystemId: systemId }));
+      add({ execSystemId: systemId });
       setValue('execSystemId', systemId);
       const systemDetail = systems.find((system) => system.id === systemId)!;
       const queues = systemDetail.batchLogicalQueues ?? [];
@@ -48,15 +47,15 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
         (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
       );
       if (selectedSystemHasJobQueue) {
-        dispatch(add({
+        add({
           execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
-        }));
+        });
         setValue(
           'execSystemLogicalQueue',
           app.jobAttributes?.execSystemLogicalQueue
         );
       } else {
-        dispatch(add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue }));
+        add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
         setValue(
           'execSystemLogicalQueue',
           systemDetail.batchDefaultLogicalQueue

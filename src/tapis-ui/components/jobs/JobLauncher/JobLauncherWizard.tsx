@@ -16,7 +16,7 @@ import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
-import { set } from 'tapis-hooks/jobs/jobLauncher';
+import { set, useJobLauncherActions } from 'tapis-hooks/jobs/jobLauncher';
 import { useDispatch } from 'react-redux';
 /*
 import useJobLauncher, {
@@ -84,16 +84,16 @@ const JobLauncherRender: React.FC<{
   app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
 }> = React.memo(({ app, systems }) => {
-  const dispatch = useDispatch();
+  const { set } = useJobLauncherActions();
   useEffect(
     () => {
       const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
         app,
         systems
       );
-      dispatch(set(defaultValues));
+      set(defaultValues);
     },
-    [ app, systems, dispatch ]
+    [ app, systems, set ]
   )
   
 

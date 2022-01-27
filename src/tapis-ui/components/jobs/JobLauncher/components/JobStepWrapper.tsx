@@ -1,9 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Jobs } from '@tapis/tapis-typescript';
-import { useJobLauncher, add } from 'tapis-hooks/jobs/jobLauncher';
+import { useJobLauncher, useJobLauncherActions } from 'tapis-hooks/jobs/jobLauncher';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
-import { useDispatch } from 'react-redux';
 
 export const withJobStepWrapper = (render: React.ReactNode) => (
   <JobStepWrapper>{render}</JobStepWrapper>
@@ -13,7 +12,7 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   const job = useJobLauncher();
-  const dispatch = useDispatch();
+  const { add } = useJobLauncherActions();
   const { nextStep } = useWizard();
   const methods = useForm<Jobs.ReqSubmitJob>({
     defaultValues: job,
@@ -28,7 +27,7 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
 
   const formSubmit = useCallback(
     (value: Jobs.ReqSubmitJob) => {
-      dispatch(add(value));
+      add(value);
       nextStep && nextStep();
     },
     [nextStep, add]
