@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Jobs } from '@tapis/tapis-typescript';
+import { parse } from 'path';
 
 export interface JobState {
   job: Partial<Jobs.ReqSubmitJob>
@@ -14,9 +15,10 @@ export const jobSlice = createSlice({
   initialState,
   reducers: {
     add: (state, action: PayloadAction<Partial<Jobs.ReqSubmitJob>>) => {
+      // Object deep copying is required due to array mutation restriction in RTK
       state.job = {
-        ...state.job,
-        ...action.payload
+        ...JSON.parse(JSON.stringify(state.job)),
+        ...JSON.parse(JSON.stringify(action.payload))
       }
     },
     set: (state, action: PayloadAction<Partial<Jobs.ReqSubmitJob>>) => {
