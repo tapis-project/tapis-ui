@@ -3,7 +3,8 @@ import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
-import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
+
+import { useJobLauncher } from 'tapis-hooks/jobs/jobLauncher';
 import { StepSummaryField } from '../components';
 
 type JobStartProps = {
@@ -11,6 +12,7 @@ type JobStartProps = {
 };
 
 export const JobStart: React.FC<JobStartProps> = ({ app }) => {
+  const job = useJobLauncher();
   const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
   return (
@@ -28,6 +30,7 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
       >
         <Input
           bsSize="sm"
+          defaultValue={job.name}
           {...mapInnerRef(register('name', { required: 'Name is required' }))}
         />
       </FieldWrapper>
@@ -36,7 +39,7 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
 };
 
 export const JobStartSummary: React.FC = () => {
-  const { job } = useJobLauncher();
+  const job = useJobLauncher();
   const { name, appId, appVersion } = job;
   return (
     <div>

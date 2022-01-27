@@ -4,9 +4,10 @@ import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
+import { useJobLauncher, add } from 'tapis-hooks/jobs/jobLauncher';
 import { v4 as uuidv4 } from 'uuid';
 import { StepSummaryField } from '../components';
+import { useDispatch } from 'react-redux';
 
 type ExecSystemProps = {
   app: Apps.TapisApp;
@@ -19,7 +20,8 @@ const findLogicalQueues = (
 ) => systems.find((system) => system.id === systemId)?.batchLogicalQueues ?? [];
 
 export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
-  const { job, add } = useJobLauncher();
+  const job = useJobLauncher();
+  const dispatch = useDispatch();
   const methods = useFormContext<Jobs.ReqSubmitJob>();
   const { register, formState, setValue } = methods;
   const { errors } = formState;
@@ -37,7 +39,7 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
   const setSystem = useCallback(
     (systemId: string) => {
       setSelectedSystem(systemId);
-      add({ execSystemId: systemId });
+      dispatch(add({ execSystemId: systemId }));
       setValue('execSystemId', systemId);
       const systemDetail = systems.find((system) => system.id === systemId)!;
       const queues = systemDetail.batchLogicalQueues ?? [];
@@ -46,15 +48,15 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
         (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
       );
       if (selectedSystemHasJobQueue) {
-        add({
+        dispatch(add({
           execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
-        });
+        }));
         setValue(
           'execSystemLogicalQueue',
           app.jobAttributes?.execSystemLogicalQueue
         );
       } else {
-        add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
+        dispatch(add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue }));
         setValue(
           'execSystemLogicalQueue',
           systemDetail.batchDefaultLogicalQueue
@@ -116,7 +118,7 @@ export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
 };
 
 export const ExecSystemSummary: React.FC = () => {
-  const { job } = useJobLauncher();
+  const job = useJobLauncher();
   const { execSystemId, execSystemLogicalQueue } = job;
   const summary = execSystemId
     ? `${execSystemId} ${

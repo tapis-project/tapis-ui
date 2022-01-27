@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
@@ -16,9 +16,14 @@ import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
+import { set } from 'tapis-hooks/jobs/jobLauncher';
+import { useDispatch } from 'react-redux';
+/*
 import useJobLauncher, {
   JobLauncherProvider,
 } from 'tapis-hooks/jobs/useJobLauncher';
+*/
+import { useJobLauncher, JobLauncherProvider } from 'tapis-hooks/jobs/jobLauncher';
 import { withJobStepWrapper } from './components';
 
 type JobLauncherWizardProps = {
@@ -46,7 +51,7 @@ const generateDefaultValues = (
 };
 
 const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
-  const { job } = useJobLauncher();
+  const job = useJobLauncher();
   const isComplete =
     jobRequiredFieldsComplete(job) &&
     fileInputsComplete(app, job.fileInputs ?? []);
@@ -79,6 +84,19 @@ const JobLauncherRender: React.FC<{
   app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
 }> = React.memo(({ app, systems }) => {
+  const dispatch = useDispatch();
+  useEffect(
+    () => {
+      const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
+        app,
+        systems
+      );
+      dispatch(set(defaultValues));
+    },
+    [ app, systems, dispatch ]
+  )
+  
+
   const steps: Array<WizardStep> = [
     {
       id: 'start',
@@ -107,18 +125,12 @@ const JobLauncherRender: React.FC<{
     },
   ];
 
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
-    app,
-    systems
-  );
   return (
-    <JobLauncherProvider value={defaultValues}>
-      <Wizard
-        steps={steps}
-        memo={[app.id, app.version]}
-        renderSubmit={<JobLauncherWizardSubmit app={app} />}
-      />
-    </JobLauncherProvider>
+    <Wizard
+      steps={steps}
+      memo={[app.id, app.version]}
+      renderSubmit={<JobLauncherWizardSubmit app={app} />}
+    />
   );
 });
 
@@ -145,7 +157,9 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       isLoading={isLoading || systemsIsLoading}
       error={error || systemsError}
     >
-      <JobLauncherRender app={app!} systems={systems} />
+      <JobLauncherProvider>
+        <JobLauncherRender app={app!} systems={systems} />
+      </JobLauncherProvider>
     </QueryWrapper>
   );
 };
