@@ -1,13 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
 import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
-import {
-  useForm,
-  useFormContext,
-  FormProvider,
-  SubmitHandler,
-  UnpackNestedValue,
-  DeepPartial,
-} from 'react-hook-form';
 import { Button } from 'reactstrap';
 import { WizardStep } from '.';
 import styles from './Wizard.module.scss';
@@ -17,10 +9,9 @@ export type WizardContextType = Partial<StepWizardChildProps>;
 const WizardContext: React.Context<WizardContextType> =
   React.createContext<WizardContextType>({});
 
-type WizardProps<T> = {
+type WizardProps = {
   steps: Array<WizardStep>;
   memo?: Array<any>;
-  defaultValues?: Partial<T>;
   renderSubmit?: React.ReactNode;
 };
 
@@ -29,32 +20,21 @@ export const useWizard = () => {
   return props;
 };
 
-type StepContainerProps = {
-  step: WizardStep;
-} & Partial<StepWizardChildProps>;
-
-function StepContainer<T>(props: StepContainerProps) {
-  const { handleSubmit } = useFormContext<T>();
-  const { nextStep, currentStep, previousStep, totalSteps, step } = props;
-  const formSubmit: SubmitHandler<T> = () => {
-    nextStep && nextStep();
-  };
+export const WizardNavigation: React.FC = () => {
+  const { currentStep, previousStep, totalSteps } = useWizard();
   return (
-    <form onSubmit={handleSubmit<T>(formSubmit)}>
-      <div className={styles.step}>{step.render}</div>
-      <div className={styles.controls}>
-        {!!currentStep && currentStep > 1 && (
-          <Button onClick={previousStep}>Back</Button>
-        )}
-        {!!currentStep && !!totalSteps && currentStep < totalSteps && (
-          <Button type="submit" color="primary">
-            Continue
-          </Button>
-        )}
-      </div>
-    </form>
+    <div className={styles.controls}>
+      {!!currentStep && currentStep > 1 && (
+        <Button onClick={previousStep}>Back</Button>
+      )}
+      {!!currentStep && !!totalSteps && currentStep < totalSteps && (
+        <Button type="submit" color="primary">
+          Continue
+        </Button>
+      )}
+    </div>
   );
-}
+};
 
 type WizardControlProps = {
   steps: Array<WizardStep>;
@@ -93,6 +73,14 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
 };
 
+type StepContainerProps = {
+  step: WizardStep;
+} & Partial<StepWizardChildProps>;
+
+const StepContainer: React.FC<StepContainerProps> = ({ step }) => {
+  return <div className={styles.step}>{step.render}</div>;
+};
+
 /* eslint-disable-next-line */
 const WizardProgress: React.FC<WizardControlProps> = ({
   steps,
@@ -105,14 +93,7 @@ const WizardProgress: React.FC<WizardControlProps> = ({
   return <div>{steps[currentStep - 1].name}</div>;
 };
 
-function Wizard<T>({
-  steps,
-  memo,
-  defaultValues,
-  renderSubmit,
-}: WizardProps<T>) {
-  const methods = useForm<T>();
-
+function Wizard({ steps, memo, renderSubmit }: WizardProps) {
   const [stepWizardProps, setStepWizardProps] = useState<
     Partial<StepWizardChildProps>
   >({});
@@ -139,14 +120,9 @@ function Wizard<T>({
   );
 
   const { goToStep } = stepWizardProps;
-  const { reset } = methods;
 
   useEffect(
     () => {
-      const resetValue: UnpackNestedValue<DeepPartial<T>> =
-        (defaultValues as UnpackNestedValue<DeepPartial<T>>) ??
-        ({} as UnpackNestedValue<DeepPartial<T>>);
-      reset && reset(resetValue);
       goToStep && goToStep(1);
     },
     /* eslint-disable-next-line */
@@ -154,27 +130,31 @@ function Wizard<T>({
   );
 
   return (
-    <FormProvider {...methods}>
-      <WizardContext.Provider value={stepWizardProps}>
-        <div className={styles.container}>
-          <StepWizard
-            instance={instanceCallback}
-            className={styles.steps}
-            onStepChange={stepChangeCallback}
-            transitions={{}}
-          >
-            {steps.map((step) => (
-              <StepContainer stepName={step.id} step={step} />
-            ))}
-          </StepWizard>
-          <WizardSummary
-            steps={steps}
-            {...stepWizardProps}
-            renderSubmit={renderSubmit}
-          />
-        </div>
-      </WizardContext.Provider>
-    </FormProvider>
+    <WizardContext.Provider value={stepWizardProps}>
+      <div className={styles.container}>
+        <StepWizard
+          instance={instanceCallback}
+          className={styles.steps}
+          onStepChange={stepChangeCallback}
+          transitions={{}}
+        >
+          {steps.map((step) => (
+            <StepContainer
+              step={step}
+              key={`wizard-step-${step.id}`}
+              stepName={step.id}
+            >
+              {step.render}
+            </StepContainer>
+          ))}
+        </StepWizard>
+        <WizardSummary
+          steps={steps}
+          {...stepWizardProps}
+          renderSubmit={renderSubmit}
+        />
+      </div>
+    </WizardContext.Provider>
   );
 }
 

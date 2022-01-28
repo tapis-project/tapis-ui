@@ -1,8 +1,10 @@
 import { Input } from 'reactstrap';
-import { FieldWrapper, Message } from 'tapis-ui/_common';
+import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
+import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
+import { StepSummaryField } from '../components';
 
 type JobStartProps = {
   app: Apps.TapisApp;
@@ -11,7 +13,6 @@ type JobStartProps = {
 export const JobStart: React.FC<JobStartProps> = ({ app }) => {
   const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
-
   return (
     <div>
       <div>
@@ -35,18 +36,11 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
 };
 
 export const JobStartSummary: React.FC = () => {
-  const { getValues } = useFormContext<Jobs.ReqSubmitJob>();
-  const values = getValues();
-  const { name, appId, appVersion } = values;
+  const { job } = useJobLauncher();
+  const { name, appId, appVersion } = job;
   return (
     <div>
-      {name ? (
-        <div>{name}</div>
-      ) : (
-        <Message type="error" canDismiss={false} scope="inline">
-          A job name is required
-        </Message>
-      )}
+      <StepSummaryField field={name} error="A job name is required" />
       <div>
         <i>
           Application: {appId} v{appVersion}

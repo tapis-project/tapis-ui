@@ -22,18 +22,111 @@ export const getIncompleteAppInputsOfType = (
 export const generateRequiredFileInputsFromApp = (
   app: Apps.TapisApp
 ): Array<Jobs.JobFileInput> => {
-  const requiredInputs: Array<Apps.AppFileInput> = getIncompleteAppInputsOfType(
-    app,
-    Apps.FileInputModeEnum.Required
-  );
+  const requiredInputs: Array<Apps.AppFileInput> =
+    app.jobAttributes?.fileInputs?.filter(
+      (fileInput) => fileInput.inputMode === Apps.FileInputModeEnum.Required
+    ) ?? [];
   const fileInputs: Array<Jobs.JobFileInput> = requiredInputs.map(
     (appFileInput) => {
       return {
         name: appFileInput.name,
+        sourceUrl: appFileInput.sourceUrl,
+        targetPath: appFileInput.targetPath,
+        description: appFileInput.description,
+        autoMountLocal: appFileInput.autoMountLocal,
       };
     }
   );
   return fileInputs;
+};
+
+export const getAppInputsIncludedByDefault = (
+  appFileInputs: Array<Apps.AppFileInput>,
+  jobFileInputs: Array<Jobs.JobFileInput>
+) => {
+  return appFileInputs.filter((appFileInput) => {
+    const includedInJob = jobFileInputs.some(
+      (jobFileInput) => jobFileInput.name === appFileInput.name
+    );
+    return (
+      appFileInput.inputMode === Apps.FileInputModeEnum.Required &&
+      !!appFileInput.sourceUrl &&
+      !includedInJob
+    );
+  });
+};
+
+/**
+ * @param appFileInputs
+ * @param jobFileInputs
+ * @returns An array of jobFileInputs that are underspecified
+ */
+export const getIncompleteJobInputs = (
+  appFileInputs: Array<Apps.AppFileInput>,
+  jobFileInputs: Array<Jobs.JobFileInput>
+) => {
+  // Get job inputs that are REQUIRED in the app but do not specify sourceUrl
+  const incompleteRequiredAppInputs: Array<Apps.AppFileInput> =
+    appFileInputs.filter(
+      (appFileInput) =>
+        appFileInput.inputMode === Apps.FileInputModeEnum.Required &&
+        !appFileInput.sourceUrl
+    );
+  const incompleteRequiredJobInputs: Array<Jobs.JobFileInput> =
+    jobFileInputs.filter((jobFileInput) => {
+      // Is this jobFileInput part of required app inputs?
+      const requiredInApp = incompleteRequiredAppInputs.some(
+        (appInput) => appInput.name === jobFileInput.name
+      );
+      if (requiredInApp) {
+        return !jobFileInput.sourceUrl;
+      } else {
+        return false;
+      }
+    });
+
+  // Get job inputs that are OPTIONAL in the app but do not specify sourceUrl
+  const incompleteOptionalAppInputs: Array<Apps.AppFileInput> =
+    appFileInputs.filter(
+      (appFileInput) =>
+        appFileInput.inputMode === Apps.FileInputModeEnum.Optional &&
+        !appFileInput.sourceUrl
+    );
+  const incompleteOptionalJobInputs: Array<Jobs.JobFileInput> =
+    jobFileInputs.filter((jobFileInput) => {
+      // Is this jobFileInput part of optional app inputs?
+      const optionalInApp = incompleteOptionalAppInputs.some(
+        (appInput) => appInput.name === jobFileInput.name
+      );
+      if (optionalInApp) {
+        return !jobFileInput.sourceUrl;
+      } else {
+        return false;
+      }
+    });
+
+  // Get job inputs that are neither OPTIONAL or REQUIRED, but are incomplete
+  const incompleteUserInputs: Array<Jobs.JobFileInput> = jobFileInputs.filter(
+    (jobFileInput) => {
+      // Is this jobFileInput neither OPTIONAL or REQUIRED?
+      const userInput =
+        !incompleteRequiredAppInputs.some(
+          (appInput) => appInput.name === jobFileInput.name
+        ) &&
+        !incompleteOptionalAppInputs.some(
+          (appInput) => appInput.name === jobFileInput.name
+        );
+      if (userInput) {
+        return !jobFileInput.sourceUrl || !jobFileInput.targetPath;
+      } else {
+        return false;
+      }
+    }
+  );
+
+  return incompleteRequiredJobInputs
+    .concat(incompleteOptionalJobInputs)
+    .concat(incompleteUserInputs);
 };
 
 export const fileInputsComplete = (
