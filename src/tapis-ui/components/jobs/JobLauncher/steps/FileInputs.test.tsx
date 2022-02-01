@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import { tapisApp } from 'fixtures/apps.fixtures';
-import { useJobBuilder } from 'tapis-hooks/jobs/jobBuilder';
+import { useJobBuilder } from 'tapis-hooks/jobs/jobBuilder/hooks';
 import { FileInputsSummary } from './FileInputs';
 import { Apps } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-hooks/jobs/jobLauncher');
+jest.mock('tapis-hooks/jobs/jobBuilder/hooks');
 
 describe('FileInputsSummary step', () => {
   it('Shows fileInputs', () => {
