@@ -42,9 +42,12 @@ export const toastsSlice = createSlice({
       }
       state.toasts[index].toast = { ...toast };
     },
+    clear: (state) => {
+      state.toasts = [];
+    },
   },
 });
 
-export const { add, markread, remove, set } = toastsSlice.actions;
+export const { add, markread, remove, set, clear } = toastsSlice.actions;
 
 export default toastsSlice.reducer;

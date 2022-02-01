@@ -5,6 +5,7 @@ import {
   markread as markReadAction,
   set as setAction,
   remove as removeAction,
+  clear as clearAction,
 } from './toastsSlice';
 import { ToastType } from '.';
 
@@ -17,10 +18,12 @@ export const useToastActions = () => {
   const set = (id: string, toast: ToastType) =>
     dispatch(setAction({ id, toast }));
   const remove = (id: string) => dispatch(removeAction(id));
+  const clear = () => dispatch(clearAction());
   return {
     add,
     markread,
     set,
     remove,
+    clear,
   };
 };
