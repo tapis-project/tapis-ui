@@ -12,7 +12,6 @@ import Toolbar from '../_components/Toolbar';
 import { useLocation } from 'react-router';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import styles from './Layout.module.scss';
-import { FilesProvider } from '../_components/FilesContext';
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
@@ -39,9 +38,7 @@ const Layout: React.FC = () => {
   );
 
   return (
-    <FilesProvider>
-      <PageLayout top={header} left={sidebar} right={body} />
-    </FilesProvider>
+    <PageLayout top={header} left={sidebar} right={body} />
   );
 };
 

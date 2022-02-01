@@ -7,16 +7,17 @@ import { useForm } from 'react-hook-form';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
-import { useFilesSelect } from '../../FilesContext';
+import { useFilesSelect, useFilesSelectActions } from 'tapis-app/Files/_store';
 
 const RenameModal: React.FC<ToolbarModalProps> = ({
   toggle,
   systemId,
   path,
 }) => {
-  const { selectedFiles, clear } = useFilesSelect();
+  const { selected } = useFilesSelect();
+  const { clear } = useFilesSelectActions();
   const [inputName, setInputName] = useState<string>();
-  const file = selectedFiles ? selectedFiles[0] : undefined;
+  const file = selected ? selected[0] : undefined;
 
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's

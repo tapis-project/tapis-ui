@@ -5,7 +5,8 @@ export const fileInfo: Files.FileInfo = {
   path: '/file1.txt',
   size: 30000,
   type: 'file',
-  lastModified: new Date('2020-01-01T12:00:00'),
+  // Disabled due to reduxjs-toolkit serialization warning on Date
+  //lastModified: new Date('2020-01-01T12:00:00'),
 };
 
 export const fileBlob: File = new File(['(⌐□_□)'], 'file.png', {

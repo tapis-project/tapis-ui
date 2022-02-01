@@ -2,12 +2,12 @@ import { act } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import Toolbar from './Toolbar';
 import { fileInfo } from 'fixtures/files.fixtures';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useFilesSelect } from 'tapis-app/Files/_store';
 import { useDownload } from 'tapis-hooks/files';
 import RenameModal from 'tapis-app/Files/_components/Toolbar/RenameModal';
 
 jest.mock('tapis-hooks/files');
-jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-app/Files/_store');
 jest.mock('tapis-app/Files/_components/Toolbar/RenameModal');
 
 describe('Toolbar', () => {
@@ -19,7 +19,7 @@ describe('Toolbar', () => {
   });
   it('enables rename buttons', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     (RenameModal as jest.Mock).mockReturnValue(<div></div>);
@@ -39,7 +39,7 @@ describe('Toolbar', () => {
 
   it('enables the move, copy, download and delete buttons', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo, { ...fileInfo, type: 'dir' }],
+      selected: [fileInfo, { ...fileInfo, type: 'dir' }],
     });
 
     const { getByLabelText } = renderComponent(<Toolbar />);

@@ -4,13 +4,18 @@ import DeleteModal from './DeleteModal';
 import { useDelete } from 'tapis-hooks/files';
 import { useMutations } from 'tapis-hooks/utils';
 import { fileInfo } from 'fixtures/files.fixtures';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useFilesSelect, useFilesSelectActions } from 'tapis-app/Files/_store';
 
 jest.mock('tapis-hooks/utils');
 jest.mock('tapis-hooks/files');
-jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-app/Files/_store');
 
 describe('DeleteModal', () => {
+  beforeEach(() => {
+    (useFilesSelectActions as jest.Mock).mockReturnValue({
+      unselect: jest.fn()
+    })
+  });
   it('performs delete operations', async () => {
     const mockRun = jest.fn();
     (useMutations as jest.Mock).mockReturnValue({
@@ -28,7 +33,7 @@ describe('DeleteModal', () => {
     });
 
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     renderComponent(

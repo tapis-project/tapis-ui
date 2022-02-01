@@ -2,11 +2,11 @@ import renderComponent from 'utils/testing';
 import TransferModal from './TransferModal';
 import { TransferListing, TransferCreate } from 'tapis-ui/components/files';
 import FileExplorer from 'tapis-app/Files/_components/Toolbar/_components/FileExplorer';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useFilesSelect } from 'tapis-app/Files/_store';
 import { fileInfo } from 'fixtures/files.fixtures';
 
 jest.mock('tapis-ui/components/files');
-jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-app/Files/_store');
 jest.mock('tapis-app/Files/_components/Toolbar/_components/FileExplorer');
 
 describe('TransferModal', () => {
@@ -20,7 +20,7 @@ describe('TransferModal', () => {
     );
 
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     renderComponent(

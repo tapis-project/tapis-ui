@@ -1,6 +1,6 @@
 import { GenericModal } from 'tapis-ui/_common';
 import { ToolbarModalProps } from '../Toolbar';
-import { useFilesSelect } from '../../FilesContext';
+import { useFilesSelect } from 'tapis-app/Files/_store';
 import { usePermissions } from 'tapis-hooks/files';
 import { FileStat, FileOperation } from 'tapis-ui/components/files';
 import { useTapisConfig } from 'tapis-hooks';
@@ -15,9 +15,9 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
   systemId,
   path,
 }) => {
-  const { selectedFiles } = useFilesSelect();
+  const { selected } = useFilesSelect();
 
-  const file = selectedFiles[0];
+  const file = selected[0];
   const { claims } = useTapisConfig();
   const username = claims['tapis/username'];
   const filePath = file.path!;

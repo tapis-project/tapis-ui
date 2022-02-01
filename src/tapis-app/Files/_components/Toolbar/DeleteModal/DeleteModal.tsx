@@ -8,7 +8,7 @@ import { focusManager } from 'react-query';
 import { useDelete } from 'tapis-hooks/files';
 import { Column } from 'react-table';
 import styles from './DeleteModal.module.scss';
-import { useFilesSelect } from '../../FilesContext';
+import { useFilesSelectActions, useFilesSelect } from 'tapis-app/Files/_store';
 import { Files } from '@tapis/tapis-typescript';
 import { DeleteHookParams } from 'tapis-hooks/files/useDelete';
 import { useFileOperations } from '../_hooks';
@@ -19,7 +19,8 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   systemId = '',
   path = '/',
 }) => {
-  const { selectedFiles, unselect } = useFilesSelect();
+  const { selected } = useFilesSelect();
+  const { unselect } = useFilesSelectActions();
   const { deleteFileAsync, reset } = useDelete();
 
   useEffect(() => {
@@ -41,21 +42,21 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   });
 
   const onSubmit = useCallback(() => {
-    const operations: Array<DeleteHookParams> = selectedFiles.map((file) => ({
+    const operations: Array<DeleteHookParams> = selected.map((file) => ({
       systemId,
       path: file.path!,
     }));
     run(operations);
-  }, [selectedFiles, run, systemId]);
+  }, [selected, run, systemId]);
 
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       unselect([file]);
-      if (selectedFiles.length === 1) {
+      if (selected.length === 1) {
         toggle();
       }
     },
-    [selectedFiles, toggle, unselect]
+    [selected, toggle, unselect]
   );
 
   const statusColumn: Array<Column> = [
@@ -63,13 +64,13 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
       Header: '',
       id: 'deleteStatus',
       Cell: (el) => {
-        const file = selectedFiles[el.row.index];
+        const file = selected[el.row.index];
         if (!state[file.path!]) {
           return (
             <span
               className={styles['remove-file']}
               onClick={() => {
-                removeFile(selectedFiles[el.row.index]);
+                removeFile(selected[el.row.index]);
               }}
             >
               &#x2715;
@@ -85,7 +86,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
     <GenericModal
       toggle={() => {
         toggle();
-        unselect(selectedFiles);
+        unselect(selected);
       }}
       title={`Delete files and folders`}
       body={
@@ -95,7 +96,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
           </h3>
           <div className={styles['files-list-container']}>
             <FileListingTable
-              files={selectedFiles}
+              files={selected}
               fields={['size']}
               appendColumns={statusColumn}
               className={styles['file-list-table']}
@@ -112,16 +113,16 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
         >
           <Button
             color="primary"
-            disabled={isLoading || isSuccess || selectedFiles.length === 0}
+            disabled={isLoading || isSuccess || selected.length === 0}
             aria-label="Submit"
             onClick={onSubmit}
           >
-            Confirm delete ({selectedFiles.length})
+            Confirm delete ({selected.length})
           </Button>
           {!isSuccess && (
             <Button
               color="danger"
-              disabled={isLoading || isSuccess || selectedFiles.length === 0}
+              disabled={isLoading || isSuccess || selected.length === 0}
               aria-label="Cancel"
               onClick={() => {
                 toggle();

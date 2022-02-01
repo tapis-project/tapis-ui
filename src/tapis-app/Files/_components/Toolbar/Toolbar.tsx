@@ -11,9 +11,11 @@ import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
-import { useFilesSelect } from '../FilesContext';
+import { useFilesSelect } from 'tapis-app/Files/_store';
 import { useDownload, DownloadStreamParams } from 'tapis-hooks/files';
 import { useToastActions } from 'tapis-app/_components/Toasts';
+import { useSelector } from 'react-redux';
+import { RootState } from 'tapis-app/provider/store';
 
 type ToolbarButtonProps = {
   text: string;
@@ -52,7 +54,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 
 const Toolbar: React.FC = () => {
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const { selectedFiles } = useFilesSelect();
+  const { selected } = useFilesSelect();
   const { pathname } = useLocation();
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
@@ -60,7 +62,7 @@ const Toolbar: React.FC = () => {
   const { add } = useToastActions();
 
   const onDownload = useCallback(() => {
-    selectedFiles.forEach((file) => {
+    selected.forEach((file) => {
       const params: DownloadStreamParams = {
         systemId,
         path: file.path ?? '',
@@ -87,7 +89,7 @@ const Toolbar: React.FC = () => {
           : undefined,
       });
     });
-  }, [selectedFiles, add, download, systemId]);
+  }, [selected, add, download, systemId]);
 
   const toggle = () => {
     setModal(undefined);
@@ -99,21 +101,21 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Rename"
             icon="rename"
-            disabled={selectedFiles.length !== 1}
+            disabled={selected.length !== 1}
             onClick={() => setModal('rename')}
             aria-label="Rename"
           />
           <ToolbarButton
             text="Move"
             icon="move"
-            disabled={selectedFiles.length === 0}
+            disabled={selected.length === 0}
             onClick={() => setModal('move')}
             aria-label="Move"
           />
           <ToolbarButton
             text="Copy"
             icon="copy"
-            disabled={selectedFiles.length === 0}
+            disabled={selected.length === 0}
             onClick={() => setModal('copy')}
             aria-label="Copy"
           />
@@ -134,7 +136,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Download"
             icon="download"
-            disabled={selectedFiles.length === 0}
+            disabled={selected.length === 0}
             onClick={onDownload}
             aria-label="Download"
           />
@@ -157,7 +159,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Delete"
             icon="trash"
-            disabled={selectedFiles.length === 0}
+            disabled={selected.length === 0}
             onClick={() => setModal('delete')}
             aria-label="Delete"
           />

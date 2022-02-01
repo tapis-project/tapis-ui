@@ -7,7 +7,7 @@ import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
-import { useFilesSelect } from '../../FilesContext';
+import { useFilesSelect } from 'tapis-app/Files/_store';
 import { Tabs } from 'tapis-app/_components';
 import {
   TransferListing,
@@ -28,7 +28,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     path: string;
   }>({ systemId, path });
   const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
-  const { selectedFiles } = useFilesSelect();
+  const { selected } = useFilesSelect();
 
   const { refetch } = useList({});
 
@@ -60,7 +60,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>
-          Transfering {selectedFiles.length} files
+          Transfering {selected.length} files
         </div>
         <Breadcrumbs
           breadcrumbs={[
@@ -71,7 +71,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
         />
         <div className={styles['nav-list']}>
           <FileListingTable
-            files={selectedFiles}
+            files={selected}
             className={`${styles['file-list-origin']} `}
             fields={['size']}
           />
@@ -90,7 +90,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
           sourceSystemId={systemId}
           destinationSystemId={destination?.systemId ?? ''}
           destinationPath={destination?.path ?? ''}
-          files={selectedFiles}
+          files={selected}
         />
       </div>
     </div>
@@ -125,7 +125,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   );
 
   const tabs: { [name: string]: React.ReactNode } = {};
-  if (selectedFiles.length > 0) {
+  if (selected.length > 0) {
     tabs['Start a Transfer'] = createTransferTab;
   }
   tabs['Recent Transfers'] = listTransfersTab;

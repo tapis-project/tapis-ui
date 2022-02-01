@@ -2,18 +2,23 @@ import renderComponent from 'utils/testing';
 import PermissionsModal from './PermissionsModal';
 import { usePermissions } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useFilesSelect, useFilesSelectActions } from 'tapis-app/Files/_store';
 import { FileStat, FileOperation } from 'tapis-ui/components/files';
 import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('tapis-hooks/files');
-jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-app/Files/_store');
 jest.mock('tapis-ui/components/files');
 
 describe('Permissions Modal', () => {
+  beforeEach(() => {
+    (useFilesSelectActions as jest.Mock).mockReturnValue({
+      unselect: jest.fn()
+    })
+  });
   it('submits with valid inputs', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
     (usePermissions as jest.Mock).mockReturnValue({
       data: {

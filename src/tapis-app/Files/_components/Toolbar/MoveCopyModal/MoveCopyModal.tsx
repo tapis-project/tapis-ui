@@ -13,7 +13,7 @@ import { MoveCopyHookParams } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import styles from './MoveCopyModal.module.scss';
-import { useFilesSelect } from '../../FilesContext';
+import { useFilesSelectActions, useFilesSelect } from 'tapis-app/Files/_store';
 import { useFileOperations } from '../_hooks';
 
 type MoveCopyModalProps = {
@@ -28,7 +28,8 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
 }) => {
   const { pathname } = useLocation();
   const [destinationPath, setDestinationPath] = useState<string | null>(path);
-  const { selectedFiles, unselect } = useFilesSelect();
+  const { selected } = useFilesSelect();
+  const { unselect } = useFilesSelectActions();
 
   const opFormatted = operation.charAt(0) + operation.toLowerCase().slice(1);
 
@@ -55,11 +56,11 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
   const removeFile = useCallback(
     (file: Files.FileInfo) => {
       unselect([file]);
-      if (selectedFiles.length === 1) {
+      if (selected.length === 1) {
         toggle();
       }
     },
-    [selectedFiles, toggle, unselect]
+    [selected, toggle, unselect]
   );
 
   const { run, state, isLoading, isFinished, isSuccess, error } =
@@ -69,13 +70,13 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
     });
 
   const onSubmit = useCallback(() => {
-    const operations: Array<MoveCopyHookParams> = selectedFiles.map((file) => ({
+    const operations: Array<MoveCopyHookParams> = selected.map((file) => ({
       systemId,
       newPath: `${destinationPath!}/${file.name!}`,
       path: file.path!,
     }));
     run(operations);
-  }, [selectedFiles, run, destinationPath, systemId]);
+  }, [selected, run, destinationPath, systemId]);
 
   const statusColumns: Array<Column> = [
     {
@@ -88,7 +89,7 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
             <span
               className={styles['remove-file']}
               onClick={() => {
-                removeFile(selectedFiles[el.row.index]);
+                removeFile(selected[el.row.index]);
               }}
             >
               &#x2715;
@@ -110,7 +111,7 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
               ? 'Copying '
               : 'Moving '
           }`}
-          {selectedFiles.length} files
+          {selected.length} files
         </div>
         <Breadcrumbs
           breadcrumbs={[
@@ -121,7 +122,7 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
         />
         <div className={styles['nav-list']}>
           <FileListingTable
-            files={selectedFiles}
+            files={selected}
             className={`${styles['file-list-origin']} `}
             fields={['size']}
             appendColumns={statusColumns}

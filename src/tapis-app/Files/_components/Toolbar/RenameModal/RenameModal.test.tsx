@@ -3,12 +3,17 @@ import renderComponent from 'utils/testing';
 import RenameModal from './RenameModal';
 import { useMove } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useFilesSelect, useFilesSelectActions } from 'tapis-app/Files/_store';
 
 jest.mock('tapis-hooks/files/useMove');
-jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-app/Files/_store');
 
 describe('RenameModal', () => {
+  beforeEach(() => {
+    (useFilesSelectActions as jest.Mock).mockReturnValue({
+      unselect: jest.fn()
+    })
+  });
   it('submits with valid inputs', async () => {
     const moveMock = jest.fn();
     const resetMock = jest.fn();
@@ -20,7 +25,7 @@ describe('RenameModal', () => {
       reset: resetMock,
     });
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     renderComponent(
@@ -56,7 +61,7 @@ describe('RenameModal', () => {
       reset: resetMock,
     });
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     renderComponent(

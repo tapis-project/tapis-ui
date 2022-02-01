@@ -5,13 +5,18 @@ import { useCopy, useMove, useList } from 'tapis-hooks/files';
 import { useMutations } from 'tapis-hooks/utils';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import { useFilesSelect, useFilesSelectActions } from 'tapis-app/Files/_store';
 
 jest.mock('tapis-hooks/utils');
 jest.mock('tapis-hooks/files');
-jest.mock('tapis-app/Files/_components/FilesContext');
+jest.mock('tapis-app/Files/_store');
 
 describe('MoveCopyModal', () => {
+  beforeEach(() => {
+    (useFilesSelectActions as jest.Mock).mockReturnValue({
+      unselect: jest.fn()
+    })
+  });
   it('performs copy operations', async () => {
     (useList as jest.Mock).mockReturnValue({
       concatenatedResults: [{ ...fileInfo, type: 'dir' }],
@@ -35,7 +40,7 @@ describe('MoveCopyModal', () => {
     });
 
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     renderComponent(
@@ -86,7 +91,7 @@ describe('MoveCopyModal', () => {
     });
 
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo],
+      selected: [fileInfo],
     });
 
     renderComponent(
