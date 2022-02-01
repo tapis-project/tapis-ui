@@ -1,3 +1,3 @@
-import { default as TapisProvider } from './TapisProvider';
+import { default as TapisHooksProvider } from './TapisHooksProvider';
 
-export default TapisProvider;
+export default TapisHooksProvider;

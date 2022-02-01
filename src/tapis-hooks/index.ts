@@ -1,2 +1,2 @@
 export { useTapisConfig } from './context';
-export { default as TapisProvider } from './provider';
+export { default as TapisHooksProvider } from './provider';

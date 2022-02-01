@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNotifications, NotificationRecord, Notification } from '.';
+import { ToastRecord, ToastType, useToasts, useToastActions } from '.';
 import Snackbar, { SnackbarCloseReason } from '@material-ui/core/Snackbar';
 import Slide, { SlideProps } from '@material-ui/core/Slide';
 import { Icon } from 'tapis-ui/_common';
-import styles from './NotificationToast.module.scss';
+import styles from './Toast.module.scss';
 
-const NotificationToast = () => {
+const Toast = () => {
   type TransitionType =
     | React.ComponentType<
         SlideProps & {
@@ -13,36 +13,36 @@ const NotificationToast = () => {
         }
       >
     | undefined;
-  const { notifications, markread } = useNotifications();
+  const { toasts } = useToasts();
+  const { markread } = useToastActions();
   const [open, setOpen] = useState(false);
-  const [notificationRecord, setNotificationRecord] =
-    useState<NotificationRecord | null>(null);
+  const [toastRecord, setToastRecord] = useState<ToastRecord | null>(null);
   const [transition, setTransition] = React.useState<TransitionType>(undefined);
 
   useEffect(() => {
-    if (notifications.length && !notificationRecord) {
+    if (toasts.length && !toastRecord) {
       // Set a new toast when we don't have an active one
-      setNotificationRecord({ ...notifications[0] });
+      setToastRecord({ ...toasts[0] });
       setTransition(() => (props: SlideProps) => (
         <Slide {...props} direction="right" />
       ));
       setOpen(true);
-    } else if (notifications.length && notificationRecord && open) {
+    } else if (toasts.length && toastRecord && open) {
       // Close an active toast when a new one is added
       setOpen(false);
-      markread(notificationRecord?.id!);
-      setNotificationRecord({ ...notifications[0] });
+      markread(toastRecord?.id!);
+      setToastRecord({ ...toasts[0] });
       setTransition(() => (props: SlideProps) => (
         <Slide {...props} direction="right" />
       ));
       setOpen(true);
     }
     /* eslint-disable-next-line */
-  }, [notifications]);
+  }, [toasts]);
 
   const handleExited = () => {
-    setNotificationRecord(null);
-    markread(notificationRecord?.id!);
+    setToastRecord(null);
+    markread(toastRecord?.id!);
   };
 
   type HandleCloseType = (
@@ -57,9 +57,9 @@ const NotificationToast = () => {
     setOpen(false);
   };
 
-  return notificationRecord && !notificationRecord.read ? (
+  return toastRecord && !toastRecord.read ? (
     <Snackbar
-      key={notificationRecord ? notificationRecord.id : undefined}
+      key={toastRecord ? toastRecord.id : undefined}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'left',
@@ -72,37 +72,33 @@ const NotificationToast = () => {
         onExited: handleExited,
       }}
       classes={{
-        anchorOriginBottomLeft: styles['notification-toast-container'],
+        anchorOriginBottomLeft: styles['toast-container'],
       }}
       ContentProps={{
         classes: {
-          root: styles['notification-toast'],
-          message: styles['notification-toast-body'],
+          root: styles['toast'],
+          message: styles['toast-body'],
         },
       }}
-      message={<ToastMessage notification={notificationRecord!.notification} />}
+      message={<ToastMessage toast={toastRecord!.toast} />}
     />
   ) : null;
 };
 
-export const ToastMessage: React.FC<{ notification: Notification }> = ({
-  notification,
-}) => {
+export const ToastMessage: React.FC<{ toast: ToastType }> = ({ toast }) => {
   return (
     <>
-      <div className={styles['notification-toast-icon-wrapper']}>
+      <div className={styles['toast-icon-wrapper']}>
         <Icon
-          name={notification.icon}
-          className={
-            notification.status === 'ERROR' ? styles['toast-is-error'] : ''
-          }
+          name={toast.icon}
+          className={toast.status === 'ERROR' ? styles['toast-is-error'] : ''}
         />
       </div>
-      <div className={styles['notification-toast-content']}>
-        <span>{notification.message}</span>
+      <div className={styles['toast-content']}>
+        <span>{toast.message}</span>
       </div>
     </>
   );
 };
 
-export default NotificationToast;
+export default Toast;

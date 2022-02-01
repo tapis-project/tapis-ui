@@ -3,12 +3,12 @@
 /* TODO:
     - Convert to CSS Module (special care necessary for `MuiSnackbar` classes)
     - Evaluate excessive markup
-        - `.MuiSnackbar-…` and `.notification-…` overlap
+        - `.MuiSnackbar-…` and `.toast-…` overlap
         - `.…icon-wrapper`
         - `.…toast-content span`
     - Evaluate introduction of CSS grid (may be over-engineering) */
 
-.notification-toast-container {
+.toast-container {
   --toast-width: 40em;
   /* NOTE: Seems unnecessary and superfluously used:
              - Removing all instances causes no UI change.
@@ -16,8 +16,8 @@
 
   max-width: var(--toast-width);
 }
-.MuiSnackbar-anchorOriginBottomLeft.notification-toast-container {
-  /* Without `display: block`+`right: …px`, notification width is too short */
+.MuiSnackbar-anchorOriginBottomLeft.toast-container {
+  /* Without `display: block`+`right: …px`, toast width is too short */
   display: block;
   right: 40px;
 
@@ -26,10 +26,10 @@
   max-width: var(--toast-width);
 }
 
-.notification-toast {
+.toast {
   height: var(--toast-height);
 }
-.MuiSnackbarContent-root.notification-toast {
+.MuiSnackbarContent-root.toast {
   background-color: var(--global-color-accent--x-light);
   border-radius: 0;
   color: var(--global-color-primary--x-dark);
@@ -41,23 +41,23 @@
   font-weight: 1000;
 }
 
-.notification-toast-body {
+.toast-body {
   height: var(--toast-height);
   display: grid;
   grid-template-columns: minmax(15px, 16%) 1fr;
   width: 100%;
 }
-.MuiSnackbarContent-message.notification-toast-body {
+.MuiSnackbarContent-message.toast-body {
   padding: 0;
 }
 
-.notification-toast-icon-wrapper {
+.toast-icon-wrapper {
   display: grid;
   place-items: center;
   border-right: 1px solid var(--global-color-primary--normal);
 }
 
-.notification-toast-content {
+.toast-content {
   padding: 10px 15px;
   height: var(--toast-height);
   font-weight: bold;

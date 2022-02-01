@@ -13,7 +13,7 @@ import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import { useDownload, DownloadStreamParams } from 'tapis-hooks/files';
-import { useNotifications } from 'tapis-app/_components/Notifications';
+import { useToastActions } from 'tapis-app/_components/Toasts';
 
 type ToolbarButtonProps = {
   text: string;
@@ -57,7 +57,7 @@ const Toolbar: React.FC = () => {
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
   const { download } = useDownload();
-  const { add } = useNotifications();
+  const { add } = useToastActions();
 
   const onDownload = useCallback(() => {
     selectedFiles.forEach((file) => {

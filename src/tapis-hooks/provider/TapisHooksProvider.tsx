@@ -10,11 +10,9 @@ interface TapisProviderProps {
   basePath: string;
 }
 
-const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps>> = ({
-  token,
-  basePath,
-  children,
-}) => {
+const TapisHooksProvider: React.FC<
+  React.PropsWithChildren<TapisProviderProps>
+> = ({ token, basePath, children }) => {
   // Provide a context state for the rest of the application, including
   // a way of modifying the state
   const contextValue: TapisContextType = {
@@ -35,4 +33,4 @@ const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps>> = ({
   );
 };
 
-export default TapisProvider;
+export default TapisHooksProvider;
