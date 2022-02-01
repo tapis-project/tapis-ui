@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import { tapisApp } from 'fixtures/apps.fixtures';
-import { useJobLauncher } from 'tapis-hooks/jobs/jobLauncher';
+import { useJobBuilder } from 'tapis-hooks/jobs/jobBuilder';
 import { FileInputsSummary } from './FileInputs';
 import { Apps } from '@tapis/tapis-typescript';
 
@@ -9,7 +9,7 @@ jest.mock('tapis-hooks/jobs/jobLauncher');
 
 describe('FileInputsSummary step', () => {
   it('Shows fileInputs', () => {
-    (useJobLauncher as jest.Mock).mockReturnValue({
+    (useJobBuilder as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [
           {
@@ -24,7 +24,7 @@ describe('FileInputsSummary step', () => {
     expect(getAllByText(/Data file/).length).toEqual(1);
   });
   it('Shows fileInputs that are incomplete', () => {
-    (useJobLauncher as jest.Mock).mockReturnValue({
+    (useJobBuilder as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [
           {
@@ -49,7 +49,7 @@ describe('FileInputsSummary step', () => {
     ).toEqual(1);
   });
   it('Shows fileInputs that are included by default', () => {
-    (useJobLauncher as jest.Mock).mockReturnValue({
+    (useJobBuilder as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [],
       },
@@ -60,7 +60,7 @@ describe('FileInputsSummary step', () => {
     expect(getAllByText(/Data file included by default/).length).toEqual(1);
   });
   it('Shows fileInputs that do not include underspecified required app inputs', () => {
-    (useJobLauncher as jest.Mock).mockReturnValue({
+    (useJobBuilder as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [],
       },

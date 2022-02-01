@@ -6,7 +6,7 @@ import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup, Label } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Button } from 'reactstrap';
-import { useJobLauncher } from 'tapis-hooks/jobs/jobLauncher';
+import { useJobBuilder } from 'tapis-hooks/jobs/jobBuilder';
 import styles from './FileInputs.module.scss';
 import {
   getIncompleteJobInputs,
@@ -127,7 +127,7 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
 };
 
 export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
-  const job = useJobLauncher();
+  const { job } = useJobBuilder();
   const appInputs = app?.jobAttributes?.fileInputs ?? [];
   const jobInputsFromRequired =
     job.fileInputs?.filter((jobFileInput) =>
@@ -162,7 +162,7 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
 export const FileInputsSummary: React.FC<{ app: Apps.TapisApp }> = ({
   app,
 }) => {
-  const job = useJobLauncher();
+  const { job } = useJobBuilder();
   const jobFileInputs = job.fileInputs ?? [];
   const appFileInputs = app.jobAttributes?.fileInputs ?? [];
   const missingRequiredInputs = appFileInputs.filter(

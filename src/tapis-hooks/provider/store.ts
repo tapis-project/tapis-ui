@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import jobReducer from './jobSlice';
+import jobs from '../jobs/store';
 
 export const store = configureStore({
   reducer: {
-    job: jobReducer
-  }
+    jobs,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

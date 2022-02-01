@@ -1,6 +1,8 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Authenticator } from '@tapis/tapis-typescript';
+import { Provider as ReduxProvider } from 'react-redux';
+import { store } from './store';
 import TapisContext, { TapisContextType } from '../context/TapisContext';
 
 interface TapisProviderProps {
@@ -24,7 +26,11 @@ const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps>> = ({
 
   return (
     <TapisContext.Provider value={contextValue}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <ReduxProvider store={store}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </ReduxProvider>
     </TapisContext.Provider>
   );
 };

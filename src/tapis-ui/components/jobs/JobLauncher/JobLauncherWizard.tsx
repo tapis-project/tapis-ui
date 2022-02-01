@@ -16,14 +16,8 @@ import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
-import { set, useJobLauncherActions } from 'tapis-hooks/jobs/jobLauncher';
-import { useDispatch } from 'react-redux';
-/*
-import useJobLauncher, {
-  JobLauncherProvider,
-} from 'tapis-hooks/jobs/useJobLauncher';
-*/
-import { useJobLauncher, JobLauncherProvider } from 'tapis-hooks/jobs/jobLauncher';
+import { useJobBuilderActions } from 'tapis-hooks/jobs/jobBuilder';
+import { useJobBuilder } from 'tapis-hooks/jobs/jobBuilder';
 import { withJobStepWrapper } from './components';
 
 type JobLauncherWizardProps = {
@@ -51,7 +45,7 @@ const generateDefaultValues = (
 };
 
 const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
-  const job = useJobLauncher();
+  const { job } = useJobBuilder();
   const isComplete =
     jobRequiredFieldsComplete(job) &&
     fileInputsComplete(app, job.fileInputs ?? []);
@@ -84,18 +78,14 @@ const JobLauncherRender: React.FC<{
   app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
 }> = React.memo(({ app, systems }) => {
-  const { set } = useJobLauncherActions();
-  useEffect(
-    () => {
-      const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
-        app,
-        systems
-      );
-      set(defaultValues);
-    },
-    [ app, systems, set ]
-  )
-  
+  const { set } = useJobBuilderActions();
+  useEffect(() => {
+    const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
+      app,
+      systems
+    );
+    set(defaultValues);
+  }, [app, systems, set]);
 
   const steps: Array<WizardStep> = [
     {
@@ -157,9 +147,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       isLoading={isLoading || systemsIsLoading}
       error={error || systemsError}
     >
-      <JobLauncherProvider>
-        <JobLauncherRender app={app!} systems={systems} />
-      </JobLauncherProvider>
+      <JobLauncherRender app={app!} systems={systems} />
     </QueryWrapper>
   );
 };

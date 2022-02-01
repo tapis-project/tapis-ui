@@ -4,7 +4,7 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
 
-import { useJobLauncher } from 'tapis-hooks/jobs/jobLauncher';
+import { useJobBuilder } from 'tapis-hooks/jobs/jobBuilder';
 import { StepSummaryField } from '../components';
 
 type JobStartProps = {
@@ -12,7 +12,7 @@ type JobStartProps = {
 };
 
 export const JobStart: React.FC<JobStartProps> = ({ app }) => {
-  const job = useJobLauncher();
+  const { job } = useJobBuilder();
   const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
   return (
@@ -39,7 +39,7 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
 };
 
 export const JobStartSummary: React.FC = () => {
-  const job = useJobLauncher();
+  const { job } = useJobBuilder();
   const { name, appId, appVersion } = job;
   return (
     <div>
