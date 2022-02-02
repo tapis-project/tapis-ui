@@ -1,9 +1,9 @@
 import React, { useReducer, useContext } from 'react';
 
-export type FragmentContextType<T> = {
+export type BuilderContextType<T> = {
   data: Partial<T>;
-  add: (fragment: Partial<T>) => void;
-  set: (fragment: Partial<T>) => void;
+  add: (slice: Partial<T>) => void;
+  set: (slice: Partial<T>) => void;
   clear: () => void;
 };
 
@@ -14,10 +14,10 @@ export type FragmentContextType<T> = {
  * @returns A Provider and a context hook
  */
 const withBuilder = <T extends unknown>() => {
-  const context = React.createContext<FragmentContextType<T>>({
+  const context = React.createContext<BuilderContextType<T>>({
     data: {},
-    add: (fragment: Partial<T>) => {},
-    set: (fragment: Partial<T>) => {},
+    add: (slice: Partial<T>) => {},
+    set: (slice: Partial<T>) => {},
     clear: () => {},
   });
 
@@ -46,7 +46,7 @@ const withBuilder = <T extends unknown>() => {
       }
     };
     const [data, dispatch] = useReducer(reducer, { ...value });
-    const contextValue: FragmentContextType<T> = {
+    const contextValue: BuilderContextType<T> = {
       data,
       add: (slice) => dispatch({ action: 'add', slice }),
       set: (slice) => dispatch({ action: 'set', slice }),
