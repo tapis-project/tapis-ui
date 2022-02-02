@@ -1,5 +1,5 @@
 import { Jobs } from '@tapis/tapis-typescript';
-import withFragment from 'tapis-hooks/utils/withFragment';
+import withFragment from 'tapis-ui/utils/withFragment';
 
 const { useFragmentContext, Provider } = withFragment<Jobs.ReqSubmitJob>();
 

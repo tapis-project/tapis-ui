@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Jobs } from '@tapis/tapis-typescript';
-import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
+import { useJobLauncher } from '.';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 
 export const withJobStepWrapper = (render: React.ReactNode) => (

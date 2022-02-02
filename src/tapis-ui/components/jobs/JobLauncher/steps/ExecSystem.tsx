@@ -4,9 +4,8 @@ import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
 import { v4 as uuidv4 } from 'uuid';
-import { StepSummaryField } from '../components';
+import { useJobLauncher, StepSummaryField } from '../components';
 
 type ExecSystemProps = {
   app: Apps.TapisApp;
