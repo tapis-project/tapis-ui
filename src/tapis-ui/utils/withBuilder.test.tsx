@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/extend-expect';
 import { renderHook } from '@testing-library/react-hooks';
-import withFragment from './withFragment';
+import withBuilder from './withBuilder';
 
 type MockType = {
   field1: string;
@@ -9,8 +9,8 @@ type MockType = {
 
 describe('withFragment', () => {
   it('generates a hook and a Provider', () => {
-    const { useFragmentContext, Provider } = withFragment<MockType>();
-    const hook = renderHook(() => useFragmentContext());
+    const { useBuilderContext, Provider } = withBuilder<MockType>();
+    const hook = renderHook(() => useBuilderContext());
     expect(Provider).toBeDefined();
     expect(hook.result.current.data).toBeDefined();
     expect(hook.result.current.add).toBeDefined();
