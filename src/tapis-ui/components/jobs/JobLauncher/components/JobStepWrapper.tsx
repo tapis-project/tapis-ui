@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useJobLauncher } from '.';
@@ -16,7 +16,7 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   const methods = useForm<Jobs.ReqSubmitJob>({
     defaultValues: job,
   });
-  const { handleSubmit } = methods;
+  const { handleSubmit, reset } = methods;
 
   const formSubmit = useCallback(
     (value: Jobs.ReqSubmitJob) => {
@@ -25,6 +25,13 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
     },
     [nextStep, add]
   );
+
+  useEffect(
+    () => {
+      reset(job);
+    },
+    [job]
+  )
 
   return (
     <FormProvider {...methods}>

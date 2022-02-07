@@ -158,6 +158,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       summary: <JobStartSummary />,
     },
     {
+      id: 'execSystem',
+      name: 'Execution System',
+      render: withJobStepWrapper(<ExecSystem />),
+      summary: <ExecSystemSummary />,
+    },
+    {
       id: 'jobSubmission',
       name: 'Job Submission',
       render: withJobStepWrapper(<JobSubmission />),

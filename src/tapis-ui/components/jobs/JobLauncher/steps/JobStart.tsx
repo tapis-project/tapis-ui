@@ -12,13 +12,14 @@ export const JobStart: React.FC = () => {
   const { errors } = formState;
   const { job, app } = useJobLauncher();
   const [ defaultName, setDefaultName ] = useState(job.name);
+  /*
   useEffect(
     () => {
       setDefaultName(job.name);
       reset({ name: job.name });
     },
     [ job.appId, job.appVersion ]
-  )
+  )*/
   return (
     <div>
       <div>
