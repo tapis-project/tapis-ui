@@ -11,7 +11,7 @@ const WizardContext: React.Context<WizardContextType> =
 
 type WizardProps = {
   steps: Array<WizardStep>;
-  memo?: Array<any>;
+  memo?: any;
   renderSubmit?: React.ReactNode;
 };
 
@@ -123,6 +123,7 @@ function Wizard({ steps, memo, renderSubmit }: WizardProps) {
 
   useEffect(
     () => {
+      console.log("Wizard reset");
       goToStep && goToStep(1);
     },
     /* eslint-disable-next-line */

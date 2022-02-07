@@ -76,7 +76,7 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
 const JobLauncherRender: React.FC<{
   app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
-}> = React.memo(({ app, systems }) => {
+}> = ({ app, systems }) => {
   const steps: Array<WizardStep> = [
     {
       id: 'start',
@@ -113,12 +113,12 @@ const JobLauncherRender: React.FC<{
     <JobLauncherProvider value={defaultValues}>
       <Wizard
         steps={steps}
-        memo={[app.id, app.version]}
+        memo={`${app.id}${app.version}`}
         renderSubmit={<JobLauncherWizardSubmit app={app} />}
       />
     </JobLauncherProvider>
   );
-});
+};
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
@@ -148,4 +148,4 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   );
 };
 
-export default React.memo(JobLauncherWizard);
+export default JobLauncherWizard;
