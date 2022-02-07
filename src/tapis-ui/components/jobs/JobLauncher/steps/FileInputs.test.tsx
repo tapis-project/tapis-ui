@@ -17,11 +17,9 @@ describe('FileInputsSummary step', () => {
           },
         ],
       },
-      app: tapisApp
+      app: tapisApp,
     });
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary />
-    );
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
     expect(getAllByText(/Data file/).length).toEqual(1);
   });
   it('Shows fileInputs that are incomplete', () => {
@@ -38,12 +36,10 @@ describe('FileInputsSummary step', () => {
           },
         ],
       },
-      app: incompleteApp
+      app: incompleteApp,
     });
 
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary />
-    );
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
     expect(
       getAllByText(/Data file is missing required information/).length
     ).toEqual(1);
@@ -56,11 +52,9 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [],
       },
-      app: tapisApp
+      app: tapisApp,
     });
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary />
-    );
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
     expect(getAllByText(/Data file included by default/).length).toEqual(1);
   });
   it('Shows fileInputs that do not include underspecified required app inputs', () => {
@@ -70,11 +64,9 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [],
       },
-      app: incompleteApp
+      app: incompleteApp,
     });
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary />
-    );
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
     expect(getAllByText(/Data file is required/).length).toEqual(1);
   });
 });

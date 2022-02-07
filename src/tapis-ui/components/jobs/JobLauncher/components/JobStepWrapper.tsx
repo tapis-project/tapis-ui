@@ -26,12 +26,9 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
     [nextStep, add]
   );
 
-  useEffect(
-    () => {
-      reset(job);
-    },
-    [job]
-  )
+  useEffect(() => {
+    reset(job);
+  }, [job, reset]);
 
   return (
     <FormProvider {...methods}>

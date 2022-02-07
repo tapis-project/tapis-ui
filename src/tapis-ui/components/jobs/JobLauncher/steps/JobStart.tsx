@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
 import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
-import { Jobs, Apps } from '@tapis/tapis-typescript';
+import { Jobs } from '@tapis/tapis-typescript';
 import { useJobLauncher } from '../components';
 import { StepSummaryField } from '../components';
 
 export const JobStart: React.FC = () => {
-  const { register, formState, reset } = useFormContext<Jobs.ReqSubmitJob>();
+  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
   const { job, app } = useJobLauncher();
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
@@ -90,16 +90,15 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     { refetchOnWindowFocus: false }
   );
   const app = data?.result;
-  const systems = systemsData?.result ?? [];
-  const [ defaultValues, setDefaultValues ] = useState<Partial<Jobs.ReqSubmitJob>>({});
-  useEffect(
-    () => {
-      if (app) {
-        setDefaultValues(generateDefaultValues(app, systems));
-      }
-    },
-    [ app, systems ]
-  )
+  const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
+  const [defaultValues, setDefaultValues] = useState<
+    Partial<Jobs.ReqSubmitJob>
+  >({});
+  useEffect(() => {
+    if (app) {
+      setDefaultValues(generateDefaultValues(app, systems));
+    }
+  }, [app, systems]);
   const steps: Array<WizardStep> = [
     {
       id: 'start',
@@ -125,15 +124,15 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       render: withJobStepWrapper(<JobSubmission />),
       summary: <JobSubmissionSummary />,
     },
-  ]
- 
+  ];
+
   return (
     <QueryWrapper
       isLoading={isLoading || systemsIsLoading}
       error={error || systemsError}
     >
-      { app && (
-        <JobLauncherProvider value={{app, systems, defaultValues}}>
+      {app && (
+        <JobLauncherProvider value={{ app, systems, defaultValues }}>
           <Wizard
             steps={steps}
             memo={`${app.id}${app.version}`}

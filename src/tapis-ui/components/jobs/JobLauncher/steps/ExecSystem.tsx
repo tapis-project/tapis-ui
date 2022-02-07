@@ -3,7 +3,7 @@ import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
-import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
+import { Jobs, Systems } from '@tapis/tapis-typescript';
 import { v4 as uuidv4 } from 'uuid';
 import { useJobLauncher, StepSummaryField } from '../components';
 

@@ -24,13 +24,11 @@ describe('ExecSystem job launcher step', () => {
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {},
       app: tapisApp,
-      systems: [ tapisSystem ]
-    })
+      systems: [tapisSystem],
+    });
   });
   it('loads the default queue', async () => {
-    const { getAllByText } = renderComponent(
-      <ExecSystem />
-    );
+    const { getAllByText } = renderComponent(<ExecSystem />);
     expect(getAllByText(/testuser2.execution/).length).toBeGreaterThanOrEqual(
       1
     );

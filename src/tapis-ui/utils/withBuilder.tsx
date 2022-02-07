@@ -46,13 +46,10 @@ const withBuilder = <T extends unknown>() => {
       }
     };
     const [data, dispatch] = useReducer(reducer, { ...value });
-    
-    useEffect(
-      () => {
-        dispatch({ action: 'set', slice: value });
-      },
-      [ dispatch, value ]
-    )
+
+    useEffect(() => {
+      dispatch({ action: 'set', slice: value });
+    }, [dispatch, value]);
 
     const contextValue: BuilderContextType<T> = {
       data,
