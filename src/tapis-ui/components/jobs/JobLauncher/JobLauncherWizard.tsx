@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
@@ -72,11 +72,12 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
     </WizardSubmitWrapper>
   );
 };
-
+  /*
 const JobLauncherRender: React.FC<{
   app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
 }> = ({ app, systems }) => {
+
   const steps: Array<WizardStep> = [
     {
       id: 'start',
@@ -118,7 +119,9 @@ const JobLauncherRender: React.FC<{
       />
     </JobLauncherProvider>
   );
+  
 };
+*/
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
@@ -138,12 +141,44 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   );
   const app = data?.result;
   const systems = systemsData?.result ?? [];
+  const [ defaultValues, setDefaultValues ] = useState<Partial<Jobs.ReqSubmitJob>>({});
+  useEffect(
+    () => {
+      if (app) {
+        setDefaultValues(generateDefaultValues(app, systems));
+      }
+    },
+    [ app, systems ]
+  )
+  const steps: Array<WizardStep> = [
+    {
+      id: 'start',
+      name: `Job Name`,
+      render: withJobStepWrapper(<JobStart />),
+      summary: <JobStartSummary />,
+    },
+    {
+      id: 'jobSubmission',
+      name: 'Job Submission',
+      render: withJobStepWrapper(<JobSubmission />),
+      summary: <JobSubmissionSummary />,
+    },
+  ]
+ 
   return (
     <QueryWrapper
       isLoading={isLoading || systemsIsLoading}
       error={error || systemsError}
     >
-      <JobLauncherRender app={app!} systems={systems} />
+      { app && (
+        <JobLauncherProvider value={{app, systems, defaultValues}}>
+          <Wizard
+            steps={steps}
+            memo={`${app.id}${app.version}`}
+            renderSubmit={<JobLauncherWizardSubmit app={app} />}
+          />
+        </JobLauncherProvider>
+      )}
     </QueryWrapper>
   );
 };

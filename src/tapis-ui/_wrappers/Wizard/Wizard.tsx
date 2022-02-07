@@ -123,7 +123,6 @@ function Wizard({ steps, memo, renderSubmit }: WizardProps) {
 
   useEffect(
     () => {
-      console.log("Wizard reset");
       goToStep && goToStep(1);
     },
     /* eslint-disable-next-line */

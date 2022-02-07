@@ -6,7 +6,6 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,
   appVersion,
 }) => {
-  console.log("rerender", appId, appVersion);
   const header = <LayoutHeader type={'sub-header'}>Job Launcher</LayoutHeader>;
 
   const body = (

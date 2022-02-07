@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
@@ -6,13 +7,18 @@ import { Jobs, Apps } from '@tapis/tapis-typescript';
 import { useJobLauncher } from '../components';
 import { StepSummaryField } from '../components';
 
-type JobStartProps = {
-  app: Apps.TapisApp;
-};
-
-export const JobStart: React.FC<JobStartProps> = ({ app }) => {
-  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
+export const JobStart: React.FC = () => {
+  const { register, formState, reset } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
+  const { job, app } = useJobLauncher();
+  const [ defaultName, setDefaultName ] = useState(job.name);
+  useEffect(
+    () => {
+      setDefaultName(job.name);
+      reset({ name: job.name });
+    },
+    [ job.appId, job.appVersion ]
+  )
   return (
     <div>
       <div>
@@ -28,6 +34,7 @@ export const JobStart: React.FC<JobStartProps> = ({ app }) => {
       >
         <Input
           bsSize="sm"
+          defaultValue={defaultName ?? ''}
           {...mapInnerRef(register('name', { required: 'Name is required' }))}
         />
       </FieldWrapper>
