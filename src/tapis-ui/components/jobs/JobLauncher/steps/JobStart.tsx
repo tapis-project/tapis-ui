@@ -11,15 +11,7 @@ export const JobStart: React.FC = () => {
   const { register, formState, reset } = useFormContext<Jobs.ReqSubmitJob>();
   const { errors } = formState;
   const { job, app } = useJobLauncher();
-  const [ defaultName, setDefaultName ] = useState(job.name);
-  /*
-  useEffect(
-    () => {
-      setDefaultName(job.name);
-      reset({ name: job.name });
-    },
-    [ job.appId, job.appVersion ]
-  )*/
+
   return (
     <div>
       <div>
@@ -35,7 +27,7 @@ export const JobStart: React.FC = () => {
       >
         <Input
           bsSize="sm"
-          defaultValue={defaultName ?? ''}
+          defaultValue={job.name}
           {...mapInnerRef(register('name', { required: 'Name is required' }))}
         />
       </FieldWrapper>
