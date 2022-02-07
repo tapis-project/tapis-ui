@@ -17,13 +17,16 @@ describe('FileInputsSummary step', () => {
           },
         ],
       },
+      app: tapisApp
     });
     const { getAllByText } = renderComponent(
-      <FileInputsSummary app={tapisApp} />
+      <FileInputsSummary />
     );
     expect(getAllByText(/Data file/).length).toEqual(1);
   });
   it('Shows fileInputs that are incomplete', () => {
+    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
+    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [
@@ -35,11 +38,11 @@ describe('FileInputsSummary step', () => {
           },
         ],
       },
+      app: incompleteApp
     });
-    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
+
     const { getAllByText } = renderComponent(
-      <FileInputsSummary app={incompleteApp} />
+      <FileInputsSummary />
     );
     expect(
       getAllByText(/Data file is missing required information/).length
@@ -53,22 +56,24 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [],
       },
+      app: tapisApp
     });
     const { getAllByText } = renderComponent(
-      <FileInputsSummary app={tapisApp} />
+      <FileInputsSummary />
     );
     expect(getAllByText(/Data file included by default/).length).toEqual(1);
   });
   it('Shows fileInputs that do not include underspecified required app inputs', () => {
+    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
+    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [],
       },
+      app: incompleteApp
     });
-    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     const { getAllByText } = renderComponent(
-      <FileInputsSummary app={incompleteApp} />
+      <FileInputsSummary />
     );
     expect(getAllByText(/Data file is required/).length).toEqual(1);
   });
