@@ -16,9 +16,7 @@ import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
-import useJobLauncher, {
-  JobLauncherProvider,
-} from 'tapis-hooks/jobs/useJobLauncher';
+import { useJobLauncher, JobLauncherProvider } from './components';
 import { withJobStepWrapper } from './components';
 
 type JobLauncherWizardProps = {

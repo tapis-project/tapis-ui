@@ -1,10 +1,10 @@
 import { Jobs } from '@tapis/tapis-typescript';
-import withFragment from 'tapis-hooks/utils/withFragment';
+import withBuilder from 'tapis-ui/utils/withBuilder';
 
-const { useFragmentContext, Provider } = withFragment<Jobs.ReqSubmitJob>();
+const { useBuilderContext, Provider } = withBuilder<Jobs.ReqSubmitJob>();
 
 export const useJobLauncher = () => {
-  const { data, add, set, clear } = useFragmentContext();
+  const { data, add, set, clear } = useBuilderContext();
   return {
     job: data,
     add,

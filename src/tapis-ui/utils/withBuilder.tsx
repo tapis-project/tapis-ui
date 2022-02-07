@@ -1,27 +1,27 @@
 import React, { useReducer, useContext } from 'react';
 
-export type FragmentContextType<T> = {
+export type BuilderContextType<T> = {
   data: Partial<T>;
-  add: (fragment: Partial<T>) => void;
-  set: (fragment: Partial<T>) => void;
+  add: (slice: Partial<T>) => void;
+  set: (slice: Partial<T>) => void;
   clear: () => void;
 };
 
 /**
  * Creates a Provider and context hook for a given data type
- * that assembles a Partial fragment of the provided data type
+ * that builds a structure from slices of the provided data type
  *
  * @returns A Provider and a context hook
  */
-const withFragment = <T extends unknown>() => {
-  const context = React.createContext<FragmentContextType<T>>({
+const withBuilder = <T extends unknown>() => {
+  const context = React.createContext<BuilderContextType<T>>({
     data: {},
-    add: (fragment: Partial<T>) => {},
-    set: (fragment: Partial<T>) => {},
+    add: (slice: Partial<T>) => {},
+    set: (slice: Partial<T>) => {},
     clear: () => {},
   });
 
-  const useFragmentContext = () => useContext(context);
+  const useBuilderContext = () => useContext(context);
   const Provider: React.FC<React.PropsWithChildren<{ value?: Partial<T> }>> = ({
     children,
     value,
@@ -30,15 +30,15 @@ const withFragment = <T extends unknown>() => {
       state: Partial<T>,
       payload: {
         action: 'add' | 'set' | 'clear';
-        fragment?: Partial<T>;
+        slice?: Partial<T>;
       }
     ) => {
-      const { action, fragment } = payload;
+      const { action, slice } = payload;
       switch (action) {
         case 'add':
-          return { ...state, ...fragment };
+          return { ...state, ...slice };
         case 'set':
-          return { ...fragment };
+          return { ...slice };
         case 'clear':
           return {};
         default:
@@ -46,19 +46,19 @@ const withFragment = <T extends unknown>() => {
       }
     };
     const [data, dispatch] = useReducer(reducer, { ...value });
-    const contextValue: FragmentContextType<T> = {
+    const contextValue: BuilderContextType<T> = {
       data,
-      add: (fragment) => dispatch({ action: 'add', fragment }),
-      set: (fragment) => dispatch({ action: 'set', fragment }),
+      add: (slice) => dispatch({ action: 'add', slice }),
+      set: (slice) => dispatch({ action: 'set', slice }),
       clear: () => dispatch({ action: 'clear' }),
     };
     return <context.Provider value={contextValue}>{children}</context.Provider>;
   };
 
   return {
-    useFragmentContext,
+    useBuilderContext,
     Provider,
   };
 };
 
-export default withFragment;
+export default withBuilder;

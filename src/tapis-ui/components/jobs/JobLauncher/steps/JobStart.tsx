@@ -3,7 +3,7 @@ import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
 import { Jobs, Apps } from '@tapis/tapis-typescript';
-import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
+import { useJobLauncher } from '../components';
 import { StepSummaryField } from '../components';
 
 type JobStartProps = {

@@ -6,13 +6,12 @@ import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup, Label } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Button } from 'reactstrap';
-import useJobLauncher from 'tapis-hooks/jobs/useJobLauncher';
+import { useJobLauncher, StepSummaryField } from '../components';
 import styles from './FileInputs.module.scss';
 import {
   getIncompleteJobInputs,
   getAppInputsIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputs';
-import { StepSummaryField } from '../components';
 import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
 
