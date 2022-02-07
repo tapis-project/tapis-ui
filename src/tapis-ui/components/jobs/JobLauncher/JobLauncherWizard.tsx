@@ -72,56 +72,6 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
     </WizardSubmitWrapper>
   );
 };
-  /*
-const JobLauncherRender: React.FC<{
-  app: Apps.TapisApp;
-  systems: Array<Systems.TapisSystem>;
-}> = ({ app, systems }) => {
-
-  const steps: Array<WizardStep> = [
-    {
-      id: 'start',
-      name: `Job Name`,
-      render: withJobStepWrapper(<JobStart app={app} />),
-      summary: <JobStartSummary />,
-    },
-
-    {
-      id: 'execSystem',
-      name: 'Execution System',
-      render: withJobStepWrapper(<ExecSystem app={app} systems={systems} />),
-      summary: <ExecSystemSummary />,
-    },
-    {
-      id: 'fileInputs',
-      name: 'File Inputs',
-      render: withJobStepWrapper(<FileInputs app={app} />),
-      summary: <FileInputsSummary app={app} />,
-    },
-    {
-      id: 'jobSubmission',
-      name: 'Job Submission',
-      render: withJobStepWrapper(<JobSubmission app={app} />),
-      summary: <JobSubmissionSummary />,
-    },
-  ];
-
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
-    app,
-    systems
-  );
-  return (
-    <JobLauncherProvider value={defaultValues}>
-      <Wizard
-        steps={steps}
-        memo={`${app.id}${app.version}`}
-        renderSubmit={<JobLauncherWizardSubmit app={app} />}
-      />
-    </JobLauncherProvider>
-  );
-  
-};
-*/
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
@@ -162,6 +112,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       name: 'Execution System',
       render: withJobStepWrapper(<ExecSystem />),
       summary: <ExecSystemSummary />,
+    },
+    {
+      id: 'fileInputs',
+      name: 'File Inputs',
+      render: withJobStepWrapper(<FileInputs />),
+      summary: <FileInputsSummary />,
     },
     {
       id: 'jobSubmission',

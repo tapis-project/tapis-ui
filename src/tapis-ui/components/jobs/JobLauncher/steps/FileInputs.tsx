@@ -125,8 +125,8 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   );
 };
 
-export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
-  const { job } = useJobLauncher();
+export const FileInputs: React.FC = () => {
+  const { job, app } = useJobLauncher();
   const appInputs = app?.jobAttributes?.fileInputs ?? [];
   const jobInputsFromRequired =
     job.fileInputs?.filter((jobFileInput) =>
@@ -158,10 +158,8 @@ export const FileInputs: React.FC<{ app?: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-export const FileInputsSummary: React.FC<{ app: Apps.TapisApp }> = ({
-  app,
-}) => {
-  const { job } = useJobLauncher();
+export const FileInputsSummary: React.FC = () => {
+  const { job, app } = useJobLauncher();
   const jobFileInputs = job.fileInputs ?? [];
   const appFileInputs = app.jobAttributes?.fileInputs ?? [];
   const missingRequiredInputs = appFileInputs.filter(
