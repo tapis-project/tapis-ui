@@ -29,7 +29,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<{dirname: string}>();
 
   const { ref: dirnameRef, ...dirnameFieldProps } = register('dirname', {
     required: 'Directory name is a required field',

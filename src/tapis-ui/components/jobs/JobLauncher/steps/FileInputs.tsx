@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldArray as TFieldArray, useFormContext } from 'react-hook-form';
+import { FieldArray as TFieldArray, useFieldArray, useFormContext } from 'react-hook-form';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { FieldArray, FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
@@ -8,6 +8,7 @@ import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import styles from './FileInputs.module.scss';
+import fieldArrayStyles from '../FieldArray.module.scss';
 import {
   getIncompleteJobInputs,
   getAppInputsIncludedByDefault,
@@ -15,7 +16,6 @@ import {
 import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
 
-// TODO: Make this collapsible
 const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   item,
   index,
@@ -125,18 +125,16 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
   );
 };
 
+const isRequired = (fileInput: Jobs.JobFileInput, app: Apps.TapisApp) => {
+  return app.jobAttributes?.fileInputs?.some(
+    (appInput) => appInput.inputMode === Apps.FileInputModeEnum.Required && appInput.name === fileInput.name
+  ) ?? false;   
+}
+
 export const FileInputs: React.FC = () => {
   const { job, app } = useJobLauncher();
-  const appInputs = app?.jobAttributes?.fileInputs ?? [];
-  const jobInputsFromRequired =
-    job.fileInputs?.filter((jobFileInput) =>
-      appInputs.some(
-        (appInput) =>
-          appInput.name === jobFileInput.name &&
-          appInput.inputMode === Apps.FileInputModeEnum.Required
-      )
-    ) ?? [];
-  const required = Array.from(jobInputsFromRequired.keys());
+
+  const required = job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
 
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
@@ -144,18 +142,41 @@ export const FileInputs: React.FC = () => {
     autoMountLocal: true,
   };
 
-  const name = 'fileInputs';
+  const { control } = useFormContext<Jobs.ReqSubmitJob>();
+  const { fields, append, remove } = useFieldArray<Jobs.ReqSubmitJob, 'fileInputs'>({
+    control,
+    name: 'fileInputs'
+  });
+  let requiredText = required > 0 ? `Required (${required})` : '';
 
   return (
-    <FieldArray<Jobs.ReqSubmitJob, typeof name>
-      title="File Inputs"
-      addButtonText="Add File Input"
-      name={name}
-      render={FileInputField}
-      required={required}
-      appendData={appendData}
-    />
+    <div className={fieldArrayStyles.array}>
+      <Collapse
+        open={required > 0}
+        title="File Inputs"
+        note={`${fields.length} items`}
+        requiredText={requiredText}
+        isCollapsable={required === 0}
+      >
+        {fields.map((item, index) => {
+          const removeCallback = () => {
+            if (!isRequired(item, app)) {
+              remove(index);
+            }
+          }
+          return (
+            <div className={fieldArrayStyles.item}>
+              <FileInputField item={item} index={index} remove={removeCallback} />
+            </div>
+          )
+        })}
+        <Button onClick={() => append(appendData)} size="sm">
+          + Add File Input
+        </Button>
+      </Collapse>
+    </div>
   );
+
 };
 
 export const FileInputsSummary: React.FC = () => {
