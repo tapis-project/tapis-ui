@@ -19,6 +19,14 @@ export const getIncompleteAppInputsOfType = (
   );
 };
 
+export const generateFileInputFromAppInput = (input: Apps.AppFileInput) => ({
+  name: input.name,
+  sourceUrl: input.sourceUrl,
+  targetPath: input.targetPath,
+  description: input.description,
+  autoMountLocal: input.autoMountLocal,
+});
+
 export const generateRequiredFileInputsFromApp = (
   app: Apps.TapisApp
 ): Array<Jobs.JobFileInput> => {
@@ -28,13 +36,7 @@ export const generateRequiredFileInputsFromApp = (
     ) ?? [];
   const fileInputs: Array<Jobs.JobFileInput> = requiredInputs.map(
     (appFileInput) => {
-      return {
-        name: appFileInput.name,
-        sourceUrl: appFileInput.sourceUrl,
-        targetPath: appFileInput.targetPath,
-        description: appFileInput.description,
-        autoMountLocal: appFileInput.autoMountLocal,
-      };
+      return generateFileInputFromAppInput(appFileInput);
     }
   );
   return fileInputs;

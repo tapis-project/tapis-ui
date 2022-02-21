@@ -1,7 +1,11 @@
 import React from 'react';
-import { FieldArray as TFieldArray, useFieldArray, useFormContext } from 'react-hook-form';
+import {
+  FieldArray as TFieldArray,
+  useFieldArray,
+  useFormContext,
+} from 'react-hook-form';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
-import { FieldArray, FieldArrayComponent } from '../FieldArray';
+import { FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup, Label } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
@@ -10,6 +14,7 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import {
+  generateFileInputFromAppInput,
   getIncompleteJobInputs,
   getAppInputsIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputs';
@@ -126,28 +131,102 @@ const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
 };
 
 const isRequired = (fileInput: Jobs.JobFileInput, app: Apps.TapisApp) => {
-  return app.jobAttributes?.fileInputs?.some(
-    (appInput) => appInput.inputMode === Apps.FileInputModeEnum.Required && appInput.name === fileInput.name
-  ) ?? false;   
-}
+  return (
+    app.jobAttributes?.fileInputs?.some(
+      (appInput) =>
+        appInput.inputMode === Apps.FileInputModeEnum.Required &&
+        appInput.name === fileInput.name
+    ) ?? false
+  );
+};
+
+/* eslint-disable-next-line */
+const getOptionalInputs = (app: Apps.TapisApp) =>
+  app.jobAttributes?.fileInputs?.filter(
+    (appInput) => appInput.inputMode === Apps.FileInputModeEnum.Optional
+  ) ?? [];
+
+const shimOptionalInputs = (app: Apps.TapisApp): Array<Apps.AppFileInput> => [
+  {
+    name: 'Optional',
+    targetPath: 'target.txt',
+    description: 'Description of this optional input',
+    inputMode: Apps.FileInputModeEnum.Optional,
+  },
+];
+
+type OptionalInputProps = {
+  input: Apps.AppFileInput;
+  included: boolean;
+  onInclude: (input: Apps.AppFileInput) => any;
+};
+
+const OptionalInput: React.FC<OptionalInputProps> = ({
+  input,
+  included,
+  onInclude,
+}) => {
+  return (
+    <Collapse
+      title={`${input.name} ${included ? '(included)' : ''}`}
+      key={uuidv4()}
+      className={styles['optional-input']}
+    >
+      <div className={styles.description}>{input.description ?? ''}</div>
+      <FieldWrapper
+        label="Source URL"
+        required={true}
+        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+      >
+        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Target Path"
+        required={true}
+        description="File mount path inside of running container"
+      >
+        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
+      </FieldWrapper>
+      <Button onClick={() => onInclude(input)} disabled={included}>
+        Include
+      </Button>
+    </Collapse>
+  );
+};
+
+const inputIncluded = (
+  input: Apps.AppFileInput,
+  jobInputs: Array<Jobs.JobFileInput>
+) => {
+  return jobInputs.some((jobInput) => jobInput.name === input.name);
+};
 
 export const FileInputs: React.FC = () => {
   const { job, app } = useJobLauncher();
 
-  const required = job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
+  // Set optional inputs to be those that are optional in the app but not yet
+  // included in the current job submission
+  const optionalInputs = shimOptionalInputs(app);
 
+  const required =
+    job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     sourceUrl: '',
     targetPath: '',
     autoMountLocal: true,
   };
 
-  const { control } = useFormContext<Jobs.ReqSubmitJob>();
-  const { fields, append, remove } = useFieldArray<Jobs.ReqSubmitJob, 'fileInputs'>({
+  const { control, getValues } = useFormContext<Jobs.ReqSubmitJob>();
+  const { fields, append, remove } = useFieldArray<
+    Jobs.ReqSubmitJob,
+    'fileInputs'
+  >({
     control,
-    name: 'fileInputs'
+    name: 'fileInputs',
   });
   let requiredText = required > 0 ? `Required (${required})` : '';
+
+  const formFileInputs = getValues()?.fileInputs ?? [];
 
   return (
     <div className={fieldArrayStyles.array}>
@@ -163,20 +242,46 @@ export const FileInputs: React.FC = () => {
             if (!isRequired(item, app)) {
               remove(index);
             }
-          }
+          };
           return (
             <div className={fieldArrayStyles.item}>
-              <FileInputField item={item} index={index} remove={removeCallback} />
+              <FileInputField
+                item={item}
+                index={index}
+                remove={removeCallback}
+              />
             </div>
-          )
+          );
         })}
         <Button onClick={() => append(appendData)} size="sm">
           + Add File Input
         </Button>
       </Collapse>
+      {!!optionalInputs.length && (
+        <Collapse
+          title="Optional File Inputs"
+          note={`${optionalInputs.length} additional files`}
+        >
+          {optionalInputs.map((optionalInput) => {
+            const alreadyIncluded = inputIncluded(
+              optionalInput,
+              formFileInputs
+            );
+            const onInclude = (input: Apps.AppFileInput) => {
+              append(generateFileInputFromAppInput(optionalInput));
+            };
+            return (
+              <OptionalInput
+                input={optionalInput}
+                onInclude={onInclude}
+                included={alreadyIncluded}
+              />
+            );
+          })}
+        </Collapse>
+      )}
     </div>
   );
-
 };
 
 export const FileInputsSummary: React.FC = () => {
