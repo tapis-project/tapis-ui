@@ -271,11 +271,13 @@ export const FileInputs: React.FC = () => {
               append(generateFileInputFromAppInput(optionalInput));
             };
             return (
-              <OptionalInput
-                input={optionalInput}
-                onInclude={onInclude}
-                included={alreadyIncluded}
-              />
+              <div className={fieldArrayStyles.item}>
+                <OptionalInput
+                  input={optionalInput}
+                  onInclude={onInclude}
+                  included={alreadyIncluded}
+                />
+              </div>
             );
           })}
         </Collapse>
