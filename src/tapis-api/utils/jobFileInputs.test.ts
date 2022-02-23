@@ -11,20 +11,15 @@ import {
 
 describe('Job File Inputs utils', () => {
   it('finds incomplete inputs of a specific kind', () => {
-    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     expect(
-      getIncompleteAppInputsOfType(
-        incompleteApp,
-        Apps.FileInputModeEnum.Required
-      )
+      getIncompleteAppInputsOfType(tapisApp, Apps.FileInputModeEnum.Required)
     ).toEqual([
       {
-        name: 'Data file',
-        description: undefined,
+        name: 'required-incomplete',
+        description: 'A required input that is missing a sourceUrl',
         inputMode: Apps.FileInputModeEnum.Required,
         autoMountLocal: true,
-        targetPath: 'data.txt',
+        targetPath: 'file1.txt',
       },
     ]);
   });
@@ -32,60 +27,68 @@ describe('Job File Inputs utils', () => {
     // The supplied app fixture bsf1 has required file inputs
     expect(generateRequiredFileInputsFromApp(tapisApp)).toEqual([
       {
-        name: 'Data file',
-        description: undefined,
+        name: 'required-complete',
+        description: 'A required input that is completely specified',
         autoMountLocal: true,
-        targetPath: 'data.txt',
-        sourceUrl: 'tapis://testuser2.execution/data.txt',
+        sourceUrl:
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/empty.txt',
+        targetPath: 'empty.txt',
+      },
+      {
+        name: 'required-incomplete',
+        description: 'A required input that is missing a sourceUrl',
+        autoMountLocal: true,
+        targetPath: 'file1.txt',
       },
     ]);
-
-    // An app with optional inputs should not generate required file inputs
-    const modifiedApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    modifiedApp.jobAttributes!.fileInputs![0].inputMode =
-      Apps.FileInputModeEnum.Optional;
-    expect(generateRequiredFileInputsFromApp(modifiedApp)).toEqual([]);
   });
 
   it('detects a complete job request that satisfies an app with fully formed required inputs', () => {
-    expect(fileInputsComplete(tapisApp, [])).toEqual(true);
+    expect(
+      fileInputsComplete(tapisApp, [
+        { name: 'required-incomplete', sourceUrl: 'file2.txt' },
+      ])
+    ).toEqual(true);
   });
 
   it('detects an incomplete job request with required inputs lacking a source url', () => {
     // Remove a required sourceUrl from the app fixture
-    const modifiedApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    modifiedApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
-
-    expect(fileInputsComplete(modifiedApp, [])).toEqual(false);
-    expect(fileInputsComplete(modifiedApp, [{ name: 'Data file' }])).toEqual(
-      false
-    );
+    expect(fileInputsComplete(tapisApp, [])).toEqual(false);
+    expect(
+      fileInputsComplete(tapisApp, [{ name: 'required-incomplete' }])
+    ).toEqual(false);
   });
 
   it('detects an incomplete job request with optional inputs lacking a source url', () => {
-    // Remove a required sourceUrl from the app fixture
-    const modifiedApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    modifiedApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
-    modifiedApp.jobAttributes!.fileInputs![0].inputMode =
-      Apps.FileInputModeEnum.Optional;
-
+    // Make a modified app that has no required inputs
+    const modifiedApp = Apps.TapisAppFromJSON(
+      JSON.parse(JSON.stringify(tapisApp))
+    );
+    modifiedApp!.jobAttributes!.fileInputs =
+      modifiedApp.jobAttributes?.fileInputs?.filter(
+        (input) => input.inputMode !== Apps.FileInputModeEnum.Required
+      ) ?? [];
     // The default job with no specified inputs is complete, because the OPTIONAL file input is not included
     expect(fileInputsComplete(modifiedApp, [])).toEqual(true);
-
     // A job that includes an incomplete OPTIONAL file input but does not specify sourceUrl is not complete
-    expect(fileInputsComplete(modifiedApp, [{ name: 'Data file' }])).toEqual(
-      false
-    );
+    expect(
+      fileInputsComplete(modifiedApp, [{ name: 'optional-incomplete' }])
+    ).toEqual(false);
 
     // A job that includes an complete OPTIONAL file input should be fine
     expect(
       fileInputsComplete(modifiedApp, [
-        { name: 'Data file', sourceUrl: 'tapis://system/file.txt' },
+        { name: 'optional-incomplete', sourceUrl: 'tapis://system/file.txt' },
       ])
     ).toEqual(true);
   });
 
   it('detects incomplete job file inputs that are unspecified in the app', () => {
+    // Make a modified app that has no pre-specified inputs
+    const modifiedApp = Apps.TapisAppFromJSON(
+      JSON.parse(JSON.stringify(tapisApp))
+    );
+    modifiedApp!.jobAttributes!.fileInputs = [];
     expect(fileInputsComplete(tapisApp, [{ name: 'Other file' }])).toEqual(
       false
     );

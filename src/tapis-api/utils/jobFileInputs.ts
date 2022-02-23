@@ -149,7 +149,7 @@ export const fileInputsComplete = (
         return true;
       } else {
         // Verify that this input has a sourceUrl specified
-        return !!jobFileInput.sourceUrl;
+        return !jobFileInput.sourceUrl;
       }
     }
   );
@@ -168,9 +168,9 @@ export const fileInputsComplete = (
         (optionalAppInput) => jobFileInput.name === optionalAppInput.name
       )
     ) ?? [];
-  const hasIncompleteOptionalInput: boolean = optionalJobInputs.some(
-    (jobInput) => !jobInput.sourceUrl
-  );
+  const hasIncompleteOptionalInput: boolean =
+    !!optionalJobInputs.length &&
+    optionalJobInputs.some((jobInput) => !jobInput.sourceUrl);
   if (hasIncompleteOptionalInput) {
     return false;
   }

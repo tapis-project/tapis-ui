@@ -18,6 +18,6 @@ describe('AppsNav', () => {
     });
 
     const { getAllByText } = renderComponent(<AppsNav />);
-    expect(getAllByText(/bsf/).length).toEqual(1);
+    expect(getAllByText(/FullJobAttrs/).length).toEqual(1);
   });
 });

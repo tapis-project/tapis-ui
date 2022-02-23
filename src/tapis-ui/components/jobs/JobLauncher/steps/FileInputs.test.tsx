@@ -13,35 +13,33 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [
           {
-            name: 'Data file',
+            name: 'required-incomplete',
           },
         ],
       },
       app: tapisApp,
     });
     const { getAllByText } = renderComponent(<FileInputsSummary />);
-    expect(getAllByText(/Data file/).length).toEqual(1);
+    expect(getAllByText(/required-incomplete/).length).toEqual(1);
   });
   it('Shows fileInputs that are incomplete', () => {
-    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [
           {
-            name: 'Data file',
+            name: 'required-incomplete',
           },
           {
             sourceUrl: 'userspecified',
           },
         ],
       },
-      app: incompleteApp,
+      app: tapisApp,
     });
 
     const { getAllByText } = renderComponent(<FileInputsSummary />);
     expect(
-      getAllByText(/Data file is missing required information/).length
+      getAllByText(/required-incomplete is missing required information/).length
     ).toEqual(1);
     expect(
       getAllByText(/userspecified is missing required information/).length
@@ -55,7 +53,9 @@ describe('FileInputsSummary step', () => {
       app: tapisApp,
     });
     const { getAllByText } = renderComponent(<FileInputsSummary />);
-    expect(getAllByText(/Data file included by default/).length).toEqual(1);
+    expect(
+      getAllByText(/required-complete included by default/).length
+    ).toEqual(1);
   });
   it('Shows fileInputs that do not include underspecified required app inputs', () => {
     const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
@@ -67,6 +67,6 @@ describe('FileInputsSummary step', () => {
       app: incompleteApp,
     });
     const { getAllByText } = renderComponent(<FileInputsSummary />);
-    expect(getAllByText(/Data file is required/).length).toEqual(1);
+    expect(getAllByText(/required-complete is required/).length).toEqual(1);
   });
 });

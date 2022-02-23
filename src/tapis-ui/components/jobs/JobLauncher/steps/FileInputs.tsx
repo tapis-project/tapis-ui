@@ -146,15 +146,6 @@ const getOptionalInputs = (app: Apps.TapisApp) =>
     (appInput) => appInput.inputMode === Apps.FileInputModeEnum.Optional
   ) ?? [];
 
-const shimOptionalInputs = (app: Apps.TapisApp): Array<Apps.AppFileInput> => [
-  {
-    name: 'Optional',
-    targetPath: 'target.txt',
-    description: 'Description of this optional input',
-    inputMode: Apps.FileInputModeEnum.Optional,
-  },
-];
-
 type OptionalInputProps = {
   input: Apps.AppFileInput;
   included: boolean;
@@ -206,7 +197,7 @@ export const FileInputs: React.FC = () => {
 
   // Set optional inputs to be those that are optional in the app but not yet
   // included in the current job submission
-  const optionalInputs = shimOptionalInputs(app);
+  const optionalInputs = getOptionalInputs(app);
 
   const required =
     job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
