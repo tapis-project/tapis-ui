@@ -140,10 +140,9 @@ const isRequired = (fileInput: Jobs.JobFileInput, app: Apps.TapisApp) => {
   );
 };
 
-/* eslint-disable-next-line */
-const getOptionalInputs = (app: Apps.TapisApp) =>
+const getFileInputsOfMode = (app: Apps.TapisApp, inputMode: Apps.FileInputModeEnum) =>
   app.jobAttributes?.fileInputs?.filter(
-    (appInput) => appInput.inputMode === Apps.FileInputModeEnum.Optional
+    appInput => appInput.inputMode === inputMode
   ) ?? [];
 
 type OptionalInputProps = {
@@ -185,6 +184,32 @@ const OptionalInput: React.FC<OptionalInputProps> = ({
   );
 };
 
+const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
+  return (
+    <Collapse
+      title={`${input.name}`}
+      key={uuidv4()}
+      className={styles['optional-input']}
+    >
+      <div className={styles.description}>{input.description ?? ''}</div>
+      <FieldWrapper
+        label="Source URL"
+        required={true}
+        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+      >
+        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Target Path"
+        required={true}
+        description="File mount path inside of running container"
+      >
+        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
+      </FieldWrapper>
+    </Collapse>
+  )
+}
+
 const inputIncluded = (
   input: Apps.AppFileInput,
   jobInputs: Array<Jobs.JobFileInput>
@@ -195,9 +220,8 @@ const inputIncluded = (
 export const FileInputs: React.FC = () => {
   const { job, app } = useJobLauncher();
 
-  // Set optional inputs to be those that are optional in the app but not yet
-  // included in the current job submission
-  const optionalInputs = getOptionalInputs(app);
+  const optionalInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Optional);
+  const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
 
   const required =
     job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
@@ -273,7 +297,20 @@ export const FileInputs: React.FC = () => {
           })}
         </Collapse>
       )}
+      {!!fixedInputs.length && (
+        <Collapse
+          title="Fixed File Inputs"
+          note={`${fixedInputs.length} additional files`}
+        >
+          {fixedInputs.map((fixedInput) => (
+            <div className={fieldArrayStyles.item}>
+              <FixedInput input={fixedInput} />
+            </div>
+          ))}
+        </Collapse>
+      )}
     </div>
+    
   );
 };
 
