@@ -3,22 +3,17 @@ import { Input } from 'reactstrap';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
 import { useFormContext } from 'react-hook-form';
-import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
+import { Jobs, Systems } from '@tapis/tapis-typescript';
 import { v4 as uuidv4 } from 'uuid';
 import { useJobLauncher, StepSummaryField } from '../components';
-
-type ExecSystemProps = {
-  app: Apps.TapisApp;
-  systems: Array<Systems.TapisSystem>;
-};
 
 const findLogicalQueues = (
   systems: Array<Systems.TapisSystem>,
   systemId: string
 ) => systems.find((system) => system.id === systemId)?.batchLogicalQueues ?? [];
 
-export const ExecSystem: React.FC<ExecSystemProps> = ({ app, systems }) => {
-  const { job, add } = useJobLauncher();
+export const ExecSystem: React.FC = () => {
+  const { job, add, app, systems } = useJobLauncher();
   const methods = useFormContext<Jobs.ReqSubmitJob>();
   const { register, formState, setValue } = methods;
   const { errors } = formState;

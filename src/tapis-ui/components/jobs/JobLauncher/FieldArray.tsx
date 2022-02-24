@@ -35,6 +35,7 @@ type FieldArrayProps<
   addButtonText?: string;
   required?: Array<number>;
   isCollapsable?: boolean;
+  onRemove?: (item: FieldArrayWithId<TFieldValues, any, 'id'>) => void;
 };
 
 // TODO: add optional items to add
@@ -49,6 +50,7 @@ export function FieldArray<
   addButtonText,
   required = [],
   isCollapsable = true,
+  onRemove,
 }: FieldArrayProps<Required<TFieldValues>, TArrayPath>) {
   const { control } = useFormContext<TFieldValues>();
   const { fields, append, remove } = useFieldArray({
@@ -67,15 +69,23 @@ export function FieldArray<
         requiredText={requiredText}
         isCollapsable={isCollapsable}
       >
-        {fields.map((item, index) => (
-          <div className={styles.item}>
-            {render({
-              item,
-              index,
-              remove: !(index in required) ? () => remove(index) : undefined,
-            })}
-          </div>
-        ))}
+        {fields.map((item, index) => {
+          const removeCallback = () => {
+            if (onRemove) {
+              onRemove(item);
+            }
+            remove(index);
+          };
+          return (
+            <div className={styles.item}>
+              {render({
+                item,
+                index,
+                remove: !(index in required) ? removeCallback : undefined,
+              })}
+            </div>
+          );
+        })}
         <Button onClick={() => append(appendData)} size="sm">
           + {addButtonText ?? ''}
         </Button>

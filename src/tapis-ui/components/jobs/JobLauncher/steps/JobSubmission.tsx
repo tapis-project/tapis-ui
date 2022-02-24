@@ -1,10 +1,4 @@
-import { Apps } from '@tapis/tapis-typescript';
-
-type JobStartProps = {
-  app: Apps.TapisApp;
-};
-
-export const JobSubmission: React.FC<JobStartProps> = ({ app }) => {
+export const JobSubmission: React.FC = () => {
   return <div>Job Submission</div>;
 };
 

@@ -11,7 +11,7 @@ const WizardContext: React.Context<WizardContextType> =
 
 type WizardProps = {
   steps: Array<WizardStep>;
-  memo?: Array<any>;
+  memo?: any;
   renderSubmit?: React.ReactNode;
 };
 

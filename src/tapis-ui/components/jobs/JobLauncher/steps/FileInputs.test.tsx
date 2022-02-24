@@ -13,36 +13,33 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [
           {
-            name: 'Data file',
+            name: 'required-incomplete',
           },
         ],
       },
+      app: tapisApp,
     });
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary app={tapisApp} />
-    );
-    expect(getAllByText(/Data file/).length).toEqual(1);
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
+    expect(getAllByText(/required-incomplete/).length).toEqual(1);
   });
   it('Shows fileInputs that are incomplete', () => {
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [
           {
-            name: 'Data file',
+            name: 'required-incomplete',
           },
           {
             sourceUrl: 'userspecified',
           },
         ],
       },
+      app: tapisApp,
     });
-    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary app={incompleteApp} />
-    );
+
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
     expect(
-      getAllByText(/Data file is missing required information/).length
+      getAllByText(/required-incomplete is missing required information/).length
     ).toEqual(1);
     expect(
       getAllByText(/userspecified is missing required information/).length
@@ -53,23 +50,23 @@ describe('FileInputsSummary step', () => {
       job: {
         fileInputs: [],
       },
+      app: tapisApp,
     });
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary app={tapisApp} />
-    );
-    expect(getAllByText(/Data file included by default/).length).toEqual(1);
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
+    expect(
+      getAllByText(/required-complete included by default/).length
+    ).toEqual(1);
   });
   it('Shows fileInputs that do not include underspecified required app inputs', () => {
+    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
+    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
     (useJobLauncher as jest.Mock).mockReturnValue({
       job: {
         fileInputs: [],
       },
+      app: incompleteApp,
     });
-    const incompleteApp: Apps.TapisApp = JSON.parse(JSON.stringify(tapisApp));
-    incompleteApp.jobAttributes!.fileInputs![0].sourceUrl = undefined;
-    const { getAllByText } = renderComponent(
-      <FileInputsSummary app={incompleteApp} />
-    );
-    expect(getAllByText(/Data file is required/).length).toEqual(1);
+    const { getAllByText } = renderComponent(<FileInputsSummary />);
+    expect(getAllByText(/required-complete is required/).length).toEqual(1);
   });
 });

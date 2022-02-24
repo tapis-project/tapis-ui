@@ -19,6 +19,14 @@ export const getIncompleteAppInputsOfType = (
   );
 };
 
+export const generateFileInputFromAppInput = (input: Apps.AppFileInput) => ({
+  name: input.name,
+  sourceUrl: input.sourceUrl,
+  targetPath: input.targetPath,
+  description: input.description,
+  autoMountLocal: input.autoMountLocal,
+});
+
 export const generateRequiredFileInputsFromApp = (
   app: Apps.TapisApp
 ): Array<Jobs.JobFileInput> => {
@@ -28,13 +36,7 @@ export const generateRequiredFileInputsFromApp = (
     ) ?? [];
   const fileInputs: Array<Jobs.JobFileInput> = requiredInputs.map(
     (appFileInput) => {
-      return {
-        name: appFileInput.name,
-        sourceUrl: appFileInput.sourceUrl,
-        targetPath: appFileInput.targetPath,
-        description: appFileInput.description,
-        autoMountLocal: appFileInput.autoMountLocal,
-      };
+      return generateFileInputFromAppInput(appFileInput);
     }
   );
   return fileInputs;
@@ -147,7 +149,7 @@ export const fileInputsComplete = (
         return true;
       } else {
         // Verify that this input has a sourceUrl specified
-        return !!jobFileInput.sourceUrl;
+        return !jobFileInput.sourceUrl;
       }
     }
   );
@@ -166,9 +168,9 @@ export const fileInputsComplete = (
         (optionalAppInput) => jobFileInput.name === optionalAppInput.name
       )
     ) ?? [];
-  const hasIncompleteOptionalInput: boolean = optionalJobInputs.some(
-    (jobInput) => !jobInput.sourceUrl
-  );
+  const hasIncompleteOptionalInput: boolean =
+    !!optionalJobInputs.length &&
+    optionalJobInputs.some((jobInput) => !jobInput.sourceUrl);
   if (hasIncompleteOptionalInput) {
     return false;
   }

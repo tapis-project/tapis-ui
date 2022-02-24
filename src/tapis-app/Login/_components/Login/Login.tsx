@@ -13,7 +13,9 @@ const Login: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: { username: null, password: null } });
+  } = useForm<{ username: string; password: string }>({
+    defaultValues: { username: '', password: '' },
+  });
 
   const { ref: usernameRef, ...usernameFieldProps } = register('username', {
     required: 'Username is a required field',

@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from 'react';
+import React, { useReducer, useContext, useEffect } from 'react';
 
 export type BuilderContextType<T> = {
   data: Partial<T>;
@@ -46,6 +46,11 @@ const withBuilder = <T extends unknown>() => {
       }
     };
     const [data, dispatch] = useReducer(reducer, { ...value });
+
+    useEffect(() => {
+      dispatch({ action: 'set', slice: value });
+    }, [dispatch, value]);
+
     const contextValue: BuilderContextType<T> = {
       data,
       add: (slice) => dispatch({ action: 'add', slice }),

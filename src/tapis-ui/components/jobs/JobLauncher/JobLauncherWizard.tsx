@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
@@ -73,53 +73,6 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-const JobLauncherRender: React.FC<{
-  app: Apps.TapisApp;
-  systems: Array<Systems.TapisSystem>;
-}> = React.memo(({ app, systems }) => {
-  const steps: Array<WizardStep> = [
-    {
-      id: 'start',
-      name: `Job Name`,
-      render: withJobStepWrapper(<JobStart app={app} />),
-      summary: <JobStartSummary />,
-    },
-
-    {
-      id: 'execSystem',
-      name: 'Execution System',
-      render: withJobStepWrapper(<ExecSystem app={app} systems={systems} />),
-      summary: <ExecSystemSummary />,
-    },
-    {
-      id: 'fileInputs',
-      name: 'File Inputs',
-      render: withJobStepWrapper(<FileInputs app={app} />),
-      summary: <FileInputsSummary app={app} />,
-    },
-    {
-      id: 'jobSubmission',
-      name: 'Job Submission',
-      render: withJobStepWrapper(<JobSubmission app={app} />),
-      summary: <JobSubmissionSummary />,
-    },
-  ];
-
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = generateDefaultValues(
-    app,
-    systems
-  );
-  return (
-    <JobLauncherProvider value={defaultValues}>
-      <Wizard
-        steps={steps}
-        memo={[app.id, app.version]}
-        renderSubmit={<JobLauncherWizardSubmit app={app} />}
-      />
-    </JobLauncherProvider>
-  );
-});
-
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
   appVersion,
@@ -137,15 +90,58 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     { refetchOnWindowFocus: false }
   );
   const app = data?.result;
-  const systems = systemsData?.result ?? [];
+  const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
+  const [defaultValues, setDefaultValues] = useState<
+    Partial<Jobs.ReqSubmitJob>
+  >({});
+  useEffect(() => {
+    if (app) {
+      setDefaultValues(generateDefaultValues(app, systems));
+    }
+  }, [app, systems]);
+  const steps: Array<WizardStep> = [
+    {
+      id: 'start',
+      name: `Job Name`,
+      render: withJobStepWrapper(<JobStart />),
+      summary: <JobStartSummary />,
+    },
+    {
+      id: 'execSystem',
+      name: 'Execution System',
+      render: withJobStepWrapper(<ExecSystem />),
+      summary: <ExecSystemSummary />,
+    },
+    {
+      id: 'fileInputs',
+      name: 'File Inputs',
+      render: withJobStepWrapper(<FileInputs />),
+      summary: <FileInputsSummary />,
+    },
+    {
+      id: 'jobSubmission',
+      name: 'Job Submission',
+      render: withJobStepWrapper(<JobSubmission />),
+      summary: <JobSubmissionSummary />,
+    },
+  ];
+
   return (
     <QueryWrapper
       isLoading={isLoading || systemsIsLoading}
       error={error || systemsError}
     >
-      <JobLauncherRender app={app!} systems={systems} />
+      {app && (
+        <JobLauncherProvider value={{ app, systems, defaultValues }}>
+          <Wizard
+            steps={steps}
+            memo={`${app.id}${app.version}`}
+            renderSubmit={<JobLauncherWizardSubmit app={app} />}
+          />
+        </JobLauncherProvider>
+      )}
     </QueryWrapper>
   );
 };
 
-export default React.memo(JobLauncherWizard);
+export default JobLauncherWizard;
