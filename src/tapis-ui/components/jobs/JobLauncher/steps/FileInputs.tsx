@@ -24,7 +24,6 @@ type FileInputFieldProps = {
   item: Jobs.JobFileInput;
   index: number;
   remove: () => void;
-  required: boolean;
   inputMode: Apps.FileInputModeEnum | undefined;
 };
 
@@ -37,7 +36,6 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   item,
   index,
   remove,
-  required,
   inputMode,
 }) => {
   const {
@@ -45,6 +43,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
     formState: { errors },
   } = useFormContext<Jobs.ReqSubmitJob>();
   const { name, description, sourceUrl, targetPath, autoMountLocal } = item;
+  const isRequired = inputMode === Apps.FileInputModeEnum.Required;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
   const note = `${
     inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
@@ -76,7 +75,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
                 : undefined,
             })
           )}
-          disabled={required}
+          disabled={isRequired}
         />
       </FieldWrapper>
       <FieldWrapper
@@ -145,22 +144,12 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
           system's local file system
         </FormText>
       </FormGroup>
-      {!required && (
+      {!isRequired && (
         <Button onClick={() => remove()} size="sm" className={styles.remove}>
           Remove
         </Button>
       )}
     </Collapse>
-  );
-};
-
-const isRequired = (fileInput: Jobs.JobFileInput, app: Apps.TapisApp) => {
-  return (
-    app.jobAttributes?.fileInputs?.some(
-      (appInput) =>
-        appInput.inputMode === Apps.FileInputModeEnum.Required &&
-        appInput.name === fileInput.name
-    ) ?? false
   );
 };
 
@@ -245,16 +234,18 @@ const inputIncluded = (
 };
 
 export const FileInputs: React.FC = () => {
-  const { job, app } = useJobLauncher();
+  const { app } = useJobLauncher();
 
   const optionalInputs = getFileInputsOfMode(
     app,
     Apps.FileInputModeEnum.Optional
   );
   const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
+  const requiredInputs = getFileInputsOfMode(
+    app,
+    Apps.FileInputModeEnum.Required
+  );
 
-  const required =
-    job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     name: '',
     sourceUrl: '',
@@ -270,22 +261,22 @@ export const FileInputs: React.FC = () => {
     control,
     name: 'fileInputs',
   });
-  let requiredText = required > 0 ? `Required (${required})` : '';
+  let requiredText =
+    requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
 
   const formFileInputs = getValues()?.fileInputs ?? [];
 
   return (
     <div>
       <Collapse
-        open={required > 0}
+        open={requiredInputs.length > 0}
         title="File Inputs"
         note={`${fields.length} items`}
         requiredText={requiredText}
-        isCollapsable={required === 0}
+        isCollapsable={requiredInputs.length === 0}
         className={fieldArrayStyles.array}
       >
         {fields.map((item, index) => {
-          const required = isRequired(item, app);
           const removeCallback = () => remove(index);
           const inputMode =
             app.jobAttributes?.fileInputs?.find(
@@ -297,7 +288,6 @@ export const FileInputs: React.FC = () => {
                 item={item}
                 index={index}
                 remove={removeCallback}
-                required={required}
                 inputMode={inputMode}
               />
             </div>
@@ -310,6 +300,7 @@ export const FileInputs: React.FC = () => {
       {!!optionalInputs.length && (
         <Collapse
           title="Optional File Inputs"
+          open={true}
           note={`${optionalInputs.length} additional files`}
           className={fieldArrayStyles.array}
         >
@@ -336,6 +327,7 @@ export const FileInputs: React.FC = () => {
       {!!fixedInputs.length && (
         <Collapse
           title="Fixed File Inputs"
+          open={true}
           note={`${fixedInputs.length} additional files`}
           className={fieldArrayStyles.array}
         >
