@@ -5,7 +5,6 @@ import {
   useFormContext,
 } from 'react-hook-form';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
-import { FieldArrayComponent } from '../FieldArray';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input, FormText, FormGroup, Label } from 'reactstrap';
 import { mapInnerRef } from 'tapis-ui/utils/forms';
@@ -21,111 +20,130 @@ import {
 import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
 
-const FileInputField: FieldArrayComponent<Jobs.ReqSubmitJob, 'fileInputs'> = ({
+type FileInputFieldProps = {
+  item: Jobs.JobFileInput;
+  index: number;
+  remove: () => void;
+  required: boolean;
+  inputMode: Apps.FileInputModeEnum | undefined;
+};
+
+const upperCaseFirstLetter = (str: string) => {
+  const lower = str.toLowerCase();
+  return `${lower.slice(0, 1).toUpperCase()}${lower.slice(1)}`;
+};
+
+const FileInputField: React.FC<FileInputFieldProps> = ({
   item,
   index,
   remove,
+  required,
+  inputMode,
 }) => {
   const {
     register,
     formState: { errors },
   } = useFormContext<Jobs.ReqSubmitJob>();
-  const { name, description, sourceUrl, targetPath, id, autoMountLocal } = item;
+  const { name, description, sourceUrl, targetPath, autoMountLocal } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
+  const note = `${inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'}`;
   return (
-    <Collapse open={!sourceUrl} key={uuidv4()} title={name ?? 'File Input'}>
-      <div key={id}>
-        <FieldWrapper
-          label="Name"
-          required={!remove}
-          description="Name of this input"
-          error={itemError?.name}
+    <Collapse
+      open={!sourceUrl}
+      key={uuidv4()}
+      title={name ?? 'File Input'}
+      note={note}
+    >
+      <FieldWrapper
+        label="Name"
+        required={true}
+        description="Name of this input"
+        error={itemError?.name}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={name}
+          {...mapInnerRef(
+            register(`fileInputs.${index}.name`, {
+              required: !remove
+                ? 'This input is required and cannot be renamed'
+                : undefined,
+            })
+          )}
+          disabled={required}
+        />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Source URL"
+        required={true}
+        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+        error={itemError?.sourceUrl}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={sourceUrl}
+          {...mapInnerRef(
+            register(`fileInputs.${index}.sourceUrl`, {
+              required: 'Source URL is required',
+            })
+          )}
+        />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Target Path"
+        required={true}
+        description="File mount path inside of running container"
+        error={itemError?.targetPath}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={targetPath}
+          {...mapInnerRef(
+            register(`fileInputs.${index}.targetPath`, {
+              required: 'Target Path is required',
+            })
+          )}
+        />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Description"
+        required={false}
+        description="Description of this input"
+        error={itemError?.description}
+      >
+        <Input
+          bsSize="sm"
+          defaultValue={description}
+          {...mapInnerRef(register(`fileInputs.${index}.description`))}
+        />
+      </FieldWrapper>
+      <FormGroup check>
+        <Label
+          check
+          className={`form-field__label ${styles.nospace}`}
+          size="sm"
         >
           <Input
+            type="checkbox"
             bsSize="sm"
-            defaultValue={name}
-            {...mapInnerRef(
-              register(`fileInputs.${index}.name`, {
-                required: !remove
-                  ? 'This input is required and cannot be renamed'
-                  : undefined,
-              })
-            )}
-            disabled={!remove}
-          />
-        </FieldWrapper>
-        <FieldWrapper
-          label="Source URL"
-          required={true}
-          description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-          error={itemError?.sourceUrl}
+            defaultChecked={autoMountLocal}
+            {...mapInnerRef(register(`fileInputs.${index}.autoMountLocal`))}
+          />{' '}
+          Auto-mount Local
+        </Label>
+        <FormText
+          className={`form-field__help ${styles.nospace}`}
+          color="muted"
         >
-          <Input
-            bsSize="sm"
-            defaultValue={sourceUrl}
-            {...mapInnerRef(
-              register(`fileInputs.${index}.sourceUrl`, {
-                required: 'Source URL is required',
-              })
-            )}
-          />
-        </FieldWrapper>
-        <FieldWrapper
-          label="Target Path"
-          required={true}
-          description="File mount path inside of running container"
-          error={itemError?.targetPath}
-        >
-          <Input
-            bsSize="sm"
-            defaultValue={targetPath}
-            {...mapInnerRef(
-              register(`fileInputs.${index}.targetPath`, {
-                required: 'Target Path is required',
-              })
-            )}
-          />
-        </FieldWrapper>
-        <FieldWrapper
-          label="Description"
-          required={false}
-          description="Description of this input"
-          error={itemError?.description}
-        >
-          <Input
-            bsSize="sm"
-            defaultValue={description}
-            {...mapInnerRef(register(`fileInputs.${index}.description`))}
-          />
-        </FieldWrapper>
-        <FormGroup check>
-          <Label
-            check
-            className={`form-field__label ${styles.nospace}`}
-            size="sm"
-          >
-            <Input
-              type="checkbox"
-              bsSize="sm"
-              defaultChecked={autoMountLocal}
-              {...mapInnerRef(register(`fileInputs.${index}.autoMountLocal`))}
-            />{' '}
-            Auto-mount Local
-          </Label>
-          <FormText
-            className={`form-field__help ${styles.nospace}`}
-            color="muted"
-          >
-            If this is true, the source URL will be mounted from the execution
-            system's local file system
-          </FormText>
-        </FormGroup>
-        {remove && (
-          <Button onClick={() => remove()} size="sm" className={styles.remove}>
-            Remove
-          </Button>
-        )}
-      </div>
+          If this is true, the source URL will be mounted from the execution
+          system's local file system
+        </FormText>
+      </FormGroup>
+      {!required && (
+        <Button onClick={() => remove()} size="sm" className={styles.remove}>
+          Remove
+        </Button>
+      )}
     </Collapse>
   );
 };
@@ -140,9 +158,12 @@ const isRequired = (fileInput: Jobs.JobFileInput, app: Apps.TapisApp) => {
   );
 };
 
-const getFileInputsOfMode = (app: Apps.TapisApp, inputMode: Apps.FileInputModeEnum) =>
+const getFileInputsOfMode = (
+  app: Apps.TapisApp,
+  inputMode: Apps.FileInputModeEnum
+) =>
   app.jobAttributes?.fileInputs?.filter(
-    appInput => appInput.inputMode === inputMode
+    (appInput) => appInput.inputMode === inputMode
   ) ?? [];
 
 type OptionalInputProps = {
@@ -207,8 +228,8 @@ const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
         <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
       </FieldWrapper>
     </Collapse>
-  )
-}
+  );
+};
 
 const inputIncluded = (
   input: Apps.AppFileInput,
@@ -220,12 +241,16 @@ const inputIncluded = (
 export const FileInputs: React.FC = () => {
   const { job, app } = useJobLauncher();
 
-  const optionalInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Optional);
+  const optionalInputs = getFileInputsOfMode(
+    app,
+    Apps.FileInputModeEnum.Optional
+  );
   const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
 
   const required =
     job.fileInputs?.filter((fileInput) => isRequired(fileInput, app)) ?? 0;
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
+    name: '',
     sourceUrl: '',
     targetPath: '',
     autoMountLocal: true,
@@ -253,17 +278,20 @@ export const FileInputs: React.FC = () => {
         isCollapsable={required === 0}
       >
         {fields.map((item, index) => {
-          const removeCallback = () => {
-            if (!isRequired(item, app)) {
-              remove(index);
-            }
-          };
+          const required = isRequired(item, app);
+          const removeCallback = () => remove(index);
+          const inputMode =
+            app.jobAttributes?.fileInputs?.find(
+              (appInput) => appInput.name === item.name
+            )?.inputMode ?? undefined;
           return (
             <div className={fieldArrayStyles.item}>
               <FileInputField
                 item={item}
                 index={index}
                 remove={removeCallback}
+                required={required}
+                inputMode={inputMode}
               />
             </div>
           );
@@ -310,7 +338,6 @@ export const FileInputs: React.FC = () => {
         </Collapse>
       )}
     </div>
-    
   );
 };
 
