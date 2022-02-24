@@ -46,7 +46,9 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   } = useFormContext<Jobs.ReqSubmitJob>();
   const { name, description, sourceUrl, targetPath, autoMountLocal } = item;
   const itemError = errors?.fileInputs && errors.fileInputs[index];
-  const note = `${inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'}`;
+  const note = `${
+    inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
+  }`;
   return (
     <Collapse
       open={!sourceUrl}
@@ -57,7 +59,11 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
       <FieldWrapper
         label="Name"
         required={true}
-        description="Name of this input"
+        description={`${
+          inputMode === Apps.FileInputModeEnum.Required
+            ? 'This input is required and cannot be renamed'
+            : 'Name of this input'
+        }`}
         error={itemError?.name}
       >
         <Input
@@ -276,6 +282,7 @@ export const FileInputs: React.FC = () => {
         note={`${fields.length} items`}
         requiredText={requiredText}
         isCollapsable={required === 0}
+        className={styles['job-inputs']}
       >
         {fields.map((item, index) => {
           const required = isRequired(item, app);
