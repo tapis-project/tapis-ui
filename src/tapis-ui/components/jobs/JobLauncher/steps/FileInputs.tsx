@@ -275,14 +275,14 @@ export const FileInputs: React.FC = () => {
   const formFileInputs = getValues()?.fileInputs ?? [];
 
   return (
-    <div className={fieldArrayStyles.array}>
+    <div>
       <Collapse
         open={required > 0}
         title="File Inputs"
         note={`${fields.length} items`}
         requiredText={requiredText}
         isCollapsable={required === 0}
-        className={styles['job-inputs']}
+        className={fieldArrayStyles.array}
       >
         {fields.map((item, index) => {
           const required = isRequired(item, app);
@@ -311,6 +311,7 @@ export const FileInputs: React.FC = () => {
         <Collapse
           title="Optional File Inputs"
           note={`${optionalInputs.length} additional files`}
+          className={fieldArrayStyles.array}
         >
           {optionalInputs.map((optionalInput) => {
             const alreadyIncluded = inputIncluded(
@@ -336,6 +337,7 @@ export const FileInputs: React.FC = () => {
         <Collapse
           title="Fixed File Inputs"
           note={`${fixedInputs.length} additional files`}
+          className={fieldArrayStyles.array}
         >
           {fixedInputs.map((fixedInput) => (
             <div className={fieldArrayStyles.item}>
