@@ -137,8 +137,8 @@ export const tapisApp: Apps.TapisApp = {
     ],
     fileInputArrays: [
       {
-        name: '2files.required',
-        description: 'random files',
+        name: 'required-complete',
+        description: 'A required input array that is completely specified',
         inputMode: Apps.FileInputModeEnum.Required,
         sourceUrls: [
           'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/empty.txt',
@@ -147,8 +147,14 @@ export const tapisApp: Apps.TapisApp = {
         targetDir: '/jobs/input/arrays/required/',
       },
       {
-        name: '2files.fixed',
-        description: 'random files',
+        name: 'required-incomplete',
+        description: 'A required input array that is missing sourceUrls',
+        inputMode: Apps.FileInputModeEnum.Required,
+        targetDir: '/jobs/input/arrays/required/'
+      },
+      {
+        name: 'fixed',
+        description: 'A fixed input array',
         inputMode: Apps.FileInputModeEnum.Fixed,
         sourceUrls: [
           'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/empty.txt',
@@ -157,13 +163,19 @@ export const tapisApp: Apps.TapisApp = {
         targetDir: '/jobs/input/arrays/fixed/',
       },
       {
-        name: '2files.optional',
-        description: 'random files',
+        name: 'optional-complete',
+        description: 'An optional input array that is completely specified',
         inputMode: Apps.FileInputModeEnum.Optional,
         sourceUrls: [
           'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/file3.txt',
           'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/file4.txt',
         ],
+        targetDir: '/jobs/input/arrays/optional/',
+      },
+      {
+        name: 'optional-incomplete',
+        description: 'An optional input array that is missing sourceUrls',
+        inputMode: Apps.FileInputModeEnum.Optional,
         targetDir: '/jobs/input/arrays/optional/',
       },
     ],
