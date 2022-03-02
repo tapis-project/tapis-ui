@@ -46,7 +46,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   }`;
   return (
     <Collapse
-      open={!sourceUrl}
+      open={!sourceUrl || !!itemError}
       key={uuidv4()}
       title={name ?? 'File Input'}
       note={note}
@@ -248,7 +248,7 @@ export const FileInputs: React.FC = () => {
     autoMountLocal: true,
   };
 
-  const { control, getValues } = useFormContext<Jobs.ReqSubmitJob>();
+  const { control, getValues, formState: { errors } } = useFormContext<Jobs.ReqSubmitJob>();
   const { fields, append, remove } = useFieldArray<
     Jobs.ReqSubmitJob,
     'fileInputs'
@@ -264,7 +264,7 @@ export const FileInputs: React.FC = () => {
   return (
     <div>
       <Collapse
-        open={requiredInputs.length > 0}
+        open={requiredInputs.length > 0 || !!errors}
         title="File Inputs"
         note={`${fields.length} items`}
         requiredText={requiredText}

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   FieldArray as TFieldArray,
-  ArrayPath,
   useFieldArray,
   useFormContext,
 } from 'react-hook-form';
@@ -20,7 +19,7 @@ import {
 } from 'tapis-api/utils/jobFileInputArrays';
 import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
-import { upperCaseFirstLetter } from './utils';
+import { upperCaseFirstLetter, reduceRecord } from './utils';
 
 
 type FileInputArraySourceUrlsProps = {
@@ -33,11 +32,11 @@ const FileInputArraySourceUrls: React.FC<FileInputArraySourceUrlsProps> = ({ ite
     register,
     control,
     formState: { errors }
-  } = useFormContext<Jobs.ReqSubmitJob>();
-  const { sourceUrls } = item;
+  } = useFormContext();
   const itemError = errors?.fileInputArrays && errors.fileInputArrays[arrayIndex];
   const sourceUrlErrors = itemError?.sourceUrls;
-  const { fields, append, remove } = useFieldArray<Jobs.ReqSubmitJob>({
+
+  const { fields, append, remove } = useFieldArray({
     control,
     name: `fileInputArrays.${arrayIndex}.sourceUrls`
   });
@@ -46,26 +45,27 @@ const FileInputArraySourceUrls: React.FC<FileInputArraySourceUrlsProps> = ({ ite
       label="Source URLs"
       required={true}
       description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
+      error={}
     >
-      {sourceUrls?.map(
-        (url, urlIndex) => (
+      {fields?.map(
+        (url, urlIndex) =>{ 
+          return (
           <div>
             <Input
               bsSize="sm"
-              defaultValue={url}
+              defaultValue={reduceRecord(url)}
               {...mapInnerRef(
                 register(`fileInputArrays.${arrayIndex}.sourceUrls.${urlIndex}`, {
-                  required: 'There must be at least one source URL, and none of them can bey empty strings',
+                  required: 'There must be at least one Source URL, and none can be empty strings',
                 })
               )}
             />
             <Button onClick={() => remove(urlIndex)} size="sm">Remove</Button>
           </div>
-
-        )
+        ) }
       )}
       <div>
-        <Button onClick={() => append('')} size="sm">
+        <Button onClick={() => append('filename')} size="sm">
           + Add File Input
         </Button>
       </div>
@@ -90,7 +90,7 @@ const FileInputArrayField: React.FC<FileInputArrayFieldProps> = ({
     register,
     formState: { errors },
   } = useFormContext<Jobs.ReqSubmitJob>();
-  const { name, description, sourceUrls, targetDir } = item;
+  const { name, description, targetDir } = item;
   const isRequired = inputMode === Apps.FileInputModeEnum.Required;
   const itemError = errors?.fileInputArrays && errors.fileInputArrays[index];
   const note = `${
@@ -98,7 +98,7 @@ const FileInputArrayField: React.FC<FileInputArrayFieldProps> = ({
   }`;
   return (
     <Collapse
-      open={!sourceUrls || !sourceUrls.length}
+      open={true}
       key={uuidv4()}
       title={name ?? 'File Input'}
       note={note}

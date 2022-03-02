@@ -15,6 +15,7 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
   const { nextStep } = useWizard();
   const methods = useForm<Jobs.ReqSubmitJob>({
     defaultValues: job,
+    reValidateMode: 'onBlur'
   });
   const { handleSubmit, reset } = methods;
 
