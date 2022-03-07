@@ -26,6 +26,7 @@ export { default as Paginator } from './Paginator';
 export { default as ProtectedRoute } from './ProtectedRoute';
 /* eslint-disable */
 export { default as FieldWrapper } from './FieldWrapper';
+export { FieldWrapperFormik, FormikInput } from './FieldWrapperFormik';
 export { default as PageLayout } from './PageLayout';
 export { LayoutBody, LayoutHeader, LayoutNavWrapper } from './LayoutSections';
 export { Collapse } from './Collapse';
