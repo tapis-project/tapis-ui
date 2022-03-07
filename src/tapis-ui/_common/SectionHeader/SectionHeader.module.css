@@ -7,7 +7,7 @@
 
   align-content: flex-end; /* preserve alignment of items when wrapped */
 
-  height: 2rem; /* ~32px (26px design * 1.2 design-to-app ratio) */
+  min-height: 2rem; /* ~32px (26px design * 1.2 design-to-app ratio) */
   box-sizing: content-box;
 
   padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
@@ -24,6 +24,12 @@
 
   /* FAQ: It is simpler to do this in CSS than in JavaScript */
   text-transform: capitalize;
+
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: flex-end;
+  align-content: flex-end;
 }
 /* Header actions are always after heading text */
 .heading ~ * {

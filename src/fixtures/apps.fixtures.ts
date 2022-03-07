@@ -1,39 +1,170 @@
+/* eslint-disable no-template-curly-in-string */
 import { Apps } from '@tapis/tapis-typescript';
 
 export const tapisApp: Apps.TapisApp = {
-  id: 'SleepSeconds',
+  tenant: 'tacc',
+  id: 'FullJobAttrs',
   version: '0.0.1',
+  description: 'Sample app for testing singularity in batch mode',
+  owner: 'cicsvc',
+  enabled: true,
+  runtime: Apps.RuntimeEnum.Singularity,
+  runtimeOptions: [Apps.RuntimeOptionEnum.SingularityRun],
+  containerImage: 'library://richcar/default/sleep-seconds-sy:1.0',
+  jobType: Apps.JobTypeEnum.Batch,
+  maxJobs: 2147483647,
+  maxJobsPerUser: 2147483647,
+  strictFileInputs: false,
   jobAttributes: {
+    description: 'Transfer files and sleep for a specified amount of time',
     dynamicExecSystem: false,
     execSystemId: 'testuser2.execution',
-    execSystemExecDir: 'scratch',
-    execSystemInputDir: 'scratch/data',
-    execSystemOutputDir: 'scratch/output',
-    archiveSystemId: 'testuser2.execution',
-    /* eslint-disable-next-line */
-    archiveSystemDir: 'jobs/archive/${JobUUID}',
-    archiveOnAppError: false,
+    execSystemLogicalQueue: 'tapisNormal',
+    archiveOnAppError: true,
+    isMpi: false,
     parameterSet: {
-      appArgs: [],
-      containerArgs: [],
+      appArgs: [
+        {
+          arg: 'someval',
+          name: 'aa.required',
+          description: 'required app arg',
+          inputMode: Apps.ArgInputModeEnum.Required,
+        },
+        {
+          arg: 'someval',
+          name: 'aa.fixed',
+          description: 'fixed app arg',
+          inputMode: Apps.ArgInputModeEnum.Fixed,
+        },
+        {
+          arg: 'someval',
+          name: 'aa.iod',
+          description: 'include on demand app arg',
+          inputMode: Apps.ArgInputModeEnum.IncludeOnDemand,
+        },
+        {
+          arg: 'someval',
+          name: 'aa.ibd',
+          description: 'include by default app arg',
+          inputMode: Apps.ArgInputModeEnum.IncludeByDefault,
+        },
+      ],
+      containerArgs: [
+        {
+          arg: 'ls',
+          name: 'ls.r',
+          description: 'container arg required - ls',
+          inputMode: Apps.ArgInputModeEnum.Required,
+        },
+        {
+          arg: 'cd ./',
+          name: 'cd.f',
+          description: 'container arg fixed - cd',
+          inputMode: Apps.ArgInputModeEnum.Fixed,
+        },
+        {
+          arg: 'cd ./',
+          name: 'cd.iod',
+          description: 'container arg include on demand',
+          inputMode: Apps.ArgInputModeEnum.IncludeOnDemand,
+        },
+        {
+          arg: 'cd ./',
+          name: 'cd.ibd',
+          description: 'app arg include by default',
+          inputMode: Apps.ArgInputModeEnum.IncludeByDefault,
+        },
+      ],
       schedulerOptions: [],
-      envVariables: [],
+      envVariables: [
+        {
+          key: 'MAIN_CLASS',
+          value: 'edu.utexas.tacc.testapps.tapis.SleepSecondsSy',
+        },
+        {
+          key: 'JOBS_PARMS',
+          value: '15',
+        },
+      ],
       archiveFilter: {
-        includes: [],
+        includes: ['Sleep*', 'tapisjob.*'],
         excludes: [],
         includeLaunchFiles: true,
       },
     },
     fileInputs: [
       {
-        sourceUrl: 'tapis://testuser2.execution/data.txt',
-        targetPath: 'data.txt',
-        inPlace: false,
-        meta: {
-          name: 'Data file',
-          required: true,
-          keyValuePairs: [],
-        },
+        name: 'required-complete',
+        description: 'A required input that is completely specified',
+        inputMode: Apps.FileInputModeEnum.Required,
+        autoMountLocal: true,
+        sourceUrl:
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/empty.txt',
+        targetPath: 'empty.txt',
+      },
+      {
+        name: 'required-incomplete',
+        description: 'A required input that is missing a sourceUrl',
+        inputMode: Apps.FileInputModeEnum.Required,
+        autoMountLocal: true,
+        targetPath: 'file1.txt',
+      },
+      {
+        name: 'optional-complete',
+        description: 'An optional input that is completely specified',
+        inputMode: Apps.FileInputModeEnum.Optional,
+        autoMountLocal: true,
+        sourceUrl:
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/optional-file.txt',
+        targetPath: 'file2.txt',
+      },
+      {
+        name: 'optional-incomplete',
+        description: 'An optional input that is missing a sourceUrl',
+        inputMode: Apps.FileInputModeEnum.Optional,
+        autoMountLocal: true,
+        targetPath: 'file3.txt',
+      },
+      {
+        name: 'fixed',
+        description: 'A fixed input that is completely specified',
+        inputMode: Apps.FileInputModeEnum.Fixed,
+        autoMountLocal: true,
+        sourceUrl:
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/fixed-file.txt',
+        targetPath: 'file4.txt',
+      },
+    ],
+    fileInputArrays: [
+      {
+        name: '2files.required',
+        description: 'random files',
+        inputMode: Apps.FileInputModeEnum.Required,
+        sourceUrls: [
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/empty.txt',
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/file1.txt',
+        ],
+        targetDir: '/jobs/input/arrays/required/',
+      },
+      {
+        name: '2files.fixed',
+        description: 'random files',
+        inputMode: Apps.FileInputModeEnum.Fixed,
+        sourceUrls: [
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/empty.txt',
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/file1.txt',
+        ],
+        targetDir: '/jobs/input/arrays/fixed/',
+      },
+      {
+        name: '2files.optional',
+        description: 'random files',
+        inputMode: Apps.FileInputModeEnum.Optional,
+        sourceUrls: [
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/file3.txt',
+          'tapis://tapisv3-exec-slurm-taccprod-new/jobs/input/file4.txt',
+        ],
+        targetDir: '/jobs/input/arrays/optional/',
       },
     ],
     nodeCount: 1,
@@ -41,8 +172,14 @@ export const tapisApp: Apps.TapisApp = {
     memoryMB: 100,
     maxMinutes: 10,
     subscriptions: [],
-    tags: [],
+    tags: ['test', 'sleep'],
   },
+  tags: [],
+  notes: {},
+  uuid: 'd3412826-13fc-4709-b9d9-26ccbc0ecbd3',
+  deleted: false,
+  created: '2022-02-23T19:13:00.460695Z',
+  updated: '2022-02-23T19:13:00.460695Z',
 };
 
 export const appsResponse: Apps.RespApps = {

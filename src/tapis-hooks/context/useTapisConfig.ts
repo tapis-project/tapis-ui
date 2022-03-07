@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { useQuery } from 'react-query';
 import Cookies from 'js-cookie';
 import { Authenticator } from '@tapis/tapis-typescript';
+import jwt_decode from 'jwt-decode';
 import TapisContext from './TapisContext';
 
 const useTapisConfig = () => {
@@ -34,10 +35,15 @@ const useTapisConfig = () => {
     await refetch();
   };
 
+  const claims: { [key: string]: any } = data?.access_token
+    ? jwt_decode(data?.access_token)
+    : {};
+
   return {
     basePath,
     accessToken: data,
     setAccessToken,
+    claims,
   };
 };
 

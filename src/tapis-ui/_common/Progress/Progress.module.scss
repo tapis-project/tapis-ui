@@ -1,0 +1,23 @@
+.progress-bar {
+  position: relative;
+  width: inherit;
+  height: inherit;
+}
+
+.inner-bar {
+  height: 100%;
+  position: relative;
+  width: var(--width);
+  max-width: 100%;
+  background-color: var(--global-color-success--normal);
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  text-align: center;
+}

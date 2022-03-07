@@ -10,6 +10,11 @@
   margin-top: 1em;
 }
 
+.constrain {
+  max-height: 100%;
+  overflow: hidden;
+}
+
 .nav {
   margin-top: 1em;
   flex-basis: 20%;
