@@ -1,5 +1,6 @@
 import FieldWrapper from '../FieldWrapperFormik';
 import { Input, InputProps } from 'reactstrap';
+import { FieldInputProps } from 'formik';
 
 export type FormikInputProps = {
   name: string;
@@ -20,7 +21,7 @@ const FormikInput: React.FC<FormikInputProps> = ({
     label={label}
     required={required}
     description={description}
-    as={(formikProps: InputProps) => (
+    as={(formikProps: FieldInputProps<any>) => (
       <Input bsSize="sm" {...props} {...formikProps} />
     )}
   />
