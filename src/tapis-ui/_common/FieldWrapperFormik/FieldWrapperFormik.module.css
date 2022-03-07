@@ -1,0 +1,14 @@
+.form-field__label {
+  font-weight: bold;
+}
+
+.form-field__help {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.form-field__validation-error {
+  font-size: 0.8rem;
+  color: #eb6e6e;
+  padding-top: 5px;
+}

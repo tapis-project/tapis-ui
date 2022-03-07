@@ -13,6 +13,7 @@
     "babel-plugin-react-css-modules": "^5.2.6",
     "bootstrap": "^4.6.0",
     "cross-fetch": "^3.1.4",
+    "formik": "^2.2.9",
     "js-cookie": "^3.0.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
@@ -32,7 +33,8 @@
     "sass": "^1.37.5",
     "typescript": "^4.3.5",
     "uuid": "^7.0.2",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "yup": "^0.32.11"
   },
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {
