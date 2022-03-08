@@ -1,36 +1,32 @@
-import { Input } from 'reactstrap';
-import { FieldWrapper } from 'tapis-ui/_common';
-import { mapInnerRef } from 'tapis-ui/utils/forms';
-import { useFormContext } from 'react-hook-form';
-import { Jobs } from '@tapis/tapis-typescript';
-import { useJobLauncher } from '../components';
-import { StepSummaryField } from '../components';
+import {
+  FormikJobStepWrapper,
+  StepSummaryField,
+  useJobLauncher,
+} from '../components';
+import { FormikInput } from 'tapis-ui/_common';
+import * as Yup from 'yup';
 
 export const JobStart: React.FC = () => {
-  const { register, formState } = useFormContext<Jobs.ReqSubmitJob>();
-  const { errors } = formState;
-  const { job, app } = useJobLauncher();
+  const { app } = useJobLauncher();
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required(),
+  });
 
   return (
-    <div>
+    <FormikJobStepWrapper validationSchema={validationSchema}>
       <div>
         <i>
           Launching {app.id} v{app.version}
         </i>
       </div>
-      <FieldWrapper
-        description="A name for this job"
-        label="Name"
+      <FormikInput
+        name="name"
         required={true}
-        error={errors['name']}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={job.name}
-          {...mapInnerRef(register('name', { required: 'Name is required' }))}
-        />
-      </FieldWrapper>
-    </div>
+        label="Name"
+        description="A name for this job"
+      />
+    </FormikJobStepWrapper>
   );
 };
 
