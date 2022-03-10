@@ -20,6 +20,7 @@ const JobStepWrapper: React.FC<React.PropsWithChildren<{}>> = ({
 
   const formSubmit = useCallback(
     (value: Jobs.ReqSubmitJob) => {
+      console.log("SUBMITTED VALUE", value);
       add(value);
       nextStep && nextStep();
     },
