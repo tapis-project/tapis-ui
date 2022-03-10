@@ -109,7 +109,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'execSystem',
       name: 'Execution System',
-      render: withJobStepWrapper(<ExecSystem />),
+      render: <ExecSystem />,
       summary: <ExecSystemSummary />,
     },
     {

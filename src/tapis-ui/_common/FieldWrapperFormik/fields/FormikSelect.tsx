@@ -17,7 +17,7 @@ const FormikSelect: React.FC<React.PropsWithChildren<FormikInputProps>> = ({
     required={required}
     description={description}
     as={(formikProps: FieldInputProps<any>) => (
-      <Input bsSize="sm" {...props} {...formikProps}>
+      <Input bsSize="sm" type="select" {...props} {...formikProps}>
         {children}
       </Input>
     )}

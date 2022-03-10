@@ -16,6 +16,7 @@ const FormikJobStepWrapper: React.FC<
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
+      console.log("DEBUG", value);
       add(value);
       nextStep && nextStep();
     },
