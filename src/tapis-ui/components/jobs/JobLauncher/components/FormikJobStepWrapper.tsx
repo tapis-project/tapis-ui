@@ -6,12 +6,13 @@ import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 
 type FormikJobStepWrapperProps = {
   validationSchema: any;
+  initialValues: Partial<Jobs.ReqSubmitJob>;
 };
 
 const FormikJobStepWrapper: React.FC<
   React.PropsWithChildren<FormikJobStepWrapperProps>
-> = ({ children, validationSchema }) => {
-  const { job, add } = useJobLauncher();
+> = ({ children, validationSchema, initialValues }) => {
+  const { add } = useJobLauncher();
   const { nextStep } = useWizard();
 
   const formSubmit = useCallback(
@@ -25,7 +26,7 @@ const FormikJobStepWrapper: React.FC<
 
   return (
     <Formik
-      initialValues={job}
+      initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={formSubmit}
     >

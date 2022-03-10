@@ -19,6 +19,11 @@ export const ExecSystem: React.FC = () => {
 
   const { job, add, app, systems } = useJobLauncher();
 
+  const initialValues: Partial<Jobs.ReqSubmitJob> = {
+    execSystemId: job.execSystemId,
+    execSystemLogicalQueue: job.execSystemLogicalQueue
+  };
+
   const [selectedSystem, setSelectedSystem] = useState(
     job.execSystemId ?? app.jobAttributes?.execSystemId ?? ''
   );
@@ -62,7 +67,7 @@ export const ExecSystem: React.FC = () => {
   );
 
   return (
-    <FormikJobStepWrapper validationSchema={validationSchema}>
+    <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>
       <FormikSelect
         name="execSystemId"
         description="The execution system for this job"
