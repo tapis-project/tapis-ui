@@ -103,7 +103,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'start',
       name: `Job Name`,
-      render: withJobStepWrapper(<JobStart />),
+      render: <JobStart />,
       summary: <JobStartSummary />,
     },
     {
