@@ -30,6 +30,9 @@ export const ExecSystem: React.FC = () => {
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
     findLogicalQueues(systems, selectedSystem)
   );
+  const [ logicalQueue, setLogicalQueue ] = useState(
+    job.execSystemLogicalQueue
+  )
 
   useEffect(
     () => {
@@ -41,9 +44,10 @@ export const ExecSystem: React.FC = () => {
         add({
           execSystemLogicalQueue: batchDefaultLogicalQueue
         });
+        setLogicalQueue(batchDefaultLogicalQueue);
       }
     },
-    [ systems, selectedSystem ]
+    [ systems, selectedSystem, setLogicalQueue ]
   )
   const setSystem = useCallback(
     (systemId: string) => {
@@ -59,11 +63,13 @@ export const ExecSystem: React.FC = () => {
         add({
           execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
         });
+        setLogicalQueue(app.jobAttributes?.execSystemLogicalQueue);
       } else {
         add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
+        setLogicalQueue(systemDetail.batchDefaultLogicalQueue);
       }
     },
-    [setSelectedSystem, setQueues, systems, add, app]
+    [setSelectedSystem, setQueues, systems, add, app, setLogicalQueue]
   );
 
   return (
@@ -87,7 +93,8 @@ export const ExecSystem: React.FC = () => {
           name="execSystemLogicalQueue"
           description="The batch queue on this execution system"
           label="Batch Logical Queue"
-          required={false}        
+          required={false}
+          value={logicalQueue}
         >
           {queues.map((queue) => (
             <option value={queue.name} key={uuidv4()}>

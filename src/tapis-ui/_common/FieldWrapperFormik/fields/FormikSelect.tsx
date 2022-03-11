@@ -1,3 +1,4 @@
+import { ChangeEvent } from 'react';
 import FieldWrapper from '../FieldWrapperFormik';
 import { Input } from 'reactstrap';
 import { FieldInputProps } from 'formik';
@@ -16,11 +17,19 @@ const FormikSelect: React.FC<React.PropsWithChildren<FormikInputProps>> = ({
     label={label}
     required={required}
     description={description}
-    as={(formikProps: FieldInputProps<any>) => (
-      <Input bsSize="sm" type="select" {...props} {...formikProps}>
-        {children}
-      </Input>
-    )}
+    as={(formikProps: FieldInputProps<any>) => {
+      const { onChange: formikOnChange, ...otherFormikProps } = formikProps;
+      const { onChange: passedOnChange, ...otherProps} = props;
+      const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        passedOnChange && passedOnChange(event);
+        formikOnChange && formikOnChange(event);
+      }
+      return (
+        <Input bsSize="sm" type="select" onChange={onChange} {...otherProps} {...otherFormikProps}>
+          {children}
+        </Input>
+      )
+    }}
   />
 );
 
