@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useJobLauncher, StepSummaryField } from '../components';
 import { FormikJobStepWrapper } from '../components';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
 const findLogicalQueues = (
@@ -11,28 +12,15 @@ const findLogicalQueues = (
   systemId: string
 ) => systems.find((system) => system.id === systemId)?.batchLogicalQueues ?? [];
 
-export const ExecSystem: React.FC = () => {
-  const validationSchema = Yup.object({
-    execSystemId: Yup.string().required(),
-    execSystemLogicalQueue: Yup.string()
-  });
-
+const SystemSelector: React.FC = () => {
+  const { setFieldValue } = useFormikContext();
   const { job, add, app, systems } = useJobLauncher();
-
-  const initialValues: Partial<Jobs.ReqSubmitJob> = {
-    execSystemId: job.execSystemId,
-    execSystemLogicalQueue: job.execSystemLogicalQueue
-  };
-
   const [selectedSystem, setSelectedSystem] = useState(
     job.execSystemId ?? app.jobAttributes?.execSystemId ?? ''
   );
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
     findLogicalQueues(systems, selectedSystem)
   );
-  const [ logicalQueue, setLogicalQueue ] = useState(
-    job.execSystemLogicalQueue
-  )
 
   useEffect(
     () => {
@@ -44,11 +32,12 @@ export const ExecSystem: React.FC = () => {
         add({
           execSystemLogicalQueue: batchDefaultLogicalQueue
         });
-        setLogicalQueue(batchDefaultLogicalQueue);
+        setFieldValue('execSystemLogicalQueue', batchDefaultLogicalQueue);
       }
     },
-    [ systems, selectedSystem, setLogicalQueue ]
-  )
+    [ systems, selectedSystem, setFieldValue ]
+  );
+
   const setSystem = useCallback(
     (systemId: string) => {
       setSelectedSystem(systemId);
@@ -63,23 +52,23 @@ export const ExecSystem: React.FC = () => {
         add({
           execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
         });
-        setLogicalQueue(app.jobAttributes?.execSystemLogicalQueue);
+        setFieldValue('execSystemLogicalQueue', app.jobAttributes?.execSystemLogicalQueue);
       } else {
         add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
-        setLogicalQueue(systemDetail.batchDefaultLogicalQueue);
+        setFieldValue('execSystemLogicalQueue', systemDetail.batchDefaultLogicalQueue);
       }
     },
-    [setSelectedSystem, setQueues, systems, add, app, setLogicalQueue]
+    [setSelectedSystem, setQueues, systems, add, app]
   );
-
   return (
-    <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>
+    <>
       <FormikSelect
         name="execSystemId"
         description="The execution system for this job"
         label="Execution System"
         required={true}
         onChange={(event) => setSystem(event.target.value)}
+        value={selectedSystem}
       >
         {systems.map((system) => (
           <option value={system.id} key={uuidv4()}>
@@ -94,7 +83,6 @@ export const ExecSystem: React.FC = () => {
           description="The batch queue on this execution system"
           label="Batch Logical Queue"
           required={false}
-          value={logicalQueue}
         >
           {queues.map((queue) => (
             <option value={queue.name} key={uuidv4()}>
@@ -103,6 +91,27 @@ export const ExecSystem: React.FC = () => {
           ))}
         </FormikSelect>
       )}
+    </>
+  )
+}
+
+export const ExecSystem: React.FC = () => {
+ 
+  const validationSchema = Yup.object({
+    execSystemId: Yup.string().required(),
+    execSystemLogicalQueue: Yup.string()
+  });
+
+  const { job, add, app, systems } = useJobLauncher();
+
+  const initialValues: Partial<Jobs.ReqSubmitJob> = {
+    execSystemId: job.execSystemId,
+    execSystemLogicalQueue: job.execSystemLogicalQueue
+  };
+
+  return (
+    <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>
+      <SystemSelector />
     </FormikJobStepWrapper>
   );
 };
