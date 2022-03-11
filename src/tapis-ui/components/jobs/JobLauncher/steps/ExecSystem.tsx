@@ -13,11 +13,10 @@ const findLogicalQueues = (
 ) => systems.find((system) => system.id === systemId)?.batchLogicalQueues ?? [];
 
 const SystemSelector: React.FC = () => {
-  const { setFieldValue } = useFormikContext();
+  const { setFieldValue, values } = useFormikContext();
   const { job, add, app, systems } = useJobLauncher();
-  const [selectedSystem, setSelectedSystem] = useState(
-    job.execSystemId ?? app.jobAttributes?.execSystemId ?? ''
-  );
+  const selectedSystem = (values as Partial<Jobs.ReqSubmitJob>).execSystemId ?? job.execSystemId ?? app.jobAttributes?.execSystemId ?? '';
+
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
     findLogicalQueues(systems, selectedSystem)
   );
@@ -35,16 +34,22 @@ const SystemSelector: React.FC = () => {
         setFieldValue('execSystemLogicalQueue', batchDefaultLogicalQueue);
       }
     },
-    [ systems, selectedSystem, setFieldValue ]
+    [ systems, selectedSystem, setFieldValue, add ]
   );
 
   const setSystem = useCallback(
     (systemId: string) => {
-      setSelectedSystem(systemId);
+      setFieldValue('execSystemId', systemId);
       add({ execSystemId: systemId });
+
+      // Populate the queues dropdown with the available queues in the selected system
       const systemDetail = systems.find((system) => system.id === systemId)!;
       const queues = systemDetail.batchLogicalQueues ?? [];
       setQueues(queues);
+
+      // Upon selecting a system, try to populate the logical queue selection
+      // with the app's specified logical queue. If the app does not specify
+      // a logical queue, fall back to the system's default logical queue
       const selectedSystemHasJobQueue = queues.some(
         (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
       );
@@ -58,7 +63,7 @@ const SystemSelector: React.FC = () => {
         setFieldValue('execSystemLogicalQueue', systemDetail.batchDefaultLogicalQueue);
       }
     },
-    [setSelectedSystem, setQueues, systems, add, app]
+    [setFieldValue, setQueues, systems, add, app]
   );
   return (
     <>
@@ -102,7 +107,7 @@ export const ExecSystem: React.FC = () => {
     execSystemLogicalQueue: Yup.string()
   });
 
-  const { job, add, app, systems } = useJobLauncher();
+  const { job } = useJobLauncher();
 
   const initialValues: Partial<Jobs.ReqSubmitJob> = {
     execSystemId: job.execSystemId,

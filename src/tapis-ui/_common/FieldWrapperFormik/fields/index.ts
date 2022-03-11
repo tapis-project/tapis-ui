@@ -1,4 +1,4 @@
-import { Input, InputProps } from 'reactstrap';
+import { InputProps } from 'reactstrap';
 
 export type FormikInputProps = {
   name: string;
