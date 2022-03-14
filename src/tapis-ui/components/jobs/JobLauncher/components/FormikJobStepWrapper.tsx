@@ -12,7 +12,6 @@ type FormikJobStepWrapperProps = {
 const FormikJobStepWrapper: React.FC<
   React.PropsWithChildren<FormikJobStepWrapperProps>
 > = ({ children, validationSchema, initialValues }) => {
-  console.log("Formik initialvalues", initialValues);
   const { add } = useJobLauncher();
   const { nextStep } = useWizard();
 
@@ -29,6 +28,7 @@ const FormikJobStepWrapper: React.FC<
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={formSubmit}
+      enableReinitialize={true}
     >
       <Form>
         {children}

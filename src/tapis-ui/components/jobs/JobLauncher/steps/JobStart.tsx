@@ -15,11 +15,14 @@ export const JobStart: React.FC = () => {
   });
 
   const initialValues: Partial<Jobs.ReqSubmitJob> = {
-    name: job.name
-  }
+    name: job.name,
+  };
 
   return (
-    <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>
+    <FormikJobStepWrapper
+      validationSchema={validationSchema}
+      initialValues={initialValues}
+    >
       <div>
         <i>
           Launching {app.id} v{app.version}
@@ -30,7 +33,6 @@ export const JobStart: React.FC = () => {
         required={true}
         label="Name"
         description="A name for this job"
-        value={job.name}
       />
     </FormikJobStepWrapper>
   );

@@ -90,7 +90,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     { refetchOnWindowFocus: false }
   );
   const app = data?.result;
-  const systems = systemsData?.result ?? [];
+  const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
   const [defaultValues, setDefaultValues] = useState<
     Partial<Jobs.ReqSubmitJob>
   >({});

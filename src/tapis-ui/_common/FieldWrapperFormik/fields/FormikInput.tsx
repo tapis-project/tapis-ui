@@ -15,13 +15,9 @@ const FormikInput: React.FC<FormikInputProps> = ({
     label={label}
     required={required}
     description={description}
-    as={(formikProps: FieldInputProps<any>) => {
-      console.log("props", props);
-      console.log("formik props", formikProps);
-      return (
-        <Input bsSize="sm" {...props} {...formikProps} />
-      )
-    }}
+    as={(formikProps: FieldInputProps<any>) => (
+      <Input bsSize="sm" {...props} {...formikProps} />
+    )}
   />
 );
 

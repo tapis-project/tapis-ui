@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Jobs, Systems } from '@tapis/tapis-typescript';
 import { v4 as uuidv4 } from 'uuid';
 import { useJobLauncher, StepSummaryField } from '../components';
@@ -15,7 +15,11 @@ const findLogicalQueues = (
 const SystemSelector: React.FC = () => {
   const { setFieldValue, values } = useFormikContext();
   const { job, add, app, systems } = useJobLauncher();
-  const selectedSystem = (values as Partial<Jobs.ReqSubmitJob>).execSystemId ?? job.execSystemId ?? app.jobAttributes?.execSystemId ?? '';
+  const selectedSystem =
+    (values as Partial<Jobs.ReqSubmitJob>).execSystemId ??
+    job.execSystemId ??
+    app.jobAttributes?.execSystemId ??
+    '';
 
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
     findLogicalQueues(systems, selectedSystem)
@@ -41,10 +45,16 @@ const SystemSelector: React.FC = () => {
         add({
           execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
         });
-        setFieldValue('execSystemLogicalQueue', app.jobAttributes?.execSystemLogicalQueue);
+        setFieldValue(
+          'execSystemLogicalQueue',
+          app.jobAttributes?.execSystemLogicalQueue
+        );
       } else {
         add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
-        setFieldValue('execSystemLogicalQueue', systemDetail.batchDefaultLogicalQueue);
+        setFieldValue(
+          'execSystemLogicalQueue',
+          systemDetail.batchDefaultLogicalQueue
+        );
       }
     },
     [setFieldValue, setQueues, systems, add, app]
@@ -81,25 +91,27 @@ const SystemSelector: React.FC = () => {
         </FormikSelect>
       )}
     </>
-  )
-}
+  );
+};
 
 export const ExecSystem: React.FC = () => {
- 
   const validationSchema = Yup.object({
     execSystemId: Yup.string().required(),
-    execSystemLogicalQueue: Yup.string()
+    execSystemLogicalQueue: Yup.string(),
   });
 
   const { job } = useJobLauncher();
 
   const initialValues: Partial<Jobs.ReqSubmitJob> = {
     execSystemId: job.execSystemId,
-    execSystemLogicalQueue: job.execSystemLogicalQueue
+    execSystemLogicalQueue: job.execSystemLogicalQueue,
   };
 
   return (
-    <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>
+    <FormikJobStepWrapper
+      validationSchema={validationSchema}
+      initialValues={initialValues}
+    >
       <SystemSelector />
     </FormikJobStepWrapper>
   );
