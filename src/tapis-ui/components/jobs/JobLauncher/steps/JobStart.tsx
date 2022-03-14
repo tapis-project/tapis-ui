@@ -30,6 +30,7 @@ export const JobStart: React.FC = () => {
         required={true}
         label="Name"
         description="A name for this job"
+        value={job.name}
       />
     </FormikJobStepWrapper>
   );
