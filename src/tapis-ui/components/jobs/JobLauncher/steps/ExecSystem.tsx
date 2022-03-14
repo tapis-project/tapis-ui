@@ -21,22 +21,6 @@ const SystemSelector: React.FC = () => {
     findLogicalQueues(systems, selectedSystem)
   );
 
-  useEffect(
-    () => {
-      const batchDefaultLogicalQueue = systems.find(
-        (system) => system.id === selectedSystem
-      )?.batchDefaultLogicalQueue;
-
-      if (!!batchDefaultLogicalQueue) {
-        add({
-          execSystemLogicalQueue: batchDefaultLogicalQueue
-        });
-        setFieldValue('execSystemLogicalQueue', batchDefaultLogicalQueue);
-      }
-    },
-    [ systems, selectedSystem, setFieldValue, add ]
-  );
-
   const setSystem = useCallback(
     (systemId: string) => {
       setFieldValue('execSystemId', systemId);
