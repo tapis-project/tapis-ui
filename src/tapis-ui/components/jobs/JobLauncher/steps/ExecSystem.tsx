@@ -19,7 +19,7 @@ const getSystem = (systems: Array<Systems.TapisSystem>, systemId?: string) =>
  * - If the selected system has a default logical queue and the one in the app is not present, use that
  * - If no app logical queue is specified and no system default queue is specified, return undefined;
  */
-const getLogicalQueue = (
+export const getLogicalQueue = (
   app: Apps.TapisApp,
   systems: Array<Systems.TapisSystem>,
   systemId?: string
