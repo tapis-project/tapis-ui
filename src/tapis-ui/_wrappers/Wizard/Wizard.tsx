@@ -158,4 +158,4 @@ function Wizard({ steps, memo, renderSubmit }: WizardProps) {
   );
 }
 
-export default React.memo(Wizard) as typeof Wizard;
+export default Wizard;

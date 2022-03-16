@@ -1,13 +1,7 @@
 import FieldWrapper from '../FieldWrapperFormik';
-import { Input, InputProps } from 'reactstrap';
+import { Input } from 'reactstrap';
 import { FieldInputProps } from 'formik';
-
-export type FormikInputProps = {
-  name: string;
-  label: string;
-  required: boolean;
-  description: string;
-} & InputProps;
+import { FormikInputProps } from '.';
 
 const FormikInput: React.FC<FormikInputProps> = ({
   name,

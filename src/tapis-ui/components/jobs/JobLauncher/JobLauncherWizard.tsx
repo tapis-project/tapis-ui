@@ -99,7 +99,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       setDefaultValues(generateDefaultValues(app, systems));
     }
   }, [app, systems]);
-  const steps: Array<WizardStep> = [
+  const generateSteps = (): Array<WizardStep> => [
     {
       id: 'start',
       name: `Job Name`,
@@ -109,7 +109,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'execSystem',
       name: 'Execution System',
-      render: withJobStepWrapper(<ExecSystem />),
+      render: <ExecSystem />,
       summary: <ExecSystemSummary />,
     },
     {
@@ -134,7 +134,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       {app && (
         <JobLauncherProvider value={{ app, systems, defaultValues }}>
           <Wizard
-            steps={steps}
+            steps={generateSteps()}
             memo={`${app.id}${app.version}`}
             renderSubmit={<JobLauncherWizardSubmit app={app} />}
           />
