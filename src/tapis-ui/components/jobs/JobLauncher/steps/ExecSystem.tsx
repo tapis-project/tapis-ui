@@ -23,7 +23,7 @@ const getLogicalQueue = (
   app: Apps.TapisApp,
   systems: Array<Systems.TapisSystem>,
   systemId?: string
-) => {
+): string | undefined => {
   if (!systemId) {
     return undefined;
   }
