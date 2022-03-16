@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { Jobs, Systems } from '@tapis/tapis-typescript';
+import { useMemo, useEffect, useState } from 'react';
+import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { v4 as uuidv4 } from 'uuid';
 import { useJobLauncher, StepSummaryField } from '../components';
 import { FormikJobStepWrapper } from '../components';
@@ -7,58 +7,72 @@ import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
-const findLogicalQueues = (
+const getLogicalQueues = (system?: Systems.TapisSystem) =>
+  system?.batchLogicalQueues ?? [];
+
+const getSystem = (systems: Array<Systems.TapisSystem>, systemId?: string) =>
+  !!systemId ? systems.find((system) => system.id === systemId) : undefined;
+
+/**
+ * Returns a default logical queue based on the following priority:
+ * - If the selected system has the logical queue specified in the app, use that
+ * - If the selected system has a default logical queue and the one in the app is not present, use that
+ * - If no app logical queue is specified and no system default queue is specified, return undefined;
+ */
+const getLogicalQueue = (
+  app: Apps.TapisApp,
   systems: Array<Systems.TapisSystem>,
-  systemId: string
-) => systems.find((system) => system.id === systemId)?.batchLogicalQueues ?? [];
+  systemId?: string
+) => {
+  if (!systemId) {
+    return undefined;
+  }
+  const system = getSystem(systems, systemId);
+  if (!system) {
+    return undefined;
+  }
+  const queues = getLogicalQueues(system);
+  if (!!app.jobAttributes?.execSystemLogicalQueue) {
+    const selectedSystemHasAppDefault = queues.some(
+      (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
+    );
+    if (selectedSystemHasAppDefault) {
+      return app.jobAttributes?.execSystemLogicalQueue;
+    }
+  }
+  if (!!system.batchDefaultLogicalQueue) {
+    return system.batchDefaultLogicalQueue;
+  }
+  return undefined;
+};
 
 const SystemSelector: React.FC = () => {
   const { setFieldValue, values } = useFormikContext();
-  const { job, add, app, systems } = useJobLauncher();
-  const selectedSystem =
-    (values as Partial<Jobs.ReqSubmitJob>).execSystemId ??
-    job.execSystemId ??
-    app.jobAttributes?.execSystemId ??
-    '';
+  const { job, app, add, systems } = useJobLauncher();
 
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
-    findLogicalQueues(systems, selectedSystem)
+    getLogicalQueues(getSystem(systems, job.execSystemId))
   );
 
-  const setSystem = useCallback(
-    (systemId: string) => {
-      setFieldValue('execSystemId', systemId);
-      add({ execSystemId: systemId });
+  const selectedSystem = useMemo(
+    () => (values as Jobs.ReqSubmitJob)?.execSystemId,
+    [values]
+  );
 
-      // Populate the queues dropdown with the available queues in the selected system
-      const systemDetail = systems.find((system) => system.id === systemId)!;
-      const queues = systemDetail.batchLogicalQueues ?? [];
-      setQueues(queues);
-
-      // Upon selecting a system, try to populate the logical queue selection
-      // with the app's specified logical queue. If the app does not specify
-      // a logical queue, fall back to the system's default logical queue
-      const selectedSystemHasJobQueue = queues.some(
-        (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
-      );
-      if (selectedSystemHasJobQueue) {
-        add({
-          execSystemLogicalQueue: app.jobAttributes?.execSystemLogicalQueue,
-        });
-        setFieldValue(
-          'execSystemLogicalQueue',
-          app.jobAttributes?.execSystemLogicalQueue
-        );
-      } else {
-        add({ execSystemLogicalQueue: systemDetail.batchDefaultLogicalQueue });
-        setFieldValue(
-          'execSystemLogicalQueue',
-          systemDetail.batchDefaultLogicalQueue
-        );
-      }
+  useEffect(
+    () => {
+      const logicalQueue = getLogicalQueue(app, systems, selectedSystem);
+      setQueues(getLogicalQueues(getSystem(systems, selectedSystem)));
+      setFieldValue('execSystemLogicalQueue', logicalQueue);
+      add({
+        execSystemId: selectedSystem,
+        execSystemLogicalQueue: logicalQueue,
+      });
     },
-    [setFieldValue, setQueues, systems, add, app]
+    /* eslint-disable-next-line */
+    [selectedSystem, setQueues, setFieldValue]
   );
+
   return (
     <>
       <FormikSelect
@@ -66,8 +80,6 @@ const SystemSelector: React.FC = () => {
         description="The execution system for this job"
         label="Execution System"
         required={true}
-        onChange={(event) => setSystem(event.target.value)}
-        value={selectedSystem}
       >
         {systems.map((system) => (
           <option value={system.id} key={uuidv4()}>
@@ -76,7 +88,7 @@ const SystemSelector: React.FC = () => {
         ))}
       </FormikSelect>
 
-      {selectedSystem && (
+      {!!selectedSystem && (
         <FormikSelect
           name="execSystemLogicalQueue"
           description="The batch queue on this execution system"
@@ -95,17 +107,19 @@ const SystemSelector: React.FC = () => {
 };
 
 export const ExecSystem: React.FC = () => {
+  const { job, app, systems } = useJobLauncher();
+  const initialValues: Partial<Jobs.ReqSubmitJob> = {
+    execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
+    execSystemLogicalQueue: job.execSystemId
+      ? getLogicalQueue(app, systems, job.execSystemId)
+      : undefined,
+  };
   const validationSchema = Yup.object({
-    execSystemId: Yup.string().required(),
+    execSystemId: Yup.string().required(
+      'An execution system must be selected for this job'
+    ),
     execSystemLogicalQueue: Yup.string(),
   });
-
-  const { job } = useJobLauncher();
-
-  const initialValues: Partial<Jobs.ReqSubmitJob> = {
-    execSystemId: job.execSystemId,
-    execSystemLogicalQueue: job.execSystemLogicalQueue,
-  };
 
   return (
     <FormikJobStepWrapper
