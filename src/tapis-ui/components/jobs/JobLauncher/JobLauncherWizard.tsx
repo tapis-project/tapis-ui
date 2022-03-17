@@ -115,7 +115,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'fileInputs',
       name: 'File Inputs',
-      render: withJobStepWrapper(<FileInputs />),
+      render: <FileInputs />,
       summary: <FileInputsSummary />,
     },
     {

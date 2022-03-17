@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, MutableRefObject } from 'react';
 import {
   FieldArray as TFieldArray,
   useFieldArray,
@@ -19,12 +19,18 @@ import {
 } from 'tapis-api/utils/jobFileInputs';
 import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
+import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
+import { FormikJobStepWrapper } from '../components';
+import * as Yup from 'yup';
+import {
+  generateRequiredFileInputsFromApp,
+  fileInputsComplete,
+} from 'tapis-api/utils/jobFileInputs';
 
 type FileInputFieldProps = {
   item: Jobs.JobFileInput;
   index: number;
-  remove: () => void;
-  inputMode: Apps.FileInputModeEnum | undefined;
+  remove: (index: number) => Jobs.JobFileInput | undefined;
 };
 
 const upperCaseFirstLetter = (str: string) => {
@@ -32,6 +38,32 @@ const upperCaseFirstLetter = (str: string) => {
   return `${lower.slice(0, 1).toUpperCase()}${lower.slice(1)}`;
 };
 
+const FileInputField: React.FC<FileInputFieldProps> = ({
+  item,
+  index,
+  remove,
+}) => {
+  const { app } = useJobLauncher();
+  const { name, sourceUrl } = item;
+  const inputMode: Apps.FileInputModeEnum | undefined =
+    app.jobAttributes?.fileInputs?.find(
+      (appInput) => appInput.name === item.name
+    )?.inputMode ?? undefined;
+  const isRequired = inputMode === Apps.FileInputModeEnum.Required;
+  const note = `${
+    inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
+  }`;
+  return (
+    <Collapse
+      open={!sourceUrl}
+      key={uuidv4()}
+      title={name ?? 'File Input'}
+      note={note}
+    >
+    </Collapse>
+  )
+}
+/*
 const FileInputField: React.FC<FileInputFieldProps> = ({
   item,
   index,
@@ -152,6 +184,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
     </Collapse>
   );
 };
+*/
 
 const getFileInputsOfMode = (
   app: Apps.TapisApp,
@@ -233,6 +266,66 @@ const inputIncluded = (
   return jobInputs.some((jobInput) => jobInput.name === input.name);
 };
 
+const FileInputCollapse: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+  const { app } = useJobLauncher();
+  const { values } = useFormikContext();
+  const requiredInputs = getFileInputsOfMode(
+    app,
+    Apps.FileInputModeEnum.Required
+  );
+  let requiredText =
+    requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
+  const fileInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
+  return (
+    <Collapse
+      open={requiredInputs.length > 0}
+      title="File Inputs"
+      note={`${fileInputs.length} items`}
+      requiredText={requiredText}
+      isCollapsable={requiredInputs.length === 0}
+      className={fieldArrayStyles.array}
+    >
+      {children}
+    </Collapse>
+  )
+}
+
+const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHelpers }) => {
+  const { app } = useJobLauncher();
+
+  const optionalInputs = getFileInputsOfMode(
+    app,
+    Apps.FileInputModeEnum.Optional
+  );
+  console.log("Array helpers", arrayHelpers);
+  return (
+    <div>
+      Optional Inputs
+    </div>
+  )
+}
+
+const FixedInputs: React.FC = () => {
+  const { app } = useJobLauncher();
+  const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
+  return (
+    <div>
+      Fixed Inputs
+    </div>
+  )
+}
+
+const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHelpers }) => {
+  const { values } = useFormikContext();
+  return (
+    <FileInputCollapse>
+      {(values as Partial<Jobs.ReqSubmitJob>)?.fileInputs?.map(
+        (fileInput, index) => <FileInputField item={fileInput} index={index} remove={arrayHelpers.remove}  />
+      )}
+    </FileInputCollapse>
+  )
+}
+
 export const FileInputs: React.FC = () => {
   const { app } = useJobLauncher();
 
@@ -241,10 +334,7 @@ export const FileInputs: React.FC = () => {
     Apps.FileInputModeEnum.Optional
   );
   const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
-  const requiredInputs = getFileInputsOfMode(
-    app,
-    Apps.FileInputModeEnum.Required
-  );
+
 
   const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
     name: '',
@@ -253,19 +343,38 @@ export const FileInputs: React.FC = () => {
     autoMountLocal: true,
   };
 
-  const { control, getValues } = useFormContext<Jobs.ReqSubmitJob>();
-  const { fields, append, remove } = useFieldArray<
-    Jobs.ReqSubmitJob,
-    'fileInputs'
-  >({
-    control,
-    name: 'fileInputs',
+  const validationSchema = Yup.object().shape({
+    fileInputs: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string().min(1).required('A fileInput name is required'),
+        sourceUrl: Yup.string().min(1).required('A sourceUrl is required'),
+        targetPath: Yup.string().min(1).required('A targetPath is required'),
+        autoMountLocal: Yup.boolean()
+      })
+    )
   });
-  let requiredText =
-    requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
 
-  const formFileInputs = getValues()?.fileInputs ?? [];
+  const initialValues = {
+    fileInputs: generateRequiredFileInputsFromApp(app),
+  }
 
+  return (
+    <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>
+      <FieldArray 
+        name='fileInputs'
+        render={arrayHelpers => {
+          return (
+            <>
+              <JobInputs arrayHelpers={arrayHelpers} /> 
+              <OptionalInputs arrayHelpers={arrayHelpers} />
+              <FixedInputs />
+            </>
+          )
+        }}
+      />
+    </FormikJobStepWrapper>
+  )
+/*
   return (
     <div>
       <Collapse
@@ -340,6 +449,7 @@ export const FileInputs: React.FC = () => {
       )}
     </div>
   );
+  */
 };
 
 export const FileInputsSummary: React.FC = () => {
