@@ -21,7 +21,7 @@ import { Collapse } from 'tapis-ui/_common';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
-import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import * as Yup from 'yup';
 import {
   generateRequiredFileInputsFromApp,
@@ -89,6 +89,12 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
         label="Description"
         required={false}
         description="Description of this input"
+      />
+      <FormikCheck
+        name={`fileInputs.${index}.autoMountLocal`}
+        label="Auto-mount Local"
+        required={false}
+        description="If this is true, the source URL will be mounted from the execution system's local file system"
       />
     </Collapse>
   )
