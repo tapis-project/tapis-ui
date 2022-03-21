@@ -12,12 +12,8 @@ const FormikCheck: React.FC<FormikInputProps> = ({
 }: FormikInputProps) => {
   return (
     <FormGroup check>
-      <Label
-        check
-        className={`form-field__label ${styles.nospace}`}
-        size="sm"
-      >
-        <Field 
+      <Label check className={`form-field__label ${styles.nospace}`} size="sm">
+        <Field
           name={name}
           as={(formikProps: FieldInputProps<any>) => (
             <Input bsSize="sm" type="checkbox" {...props} {...formikProps} />
@@ -25,14 +21,11 @@ const FormikCheck: React.FC<FormikInputProps> = ({
         />
         {label}
       </Label>
-      <FormText
-        className={`form-field__help ${styles.nospace}`}
-        color="muted"
-      >
+      <FormText className={`form-field__help ${styles.nospace}`} color="muted">
         {description}
       </FormText>
     </FormGroup>
-  )
+  );
 };
 
 export default FormikCheck;
