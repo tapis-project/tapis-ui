@@ -1,13 +1,7 @@
-import React, { useRef, MutableRefObject, useMemo } from 'react';
-import {
-  FieldArray as TFieldArray,
-  useFieldArray,
-  useFormContext,
-} from 'react-hook-form';
+import React, { useMemo } from 'react';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input, FormText, FormGroup, Label } from 'reactstrap';
-import { mapInnerRef } from 'tapis-ui/utils/forms';
+import { Input } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import styles from './FileInputs.module.scss';
@@ -25,7 +19,6 @@ import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import * as Yup from 'yup';
 import {
   generateRequiredFileInputsFromApp,
-  fileInputsComplete,
 } from 'tapis-api/utils/jobFileInputs';
 
 type FileInputFieldProps = {
@@ -321,26 +314,6 @@ export const FileInputs: React.FC = () => {
       />
     </FormikJobStepWrapper>
   )
-/*
-  return (
-    <div>
-      {!!fixedInputs.length && (
-        <Collapse
-          title="Fixed File Inputs"
-          open={true}
-          note={`${fixedInputs.length} additional files`}
-          className={fieldArrayStyles.array}
-        >
-          {fixedInputs.map((fixedInput) => (
-            <div className={fieldArrayStyles.item}>
-              <FixedInput input={fixedInput} />
-            </div>
-          ))}
-        </Collapse>
-      )}
-    </div>
-  );
-  */
 };
 
 export const FileInputsSummary: React.FC = () => {
