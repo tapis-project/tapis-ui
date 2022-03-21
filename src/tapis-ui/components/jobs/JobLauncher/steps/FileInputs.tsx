@@ -112,44 +112,7 @@ const getFileInputsOfMode = (
     (appInput) => appInput.inputMode === inputMode
   ) ?? [];
 
-type OptionalInputProps = {
-  input: Apps.AppFileInput;
-  included: boolean;
-  onInclude: (input: Apps.AppFileInput) => any;
-};
 
-const OptionalInput: React.FC<OptionalInputProps> = ({
-  input,
-  included,
-  onInclude,
-}) => {
-  return (
-    <Collapse
-      title={`${input.name} ${included ? '(included)' : ''}`}
-      key={uuidv4()}
-      className={styles['optional-input']}
-    >
-      <div className={styles.description}>{input.description ?? ''}</div>
-      <FieldWrapper
-        label="Source URL"
-        required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-      >
-        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Target Path"
-        required={true}
-        description="File mount path inside of running container"
-      >
-        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
-      </FieldWrapper>
-      <Button onClick={() => onInclude(input)} disabled={included}>
-        Include
-      </Button>
-    </Collapse>
-  );
-};
 
 const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
   return (
@@ -184,42 +147,88 @@ const inputIncluded = (
   return jobInputs.some((jobInput) => jobInput.name === input.name);
 };
 
-const FileInputCollapse: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  const { app } = useJobLauncher();
-  const { values } = useFormikContext();
-  const requiredInputs = useMemo(() => getFileInputsOfMode(
-    app,
-    Apps.FileInputModeEnum.Required
-  ), [ app.id, app.version ]);
-  let requiredText =
-    requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
-  const fileInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
+type OptionalInputProps = {
+  input: Apps.AppFileInput;
+  included: boolean;
+  onInclude: () => any;
+};
+
+const OptionalInput: React.FC<OptionalInputProps> = ({
+  input,
+  included,
+  onInclude,
+}) => {
   return (
     <Collapse
-      open={requiredInputs.length > 0}
-      title="File Inputs"
-      note={`${fileInputs.length} items`}
-      requiredText={requiredText}
-      isCollapsable={requiredInputs.length === 0}
-      className={fieldArrayStyles.array}
+      title={`${input.name} ${included ? '(included)' : ''}`}
+      key={uuidv4()}
+      className={styles['optional-input']}
     >
-      {children}
+      <div className={styles.description}>{input.description ?? ''}</div>
+      <FieldWrapper
+        label="Source URL"
+        required={true}
+        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+      >
+        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Target Path"
+        required={true}
+        description="File mount path inside of running container"
+      >
+        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
+      </FieldWrapper>
+      <Button onClick={() => onInclude()} disabled={included} size="sm">
+        Include
+      </Button>
+      {included && (
+        <div className={styles.included}>This optional input has already been included with your job file inputs.</div>
+      )}
     </Collapse>
-  )
-}
+  );
+};
 
 const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHelpers }) => {
   const { app } = useJobLauncher();
+  const { values } = useFormikContext();
 
   const optionalInputs = useMemo(() => getFileInputsOfMode(
     app,
     Apps.FileInputModeEnum.Optional
   ), [ app.id, app.version ]);
-  return (
-    <div>
-      Optional Inputs
-    </div>
-  )
+
+  const formFileInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
+  
+  return !!optionalInputs.length 
+    ? (
+      <Collapse
+        title="Optional File Inputs"
+        open={true}
+        note={`${optionalInputs.length} additional files`}
+        className={fieldArrayStyles.array}
+      >
+        {optionalInputs.map((optionalInput) => {
+          const alreadyIncluded = inputIncluded(
+            optionalInput,
+            formFileInputs
+          );
+          const onInclude = () => {
+            arrayHelpers.push(generateFileInputFromAppInput(optionalInput));
+          };
+          return (
+            <div className={fieldArrayStyles.item}>
+              <OptionalInput
+                input={optionalInput}
+                onInclude={onInclude}
+                included={alreadyIncluded}
+              />
+            </div>
+          );
+        })}
+      </Collapse>
+    )
+    : null;
 }
 
 const FixedInputs: React.FC = () => {
@@ -299,62 +308,6 @@ export const FileInputs: React.FC = () => {
 /*
   return (
     <div>
-      <Collapse
-        open={requiredInputs.length > 0}
-        title="File Inputs"
-        note={`${fields.length} items`}
-        requiredText={requiredText}
-        isCollapsable={requiredInputs.length === 0}
-        className={fieldArrayStyles.array}
-      >
-        {fields.map((item, index) => {
-          const removeCallback = () => remove(index);
-          const inputMode =
-            app.jobAttributes?.fileInputs?.find(
-              (appInput) => appInput.name === item.name
-            )?.inputMode ?? undefined;
-          return (
-            <div className={fieldArrayStyles.item}>
-              <FileInputField
-                item={item}
-                index={index}
-                remove={removeCallback}
-                inputMode={inputMode}
-              />
-            </div>
-          );
-        })}
-        <Button onClick={() => append(appendData)} size="sm">
-          + Add File Input
-        </Button>
-      </Collapse>
-      {!!optionalInputs.length && (
-        <Collapse
-          title="Optional File Inputs"
-          open={true}
-          note={`${optionalInputs.length} additional files`}
-          className={fieldArrayStyles.array}
-        >
-          {optionalInputs.map((optionalInput) => {
-            const alreadyIncluded = inputIncluded(
-              optionalInput,
-              formFileInputs
-            );
-            const onInclude = (input: Apps.AppFileInput) => {
-              append(generateFileInputFromAppInput(optionalInput));
-            };
-            return (
-              <div className={fieldArrayStyles.item}>
-                <OptionalInput
-                  input={optionalInput}
-                  onInclude={onInclude}
-                  included={alreadyIncluded}
-                />
-              </div>
-            );
-          })}
-        </Collapse>
-      )}
       {!!fixedInputs.length && (
         <Collapse
           title="Fixed File Inputs"
