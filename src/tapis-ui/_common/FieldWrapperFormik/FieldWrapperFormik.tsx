@@ -23,6 +23,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
         className="form-field__label"
         size="sm"
         style={{ display: 'flex', alignItems: 'center' }}
+        htmlFor={name}
       >
         {label}
         {required ? (
@@ -31,7 +32,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
           </Badge>
         ) : null}
       </Label>
-      <Field name={name} as={Component} />
+      <Field name={name} as={Component} id={name} />
       <ErrorMessage name={name} className="form-field__help">
         {(message) => (
           <div className={styles['form-field__help']}>{message}</div>

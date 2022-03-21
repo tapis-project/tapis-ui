@@ -27,7 +27,7 @@ describe('RenameModal', () => {
       <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
     );
 
-    const input = screen.getByLabelText('Input');
+    const input = screen.getByLabelText(/Name/);
     await act(async () => {
       fireEvent.change(input, {
         target: {
@@ -62,8 +62,7 @@ describe('RenameModal', () => {
     renderComponent(
       <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
     );
-
-    const input = screen.getByLabelText('Input');
+    const input = screen.getByLabelText(/Name/);
     await act(async () => {
       fireEvent.change(input, {
         target: {
