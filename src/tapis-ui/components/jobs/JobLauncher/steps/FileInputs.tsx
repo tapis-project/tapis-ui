@@ -39,7 +39,7 @@ const upperCaseFirstLetter = (str: string) => {
   return `${lower.slice(0, 1).toUpperCase()}${lower.slice(1)}`;
 };
 
-const FileInputField: React.FC<FileInputFieldProps> = ({
+const JobInputField: React.FC<FileInputFieldProps> = ({
   item,
   index,
   remove,
@@ -234,15 +234,31 @@ const FixedInputs: React.FC = () => {
 
 const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHelpers }) => {
   const { values } = useFormikContext();
+  const { app } = useJobLauncher();
+  const requiredInputs = useMemo(() => getFileInputsOfMode(
+    app,
+    Apps.FileInputModeEnum.Required
+  ), [ app.id, app.version ]);
+  let requiredText =
+    requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
+  const jobInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
+
   return (
-    <FileInputCollapse>
-      {(values as Partial<Jobs.ReqSubmitJob>)?.fileInputs?.map(
-        (fileInput, index) => <FileInputField item={fileInput} index={index} remove={arrayHelpers.remove}  />
+    <Collapse
+      open={requiredInputs.length > 0}
+      title="File Inputs"
+      note={`${jobInputs.length} items`}
+      requiredText={requiredText}
+      isCollapsable={requiredInputs.length === 0}
+      className={fieldArrayStyles.array} 
+    >
+      {jobInputs.map(
+        (jobInput, index) => <JobInputField item={jobInput} index={index} remove={arrayHelpers.remove}  />
       )}
       <Button onClick={() => arrayHelpers.push({})} size="sm">
         + Add File Input
       </Button>
-    </FileInputCollapse>
+    </Collapse>
   )
 }
 
