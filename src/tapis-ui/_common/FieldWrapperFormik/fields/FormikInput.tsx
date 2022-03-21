@@ -1,3 +1,4 @@
+import React from 'react';
 import FieldWrapper from '../FieldWrapperFormik';
 import { Input } from 'reactstrap';
 import { FieldInputProps } from 'formik';
@@ -21,4 +22,4 @@ const FormikInput: React.FC<FormikInputProps> = ({
   />
 );
 
-export default FormikInput;
+export default React.memo(FormikInput);

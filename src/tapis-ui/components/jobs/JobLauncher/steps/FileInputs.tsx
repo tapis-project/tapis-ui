@@ -1,4 +1,4 @@
-import React, { useRef, MutableRefObject } from 'react';
+import React, { useRef, MutableRefObject, useMemo } from 'react';
 import {
   FieldArray as TFieldArray,
   useFieldArray,
@@ -46,10 +46,10 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
 }) => {
   const { app } = useJobLauncher();
   const { name, sourceUrl } = item;
-  const inputMode: Apps.FileInputModeEnum | undefined =
+  const inputMode: Apps.FileInputModeEnum | undefined = useMemo(() =>
     app.jobAttributes?.fileInputs?.find(
       (appInput) => appInput.name === item.name
-    )?.inputMode ?? undefined;
+    )?.inputMode ?? undefined, [ app.id, app.version ]);
   const isRequired = inputMode === Apps.FileInputModeEnum.Required;
   const note = `${
     inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
@@ -57,9 +57,10 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   return (
     <Collapse
       open={!sourceUrl}
-      key={uuidv4()}
+      key={`fileInputs.${index}`}
       title={name ?? 'File Input'}
       note={note}
+      className={styles['job-input']}
     >
       <FormikInput 
         name={`fileInputs.${index}.name`}
@@ -96,131 +97,12 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
         required={false}
         description="If this is true, the source URL will be mounted from the execution system's local file system"
       />
+      {!isRequired && (
+        <Button onClick={() => remove(index)} size="sm">Remove</Button>
+      )}
     </Collapse>
   )
 }
-/*
-const FileInputField: React.FC<FileInputFieldProps> = ({
-  item,
-  index,
-  remove,
-  inputMode,
-}) => {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<Jobs.ReqSubmitJob>();
-  const { name, description, sourceUrl, targetPath, autoMountLocal } = item;
-  const isRequired = inputMode === Apps.FileInputModeEnum.Required;
-  const itemError = errors?.fileInputs && errors.fileInputs[index];
-  const note = `${
-    inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
-  }`;
-  return (
-    <Collapse
-      open={!sourceUrl}
-      key={uuidv4()}
-      title={name ?? 'File Input'}
-      note={note}
-    >
-      <FieldWrapper
-        label="Name"
-        required={true}
-        description={`${
-          inputMode === Apps.FileInputModeEnum.Required
-            ? 'This input is required and cannot be renamed'
-            : 'Name of this input'
-        }`}
-        error={itemError?.name}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={name}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.name`, {
-              required: !remove
-                ? 'This input is required and cannot be renamed'
-                : undefined,
-            })
-          )}
-          disabled={isRequired}
-        />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Source URL"
-        required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-        error={itemError?.sourceUrl}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={sourceUrl}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.sourceUrl`, {
-              required: 'Source URL is required',
-            })
-          )}
-        />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Target Path"
-        required={true}
-        description="File mount path inside of running container"
-        error={itemError?.targetPath}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={targetPath}
-          {...mapInnerRef(
-            register(`fileInputs.${index}.targetPath`, {
-              required: 'Target Path is required',
-            })
-          )}
-        />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Description"
-        required={false}
-        description="Description of this input"
-        error={itemError?.description}
-      >
-        <Input
-          bsSize="sm"
-          defaultValue={description}
-          {...mapInnerRef(register(`fileInputs.${index}.description`))}
-        />
-      </FieldWrapper>
-      <FormGroup check>
-        <Label
-          check
-          className={`form-field__label ${styles.nospace}`}
-          size="sm"
-        >
-          <Input
-            type="checkbox"
-            bsSize="sm"
-            defaultChecked={autoMountLocal}
-            {...mapInnerRef(register(`fileInputs.${index}.autoMountLocal`))}
-          />{' '}
-          Auto-mount Local
-        </Label>
-        <FormText
-          className={`form-field__help ${styles.nospace}`}
-          color="muted"
-        >
-          If this is true, the source URL will be mounted from the execution
-          system's local file system
-        </FormText>
-      </FormGroup>
-      {!isRequired && (
-        <Button onClick={() => remove()} size="sm" className={styles.remove}>
-          Remove
-        </Button>
-      )}
-    </Collapse>
-  );
-};
-*/
 
 const getFileInputsOfMode = (
   app: Apps.TapisApp,
@@ -305,10 +187,10 @@ const inputIncluded = (
 const FileInputCollapse: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const { app } = useJobLauncher();
   const { values } = useFormikContext();
-  const requiredInputs = getFileInputsOfMode(
+  const requiredInputs = useMemo(() => getFileInputsOfMode(
     app,
     Apps.FileInputModeEnum.Required
-  );
+  ), [ app.id, app.version ]);
   let requiredText =
     requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
   const fileInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
@@ -329,11 +211,10 @@ const FileInputCollapse: React.FC<React.PropsWithChildren<{}>> = ({ children }) 
 const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHelpers }) => {
   const { app } = useJobLauncher();
 
-  const optionalInputs = getFileInputsOfMode(
+  const optionalInputs = useMemo(() => getFileInputsOfMode(
     app,
     Apps.FileInputModeEnum.Optional
-  );
-  console.log("Array helpers", arrayHelpers);
+  ), [ app.id, app.version ]);
   return (
     <div>
       Optional Inputs
@@ -343,7 +224,7 @@ const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arr
 
 const FixedInputs: React.FC = () => {
   const { app } = useJobLauncher();
-  const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
+  const fixedInputs = useMemo(() => getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed), [ app.id, app.version ]);
   return (
     <div>
       Fixed Inputs
@@ -358,26 +239,15 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHel
       {(values as Partial<Jobs.ReqSubmitJob>)?.fileInputs?.map(
         (fileInput, index) => <FileInputField item={fileInput} index={index} remove={arrayHelpers.remove}  />
       )}
+      <Button onClick={() => arrayHelpers.push({})} size="sm">
+        + Add File Input
+      </Button>
     </FileInputCollapse>
   )
 }
 
 export const FileInputs: React.FC = () => {
   const { app } = useJobLauncher();
-
-  const optionalInputs = getFileInputsOfMode(
-    app,
-    Apps.FileInputModeEnum.Optional
-  );
-  const fixedInputs = getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed);
-
-
-  const appendData: TFieldArray<Required<Jobs.ReqSubmitJob>, 'fileInputs'> = {
-    name: '',
-    sourceUrl: '',
-    targetPath: '',
-    autoMountLocal: true,
-  };
 
   const validationSchema = Yup.object().shape({
     fileInputs: Yup.array().of(
@@ -390,9 +260,9 @@ export const FileInputs: React.FC = () => {
     )
   });
 
-  const initialValues = {
+  const initialValues = useMemo(() =>  ({
     fileInputs: generateRequiredFileInputsFromApp(app),
-  }
+  }), [ app.id, app.version ]); 
 
   return (
     <FormikJobStepWrapper validationSchema={validationSchema} initialValues={initialValues}>

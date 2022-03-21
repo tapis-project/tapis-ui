@@ -29,6 +29,7 @@ const FormikJobStepWrapper: React.FC<
       validationSchema={validationSchema}
       onSubmit={formSubmit}
       enableReinitialize={true}
+      validateOnChange={false}
     >
       <Form>
         {children}
