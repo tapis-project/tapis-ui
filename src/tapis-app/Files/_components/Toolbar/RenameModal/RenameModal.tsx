@@ -37,16 +37,20 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     newname: Yup.string()
       .min(1)
       .max(255, 'The new filename cannot be longer than 255 characters')
-      .matches(/[a-zA-Z0-9_.-]+/, "Filename must contain only alphanumeric characters and the following: '.', '_', '-'" )
-      .required('The new filename is required')
+      .matches(
+        /[a-zA-Z0-9_.-]+/,
+        "Filename must contain only alphanumeric characters and the following: '.', '_', '-'"
+      )
+      .required('The new filename is required'),
   });
 
   const initialValues = {
-    newname: file?.name ?? inputName ?? ''
-  }
+    newname: file?.name ?? inputName ?? '',
+  };
 
   const onSubmit = useCallback(
     ({ newname }: { newname: string }) => {
+      console.log('ONSUBMIT', newname);
       setInputName(newname);
       if (!file?.name) {
         return;
@@ -79,14 +83,14 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
             onSubmit={onSubmit}
           >
             <Form>
-              <FormikInput 
+              <FormikInput
                 name="newname"
                 label={`${
                   dirOrFile(file?.type).charAt(0).toUpperCase() +
                   dirOrFile(file?.type).slice(1)
                 } Name`}
                 required={true}
-                description="Rename File" 
+                description="Rename File"
               />
             </Form>
           </Formik>

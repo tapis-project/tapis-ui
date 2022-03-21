@@ -30,14 +30,17 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   const validationSchema = Yup.object({
     dirname: Yup.string()
       .min(1)
-      .max(255, "Directory name cannot be longer than 255 characters")
-      .matches(/[a-zA-Z0-9_.-]+/, "Must contain only alphanumeric characters and the following: '.', '_', '-'")
-      .required('Directory name is a required field')
+      .max(255, 'Directory name cannot be longer than 255 characters')
+      .matches(
+        /[a-zA-Z0-9_.-]+/,
+        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
+      )
+      .required('Directory name is a required field'),
   });
 
   const initialValues = {
-    dirname: ''
-  }
+    dirname: '',
+  };
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
     mkdir(systemId ?? '', `${path ?? '/'}${dirname}`, { onSuccess });

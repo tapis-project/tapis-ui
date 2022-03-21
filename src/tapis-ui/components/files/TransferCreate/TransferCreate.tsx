@@ -23,7 +23,6 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   destinationPath,
   className = '',
 }) => {
-
   const { create, data, isLoading, error, isSuccess, reset } = useCreate();
 
   const onSubmit = useCallback(
@@ -49,12 +48,12 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   }, [reset]);
 
   const validationSchema = Yup.object({
-    tag: Yup.string()
-  })
+    tag: Yup.string(),
+  });
 
   const initialValues = {
-    tag: ''
-  }
+    tag: '',
+  };
 
   return (
     <Formik
@@ -63,7 +62,7 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
       onSubmit={onSubmit}
     >
       <Form>
-        <FormikInput 
+        <FormikInput
           name="tag"
           label="Tag"
           required={false}

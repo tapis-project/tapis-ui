@@ -3,7 +3,11 @@ import { useNativeOp } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { Form, Formik } from 'formik';
-import { FormikInput, FormikSelect, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikSelect,
+  FormikCheck,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { focusManager } from 'react-query';
 import * as Yup from 'yup';
@@ -31,25 +35,40 @@ const FileOperation: React.FC<FileOperationProps> = ({
 
   const validationSchema = Yup.object({
     recursive: Yup.boolean(),
-    operation: Yup.string().required("An operation is required"),
-    argument: Yup.string()
+    operation: Yup.string().required('An operation is required'),
+    argument: Yup.string(),
   });
 
   const initialValues = {
     recursive: false,
     operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
-    argument: '' 
-  }
+    argument: '',
+  };
 
   const onSubmit = useCallback(
-    ({ recursive, operation, argument }: { recursive: boolean, operation: Files.NativeLinuxOpRequestOperationEnum, argument: string }) => {
-      nativeOp({ systemId, path, recursive, operation, argument }, { onSuccess });
+    ({
+      recursive,
+      operation,
+      argument,
+    }: {
+      recursive: boolean;
+      operation: Files.NativeLinuxOpRequestOperationEnum;
+      argument: string;
+    }) => {
+      nativeOp(
+        { systemId, path, recursive, operation, argument },
+        { onSuccess }
+      );
     },
     [nativeOp, onSuccess, systemId, path]
   );
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
       <Form className={className}>
         <FormikSelect
           name="operation"
@@ -68,14 +87,14 @@ const FileOperation: React.FC<FileOperationProps> = ({
             CHGRP
           </option>
         </FormikSelect>
-        <FormikInput 
+        <FormikInput
           name="argument"
           label="Arguments"
           required={false}
           description="Arguments for the native file operation"
           aria-label="Arguments"
         />
-        <FormikCheck 
+        <FormikCheck
           name="recursive"
           label="Recursive"
           required={false}
