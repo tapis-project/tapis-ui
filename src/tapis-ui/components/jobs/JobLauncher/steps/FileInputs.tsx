@@ -112,34 +112,6 @@ const getFileInputsOfMode = (
     (appInput) => appInput.inputMode === inputMode
   ) ?? [];
 
-
-
-const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
-  return (
-    <Collapse
-      title={`${input.name}`}
-      key={uuidv4()}
-      className={styles['optional-input']}
-    >
-      <div className={styles.description}>{input.description ?? ''}</div>
-      <FieldWrapper
-        label="Source URL"
-        required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-      >
-        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
-      </FieldWrapper>
-      <FieldWrapper
-        label="Target Path"
-        required={true}
-        description="File mount path inside of running container"
-      >
-        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
-      </FieldWrapper>
-    </Collapse>
-  );
-};
-
 const inputIncluded = (
   input: Apps.AppFileInput,
   jobInputs: Array<Jobs.JobFileInput>
@@ -183,7 +155,7 @@ const OptionalInput: React.FC<OptionalInputProps> = ({
         Include
       </Button>
       {included && (
-        <div className={styles.included}>This optional input has already been included with your job file inputs.</div>
+        <div className={styles.description}>This optional input has already been included with your job file inputs.</div>
       )}
     </Collapse>
   );
@@ -208,6 +180,9 @@ const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arr
         note={`${optionalInputs.length} additional files`}
         className={fieldArrayStyles.array}
       >
+        <div className={styles.description}>
+          These File Inputs are defined in the application and can be included with your job.
+        </div>
         {optionalInputs.map((optionalInput) => {
           const alreadyIncluded = inputIncluded(
             optionalInput,
@@ -231,13 +206,51 @@ const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arr
     : null;
 }
 
+const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
+  return (
+    <Collapse
+      title={`${input.name}`}
+      key={uuidv4()}
+      className={styles['optional-input']}
+    >
+      <div className={styles.description}>{input.description ?? ''}</div>
+      <FieldWrapper
+        label="Source URL"
+        required={true}
+        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+      >
+        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
+      </FieldWrapper>
+      <FieldWrapper
+        label="Target Path"
+        required={true}
+        description="File mount path inside of running container"
+      >
+        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
+      </FieldWrapper>
+    </Collapse>
+  );
+};
+
 const FixedInputs: React.FC = () => {
   const { app } = useJobLauncher();
   const fixedInputs = useMemo(() => getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed), [ app.id, app.version ]);
   return (
-    <div>
-      Fixed Inputs
-    </div>
+    <Collapse
+      title="Fixed File Inputs"
+      open={true}
+      note={`${fixedInputs.length} additional files`}
+      className={fieldArrayStyles.array}
+    >
+      <div className={styles.description}>
+        These File Inputs are defined in the application and will automatically be included with your job. They cannot be removed or altered.
+      </div>
+      {fixedInputs.map((fixedInput) => (
+        <div className={fieldArrayStyles.item}>
+          <FixedInput input={fixedInput} />
+        </div>
+      ))}
+    </Collapse>
   )
 }
 
@@ -261,6 +274,9 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({ arrayHel
       isCollapsable={requiredInputs.length === 0}
       className={fieldArrayStyles.array} 
     >
+      <div className={styles.description}>
+        These File Inputs will be submitted with your job.
+      </div>
       {jobInputs.map(
         (jobInput, index) => <JobInputField item={jobInput} index={index} remove={arrayHelpers.remove}  />
       )}
