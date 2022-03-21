@@ -45,7 +45,7 @@ const FileOperation: React.FC<FileOperationProps> = ({
     ({ recursive, operation, argument }: { recursive: boolean, operation: Files.NativeLinuxOpRequestOperationEnum, argument: string }) => {
       nativeOp({ systemId, path, recursive, operation, argument }, { onSuccess });
     },
-    [nativeOp, onSuccess]
+    [nativeOp, onSuccess, systemId, path]
   );
 
   return (
