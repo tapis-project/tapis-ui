@@ -17,7 +17,6 @@ import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
-import { withJobStepWrapper } from './components';
 
 type JobLauncherWizardProps = {
   appId: string;
@@ -121,7 +120,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'jobSubmission',
       name: 'Job Submission',
-      render: withJobStepWrapper(<JobSubmission />),
+      render: <JobSubmission />,
       summary: <JobSubmissionSummary />,
     },
   ];
