@@ -32,7 +32,6 @@ const generateDefaultValues = (
   app: Apps.TapisApp,
   systems: Array<Systems.TapisSystem>
 ): Partial<Jobs.ReqSubmitJob> => {
-  console.log("Generating defaults");
   const systemDefaultQueue = systems.find(
     (system) => system.id === app.jobAttributes?.execSystemId
   )?.batchDefaultLogicalQueue;
@@ -128,7 +127,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'fileInputArrays',
       name: 'File Input Arrays',
-      render: withJobStepWrapper(<FileInputArrays />),
+      render: <FileInputArrays />,
       summary: <FileInputArraysSummary />
     },
     {
