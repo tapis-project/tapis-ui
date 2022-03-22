@@ -14,7 +14,7 @@ import {
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
-import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 
@@ -129,15 +129,15 @@ const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
       className={styles['optional-input']}
     >
       <div className={styles.description}>{inputArray.description ?? ''}</div>
-      {/*
       <FieldWrapper
-        label="Source URL"
+        label="Source URLs"
         required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+        description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
       >
-        <Input bsSize="sm" defaultValue={inputArray.sourceUrl} disabled={true} />
+        {inputArray.sourceUrls?.map(
+          (sourceUrl) => (<Input bsSize="sm" defaultValue={sourceUrl} disabled={true} />)
+        )}
       </FieldWrapper>
-      */}
       <FieldWrapper
         label="Target Path"
         required={true}
@@ -211,22 +211,22 @@ const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({ inp
       className={styles['optional-input']}
     >
       <div className={styles.description}>{inputArray.description ?? ''}</div>
-      {/*
       <FieldWrapper
-        label="Source URL"
+        label="Source URLs"
         required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+        description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
       >
-        <Input bsSize="sm" defaultValue={inputArray.sourceUrl} disabled={true} />
+        {inputArray.sourceUrls?.map(
+          (sourceUrl) => (<Input bsSize="sm" defaultValue={sourceUrl} disabled={true} />)
+        )}
       </FieldWrapper>
       <FieldWrapper
-        label="Target Path"
+        label="Target Directory"
         required={true}
         description="File mount path inside of running container"
       >
-        <Input bsSize="sm" defaultValue={inputArray.targetPath} disabled={true} />
+        <Input bsSize="sm" defaultValue={inputArray.targetDir} disabled={true} />
       </FieldWrapper>
-      */}
     </Collapse>
   );
 };
