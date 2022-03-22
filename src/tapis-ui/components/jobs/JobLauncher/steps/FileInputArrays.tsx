@@ -7,20 +7,19 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import {
-  generateFileInputFromAppInput,
-  getIncompleteJobInputs,
-  getAppInputsIncludedByDefault,
-} from 'tapis-api/utils/jobFileInputs';
+  generateFileInputArrayFromAppInput,
+  getIncompleteJobInputArrays,
+  getAppInputArraysIncludedByDefault,
+} from 'tapis-api/utils/jobFileInputArrays';
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
 import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
-import { generateRequiredFileInputsFromApp } from 'tapis-api/utils/jobFileInputs';
 
-type FileInputFieldProps = {
-  item: Jobs.JobFileInput;
+type JobInputArrayFieldProps = {
+  item: Jobs.JobFileInputArray;
   index: number;
   remove: (index: number) => Jobs.JobFileInput | undefined;
 };
@@ -30,16 +29,16 @@ const upperCaseFirstLetter = (str: string) => {
   return `${lower.slice(0, 1).toUpperCase()}${lower.slice(1)}`;
 };
 
-const JobInputField: React.FC<FileInputFieldProps> = ({
+const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
   item,
   index,
   remove,
 }) => {
   const { app } = useJobLauncher();
-  const { name, sourceUrl } = item;
+  const { name, sourceUrls } = item;
   const inputMode: Apps.FileInputModeEnum | undefined = useMemo(
     () =>
-      app.jobAttributes?.fileInputs?.find(
+      app.jobAttributes?.fileInputArrays?.find(
         (appInput) => appInput.name === item.name
       )?.inputMode ?? undefined,
     /* eslint-disable-next-line */
@@ -51,14 +50,14 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   }`;
   return (
     <Collapse
-      open={!sourceUrl}
-      key={`fileInputs.${index}`}
-      title={name ?? 'File Input'}
+      open={!sourceUrls}
+      key={`fileInputArrays.${index}`}
+      title={name ?? 'File Input Array'}
       note={note}
       className={styles['job-input']}
     >
       <FormikInput
-        name={`fileInputs.${index}.name`}
+        name={`fileInputArrays.${index}.name`}
         label="Name"
         required={true}
         description={`${
@@ -68,29 +67,25 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
         }`}
         disabled={isRequired}
       />
+      {/*
       <FormikInput
         name={`fileInputs.${index}.sourceUrl`}
         label="Source URL"
         required={true}
         description="Input TAPIS file as a pathname, TAPIS URI or web URL"
       />
+      */}
       <FormikInput
-        name={`fileInputs.${index}.targetPath`}
-        label="Target Path"
+        name={`fileInputArrays.${index}.targetDir`}
+        label="Target Directory"
         required={true}
         description="File mount path inside of running container"
       />
       <FormikInput
-        name={`fileInputs.${index}.description`}
+        name={`fileInputArrays.${index}.description`}
         label="Description"
         required={false}
         description="Description of this input"
-      />
-      <FormikCheck
-        name={`fileInputs.${index}.autoMountLocal`}
-        label="Auto-mount Local"
-        required={false}
-        description="If this is true, the source URL will be mounted from the execution system's local file system"
       />
       {!isRequired && (
         <Button onClick={() => remove(index)} size="sm">
@@ -101,59 +96,61 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   );
 };
 
-const getFileInputsOfMode = (
+const getFileInputArraysOfMode = (
   app: Apps.TapisApp,
   inputMode: Apps.FileInputModeEnum
 ) =>
-  app.jobAttributes?.fileInputs?.filter(
-    (appInput) => appInput.inputMode === inputMode
+  app.jobAttributes?.fileInputArrays?.filter(
+    (appInputArray) => appInputArray.inputMode === inputMode
   ) ?? [];
 
-const inputIncluded = (
-  input: Apps.AppFileInput,
-  jobInputs: Array<Jobs.JobFileInput>
+const inputArrayIncluded = (
+  input: Apps.AppFileInputArray,
+  jobInputArrays: Array<Jobs.JobFileInputArray>
 ) => {
-  return jobInputs.some((jobInput) => jobInput.name === input.name);
+  return jobInputArrays.some((jobInputArray) => jobInputArray.name === input.name);
 };
 
-type OptionalInputProps = {
-  input: Apps.AppFileInput;
+type OptionalInputArrayProps = {
+  inputArray: Apps.AppFileInputArray;
   included: boolean;
   onInclude: () => any;
 };
 
-const OptionalInput: React.FC<OptionalInputProps> = ({
-  input,
+const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
+  inputArray,
   included,
   onInclude,
 }) => {
   return (
     <Collapse
-      title={`${input.name} ${included ? '(included)' : ''}`}
-      key={`optional-input-${input.name}`}
+      title={`${inputArray.name} ${included ? '(included)' : ''}`}
+      key={`optional-input-array-${inputArray.name}`}
       className={styles['optional-input']}
     >
-      <div className={styles.description}>{input.description ?? ''}</div>
+      <div className={styles.description}>{inputArray.description ?? ''}</div>
+      {/*
       <FieldWrapper
         label="Source URL"
         required={true}
         description="Input TAPIS file as a pathname, TAPIS URI or web URL"
       >
-        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
+        <Input bsSize="sm" defaultValue={inputArray.sourceUrl} disabled={true} />
       </FieldWrapper>
+      */}
       <FieldWrapper
         label="Target Path"
         required={true}
         description="File mount path inside of running container"
       >
-        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
+        <Input bsSize="sm" defaultValue={inputArray.targetDir} disabled={true} />
       </FieldWrapper>
       <Button onClick={() => onInclude()} disabled={included} size="sm">
         Include
       </Button>
       {included && (
         <div className={styles.description}>
-          This optional input has already been included with your job file
+          This optional input array has already been included with your job file
           inputs.
         </div>
       )}
@@ -161,41 +158,41 @@ const OptionalInput: React.FC<OptionalInputProps> = ({
   );
 };
 
-const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
+const OptionalInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   arrayHelpers,
 }) => {
   const { app } = useJobLauncher();
   const { values } = useFormikContext();
 
-  const optionalInputs = useMemo(
-    () => getFileInputsOfMode(app, Apps.FileInputModeEnum.Optional),
+  const optionalInputArrays = useMemo(
+    () => getFileInputArraysOfMode(app, Apps.FileInputModeEnum.Optional),
     /* eslint-disable-next-line */
     [app.id, app.version]
   );
 
-  const formFileInputs =
-    (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
+  const formFileInputArrays =
+    (values as Partial<Jobs.ReqSubmitJob>)?.fileInputArrays ?? [];
 
-  return !!optionalInputs.length ? (
+  return !!optionalInputArrays.length ? (
     <Collapse
-      title="Optional File Inputs"
+      title="Optional File Input Arrays"
       open={true}
-      note={`${optionalInputs.length} additional files`}
+      note={`${optionalInputArrays.length} additional files`}
       className={fieldArrayStyles.array}
     >
       <div className={styles.description}>
         These File Inputs are defined in the application and can be included
         with your job.
       </div>
-      {optionalInputs.map((optionalInput) => {
-        const alreadyIncluded = inputIncluded(optionalInput, formFileInputs);
+      {optionalInputArrays.map((optionalInputArray) => {
+        const alreadyIncluded = inputArrayIncluded(optionalInputArray, formFileInputArrays);
         const onInclude = () => {
-          arrayHelpers.push(generateFileInputFromAppInput(optionalInput));
+          arrayHelpers.push(generateFileInputArrayFromAppInput(optionalInputArray));
         };
         return (
           <div className={fieldArrayStyles.item}>
-            <OptionalInput
-              input={optionalInput}
+            <OptionalInputArray
+              inputArray={optionalInputArray}
               onInclude={onInclude}
               included={alreadyIncluded}
             />
@@ -206,90 +203,92 @@ const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   ) : null;
 };
 
-const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
+const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({ inputArray }) => {
   return (
     <Collapse
-      title={`${input.name}`}
-      key={`fixed-input-${input.name}`}
+      title={`${inputArray.name}`}
+      key={`fixed-input-${inputArray.name}`}
       className={styles['optional-input']}
     >
-      <div className={styles.description}>{input.description ?? ''}</div>
+      <div className={styles.description}>{inputArray.description ?? ''}</div>
+      {/*
       <FieldWrapper
         label="Source URL"
         required={true}
         description="Input TAPIS file as a pathname, TAPIS URI or web URL"
       >
-        <Input bsSize="sm" defaultValue={input.sourceUrl} disabled={true} />
+        <Input bsSize="sm" defaultValue={inputArray.sourceUrl} disabled={true} />
       </FieldWrapper>
       <FieldWrapper
         label="Target Path"
         required={true}
         description="File mount path inside of running container"
       >
-        <Input bsSize="sm" defaultValue={input.targetPath} disabled={true} />
+        <Input bsSize="sm" defaultValue={inputArray.targetPath} disabled={true} />
       </FieldWrapper>
+      */}
     </Collapse>
   );
 };
 
-const FixedInputs: React.FC = () => {
+const FixedInputArrays: React.FC = () => {
   const { app } = useJobLauncher();
 
-  const fixedInputs = useMemo(
-    () => getFileInputsOfMode(app, Apps.FileInputModeEnum.Fixed),
+  const fixedInputArrays = useMemo(
+    () => getFileInputArraysOfMode(app, Apps.FileInputModeEnum.Fixed),
     /* eslint-disable-next-line */
     [app.id, app.version]
   );
 
   return (
     <Collapse
-      title="Fixed File Inputs"
+      title="Fixed File Input Arrays"
       open={true}
-      note={`${fixedInputs.length} additional files`}
+      note={`${fixedInputArrays.length} additional files`}
       className={fieldArrayStyles.array}
     >
       <div className={styles.description}>
         These File Inputs are defined in the application and will automatically
         be included with your job. They cannot be removed or altered.
       </div>
-      {fixedInputs.map((fixedInput) => (
+      {fixedInputArrays.map((fixedInputArray) => (
         <div className={fieldArrayStyles.item}>
-          <FixedInput input={fixedInput} />
+          <FixedInputArray inputArray={fixedInputArray} />
         </div>
       ))}
     </Collapse>
   );
 };
 
-const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
+const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   arrayHelpers,
 }) => {
   const { values } = useFormikContext();
   const { app } = useJobLauncher();
-  const requiredInputs = useMemo(
-    () => getFileInputsOfMode(app, Apps.FileInputModeEnum.Required),
+  const requiredInputArrays = useMemo(
+    () => getFileInputArraysOfMode(app, Apps.FileInputModeEnum.Required),
     /* eslint-disable-next-line */
     [app.id, app.version]
   );
   let requiredText =
-    requiredInputs.length > 0 ? `Required (${requiredInputs.length})` : '';
-  const jobInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
+    requiredInputArrays.length > 0 ? `Required (${requiredInputArrays.length})` : '';
+  const jobInputArrays = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputArrays ?? [];
 
   return (
     <Collapse
-      open={requiredInputs.length > 0}
-      title="File Inputs"
-      note={`${jobInputs.length} items`}
+      open={requiredInputArrays.length > 0}
+      title="File Inputs Arrays"
+      note={`${jobInputArrays.length} items`}
       requiredText={requiredText}
-      isCollapsable={requiredInputs.length === 0}
+      isCollapsable={requiredInputArrays.length === 0}
       className={fieldArrayStyles.array}
     >
       <div className={styles.description}>
-        These File Inputs will be submitted with your job.
+        These File Input Arrays will be submitted with your job.
       </div>
-      {jobInputs.map((jobInput, index) => (
-        <JobInputField
-          item={jobInput}
+      {jobInputArrays.map((jobInputArray, index) => (
+        <JobInputArrayField
+          item={jobInputArray}
           index={index}
           remove={arrayHelpers.remove}
         />
@@ -302,7 +301,7 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 };
 
 export const FileInputArrays: React.FC = () => {
-  const { app } = useJobLauncher();
+  const { job } = useJobLauncher();
 
   const validationSchema = Yup.object().shape({
     fileInputs: Yup.array().of(
@@ -310,17 +309,15 @@ export const FileInputArrays: React.FC = () => {
         name: Yup.string().min(1).required('A fileInput name is required'),
         sourceUrl: Yup.string().min(1).required('A sourceUrl is required'),
         targetPath: Yup.string().min(1).required('A targetPath is required'),
-        autoMountLocal: Yup.boolean(),
       })
     ),
   });
 
   const initialValues = useMemo(
     () => ({
-      fileInputs: generateRequiredFileInputsFromApp(app),
+      fileInputArrays: job.fileInputArrays,
     }),
-    /* eslint-disable-next-line */
-    [app.id, app.version]
+    [job]
   );
 
   return (
@@ -333,9 +330,9 @@ export const FileInputArrays: React.FC = () => {
         render={(arrayHelpers) => {
           return (
             <>
-              <JobInputs arrayHelpers={arrayHelpers} />
-              <OptionalInputs arrayHelpers={arrayHelpers} />
-              <FixedInputs />
+              <JobInputArrays arrayHelpers={arrayHelpers} />
+              <OptionalInputArrays arrayHelpers={arrayHelpers} />
+              <FixedInputArrays />
             </>
           );
         }}
@@ -346,59 +343,60 @@ export const FileInputArrays: React.FC = () => {
 
 export const FileInputArraysSummary: React.FC = () => {
   const { job, app } = useJobLauncher();
-  const jobFileInputs = job.fileInputs ?? [];
-  const appFileInputs = app.jobAttributes?.fileInputs ?? [];
-  const missingRequiredInputs = appFileInputs.filter(
-    (appFileInput) =>
-      appFileInput.inputMode === Apps.FileInputModeEnum.Required &&
-      !jobFileInputs.some(
-        (jobFileInput) => jobFileInput.name === appFileInput.name
+  const jobFileInputArrays = job.fileInputArrays ?? [];
+  const appFileInputArrays = app.jobAttributes?.fileInputArrays ?? [];
+  const missingRequiredInputArrays = appFileInputArrays.filter(
+    (appFileInputArray) =>
+      appFileInputArray.inputMode === Apps.FileInputModeEnum.Required &&
+      !jobFileInputArrays.some(
+        (jobFileInputArray) => jobFileInputArray.name === appFileInputArray.name
       )
   );
-  const incompleteJobInputs = getIncompleteJobInputs(
-    appFileInputs,
-    jobFileInputs
+  const incompleteJobInputs = getIncompleteJobInputArrays(
+    appFileInputArrays,
+    jobFileInputArrays
   );
-  const includedByDefault = getAppInputsIncludedByDefault(
-    appFileInputs,
-    jobFileInputs
+  const includedByDefault = getAppInputArraysIncludedByDefault(
+    appFileInputArrays,
+    jobFileInputArrays
   );
   return (
     <div>
-      {jobFileInputs.map((jobFileInput) => {
+      {jobFileInputArrays.map((jobFileInputArray) => {
         const complete = !incompleteJobInputs.some(
-          (incompleteInput) => incompleteInput.name === jobFileInput.name
+          (incompleteInput) => incompleteInput.name === jobFileInputArray.name
         );
         // If this job file input is complete, display its name or sourceUrl
         const field = complete
-          ? jobFileInput.name ?? jobFileInput.sourceUrl
+          ? jobFileInputArray.name ?? 
+            (jobFileInputArray.sourceUrls ? `${jobFileInputArray.sourceUrls[0]}...` : undefined)
           : undefined;
         const key =
-          jobFileInput.name ??
-          jobFileInput.sourceUrl ??
-          jobFileInput.targetPath;
+          jobFileInputArray.name ??
+          (jobFileInputArray.sourceUrls ? `${jobFileInputArray.sourceUrls[0]}...` : undefined) ??
+          jobFileInputArray.targetDir;
         // If this job file input is incomplete, display its name or sourceUrl
         const error = !complete
-          ? `${key ?? 'A file input'} is missing required information`
+          ? `${key ?? 'A file input array'} is missing required information`
           : undefined;
         return (
           <StepSummaryField
             field={field}
             error={error}
-            key={`file-inputs-summary-${key ?? uuidv4()}`}
+            key={`file-input-arrays-summary-${key ?? uuidv4()}`}
           />
         );
       })}
-      {missingRequiredInputs.map((requiredFileInput) => (
+      {missingRequiredInputArrays.map((requiredFileInput) => (
         <StepSummaryField
           error={`${requiredFileInput.name} is required`}
-          key={`file-inputs-required-error-${requiredFileInput.name}`}
+          key={`file-inputs-arrays-required-error-${requiredFileInput.name}`}
         />
       ))}
       {includedByDefault.map((defaultInput) => (
         <StepSummaryField
           field={`${defaultInput.name} included by default`}
-          key={`file-inputs-default-${defaultInput.name}`}
+          key={`file-input-arrays-default-${defaultInput.name}`}
         />
       ))}
     </div>
