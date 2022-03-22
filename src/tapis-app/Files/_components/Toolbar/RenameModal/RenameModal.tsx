@@ -50,7 +50,6 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
 
   const onSubmit = useCallback(
     ({ newname }: { newname: string }) => {
-      console.log('ONSUBMIT', newname);
       setInputName(newname);
       if (!file?.name) {
         return;
@@ -82,7 +81,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            <Form>
+            <Form id="rename-form">
               <FormikInput
                 name="newname"
                 label={`${
@@ -104,6 +103,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
           reverse={true}
         >
           <Button
+            form="rename-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"

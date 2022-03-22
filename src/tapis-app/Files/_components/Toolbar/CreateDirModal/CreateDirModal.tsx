@@ -56,7 +56,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            <Form>
+            <Form id="newdirectory-form">
               <FormikInput
                 name="dirname"
                 label="Directory name"
@@ -76,6 +76,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
           reverse={true}
         >
           <Button
+            form="newdirectory-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"

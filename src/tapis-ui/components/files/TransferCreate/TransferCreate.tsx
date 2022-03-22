@@ -48,7 +48,7 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   }, [reset]);
 
   const validationSchema = Yup.object({
-    tag: Yup.string().required("a tag for this transfer is required"),
+    tag: Yup.string().required('a tag for this transfer is required'),
   });
 
   const initialValues = {
