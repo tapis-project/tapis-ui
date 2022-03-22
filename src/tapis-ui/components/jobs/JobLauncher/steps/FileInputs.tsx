@@ -302,7 +302,7 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 };
 
 export const FileInputs: React.FC = () => {
-  const { app } = useJobLauncher();
+  const { app, job } = useJobLauncher();
 
   const validationSchema = Yup.object().shape({
     fileInputs: Yup.array().of(
@@ -317,10 +317,9 @@ export const FileInputs: React.FC = () => {
 
   const initialValues = useMemo(
     () => ({
-      fileInputs: generateRequiredFileInputsFromApp(app),
+      fileInputs: job.fileInputs,
     }),
-    /* eslint-disable-next-line */
-    [app.id, app.version]
+    [job]
   );
 
   return (

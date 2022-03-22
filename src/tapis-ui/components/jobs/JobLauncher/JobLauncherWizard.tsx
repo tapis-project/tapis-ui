@@ -124,12 +124,14 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       render: <FileInputs />,
       summary: <FileInputsSummary />,
     },
+    /*
     {
       id: 'fileInputArrays',
       name: 'File Input Arrays',
       render: <FileInputArrays />,
       summary: <FileInputArraysSummary />
     },
+    */
     {
       id: 'jobSubmission',
       name: 'Job Submission',
