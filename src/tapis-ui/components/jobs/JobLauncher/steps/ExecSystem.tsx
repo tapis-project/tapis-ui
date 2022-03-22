@@ -1,6 +1,5 @@
 import { useMemo, useEffect, useState } from 'react';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { v4 as uuidv4 } from 'uuid';
 import { useJobLauncher, StepSummaryField } from '../components';
 import { FormikJobStepWrapper } from '../components';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
@@ -82,7 +81,7 @@ const SystemSelector: React.FC = () => {
         required={true}
       >
         {systems.map((system) => (
-          <option value={system.id} key={uuidv4()}>
+          <option value={system.id} key={`execsystem-select-${system.id}`}>
             {system.id}
           </option>
         ))}
@@ -96,7 +95,7 @@ const SystemSelector: React.FC = () => {
           required={false}
         >
           {queues.map((queue) => (
-            <option value={queue.name} key={uuidv4()}>
+            <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}
             </option>
           ))}

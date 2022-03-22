@@ -12,10 +12,10 @@ import {
   getAppInputsIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputs';
 import { Collapse } from 'tapis-ui/_common';
-import { v4 as uuidv4 } from 'uuid';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
 import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 import { generateRequiredFileInputsFromApp } from 'tapis-api/utils/jobFileInputs';
 
@@ -130,7 +130,7 @@ const OptionalInput: React.FC<OptionalInputProps> = ({
   return (
     <Collapse
       title={`${input.name} ${included ? '(included)' : ''}`}
-      key={uuidv4()}
+      key={`optional-input-${input.name}`}
       className={styles['optional-input']}
     >
       <div className={styles.description}>{input.description ?? ''}</div>
@@ -210,7 +210,7 @@ const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
   return (
     <Collapse
       title={`${input.name}`}
-      key={uuidv4()}
+      key={`fixed-input-${input.name}`}
       className={styles['optional-input']}
     >
       <div className={styles.description}>{input.description ?? ''}</div>
@@ -373,27 +373,32 @@ export const FileInputsSummary: React.FC = () => {
         const field = complete
           ? jobFileInput.name ?? jobFileInput.sourceUrl
           : undefined;
+        const key =
+          jobFileInput.name ??
+          jobFileInput.sourceUrl ??
+          jobFileInput.targetPath;
         // If this job file input is incomplete, display its name or sourceUrl
         const error = !complete
-          ? `${
-              jobFileInput.name ??
-              jobFileInput.sourceUrl ??
-              jobFileInput.targetPath ??
-              'A file input'
-            } is missing required information`
+          ? `${key ?? 'A file input'} is missing required information`
           : undefined;
-        return <StepSummaryField field={field} error={error} key={uuidv4()} />;
+        return (
+          <StepSummaryField
+            field={field}
+            error={error}
+            key={`file-inputs-summary-${key ?? uuidv4()}`}
+          />
+        );
       })}
       {missingRequiredInputs.map((requiredFileInput) => (
         <StepSummaryField
           error={`${requiredFileInput.name} is required`}
-          key={uuidv4()}
+          key={`file-inputs-required-error-${requiredFileInput.name}`}
         />
       ))}
       {includedByDefault.map((defaultInput) => (
         <StepSummaryField
           field={`${defaultInput.name} included by default`}
-          key={uuidv4()}
+          key={`file-inputs-default-${defaultInput.name}`}
         />
       ))}
     </div>
