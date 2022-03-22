@@ -12,11 +12,55 @@ import {
   getAppInputArraysIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputArrays';
 import { Collapse } from 'tapis-ui/_common';
-import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
+import { FieldArray, useFormikContext, FieldArrayRenderProps, Field, useField, ErrorMessage } from 'formik';
+import { FormGroup, Label, FormText, Badge } from 'reactstrap';
 import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
+import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
+
+
+export type FieldWrapperProps = {
+  fileInputArrayIndex: number
+};
+
+const SourceUrlsField: React.FC<FieldWrapperProps> = ({
+  fileInputArrayIndex
+}) => {
+  const { values} = useFormikContext();
+  const sourceUrls: Array<string> = !!(values as Partial<Jobs.ReqSubmitJob>).fileInputArrays ? 
+    (values as Partial<Jobs.ReqSubmitJob>).fileInputArrays![fileInputArrayIndex].sourceUrls ?? [] : [];
+  return (
+    <>
+      {sourceUrls.map(
+        (sourceUrl, sourceUrlIndex) => {
+          const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`
+          return (
+            <FormGroup>
+              <Label
+                className="form-field__label"
+                size="sm"
+                style={{ display: 'flex', alignItems: 'center' }}
+                htmlFor={sourceUrlName}
+              >
+                <Badge color="danger" style={{ marginLeft: '10px' }}>
+                  Required
+                </Badge>
+              </Label>
+              <Field name={sourceUrlName} id={sourceUrlName} />
+              <ErrorMessage name={sourceUrlName} className="form-field__help">
+                {(message) => (
+                  <div className={formStyles['form-field__help']}>{message}</div>
+                )}
+              </ErrorMessage>
+            </FormGroup>
+          )
+        }
+      )}
+    </>
+  )
+};
 
 type JobInputArrayFieldProps = {
   item: Jobs.JobFileInputArray;
@@ -67,14 +111,13 @@ const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
         }`}
         disabled={isRequired}
       />
-      {/*
-      <FormikInput
-        name={`fileInputs.${index}.sourceUrl`}
-        label="Source URL"
+      <FieldWrapper
+        label="Source URLs"
         required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-      />
-      */}
+        description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
+      >
+        <SourceUrlsField fileInputArrayIndex={index} />
+      </FieldWrapper>
       <FormikInput
         name={`fileInputArrays.${index}.targetDir`}
         label="Target Directory"
@@ -304,11 +347,11 @@ export const FileInputArrays: React.FC = () => {
   const { job } = useJobLauncher();
 
   const validationSchema = Yup.object().shape({
-    fileInputs: Yup.array().of(
+    fileInputArrays: Yup.array().of(
       Yup.object().shape({
-        name: Yup.string().min(1).required('A fileInput name is required'),
-        sourceUrl: Yup.string().min(1).required('A sourceUrl is required'),
-        targetPath: Yup.string().min(1).required('A targetPath is required'),
+        name: Yup.string().min(1).required('A fileInputArray name is required'),
+        sourceUrls: Yup.array(Yup.string().min(1).required('A sourceUrl is required')).min(1),
+        targetDir: Yup.string().min(1).required('A targetDir is required'),
       })
     ),
   });
