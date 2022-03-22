@@ -6,7 +6,7 @@ import { useMkdir } from 'tapis-hooks/files';
 jest.mock('tapis-hooks/files/useMkdir');
 
 describe('CreateDirModal', () => {
-  it.skip('fires the onSubmit function', async () => {
+  it('fires the onSubmit function', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
     (useMkdir as jest.Mock).mockReturnValue({
@@ -39,7 +39,7 @@ describe('CreateDirModal', () => {
     });
   });
 
-  it.skip('submits with valid inputs', async () => {
+  it('submits with valid inputs', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
     (useMkdir as jest.Mock).mockReturnValue({
@@ -72,7 +72,7 @@ describe('CreateDirModal', () => {
     });
   });
 
-  it.skip('fails with invalid inputs', async () => {
+  it('fails with invalid inputs', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
     (useMkdir as jest.Mock).mockReturnValue({

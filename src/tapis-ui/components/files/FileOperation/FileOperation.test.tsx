@@ -7,7 +7,7 @@ import { Files } from '@tapis/tapis-typescript';
 jest.mock('tapis-hooks/files');
 
 describe('FileOperation', () => {
-  it.skip('submits with valid inputs', async () => {
+  it('submits with valid inputs', async () => {
     const nativeOpMock = jest.fn();
     const resetMock = jest.fn();
     (useNativeOp as jest.Mock).mockReturnValue({

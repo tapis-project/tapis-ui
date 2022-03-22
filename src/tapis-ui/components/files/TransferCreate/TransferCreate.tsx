@@ -26,7 +26,7 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   const { create, data, isLoading, error, isSuccess, reset } = useCreate();
 
   const onSubmit = useCallback(
-    ({ tag }) => {
+    ({ tag }: { tag: string }) => {
       const destinationURI = `tapis://${destinationSystemId}${destinationPath}`;
       const elements: Array<Files.TransferTaskRequestElement> = files.map(
         (file) => ({
@@ -48,7 +48,7 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   }, [reset]);
 
   const validationSchema = Yup.object({
-    tag: Yup.string(),
+    tag: Yup.string().required("a tag for this transfer is required"),
   });
 
   const initialValues = {
@@ -85,7 +85,6 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
             disabled={isLoading || isSuccess}
             aria-label="Submit"
             type="submit"
-            form="transfercreate-form"
           >
             Submit
           </Button>

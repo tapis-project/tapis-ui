@@ -107,7 +107,6 @@ const FileOperation: React.FC<FileOperationProps> = ({
           success={isSuccess ? `Successfully submitted operation` : ''}
         >
           <Button
-            form="nativeoperation-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"

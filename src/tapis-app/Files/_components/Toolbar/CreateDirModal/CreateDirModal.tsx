@@ -76,7 +76,6 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
           reverse={true}
         >
           <Button
-            form="newdirectory-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"

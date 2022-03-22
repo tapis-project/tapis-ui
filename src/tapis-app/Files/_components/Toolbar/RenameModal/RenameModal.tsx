@@ -104,7 +104,6 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
           reverse={true}
         >
           <Button
-            form="rename-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"

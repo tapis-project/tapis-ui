@@ -9,7 +9,7 @@ jest.mock('tapis-hooks/files/useMove');
 jest.mock('tapis-app/Files/_components/FilesContext');
 
 describe('RenameModal', () => {
-  it.skip('submits with valid inputs', async () => {
+  it('submits with valid inputs', async () => {
     const moveMock = jest.fn();
     const resetMock = jest.fn();
     (useMove as jest.Mock).mockReturnValue({
@@ -47,7 +47,7 @@ describe('RenameModal', () => {
     });
   });
 
-  it.skip('fails with invalid inputs', async () => {
+  it('fails with invalid inputs', async () => {
     const moveMock = jest.fn();
     const resetMock = jest.fn();
     (useMove as jest.Mock).mockReturnValue({

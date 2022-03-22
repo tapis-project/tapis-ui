@@ -7,7 +7,7 @@ import { fileInfo } from 'fixtures/files.fixtures';
 jest.mock('tapis-hooks/files/transfers');
 
 describe('TransferCreate', () => {
-  it.skip('submits a file transfer', async () => {
+  it('submits a file transfer', async () => {
     const createMock = jest.fn();
     const resetMock = jest.fn();
     (useCreate as jest.Mock).mockReturnValue({
