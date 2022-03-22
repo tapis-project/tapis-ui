@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
 import { useCreate } from 'tapis-hooks/files/transfers';
 import { Files } from '@tapis/tapis-typescript';
-import { Button, Input } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
-import { FieldWrapper } from 'tapis-ui/_common';
 import { focusManager } from 'react-query';
-import { useForm } from 'react-hook-form';
+import { Form, Formik } from 'formik';
+import { FormikInput } from 'tapis-ui/_common';
+import * as Yup from 'yup';
 
 type TransferCreateProps = {
   files: Array<Files.FileInfo>;
@@ -22,22 +23,10 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   destinationPath,
   className = '',
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<{ tag: string }>({
-    defaultValues: {
-      tag: '',
-    },
-  });
-
-  const { ref: tagRef, ...tagFieldProps } = register('tag');
-
   const { create, data, isLoading, error, isSuccess, reset } = useCreate();
 
   const onSubmit = useCallback(
-    ({ tag }) => {
+    ({ tag }: { tag: string }) => {
       const destinationURI = `tapis://${destinationSystemId}${destinationPath}`;
       const elements: Array<Files.TransferTaskRequestElement> = files.map(
         (file) => ({
@@ -58,49 +47,50 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
     reset();
   }, [reset]);
 
+  const validationSchema = Yup.object({
+    tag: Yup.string().required('a tag for this transfer is required'),
+  });
+
+  const initialValues = {
+    tag: '',
+  };
+
   return (
-    <form
-      id="transfercreate-form"
-      onSubmit={handleSubmit(onSubmit)}
-      className={className}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
     >
-      <FieldWrapper
-        label="Tag"
-        required={false}
-        description="A tag name for this file transfer"
-        error={errors.tag}
-      >
-        <Input
-          bsSize="sm"
-          id="argumentInput"
-          {...tagFieldProps}
-          innerRef={tagRef}
-          aria-label="Tag"
+      <Form>
+        <FormikInput
+          name="tag"
+          label="Tag"
+          required={false}
+          description="A tag name for this file transfer"
         />
-      </FieldWrapper>
-      <SubmitWrapper
-        isLoading={isLoading}
-        error={error}
-        success={
-          isSuccess
-            ? `Successfully submitted transfer ${
-                data?.result?.tag ?? data?.result?.uuid ?? ''
-              }`
-            : ''
-        }
-        reverse
-      >
-        <Button
-          color="primary"
-          disabled={isLoading || isSuccess}
-          aria-label="Submit"
-          type="submit"
-          form="transfercreate-form"
+        <SubmitWrapper
+          isLoading={isLoading}
+          error={error}
+          success={
+            isSuccess
+              ? `Successfully submitted transfer ${
+                  data?.result?.tag ?? data?.result?.uuid ?? ''
+                }`
+              : ''
+          }
+          reverse
         >
-          Submit
-        </Button>
-      </SubmitWrapper>
-    </form>
+          <Button
+            color="primary"
+            disabled={isLoading || isSuccess}
+            aria-label="Submit"
+            type="submit"
+          >
+            Submit
+          </Button>
+        </SubmitWrapper>
+      </Form>
+    </Formik>
   );
 };
 
