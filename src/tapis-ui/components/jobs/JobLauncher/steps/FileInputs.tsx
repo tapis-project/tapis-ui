@@ -17,7 +17,6 @@ import { FormikJobStepWrapper } from '../components';
 import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
-import { generateRequiredFileInputsFromApp } from 'tapis-api/utils/jobFileInputs';
 
 type FileInputFieldProps = {
   item: Jobs.JobFileInput;
@@ -302,7 +301,7 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 };
 
 export const FileInputs: React.FC = () => {
-  const { app, job } = useJobLauncher();
+  const { job } = useJobLauncher();
 
   const validationSchema = Yup.object().shape({
     fileInputs: Yup.array().of(
