@@ -22,7 +22,6 @@ import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
-import { withJobStepWrapper } from './components';
 
 type JobLauncherWizardProps = {
   appId: string;
@@ -107,23 +106,23 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       setDefaultValues(generateDefaultValues(app, systems));
     }
   }, [app, systems]);
-  const steps: Array<WizardStep> = [
+  const generateSteps = (): Array<WizardStep> => [
     {
       id: 'start',
       name: `Job Name`,
-      render: withJobStepWrapper(<JobStart />),
+      render: <JobStart />,
       summary: <JobStartSummary />,
     },
     {
       id: 'execSystem',
       name: 'Execution System',
-      render: withJobStepWrapper(<ExecSystem />),
+      render: <ExecSystem />,
       summary: <ExecSystemSummary />,
     },
     {
       id: 'fileInputs',
       name: 'File Inputs',
-      render: withJobStepWrapper(<FileInputs />),
+      render: <FileInputs />,
       summary: <FileInputsSummary />,
     },
     {
@@ -135,7 +134,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'jobSubmission',
       name: 'Job Submission',
-      render: withJobStepWrapper(<JobSubmission />),
+      render: <JobSubmission />,
       summary: <JobSubmissionSummary />,
     },
   ];
@@ -148,7 +147,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       {app && (
         <JobLauncherProvider value={{ app, systems, defaultValues }}>
           <Wizard
-            steps={steps}
+            steps={generateSteps()}
             memo={`${app.id}${app.version}`}
             renderSubmit={<JobLauncherWizardSubmit app={app} />}
           />

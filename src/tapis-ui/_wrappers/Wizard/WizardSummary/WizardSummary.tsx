@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { WizardStep } from '../';
 import { StepWizardChildProps } from 'react-step-wizard';
 import { Button } from 'reactstrap';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './WizardSummary.module.scss';
 
 type WizardControlProps = {
@@ -24,10 +25,7 @@ function WizardSummary({
       {renderSubmit && <div className={styles.submit}>{renderSubmit}</div>}
       {steps.map((step) => {
         return (
-          <div
-            className={styles['step-summary']}
-            key={`wizard-summary-${step.id}`}
-          >
+          <div className={styles['step-summary']} key={uuidv4()}>
             <div className={styles.name}>
               <div>
                 <b>{step.name}</b>
