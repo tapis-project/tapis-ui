@@ -12,13 +12,16 @@ import {
 describe('Job File Input Arrays utils', () => {
   it('finds incomplete input arrays of a specific kind', () => {
     expect(
-      getIncompleteAppInputArraysOfType(tapisApp, Apps.FileInputModeEnum.Required)
+      getIncompleteAppInputArraysOfType(
+        tapisApp,
+        Apps.FileInputModeEnum.Required
+      )
     ).toEqual([
       {
         name: 'required-incomplete',
         description: 'A required input array that is missing sourceUrls',
         inputMode: Apps.FileInputModeEnum.Required,
-        targetDir: '/jobs/input/arrays/required/'
+        targetDir: '/jobs/input/arrays/required/',
       },
     ]);
   });
@@ -38,7 +41,7 @@ describe('Job File Input Arrays utils', () => {
         name: 'required-incomplete',
         description: 'A required input array that is missing sourceUrls',
         sourceUrls: [],
-        targetDir: '/jobs/input/arrays/required/'
+        targetDir: '/jobs/input/arrays/required/',
       },
     ]);
   });
@@ -46,7 +49,7 @@ describe('Job File Input Arrays utils', () => {
   it('detects a complete job request that satisfies an app with fully formed required input arrays', () => {
     expect(
       fileInputArraysComplete(tapisApp, [
-        { name: 'required-incomplete', sourceUrls: [ 'file2.txt' ]},
+        { name: 'required-incomplete', sourceUrls: ['file2.txt'] },
       ])
     ).toEqual(true);
   });
@@ -58,7 +61,9 @@ describe('Job File Input Arrays utils', () => {
       fileInputArraysComplete(tapisApp, [{ name: 'required-incomplete' }])
     ).toEqual(false);
     expect(
-      fileInputArraysComplete(tapisApp, [{ name: 'required-incomplete', sourceUrls: [] }])
+      fileInputArraysComplete(tapisApp, [
+        { name: 'required-incomplete', sourceUrls: [] },
+      ])
     ).toEqual(false);
   });
 
@@ -81,7 +86,10 @@ describe('Job File Input Arrays utils', () => {
     // A job that includes an complete OPTIONAL file input should be fine
     expect(
       fileInputArraysComplete(modifiedApp, [
-        { name: 'optional-incomplete', sourceUrls: [ 'tapis://system/file.txt' ]},
+        {
+          name: 'optional-incomplete',
+          sourceUrls: ['tapis://system/file.txt'],
+        },
       ])
     ).toEqual(true);
   });

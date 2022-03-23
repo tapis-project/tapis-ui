@@ -19,7 +19,9 @@ export const getIncompleteAppInputArraysOfType = (
   );
 };
 
-export const generateFileInputArrayFromAppInput = (input: Apps.AppFileInputArray): Jobs.JobFileInputArray => ({
+export const generateFileInputArrayFromAppInput = (
+  input: Apps.AppFileInputArray
+): Jobs.JobFileInputArray => ({
   name: input.name,
   sourceUrls: input.sourceUrls ?? [],
   targetDir: input.targetDir,
@@ -80,7 +82,9 @@ export const getIncompleteJobInputArrays = (
         (appInputArray) => appInputArray.name === jobFileInputArray.name
       );
       if (requiredInApp) {
-        return !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length;
+        return (
+          !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length
+        );
       } else {
         return false;
       }
@@ -100,15 +104,17 @@ export const getIncompleteJobInputArrays = (
         (appInputArray) => appInputArray.name === jobFileInputArray.name
       );
       if (optionalInApp) {
-        return !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length;
+        return (
+          !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length
+        );
       } else {
         return false;
       }
     });
 
   // Get job input arrays that are neither OPTIONAL or REQUIRED, but are incomplete
-  const incompleteUserInputArrays: Array<Jobs.JobFileInputArray> = jobFileInputArrays.filter(
-    (jobFileInputArray) => {
+  const incompleteUserInputArrays: Array<Jobs.JobFileInputArray> =
+    jobFileInputArrays.filter((jobFileInputArray) => {
       // Is this jobFileInputArray neither OPTIONAL or REQUIRED?
       const userInput =
         !incompleteRequiredAppInputArrays.some(
@@ -118,12 +124,15 @@ export const getIncompleteJobInputArrays = (
           (appInputArray) => appInputArray.name === jobFileInputArray.name
         );
       if (userInput) {
-        return !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length || !jobFileInputArray.targetDir;
+        return (
+          !jobFileInputArray.sourceUrls ||
+          !jobFileInputArray.sourceUrls.length ||
+          !jobFileInputArray.targetDir
+        );
       } else {
         return false;
       }
-    }
-  );
+    });
 
   return incompleteRequiredJobInputArrays
     .concat(incompleteOptionalJobInputArrays)
@@ -140,15 +149,19 @@ export const fileInputArraysComplete = (
   const hasIncompleteRequiredInput: boolean = incompleteRequiredInputs.some(
     (requiredInputArray) => {
       // Find JobFileInputArray with name matching the required input
-      const jobFileInputArray: Jobs.JobFileInputArray | undefined = fileInputArrays.find(
-        (jobFileInputArray) => jobFileInputArray.name === requiredInputArray.name
-      );
+      const jobFileInputArray: Jobs.JobFileInputArray | undefined =
+        fileInputArrays.find(
+          (jobFileInputArray) =>
+            jobFileInputArray.name === requiredInputArray.name
+        );
       if (!jobFileInputArray) {
         // Matching jobFileInput not found, therefore there is an incomplete required input
         return true;
       } else {
         // Verify that this input has a sourceUrl specified
-        return !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length;
+        return (
+          !jobFileInputArray.sourceUrls || !jobFileInputArray.sourceUrls.length
+        );
       }
     }
   );
@@ -157,14 +170,16 @@ export const fileInputArraysComplete = (
   }
 
   // Check to see if an OPTIONAL input was included but not fully specified
-  const optionalAppInputArrays: Array<Apps.AppFileInputArray> = getIncompleteAppInputArrays(
-    app
-  ).filter((appFileInput) => !appFileInput.sourceUrls);
+  const optionalAppInputArrays: Array<Apps.AppFileInputArray> =
+    getIncompleteAppInputArrays(app).filter(
+      (appFileInput) => !appFileInput.sourceUrls
+    );
   // get any optional app file input that was included in the job.
   const optionalJobInputArrays: Array<Jobs.JobFileInputArray> =
     fileInputArrays.filter((jobFileInputArray) =>
       optionalAppInputArrays.some(
-        (optionalAppInputArray) => jobFileInputArray.name === optionalAppInputArray.name
+        (optionalAppInputArray) =>
+          jobFileInputArray.name === optionalAppInputArray.name
       )
     ) ?? [];
   const hasIncompleteOptionalInputArray: boolean =
@@ -179,11 +194,13 @@ export const fileInputArraysComplete = (
     app.jobAttributes?.fileInputArrays?.map((input) => input.name) ?? [];
   const otherInputArrays: Array<Jobs.JobFileInputArray> =
     fileInputArrays.filter(
-      (jobInputArray) => !namedInputs.some((name) => name === jobInputArray.name)
+      (jobInputArray) =>
+        !namedInputs.some((name) => name === jobInputArray.name)
     ) ?? [];
   if (
     otherInputArrays.some(
-      (otherInputArray) => !otherInputArray.sourceUrls || !otherInputArray.targetDir
+      (otherInputArray) =>
+        !otherInputArray.sourceUrls || !otherInputArray.targetDir
     )
   ) {
     return false;

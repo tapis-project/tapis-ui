@@ -19,7 +19,9 @@ export const getIncompleteAppInputsOfType = (
   );
 };
 
-export const generateFileInputFromAppInput = (input: Apps.AppFileInput): Jobs.JobFileInput => ({
+export const generateFileInputFromAppInput = (
+  input: Apps.AppFileInput
+): Jobs.JobFileInput => ({
   name: input.name,
   sourceUrl: input.sourceUrl,
   targetPath: input.targetPath,

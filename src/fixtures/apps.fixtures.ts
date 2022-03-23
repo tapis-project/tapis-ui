@@ -150,7 +150,7 @@ export const tapisApp: Apps.TapisApp = {
         name: 'required-incomplete',
         description: 'A required input array that is missing sourceUrls',
         inputMode: Apps.FileInputModeEnum.Required,
-        targetDir: '/jobs/input/arrays/required/'
+        targetDir: '/jobs/input/arrays/required/',
       },
       {
         name: 'fixed',

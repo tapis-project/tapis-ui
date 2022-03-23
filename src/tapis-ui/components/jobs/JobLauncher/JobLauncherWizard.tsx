@@ -7,14 +7,17 @@ import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
-import { FileInputArrays, FileInputArraysSummary } from './steps/FileInputArrays';
+import {
+  FileInputArrays,
+  FileInputArraysSummary,
+} from './steps/FileInputArrays';
 import {
   generateRequiredFileInputsFromApp,
   fileInputsComplete,
 } from 'tapis-api/utils/jobFileInputs';
 import {
   generateRequiredFileInputArraysFromApp,
-  fileInputArraysComplete
+  fileInputArraysComplete,
 } from 'tapis-api/utils/jobFileInputArrays';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
@@ -43,7 +46,7 @@ const generateDefaultValues = (
     execSystemLogicalQueue:
       app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
     fileInputs: generateRequiredFileInputsFromApp(app),
-    fileInputArrays: generateRequiredFileInputArraysFromApp(app)
+    fileInputArrays: generateRequiredFileInputArraysFromApp(app),
   };
   return defaultValues;
 };
@@ -128,7 +131,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       id: 'fileInputArrays',
       name: 'File Input Arrays',
       render: <FileInputArrays />,
-      summary: <FileInputArraysSummary />
+      summary: <FileInputArraysSummary />,
     },
     {
       id: 'jobSubmission',
