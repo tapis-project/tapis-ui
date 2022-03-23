@@ -45,7 +45,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
                   <InputGroup>
                     <Input {...field} bsSize="sm" />
                     <InputGroupAddon addonType='append'>
-                      <Button size="sm" onClick={() => arrayHelpers.remove(sourceUrlIndex)}>Remove</Button>
+                      <Button size="sm" onClick={() => arrayHelpers.remove(sourceUrlIndex)} disabled={sourceUrlIndex === 0}>Remove</Button>
                     </InputGroupAddon>
                   </InputGroup>
                 )}
@@ -100,7 +100,7 @@ const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
       key={`fileInputArrays.${index}`}
       title={name ?? 'File Input Array'}
       note={note}
-      className={styles['job-input']}
+      className={fieldArrayStyles.item}
     >
       <FormikInput
         name={`fileInputArrays.${index}.name`}
@@ -343,7 +343,7 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
           remove={arrayHelpers.remove}
         />
       ))}
-      <Button onClick={() => arrayHelpers.push({})} size="sm">
+      <Button onClick={() => arrayHelpers.push({ sourceUrls: [ '' ] })} size="sm">
         + Add File Input Array
       </Button>
     </Collapse>
@@ -376,7 +376,7 @@ export const FileInputArrays: React.FC = () => {
       initialValues={initialValues}
     >
       <FieldArray
-        name="fileInputs"
+        name="fileInputArrays"
         render={(arrayHelpers) => {
           return (
             <>
