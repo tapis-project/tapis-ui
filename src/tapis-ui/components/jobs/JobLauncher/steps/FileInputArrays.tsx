@@ -12,8 +12,8 @@ import {
   getAppInputArraysIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputArrays';
 import { Collapse } from 'tapis-ui/_common';
-import { FieldArray, useFormikContext, FieldArrayRenderProps, Field, useField, ErrorMessage } from 'formik';
-import { FormGroup, Label, FormText, Badge } from 'reactstrap';
+import { FieldArray, useFormikContext, FieldArrayRenderProps, Field, useField, ErrorMessage, FieldProps } from 'formik';
+import { FormGroup, Label, InputGroup, InputGroupAddon, Badge } from 'reactstrap';
 import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,43 +22,45 @@ import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.m
 
 
 export type FieldWrapperProps = {
-  fileInputArrayIndex: number
+  fileInputArrayIndex: number,
+  arrayHelpers: FieldArrayRenderProps
 };
 
 const SourceUrlsField: React.FC<FieldWrapperProps> = ({
-  fileInputArrayIndex
+  fileInputArrayIndex,
+  arrayHelpers
 }) => {
-  const { values} = useFormikContext();
+  const { values } = useFormikContext();
   const sourceUrls: Array<string> = !!(values as Partial<Jobs.ReqSubmitJob>).fileInputArrays ? 
     (values as Partial<Jobs.ReqSubmitJob>).fileInputArrays![fileInputArrayIndex].sourceUrls ?? [] : [];
   return (
-    <>
+    <FormGroup>
       {sourceUrls.map(
         (sourceUrl, sourceUrlIndex) => {
-          const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`
+          const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`;
           return (
-            <FormGroup>
-              <Label
-                className="form-field__label"
-                size="sm"
-                style={{ display: 'flex', alignItems: 'center' }}
-                htmlFor={sourceUrlName}
-              >
-                <Badge color="danger" style={{ marginLeft: '10px' }}>
-                  Required
-                </Badge>
-              </Label>
-              <Field name={sourceUrlName} id={sourceUrlName} />
+            <>
+              <Field name={sourceUrlName}>
+                {({ field }: FieldProps) => (
+                  <InputGroup>
+                    <Input {...field} bsSize="sm" />
+                    <InputGroupAddon addonType='append'>
+                      <Button size="sm" onClick={() => arrayHelpers.remove(sourceUrlIndex)}>Remove</Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                )}
+              </Field>
               <ErrorMessage name={sourceUrlName} className="form-field__help">
                 {(message) => (
-                  <div className={formStyles['form-field__help']}>{message}</div>
+                  <div className={`${formStyles['form-field__help']} ${styles.description}`}>{message}</div>
                 )}
               </ErrorMessage>
-            </FormGroup>
+            </>
           )
         }
       )}
-    </>
+      <Button size="sm" onClick={() => arrayHelpers.push('')}>+ Add Source URL</Button>
+    </FormGroup>
   )
 };
 
@@ -111,13 +113,18 @@ const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
         }`}
         disabled={isRequired}
       />
-      <FieldWrapper
-        label="Source URLs"
-        required={true}
-        description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
-      >
-        <SourceUrlsField fileInputArrayIndex={index} />
-      </FieldWrapper>
+      <FieldArray 
+        name={`fileInputArrays.${index}.sourceUrls`}
+        render={(arrayHelpers) => (
+          <FieldWrapper
+            label="Source URLs"
+            required={true}
+            description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
+          >
+            <SourceUrlsField fileInputArrayIndex={index} arrayHelpers={arrayHelpers} />
+          </FieldWrapper>
+        )} 
+      />
       <FormikInput
         name={`fileInputArrays.${index}.targetDir`}
         label="Target Directory"
@@ -337,7 +344,7 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
         />
       ))}
       <Button onClick={() => arrayHelpers.push({})} size="sm">
-        + Add File Input
+        + Add File Input Array
       </Button>
     </Collapse>
   );
@@ -395,7 +402,7 @@ export const FileInputArraysSummary: React.FC = () => {
         (jobFileInputArray) => jobFileInputArray.name === appFileInputArray.name
       )
   );
-  const incompleteJobInputs = getIncompleteJobInputArrays(
+  const incompleteJobInputArrays = getIncompleteJobInputArrays(
     appFileInputArrays,
     jobFileInputArrays
   );
@@ -406,7 +413,7 @@ export const FileInputArraysSummary: React.FC = () => {
   return (
     <div>
       {jobFileInputArrays.map((jobFileInputArray) => {
-        const complete = !incompleteJobInputs.some(
+        const complete = !incompleteJobInputArrays.some(
           (incompleteInput) => incompleteInput.name === jobFileInputArray.name
         );
         // If this job file input is complete, display its name or sourceUrl
@@ -424,7 +431,7 @@ export const FileInputArraysSummary: React.FC = () => {
           : undefined;
         return (
           <StepSummaryField
-            field={field}
+            field={`${field} (${jobFileInputArray.sourceUrls?.length ?? "0"})`}
             error={error}
             key={`file-input-arrays-summary-${key ?? uuidv4()}`}
           />
