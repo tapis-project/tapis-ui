@@ -57,7 +57,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
                     <Button
                       size="sm"
                       onClick={() => arrayHelpers.remove(sourceUrlIndex)}
-                      disabled={sourceUrlIndex === 0}
+                      disabled={sourceUrls.length === 1 && sourceUrlIndex === 0}
                     >
                       Remove
                     </Button>
