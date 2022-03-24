@@ -1,27 +1,20 @@
-import { useCallback, useState, useEffect } from 'react';
-import { Breadcrumbs } from 'tapis-ui/_common';
-import { Files, Systems } from '@tapis/tapis-typescript';
-import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
-import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
-import FileListing from 'tapis-ui/components/files/FileListing';
-import { OnNavigateCallback } from 'tapis-ui/components/files/FileListing/FileListing';
-import { SystemListing } from 'tapis-ui/components/systems';
-import { normalize } from 'path';
+import { useCallback, useState } from 'react';
+import { Files } from '@tapis/tapis-typescript';
 import { GenericModal } from 'tapis-ui/_common';
 import { FileExplorer } from 'tapis-ui/components/files';
 import { SelectMode } from 'tapis-ui/components/files/FileListing/FileListing';
 import { Button } from 'reactstrap';
 
-type FileSelectModal = {
+type FileSelectModalProps = {
   systemId?: string;
   path?: string;
   allowSystemChange?: boolean;
-  onSelect?: (files: Array<Files.FileInfo>) => void;
+  onSelect?: (systemId: string | null, files: Array<Files.FileInfo>) => void;
   selectMode?: SelectMode;
   toggle: () => void;
 };
 
-const FileSelectModal: React.FC<FileSelectModal> = ({
+const FileSelectModal: React.FC<FileSelectModalProps> = ({
   systemId,
   path,
   allowSystemChange,
@@ -30,14 +23,33 @@ const FileSelectModal: React.FC<FileSelectModal> = ({
   selectMode,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
+  const [selectedSystem, setSelectedSystem] = useState<string | null>(systemId ?? null);
 
   const fileExplorerSelectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
-      console.log(files);
       setSelectedFiles(files);
     },
     [setSelectedFiles]
   );
+
+  const fileExplorerNavigateCallback = useCallback(
+    (systemId: string | null, path: string | null) => {
+      setSelectedSystem(systemId);
+    },
+    [setSelectedSystem]
+  );
+
+  const selectButtonCallback = useCallback(
+    () => {
+      if (toggle) {
+        toggle();
+      } 
+      if (onSelect) {
+        onSelect(selectedSystem, selectedFiles);
+      }
+    },
+    [ toggle, onSelect, selectedSystem, selectedFiles ]
+  )
 
   const body = (
     <FileExplorer
@@ -46,10 +58,21 @@ const FileSelectModal: React.FC<FileSelectModal> = ({
       path={path}
       selectMode={selectMode}
       onSelect={fileExplorerSelectCallback}
+      onNavigate={fileExplorerNavigateCallback}
+      fields={['size', 'lastModified']}
+      selectedFiles={selectedFiles}
     />
   );
 
-  const footer = <Button>Select ({selectedFiles.length})</Button>;
+  const footer = (
+    <Button 
+      disabled={selectedFiles.length === 0}
+      color="primary"
+      onClick={selectButtonCallback}
+    >
+      Select ({selectedFiles.length})
+    </Button>
+  );
 
   return (
     <GenericModal

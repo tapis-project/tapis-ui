@@ -105,7 +105,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       <div>
         {currentSystem ? (
           <FileListing
-            className={`${styles['file-list']} ${styles['nav-list']}`}
+            className={`${styles['nav-list']}`}
             systemId={currentSystem}
             path={currentPath ?? '/'}
             onNavigate={onFileNavigate}

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Apps, Jobs } from '@tapis/tapis-typescript';
+import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input } from 'reactstrap';
 import { Button } from 'reactstrap';
@@ -12,7 +12,7 @@ import {
   getAppInputsIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputs';
 import { Collapse } from 'tapis-ui/_common';
-import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
+import { FieldArray, useFormikContext, FieldArrayRenderProps, useFormik } from 'formik';
 import { FormikJobStepWrapper } from '../components';
 import {
   FormikInput,
@@ -40,6 +40,7 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   remove,
 }) => {
   const { app } = useJobLauncher();
+  const { setFieldValue } = useFormikContext();
   const { name, sourceUrl } = item;
   const inputMode: Apps.FileInputModeEnum | undefined = useMemo(
     () =>
@@ -60,6 +61,12 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   const toggle = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
+  const onSelect = useCallback(
+    (systemId: string | null, files: Array<Files.FileInfo>) => {
+      setFieldValue(`fileInputs.${index}.sourceUrl`, `tapis://${systemId ?? ''}${files[0].path}`);
+    },
+    [setFieldValue]
+  )
   return (
     <>
       <Collapse
@@ -111,7 +118,13 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
           </Button>
         )}
       </Collapse>
-      {modalOpen && <FileSelectModal toggle={toggle} />}
+      {modalOpen && (
+        <FileSelectModal
+          toggle={toggle} 
+          selectMode={{mode: 'single', types: ['dir', 'file']}}
+          onSelect={onSelect}
+        />
+      )}
     </>
   );
 };

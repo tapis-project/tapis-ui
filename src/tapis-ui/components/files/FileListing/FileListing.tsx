@@ -96,7 +96,7 @@ const FileListingName: React.FC<FileListingItemProps> = ({
 export type SelectMode = {
   mode: 'none' | 'single' | 'multi';
   // If undefined, allowed selectable file types will be treated as [ "file", "dir" ]
-  types?: Array<string>;
+  types?: Array<'dir' | 'file'>;
 };
 
 type FileListingTableProps = {
