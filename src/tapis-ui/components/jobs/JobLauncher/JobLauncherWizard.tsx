@@ -8,9 +8,17 @@ import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
 import {
+  FileInputArrays,
+  FileInputArraysSummary,
+} from './steps/FileInputArrays';
+import {
   generateRequiredFileInputsFromApp,
   fileInputsComplete,
 } from 'tapis-api/utils/jobFileInputs';
+import {
+  generateRequiredFileInputArraysFromApp,
+  fileInputArraysComplete,
+} from 'tapis-api/utils/jobFileInputArrays';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
@@ -38,6 +46,7 @@ const generateDefaultValues = (
     execSystemLogicalQueue:
       app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
     fileInputs: generateRequiredFileInputsFromApp(app),
+    fileInputArrays: generateRequiredFileInputArraysFromApp(app),
   };
   return defaultValues;
 };
@@ -46,7 +55,8 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   const { job } = useJobLauncher();
   const isComplete =
     jobRequiredFieldsComplete(job) &&
-    fileInputsComplete(app, job.fileInputs ?? []);
+    fileInputsComplete(app, job.fileInputs ?? []) &&
+    fileInputArraysComplete(app, job.fileInputArrays ?? []);
   const { isLoading, error, isSuccess, submit, data } = useSubmit(
     app.id!,
     app.version!
@@ -116,6 +126,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       name: 'File Inputs',
       render: <FileInputs />,
       summary: <FileInputsSummary />,
+    },
+    {
+      id: 'fileInputArrays',
+      name: 'File Input Arrays',
+      render: <FileInputArrays />,
+      summary: <FileInputArraysSummary />,
     },
     {
       id: 'jobSubmission',

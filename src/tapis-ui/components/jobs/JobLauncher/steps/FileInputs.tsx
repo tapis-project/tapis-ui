@@ -54,7 +54,7 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
       key={`fileInputs.${index}`}
       title={name ?? 'File Input'}
       note={note}
-      className={styles['job-input']}
+      className={fieldArrayStyles.item}
     >
       <FormikInput
         name={`fileInputs.${index}.name`}
