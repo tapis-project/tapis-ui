@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
-import { FileExplorer } from '../_components';
+import FileExplorer from 'tapis-ui/components/files/FileExplorer/FileExplorer';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { Files } from '@tapis/tapis-typescript';
@@ -84,6 +84,8 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
           systemId={systemId}
           path={path}
           onNavigate={onNavigate}
+          fields={['size']}
+          className={styles['file-list']}
           allowSystemChange
         />
         <TransferCreate
