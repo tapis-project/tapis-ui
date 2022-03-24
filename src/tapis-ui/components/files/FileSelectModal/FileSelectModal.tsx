@@ -8,7 +8,7 @@ import { OnNavigateCallback } from 'tapis-ui/components/files/FileListing/FileLi
 import { SystemListing } from 'tapis-ui/components/systems';
 import { normalize } from 'path';
 import { GenericModal } from 'tapis-ui/_common';
-import { FileExplorer } from 'tapis-ui/components/files'; 
+import { FileExplorer } from 'tapis-ui/components/files';
 import { SelectMode } from 'tapis-ui/components/files/FileListing/FileListing';
 import { Button } from 'reactstrap';
 
@@ -27,17 +27,17 @@ const FileSelectModal: React.FC<FileSelectModal> = ({
   allowSystemChange,
   onSelect,
   toggle,
-  selectMode
+  selectMode,
 }) => {
-  const [ selectedFiles, setSelectedFiles ] = useState<Array<Files.FileInfo>>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
 
   const fileExplorerSelectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
       console.log(files);
       setSelectedFiles(files);
     },
-    [ setSelectedFiles ]
-  )
+    [setSelectedFiles]
+  );
 
   const body = (
     <FileExplorer
@@ -47,12 +47,9 @@ const FileSelectModal: React.FC<FileSelectModal> = ({
       selectMode={selectMode}
       onSelect={fileExplorerSelectCallback}
     />
-  )
+  );
 
-  const footer = (
-    <Button>Select ({selectedFiles.length})</Button>
-  )
-
+  const footer = <Button>Select ({selectedFiles.length})</Button>;
 
   return (
     <GenericModal

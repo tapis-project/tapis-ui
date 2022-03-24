@@ -4,7 +4,11 @@ import { Systems } from '@tapis/tapis-typescript';
 import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import FileListing from 'tapis-ui/components/files/FileListing';
-import { OnNavigateCallback, OnSelectCallback, SelectMode } from 'tapis-ui/components/files/FileListing/FileListing';
+import {
+  OnNavigateCallback,
+  OnSelectCallback,
+  SelectMode,
+} from 'tapis-ui/components/files/FileListing/FileListing';
 import { SystemListing } from 'tapis-ui/components/systems';
 import { normalize } from 'path';
 import styles from './FileExplorer.module.scss';
@@ -33,7 +37,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   onUnselect,
   fields = ['size'],
   selectedFiles,
-  selectMode
+  selectMode,
 }) => {
   const [currentSystem, setCurrentSystem] = useState(systemId);
   const [currentPath, setCurrentPath] = useState(path);

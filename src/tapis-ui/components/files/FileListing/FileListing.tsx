@@ -231,7 +231,7 @@ interface FileListingProps {
   className?: string;
   fields?: Array<'size' | 'lastModified'>;
   selectedFiles?: Array<Files.FileInfo>;
-  selectMode?: SelectMode
+  selectMode?: SelectMode;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -244,7 +244,7 @@ const FileListing: React.FC<FileListingProps> = ({
   className,
   fields = ['size', 'lastModified'],
   selectedFiles = [],
-  selectMode
+  selectMode,
 }) => {
   const {
     hasNextPage,

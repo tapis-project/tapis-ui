@@ -8,7 +8,7 @@ import { FileExplorer } from 'tapis-ui/components/files';
 
 type FormikBrowseInputProps = {
   onBrowse: () => void;
-} & FormikInputProps
+} & FormikInputProps;
 
 const FormikBrowseInput: React.FC<FormikBrowseInputProps> = ({
   name,
@@ -27,10 +27,7 @@ const FormikBrowseInput: React.FC<FormikBrowseInputProps> = ({
       as={(formikProps: FieldInputProps<any>) => (
         <InputGroup>
           <InputGroupAddon addonType="prepend">
-            <Button
-              size="sm"
-              onClick={onBrowse}
-            >
+            <Button size="sm" onClick={onBrowse}>
               Browse
             </Button>
           </InputGroupAddon>
@@ -39,6 +36,6 @@ const FormikBrowseInput: React.FC<FormikBrowseInputProps> = ({
       )}
     />
   );
-}
+};
 
 export default React.memo(FormikBrowseInput);

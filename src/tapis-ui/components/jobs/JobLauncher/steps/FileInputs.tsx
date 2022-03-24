@@ -14,7 +14,11 @@ import {
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
-import { FormikInput, FormikCheck, FormikBrowseInput } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikCheck,
+  FormikBrowseInput,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import { FileSelectModal } from 'tapis-ui/components/files';
 import * as Yup from 'yup';
@@ -49,23 +53,13 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   const note = `${
     inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
   }`;
-  const [ modalOpen, setModalOpen ] = useState(false);
-  const onBrowse = useCallback(
-    () => {
-      setModalOpen(true);
-    },
-    [
-      setModalOpen
-    ]
-  );
-  const toggle = useCallback(
-    () => {
-      setModalOpen(false);
-    },
-    [
-      setModalOpen
-    ]
-  )
+  const [modalOpen, setModalOpen] = useState(false);
+  const onBrowse = useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
+  const toggle = useCallback(() => {
+    setModalOpen(false);
+  }, [setModalOpen]);
   return (
     <>
       <Collapse
@@ -117,9 +111,7 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
           </Button>
         )}
       </Collapse>
-      {modalOpen && (
-        <FileSelectModal toggle={toggle} />
-      )}
+      {modalOpen && <FileSelectModal toggle={toggle} />}
     </>
   );
 };
@@ -346,23 +338,23 @@ export const FileInputs: React.FC = () => {
   );
 
   return (
-      <FormikJobStepWrapper
-        validationSchema={validationSchema}
-        initialValues={initialValues}
-      >
-        <FieldArray
-          name="fileInputs"
-          render={(arrayHelpers) => {
-            return (
-              <>
-                <JobInputs arrayHelpers={arrayHelpers} />
-                <OptionalInputs arrayHelpers={arrayHelpers} />
-                <FixedInputs />
-              </>
-            );
-          }}
-        />
-      </FormikJobStepWrapper>
+    <FormikJobStepWrapper
+      validationSchema={validationSchema}
+      initialValues={initialValues}
+    >
+      <FieldArray
+        name="fileInputs"
+        render={(arrayHelpers) => {
+          return (
+            <>
+              <JobInputs arrayHelpers={arrayHelpers} />
+              <OptionalInputs arrayHelpers={arrayHelpers} />
+              <FixedInputs />
+            </>
+          );
+        }}
+      />
+    </FormikJobStepWrapper>
   );
 };
 
