@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input } from 'reactstrap';
-import { Button } from 'reactstrap';
+import { Input, Button  } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
@@ -26,6 +25,8 @@ import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import { FormikTapisFileInput } from 'tapis-ui/_common/FieldWrapperFormik';
+import { Icon } from 'tapis-ui/_common';
 
 export type FieldWrapperProps = {
   fileInputArrayIndex: number;
@@ -51,18 +52,18 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
           <>
             <Field name={sourceUrlName}>
               {({ field }: FieldProps) => (
-                <InputGroup>
-                  <Input {...field} bsSize="sm" />
-                  <InputGroupAddon addonType="append">
+                <FormikTapisFileInput 
+                  {...field}
+                  append={(
                     <Button
                       size="sm"
                       onClick={() => arrayHelpers.remove(sourceUrlIndex)}
                       disabled={sourceUrls.length === 1 && sourceUrlIndex === 0}
                     >
-                      Remove
-                    </Button>
-                  </InputGroupAddon>
-                </InputGroup>
+                      <Icon name="close" />
+                    </Button> 
+                  )}
+                />
               )}
             </Field>
             <ErrorMessage name={sourceUrlName} className="form-field__help">

@@ -7,9 +7,11 @@ import { Files } from '@tapis/tapis-typescript'
 import { FileSelectModal } from 'tapis-ui/components/files';
 import { InputProps } from 'reactstrap';
 
-type FormikTapisFileInputProps = InputProps & FieldInputProps<any>;
+type FormikTapisFileInputProps = {
+  append?: React.ReactNode
+} & InputProps & FieldInputProps<any>;
 
-export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = (props) => {
+export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({ append, ...props }) => {
   const { name } = props;
   const [ , , helpers ] = useField(name);
   const { setValue } = helpers;
@@ -36,6 +38,11 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = (props)
           </Button>
         </InputGroupAddon>
         <Input {...props} bsSize="sm" />
+        {!!append && (
+          <InputGroupAddon addonType="append">
+            {append}
+          </InputGroupAddon>
+        )}
       </InputGroup>
       {modalOpen && (
         <FileSelectModal
