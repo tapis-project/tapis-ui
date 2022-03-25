@@ -44,6 +44,7 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
         className={styles.link}
         onClick={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           onNavigate(file);
         }}
         data-testid={`btn-link-${file.name}`}

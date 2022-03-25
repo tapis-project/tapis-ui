@@ -56,8 +56,9 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   const fileExplorerNavigateCallback = useCallback(
     (systemId: string | null, path: string | null) => {
       setSelectedSystem(systemId);
+      setSelectedFiles([]);
     },
-    [setSelectedSystem]
+    [setSelectedSystem, setSelectedFiles]
   );
 
   const selectButtonCallback = useCallback(() => {
@@ -93,10 +94,33 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
     </Button>
   );
 
+  let title = 'Select files';
+  const selectionNames = selectMode?.types?.map(
+    (selectType) => {
+      if (selectMode.mode === 'single') {
+        if (selectType === 'dir') {
+          return 'directory'
+        };
+        return 'file';
+      }
+      if (selectMode.mode === 'multi') {
+        if (selectType === 'dir') {
+          return 'directories'
+        }
+        return 'files';
+      }
+      return 'files';
+    }
+  ) ?? [];
+  if (!!selectionNames.length) {
+    title = `Select ${selectMode?.mode === 'multi' ? 'one or more' : 'a'} ${selectionNames[0]} ${selectionNames.length > 1 ? ' or ' + selectionNames[1] : ''}`
+  }
+
+
   return (
     <GenericModal
       toggle={toggle}
-      title={`Select Files`}
+      title={title}
       size="xl"
       body={body}
       footer={footer}

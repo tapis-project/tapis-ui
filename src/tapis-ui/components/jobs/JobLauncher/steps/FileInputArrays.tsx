@@ -114,7 +114,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
       {modal && (
         <FileSelectModal
           toggle={close}
-          selectMode={{ mode: 'multi', types: ['dir', 'file'] }}
+          selectMode={{ mode: 'multi', types: ['file', 'dir'] }}
           onSelect={onSelect}
         />
       )}

@@ -65,7 +65,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
       {modal && (
         <FileSelectModal
           toggle={close}
-          selectMode={{ mode: 'single', types: ['dir', 'file'] }}
+          selectMode={{ mode: 'single', types: ['file', 'dir'] }}
           onSelect={onSelect}
           systemId={systemId}
           path={path}
