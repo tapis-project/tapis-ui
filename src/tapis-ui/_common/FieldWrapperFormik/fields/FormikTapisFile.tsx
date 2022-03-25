@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import FieldWrapper from '../FieldWrapperFormik';
 import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
@@ -13,13 +13,33 @@ type FormikTapisFileInputProps = {
 } & InputProps &
   FieldInputProps<any>;
 
+
+const parseTapisURI = (uri: string): { systemId: string, file: Files.FileInfo, path: string } | undefined => {
+  const regex = /tapis:\/\/([\w\.\-_]+)\/(.+)/;
+  const match = uri.match(regex);
+  if (match) {
+    const systemId = match[1];
+    const filePath = `/${match[2]}`;
+    return {
+      systemId,
+      file: {
+        name: filePath.split('/').slice(-1)[0],
+        path: filePath
+      },
+      path: filePath.split('/').slice(0, -1).join('/')
+    }
+  } 
+  return undefined;
+}
+
 export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   append,
   ...props
 }) => {
   const { name } = props;
-  const [, , helpers] = useField(name);
+  const [field, meta, helpers] = useField(name);
   const { setValue } = helpers;
+  const { value } = field;
   const { modal, open, close } = useModal(); 
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
@@ -27,6 +47,8 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
     },
     [setValue]
   );
+  const { systemId, file, path } = useMemo(() => parseTapisURI(value) ?? { systemId: undefined, file: undefined, path: undefined }, [ value ])
+
   return (
     <>
       <InputGroup>
@@ -45,6 +67,9 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
           toggle={close}
           selectMode={{ mode: 'single', types: ['dir', 'file'] }}
           onSelect={onSelect}
+          systemId={systemId}
+          path={path}
+          initialSelection={ file ? [ file ] : undefined}
         />
       )}
     </>

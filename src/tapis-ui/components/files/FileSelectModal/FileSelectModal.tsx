@@ -12,6 +12,7 @@ type FileSelectModalProps = {
   onSelect?: (systemId: string | null, files: Array<Files.FileInfo>) => void;
   selectMode?: SelectMode;
   toggle: () => void;
+  initialSelection?: Array<Files.FileInfo>;
 };
 
 const FileSelectModal: React.FC<FileSelectModalProps> = ({
@@ -21,8 +22,9 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   onSelect,
   toggle,
   selectMode,
+  initialSelection
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>(initialSelection ?? []);
   const [selectedSystem, setSelectedSystem] = useState<string | null>(
     systemId ?? null
   );
