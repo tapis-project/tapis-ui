@@ -3,5 +3,6 @@ export {
   FormikInput,
   FormikSelect,
   FormikCheck,
-  FormikBrowseInput,
+  FormikTapisFile,
+  FormikTapisFileInput,
 } from './fields';
