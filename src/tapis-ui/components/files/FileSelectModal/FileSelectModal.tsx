@@ -29,18 +29,26 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
 
   const fileExplorerSelectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
-      setSelectedFiles([ ...selectedFiles, ...files ]);
+      if (selectMode?.mode === 'multi') {
+        setSelectedFiles([ ...selectedFiles, ...files ]);
+      } else {
+        setSelectedFiles(files);
+      }      
     },
-    [setSelectedFiles, selectedFiles]
+    [setSelectedFiles, selectedFiles, selectMode]
   );
 
   const fileExplorerUnselectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
-      setSelectedFiles(selectedFiles.filter(
-        (selected) => !files.some(unselected => unselected.path === selected.path)
-      ))
+      if (selectMode?.mode === 'multi') {
+        setSelectedFiles(selectedFiles.filter(
+          (selected) => !files.some(unselected => unselected.path === selected.path)
+        ))  
+      } else {
+        setSelectedFiles([]);
+      }
     },
-    [ setSelectedFiles, selectedFiles ]
+    [ setSelectedFiles, selectedFiles, selectMode ]
   )
 
   const fileExplorerNavigateCallback = useCallback(
