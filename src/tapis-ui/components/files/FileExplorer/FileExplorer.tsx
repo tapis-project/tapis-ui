@@ -71,8 +71,8 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       setCurrentPath(to);
       onNavigate && onNavigate(currentSystem ?? null, to);
     },
-    [ setCurrentPath, currentSystem, onNavigate ]
-  )
+    [setCurrentPath, currentSystem, onNavigate]
+  );
 
   useEffect(() => {
     const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(
@@ -80,15 +80,21 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
     );
     const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map((breadcrumb) => ({
       ...breadcrumb,
-      onClick: onBreadcrumbNavigate
+      onClick: onBreadcrumbNavigate,
     }));
     newCrumbs.unshift({
       text: currentSystem ?? '',
       to: '/',
-      onClick: onBreadcrumbNavigate
+      onClick: onBreadcrumbNavigate,
     });
     setTargetBreadcrumbs(newCrumbs);
-  }, [setTargetBreadcrumbs, currentPath, setCurrentPath, currentSystem]);
+  }, [
+    setTargetBreadcrumbs,
+    currentPath,
+    setCurrentPath,
+    currentSystem,
+    onBreadcrumbNavigate,
+  ]);
 
   const breadcrumbs: Array<BreadcrumbType> = [];
   if (allowSystemChange) {

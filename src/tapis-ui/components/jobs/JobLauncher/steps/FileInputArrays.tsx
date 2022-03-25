@@ -43,27 +43,28 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   arrayHelpers,
 }) => {
   const { values } = useFormikContext();
-  const sourceUrls: Array<string> = !!(values as Partial<Jobs.ReqSubmitJob>)
-    .fileInputArrays
-    ? (values as Partial<Jobs.ReqSubmitJob>).fileInputArrays![
-        fileInputArrayIndex
-      ].sourceUrls ?? []
-    : [];
+  const sourceUrls: Array<string> = useMemo(
+    () =>
+      !!(values as Partial<Jobs.ReqSubmitJob>).fileInputArrays
+        ? (values as Partial<Jobs.ReqSubmitJob>).fileInputArrays![
+            fileInputArrayIndex
+          ].sourceUrls ?? []
+        : [],
+    [values, fileInputArrayIndex]
+  );
   const { push } = arrayHelpers;
   const { modal, open, close } = useModal();
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
-      files.forEach(
-        (file) => {
-          const newSourceUrl = `tapis://${systemId ?? ''}${file.path}`;
-          if (!sourceUrls.some(sourceUrl => sourceUrl === newSourceUrl)) {
-            push(newSourceUrl)
-          } 
+      files.forEach((file) => {
+        const newSourceUrl = `tapis://${systemId ?? ''}${file.path}`;
+        if (!sourceUrls.some((sourceUrl) => sourceUrl === newSourceUrl)) {
+          push(newSourceUrl);
         }
-      )
+      });
     },
-    [ push, sourceUrls ]
-  )
+    [push, sourceUrls]
+  );
 
   return (
     <FormGroup>

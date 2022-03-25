@@ -22,9 +22,11 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   onSelect,
   toggle,
   selectMode,
-  initialSelection
+  initialSelection,
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>(initialSelection ?? []);
+  const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>(
+    initialSelection ?? []
+  );
   const [selectedSystem, setSelectedSystem] = useState<string | null>(
     systemId ?? null
   );
@@ -32,10 +34,10 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   const fileExplorerSelectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
       if (selectMode?.mode === 'multi') {
-        setSelectedFiles([ ...selectedFiles, ...files ]);
+        setSelectedFiles([...selectedFiles, ...files]);
       } else {
         setSelectedFiles(files);
-      }      
+      }
     },
     [setSelectedFiles, selectedFiles, selectMode]
   );
@@ -43,15 +45,18 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   const fileExplorerUnselectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
       if (selectMode?.mode === 'multi') {
-        setSelectedFiles(selectedFiles.filter(
-          (selected) => !files.some(unselected => unselected.path === selected.path)
-        ))  
+        setSelectedFiles(
+          selectedFiles.filter(
+            (selected) =>
+              !files.some((unselected) => unselected.path === selected.path)
+          )
+        );
       } else {
         setSelectedFiles([]);
       }
     },
-    [ setSelectedFiles, selectedFiles, selectMode ]
-  )
+    [setSelectedFiles, selectedFiles, selectMode]
+  );
 
   const fileExplorerNavigateCallback = useCallback(
     (systemId: string | null, path: string | null) => {
@@ -90,32 +95,37 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
       color="primary"
       onClick={selectButtonCallback}
     >
-      Select ({selectedFiles.length})
+      Select{' '}
+      {`${
+        selectMode?.mode === 'multi'
+          ? `(${selectedFiles.length})`
+          : `${!!selectedFiles.length ? selectedFiles[0].name : ''}`
+      }`}
     </Button>
   );
 
   let title = 'Select files';
-  const selectionNames = selectMode?.types?.map(
-    (selectType) => {
+  const selectionNames =
+    selectMode?.types?.map((selectType) => {
       if (selectMode.mode === 'single') {
         if (selectType === 'dir') {
-          return 'directory'
-        };
+          return 'directory';
+        }
         return 'file';
       }
       if (selectMode.mode === 'multi') {
         if (selectType === 'dir') {
-          return 'directories'
+          return 'directories';
         }
         return 'files';
       }
       return 'files';
-    }
-  ) ?? [];
+    }) ?? [];
   if (!!selectionNames.length) {
-    title = `Select ${selectMode?.mode === 'multi' ? 'one or more' : 'a'} ${selectionNames[0]} ${selectionNames.length > 1 ? ' or ' + selectionNames[1] : ''}`
+    title = `Select ${selectMode?.mode === 'multi' ? 'one or more' : 'a'} ${
+      selectionNames[0]
+    } ${selectionNames.length > 1 ? ` or ${selectionNames[1]}` : ''}`;
   }
-
 
   return (
     <GenericModal

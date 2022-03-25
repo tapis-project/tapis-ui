@@ -10,12 +10,14 @@ import { useModal } from 'tapis-ui/_common/GenericModal';
 
 type FormikTapisFileInputProps = {
   append?: React.ReactNode;
+  allowSystemChange?: boolean;
 } & InputProps &
   FieldInputProps<any>;
 
-
-const parseTapisURI = (uri: string): { systemId: string, file: Files.FileInfo, path: string } | undefined => {
-  const regex = /tapis:\/\/([\w\.\-_]+)\/(.+)/;
+const parseTapisURI = (
+  uri: string
+): { systemId: string; file: Files.FileInfo; path: string } | undefined => {
+  const regex = /tapis:\/\/([\w.\-_]+)\/(.+)/;
   const match = uri.match(regex);
   if (match) {
     const systemId = match[1];
@@ -24,30 +26,39 @@ const parseTapisURI = (uri: string): { systemId: string, file: Files.FileInfo, p
       systemId,
       file: {
         name: filePath.split('/').slice(-1)[0],
-        path: filePath
+        path: filePath,
       },
-      path: filePath.split('/').slice(0, -1).join('/')
-    }
-  } 
+      path: filePath.split('/').slice(0, -1).join('/'),
+    };
+  }
   return undefined;
-}
+};
 
 export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   append,
+  allowSystemChange = true,
   ...props
 }) => {
   const { name } = props;
-  const [field, meta, helpers] = useField(name);
+  const [field, , helpers] = useField(name);
   const { setValue } = helpers;
   const { value } = field;
-  const { modal, open, close } = useModal(); 
+  const { modal, open, close } = useModal();
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       setValue(`tapis://${systemId ?? ''}${files[0].path}`);
     },
     [setValue]
   );
-  const { systemId, file, path } = useMemo(() => parseTapisURI(value) ?? { systemId: undefined, file: undefined, path: undefined }, [ value ])
+  const { systemId, file, path } = useMemo(
+    () =>
+      parseTapisURI(value) ?? {
+        systemId: undefined,
+        file: undefined,
+        path: undefined,
+      },
+    [value]
+  );
 
   return (
     <>
@@ -69,19 +80,23 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
           onSelect={onSelect}
           systemId={systemId}
           path={path}
-          initialSelection={ file ? [ file ] : undefined}
+          initialSelection={file ? [file] : undefined}
+          allowSystemChange
         />
       )}
     </>
   );
 };
 
-const FormikTapisFile: React.FC<FormikInputProps> = ({
+type FormikTapisFileProps = {
+  allowSystemChange?: boolean;
+} & FormikInputProps;
+
+const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
   name,
   label,
   required,
   description,
-  onBrowse,
   ...props
 }: FormikInputProps) => {
   return (
