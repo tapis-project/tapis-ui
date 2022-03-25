@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Apps, Jobs } from '@tapis/tapis-typescript';
+import React, { useMemo, useCallback } from 'react';
+import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
 import {
   useJobLauncher,
@@ -12,6 +12,8 @@ import {
   getAppInputArraysIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper } from 'tapis-ui/_common';
+import { useModal } from 'tapis-ui/_common/GenericModal';
+import { FileSelectModal } from 'tapis-ui/components/files';
 import {
   FieldArray,
   useFormikContext,
@@ -47,7 +49,17 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
         fileInputArrayIndex
       ].sourceUrls ?? []
     : [];
-  
+  const { push } = arrayHelpers;
+  const { modal, open, close } = useModal();
+  const onSelect = useCallback(
+    (systemId: string | null, files: Array<Files.FileInfo>) => {
+      files.forEach(
+        (file) => push(`tapis://${systemId ?? ''}${file.path}`)
+      )
+    },
+    [ push ]
+  )
+
   return (
     <FormGroup>
       <div className={arrayStyles.sourceUrls}>
@@ -86,9 +98,21 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
           );
         })}
       </div>
-      <Button size="sm" onClick={() => arrayHelpers.push('')}>
-        + Add Source URL
-      </Button>
+      <div>
+        <Button size="sm" onClick={() => arrayHelpers.push('')}>
+          + Add Source URL
+        </Button>
+        <Button size="sm" onClick={() => open()}>
+          + Browse for Files
+        </Button>
+      </div>
+      {modal && (
+        <FileSelectModal
+          toggle={close}
+          selectMode={{ mode: 'multi', types: ['dir', 'file'] }}
+          onSelect={onSelect}
+        />
+      )}
     </FormGroup>
   );
 };
