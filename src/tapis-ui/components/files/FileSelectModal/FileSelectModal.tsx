@@ -23,7 +23,9 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   selectMode,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>([]);
-  const [selectedSystem, setSelectedSystem] = useState<string | null>(systemId ?? null);
+  const [selectedSystem, setSelectedSystem] = useState<string | null>(
+    systemId ?? null
+  );
 
   const fileExplorerSelectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
@@ -39,17 +41,14 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
     [setSelectedSystem]
   );
 
-  const selectButtonCallback = useCallback(
-    () => {
-      if (toggle) {
-        toggle();
-      } 
-      if (onSelect) {
-        onSelect(selectedSystem, selectedFiles);
-      }
-    },
-    [ toggle, onSelect, selectedSystem, selectedFiles ]
-  )
+  const selectButtonCallback = useCallback(() => {
+    if (toggle) {
+      toggle();
+    }
+    if (onSelect) {
+      onSelect(selectedSystem, selectedFiles);
+    }
+  }, [toggle, onSelect, selectedSystem, selectedFiles]);
 
   const body = (
     <FileExplorer
@@ -65,7 +64,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   );
 
   const footer = (
-    <Button 
+    <Button
       disabled={selectedFiles.length === 0}
       color="primary"
       onClick={selectButtonCallback}

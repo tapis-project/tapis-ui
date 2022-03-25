@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
-import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input, Button  } from 'reactstrap';
-import { useJobLauncher, StepSummaryField } from '../components';
-import styles from './FileInputs.module.scss';
-import fieldArrayStyles from '../FieldArray.module.scss';
+import { Input, Button, FormGroup } from 'reactstrap';
+import {
+  useJobLauncher,
+  StepSummaryField,
+  FormikJobStepWrapper,
+} from '../components';
 import {
   generateFileInputArrayFromAppInput,
   getIncompleteJobInputArrays,
   getAppInputArraysIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputArrays';
-import { Collapse } from 'tapis-ui/_common';
+import { Collapse, Icon, FieldWrapper } from 'tapis-ui/_common';
 import {
   FieldArray,
   useFormikContext,
@@ -19,14 +20,16 @@ import {
   ErrorMessage,
   FieldProps,
 } from 'formik';
-import { FormGroup, InputGroup, InputGroupAddon } from 'reactstrap';
-import { FormikJobStepWrapper } from '../components';
-import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikTapisFileInput,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
+import arrayStyles from './FileInputArrays.module.scss';
+import styles from './FileInputs.module.scss';
+import fieldArrayStyles from '../FieldArray.module.scss';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
-import { FormikTapisFileInput } from 'tapis-ui/_common/FieldWrapperFormik';
-import { Icon } from 'tapis-ui/_common';
 
 export type FieldWrapperProps = {
   fileInputArrayIndex: number;
@@ -46,38 +49,42 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
     : [];
   return (
     <FormGroup>
-      {sourceUrls.map((sourceUrl, sourceUrlIndex) => {
-        const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`;
-        return (
-          <>
-            <Field name={sourceUrlName}>
-              {({ field }: FieldProps) => (
-                <FormikTapisFileInput 
-                  {...field}
-                  append={(
-                    <Button
-                      size="sm"
-                      onClick={() => arrayHelpers.remove(sourceUrlIndex)}
-                      disabled={sourceUrls.length === 1 && sourceUrlIndex === 0}
-                    >
-                      <Icon name="close" />
-                    </Button> 
-                  )}
-                />
-              )}
-            </Field>
-            <ErrorMessage name={sourceUrlName} className="form-field__help">
-              {(message) => (
-                <div
-                  className={`${formStyles['form-field__help']} ${styles.description}`}
-                >
-                  {message}
-                </div>
-              )}
-            </ErrorMessage>
-          </>
-        );
-      })}
+      <div className={arrayStyles.sourceUrls}>
+        {sourceUrls.map((_, sourceUrlIndex) => {
+          const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`;
+          return (
+            <>
+              <Field name={sourceUrlName}>
+                {({ field }: FieldProps) => (
+                  <FormikTapisFileInput
+                    {...field}
+                    append={
+                      <Button
+                        size="sm"
+                        onClick={() => arrayHelpers.remove(sourceUrlIndex)}
+                        disabled={
+                          sourceUrls.length === 1 && sourceUrlIndex === 0
+                        }
+                      >
+                        <Icon name="close" />
+                      </Button>
+                    }
+                  />
+                )}
+              </Field>
+              <ErrorMessage name={sourceUrlName} className="form-field__help">
+                {(message) => (
+                  <div
+                    className={`${formStyles['form-field__help']} ${styles.description}`}
+                  >
+                    {message}
+                  </div>
+                )}
+              </ErrorMessage>
+            </>
+          );
+        })}
+      </div>
       <Button size="sm" onClick={() => arrayHelpers.push('')}>
         + Add Source URL
       </Button>

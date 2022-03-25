@@ -132,7 +132,13 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>Destination</div>
-        <FileExplorer systemId={systemId} path={path} onNavigate={onNavigate} fields={['size']} className={styles['file-list']} />
+        <FileExplorer
+          systemId={systemId}
+          path={path}
+          onNavigate={onNavigate}
+          fields={['size']}
+          className={styles['file-list']}
+        />
       </div>
     </div>
   );

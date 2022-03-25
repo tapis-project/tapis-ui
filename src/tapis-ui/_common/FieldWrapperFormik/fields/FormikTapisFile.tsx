@@ -3,17 +3,21 @@ import FieldWrapper from '../FieldWrapperFormik';
 import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
 import { FormikInputProps } from '.';
-import { Files } from '@tapis/tapis-typescript'
+import { Files } from '@tapis/tapis-typescript';
 import { FileSelectModal } from 'tapis-ui/components/files';
 import { InputProps } from 'reactstrap';
 
 type FormikTapisFileInputProps = {
-  append?: React.ReactNode
-} & InputProps & FieldInputProps<any>;
+  append?: React.ReactNode;
+} & InputProps &
+  FieldInputProps<any>;
 
-export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({ append, ...props }) => {
+export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
+  append,
+  ...props
+}) => {
   const { name } = props;
-  const [ , , helpers ] = useField(name);
+  const [, , helpers] = useField(name);
   const { setValue } = helpers;
   const [modalOpen, setModalOpen] = useState(false);
   const onBrowse = useCallback(() => {
@@ -27,7 +31,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({ appe
       setValue(`tapis://${systemId ?? ''}${files[0].path}`);
     },
     [setValue]
-  )
+  );
 
   return (
     <>
@@ -39,22 +43,19 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({ appe
         </InputGroupAddon>
         <Input {...props} bsSize="sm" />
         {!!append && (
-          <InputGroupAddon addonType="append">
-            {append}
-          </InputGroupAddon>
+          <InputGroupAddon addonType="append">{append}</InputGroupAddon>
         )}
       </InputGroup>
       {modalOpen && (
         <FileSelectModal
-          toggle={toggle} 
-          selectMode={{mode: 'single', types: ['dir', 'file']}}
+          toggle={toggle}
+          selectMode={{ mode: 'single', types: ['dir', 'file'] }}
           onSelect={onSelect}
         />
       )}
     </>
-  )
-}
-
+  );
+};
 
 const FormikTapisFile: React.FC<FormikInputProps> = ({
   name,
@@ -74,7 +75,6 @@ const FormikTapisFile: React.FC<FormikInputProps> = ({
         <FormikTapisFileInput {...props} {...formikProps} bsSize="sm" />
       )}
     />
-
   );
 };
 

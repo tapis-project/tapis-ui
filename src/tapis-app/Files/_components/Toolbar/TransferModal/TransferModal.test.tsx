@@ -11,9 +11,7 @@ jest.mock('tapis-ui/components/files/FileExplorer/FileExplorer');
 
 describe('TransferModal', () => {
   it('renders the transfer modal', async () => {
-    (FileExplorer as jest.Mock).mockReturnValue(
-      <div>Mock File Explorer</div>
-    );
+    (FileExplorer as jest.Mock).mockReturnValue(<div>Mock File Explorer</div>);
     (TransferListing as jest.Mock).mockReturnValue(
       <div>Mock Transfer listing</div>
     );
