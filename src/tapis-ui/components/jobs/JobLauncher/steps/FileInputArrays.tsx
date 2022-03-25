@@ -47,6 +47,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
         fileInputArrayIndex
       ].sourceUrls ?? []
     : [];
+  
   return (
     <FormGroup>
       <div className={arrayStyles.sourceUrls}>

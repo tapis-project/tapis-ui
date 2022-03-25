@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import FieldWrapper from '../FieldWrapperFormik';
 import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
@@ -6,6 +6,7 @@ import { FormikInputProps } from '.';
 import { Files } from '@tapis/tapis-typescript';
 import { FileSelectModal } from 'tapis-ui/components/files';
 import { InputProps } from 'reactstrap';
+import { useModal } from 'tapis-ui/_common/GenericModal';
 
 type FormikTapisFileInputProps = {
   append?: React.ReactNode;
@@ -19,25 +20,18 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   const { name } = props;
   const [, , helpers] = useField(name);
   const { setValue } = helpers;
-  const [modalOpen, setModalOpen] = useState(false);
-  const onBrowse = useCallback(() => {
-    setModalOpen(true);
-  }, [setModalOpen]);
-  const toggle = useCallback(() => {
-    setModalOpen(false);
-  }, [setModalOpen]);
+  const { modal, open, close } = useModal(); 
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       setValue(`tapis://${systemId ?? ''}${files[0].path}`);
     },
     [setValue]
   );
-
   return (
     <>
       <InputGroup>
         <InputGroupAddon addonType="prepend">
-          <Button size="sm" onClick={onBrowse}>
+          <Button size="sm" onClick={open}>
             Browse
           </Button>
         </InputGroupAddon>
@@ -46,9 +40,9 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
           <InputGroupAddon addonType="append">{append}</InputGroupAddon>
         )}
       </InputGroup>
-      {modalOpen && (
+      {modal && (
         <FileSelectModal
-          toggle={toggle}
+          toggle={close}
           selectMode={{ mode: 'single', types: ['dir', 'file'] }}
           onSelect={onSelect}
         />
