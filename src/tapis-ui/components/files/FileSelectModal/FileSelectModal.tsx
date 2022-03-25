@@ -4,6 +4,7 @@ import { GenericModal } from 'tapis-ui/_common';
 import { FileExplorer } from 'tapis-ui/components/files';
 import { SelectMode } from 'tapis-ui/components/files/FileListing/FileListing';
 import { Button } from 'reactstrap';
+import styles from './FileSelectModal.module.scss';
 
 type FileSelectModalProps = {
   systemId?: string;
@@ -86,6 +87,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
       onNavigate={fileExplorerNavigateCallback}
       fields={['size', 'lastModified']}
       selectedFiles={selectedFiles}
+      className={styles['file-list']}
     />
   );
 
@@ -131,7 +133,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
     <GenericModal
       toggle={toggle}
       title={title}
-      size="xl"
+      size="lg"
       body={body}
       footer={footer}
     />
