@@ -54,10 +54,15 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       files.forEach(
-        (file) => push(`tapis://${systemId ?? ''}${file.path}`)
+        (file) => {
+          const newSourceUrl = `tapis://${systemId ?? ''}${file.path}`;
+          if (!sourceUrls.some(sourceUrl => sourceUrl === newSourceUrl)) {
+            push(newSourceUrl)
+          } 
+        }
       )
     },
-    [ push ]
+    [ push, sourceUrls ]
   )
 
   return (
