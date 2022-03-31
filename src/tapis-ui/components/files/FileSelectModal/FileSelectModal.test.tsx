@@ -1,11 +1,9 @@
-import React from 'react';
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import FileSelectModal from './FileSelectModal';
 import { useList } from 'tapis-hooks/files';
 import { fileInfo } from 'fixtures/files.fixtures';
-import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('tapis-hooks/files');
 
@@ -48,13 +46,13 @@ describe('File Select Modal', () => {
       fireEvent.click(file1);
     });
 
-    const select = getByTestId("modalSelect");
+    const select = getByTestId('modalSelect');
     expect(select).toBeDefined();
 
     await act(async () => {
       fireEvent.click(select);
     });
 
-    expect(mockOnSelect).toHaveBeenCalledWith("system", [{ ...fileInfo }]);
+    expect(mockOnSelect).toHaveBeenCalledWith('system', [{ ...fileInfo }]);
   });
 });
