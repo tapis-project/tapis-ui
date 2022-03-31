@@ -22,7 +22,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   allowSystemChange,
   onSelect,
   toggle,
-  selectMode,
+  selectMode = { mode: 'single', types: ['file', 'dir'] },
   initialSelection,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<Array<Files.FileInfo>>(
@@ -96,6 +96,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
       disabled={selectedFiles.length === 0}
       color="primary"
       onClick={selectButtonCallback}
+      data-testid="modalSelect"
     >
       Select{' '}
       {`${
