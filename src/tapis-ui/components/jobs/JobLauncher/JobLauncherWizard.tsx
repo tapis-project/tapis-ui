@@ -49,8 +49,8 @@ const generateDefaultValues = (
     fileInputs: generateRequiredFileInputsFromApp(app),
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
     parameterSet: {
-      archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter
-    }
+      archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
+    },
   };
   return defaultValues;
 };
@@ -141,7 +141,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       id: 'archiveFilter',
       name: 'Archive Filter',
       render: <ArchiveFilter />,
-      summary: <ArchiveFilterSummary />
+      summary: <ArchiveFilterSummary />,
     },
     {
       id: 'jobSubmission',
