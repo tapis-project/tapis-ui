@@ -14,21 +14,22 @@ type FormikTapisFileInputProps = {
 } & InputProps &
   FieldInputProps<any>;
 
-const parseTapisURI = (
+export const parseTapisURI = (
   uri: string
-): { systemId: string; file: Files.FileInfo; path: string } | undefined => {
+): { systemId: string; file: Files.FileInfo; parent: string } | undefined => {
   const regex = /tapis:\/\/([\w.\-_]+)\/(.+)/;
   const match = uri.match(regex);
   if (match) {
     const systemId = match[1];
     const filePath = `/${match[2]}`;
+    const parentDir = filePath.split('/').slice(0, -1).join('/');
     return {
       systemId,
       file: {
         name: filePath.split('/').slice(-1)[0],
         path: filePath,
       },
-      path: filePath.split('/').slice(0, -1).join('/'),
+      parent: !!parentDir.length ? parentDir : '/',
     };
   }
   return undefined;
@@ -50,12 +51,12 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
     },
     [setValue]
   );
-  const { systemId, file, path } = useMemo(
+  const { systemId, file, parent } = useMemo(
     () =>
       parseTapisURI(value) ?? {
         systemId: undefined,
         file: undefined,
-        path: undefined,
+        parent: undefined,
       },
     [value]
   );
@@ -79,7 +80,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
           selectMode={{ mode: 'single', types: ['file', 'dir'] }}
           onSelect={onSelect}
           systemId={systemId}
-          path={path}
+          path={parent}
           initialSelection={file ? [file] : undefined}
           allowSystemChange
         />
