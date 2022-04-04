@@ -16,7 +16,7 @@ const FormikCheck: React.FC<FormikInputProps> = ({
         <Field
           name={name}
           as={(formikProps: FieldInputProps<any>) => (
-            <Input bsSize="sm" type="checkbox" {...props} {...formikProps} />
+            <Input bsSize="sm" type="checkbox" {...props} {...formikProps} checked={formikProps.value} />
           )}
         />
         {label}
