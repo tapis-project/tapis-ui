@@ -11,9 +11,9 @@ export const generateJobAppArg = (appArg: Apps.AppArgSpec): Jobs.JobArgSpec => {
 }
 
 
-export const getAppArgMode = (jobAppArg: Jobs.JobArgSpec, app: Apps.TapisApp): Apps.ArgInputModeEnum | undefined => {
+export const getAppArgMode = (name: string, app: Apps.TapisApp): Apps.ArgInputModeEnum | undefined => {
   const appArg: Apps.AppArgSpec | undefined = app.jobAttributes?.parameterSet?.appArgs?.find(
-    (appArg) => appArg.name === jobAppArg.name
+    (appArg) => appArg.name === name
   );
   if (!appArg) {
     return undefined;

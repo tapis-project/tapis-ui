@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Jobs } from '@tapis/tapis-typescript';
+import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
@@ -13,6 +13,7 @@ import {
 import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
 import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { getAppArgMode } from 'tapis-api/utils/jobAppArgs';
 import * as Yup from 'yup';
 
 type AppArgFieldProps = {
@@ -24,8 +25,10 @@ const AppArgField: React.FC<AppArgFieldProps> = ({
   index,
   arrayHelpers,
 }) => {
+  const { app } = useJobLauncher();
   const [field] = useField(`parameterSet.appArgs.${index}.name`);
   const name = useMemo(() => field.value, [field]);
+  const inputMode = useMemo(() => name ? getAppArgMode(name, app) : undefined, [name, app]);
   return (
     <Collapse
       key={`appArgs.${index}`}
@@ -35,25 +38,29 @@ const AppArgField: React.FC<AppArgFieldProps> = ({
       <FormikInput
         name={`parameterSet.appArgs.${index}.name`}
         required={true}
-        label="Key"
-        description="The name for this app argument"
+        label="Name"
+        disabled={!!inputMode}
+        description={`The name for this app argument ${!!inputMode ? 'is defined in the application and cannot be changed' : ''}`}
       />
       <FormikInput
         name={`parameterSet.appArgs.${index}.arg`}
         required={true}
         label="Value"
+        disabled={inputMode === Apps.ArgInputModeEnum.Fixed}
         description="A value for this app argument"
       />
       <FormikInput
         name={`parameterSet.appArgs.${index}.description`}
         required={false}
         label="Description"
+        disabled={inputMode === Apps.ArgInputModeEnum.Fixed}
         description="A description for this app argument"
       />
       <FormikCheck
         name={`parameterSet.appArgs.${index}.include`}
         required={false}
         label="Include"
+        disabled={inputMode === Apps.ArgInputModeEnum.Fixed || inputMode === Apps.ArgInputModeEnum.Required}
         description="If checked, this argument will be included"
       />
       <Button size="sm" onClick={() => arrayHelpers.remove(index)}>
