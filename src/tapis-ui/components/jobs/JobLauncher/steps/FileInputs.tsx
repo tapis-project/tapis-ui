@@ -14,7 +14,11 @@ import {
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
-import { FormikInput, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikCheck,
+  FormikTapisFile,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 
@@ -48,55 +52,58 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   const note = `${
     inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
   }`;
+
   return (
-    <Collapse
-      open={!sourceUrl}
-      key={`fileInputs.${index}`}
-      title={name ?? 'File Input'}
-      note={note}
-      className={fieldArrayStyles.item}
-    >
-      <FormikInput
-        name={`fileInputs.${index}.name`}
-        label="Name"
-        required={true}
-        description={`${
-          isRequired
-            ? 'This input is required and cannot be renamed'
-            : 'Name of this input'
-        }`}
-        disabled={isRequired}
-      />
-      <FormikInput
-        name={`fileInputs.${index}.sourceUrl`}
-        label="Source URL"
-        required={true}
-        description="Input TAPIS file as a pathname, TAPIS URI or web URL"
-      />
-      <FormikInput
-        name={`fileInputs.${index}.targetPath`}
-        label="Target Path"
-        required={true}
-        description="File mount path inside of running container"
-      />
-      <FormikInput
-        name={`fileInputs.${index}.description`}
-        label="Description"
-        required={false}
-        description="Description of this input"
-      />
-      <FormikCheck
-        name={`fileInputs.${index}.autoMountLocal`}
-        label="Auto-mount Local"
-        required={false}
-        description="If this is true, the source URL will be mounted from the execution system's local file system"
-      />
-      {!isRequired && (
-        <Button onClick={() => remove(index)} size="sm">
-          Remove
-        </Button>
-      )}
-    </Collapse>
+    <>
+      <Collapse
+        open={!sourceUrl}
+        key={`fileInputs.${index}`}
+        title={name ?? 'File Input'}
+        note={note}
+        className={fieldArrayStyles.item}
+      >
+        <FormikInput
+          name={`fileInputs.${index}.name`}
+          label="Name"
+          required={true}
+          description={`${
+            isRequired
+              ? 'This input is required and cannot be renamed'
+              : 'Name of this input'
+          }`}
+          disabled={isRequired}
+        />
+        <FormikTapisFile
+          name={`fileInputs.${index}.sourceUrl`}
+          label="Source URL"
+          required={true}
+          description="Input TAPIS file as a pathname, TAPIS URI or web URL"
+        />
+        <FormikInput
+          name={`fileInputs.${index}.targetPath`}
+          label="Target Path"
+          required={true}
+          description="File mount path inside of running container"
+        />
+        <FormikInput
+          name={`fileInputs.${index}.description`}
+          label="Description"
+          required={false}
+          description="Description of this input"
+        />
+        <FormikCheck
+          name={`fileInputs.${index}.autoMountLocal`}
+          label="Auto-mount Local"
+          required={false}
+          description="If this is true, the source URL will be mounted from the execution system's local file system"
+        />
+        {!isRequired && (
+          <Button onClick={() => remove(index)} size="sm">
+            Remove
+          </Button>
+        )}
+      </Collapse>
+    </>
   );
 };
 

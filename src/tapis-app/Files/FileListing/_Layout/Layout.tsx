@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ systemId, path, location }) => {
         systemId={systemId}
         path={path}
         location={location}
-        selectTypes={['dir', 'file']}
+        selectMode={{ mode: 'multi', types: ['dir', 'file'] }}
         selectedFiles={selectedFiles}
         onSelect={(files) => select(files, 'multi')}
         onUnselect={unselect}

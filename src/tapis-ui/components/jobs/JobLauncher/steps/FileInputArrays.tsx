@@ -1,17 +1,19 @@
-import React, { useMemo } from 'react';
-import { Apps, Jobs } from '@tapis/tapis-typescript';
-import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
-import { Input } from 'reactstrap';
-import { Button } from 'reactstrap';
-import { useJobLauncher, StepSummaryField } from '../components';
-import styles from './FileInputs.module.scss';
-import fieldArrayStyles from '../FieldArray.module.scss';
+import React, { useMemo, useCallback } from 'react';
+import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
+import { Input, Button, FormGroup } from 'reactstrap';
+import {
+  useJobLauncher,
+  StepSummaryField,
+  FormikJobStepWrapper,
+} from '../components';
 import {
   generateFileInputArrayFromAppInput,
   getIncompleteJobInputArrays,
   getAppInputArraysIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputArrays';
-import { Collapse } from 'tapis-ui/_common';
+import { Collapse, Icon, FieldWrapper } from 'tapis-ui/_common';
+import { useModal } from 'tapis-ui/_common/GenericModal';
+import { FileSelectModal } from 'tapis-ui/components/files';
 import {
   FieldArray,
   useFormikContext,
@@ -20,11 +22,15 @@ import {
   ErrorMessage,
   FieldProps,
 } from 'formik';
-import { FormGroup, InputGroup, InputGroupAddon } from 'reactstrap';
-import { FormikJobStepWrapper } from '../components';
-import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikTapisFileInput,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
+import arrayStyles from './FileInputArrays.module.scss';
+import styles from './FileInputs.module.scss';
+import fieldArrayStyles from '../FieldArray.module.scss';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
 
 export type FieldWrapperProps = {
@@ -37,49 +43,82 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   arrayHelpers,
 }) => {
   const { values } = useFormikContext();
-  const sourceUrls: Array<string> = !!(values as Partial<Jobs.ReqSubmitJob>)
-    .fileInputArrays
-    ? (values as Partial<Jobs.ReqSubmitJob>).fileInputArrays![
-        fileInputArrayIndex
-      ].sourceUrls ?? []
-    : [];
+  const sourceUrls: Array<string> = useMemo(
+    () =>
+      !!(values as Partial<Jobs.ReqSubmitJob>).fileInputArrays
+        ? (values as Partial<Jobs.ReqSubmitJob>).fileInputArrays![
+            fileInputArrayIndex
+          ].sourceUrls ?? []
+        : [],
+    [values, fileInputArrayIndex]
+  );
+  const { push } = arrayHelpers;
+  const { modal, open, close } = useModal();
+  const onSelect = useCallback(
+    (systemId: string | null, files: Array<Files.FileInfo>) => {
+      files.forEach((file) => {
+        const newSourceUrl = `tapis://${systemId ?? ''}${file.path}`;
+        if (!sourceUrls.some((sourceUrl) => sourceUrl === newSourceUrl)) {
+          push(newSourceUrl);
+        }
+      });
+    },
+    [push, sourceUrls]
+  );
+
   return (
     <FormGroup>
-      {sourceUrls.map((sourceUrl, sourceUrlIndex) => {
-        const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`;
-        return (
-          <>
-            <Field name={sourceUrlName}>
-              {({ field }: FieldProps) => (
-                <InputGroup>
-                  <Input {...field} bsSize="sm" />
-                  <InputGroupAddon addonType="append">
-                    <Button
-                      size="sm"
-                      onClick={() => arrayHelpers.remove(sourceUrlIndex)}
-                      disabled={sourceUrls.length === 1 && sourceUrlIndex === 0}
-                    >
-                      Remove
-                    </Button>
-                  </InputGroupAddon>
-                </InputGroup>
-              )}
-            </Field>
-            <ErrorMessage name={sourceUrlName} className="form-field__help">
-              {(message) => (
-                <div
-                  className={`${formStyles['form-field__help']} ${styles.description}`}
-                >
-                  {message}
-                </div>
-              )}
-            </ErrorMessage>
-          </>
-        );
-      })}
-      <Button size="sm" onClick={() => arrayHelpers.push('')}>
-        + Add Source URL
-      </Button>
+      <div className={arrayStyles.sourceUrls}>
+        {sourceUrls.map((_, sourceUrlIndex) => {
+          const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`;
+          return (
+            <>
+              <Field name={sourceUrlName}>
+                {({ field }: FieldProps) => (
+                  <FormikTapisFileInput
+                    {...field}
+                    append={
+                      <Button
+                        size="sm"
+                        onClick={() => arrayHelpers.remove(sourceUrlIndex)}
+                        disabled={
+                          sourceUrls.length === 1 && sourceUrlIndex === 0
+                        }
+                      >
+                        <Icon name="close" />
+                      </Button>
+                    }
+                  />
+                )}
+              </Field>
+              <ErrorMessage name={sourceUrlName} className="form-field__help">
+                {(message) => (
+                  <div
+                    className={`${formStyles['form-field__help']} ${styles.description}`}
+                  >
+                    {message}
+                  </div>
+                )}
+              </ErrorMessage>
+            </>
+          );
+        })}
+      </div>
+      <div>
+        <Button size="sm" onClick={() => arrayHelpers.push('')}>
+          + Add Source URL
+        </Button>
+        <Button size="sm" onClick={() => open()}>
+          + Browse for Files
+        </Button>
+      </div>
+      {modal && (
+        <FileSelectModal
+          toggle={close}
+          selectMode={{ mode: 'multi', types: ['file', 'dir'] }}
+          onSelect={onSelect}
+        />
+      )}
     </FormGroup>
   );
 };

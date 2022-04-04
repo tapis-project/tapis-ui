@@ -34,7 +34,7 @@ describe('Files', () => {
       <FileListing
         systemId={'system'}
         path={'/'}
-        selectTypes={['dir', 'file']}
+        selectMode={{ mode: 'single', types: ['dir', 'file'] }}
         onSelect={mockOnSelect}
       />
     );
@@ -58,7 +58,7 @@ describe('Files', () => {
       <FileListing
         systemId={'system'}
         path={'/'}
-        selectTypes={['dir', 'file']}
+        selectMode={{ mode: 'single', types: ['dir', 'file'] }}
         selectedFiles={[fileInfo]}
         onUnselect={mockOnUnselect}
       />
@@ -88,7 +88,7 @@ describe('Files', () => {
       <FileListing
         systemId={'system'}
         path={'/'}
-        selectTypes={['dir', 'file']}
+        selectMode={{ mode: 'multi', types: ['dir', 'file'] }}
         selectedFiles={[fileInfo]}
         onSelect={mockOnSelect}
         onUnselect={mockOnUnselect}

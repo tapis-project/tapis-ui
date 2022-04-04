@@ -44,6 +44,7 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
         className={styles.link}
         onClick={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           onNavigate(file);
         }}
         data-testid={`btn-link-${file.name}`}
@@ -93,10 +94,10 @@ const FileListingName: React.FC<FileListingItemProps> = ({
   );
 };
 
-type SelectMode = {
+export type SelectMode = {
   mode: 'none' | 'single' | 'multi';
   // If undefined, allowed selectable file types will be treated as [ "file", "dir" ]
-  types?: Array<string>;
+  types?: Array<'dir' | 'file'>;
 };
 
 type FileListingTableProps = {
@@ -228,10 +229,10 @@ interface FileListingProps {
   onUnselect?: OnSelectCallback;
   onNavigate?: OnNavigateCallback;
   location?: string;
-  selectTypes?: Array<'dir' | 'file'>;
   className?: string;
   fields?: Array<'size' | 'lastModified'>;
   selectedFiles?: Array<Files.FileInfo>;
+  selectMode?: SelectMode;
 }
 
 const FileListing: React.FC<FileListingProps> = ({
@@ -241,10 +242,10 @@ const FileListing: React.FC<FileListingProps> = ({
   onUnselect = undefined,
   onNavigate = undefined,
   location = undefined,
-  selectTypes = [],
   className,
   fields = ['size', 'lastModified'],
   selectedFiles = [],
+  selectMode,
 }) => {
   const {
     hasNextPage,
@@ -278,7 +279,7 @@ const FileListing: React.FC<FileListingProps> = ({
     return result;
   }, [selectedFiles, concatenatedResults]);
 
-  const prependColumns = selectTypes.length
+  const prependColumns = selectMode?.types?.length
     ? [
         {
           Header: (
@@ -306,7 +307,7 @@ const FileListing: React.FC<FileListingProps> = ({
 
   const fileSelectCallback = useCallback(
     (file: Files.FileInfo) => {
-      if (!selectTypes.some((allowed) => allowed === file.type)) {
+      if (!selectMode?.types?.some((allowed) => allowed === file.type)) {
         return;
       }
       if (selectedFileDict[file.path ?? ''] && onUnselect) {
@@ -315,7 +316,7 @@ const FileListing: React.FC<FileListingProps> = ({
         onSelect && onSelect([file]);
       }
     },
-    [selectTypes, onUnselect, selectedFileDict, onSelect]
+    [selectMode, onUnselect, selectedFileDict, onSelect]
   );
 
   // Maps rows to row properties, such as classNames
@@ -339,6 +340,7 @@ const FileListing: React.FC<FileListingProps> = ({
         location={location}
         onNavigate={onNavigate}
         fields={fields}
+        selectMode={selectMode}
       />
     </QueryWrapper>
   );

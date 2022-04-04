@@ -4,10 +4,15 @@ import { Systems } from '@tapis/tapis-typescript';
 import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import FileListing from 'tapis-ui/components/files/FileListing';
-import { OnNavigateCallback } from 'tapis-ui/components/files/FileListing/FileListing';
+import {
+  OnNavigateCallback,
+  OnSelectCallback,
+  SelectMode,
+} from 'tapis-ui/components/files/FileListing/FileListing';
 import { SystemListing } from 'tapis-ui/components/systems';
 import { normalize } from 'path';
 import styles from './FileExplorer.module.scss';
+import { Files } from '@tapis/tapis-typescript';
 
 type FileExplorerProps = {
   systemId?: string;
@@ -15,14 +20,24 @@ type FileExplorerProps = {
   className?: string;
   allowSystemChange?: boolean;
   onNavigate?: (systemId: string | null, path: string | null) => void;
+  onSelect?: OnSelectCallback;
+  onUnselect?: OnSelectCallback;
+  fields?: Array<'size' | 'lastModified'>;
+  selectedFiles?: Array<Files.FileInfo>;
+  selectMode?: SelectMode;
 };
 
 const FileExplorer: React.FC<FileExplorerProps> = ({
   systemId,
   path,
   className,
-  onNavigate,
   allowSystemChange,
+  onNavigate,
+  onSelect,
+  onUnselect,
+  fields = ['size'],
+  selectedFiles,
+  selectMode,
 }) => {
   const [currentSystem, setCurrentSystem] = useState(systemId);
   const [currentPath, setCurrentPath] = useState(path);
@@ -51,25 +66,35 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
     [setCurrentPath, setCurrentSystem, onNavigate]
   );
 
+  const onBreadcrumbNavigate = useCallback(
+    (to: string) => {
+      setCurrentPath(to);
+      onNavigate && onNavigate(currentSystem ?? null, to);
+    },
+    [setCurrentPath, currentSystem, onNavigate]
+  );
+
   useEffect(() => {
     const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(
       currentPath ?? ''
     );
     const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map((breadcrumb) => ({
       ...breadcrumb,
-      onClick: (to: string) => {
-        setCurrentPath(to);
-      },
+      onClick: onBreadcrumbNavigate,
     }));
     newCrumbs.unshift({
       text: currentSystem ?? '',
       to: '/',
-      onClick: (to: string) => {
-        setCurrentPath(to);
-      },
+      onClick: onBreadcrumbNavigate,
     });
     setTargetBreadcrumbs(newCrumbs);
-  }, [setTargetBreadcrumbs, currentPath, setCurrentPath, currentSystem]);
+  }, [
+    setTargetBreadcrumbs,
+    currentPath,
+    setCurrentPath,
+    currentSystem,
+    onBreadcrumbNavigate,
+  ]);
 
   const breadcrumbs: Array<BreadcrumbType> = [];
   if (allowSystemChange) {
@@ -90,11 +115,15 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       <div>
         {currentSystem ? (
           <FileListing
-            className={`${styles['file-list']} ${styles['nav-list']}`}
+            className={`${styles['nav-list']}`}
             systemId={currentSystem}
             path={currentPath ?? '/'}
             onNavigate={onFileNavigate}
-            fields={['size']}
+            onSelect={onSelect}
+            onUnselect={onUnselect}
+            selectedFiles={selectedFiles}
+            fields={fields}
+            selectMode={selectMode}
           />
         ) : (
           <SystemListing
