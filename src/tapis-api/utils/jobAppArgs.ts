@@ -20,3 +20,14 @@ export const getAppArgMode = (jobAppArg: Jobs.JobArgSpec, app: Apps.TapisApp): A
   }
   return appArg.inputMode;
 }
+
+
+export const generateJobAppArgsFromSpec = (app: Apps.TapisApp): Array<Jobs.JobArgSpec> => {
+  return (
+    app.jobAttributes?.parameterSet?.appArgs
+      ? [] as Array<Jobs.JobArgSpec>
+      : app.jobAttributes!.parameterSet!.appArgs!.map(
+        (appArg) => generateJobAppArg(appArg)
+      )
+  )
+}
