@@ -51,7 +51,7 @@ const generateDefaultValues = (
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
     parameterSet: {
       archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
-      envVariables: app.jobAttributes?.parameterSet?.envVariables
+      envVariables: app.jobAttributes?.parameterSet?.envVariables,
     },
   };
   return defaultValues;
@@ -143,7 +143,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       id: 'envVariables',
       name: 'Environment Variables',
       render: <EnvVariables />,
-      summary: <EnvVariablesSummary />
+      summary: <EnvVariablesSummary />,
     },
     {
       id: 'archiveFilter',

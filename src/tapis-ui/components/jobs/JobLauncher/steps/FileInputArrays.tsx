@@ -242,7 +242,9 @@ const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
       key={`optional-input-array-${inputArray.name}`}
       className={styles['optional-input']}
     >
-      <div className={fieldArrayStyles.description}>{inputArray.description ?? ''}</div>
+      <div className={fieldArrayStyles.description}>
+        {inputArray.description ?? ''}
+      </div>
       <FieldWrapper
         label="Source URLs"
         required={true}
@@ -334,7 +336,9 @@ const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({
       key={`fixed-input-${inputArray.name}`}
       className={styles['optional-input']}
     >
-      <div className={fieldArrayStyles.description}>{inputArray.description ?? ''}</div>
+      <div className={fieldArrayStyles.description}>
+        {inputArray.description ?? ''}
+      </div>
       <FieldWrapper
         label="Source URLs"
         required={true}

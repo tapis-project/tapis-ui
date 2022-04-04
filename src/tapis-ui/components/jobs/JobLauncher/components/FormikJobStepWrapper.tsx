@@ -12,15 +12,24 @@ type FormikJobStepWrapperProps = {
 const FormikJobStepWrapper: React.FC<
   React.PropsWithChildren<FormikJobStepWrapperProps>
 > = ({ children, validationSchema, initialValues }) => {
-  const { add } = useJobLauncher();
+  const { add, job } = useJobLauncher();
   const { nextStep } = useWizard();
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
-      add(value);
+      if (value.parameterSet) {
+        add({
+          parameterSet: {
+            ...job.parameterSet,
+            ...value.parameterSet,
+          },
+        });
+      } else {
+        add(value);
+      }
       nextStep && nextStep();
     },
-    [nextStep, add]
+    [nextStep, add, job]
   );
 
   return (
