@@ -7,6 +7,7 @@ import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
+import { ArchiveFilter, ArchiveFilterSummary } from './steps/ArchiveFilter';
 import {
   FileInputArrays,
   FileInputArraysSummary,
@@ -47,6 +48,9 @@ const generateDefaultValues = (
       app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
     fileInputs: generateRequiredFileInputsFromApp(app),
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
+    parameterSet: {
+      archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
+    },
   };
   return defaultValues;
 };
@@ -132,6 +136,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       name: 'File Input Arrays',
       render: <FileInputArrays />,
       summary: <FileInputArraysSummary />,
+    },
+    {
+      id: 'archiveFilter',
+      name: 'Archive Filter',
+      render: <ArchiveFilter />,
+      summary: <ArchiveFilterSummary />,
     },
     {
       id: 'jobSubmission',
