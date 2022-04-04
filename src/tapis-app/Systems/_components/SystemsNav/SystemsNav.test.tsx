@@ -7,8 +7,8 @@ import { useList } from 'tapis-hooks/systems';
 
 jest.mock('tapis-hooks/systems');
 
-describe('SystemsNav', () => {
-  it('renders SystemNav component', () => {
+describe('SystemList', () => {
+  it('renders SystemList component', () => {
     (useList as jest.Mock).mockReturnValue({
       data: {
         result: [tapisSystem],
@@ -18,6 +18,6 @@ describe('SystemsNav', () => {
     });
 
     const { getAllByText } = renderComponent(<SystemsNav />);
-    expect(getAllByText(/testuser2\.execution/).length).toEqual(1);
+    expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
   });
 });

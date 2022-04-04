@@ -1,12 +1,13 @@
 import React from 'react';
 import { FormGroup, Label, FormText, Badge } from 'reactstrap';
 import './FieldWrapper.scss';
+import { FieldError } from 'react-hook-form';
 
 export type FieldWrapperProps = {
   label: string;
   required: boolean;
   description: string;
-  error?: string;
+  error?: FieldError;
   children?: React.ReactNode;
 };
 const FieldWrapper: React.FC<FieldWrapperProps> = ({
@@ -31,7 +32,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
     </Label>
     {children}
     {error ? (
-      <div className="form-field__validation-error">{error}</div>
+      <div className="form-field__validation-error">{error.message}</div>
     ) : (
       description && (
         <FormText className="form-field__help" color="muted">

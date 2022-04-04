@@ -1,13 +1,10 @@
-import { useQuery, QueryObserverOptions } from 'react-query';
+import { useQuery } from 'react-query';
 import { details } from 'tapis-api/jobs';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const useDetails = (
-  jobUuid: string,
-  options: QueryObserverOptions<Jobs.RespGetJob, Error> = {}
-) => {
+const useDetails = (jobUuid: string) => {
   const { accessToken, basePath } = useTapisConfig();
   const params: Jobs.GetJobRequest = { jobUuid };
   const result = useQuery<Jobs.RespGetJob, Error>(
@@ -16,7 +13,6 @@ const useDetails = (
     // which is expected behavior for not having a token
     () => details(params, basePath, accessToken?.access_token ?? ''),
     {
-      ...options,
       enabled: !!accessToken,
     }
   );

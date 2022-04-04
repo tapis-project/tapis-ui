@@ -1,4 +1,4 @@
-import { act, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, screen, fireEvent } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import TransferCancel from './TransferCreate';
 import { useCreate } from 'tapis-hooks/files/transfers';
@@ -27,6 +27,8 @@ describe('TransferCreate', () => {
       />
     );
 
+    expect(resetMock).toBeCalledTimes(1);
+
     const input = screen.getByLabelText('Tag');
     await act(async () => {
       fireEvent.change(input, {
@@ -41,18 +43,16 @@ describe('TransferCreate', () => {
       submit.click();
     });
 
-    await waitFor(() => {
-      const callParams = createMock.mock.calls[0];
-      expect(resetMock).toBeCalledTimes(1);
-      expect(callParams[0]).toEqual({
-        tag: 'mytag',
-        elements: [
-          {
-            destinationURI: 'tapis://destination/dest',
-            sourceURI: 'tapis://source/file1.txt',
-          },
-        ],
-      });
+    const callParams = createMock.mock.calls[0];
+
+    expect(callParams[0]).toEqual({
+      tag: 'mytag',
+      elements: [
+        {
+          destinationURI: 'tapis://destination/dest',
+          sourceURI: 'tapis://source/file1.txt',
+        },
+      ],
     });
   });
 });
