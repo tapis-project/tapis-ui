@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import CreateDirModal from './CreateDirModal';
 import { useMkdir } from 'tapis-hooks/files';
@@ -33,8 +33,10 @@ describe('CreateDirModal', () => {
       fireEvent.click(button);
     });
 
-    expect(mkdirMock).toBeCalledTimes(1);
-    expect(resetMock).toBeCalledTimes(1);
+    await waitFor(() => {
+      expect(mkdirMock).toBeCalledTimes(1);
+      expect(resetMock).toBeCalledTimes(1);
+    });
   });
 
   it('submits with valid inputs', async () => {
@@ -64,8 +66,10 @@ describe('CreateDirModal', () => {
       fireEvent.click(button);
     });
 
-    expect(mkdirMock).toBeCalledTimes(1);
-    expect(resetMock).toBeCalledTimes(1);
+    await waitFor(() => {
+      expect(mkdirMock).toBeCalledTimes(1);
+      expect(resetMock).toBeCalledTimes(1);
+    });
   });
 
   it('fails with invalid inputs', async () => {
@@ -96,7 +100,9 @@ describe('CreateDirModal', () => {
       fireEvent.click(button);
     });
 
-    expect(mkdirMock).toBeCalledTimes(0);
-    expect(resetMock).toBeCalledTimes(1);
+    await waitFor(() => {
+      expect(mkdirMock).toBeCalledTimes(0);
+      expect(resetMock).toBeCalledTimes(1);
+    });
   });
 });

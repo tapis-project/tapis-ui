@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import FileOperation from './FileOperation';
 import { useNativeOp } from 'tapis-hooks/files';
@@ -41,15 +41,16 @@ describe('FileOperation', () => {
       fireEvent.click(button);
     });
 
-    const callParams = nativeOpMock.mock.calls[0];
-
-    expect(callParams[0]).toEqual({
-      systemId: 'mockSystem',
-      path: '/file1.txt',
-      recursive: true,
-      operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
-      argument: '600',
+    await waitFor(() => {
+      const callParams = nativeOpMock.mock.calls[0];
+      expect(callParams[0]).toEqual({
+        systemId: 'mockSystem',
+        path: '/file1.txt',
+        recursive: true,
+        operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
+        argument: '600',
+      });
+      expect(resetMock).toBeCalledTimes(1);
     });
-    expect(resetMock).toBeCalledTimes(1);
   });
 });

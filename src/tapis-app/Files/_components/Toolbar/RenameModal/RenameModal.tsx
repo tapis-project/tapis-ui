@@ -1,13 +1,15 @@
 import { useCallback, useState } from 'react';
-import { Button, Input } from 'reactstrap';
-import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
+import { Button } from 'reactstrap';
+import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
-import { useForm } from 'react-hook-form';
+import { Form, Formik } from 'formik';
+import { FormikInput } from 'tapis-ui/_common';
 import { useMove } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 import { useFilesSelect } from '../../FilesContext';
+import * as Yup from 'yup';
 
 const RenameModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -31,29 +33,20 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     reset();
   }, [reset]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      newname: file?.name ?? inputName ?? '',
-    },
+  const validationSchema = Yup.object({
+    newname: Yup.string()
+      .min(1)
+      .max(255, 'The new filename cannot be longer than 255 characters')
+      .matches(
+        /[a-zA-Z0-9_.-]+/,
+        "Filename must contain only alphanumeric characters and the following: '.', '_', '-'"
+      )
+      .required('The new filename is required'),
   });
 
-  const { ref: newnameRef, ...newnameFieldProps } = register('newname', {
-    required: "'newname' is a required field",
-    maxLength: {
-      value: 255,
-      message: "'newname' cannot be longer than 255 characters",
-    },
-    pattern: {
-      value: /[a-zA-Z0-9_.-]+/,
-      message:
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'",
-    },
-    disabled: isSuccess,
-  });
+  const initialValues = {
+    newname: file?.name ?? inputName ?? '',
+  };
 
   const onSubmit = useCallback(
     ({ newname }: { newname: string }) => {
@@ -83,24 +76,23 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
       title={`Rename ${dirOrFile(file?.type)}`}
       body={
         <div>
-          <form id="rename-form" onSubmit={handleSubmit(onSubmit)}>
-            <FieldWrapper
-              label={`${
-                dirOrFile(file?.type).charAt(0).toUpperCase() +
-                dirOrFile(file?.type).slice(1)
-              } Name`}
-              required={true}
-              description="Rename File"
-              error={errors['newname']}
-            >
-              <Input
-                bsSize="sm"
-                {...newnameFieldProps}
-                innerRef={newnameRef}
-                aria-label="Input"
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            <Form id="rename-form">
+              <FormikInput
+                name="newname"
+                label={`${
+                  dirOrFile(file?.type).charAt(0).toUpperCase() +
+                  dirOrFile(file?.type).slice(1)
+                } Name`}
+                required={true}
+                description="Rename File"
               />
-            </FieldWrapper>
-          </form>
+            </Form>
+          </Formik>
         </div>
       }
       footer={

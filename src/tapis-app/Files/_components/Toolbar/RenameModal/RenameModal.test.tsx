@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import RenameModal from './RenameModal';
 import { useMove } from 'tapis-hooks/files';
@@ -27,7 +27,7 @@ describe('RenameModal', () => {
       <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
     );
 
-    const input = screen.getByLabelText('Input');
+    const input = screen.getByLabelText(/Name/);
     await act(async () => {
       fireEvent.change(input, {
         target: {
@@ -41,8 +41,10 @@ describe('RenameModal', () => {
       fireEvent.click(button);
     });
 
-    expect(moveMock).toBeCalledTimes(1);
-    expect(resetMock).toBeCalledTimes(1);
+    await waitFor(() => {
+      expect(moveMock).toBeCalledTimes(1);
+      expect(resetMock).toBeCalledTimes(1);
+    });
   });
 
   it('fails with invalid inputs', async () => {
@@ -62,8 +64,7 @@ describe('RenameModal', () => {
     renderComponent(
       <RenameModal toggle={() => {}} systemId={'system-id'} path={'/'} />
     );
-
-    const input = screen.getByLabelText('Input');
+    const input = screen.getByLabelText(/Name/);
     await act(async () => {
       fireEvent.change(input, {
         target: {
@@ -78,7 +79,9 @@ describe('RenameModal', () => {
       fireEvent.click(button);
     });
 
-    expect(moveMock).toBeCalledTimes(0);
-    expect(resetMock).toBeCalledTimes(1);
+    await waitFor(() => {
+      expect(moveMock).toBeCalledTimes(0);
+      expect(resetMock).toBeCalledTimes(1);
+    });
   });
 });

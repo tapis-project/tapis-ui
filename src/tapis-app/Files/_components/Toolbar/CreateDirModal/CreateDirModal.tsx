@@ -1,12 +1,14 @@
 import { useCallback } from 'react';
-import { Button, Input } from 'reactstrap';
-import { GenericModal, FieldWrapper } from 'tapis-ui/_common';
+import { Button } from 'reactstrap';
+import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../Toolbar';
-import { useForm } from 'react-hook-form';
+import { Form, Formik } from 'formik';
+import { FormikInput } from 'tapis-ui/_common';
 import { useMkdir } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
+import * as Yup from 'yup';
 
 const CreateDirModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -25,25 +27,20 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     reset();
   }, [reset]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const { ref: dirnameRef, ...dirnameFieldProps } = register('dirname', {
-    required: 'Directory name is a required field',
-    maxLength: {
-      value: 255,
-      message: 'Directory name cannot be longer than 255 characters',
-    },
-    pattern: {
-      value: /[a-zA-Z0-9_.-]+/,
-      message:
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'",
-    },
-    disabled: isSuccess,
+  const validationSchema = Yup.object({
+    dirname: Yup.string()
+      .min(1)
+      .max(255, 'Directory name cannot be longer than 255 characters')
+      .matches(
+        /[a-zA-Z0-9_.-]+/,
+        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
+      )
+      .required('Directory name is a required field'),
   });
+
+  const initialValues = {
+    dirname: '',
+  };
 
   const onSubmit = ({ dirname }: { dirname: string }) =>
     mkdir(systemId ?? '', `${path ?? '/'}${dirname}`, { onSuccess });
@@ -54,21 +51,21 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
       title="Create Directory"
       body={
         <div>
-          <form id="newdirectory-form" onSubmit={handleSubmit(onSubmit)}>
-            <FieldWrapper
-              label="Directory name"
-              required={true}
-              description={`Creates a directory in ${systemId}/${path}`}
-              error={errors['dirname']}
-            >
-              <Input
-                bsSize="sm"
-                {...dirnameFieldProps}
-                innerRef={dirnameRef}
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            <Form id="newdirectory-form">
+              <FormikInput
+                name="dirname"
+                label="Directory name"
+                required={true}
+                description={`Creates a directory in ${systemId}/${path}`}
                 aria-label="Input"
               />
-            </FieldWrapper>
-          </form>
+            </Form>
+          </Formik>
         </div>
       }
       footer={

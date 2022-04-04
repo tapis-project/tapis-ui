@@ -1,0 +1,20 @@
+.header {
+  border-bottom: 1px solid gray;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  color: gray;
+  align-items: center;
+}
+
+.expand {
+  text-decoration: none !important;
+  :not:hover {
+    color: gray !important;
+  }
+}
