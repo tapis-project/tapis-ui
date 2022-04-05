@@ -4,19 +4,12 @@ import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'tapis-ui/_common';
-import {
-  FieldArray,
-  useFormikContext,
-  useField,
-  FieldArrayRenderProps,
-} from 'formik';
+import { FieldArray, useField, FieldArrayRenderProps } from 'formik';
 import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
 import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
-import { getAppArgMode } from 'tapis-api/utils/jobAppArgs';
+import { getArgMode } from 'tapis-api/utils/jobArgs';
 import * as Yup from 'yup';
-import { string } from 'prop-types';
-
 
 type ArgFieldProps = {
   index: number;
@@ -31,7 +24,7 @@ const ArgField: React.FC<ArgFieldProps> = ({
   name,
   argType,
   arrayHelpers,
-  inputMode
+  inputMode,
 }) => {
   const [field] = useField(`${name}.name`);
   const argName = useMemo(() => field.value, [field]);
@@ -46,7 +39,11 @@ const ArgField: React.FC<ArgFieldProps> = ({
         required={true}
         label="Name"
         disabled={!!inputMode}
-        description={`The name for this ${argType} ${!!inputMode ? 'is defined in the application and cannot be changed' : ''}`}
+        description={`The name for this ${argType} ${
+          !!inputMode
+            ? 'is defined in the application and cannot be changed'
+            : ''
+        }`}
       />
       <FormikInput
         name={`${name}.arg`}
@@ -66,7 +63,10 @@ const ArgField: React.FC<ArgFieldProps> = ({
         name={`${name}.include`}
         required={false}
         label="Include"
-        disabled={inputMode === Apps.ArgInputModeEnum.Fixed || inputMode === Apps.ArgInputModeEnum.Required}
+        disabled={
+          inputMode === Apps.ArgInputModeEnum.Fixed ||
+          inputMode === Apps.ArgInputModeEnum.Required
+        }
         description={`If checked, this ${argType} will be included`}
       />
       <Button size="sm" onClick={() => arrayHelpers.remove(index)}>
@@ -80,33 +80,38 @@ type ArgsFieldArrayProps = {
   argSpecs: Array<Apps.AppArgSpec>;
   name: string;
   argType: string;
-}
+};
 
 const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
   argSpecs,
   name,
-  argType
+  argType,
 }) => {
-  const [ field ] = useField(name);
-  const args = useMemo(() => (field.value as Array<Jobs.JobArgSpec>) ?? [], [ field ]);
+  const [field] = useField(name);
+  const args = useMemo(
+    () => (field.value as Array<Jobs.JobArgSpec>) ?? [],
+    [field]
+  );
   return (
     <FieldArray
       name={name}
       render={(arrayHelpers) => (
-        <div>
+        <div className={fieldArrayStyles.array}>
           <h3>{`${argType}s`}</h3>
           <div className={fieldArrayStyles['array-group']}>
             {args.map((arg, index) => {
-              const inputMode = arg.name ? getAppArgMode(arg.name, argSpecs) : undefined;
+              const inputMode = arg.name
+                ? getArgMode(arg.name, argSpecs)
+                : undefined;
               return (
-                <ArgField 
-                  index={index} 
-                  arrayHelpers={arrayHelpers} 
-                  name={`${name}.${index}`} 
+                <ArgField
+                  index={index}
+                  arrayHelpers={arrayHelpers}
+                  name={`${name}.${index}`}
                   argType={argType}
                   inputMode={inputMode}
                 />
-              )
+              );
             })}
           </div>
           <Button
@@ -128,14 +133,14 @@ export const Args: React.FC = () => {
       name: Yup.string(),
       description: Yup.string(),
       include: Yup.boolean(),
-      arg: Yup.string().min(1).required("The argument cannot be blank")
+      arg: Yup.string().min(1).required('The argument cannot be blank'),
     })
   );
   const validationSchema = Yup.object().shape({
     parameterSet: Yup.object({
       appArgs: argsSchema,
       containerArgs: argsSchema,
-      scheduleOptions: argsSchema
+      scheduleOptions: argsSchema,
     }),
   });
 
@@ -143,19 +148,46 @@ export const Args: React.FC = () => {
     () => ({
       parameterSet: {
         appArgs: job.parameterSet?.appArgs,
+        containerArgs: job.parameterSet?.containerArgs,
+        schedulerOptions: job.parameterSet?.schedulerOptions,
       },
     }),
     [job]
   );
 
-  const appArgSpecs = useMemo(() => app.jobAttributes?.parameterSet?.appArgs ?? [], [ app ]);
+  const appArgSpecs = useMemo(
+    () => app.jobAttributes?.parameterSet?.appArgs ?? [],
+    [app]
+  );
+  const containerArgSpecs = useMemo(
+    () => app.jobAttributes?.parameterSet?.containerArgs ?? [],
+    [app]
+  );
+  const scheduleOptionSpecs = useMemo(
+    () => app.jobAttributes?.parameterSet?.schedulerOptions ?? [],
+    [app]
+  );
 
   return (
     <FormikJobStepWrapper
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
-      <ArgsFieldArray name="parameterSet.appArgs" argType="App Arguments" argSpecs={appArgSpecs} />
+      <ArgsFieldArray
+        name="parameterSet.appArgs"
+        argType="App Argument"
+        argSpecs={appArgSpecs}
+      />
+      <ArgsFieldArray
+        name="parameterSet.containerArgs"
+        argType="Container Argument"
+        argSpecs={containerArgSpecs}
+      />
+      <ArgsFieldArray
+        name="parameterSet.schedulerOptions"
+        argType="Scheduler Option"
+        argSpecs={scheduleOptionSpecs}
+      />
     </FormikJobStepWrapper>
   );
 };
@@ -163,11 +195,21 @@ export const Args: React.FC = () => {
 export const ArgsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const appArgs = job.parameterSet?.appArgs ?? [];
+  const containerArgs = job.parameterSet?.containerArgs ?? [];
+  const schedulerOptions = job.parameterSet?.schedulerOptions ?? [];
   return (
     <div>
       <StepSummaryField
         field={`App Arguments: ${appArgs.length}`}
         key={`app-args-summary`}
+      />
+      <StepSummaryField
+        field={`Container Arguments: ${containerArgs.length}`}
+        key={`container-args-summary`}
+      />
+      <StepSummaryField
+        field={`Scheduler Options: ${schedulerOptions.length}`}
+        key={`scheduler-options-summary`}
       />
     </div>
   );
