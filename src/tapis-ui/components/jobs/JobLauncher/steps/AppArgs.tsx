@@ -76,27 +76,34 @@ const ArgField: React.FC<ArgFieldProps> = ({
   );
 };
 
-const AppArgsRender: React.FC = () => {
-  const { values } = useFormikContext();
-  const { app } = useJobLauncher();
-  const appArgs =
-    (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.appArgs ?? [];
-  const argSpecs = useMemo(() => app.jobAttributes?.parameterSet?.appArgs ?? [], [ app ]);
+type ArgsFieldArrayProps = {
+  argSpecs: Array<Apps.AppArgSpec>;
+  name: string;
+  argType: string;
+}
+
+const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
+  argSpecs,
+  name,
+  argType
+}) => {
+  const [ field ] = useField(name);
+  const args = useMemo(() => (field.value as Array<Jobs.JobArgSpec>) ?? [], [ field ]);
   return (
     <FieldArray
-      name={'parameterSet.appArgs'}
+      name={name}
       render={(arrayHelpers) => (
         <div>
-          <h3>Environment Variables</h3>
+          <h3>{`${argType}s`}</h3>
           <div className={fieldArrayStyles['array-group']}>
-            {appArgs.map((appArg, index) => {
-              const inputMode = appArg.name ? getAppArgMode(appArg.name, argSpecs) : undefined;
+            {args.map((arg, index) => {
+              const inputMode = arg.name ? getAppArgMode(arg.name, argSpecs) : undefined;
               return (
                 <ArgField 
                   index={index} 
                   arrayHelpers={arrayHelpers} 
-                  name={`parameterSet.appArgs.${index}`} 
-                  argType="App Argument"
+                  name={`${name}.${index}`} 
+                  argType={argType}
                   inputMode={inputMode}
                 />
               )
@@ -114,19 +121,21 @@ const AppArgsRender: React.FC = () => {
   );
 };
 
-export const AppArgs: React.FC = () => {
-  const { job } = useJobLauncher();
-
+export const Args: React.FC = () => {
+  const { job, app } = useJobLauncher();
+  const argsSchema = Yup.array(
+    Yup.object({
+      name: Yup.string(),
+      description: Yup.string(),
+      include: Yup.boolean(),
+      arg: Yup.string().min(1).required("The argument cannot be blank")
+    })
+  );
   const validationSchema = Yup.object().shape({
     parameterSet: Yup.object({
-      appArgs: Yup.array(
-        Yup.object({
-          name: Yup.string(),
-          description: Yup.string(),
-          include: Yup.boolean(),
-          arg: Yup.string().min(1).required("The argument cannot be blank")
-        })
-      ),
+      appArgs: argsSchema,
+      containerArgs: argsSchema,
+      scheduleOptions: argsSchema
     }),
   });
 
@@ -139,17 +148,19 @@ export const AppArgs: React.FC = () => {
     [job]
   );
 
+  const appArgSpecs = useMemo(() => app.jobAttributes?.parameterSet?.appArgs ?? [], [ app ]);
+
   return (
     <FormikJobStepWrapper
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
-      <AppArgsRender />
+      <ArgsFieldArray name="parameterSet.appArgs" argType="App Arguments" argSpecs={appArgSpecs} />
     </FormikJobStepWrapper>
   );
 };
 
-export const AppArgsSummary: React.FC = () => {
+export const ArgsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const appArgs = job.parameterSet?.appArgs ?? [];
   return (

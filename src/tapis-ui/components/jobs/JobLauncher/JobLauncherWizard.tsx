@@ -9,7 +9,7 @@ import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
 import { ArchiveFilter, ArchiveFilterSummary } from './steps/ArchiveFilter';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
-import { AppArgs, AppArgsSummary } from './steps/AppArgs';
+import { Args, ArgsSummary } from './steps/AppArgs';
 import {
   FileInputArrays,
   FileInputArraysSummary,
@@ -147,8 +147,8 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     {
       id: 'appArgs',
       name: 'App Arguments',
-      render: <AppArgs />,
-      summary: <AppArgsSummary />
+      render: <Args />,
+      summary: <ArgsSummary />
     },
     {
       id: 'envVariables',
