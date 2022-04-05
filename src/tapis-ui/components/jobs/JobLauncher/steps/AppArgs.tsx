@@ -67,7 +67,12 @@ const ArgField: React.FC<ArgFieldProps> = ({
           inputMode === Apps.ArgInputModeEnum.Fixed ||
           inputMode === Apps.ArgInputModeEnum.Required
         }
-        description={`If checked, this ${argType} will be included`}
+        description={
+          inputMode === Apps.ArgInputModeEnum.Fixed ||
+          inputMode === Apps.ArgInputModeEnum.Required
+            ? `This ${argType} must be included`
+            : `If checked, this ${argType} will be included`
+        }
       />
       <Button size="sm" onClick={() => arrayHelpers.remove(index)}>
         Remove
