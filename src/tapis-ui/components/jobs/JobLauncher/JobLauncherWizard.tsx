@@ -8,6 +8,7 @@ import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
 import { ArchiveFilter, ArchiveFilterSummary } from './steps/ArchiveFilter';
+import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
 import {
   FileInputArrays,
   FileInputArraysSummary,
@@ -50,6 +51,7 @@ const generateDefaultValues = (
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
     parameterSet: {
       archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
+      envVariables: app.jobAttributes?.parameterSet?.envVariables,
     },
   };
   return defaultValues;
@@ -136,6 +138,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       name: 'File Input Arrays',
       render: <FileInputArrays />,
       summary: <FileInputArraysSummary />,
+    },
+    {
+      id: 'envVariables',
+      name: 'Environment Variables',
+      render: <EnvVariables />,
+      summary: <EnvVariablesSummary />,
     },
     {
       id: 'archiveFilter',

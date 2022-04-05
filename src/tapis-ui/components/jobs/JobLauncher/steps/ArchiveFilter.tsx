@@ -4,7 +4,6 @@ import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
-import styles from './ArchiveFilter.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'tapis-ui/_common';
 import {
@@ -49,7 +48,7 @@ const ArrayGroup: React.FC<ArrayGroupProps> = ({
             required={false}
             description={description}
           >
-            <div className={styles['array-group']}>
+            <div className={fieldArrayStyles['array-group']}>
               {values.map((value, index) => (
                 <>
                   <Field name={`${name}.${index}`}>
@@ -73,7 +72,7 @@ const ArrayGroup: React.FC<ArrayGroupProps> = ({
                   >
                     {(message) => (
                       <div
-                        className={`${formStyles['form-field__help']} ${styles.description}`}
+                        className={`${formStyles['form-field__help']} ${fieldArrayStyles.description}`}
                       >
                         {message}
                       </div>
@@ -102,7 +101,7 @@ const ArchiveFilterRender: React.FC = () => {
       ?.excludes ?? [];
   return (
     <div>
-      <h2>Archive Filter</h2>
+      <h3>Archive Filter</h3>
       <ArrayGroup
         name="parameterSet.archiveFilter.includes"
         label="Includes"

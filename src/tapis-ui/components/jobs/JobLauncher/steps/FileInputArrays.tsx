@@ -242,7 +242,9 @@ const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
       key={`optional-input-array-${inputArray.name}`}
       className={styles['optional-input']}
     >
-      <div className={styles.description}>{inputArray.description ?? ''}</div>
+      <div className={fieldArrayStyles.description}>
+        {inputArray.description ?? ''}
+      </div>
       <FieldWrapper
         label="Source URLs"
         required={true}
@@ -267,7 +269,7 @@ const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
         Include
       </Button>
       {included && (
-        <div className={styles.description}>
+        <div className={fieldArrayStyles.description}>
           This optional input array has already been included with your job file
           inputs.
         </div>
@@ -297,7 +299,7 @@ const OptionalInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
         note={`${optionalInputArrays.length} additional files`}
         className={fieldArrayStyles.array}
       >
-        <div className={styles.description}>
+        <div className={fieldArrayStyles.description}>
           These File Inputs are defined in the application and can be included
           with your job.
         </div>
@@ -334,7 +336,9 @@ const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({
       key={`fixed-input-${inputArray.name}`}
       className={styles['optional-input']}
     >
-      <div className={styles.description}>{inputArray.description ?? ''}</div>
+      <div className={fieldArrayStyles.description}>
+        {inputArray.description ?? ''}
+      </div>
       <FieldWrapper
         label="Source URLs"
         required={true}
@@ -375,7 +379,7 @@ const FixedInputArrays: React.FC = () => {
       note={`${fixedInputArrays.length} additional files`}
       className={fieldArrayStyles.array}
     >
-      <div className={styles.description}>
+      <div className={fieldArrayStyles.description}>
         These File Inputs are defined in the application and will automatically
         be included with your job. They cannot be removed or altered.
       </div>
@@ -414,7 +418,7 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
       isCollapsable={requiredInputArrays.length === 0}
       className={fieldArrayStyles.array}
     >
-      <div className={styles.description}>
+      <div className={fieldArrayStyles.description}>
         These File Input Arrays will be submitted with your job.
       </div>
       {jobInputArrays.map((jobInputArray, index) => (
@@ -463,6 +467,7 @@ export const FileInputArrays: React.FC = () => {
         render={(arrayHelpers) => {
           return (
             <>
+              <h3>File Input Arrays</h3>
               <JobInputArrays arrayHelpers={arrayHelpers} />
               <OptionalInputArrays arrayHelpers={arrayHelpers} />
               <FixedInputArrays />
