@@ -54,7 +54,7 @@ const generateDefaultValues = (
     fileInputs: generateRequiredFileInputsFromApp(app),
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
     parameterSet: {
-      appArgs: generateJobAppArgsFromSpec(app),
+      appArgs: generateJobAppArgsFromSpec(app.jobAttributes?.parameterSet?.appArgs ?? []),
       archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
       envVariables: app.jobAttributes?.parameterSet?.envVariables,
     },

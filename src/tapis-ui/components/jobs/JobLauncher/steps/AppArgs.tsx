@@ -15,53 +15,59 @@ import { FormikInput } from 'tapis-ui/_common';
 import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import { getAppArgMode } from 'tapis-api/utils/jobAppArgs';
 import * as Yup from 'yup';
+import { string } from 'prop-types';
 
-type AppArgFieldProps = {
+
+type ArgFieldProps = {
   index: number;
+  name: string;
+  argType: string;
   arrayHelpers: FieldArrayRenderProps;
+  inputMode?: Apps.ArgInputModeEnum;
 };
 
-const AppArgField: React.FC<AppArgFieldProps> = ({
+const ArgField: React.FC<ArgFieldProps> = ({
   index,
+  name,
+  argType,
   arrayHelpers,
+  inputMode
 }) => {
-  const { app } = useJobLauncher();
-  const [field] = useField(`parameterSet.appArgs.${index}.name`);
-  const name = useMemo(() => field.value, [field]);
-  const inputMode = useMemo(() => name ? getAppArgMode(name, app) : undefined, [name, app]);
+  const [field] = useField(`${name}.name`);
+  const argName = useMemo(() => field.value, [field]);
   return (
     <Collapse
-      key={`appArgs.${index}`}
-      title={!!name && name.length ? name : 'App Argument'}
+      key={`${argType}.${index}`}
+      title={!!argName && argName.length ? argName : argType}
       className={fieldArrayStyles.item}
     >
       <FormikInput
-        name={`parameterSet.appArgs.${index}.name`}
+        name={`${name}.name`}
         required={true}
         label="Name"
         disabled={!!inputMode}
-        description={`The name for this app argument ${!!inputMode ? 'is defined in the application and cannot be changed' : ''}`}
+        description={`The name for this ${argType} ${!!inputMode ? 'is defined in the application and cannot be changed' : ''}`}
       />
       <FormikInput
-        name={`parameterSet.appArgs.${index}.arg`}
+        name={`${name}.arg`}
         required={true}
         label="Value"
         disabled={inputMode === Apps.ArgInputModeEnum.Fixed}
-        description="A value for this app argument"
+        description={`A value for this ${argType}`}
       />
       <FormikInput
-        name={`parameterSet.appArgs.${index}.description`}
+        name={`${name}.description`}
         required={false}
         label="Description"
         disabled={inputMode === Apps.ArgInputModeEnum.Fixed}
-        description="A description for this app argument"
+        description={`A description for this ${argType}`}
       />
       <FormikCheck
-        name={`parameterSet.appArgs.${index}.include`}
+        name={`${name}.include`}
         required={false}
         label="Include"
         disabled={inputMode === Apps.ArgInputModeEnum.Fixed || inputMode === Apps.ArgInputModeEnum.Required}
-        description="If checked, this argument will be included"
+        description={`If checked, this ${argType} will be included`}
       />
       <Button size="sm" onClick={() => arrayHelpers.remove(index)}>
         Remove
@@ -72,8 +78,10 @@ const AppArgField: React.FC<AppArgFieldProps> = ({
 
 const AppArgsRender: React.FC = () => {
   const { values } = useFormikContext();
+  const { app } = useJobLauncher();
   const appArgs =
     (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.appArgs ?? [];
+  const argSpecs = useMemo(() => app.jobAttributes?.parameterSet?.appArgs ?? [], [ app ]);
   return (
     <FieldArray
       name={'parameterSet.appArgs'}
@@ -81,9 +89,18 @@ const AppArgsRender: React.FC = () => {
         <div>
           <h3>Environment Variables</h3>
           <div className={fieldArrayStyles['array-group']}>
-            {appArgs.map((appArg, index) => (
-              <AppArgField index={index} arrayHelpers={arrayHelpers} />
-            ))}
+            {appArgs.map((appArg, index) => {
+              const inputMode = appArg.name ? getAppArgMode(appArg.name, argSpecs) : undefined;
+              return (
+                <ArgField 
+                  index={index} 
+                  arrayHelpers={arrayHelpers} 
+                  name={`parameterSet.appArgs.${index}`} 
+                  argType="App Argument"
+                  inputMode={inputMode}
+                />
+              )
+            })}
           </div>
           <Button
             onClick={() => arrayHelpers.push({ key: '', value: '' })}
