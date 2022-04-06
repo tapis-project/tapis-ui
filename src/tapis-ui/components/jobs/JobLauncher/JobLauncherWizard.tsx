@@ -9,6 +9,7 @@ import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
 import { ArchiveFilter, ArchiveFilterSummary } from './steps/ArchiveFilter';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
+import { Args, ArgsSummary } from './steps/AppArgs';
 import {
   FileInputArrays,
   FileInputArraysSummary,
@@ -21,6 +22,7 @@ import {
   generateRequiredFileInputArraysFromApp,
   fileInputArraysComplete,
 } from 'tapis-api/utils/jobFileInputArrays';
+import { generateJobArgsFromSpec } from 'tapis-api/utils/jobArgs';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
@@ -50,6 +52,15 @@ const generateDefaultValues = (
     fileInputs: generateRequiredFileInputsFromApp(app),
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
     parameterSet: {
+      appArgs: generateJobArgsFromSpec(
+        app.jobAttributes?.parameterSet?.appArgs ?? []
+      ),
+      containerArgs: generateJobArgsFromSpec(
+        app.jobAttributes?.parameterSet?.containerArgs ?? []
+      ),
+      schedulerOptions: generateJobArgsFromSpec(
+        app.jobAttributes?.parameterSet?.schedulerOptions ?? []
+      ),
       archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
       envVariables: app.jobAttributes?.parameterSet?.envVariables,
     },
@@ -138,6 +149,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       name: 'File Input Arrays',
       render: <FileInputArrays />,
       summary: <FileInputArraysSummary />,
+    },
+    {
+      id: 'args',
+      name: 'Arguments',
+      render: <Args />,
+      summary: <ArgsSummary />,
     },
     {
       id: 'envVariables',
