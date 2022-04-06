@@ -9,10 +9,7 @@ import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
 import { ArchiveFilter, ArchiveFilterSummary } from './steps/ArchiveFilter';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
-<<<<<<< HEAD
 import { Args, ArgsSummary } from './steps/AppArgs';
-=======
->>>>>>> milestone/11--job-file-inputs-and-parameters
 import {
   FileInputArrays,
   FileInputArraysSummary,

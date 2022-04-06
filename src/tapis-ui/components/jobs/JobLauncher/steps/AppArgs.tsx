@@ -120,7 +120,14 @@ const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
             })}
           </div>
           <Button
-            onClick={() => arrayHelpers.push({ key: '', value: '' })}
+            onClick={() =>
+              arrayHelpers.push({
+                name: '',
+                description: '',
+                include: true,
+                arg: '',
+              })
+            }
             size="sm"
           >
             + Add
