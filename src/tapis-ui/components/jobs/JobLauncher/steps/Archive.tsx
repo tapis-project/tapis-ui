@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Jobs } from '@tapis/tapis-typescript';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input } from 'reactstrap';
@@ -14,7 +14,11 @@ import {
   FieldProps,
 } from 'formik';
 import { InputGroup, InputGroupAddon } from 'reactstrap';
-import { FormikCheck, FormikTapisFile, FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikCheck,
+  FormikTapisFile,
+  FormikSelect,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { FormikJobStepWrapper } from '../components';
 import * as Yup from 'yup';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
@@ -127,7 +131,10 @@ const ArchiveFilterRender: React.FC = () => {
 const ArchiveOptions: React.FC = () => {
   const { systems } = useJobLauncher();
   const { values } = useFormikContext();
-  const archiveSystemId = useMemo(() => (values as Partial<Jobs.ReqSubmitJob>).archiveSystemId, [ values ]);
+  const archiveSystemId = useMemo(
+    () => (values as Partial<Jobs.ReqSubmitJob>).archiveSystemId,
+    [values]
+  );
   return (
     <>
       <h3>Archive Options</h3>
@@ -140,7 +147,10 @@ const ArchiveOptions: React.FC = () => {
         >
           <option value={undefined}></option>
           {systems.map((system) => (
-            <option value={system.id} key={`archive-system-select-${system.id}`}>
+            <option
+              value={system.id}
+              key={`archive-system-select-${system.id}`}
+            >
               {system.id}
             </option>
           ))}
@@ -164,8 +174,8 @@ const ArchiveOptions: React.FC = () => {
         />
       </div>
     </>
-  )
-}
+  );
+};
 
 export const Archive: React.FC = () => {
   const { job } = useJobLauncher();
@@ -222,11 +232,11 @@ export const ArchiveSummary: React.FC = () => {
   return (
     <div>
       <StepSummaryField
-        field={`Archive System ID: ${archiveSystemId ?? "default"}`}
+        field={`Archive System ID: ${archiveSystemId ?? 'default'}`}
         key={`archive-system-id-summary`}
       />
       <StepSummaryField
-        field={`Archive System Directory: ${archiveSystemDir ?? "default"}`}
+        field={`Archive System Directory: ${archiveSystemDir ?? 'default'}`}
         key={`archive-system-dir-summary`}
       />
       <StepSummaryField

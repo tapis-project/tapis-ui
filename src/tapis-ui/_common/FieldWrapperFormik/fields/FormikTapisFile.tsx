@@ -13,16 +13,16 @@ const pathToFile = (path?: string): Files.FileInfo | undefined => {
   if (path) {
     return {
       name: path.split('/').slice(-1)[0],
-      path
-    }
+      path,
+    };
   }
   return undefined;
-}
+};
 
 const pathParent = (path?: string): string => {
-  const parentDir = path?.split('/').slice(0, -1).join('/'); 
+  const parentDir = path?.split('/').slice(0, -1).join('/');
   return !!parentDir && !!parentDir.length ? parentDir : '/';
-}
+};
 
 export const parseTapisURI = (
   uri?: string
@@ -46,7 +46,7 @@ type FormikTapisFileInputProps = {
   allowSystemChange?: boolean;
   systemId?: string;
   path?: string;
-  mode?: "single" | "none" | "multi";
+  mode?: 'single' | 'none' | 'multi';
   files?: boolean;
   dirs?: boolean;
 } & InputProps &
@@ -58,9 +58,9 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   disabled,
   systemId,
   path,
-  mode='single',
-  files=true,
-  dirs=true,
+  mode = 'single',
+  files = true,
+  dirs = true,
   ...props
 }) => {
   const { name } = props;
@@ -73,34 +73,35 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
       if (allowSystemChange) {
         setValue(`tapis://${systemId ?? ''}${files[0].path}`);
       } else {
-        setValue(`${files[0].path}`)
+        setValue(`${files[0].path}`);
       }
     },
-    [setValue]
+    [setValue, allowSystemChange]
   );
-  const { systemId: parsedSystemId, file, parent } = useMemo(
-    () => {
-      const result =  parseTapisURI(value) ?? {
-        systemId: systemId,
-        file: value ? pathToFile(value) : pathToFile(path),
-        parent: value ? pathParent(value) : pathParent(path),
-      }
-      return result;
-    },
-    [value, systemId, path]
-  );
+  const {
+    systemId: parsedSystemId,
+    file,
+    parent,
+  } = useMemo(() => {
+    const result = parseTapisURI(value) ?? {
+      systemId: systemId,
+      file: value ? pathToFile(value) : pathToFile(path),
+      parent: value ? pathParent(value) : pathParent(path),
+    };
+    return result;
+  }, [value, systemId, path]);
   const selectMode = useMemo((): SelectMode => {
-    const types = [] as Array<"file" | "dir">;
+    const types = [] as Array<'file' | 'dir'>;
     if (files) {
-      types.push("file");
+      types.push('file');
     }
     if (dirs) {
-      types.push("dir");
+      types.push('dir');
     }
     return {
       mode,
-      types
-    }
+      types,
+    };
   }, [mode, files, dirs]);
 
   return (
@@ -135,7 +136,7 @@ type FormikTapisFileProps = {
   allowSystemChange?: boolean;
   systemId?: string;
   path?: string;
-  mode?: "single" | "none" | "multi";
+  mode?: 'single' | 'none' | 'multi';
   files?: boolean;
   dirs?: boolean;
 } & FormikInputProps;
@@ -159,12 +160,12 @@ const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
       required={required}
       description={description}
       as={(formikProps: FieldInputProps<any>) => (
-        <FormikTapisFileInput 
+        <FormikTapisFileInput
           {...props}
           {...formikProps}
           bsSize="sm"
           systemId={systemId}
-          path={path} 
+          path={path}
           mode={mode}
           files={files}
           dirs={dirs}
