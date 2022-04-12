@@ -48,10 +48,11 @@ export const JobStart: React.FC = () => {
 
 export const JobStartSummary: React.FC = () => {
   const { job } = useJobLauncher();
-  const { name, appId, appVersion } = job;
+  const { name, description, appId, appVersion } = job;
   return (
     <div>
       <StepSummaryField field={name} error="A job name is required" />
+      <StepSummaryField field={description} />
       <div>
         <i>
           Application: {appId} v{appVersion}
