@@ -18,7 +18,7 @@ export const parseTapisURI = (
   uri: string
 ): { systemId: string; file: Files.FileInfo; parent: string } | undefined => {
   const regex = /tapis:\/\/([\w.\-_]+)\/(.+)/;
-  const match = uri.match(regex);
+  const match = uri?.match(regex);
   if (match) {
     const systemId = match[1];
     const filePath = `/${match[2]}`;
@@ -38,6 +38,7 @@ export const parseTapisURI = (
 export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   append,
   allowSystemChange = true,
+  disabled,
   ...props
 }) => {
   const { name } = props;
@@ -47,7 +48,11 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   const { modal, open, close } = useModal();
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
-      setValue(`tapis://${systemId ?? ''}${files[0].path}`);
+      if (allowSystemChange) {
+        setValue(`tapis://${systemId ?? ''}${files[0].path}`);
+      } else {
+        setValue(`${files[0].path}`)
+      }
     },
     [setValue]
   );
@@ -64,7 +69,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   return (
     <>
       <InputGroup>
-        <InputGroupAddon addonType="prepend">
+        <InputGroupAddon addonType="prepend" disabled={disabled}>
           <Button size="sm" onClick={open}>
             Browse
           </Button>
