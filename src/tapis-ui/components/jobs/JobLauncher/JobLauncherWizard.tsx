@@ -44,6 +44,7 @@ const generateDefaultValues = (
   )?.batchDefaultLogicalQueue;
   const defaultValues: Partial<Jobs.ReqSubmitJob> = {
     name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
+    description: app.description,
     appId: app.id,
     appVersion: app.version,
     execSystemId: app.jobAttributes?.execSystemId,

@@ -12,10 +12,12 @@ export const JobStart: React.FC = () => {
 
   const validationSchema = Yup.object({
     name: Yup.string().required(),
+    description: Yup.string(),
   });
 
   const initialValues: Partial<Jobs.ReqSubmitJob> = {
     name: job.name,
+    description: job.description,
   };
 
   return (
@@ -33,6 +35,12 @@ export const JobStart: React.FC = () => {
         required={true}
         label="Name"
         description="A name for this job"
+      />
+      <FormikInput
+        name="description"
+        required={false}
+        label="Description"
+        description="A description of this job"
       />
     </FormikJobStepWrapper>
   );
