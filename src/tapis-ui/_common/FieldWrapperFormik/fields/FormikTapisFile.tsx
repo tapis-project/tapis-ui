@@ -3,42 +3,57 @@ import FieldWrapper from '../FieldWrapperFormik';
 import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
 import { FormikInputProps } from '.';
-import { Files } from '@tapis/tapis-typescript';
+import { Files, Jobs } from '@tapis/tapis-typescript';
 import { FileSelectModal } from 'tapis-ui/components/files';
 import { InputProps } from 'reactstrap';
 import { useModal } from 'tapis-ui/_common/GenericModal';
 
-type FormikTapisFileInputProps = {
-  append?: React.ReactNode;
-  allowSystemChange?: boolean;
-} & InputProps &
-  FieldInputProps<any>;
+const pathToFile = (path?: string): Files.FileInfo | undefined => {
+  if (path) {
+    return {
+      name: path.split('/').slice(-1)[0],
+      path
+    }
+  }
+  return undefined;
+}
+
+const pathParent = (path?: string): string => {
+  const parentDir = path?.split('/').slice(0, -1).join('/'); 
+  return !!parentDir && !!parentDir.length ? parentDir : '/';
+}
 
 export const parseTapisURI = (
-  uri: string
+  uri?: string
 ): { systemId: string; file: Files.FileInfo; parent: string } | undefined => {
   const regex = /tapis:\/\/([\w.\-_]+)\/(.+)/;
   const match = uri?.match(regex);
   if (match) {
     const systemId = match[1];
     const filePath = `/${match[2]}`;
-    const parentDir = filePath.split('/').slice(0, -1).join('/');
     return {
       systemId,
-      file: {
-        name: filePath.split('/').slice(-1)[0],
-        path: filePath,
-      },
-      parent: !!parentDir.length ? parentDir : '/',
+      file: pathToFile(filePath)!,
+      parent: pathParent(filePath),
     };
   }
   return undefined;
 };
 
+type FormikTapisFileInputProps = {
+  append?: React.ReactNode;
+  allowSystemChange?: boolean;
+  systemId?: string;
+  path?: string;
+} & InputProps &
+  FieldInputProps<any>;
+
 export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   append,
   allowSystemChange = true,
   disabled,
+  systemId,
+  path,
   ...props
 }) => {
   const { name } = props;
@@ -56,25 +71,27 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
     },
     [setValue]
   );
-  const { systemId, file, parent } = useMemo(
-    () =>
-      parseTapisURI(value) ?? {
-        systemId: undefined,
-        file: undefined,
-        parent: undefined,
-      },
-    [value]
+  const { systemId: parsedSystemId, file, parent } = useMemo(
+    () => {
+      const result =  parseTapisURI(value) ?? {
+        systemId: systemId,
+        file: value ? pathToFile(value) : pathToFile(path),
+        parent: value ? pathParent(value) : pathParent(path),
+      }
+      return result;
+    },
+    [value, systemId, path]
   );
 
   return (
     <>
       <InputGroup>
-        <InputGroupAddon addonType="prepend" disabled={disabled}>
-          <Button size="sm" onClick={open}>
+        <InputGroupAddon addonType="prepend">
+          <Button size="sm" onClick={open} disabled={disabled}>
             Browse
           </Button>
         </InputGroupAddon>
-        <Input {...props} bsSize="sm" />
+        <Input disabled={disabled} {...props} bsSize="sm" />
         {!!append && (
           <InputGroupAddon addonType="append">{append}</InputGroupAddon>
         )}
@@ -84,7 +101,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
           toggle={close}
           selectMode={{ mode: 'single', types: ['file', 'dir'] }}
           onSelect={onSelect}
-          systemId={systemId}
+          systemId={parsedSystemId ?? systemId}
           path={parent}
           initialSelection={file ? [file] : undefined}
           allowSystemChange
@@ -96,6 +113,8 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
 
 type FormikTapisFileProps = {
   allowSystemChange?: boolean;
+  systemId?: string,
+  path?: string,
 } & FormikInputProps;
 
 const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
@@ -103,6 +122,8 @@ const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
   label,
   required,
   description,
+  systemId,
+  path,
   ...props
 }: FormikInputProps) => {
   return (
@@ -112,7 +133,7 @@ const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
       required={required}
       description={description}
       as={(formikProps: FieldInputProps<any>) => (
-        <FormikTapisFileInput {...props} {...formikProps} bsSize="sm" />
+        <FormikTapisFileInput {...props} {...formikProps} bsSize="sm" systemId={systemId} path={path} />
       )}
     />
   );

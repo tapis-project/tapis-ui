@@ -80,7 +80,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
     <FileExplorer
       allowSystemChange={allowSystemChange}
       systemId={systemId}
-      path={path}
+      path={path ?? '/'}
       selectMode={selectMode}
       onSelect={fileExplorerSelectCallback}
       onUnselect={fileExplorerUnselectCallback}

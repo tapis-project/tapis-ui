@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Jobs } from '@tapis/tapis-typescript';
 import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
 import { Input } from 'reactstrap';
@@ -138,6 +138,7 @@ const ArchiveOptions: React.FC = () => {
           description="If selected, this system ID will be used for job archiving instead of the execution system default"
           required={false}
         >
+          <option value={undefined}></option>
           {systems.map((system) => (
             <option value={system.id} key={`archive-system-select-${system.id}`}>
               {system.id}
