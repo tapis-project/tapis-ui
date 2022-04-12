@@ -19,6 +19,7 @@ const FormikJobStepWrapper: React.FC<
     (value: Partial<Jobs.ReqSubmitJob>) => {
       if (value.parameterSet) {
         add({
+          ...value,
           parameterSet: {
             ...job.parameterSet,
             ...value.parameterSet,

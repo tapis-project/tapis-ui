@@ -218,8 +218,21 @@ export const ArchiveSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const includes = job.parameterSet?.archiveFilter?.includes ?? [];
   const excludes = job.parameterSet?.archiveFilter?.excludes ?? [];
+  const { archiveSystemId, archiveSystemDir, archiveOnAppError } = job;
   return (
     <div>
+      <StepSummaryField
+        field={`Archive System ID: ${archiveSystemId ?? "default"}`}
+        key={`archive-system-id-summary`}
+      />
+      <StepSummaryField
+        field={`Archive System Directory: ${archiveSystemDir ?? "default"}`}
+        key={`archive-system-dir-summary`}
+      />
+      <StepSummaryField
+        field={`Archive On App Error: ${archiveOnAppError}`}
+        key={`archive-on-app-error-summary`}
+      />
       <StepSummaryField
         field={`Includes: ${includes.length}`}
         key={`archive-filter-includes-summary`}

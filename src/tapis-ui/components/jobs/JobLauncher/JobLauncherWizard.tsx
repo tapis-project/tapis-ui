@@ -167,8 +167,8 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       summary: <EnvVariablesSummary />,
     },
     {
-      id: 'archiveFilter',
-      name: 'Archive Filter',
+      id: 'archiving',
+      name: 'Archiving',
       render: <Archive />,
       summary: <ArchiveSummary />,
     },
