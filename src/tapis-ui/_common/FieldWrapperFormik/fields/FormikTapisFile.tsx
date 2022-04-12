@@ -3,10 +3,11 @@ import FieldWrapper from '../FieldWrapperFormik';
 import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
 import { FormikInputProps } from '.';
-import { Files, Jobs } from '@tapis/tapis-typescript';
+import { Files } from '@tapis/tapis-typescript';
 import { FileSelectModal } from 'tapis-ui/components/files';
 import { InputProps } from 'reactstrap';
 import { useModal } from 'tapis-ui/_common/GenericModal';
+import { SelectMode } from 'tapis-ui/components/files/FileListing/FileListing';
 
 const pathToFile = (path?: string): Files.FileInfo | undefined => {
   if (path) {
@@ -45,6 +46,9 @@ type FormikTapisFileInputProps = {
   allowSystemChange?: boolean;
   systemId?: string;
   path?: string;
+  mode?: "single" | "none" | "multi";
+  files?: boolean;
+  dirs?: boolean;
 } & InputProps &
   FieldInputProps<any>;
 
@@ -54,6 +58,9 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   disabled,
   systemId,
   path,
+  mode='single',
+  files=true,
+  dirs=true,
   ...props
 }) => {
   const { name } = props;
@@ -82,6 +89,19 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
     },
     [value, systemId, path]
   );
+  const selectMode = useMemo((): SelectMode => {
+    const types = [] as Array<"file" | "dir">;
+    if (files) {
+      types.push("file");
+    }
+    if (dirs) {
+      types.push("dir");
+    }
+    return {
+      mode,
+      types
+    }
+  }, [mode, files, dirs]);
 
   return (
     <>
@@ -99,9 +119,9 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
       {modal && (
         <FileSelectModal
           toggle={close}
-          selectMode={{ mode: 'single', types: ['file', 'dir'] }}
           onSelect={onSelect}
           systemId={parsedSystemId ?? systemId}
+          selectMode={selectMode}
           path={parent}
           initialSelection={file ? [file] : undefined}
           allowSystemChange
@@ -113,8 +133,11 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
 
 type FormikTapisFileProps = {
   allowSystemChange?: boolean;
-  systemId?: string,
-  path?: string,
+  systemId?: string;
+  path?: string;
+  mode?: "single" | "none" | "multi";
+  files?: boolean;
+  dirs?: boolean;
 } & FormikInputProps;
 
 const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
@@ -124,6 +147,9 @@ const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
   description,
   systemId,
   path,
+  mode,
+  files,
+  dirs,
   ...props
 }: FormikInputProps) => {
   return (
@@ -133,7 +159,16 @@ const FormikTapisFile: React.FC<FormikTapisFileProps> = ({
       required={required}
       description={description}
       as={(formikProps: FieldInputProps<any>) => (
-        <FormikTapisFileInput {...props} {...formikProps} bsSize="sm" systemId={systemId} path={path} />
+        <FormikTapisFileInput 
+          {...props}
+          {...formikProps}
+          bsSize="sm"
+          systemId={systemId}
+          path={path} 
+          mode={mode}
+          files={files}
+          dirs={dirs}
+        />
       )}
     />
   );

@@ -153,6 +153,8 @@ const ArchiveOptions: React.FC = () => {
           label="Archive System Directory"
           description="The directory on the selected system in which to place archived files"
           required={false}
+          files={false}
+          dirs={true}
         />
         <FormikCheck
           name="archiveOnAppError"
