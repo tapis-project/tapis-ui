@@ -26,10 +26,10 @@ const FormikJobStepWrapper: React.FC<
       if (value.parameterSet) {
         value.parameterSet = {
           ...job.parameterSet,
-          ...value.parameterSet
-        }
+          ...value.parameterSet,
+        };
       }
-      add(value); 
+      add(value);
       nextStep && nextStep();
     },
     [nextStep, add, job]

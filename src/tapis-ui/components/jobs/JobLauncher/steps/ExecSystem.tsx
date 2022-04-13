@@ -2,8 +2,14 @@ import { useMemo, useEffect, useState, useCallback } from 'react';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { useJobLauncher, StepSummaryField } from '../components';
 import { FormikJobStepWrapper } from '../components';
-import { FormikInput, FormikCheck, FormikSelect, FormikTapisFile } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikCheck,
+  FormikSelect,
+  FormikTapisFile,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
+import { Collapse } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 
 const getLogicalQueues = (system?: Systems.TapisSystem) =>
@@ -109,10 +115,10 @@ const ExecSystemDirs: React.FC = () => {
   const { values } = useFormikContext();
   const execSystemId = useMemo(
     () => (values as Partial<Jobs.ReqSubmitJob>).execSystemId,
-    [ values ]
-  )
+    [values]
+  );
   return (
-    <>
+    <Collapse title="Execution System Directories">
       <FormikTapisFile
         allowSystemChange={false}
         systemId={execSystemId}
@@ -146,15 +152,14 @@ const ExecSystemDirs: React.FC = () => {
         files={false}
         dirs={true}
       />
-    </>
-  )
-}
-
+    </Collapse>
+  );
+};
 
 const ExecSystemQueueOptions: React.FC = () => {
   return (
-    <>
-      <FormikInput 
+    <Collapse title="Queue Parameters">
+      <FormikInput
         name="nodeCount"
         label="Node Count"
         description="The number of nodes to use for this job"
@@ -178,17 +183,19 @@ const ExecSystemQueueOptions: React.FC = () => {
         description="The maximum amount of time in minutes for this job"
         required={false}
       />
-    </>
-  )
-}
-
+    </Collapse>
+  );
+};
 
 const MPIOptions: React.FC = () => {
   const { values } = useFormikContext();
-  const isMpi = useMemo(() => (values as Partial<Jobs.ReqSubmitJob>).isMpi, [ values ]);
+  const isMpi = useMemo(
+    () => (values as Partial<Jobs.ReqSubmitJob>).isMpi,
+    [values]
+  );
   return (
-    <>
-      <FormikCheck 
+    <Collapse title="MPI Options">
+      <FormikCheck
         name="isMpi"
         label="Is MPI?"
         description="If checked, this job will be run as an MPI job"
@@ -208,17 +215,16 @@ const MPIOptions: React.FC = () => {
         required={false}
         disabled={!!isMpi}
       />
-    </>
-  ) 
-}
+    </Collapse>
+  );
+};
 
 type QueueErrors = {
   nodeCount?: string;
   coresPerNode?: string;
   memoryMB?: string;
   maxMinutes?: string;
-}
-
+};
 
 export const ExecSystem: React.FC = () => {
   const { job, app, systems } = useJobLauncher();
@@ -236,7 +242,7 @@ export const ExecSystem: React.FC = () => {
     maxMinutes: job.maxMinutes,
     isMpi: job.isMpi,
     mpiCmd: job.mpiCmd,
-    cmdPrefix: job.cmdPrefix
+    cmdPrefix: job.cmdPrefix,
   };
 
   const validationSchema = Yup.object({
@@ -253,17 +259,28 @@ export const ExecSystem: React.FC = () => {
     maxMinutes: Yup.number(),
     isMpi: Yup.boolean(),
     mpiCmd: Yup.string(),
-    cmdPrefix: Yup.string()
+    cmdPrefix: Yup.string(),
   });
 
   const queueValidation = useCallback(
     (values: Partial<Jobs.ReqSubmitJob>) => {
-      const { execSystemId, execSystemLogicalQueue, nodeCount, coresPerNode, memoryMB, maxMinutes } = values;
+      const {
+        execSystemId,
+        execSystemLogicalQueue,
+        nodeCount,
+        coresPerNode,
+        memoryMB,
+        maxMinutes,
+      } = values;
       const errors: QueueErrors = {};
       if (!execSystemId || !execSystemLogicalQueue) {
         return errors;
       }
-      const queue = systems.find(system => system.id === execSystemId)?.batchLogicalQueues?.find(queue => queue.name === execSystemLogicalQueue); 
+      const queue = systems
+        .find((system) => system.id === execSystemId)
+        ?.batchLogicalQueues?.find(
+          (queue) => queue.name === execSystemLogicalQueue
+        );
       if (!queue) {
         return errors;
       }
@@ -278,7 +295,7 @@ export const ExecSystem: React.FC = () => {
       }
       if (!!coresPerNode) {
         if (queue?.maxCoresPerNode && coresPerNode > queue?.maxCoresPerNode) {
-          errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`; 
+          errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`;
         }
         if (queue?.minCoresPerNode && coresPerNode < queue?.minCoresPerNode) {
           errors.coresPerNode = `The minimum number of cores per node for this queue is ${queue?.minCoresPerNode}`;
@@ -300,10 +317,10 @@ export const ExecSystem: React.FC = () => {
           errors.maxMinutes = `The minimum number of minutes for a job on this queue is ${queue?.minMinutes}`;
         }
       }
-     return errors;
+      return errors;
     },
-    [ systems ]
-  )
+    [systems]
+  );
 
   return (
     <FormikJobStepWrapper
@@ -319,11 +336,10 @@ export const ExecSystem: React.FC = () => {
   );
 };
 
-
-
 export const ExecSystemSummary: React.FC = () => {
   const { job } = useJobLauncher();
-  const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } = job;
+  const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } =
+    job;
   const summary = execSystemId
     ? `${execSystemId} ${
         execSystemLogicalQueue ? '(' + execSystemLogicalQueue + ')' : ''
@@ -337,7 +353,11 @@ export const ExecSystemSummary: React.FC = () => {
         key="execution-system-id-summary"
       />
       <StepSummaryField
-        field={`${isMpi ? `MPI Command: ${mpiCmd ?? 'system default'}` : `Command Prefix: ${cmdPrefix ?? 'system default'}`}`}
+        field={`${
+          isMpi
+            ? `MPI Command: ${mpiCmd ?? 'system default'}`
+            : `Command Prefix: ${cmdPrefix ?? 'system default'}`
+        }`}
         key="execution-mpi-summary"
       />
     </div>
