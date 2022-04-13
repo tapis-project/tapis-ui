@@ -18,17 +18,18 @@ const FormikJobStepWrapper: React.FC<
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
-      if (value.parameterSet) {
-        add({
-          ...value,
-          parameterSet: {
-            ...job.parameterSet,
-            ...value.parameterSet,
-          },
-        });
+      if (value.isMpi) {
+        value.cmdPrefix = undefined;
       } else {
-        add(value);
+        value.mpiCmd = undefined;
       }
+      if (value.parameterSet) {
+        value.parameterSet = {
+          ...job.parameterSet,
+          ...value.parameterSet
+        }
+      }
+      add(value); 
       nextStep && nextStep();
     },
     [nextStep, add, job]

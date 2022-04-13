@@ -182,6 +182,36 @@ const ExecSystemQueueOptions: React.FC = () => {
   )
 }
 
+
+const MPIOptions: React.FC = () => {
+  const { values } = useFormikContext();
+  const isMpi = useMemo(() => (values as Partial<Jobs.ReqSubmitJob>).isMpi, [ values ]);
+  return (
+    <>
+      <FormikCheck 
+        name="isMpi"
+        label="Is MPI?"
+        description="If checked, this job will be run as an MPI job"
+        required={false}
+      />
+      <FormikInput
+        name="mpiCmd"
+        label="MPI Command"
+        description="If this is an MPI job, you may specify the MPI command"
+        required={false}
+        disabled={!isMpi}
+      />
+      <FormikInput
+        name="cmdPrefix"
+        label="Command Prefix"
+        description="If this is not an MPI job, you may specify a command prefix"
+        required={false}
+        disabled={!!isMpi}
+      />
+    </>
+  ) 
+}
+
 type QueueErrors = {
   nodeCount?: string;
   coresPerNode?: string;
@@ -283,46 +313,17 @@ export const ExecSystem: React.FC = () => {
     >
       <SystemSelector />
       <ExecSystemQueueOptions />
+      <MPIOptions />
       <ExecSystemDirs />
     </FormikJobStepWrapper>
   );
 };
 
 
-const MPIOptions: React.FC = () => {
-  return (
-    <>
-      <FormikCheck 
-        name="nodeCount"
-        label="Node Count"
-        description="The number of nodes to use for this job"
-        required={false}
-      />
-      <FormikInput
-        name="coresPerNode"
-        label="Cores Per Node"
-        description="The number of cores to use per node"
-        required={false}
-      />
-      <FormikInput
-        name="memoryMB"
-        label="Memory, in Megabytes"
-        description="The amount of memory to use per node in megabytes"
-        required={false}
-      />
-      <FormikInput
-        name="maxMinutes"
-        label="Maximum Minutes"
-        description="The maximum amount of time in minutes for this job"
-        required={false}
-      />
-    </>
-  ) 
-}
 
 export const ExecSystemSummary: React.FC = () => {
   const { job } = useJobLauncher();
-  const { execSystemId, execSystemLogicalQueue } = job;
+  const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } = job;
   const summary = execSystemId
     ? `${execSystemId} ${
         execSystemLogicalQueue ? '(' + execSystemLogicalQueue + ')' : ''
@@ -333,6 +334,11 @@ export const ExecSystemSummary: React.FC = () => {
       <StepSummaryField
         field={summary}
         error="An execution system is required"
+        key="execution-system-id-summary"
+      />
+      <StepSummaryField
+        field={`${isMpi ? `MPI Command: ${mpiCmd ?? 'system default'}` : `Command Prefix: ${cmdPrefix ?? 'system default'}`}`}
+        key="execution-mpi-summary"
       />
     </div>
   );
