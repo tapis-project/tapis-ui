@@ -199,7 +199,14 @@ export const ExecSystem: React.FC = () => {
       : undefined,
     execSystemExecDir: job.execSystemExecDir,
     execSystemInputDir: job.execSystemInputDir,
-    execSystemOutputDir: job.execSystemOutputDir
+    execSystemOutputDir: job.execSystemOutputDir,
+    nodeCount: job.nodeCount,
+    coresPerNode: job.coresPerNode,
+    memoryMB: job.memoryMB,
+    maxMinutes: job.maxMinutes,
+    isMpi: job.isMpi,
+    mpiCmd: job.mpiCmd,
+    cmdPrefix: job.cmdPrefix
   };
 
   const validationSchema = Yup.object({
@@ -209,7 +216,14 @@ export const ExecSystem: React.FC = () => {
     execSystemLogicalQueue: Yup.string(),
     execSystemExecDir: Yup.string(),
     execSystemInputDir: Yup.string(),
-    execSystemOutputDir: Yup.string()
+    execSystemOutputDir: Yup.string(),
+    nodeCount: Yup.number(),
+    coresPerNode: Yup.number(),
+    memoryMB: Yup.number(),
+    maxMinutes: Yup.number(),
+    isMpi: Yup.boolean(),
+    mpiCmd: Yup.string(),
+    cmdPrefix: Yup.string()
   });
 
   const queueValidation = useCallback(
@@ -273,6 +287,38 @@ export const ExecSystem: React.FC = () => {
     </FormikJobStepWrapper>
   );
 };
+
+
+const MPIOptions: React.FC = () => {
+  return (
+    <>
+      <FormikCheck 
+        name="nodeCount"
+        label="Node Count"
+        description="The number of nodes to use for this job"
+        required={false}
+      />
+      <FormikInput
+        name="coresPerNode"
+        label="Cores Per Node"
+        description="The number of cores to use per node"
+        required={false}
+      />
+      <FormikInput
+        name="memoryMB"
+        label="Memory, in Megabytes"
+        description="The amount of memory to use per node in megabytes"
+        required={false}
+      />
+      <FormikInput
+        name="maxMinutes"
+        label="Maximum Minutes"
+        description="The maximum amount of time in minutes for this job"
+        required={false}
+      />
+    </>
+  ) 
+}
 
 export const ExecSystemSummary: React.FC = () => {
   const { job } = useJobLauncher();
