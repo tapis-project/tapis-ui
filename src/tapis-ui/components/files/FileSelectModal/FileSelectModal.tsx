@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { Files } from '@tapis/tapis-typescript';
 import { GenericModal } from 'tapis-ui/_common';
 import { FileExplorer } from 'tapis-ui/components/files';
@@ -31,6 +31,16 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
   const [selectedSystem, setSelectedSystem] = useState<string | null>(
     systemId ?? null
   );
+  const [currentPath, setCurrentPath] = useState<string>(path ?? '/');
+
+  // Is the FileSelectModal set up to allow single directory selection?
+  const dirSelectMode = useMemo(() => {
+    return (
+      selectMode?.mode === 'single' &&
+      selectMode?.types?.length === 1 &&
+      selectMode?.types?.some((mode) => mode === 'dir')
+    );
+  }, [selectMode]);
 
   const fileExplorerSelectCallback = useCallback(
     (files: Array<Files.FileInfo>) => {
@@ -63,8 +73,9 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
     (systemId: string | null, path: string | null) => {
       setSelectedSystem(systemId);
       setSelectedFiles([]);
+      setCurrentPath(path ?? '/');
     },
-    [setSelectedSystem, setSelectedFiles]
+    [setSelectedSystem, setSelectedFiles, setCurrentPath]
   );
 
   const selectButtonCallback = useCallback(() => {
@@ -72,15 +83,28 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
       toggle();
     }
     if (onSelect) {
-      onSelect(selectedSystem, selectedFiles);
+      if (!!selectedFiles.length) {
+        onSelect(selectedSystem, selectedFiles);
+      } else if (dirSelectMode) {
+        onSelect(selectedSystem, [
+          { name: currentPath.split('/').slice(-1)[0], path: currentPath },
+        ]);
+      }
     }
-  }, [toggle, onSelect, selectedSystem, selectedFiles]);
+  }, [
+    toggle,
+    onSelect,
+    selectedSystem,
+    selectedFiles,
+    currentPath,
+    dirSelectMode,
+  ]);
 
   const body = (
     <FileExplorer
       allowSystemChange={allowSystemChange}
       systemId={systemId}
-      path={path}
+      path={currentPath}
       selectMode={selectMode}
       onSelect={fileExplorerSelectCallback}
       onUnselect={fileExplorerUnselectCallback}
@@ -93,7 +117,7 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
 
   const footer = (
     <Button
-      disabled={selectedFiles.length === 0}
+      disabled={selectedFiles.length === 0 && !dirSelectMode}
       color="primary"
       onClick={selectButtonCallback}
       data-testid="modalSelect"
@@ -102,6 +126,8 @@ const FileSelectModal: React.FC<FileSelectModalProps> = ({
       {`${
         selectMode?.mode === 'multi'
           ? `(${selectedFiles.length})`
+          : dirSelectMode
+          ? `${!!selectedFiles.length ? selectedFiles[0].name : currentPath}`
           : `${!!selectedFiles.length ? selectedFiles[0].name : ''}`
       }`}
     </Button>

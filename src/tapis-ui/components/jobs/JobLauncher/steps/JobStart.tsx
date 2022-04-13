@@ -12,10 +12,12 @@ export const JobStart: React.FC = () => {
 
   const validationSchema = Yup.object({
     name: Yup.string().required(),
+    description: Yup.string(),
   });
 
   const initialValues: Partial<Jobs.ReqSubmitJob> = {
     name: job.name,
+    description: job.description,
   };
 
   return (
@@ -34,16 +36,23 @@ export const JobStart: React.FC = () => {
         label="Name"
         description="A name for this job"
       />
+      <FormikInput
+        name="description"
+        required={false}
+        label="Description"
+        description="A description of this job"
+      />
     </FormikJobStepWrapper>
   );
 };
 
 export const JobStartSummary: React.FC = () => {
   const { job } = useJobLauncher();
-  const { name, appId, appVersion } = job;
+  const { name, description, appId, appVersion } = job;
   return (
     <div>
       <StepSummaryField field={name} error="A job name is required" />
+      <StepSummaryField field={description} />
       <div>
         <i>
           Application: {appId} v{appVersion}

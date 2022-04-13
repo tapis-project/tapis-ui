@@ -7,7 +7,7 @@ import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
 import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
-import { ArchiveFilter, ArchiveFilterSummary } from './steps/ArchiveFilter';
+import { Archive, ArchiveSummary } from './steps/Archive';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
 import { Args, ArgsSummary } from './steps/AppArgs';
 import {
@@ -44,8 +44,12 @@ const generateDefaultValues = (
   )?.batchDefaultLogicalQueue;
   const defaultValues: Partial<Jobs.ReqSubmitJob> = {
     name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
+    description: app.description,
     appId: app.id,
     appVersion: app.version,
+    archiveOnAppError: app.jobAttributes?.archiveOnAppError ?? true,
+    archiveSystemId: app.jobAttributes?.archiveSystemId,
+    archiveSystemDir: app.jobAttributes?.archiveSystemDir,
     execSystemId: app.jobAttributes?.execSystemId,
     execSystemLogicalQueue:
       app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
@@ -163,10 +167,10 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       summary: <EnvVariablesSummary />,
     },
     {
-      id: 'archiveFilter',
-      name: 'Archive Filter',
-      render: <ArchiveFilter />,
-      summary: <ArchiveFilterSummary />,
+      id: 'archiving',
+      name: 'Archiving',
+      render: <Archive />,
+      summary: <ArchiveSummary />,
     },
     {
       id: 'jobSubmission',
