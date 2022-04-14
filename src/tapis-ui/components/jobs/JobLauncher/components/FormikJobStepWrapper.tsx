@@ -5,29 +5,31 @@ import { useJobLauncher } from '.';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 
 type FormikJobStepWrapperProps = {
-  validationSchema: any;
+  validationSchema?: any;
   initialValues: Partial<Jobs.ReqSubmitJob>;
+  validate?: (values: Partial<Jobs.ReqSubmitJob>) => any;
 };
 
 const FormikJobStepWrapper: React.FC<
   React.PropsWithChildren<FormikJobStepWrapperProps>
-> = ({ children, validationSchema, initialValues }) => {
+> = ({ children, validationSchema, initialValues, validate }) => {
   const { add, job } = useJobLauncher();
   const { nextStep } = useWizard();
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
-      if (value.parameterSet) {
-        add({
-          ...value,
-          parameterSet: {
-            ...job.parameterSet,
-            ...value.parameterSet,
-          },
-        });
+      if (value.isMpi) {
+        value.cmdPrefix = undefined;
       } else {
-        add(value);
+        value.mpiCmd = undefined;
       }
+      if (value.parameterSet) {
+        value.parameterSet = {
+          ...job.parameterSet,
+          ...value.parameterSet,
+        };
+      }
+      add(value);
       nextStep && nextStep();
     },
     [nextStep, add, job]
@@ -40,6 +42,7 @@ const FormikJobStepWrapper: React.FC<
       onSubmit={formSubmit}
       enableReinitialize={true}
       validateOnChange={false}
+      validate={validate}
     >
       <Form>
         {children}

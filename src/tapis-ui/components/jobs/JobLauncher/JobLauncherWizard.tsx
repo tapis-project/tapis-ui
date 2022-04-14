@@ -50,6 +50,13 @@ const generateDefaultValues = (
     archiveOnAppError: app.jobAttributes?.archiveOnAppError ?? true,
     archiveSystemId: app.jobAttributes?.archiveSystemId,
     archiveSystemDir: app.jobAttributes?.archiveSystemDir,
+    nodeCount: app.jobAttributes?.nodeCount,
+    coresPerNode: app.jobAttributes?.coresPerNode,
+    memoryMB: app.jobAttributes?.memoryMB,
+    maxMinutes: app.jobAttributes?.maxMinutes,
+    isMpi: app.jobAttributes?.isMpi,
+    mpiCmd: app.jobAttributes?.mpiCmd,
+    cmdPrefix: app.jobAttributes?.cmdPrefix,
     execSystemId: app.jobAttributes?.execSystemId,
     execSystemLogicalQueue:
       app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
