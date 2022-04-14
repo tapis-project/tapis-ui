@@ -1,0 +1,30 @@
+.input {
+  composes: form-control from '../../styles/components/bootstrap.form.css';
+}
+
+.copy-button {
+  // May be changed by JavaScript which also needs the value
+  --transition-duration: 0;
+
+  transition: color var(--transition-duration),
+    background-color var(--transition-duration);
+
+  composes: c-button--secondary from '../../styles/components/c-button.css';
+}
+
+.copy-button.is-copied,
+// FAQ: The pseudo-classes allow override of Bootstrap styles/selectors
+.copy-button.is-copied:hover,
+.copy-button.is-copied:focus,
+.copy-button.is-copied:active {
+  background-color: var(--global-color-success--normal);
+  color: var(--global-color-primary--xx-light);
+}
+
+.button__icon {
+  composes: c-button__icon--before from '../../styles/components/c-button.css';
+}
+
+.button__text {
+  /* … */
+}
