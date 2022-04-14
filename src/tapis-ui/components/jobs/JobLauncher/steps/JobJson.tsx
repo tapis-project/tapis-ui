@@ -3,7 +3,7 @@ import { useJobLauncher } from '../components';
 import { Input, FormGroup, Label } from 'reactstrap';
 import { Jobs } from '@tapis/tapis-typescript';
 import { CopyButton } from 'tapis-ui/_common';
-import styles from './JobSubmission.module.scss';
+import styles from './JobJson.module.scss';
 
 const simplifyJob = (job: Partial<Jobs.ReqSubmitJob>) => {
   const result = JSON.parse(JSON.stringify(job));
@@ -46,7 +46,7 @@ const simplifyJob = (job: Partial<Jobs.ReqSubmitJob>) => {
   return result;
 };
 
-export const JobSubmission: React.FC = () => {
+export const JobJson: React.FC = () => {
   const { job } = useJobLauncher();
   const [simplified, setSimplified] = useState(false);
   const onChange = useCallback(() => {
@@ -58,7 +58,7 @@ export const JobSubmission: React.FC = () => {
   );
   return (
     <div>
-      <h3>Job Submission</h3>
+      <h3>Job JSON</h3>
       <div>
         This is a preview of the json job submission data. You may copy it for
         future reference.
@@ -83,6 +83,6 @@ export const JobSubmission: React.FC = () => {
   );
 };
 
-export const JobSubmissionSummary: React.FC = () => {
-  return <div>Job Submission</div>;
+export const JobJsonSummary: React.FC = () => {
+  return null;
 };

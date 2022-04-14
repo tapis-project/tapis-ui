@@ -6,7 +6,7 @@ import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
-import { JobSubmission, JobSubmissionSummary } from './steps/JobSubmission';
+import { JobJson, JobJsonSummary } from './steps/JobJson';
 import { Archive, ArchiveSummary } from './steps/Archive';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
 import { Args, ArgsSummary } from './steps/AppArgs';
@@ -180,10 +180,10 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       summary: <ArchiveSummary />,
     },
     {
-      id: 'jobSubmission',
-      name: 'Job Submission',
-      render: <JobSubmission />,
-      summary: <JobSubmissionSummary />,
+      id: 'jobJson',
+      name: 'Job JSON',
+      render: <JobJson />,
+      summary: <JobJsonSummary />,
     },
   ];
 
