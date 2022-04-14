@@ -72,7 +72,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
         {sourceUrls.map((_, sourceUrlIndex) => {
           const sourceUrlName = `fileInputArrays.${fileInputArrayIndex}.sourceUrls.${sourceUrlIndex}`;
           return (
-            <>
+            <div key={sourceUrlName}>
               <Field name={sourceUrlName}>
                 {({ field }: FieldProps) => (
                   <FormikTapisFileInput
@@ -100,7 +100,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
                   </div>
                 )}
               </ErrorMessage>
-            </>
+            </div>
           );
         })}
       </div>
@@ -156,7 +156,6 @@ const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
   return (
     <Collapse
       open={!sourceUrls}
-      key={`fileInputArrays.${index}`}
       title={name ?? 'File Input Array'}
       note={note}
       className={fieldArrayStyles.item}
@@ -179,6 +178,7 @@ const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
             label="Source URLs"
             required={true}
             description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
+            key={uuidv4()}
           >
             <SourceUrlsField
               fileInputArrayIndex={index}
@@ -239,7 +239,6 @@ const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
   return (
     <Collapse
       title={`${inputArray.name} ${included ? '(included)' : ''}`}
-      key={`optional-input-array-${inputArray.name}`}
       className={styles['optional-input']}
     >
       <div className={fieldArrayStyles.description}>
@@ -314,7 +313,10 @@ const OptionalInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
             );
           };
           return (
-            <div className={fieldArrayStyles.item}>
+            <div
+              className={fieldArrayStyles.item}
+              key={`optional-input-array-${optionalInputArray.name}`}
+            >
               <OptionalInputArray
                 inputArray={optionalInputArray}
                 onInclude={onInclude}
@@ -331,11 +333,7 @@ const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({
   inputArray,
 }) => {
   return (
-    <Collapse
-      title={`${inputArray.name}`}
-      key={`fixed-input-${inputArray.name}`}
-      className={styles['optional-input']}
-    >
+    <Collapse title={`${inputArray.name}`} className={styles['optional-input']}>
       <div className={fieldArrayStyles.description}>
         {inputArray.description ?? ''}
       </div>
@@ -345,7 +343,12 @@ const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({
         description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
       >
         {inputArray.sourceUrls?.map((sourceUrl) => (
-          <Input bsSize="sm" defaultValue={sourceUrl} disabled={true} />
+          <Input
+            bsSize="sm"
+            defaultValue={sourceUrl}
+            disabled={true}
+            key={uuidv4()}
+          />
         ))}
       </FieldWrapper>
       <FieldWrapper
@@ -384,7 +387,10 @@ const FixedInputArrays: React.FC = () => {
         be included with your job. They cannot be removed or altered.
       </div>
       {fixedInputArrays.map((fixedInputArray) => (
-        <div className={fieldArrayStyles.item}>
+        <div
+          className={fieldArrayStyles.item}
+          key={`fixed-input-${fixedInputArray.name}`}
+        >
           <FixedInputArray inputArray={fixedInputArray} />
         </div>
       ))}
@@ -426,6 +432,7 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
           item={jobInputArray}
           index={index}
           remove={arrayHelpers.remove}
+          key={`fileInputArrays.${index}`}
         />
       ))}
       <Button onClick={() => arrayHelpers.push({ sourceUrls: [''] })} size="sm">
@@ -499,7 +506,7 @@ export const FileInputArraysSummary: React.FC = () => {
     jobFileInputArrays
   );
   return (
-    <div>
+    <div key="file-input-arrays-summary">
       {jobFileInputArrays.map((jobFileInputArray) => {
         const complete = !incompleteJobInputArrays.some(
           (incompleteInput) => incompleteInput.name === jobFileInputArray.name
