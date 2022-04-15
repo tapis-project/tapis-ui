@@ -11,7 +11,7 @@ type JobLauncherContextType = {
 const JobLauncherContext = React.createContext<JobLauncherContextType>({
   app: {},
   systems: [],
-  schedulerProfiles: []
+  schedulerProfiles: [],
 });
 
 const { useBuilderContext, Provider } = withBuilder<Jobs.ReqSubmitJob>();
@@ -26,7 +26,7 @@ export const useJobLauncher = () => {
     clear,
     app,
     systems,
-    schedulerProfiles
+    schedulerProfiles,
   };
 };
 

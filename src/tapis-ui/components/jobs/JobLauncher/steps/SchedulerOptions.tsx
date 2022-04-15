@@ -1,55 +1,60 @@
-import React, { useCallback, useMemo } from "react";
-import { Apps, Jobs } from "@tapis/tapis-typescript";
-import { Button } from "reactstrap";
-import { useJobLauncher, StepSummaryField } from "../components";
-import fieldArrayStyles from "../FieldArray.module.scss";
-import { Collapse } from "tapis-ui/_common";
-import { FieldArray, useField, FieldArrayRenderProps, useFormikContext } from "formik";
-import { FormikJobStepWrapper } from "../components";
-import { FormikInput } from "tapis-ui/_common";
-import { FormikCheck } from "tapis-ui/_common/FieldWrapperFormik";
-import { getArgMode } from "tapis-api/utils/jobArgs";
-import { ArgField, argsSchema } from "./AppArgs";
-import { DescriptionList } from "tapis-ui/_common";
-import * as Yup from "yup";
+import React, { useCallback, useMemo } from 'react';
+import { Jobs } from '@tapis/tapis-typescript';
+import { Button } from 'reactstrap';
+import { useJobLauncher, StepSummaryField } from '../components';
+import fieldArrayStyles from '../FieldArray.module.scss';
+import { Collapse } from 'tapis-ui/_common';
+import { FieldArray, useField, useFormikContext } from 'formik';
+import { FormikJobStepWrapper } from '../components';
+import { getArgMode } from 'tapis-api/utils/jobArgs';
+import { ArgField, argsSchema, assembleArgSpec } from './AppArgs';
+import { DescriptionList } from 'tapis-ui/_common';
+import * as Yup from 'yup';
 import styles from './SchedulerOptions.module.scss';
 
-const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
-  arrayHelpers,
-}) => {
+const findSchedulerProfile = (values: Partial<Jobs.ReqSubmitJob>) => {
+  // Look at current schedulerOptions
+  const argSpecs = values.parameterSet?.schedulerOptions ?? [];
+  // Find any scheduler option that has --tapis-profile set
+  const profile = argSpecs.find((argSpec) =>
+    argSpec.arg?.includes('--tapis-profile')
+  );
+  if (profile) {
+    // Return the name of the profile after --tapis-profile
+    const args = profile.arg?.split(' ');
+    if (args && args.length >= 2) {
+      return args[1];
+    }
+  }
+  return undefined;
+};
+
+const SchedulerProfiles: React.FC = () => {
   const { schedulerProfiles } = useJobLauncher();
   const { values, setValues } = useFormikContext();
   const setSchedulerProfile = useCallback(
     (newProfile: Jobs.JobArgSpec) => {
-      const argSpecs = (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.schedulerOptions ?? [];
+      const argSpecs =
+        (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.schedulerOptions ??
+        [];
       setValues({
         parameterSet: {
           schedulerOptions: [
             newProfile,
-            ...argSpecs.filter(existing => !existing.arg?.includes("--tapis-profile"))
-          ]
-        }
-      })
+            ...argSpecs.filter(
+              (existing) => !existing.arg?.includes('--tapis-profile')
+            ),
+          ],
+        },
+      });
     },
-    [ values, setValues ]
+    [values, setValues]
   );
   const currentProfile = useMemo(
-    () => {
-      // Look at current schedulerOptions
-      const argSpecs = (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.schedulerOptions ?? [];
-      // Find any scheduler option that has --tapis-profile set
-      const profile = argSpecs.find(argSpec => argSpec.arg?.includes("--tapis-profile"));
-      if (profile) {
-        // Return the name of the profile after --tapis-profile
-        const args = profile.arg?.split(' ');
-        if (args && args.length >= 2) {
-          return args[1];
-        }
-      }
-      return undefined;
-    },
-    [ values ]
-  )
+    () => findSchedulerProfile(values as Partial<Jobs.ReqSubmitJob>),
+    [values]
+  );
+
   return (
     <div className={fieldArrayStyles.array}>
       <h3>Scheduler Profiles</h3>
@@ -65,13 +70,21 @@ const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
         }) => (
           <Collapse
             key={`scheduler-profiles-${name}`}
-            className={fieldArrayStyles["array-group"]}
+            className={fieldArrayStyles['array-group']}
             title={`${name} ${name === currentProfile ? '(selected)' : ''}`}
           >
             <div className={styles['scheduler-option']}>
               <div>{description}</div>
-              <DescriptionList data={{moduleLoadCommand, modulesToLoad, hiddenOptions, owner, tenant}}
-              className={styles['scheduler-option-list']} />
+              <DescriptionList
+                data={{
+                  moduleLoadCommand,
+                  modulesToLoad,
+                  hiddenOptions,
+                  owner,
+                  tenant,
+                }}
+                className={styles['scheduler-option-list']}
+              />
             </div>
             <Button
               size="sm"
@@ -96,7 +109,7 @@ const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 
 const SchedulerOptionArray: React.FC = () => {
   const { app } = useJobLauncher();
-  const [field] = useField("parameterSet.schedulerOptions");
+  const [field] = useField('parameterSet.schedulerOptions');
   const args = useMemo(
     () => (field.value as Array<Jobs.JobArgSpec>) ?? [],
     [field]
@@ -113,7 +126,7 @@ const SchedulerOptionArray: React.FC = () => {
         <>
           <div className={fieldArrayStyles.array}>
             <h3>{`Scheduler Arguments`}</h3>
-            <div className={fieldArrayStyles["array-group"]}>
+            <div className={fieldArrayStyles['array-group']}>
               {args.map((arg, index) => {
                 const inputMode = arg.name
                   ? getArgMode(arg.name, schedulerOptionSpecs)
@@ -123,7 +136,7 @@ const SchedulerOptionArray: React.FC = () => {
                     index={index}
                     arrayHelpers={arrayHelpers}
                     name={`parameterSet.schedulerOptions.${index}`}
-                    argType={"scheduler option"}
+                    argType={'scheduler option'}
                     inputMode={inputMode}
                   />
                 );
@@ -132,10 +145,10 @@ const SchedulerOptionArray: React.FC = () => {
             <Button
               onClick={() =>
                 arrayHelpers.push({
-                  name: "",
-                  description: "",
+                  name: '',
+                  description: '',
                   include: true,
-                  arg: "",
+                  arg: '',
                 })
               }
               size="sm"
@@ -143,7 +156,7 @@ const SchedulerOptionArray: React.FC = () => {
               + Add
             </Button>
           </div>
-          <SchedulerProfiles arrayHelpers={arrayHelpers} />
+          <SchedulerProfiles />
         </>
       )}
     />
@@ -151,7 +164,7 @@ const SchedulerOptionArray: React.FC = () => {
 };
 
 export const SchedulerOptions: React.FC = () => {
-  const { job, app } = useJobLauncher();
+  const { job } = useJobLauncher();
 
   const validationSchema = Yup.object().shape({
     parameterSet: Yup.object({
@@ -181,22 +194,17 @@ export const SchedulerOptions: React.FC = () => {
 
 export const SchedulerOptionsSummary: React.FC = () => {
   const { job } = useJobLauncher();
-  const appArgs = job.parameterSet?.appArgs ?? [];
-  const containerArgs = job.parameterSet?.containerArgs ?? [];
   const schedulerOptions = job.parameterSet?.schedulerOptions ?? [];
+  const currentProfile = useMemo(() => findSchedulerProfile(job), [job]);
   return (
     <div>
       <StepSummaryField
-        field={`App Arguments: ${appArgs.length}`}
-        key={`app-args-summary`}
+        field={`Scheduler Profile: ${currentProfile ?? 'none selected'}`}
+        key={`scheduler-profile-summary`}
       />
       <StepSummaryField
-        field={`Container Arguments: ${containerArgs.length}`}
-        key={`container-args-summary`}
-      />
-      <StepSummaryField
-        field={`Scheduler Options: ${schedulerOptions.length}`}
-        key={`scheduler-options-summary`}
+        field={`Scheduler Args: ${assembleArgSpec(schedulerOptions)}`}
+        key={`scheduler-args-summary`}
       />
     </div>
   );

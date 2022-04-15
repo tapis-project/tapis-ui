@@ -24,14 +24,17 @@ import {
 } from 'tapis-api/utils/jobFileInputArrays';
 import {
   SchedulerOptions,
-  SchedulerOptionsSummary
+  SchedulerOptionsSummary,
 } from './steps/SchedulerOptions';
 import { generateJobArgsFromSpec } from 'tapis-api/utils/jobArgs';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
-import { useList as useSystemsList, useSchedulerProfiles } from 'tapis-hooks/systems';
+import {
+  useList as useSystemsList,
+  useSchedulerProfiles,
+} from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
 
 type JobLauncherWizardProps = {
@@ -126,19 +129,18 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     data: systemsData,
     isLoading: systemsIsLoading,
     error: systemsError,
-  } = useSystemsList(
-    { select: 'allAttributes' },
-  );
+  } = useSystemsList({ select: 'allAttributes' });
   const {
     data: schedulerProfilesData,
     isLoading: schedulerProfilesIsLoading,
-    error: schedulerProfilesError
-  } = useSchedulerProfiles(
-    { refetchOnWindowFocus: false }
-  )
+    error: schedulerProfilesError,
+  } = useSchedulerProfiles({ refetchOnWindowFocus: false });
   const app = data?.result;
   const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
-  const schedulerProfiles = useMemo(() => schedulerProfilesData?.result ?? [], [schedulerProfilesData]);
+  const schedulerProfiles = useMemo(
+    () => schedulerProfilesData?.result ?? [],
+    [schedulerProfilesData]
+  );
   const [defaultValues, setDefaultValues] = useState<
     Partial<Jobs.ReqSubmitJob>
   >({});
@@ -179,16 +181,16 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       summary: <ArgsSummary />,
     },
     {
-      id: 'schedulerOptions',
-      name: 'Scheduler Options',
-      render: <SchedulerOptions />,
-      summary: <SchedulerOptionsSummary />
-    },
-    {
       id: 'envVariables',
       name: 'Environment Variables',
       render: <EnvVariables />,
       summary: <EnvVariablesSummary />,
+    },
+    {
+      id: 'schedulerOptions',
+      name: 'Scheduler Options',
+      render: <SchedulerOptions />,
+      summary: <SchedulerOptionsSummary />,
     },
     {
       id: 'archiving',
@@ -206,11 +208,13 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
 
   return (
     <QueryWrapper
-      isLoading={isLoading || systemsIsLoading}
-      error={error || systemsError}
+      isLoading={isLoading || systemsIsLoading || schedulerProfilesIsLoading}
+      error={error || systemsError || schedulerProfilesError}
     >
       {app && (
-        <JobLauncherProvider value={{ app, systems, defaultValues, schedulerProfiles }}>
+        <JobLauncherProvider
+          value={{ app, systems, defaultValues, schedulerProfiles }}
+        >
           <Wizard
             steps={generateSteps()}
             memo={`${app.id}${app.version}`}

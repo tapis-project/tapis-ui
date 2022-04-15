@@ -1,15 +1,15 @@
-import React, { useMemo } from "react";
-import { Apps, Jobs } from "@tapis/tapis-typescript";
-import { Button } from "reactstrap";
-import { useJobLauncher, StepSummaryField } from "../components";
-import fieldArrayStyles from "../FieldArray.module.scss";
-import { Collapse } from "tapis-ui/_common";
-import { FieldArray, useField, FieldArrayRenderProps } from "formik";
-import { FormikJobStepWrapper } from "../components";
-import { FormikInput } from "tapis-ui/_common";
-import { FormikCheck } from "tapis-ui/_common/FieldWrapperFormik";
-import { getArgMode } from "tapis-api/utils/jobArgs";
-import * as Yup from "yup";
+import React, { useMemo } from 'react';
+import { Apps, Jobs } from '@tapis/tapis-typescript';
+import { Button } from 'reactstrap';
+import { useJobLauncher, StepSummaryField } from '../components';
+import fieldArrayStyles from '../FieldArray.module.scss';
+import { Collapse } from 'tapis-ui/_common';
+import { FieldArray, useField, FieldArrayRenderProps } from 'formik';
+import { FormikJobStepWrapper } from '../components';
+import { FormikInput } from 'tapis-ui/_common';
+import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { getArgMode } from 'tapis-api/utils/jobArgs';
+import * as Yup from 'yup';
 
 type ArgFieldProps = {
   index: number;
@@ -41,8 +41,8 @@ export const ArgField: React.FC<ArgFieldProps> = ({
         disabled={!!inputMode}
         description={`The name for this ${argType} ${
           !!inputMode
-            ? "is defined in the application and cannot be changed"
-            : ""
+            ? 'is defined in the application and cannot be changed'
+            : ''
         }`}
       />
       <FormikInput
@@ -103,7 +103,7 @@ export const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
       render={(arrayHelpers) => (
         <div className={fieldArrayStyles.array}>
           <h3>{`${argType}s`}</h3>
-          <div className={fieldArrayStyles["array-group"]}>
+          <div className={fieldArrayStyles['array-group']}>
             {args.map((arg, index) => {
               const inputMode = arg.name
                 ? getArgMode(arg.name, argSpecs)
@@ -122,10 +122,10 @@ export const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
           <Button
             onClick={() =>
               arrayHelpers.push({
-                name: "",
-                description: "",
+                name: '',
+                description: '',
                 include: true,
-                arg: "",
+                arg: '',
               })
             }
             size="sm"
@@ -143,7 +143,7 @@ export const argsSchema = Yup.array(
     name: Yup.string(),
     description: Yup.string(),
     include: Yup.boolean(),
-    arg: Yup.string().min(1).required("The argument cannot be blank"),
+    arg: Yup.string().min(1).required('The argument cannot be blank'),
   })
 );
 
@@ -177,10 +177,6 @@ export const Args: React.FC = () => {
     () => app.jobAttributes?.parameterSet?.containerArgs ?? [],
     [app]
   );
-  const scheduleOptionSpecs = useMemo(
-    () => app.jobAttributes?.parameterSet?.schedulerOptions ?? [],
-    [app]
-  );
 
   return (
     <FormikJobStepWrapper
@@ -197,16 +193,11 @@ export const Args: React.FC = () => {
         argType="Container Argument"
         argSpecs={containerArgSpecs}
       />
-      <ArgsFieldArray
-        name="parameterSet.schedulerOptions"
-        argType="Scheduler Option"
-        argSpecs={scheduleOptionSpecs}
-      />
     </FormikJobStepWrapper>
   );
 };
 
-const assembleArgSpec = (argSpecs: Array<Jobs.JobArgSpec>) =>
+export const assembleArgSpec = (argSpecs: Array<Jobs.JobArgSpec>) =>
   argSpecs.reduce(
     (previous, current) =>
       `${previous}${current.include ? ` ${current.arg}` : ``}`,
@@ -217,7 +208,6 @@ export const ArgsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const appArgs = job.parameterSet?.appArgs ?? [];
   const containerArgs = job.parameterSet?.containerArgs ?? [];
-  const schedulerOptions = job.parameterSet?.schedulerOptions ?? [];
   return (
     <div>
       <StepSummaryField
@@ -227,10 +217,6 @@ export const ArgsSummary: React.FC = () => {
       <StepSummaryField
         field={`Container: ${assembleArgSpec(containerArgs)}`}
         key={`container-args-summary`}
-      />
-      <StepSummaryField
-        field={`Scheduler: ${assembleArgSpec(schedulerOptions)}`}
-        key={`scheduler-options-summary`}
       />
     </div>
   );

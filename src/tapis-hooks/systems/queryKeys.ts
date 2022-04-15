@@ -1,7 +1,7 @@
 const QueryKeys = {
   list: 'systems/list',
   details: 'systems/details',
-  listSchedulerProfiles: 'systems/listScehdulerProfiles'
+  listSchedulerProfiles: 'systems/listScehdulerProfiles',
 };
 
 export default QueryKeys;
