@@ -519,7 +519,9 @@ export const FileInputArraysSummary: React.FC = () => {
 
         return (
           <StepSummaryField
-            field={`${key} (${jobFileInputArray.sourceUrls?.length ?? '0'})`}
+            field={`${key} (${
+              jobFileInputArray.sourceUrls?.length ?? '0'
+            } files)`}
             error={error}
             key={`file-input-arrays-summary-${key ?? uuidv4()}`}
           />

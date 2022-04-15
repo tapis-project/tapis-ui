@@ -381,7 +381,8 @@ export const FileInputsSummary: React.FC = () => {
         );
         // If this job file input is complete, display its name or sourceUrl
         const field = complete
-          ? jobFileInput.name ?? jobFileInput.sourceUrl
+          ? `${jobFileInput.name}: ${jobFileInput.sourceUrl}` ??
+            jobFileInput.sourceUrl
           : undefined;
         const key =
           jobFileInput.name ??
