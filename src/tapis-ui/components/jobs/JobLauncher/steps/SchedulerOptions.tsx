@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Apps, Jobs } from "@tapis/tapis-typescript";
 import { Button } from "reactstrap";
 import { useJobLauncher, StepSummaryField } from "../components";
 import fieldArrayStyles from "../FieldArray.module.scss";
 import { Collapse } from "tapis-ui/_common";
-import { FieldArray, useField, FieldArrayRenderProps } from "formik";
+import { FieldArray, useField, FieldArrayRenderProps, useFormikContext } from "formik";
 import { FormikJobStepWrapper } from "../components";
 import { FormikInput } from "tapis-ui/_common";
 import { FormikCheck } from "tapis-ui/_common/FieldWrapperFormik";
@@ -16,7 +16,38 @@ const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   arrayHelpers,
 }) => {
   const { schedulerProfiles } = useJobLauncher();
-  const { values } = useField("parameterSet.schedulerOptions");
+  const { values, setValues } = useFormikContext();
+  const setSchedulerProfile = useCallback(
+    (newProfile: Jobs.JobArgSpec) => {
+      const argSpecs = (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.schedulerOptions ?? [];
+      setValues({
+        parameterSet: {
+          schedulerOptions: [
+            newProfile,
+            ...argSpecs.filter(existing => !existing.arg?.includes("--tapis-profile"))
+          ]
+        }
+      })
+    },
+    [ values, setValues ]
+  );
+  const currentProfile = useMemo(
+    () => {
+      // Look at current schedulerOptions
+      const argSpecs = (values as Partial<Jobs.ReqSubmitJob>).parameterSet?.schedulerOptions ?? [];
+      // Find any scheduler option that has --tapis-profile set
+      const profile = argSpecs.find(argSpec => argSpec.arg?.includes("--tapis-profile"));
+      if (profile) {
+        // Return the name of the profile after --tapis-profile
+        const args = profile.arg?.split(' ');
+        if (args && args.length >= 2) {
+          return args[1];
+        }
+      }
+      return undefined;
+    },
+    [ values ]
+  )
   return (
     <div className={fieldArrayStyles.array}>
       <h3>Scheduler Profiles</h3>
@@ -33,17 +64,17 @@ const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
           <Collapse
             key={`scheduler-profiles-${name}`}
             className={fieldArrayStyles["array-group"]}
-            title={name}
+            title={`${name} ${name === currentProfile ? '(selected)' : ''}`}
           >
             <div>{description}</div>
             <Button
               size="sm"
               onClick={() =>
-                arrayHelpers.push({
+                setSchedulerProfile({
                   name: `${name} Scheduler Profile`,
                   description,
                   include: true,
-                  arg: `--tacc-profile ${name}`,
+                  arg: `--tapis-profile ${name}`,
                 })
               }
             >
