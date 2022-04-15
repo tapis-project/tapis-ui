@@ -119,10 +119,12 @@ export const EnvVariablesSummary: React.FC = () => {
   const envVariables = job.parameterSet?.envVariables ?? [];
   return (
     <div>
-      <StepSummaryField
-        field={`Environment Variables: ${envVariables.length}`}
-        key={`env-variables-summary`}
-      />
+      {envVariables.map((envVariable) => (
+        <StepSummaryField
+          field={`${envVariable.key} : ${envVariable.value}`}
+          key={`env-variables-summary-${envVariable.key}`}
+        />
+      ))}
     </div>
   );
 };
