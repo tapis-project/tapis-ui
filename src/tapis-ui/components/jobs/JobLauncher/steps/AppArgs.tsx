@@ -206,6 +206,13 @@ export const Args: React.FC = () => {
   );
 };
 
+const assembleArgSpec = (argSpecs: Array<Jobs.JobArgSpec>) =>
+  argSpecs.reduce(
+    (previous, current) =>
+      `${previous}${current.include ? ` ${current.arg}` : ``}`,
+    ''
+  );
+
 export const ArgsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const appArgs = job.parameterSet?.appArgs ?? [];
@@ -214,15 +221,15 @@ export const ArgsSummary: React.FC = () => {
   return (
     <div>
       <StepSummaryField
-        field={`App Arguments: ${appArgs.length}`}
+        field={`App: ${assembleArgSpec(appArgs)}`}
         key={`app-args-summary`}
       />
       <StepSummaryField
-        field={`Container Arguments: ${containerArgs.length}`}
+        field={`Container: ${assembleArgSpec(containerArgs)}`}
         key={`container-args-summary`}
       />
       <StepSummaryField
-        field={`Scheduler Options: ${schedulerOptions.length}`}
+        field={`Scheduler: ${assembleArgSpec(schedulerOptions)}`}
         key={`scheduler-options-summary`}
       />
     </div>
