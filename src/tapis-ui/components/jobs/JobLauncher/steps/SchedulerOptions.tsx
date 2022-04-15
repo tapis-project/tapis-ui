@@ -10,7 +10,9 @@ import { FormikInput } from "tapis-ui/_common";
 import { FormikCheck } from "tapis-ui/_common/FieldWrapperFormik";
 import { getArgMode } from "tapis-api/utils/jobArgs";
 import { ArgField, argsSchema } from "./AppArgs";
+import { DescriptionList } from "tapis-ui/_common";
 import * as Yup from "yup";
+import styles from './SchedulerOptions.module.scss';
 
 const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   arrayHelpers,
@@ -66,7 +68,11 @@ const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
             className={fieldArrayStyles["array-group"]}
             title={`${name} ${name === currentProfile ? '(selected)' : ''}`}
           >
-            <div>{description}</div>
+            <div className={styles['scheduler-option']}>
+              <div>{description}</div>
+              <DescriptionList data={{moduleLoadCommand, modulesToLoad, hiddenOptions, owner, tenant}}
+              className={styles['scheduler-option-list']} />
+            </div>
             <Button
               size="sm"
               onClick={() =>
@@ -77,6 +83,7 @@ const SchedulerProfiles: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
                   arg: `--tapis-profile ${name}`,
                 })
               }
+              disabled={name === currentProfile}
             >
               Use This Profile
             </Button>
