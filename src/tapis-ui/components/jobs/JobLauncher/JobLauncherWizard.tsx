@@ -27,7 +27,7 @@ import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
 import { useSubmit } from 'tapis-hooks/jobs';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
-import { useList as useSystemsList } from 'tapis-hooks/systems';
+import { useList as useSystemsList, useSchedulerProfiles } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
 
 type JobLauncherWizardProps = {
@@ -124,10 +124,18 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     error: systemsError,
   } = useSystemsList(
     { select: 'allAttributes' },
-    { refetchOnWindowFocus: false }
   );
+  const {
+    data: schedulerProfilesData,
+    isLoading: schedulerProfilesIsLoading,
+    error: schedulerProfilesError
+  } = useSchedulerProfiles(
+    { refetchOnWindowFocus: false }
+  )
   const app = data?.result;
   const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
+  const schedulerProfiles = useMemo(() => schedulerProfilesData?.result ?? [], [schedulerProfilesData]);
+  console.log(schedulerProfiles);
   const [defaultValues, setDefaultValues] = useState<
     Partial<Jobs.ReqSubmitJob>
   >({});
@@ -193,7 +201,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       error={error || systemsError}
     >
       {app && (
-        <JobLauncherProvider value={{ app, systems, defaultValues }}>
+        <JobLauncherProvider value={{ app, systems, defaultValues, schedulerProfiles }}>
           <Wizard
             steps={generateSteps()}
             memo={`${app.id}${app.version}`}

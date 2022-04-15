@@ -5,11 +5,13 @@ import withBuilder from 'tapis-ui/utils/withBuilder';
 type JobLauncherContextType = {
   app: Apps.TapisApp;
   systems: Array<Systems.TapisSystem>;
+  schedulerProfiles: Array<Systems.SchedulerProfile>;
 };
 
 const JobLauncherContext = React.createContext<JobLauncherContextType>({
   app: {},
   systems: [],
+  schedulerProfiles: []
 });
 
 const { useBuilderContext, Provider } = withBuilder<Jobs.ReqSubmitJob>();
@@ -32,15 +34,16 @@ type JobLauncherProviderProps = {
     defaultValues: Partial<Jobs.ReqSubmitJob>;
     app: Apps.TapisApp;
     systems: Array<Systems.TapisSystem>;
+    schedulerProfiles: Array<Systems.SchedulerProfile>;
   };
 };
 
 export const JobLauncherProvider: React.FC<
   React.PropsWithChildren<JobLauncherProviderProps>
 > = ({ value, children }) => {
-  const { app, systems, defaultValues } = value;
+  const { app, systems, defaultValues, schedulerProfiles } = value;
   return (
-    <JobLauncherContext.Provider value={{ app, systems }}>
+    <JobLauncherContext.Provider value={{ app, systems, schedulerProfiles }}>
       {Provider({ value: defaultValues, children })}
     </JobLauncherContext.Provider>
   );
