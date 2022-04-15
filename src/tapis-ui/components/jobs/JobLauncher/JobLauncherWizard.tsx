@@ -22,6 +22,10 @@ import {
   generateRequiredFileInputArraysFromApp,
   fileInputArraysComplete,
 } from 'tapis-api/utils/jobFileInputArrays';
+import {
+  SchedulerOptions,
+  SchedulerOptionsSummary
+} from './steps/SchedulerOptions';
 import { generateJobArgsFromSpec } from 'tapis-api/utils/jobArgs';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { Button } from 'reactstrap';
@@ -135,7 +139,6 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   const app = data?.result;
   const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
   const schedulerProfiles = useMemo(() => schedulerProfilesData?.result ?? [], [schedulerProfilesData]);
-  console.log(schedulerProfiles);
   const [defaultValues, setDefaultValues] = useState<
     Partial<Jobs.ReqSubmitJob>
   >({});
@@ -174,6 +177,12 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       name: 'Arguments',
       render: <Args />,
       summary: <ArgsSummary />,
+    },
+    {
+      id: 'schedulerOptions',
+      name: 'Scheduler Options',
+      render: <SchedulerOptions />,
+      summary: <SchedulerOptionsSummary />
     },
     {
       id: 'envVariables',

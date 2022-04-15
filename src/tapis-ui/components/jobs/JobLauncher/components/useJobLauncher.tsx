@@ -18,7 +18,7 @@ const { useBuilderContext, Provider } = withBuilder<Jobs.ReqSubmitJob>();
 
 export const useJobLauncher = () => {
   const { data, add, set, clear } = useBuilderContext();
-  const { app, systems } = useContext(JobLauncherContext);
+  const { app, systems, schedulerProfiles } = useContext(JobLauncherContext);
   return {
     job: data,
     add,
@@ -26,6 +26,7 @@ export const useJobLauncher = () => {
     clear,
     app,
     systems,
+    schedulerProfiles
   };
 };
 
