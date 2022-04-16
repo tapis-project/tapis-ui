@@ -195,11 +195,12 @@ export const SchedulerOptions: React.FC = () => {
 export const SchedulerOptionsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const schedulerOptions = job.parameterSet?.schedulerOptions ?? [];
-  const currentProfile = useMemo(() => findSchedulerProfile(job), [job]);
   return (
     <div>
       <StepSummaryField
-        field={`Scheduler Profile: ${currentProfile ?? 'none selected'}`}
+        field={`Scheduler Profile: ${
+          findSchedulerProfile(job) ?? 'none selected'
+        }`}
         key={`scheduler-profile-summary`}
       />
       <StepSummaryField

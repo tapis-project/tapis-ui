@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
@@ -42,10 +42,16 @@ type JobLauncherWizardProps = {
   appVersion: string;
 };
 
-const generateDefaultValues = (
-  app: Apps.TapisApp,
-  systems: Array<Systems.TapisSystem>
-): Partial<Jobs.ReqSubmitJob> => {
+const generateDefaultValues = ({
+  app,
+  systems,
+}: {
+  app?: Apps.TapisApp;
+  systems: Array<Systems.TapisSystem>;
+}): Partial<Jobs.ReqSubmitJob> => {
+  if (!app) {
+    return {};
+  }
   const systemDefaultQueue = systems.find(
     (system) => system.id === app.jobAttributes?.execSystemId
   )?.batchDefaultLogicalQueue;
@@ -129,7 +135,10 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     data: systemsData,
     isLoading: systemsIsLoading,
     error: systemsError,
-  } = useSystemsList({ select: 'allAttributes' });
+  } = useSystemsList(
+    { select: 'allAttributes' },
+    { refetchOnWindowFocus: false }
+  );
   const {
     data: schedulerProfilesData,
     isLoading: schedulerProfilesIsLoading,
@@ -141,14 +150,11 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     () => schedulerProfilesData?.result ?? [],
     [schedulerProfilesData]
   );
-  const [defaultValues, setDefaultValues] = useState<
-    Partial<Jobs.ReqSubmitJob>
-  >({});
-  useEffect(() => {
-    if (app) {
-      setDefaultValues(generateDefaultValues(app, systems));
-    }
-  }, [app, systems]);
+  const defaultValues = useMemo(
+    () => generateDefaultValues({ app, systems }),
+    [app, systems]
+  );
+
   const generateSteps = (): Array<WizardStep> => [
     {
       id: 'start',
