@@ -57,7 +57,6 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
     <>
       <Collapse
         open={!sourceUrl}
-        key={`fileInputs.${index}`}
         title={name ?? 'File Input'}
         note={note}
         className={fieldArrayStyles.item}
@@ -136,7 +135,6 @@ const OptionalInput: React.FC<OptionalInputProps> = ({
   return (
     <Collapse
       title={`${input.name} ${included ? '(included)' : ''}`}
-      key={`optional-input-${input.name}`}
       className={styles['optional-input']}
     >
       <div className={fieldArrayStyles.description}>
@@ -201,7 +199,10 @@ const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
           arrayHelpers.push(generateFileInputFromAppInput(optionalInput));
         };
         return (
-          <div className={fieldArrayStyles.item}>
+          <div
+            className={fieldArrayStyles.item}
+            key={`optional-input-${optionalInput.name}`}
+          >
             <OptionalInput
               input={optionalInput}
               onInclude={onInclude}
@@ -216,11 +217,7 @@ const OptionalInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 
 const FixedInput: React.FC<{ input: Apps.AppFileInput }> = ({ input }) => {
   return (
-    <Collapse
-      title={`${input.name}`}
-      key={`fixed-input-${input.name}`}
-      className={styles['optional-input']}
-    >
+    <Collapse title={`${input.name}`} className={styles['optional-input']}>
       <div className={fieldArrayStyles.description}>
         {input.description ?? ''}
       </div>
@@ -263,7 +260,10 @@ const FixedInputs: React.FC = () => {
         be included with your job. They cannot be removed or altered.
       </div>
       {fixedInputs.map((fixedInput) => (
-        <div className={fieldArrayStyles.item}>
+        <div
+          className={fieldArrayStyles.item}
+          key={`fixed-input-${fixedInput.name}`}
+        >
           <FixedInput input={fixedInput} />
         </div>
       ))}
@@ -299,6 +299,7 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
       </div>
       {jobInputs.map((jobInput, index) => (
         <JobInputField
+          key={`fileInputs.${index}`}
           item={jobInput}
           index={index}
           remove={arrayHelpers.remove}
@@ -374,7 +375,7 @@ export const FileInputsSummary: React.FC = () => {
     jobFileInputs
   );
   return (
-    <div>
+    <div key="file-inputs-summary">
       {jobFileInputs.map((jobFileInput) => {
         const complete = !incompleteJobInputs.some(
           (incompleteInput) => incompleteInput.name === jobFileInput.name
