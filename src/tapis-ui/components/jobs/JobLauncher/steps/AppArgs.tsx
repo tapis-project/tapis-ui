@@ -19,7 +19,7 @@ type ArgFieldProps = {
   inputMode?: Apps.ArgInputModeEnum;
 };
 
-const ArgField: React.FC<ArgFieldProps> = ({
+export const ArgField: React.FC<ArgFieldProps> = ({
   index,
   name,
   argType,
@@ -87,7 +87,7 @@ type ArgsFieldArrayProps = {
   argType: string;
 };
 
-const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
+export const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
   argSpecs,
   name,
   argType,
@@ -138,16 +138,18 @@ const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
   );
 };
 
+export const argsSchema = Yup.array(
+  Yup.object({
+    name: Yup.string(),
+    description: Yup.string(),
+    include: Yup.boolean(),
+    arg: Yup.string().min(1).required('The argument cannot be blank'),
+  })
+);
+
 export const Args: React.FC = () => {
   const { job, app } = useJobLauncher();
-  const argsSchema = Yup.array(
-    Yup.object({
-      name: Yup.string(),
-      description: Yup.string(),
-      include: Yup.boolean(),
-      arg: Yup.string().min(1).required('The argument cannot be blank'),
-    })
-  );
+
   const validationSchema = Yup.object().shape({
     parameterSet: Yup.object({
       appArgs: argsSchema,
@@ -175,10 +177,6 @@ export const Args: React.FC = () => {
     () => app.jobAttributes?.parameterSet?.containerArgs ?? [],
     [app]
   );
-  const scheduleOptionSpecs = useMemo(
-    () => app.jobAttributes?.parameterSet?.schedulerOptions ?? [],
-    [app]
-  );
 
   return (
     <FormikJobStepWrapper
@@ -195,16 +193,11 @@ export const Args: React.FC = () => {
         argType="Container Argument"
         argSpecs={containerArgSpecs}
       />
-      <ArgsFieldArray
-        name="parameterSet.schedulerOptions"
-        argType="Scheduler Option"
-        argSpecs={scheduleOptionSpecs}
-      />
     </FormikJobStepWrapper>
   );
 };
 
-const assembleArgSpec = (argSpecs: Array<Jobs.JobArgSpec>) =>
+export const assembleArgSpec = (argSpecs: Array<Jobs.JobArgSpec>) =>
   argSpecs.reduce(
     (previous, current) =>
       `${previous}${current.include ? ` ${current.arg}` : ``}`,
@@ -215,7 +208,6 @@ export const ArgsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const appArgs = job.parameterSet?.appArgs ?? [];
   const containerArgs = job.parameterSet?.containerArgs ?? [];
-  const schedulerOptions = job.parameterSet?.schedulerOptions ?? [];
   return (
     <div>
       <StepSummaryField
@@ -225,10 +217,6 @@ export const ArgsSummary: React.FC = () => {
       <StepSummaryField
         field={`Container: ${assembleArgSpec(containerArgs)}`}
         key={`container-args-summary`}
-      />
-      <StepSummaryField
-        field={`Scheduler: ${assembleArgSpec(schedulerOptions)}`}
-        key={`scheduler-options-summary`}
       />
     </div>
   );
