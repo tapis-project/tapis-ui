@@ -121,7 +121,7 @@ export const EnvVariablesSummary: React.FC = () => {
     <div>
       <StepSummaryField
         field={`Environment Variables: ${envVariables.length}`}
-        key={`env-variables-summary`}
+        key={`env-variables-count-summary`}
       />
     </div>
   );
