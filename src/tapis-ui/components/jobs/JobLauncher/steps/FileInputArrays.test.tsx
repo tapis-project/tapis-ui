@@ -20,7 +20,7 @@ describe('FileInputArraysSummary step', () => {
       app: tapisApp,
     });
     const { getAllByText } = renderComponent(<FileInputArraysSummary />);
-    expect(getAllByText(/required-incomplete \(0\)/).length).toEqual(1);
+    expect(getAllByText(/required-incomplete \(0 files\)/).length).toEqual(1);
   });
   it.skip('Shows fileInputArrays that are incomplete', () => {
     (useJobLauncher as jest.Mock).mockReturnValue({
