@@ -51,8 +51,15 @@ export const JobStartSummary: React.FC = () => {
   const { name, description, appId, appVersion } = job;
   return (
     <div>
-      <StepSummaryField field={name} error="A job name is required" />
-      <StepSummaryField field={description} />
+      <StepSummaryField
+        field={name}
+        error="A job name is required"
+        key="job-start-name-summary"
+      />
+      <StepSummaryField
+        field={description}
+        key="job-start-description-summary"
+      />
       <div>
         <i>
           Application: {appId} v{appVersion}
