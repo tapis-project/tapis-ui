@@ -15,7 +15,7 @@ describe('System Listing', () => {
       error: null,
     });
     const { getAllByText } = renderComponent(<SystemListing />);
-    expect(getAllByText(/testuser8-e2e/).length).toEqual(1);
+    expect(getAllByText(/testuser2\.execution/).length).toEqual(1);
   });
 
   it('performs system selection', () => {
@@ -29,7 +29,7 @@ describe('System Listing', () => {
       <SystemListing onSelect={mockOnSelect} />
     );
     // Find the file1.txt and file2.txt rows
-    const system = getByTestId('testuser8-e2e');
+    const system = getByTestId('testuser2.execution');
     expect(system).toBeDefined();
 
     // Click on file1.txt and expect the callback to have run
@@ -48,7 +48,7 @@ describe('System Listing', () => {
       <SystemListing onNavigate={mockOnNavigate} />
     );
     // Find the file1.txt and file2.txt rows
-    const system = getByTestId('href-testuser8-e2e');
+    const system = getByTestId('href-testuser2.execution');
     expect(system).toBeDefined();
 
     // Click on file1.txt and expect the callback to have run

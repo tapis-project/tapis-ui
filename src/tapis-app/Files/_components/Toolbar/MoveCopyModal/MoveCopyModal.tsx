@@ -4,7 +4,8 @@ import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
-import { FileExplorer, FileOperationStatus } from '../_components';
+import { FileOperationStatus } from '../_components';
+import { FileExplorer } from 'tapis-ui/components/files';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { focusManager } from 'react-query';
@@ -131,7 +132,13 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
       <div className="col-md-6 d-flex flex-column">
         {/* Table of selected files */}
         <div className={`${styles['col-header']}`}>Destination</div>
-        <FileExplorer systemId={systemId} path={path} onNavigate={onNavigate} />
+        <FileExplorer
+          systemId={systemId}
+          path={path}
+          onNavigate={onNavigate}
+          fields={['size']}
+          className={styles['file-list']}
+        />
       </div>
     </div>
   );

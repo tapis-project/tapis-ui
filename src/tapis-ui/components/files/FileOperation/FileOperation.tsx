@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect } from 'react';
 import { useNativeOp } from 'tapis-hooks/files';
 import { Files } from '@tapis/tapis-typescript';
-import { Button, FormGroup, Label } from 'reactstrap';
-import { useForm } from 'react-hook-form';
-import { FieldWrapper } from 'tapis-ui/_common';
-import { Input } from 'reactstrap';
+import { Button } from 'reactstrap';
+import { Form, Formik } from 'formik';
+import {
+  FormikInput,
+  FormikSelect,
+  FormikCheck,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
-import { NativeOpParams } from 'tapis-hooks/files';
 import { focusManager } from 'react-query';
+import * as Yup from 'yup';
 
 type FileOperationProps = {
   systemId: string;
@@ -20,20 +23,6 @@ const FileOperation: React.FC<FileOperationProps> = ({
   path,
   className = '',
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<NativeOpParams>({
-    defaultValues: {
-      systemId,
-      path,
-      recursive: false,
-      operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
-      argument: '',
-    },
-  });
-
   const onSuccess = useCallback(() => {
     focusManager.setFocused(true);
   }, []);
@@ -44,35 +33,48 @@ const FileOperation: React.FC<FileOperationProps> = ({
     reset();
   }, [reset]);
 
-  const { ref: recursiveRef, ...recursiveFieldProps } = register('recursive');
-  const { ref: operationRef, ...operationFieldProps } = register('operation');
-  const { ref: argumentRef, ...argumentFieldProps } = register('argument');
+  const validationSchema = Yup.object({
+    recursive: Yup.boolean(),
+    operation: Yup.string().required('An operation is required'),
+    argument: Yup.string(),
+  });
+
+  const initialValues = {
+    recursive: false,
+    operation: Files.NativeLinuxOpRequestOperationEnum.Chmod,
+    argument: '',
+  };
 
   const onSubmit = useCallback(
-    (data: NativeOpParams) => {
-      nativeOp(data, { onSuccess });
+    ({
+      recursive,
+      operation,
+      argument,
+    }: {
+      recursive: boolean;
+      operation: Files.NativeLinuxOpRequestOperationEnum;
+      argument: string;
+    }) => {
+      nativeOp(
+        { systemId, path, recursive, operation, argument },
+        { onSuccess }
+      );
     },
-    [nativeOp, onSuccess]
+    [nativeOp, onSuccess, systemId, path]
   );
 
   return (
-    <form
-      id="nativeoperation-form"
-      onSubmit={handleSubmit(onSubmit)}
-      className={className}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
     >
-      <FieldWrapper
-        label="Linux Operation"
-        required={true}
-        description="Native operation to execute"
-        error={errors.operation}
-      >
-        <Input
-          bsSize="sm"
-          type="select"
-          id="operationSelect"
-          {...operationFieldProps}
-          innerRef={operationRef}
+      <Form className={className}>
+        <FormikSelect
+          name="operation"
+          label="Linux Operation"
+          required={true}
+          description="Native operation to execute"
           aria-label="Operation"
         >
           <option value={Files.NativeLinuxOpRequestOperationEnum.Chmod}>
@@ -84,50 +86,37 @@ const FileOperation: React.FC<FileOperationProps> = ({
           <option value={Files.NativeLinuxOpRequestOperationEnum.Chgrp}>
             CHGRP
           </option>
-        </Input>
-      </FieldWrapper>
-      <FieldWrapper
-        label="Arguments"
-        required={false}
-        description="Arguments for the native file operation"
-        error={errors.argument}
-      >
-        <Input
-          bsSize="sm"
-          id="argumentInput"
-          {...argumentFieldProps}
-          innerRef={argumentRef}
+        </FormikSelect>
+        <FormikInput
+          name="argument"
+          label="Arguments"
+          required={false}
+          description="Arguments for the native file operation"
           aria-label="Arguments"
         />
-      </FieldWrapper>
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="recursive"
-            {...recursiveFieldProps}
-            innerRef={recursiveRef}
-            aria-label="Recursive"
-          />{' '}
-          Run operation recursively
-        </Label>
-      </FormGroup>
-      <SubmitWrapper
-        isLoading={isLoading}
-        error={error}
-        success={isSuccess ? `Successfully submitted operation` : ''}
-      >
-        <Button
-          form="nativeoperation-form"
-          color="primary"
-          disabled={isLoading || isSuccess}
-          aria-label="Submit"
-          type="submit"
+        <FormikCheck
+          name="recursive"
+          label="Recursive"
+          required={false}
+          description="Run operation recursively"
+          aria-label="Recursive"
+        />
+        <SubmitWrapper
+          isLoading={isLoading}
+          error={error}
+          success={isSuccess ? `Successfully submitted operation` : ''}
         >
-          Run Operation
-        </Button>
-      </SubmitWrapper>
-    </form>
+          <Button
+            color="primary"
+            disabled={isLoading || isSuccess}
+            aria-label="Submit"
+            type="submit"
+          >
+            Run Operation
+          </Button>
+        </SubmitWrapper>
+      </Form>
+    </Formik>
   );
 };
 
