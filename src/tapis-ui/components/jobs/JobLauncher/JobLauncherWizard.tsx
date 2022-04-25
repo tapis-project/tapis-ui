@@ -5,7 +5,7 @@ import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
-import { ExecSystem, ExecSystemSummary } from './steps/ExecSystem';
+import { ExecOptions, ExecOptionsSummary } from './steps/ExecOptions';
 import { JobJson, JobJsonSummary } from './steps/JobJson';
 import { Archive, ArchiveSummary } from './steps/Archive';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
@@ -164,10 +164,10 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       summary: <JobStartSummary />,
     },
     {
-      id: 'execSystem',
-      name: 'Execution System',
-      render: <ExecSystem />,
-      summary: <ExecSystemSummary />,
+      id: 'execution',
+      name: 'Execution Options',
+      render: <ExecOptions />,
+      summary: <ExecOptionsSummary />,
     },
     {
       id: 'fileInputs',

@@ -107,6 +107,19 @@ const SystemSelector: React.FC = () => {
           ))}
         </FormikSelect>
       )}
+      <FormikSelect
+        name="jobType"
+        label="Job Type"
+        description="Jobs can either be Batch or Fork"
+        required={true}
+      >
+        <option value={Apps.JobTypeEnum.Batch}>
+          Batch
+        </option>
+        <option value={Apps.JobTypeEnum.Fork}>
+          Fork
+        </option>
+      </FormikSelect>
     </>
   );
 };
@@ -226,13 +239,14 @@ type QueueErrors = {
   maxMinutes?: string;
 };
 
-export const ExecSystem: React.FC = () => {
+export const ExecOptions: React.FC = () => {
   const { job, app, systems } = useJobLauncher();
   const initialValues: Partial<Jobs.ReqSubmitJob> = {
     execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
     execSystemLogicalQueue: job.execSystemId
       ? getLogicalQueue(app, systems, job.execSystemId)
       : undefined,
+    jobType: job.jobType,
     execSystemExecDir: job.execSystemExecDir,
     execSystemInputDir: job.execSystemInputDir,
     execSystemOutputDir: job.execSystemOutputDir,
@@ -253,6 +267,7 @@ export const ExecSystem: React.FC = () => {
     execSystemExecDir: Yup.string(),
     execSystemInputDir: Yup.string(),
     execSystemOutputDir: Yup.string(),
+    jobType: Yup.string().required(),
     nodeCount: Yup.number(),
     coresPerNode: Yup.number(),
     memoryMB: Yup.number(),
@@ -336,7 +351,7 @@ export const ExecSystem: React.FC = () => {
   );
 };
 
-export const ExecSystemSummary: React.FC = () => {
+export const ExecOptionsSummary: React.FC = () => {
   const { job } = useJobLauncher();
   const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } =
     job;
