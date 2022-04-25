@@ -65,6 +65,7 @@ const generateDefaultValues = ({
     archiveSystemDir: app.jobAttributes?.archiveSystemDir,
     nodeCount: app.jobAttributes?.nodeCount,
     coresPerNode: app.jobAttributes?.coresPerNode,
+    jobType: app.jobType,
     memoryMB: app.jobAttributes?.memoryMB,
     maxMinutes: app.jobAttributes?.maxMinutes,
     isMpi: app.jobAttributes?.isMpi,

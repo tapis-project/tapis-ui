@@ -122,10 +122,10 @@ export const ArgsFieldArray: React.FC<ArgsFieldArrayProps> = ({
           <Button
             onClick={() =>
               arrayHelpers.push({
-                name: '',
-                description: '',
+                name: undefined,
+                description: undefined,
                 include: true,
-                arg: '',
+                arg: undefined,
               })
             }
             size="sm"
