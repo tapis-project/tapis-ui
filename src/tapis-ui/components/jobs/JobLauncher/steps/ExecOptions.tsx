@@ -11,6 +11,7 @@ import {
 import { useFormikContext } from 'formik';
 import { Collapse } from 'tapis-ui/_common';
 import * as Yup from 'yup';
+import fieldArrayStyles from '../FieldArray.module.scss';
 
 const getLogicalQueues = (system?: Systems.TapisSystem) =>
   system?.batchLogicalQueues ?? [];
@@ -79,7 +80,7 @@ const SystemSelector: React.FC = () => {
   );
 
   return (
-    <>
+    <div className={fieldArrayStyles.item}>
       <FormikSelect
         name="execSystemId"
         description="The execution system for this job"
@@ -120,7 +121,7 @@ const SystemSelector: React.FC = () => {
           Fork
         </option>
       </FormikSelect>
-    </>
+    </div>
   );
 };
 
@@ -343,6 +344,7 @@ export const ExecOptions: React.FC = () => {
       initialValues={initialValues}
       validate={queueValidation}
     >
+      <h2>Execution Options</h2>
       <SystemSelector />
       <ExecSystemQueueOptions />
       <MPIOptions />

@@ -180,6 +180,7 @@ export const Args: React.FC = () => {
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
+      <h2>Arguments</h2>
       <ArgsFieldArray
         name="parameterSet.appArgs"
         argType="App Argument"

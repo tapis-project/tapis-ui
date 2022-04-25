@@ -58,7 +58,7 @@ export const JobJson: React.FC = () => {
   );
   return (
     <div>
-      <h3>Job JSON</h3>
+      <h2>Job JSON</h2>
       <div>
         This is a preview of the json job submission data. You may copy it for
         future reference.
