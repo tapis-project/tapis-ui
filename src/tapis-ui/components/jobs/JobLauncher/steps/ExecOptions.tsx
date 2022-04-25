@@ -65,10 +65,19 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
+  const isBatch = useMemo(
+    () => (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch,
+    [values]
+  );
+
   useEffect(
     () => {
-      const logicalQueue = getLogicalQueue(app, systems, selectedSystem);
-      setQueues(getLogicalQueues(getSystem(systems, selectedSystem)));
+      const logicalQueue = isBatch
+        ? getLogicalQueue(app, systems, selectedSystem)
+        : undefined;
+      const system = getSystem(systems, selectedSystem);
+      const queues = getLogicalQueues(system);
+      setQueues(queues);
       setFieldValue('execSystemLogicalQueue', logicalQueue);
       add({
         execSystemId: selectedSystem,
@@ -76,7 +85,7 @@ const SystemSelector: React.FC = () => {
       });
     },
     /* eslint-disable-next-line */
-    [selectedSystem, setQueues, setFieldValue]
+    [selectedSystem, isBatch, setQueues, setFieldValue]
   );
 
   return (
@@ -87,14 +96,23 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
+        <option value={undefined} />
         {systems.map((system) => (
           <option value={system.id} key={`execsystem-select-${system.id}`}>
             {system.id}
           </option>
         ))}
       </FormikSelect>
-
-      {!!selectedSystem && (
+      <FormikSelect
+        name="jobType"
+        label="Job Type"
+        description="Jobs can either be Batch or Fork"
+        required={true}
+      >
+        <option value={Apps.JobTypeEnum.Batch}>Batch</option>
+        <option value={Apps.JobTypeEnum.Fork}>Fork</option>
+      </FormikSelect>
+      {!!selectedSystem && isBatch && (
         <FormikSelect
           name="execSystemLogicalQueue"
           description="The batch queue on this execution system"
@@ -108,19 +126,6 @@ const SystemSelector: React.FC = () => {
           ))}
         </FormikSelect>
       )}
-      <FormikSelect
-        name="jobType"
-        label="Job Type"
-        description="Jobs can either be Batch or Fork"
-        required={true}
-      >
-        <option value={Apps.JobTypeEnum.Batch}>
-          Batch
-        </option>
-        <option value={Apps.JobTypeEnum.Fork}>
-          Fork
-        </option>
-      </FormikSelect>
     </div>
   );
 };
@@ -238,6 +243,7 @@ type QueueErrors = {
   coresPerNode?: string;
   memoryMB?: string;
   maxMinutes?: string;
+  execSystemLogicalQueue?: string;
 };
 
 export const ExecOptions: React.FC = () => {
@@ -287,9 +293,21 @@ export const ExecOptions: React.FC = () => {
         coresPerNode,
         memoryMB,
         maxMinutes,
+        jobType,
       } = values;
       const errors: QueueErrors = {};
-      if (!execSystemId || !execSystemLogicalQueue) {
+      if (!execSystemId) {
+        return errors;
+      }
+      if (
+        jobType === Apps.JobTypeEnum.Batch &&
+        !execSystemLogicalQueue &&
+        !app.jobAttributes?.execSystemLogicalQueue
+      ) {
+        errors.execSystemLogicalQueue = `You must specify a logical queue for this batch job`;
+        return errors;
+      }
+      if (!execSystemLogicalQueue) {
         return errors;
       }
       const queue = systems
@@ -335,7 +353,7 @@ export const ExecOptions: React.FC = () => {
       }
       return errors;
     },
-    [systems]
+    [systems, app]
   );
 
   return (
