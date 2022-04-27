@@ -10,7 +10,6 @@ const SystemDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
     select: 'allAttributes',
   });
   const system: Systems.TapisSystem | undefined = data?.result;
-  console.log(system);
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <h3>{system?.id}</h3>
