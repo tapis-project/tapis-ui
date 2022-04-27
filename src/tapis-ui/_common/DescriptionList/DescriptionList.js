@@ -43,8 +43,10 @@ const DescriptionList = ({ className, data, density, direction }) => {
             <dd className={styles.value} data-testid="value">
               {typeof value === 'object' ? (
                 <DescriptionList data={value} />
-              ) : (
+              ) : typeof value === 'string' ? (
                 value
+              ) : (
+                JSON.stringify(value)
               )}
             </dd>
           )}
