@@ -52,6 +52,6 @@ describe('Description List', () => {
     const keys = await findAllByTestId('key');
     const values = await findAllByTestId('value');
     expect(keys.length).toEqual(1)
-    expect(values.length).toEqual(4)
+    expect(values.length).toEqual(5)
   });
 });

@@ -1,5 +1,9 @@
 @import '../../styles/tools/mixins.scss';
 
+.array-entry {
+  display: flex;
+}
+
 .container.is-horz {
   margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
   & dd {
@@ -52,7 +56,7 @@
   padding-left: 0;
 }
 .is-vert.is-wide > .value {
-  padding-left: 2.5rem;
+  padding-left: 1rem;
 } /* 40px Firefox default margin */
 
 /* Truncate specific edge cases */
