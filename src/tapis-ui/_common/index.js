@@ -32,3 +32,4 @@ export { default as PageLayout } from './PageLayout';
 export { LayoutBody, LayoutHeader, LayoutNavWrapper } from './LayoutSections';
 export { Collapse } from './Collapse';
 export { default as JSONDisplay } from './JSONDisplay';
+export { default as Tabs } from './Tabs';

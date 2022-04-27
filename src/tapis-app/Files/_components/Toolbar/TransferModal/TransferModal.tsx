@@ -8,7 +8,7 @@ import { useLocation } from 'react-router';
 import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
-import { Tabs } from 'tapis-app/_components';
+import { Tabs } from 'tapis-ui/_common';
 import {
   TransferListing,
   TransferDetails,

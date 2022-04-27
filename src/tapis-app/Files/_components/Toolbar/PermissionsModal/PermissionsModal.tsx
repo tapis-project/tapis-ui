@@ -6,7 +6,7 @@ import { FileStat, FileOperation } from 'tapis-ui/components/files';
 import { useTapisConfig } from 'tapis-hooks';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Files } from '@tapis/tapis-typescript';
-import { Tabs } from 'tapis-app/_components';
+import { Tabs } from 'tapis-ui/_common';
 import styles from './PermissionsModal.module.scss';
 import React from 'react';
 
