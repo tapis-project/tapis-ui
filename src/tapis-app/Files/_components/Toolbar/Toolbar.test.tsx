@@ -20,12 +20,12 @@ describe('Toolbar', () => {
     (usePermissions as jest.Mock).mockReturnValue({
       data: {
         result: {
-          permission: Files.FilePermissionPermissionEnum.Modify
-        }
+          permission: Files.FilePermissionPermissionEnum.Modify,
+        },
       },
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
   });
   it('enables rename buttons', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
