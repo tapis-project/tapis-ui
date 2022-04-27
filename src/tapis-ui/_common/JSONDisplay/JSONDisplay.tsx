@@ -28,6 +28,26 @@ const simplifyObject = (obj: any) => {
   return result;
 };
 
+const convertSets = (obj: any): any => {
+  if (obj === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(obj)) {
+    return (obj as Array<any>).map((value) => convertSets(value));
+  }
+  if (obj instanceof Set) {
+    return Array.from(obj).map((value) => convertSets(value));
+  }
+  if (typeof obj === 'object') {
+    const result: any = {};
+    Object.entries(obj).forEach(([key, value]) => {
+      result[key] = convertSets(value);
+    });
+    return result;
+  }
+  return JSON.parse(JSON.stringify(obj));
+};
+
 type JSONDisplayProps = {
   json: any;
   className?: string;
@@ -39,7 +59,12 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({ json, className }) => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
   const jsonString = useMemo(
-    () => JSON.stringify(simplified ? simplifyObject(json) : json, null, 2),
+    () =>
+      JSON.stringify(
+        simplified ? simplifyObject(convertSets(json)) : convertSets(json),
+        null,
+        2
+      ),
     [json, simplified]
   );
   return (
