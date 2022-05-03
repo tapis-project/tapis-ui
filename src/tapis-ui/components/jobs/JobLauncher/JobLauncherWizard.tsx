@@ -38,22 +38,19 @@ const JobLauncherWizardRender: React.FC = () => {
   );
 
   // Map Array of JobSteps into an array of WizardSteps
-  const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(
-    () => {
-      return jobSteps.map((jobStep) => {
-        const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
-        return {
-          initialValues: generateInitialValues({ job, app, systems }),
-          // generate a validation function from the JobStep's validateThunk, given the current hook values
-          validate: validateThunk
-            ? validateThunk({ job, app, systems })
-            : undefined,
-          ...stepProps,
-        };
-      })
-    },
-    [app, job, systems]
-  );
+  const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => {
+    return jobSteps.map((jobStep) => {
+      const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
+      return {
+        initialValues: generateInitialValues({ job, app, systems }),
+        // generate a validation function from the JobStep's validateThunk, given the current hook values
+        validate: validateThunk
+          ? validateThunk({ job, app, systems })
+          : undefined,
+        ...stepProps,
+      };
+    });
+  }, [app, job, systems]);
 
   return (
     <Wizard

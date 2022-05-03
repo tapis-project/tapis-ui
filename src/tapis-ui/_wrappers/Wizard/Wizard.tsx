@@ -18,27 +18,26 @@ export const useWizard = () => {
 export const WizardNavigation: React.FC = () => {
   const { currentStep, previousStep, totalSteps, nextStep, goToStep } =
     useWizard();
-  const { validateForm } = useFormikContext();
+  const { validateForm, handleSubmit } = useFormikContext();
   const onContinue = useCallback(async () => {
     try {
       const errors = await validateForm();
       if (!Object.keys(errors).length) {
         nextStep && nextStep();
       }
-    } catch {
-      console.error('Form error');
-    }
+    } catch {}
   }, [validateForm, nextStep]);
   const onSkip = useCallback(async () => {
     try {
       const errors = await validateForm();
       if (!Object.keys(errors).length && goToStep && !!totalSteps) {
+        // Skip to End button doesn't appear to trigger handleSubmit,
+        // so it must be called explicitly
+        handleSubmit();
         goToStep(totalSteps);
       }
-    } catch {
-      console.error('Form error');
-    }
-  }, [validateForm, goToStep, totalSteps]);
+    } catch {}
+  }, [validateForm, handleSubmit, goToStep, totalSteps]);
   return (
     <div className={styles.controls}>
       {!!currentStep && currentStep > 1 && (
