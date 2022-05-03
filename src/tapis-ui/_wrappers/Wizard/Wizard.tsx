@@ -109,6 +109,7 @@ function StepContainer<T>({ step, formSubmit }: StepContainerProps<T>) {
       initialValues={initialValues}
       validate={validate}
       onSubmit={formSubmit}
+      enableReinitialize={true}
     >
       <Form>
         <div className={styles.step}>
@@ -123,11 +124,10 @@ function StepContainer<T>({ step, formSubmit }: StepContainerProps<T>) {
 type WizardProps<T> = {
   steps: Array<WizardStep<T>>;
   memo?: any;
-  renderSubmit?: React.ReactNode;
   formSubmit: (values: Partial<T>) => void;
 };
 
-function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
+function Wizard<T>({ steps, memo, formSubmit }: WizardProps<T>) {
   const [stepWizardProps, setStepWizardProps] = useState<
     Partial<StepWizardChildProps>
   >({});
