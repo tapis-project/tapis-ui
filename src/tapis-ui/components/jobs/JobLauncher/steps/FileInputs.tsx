@@ -13,7 +13,6 @@ import {
 } from 'tapis-api/utils/jobFileInputs';
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
-import { FormikJobStepWrapper } from '../components';
 import {
   FormikInput,
   FormikCheck,
@@ -406,7 +405,6 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-
 const step: JobStep = {
   id: 'fileInputs',
   name: 'File Inputs',
@@ -416,6 +414,6 @@ const step: JobStep = {
   generateInitialValues: ({ job }) => ({
     fileInputs: job.fileInputs,
   }),
-}
+};
 
 export default step;

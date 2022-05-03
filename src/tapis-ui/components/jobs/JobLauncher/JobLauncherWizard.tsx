@@ -2,12 +2,8 @@ import React, { useCallback, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import {
-  generateRequiredFileInputsFromApp,
-} from 'tapis-api/utils/jobFileInputs';
-import {
-  generateRequiredFileInputArraysFromApp,
-} from 'tapis-api/utils/jobFileInputArrays';
+import { generateRequiredFileInputsFromApp } from 'tapis-api/utils/jobFileInputs';
+import { generateRequiredFileInputArraysFromApp } from 'tapis-api/utils/jobFileInputArrays';
 import { generateJobArgsFromSpec } from 'tapis-api/utils/jobArgs';
 
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
@@ -96,18 +92,19 @@ const JobLauncherWizardRender: React.FC = () => {
   );
 
   const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(
-    () => jobSteps.map(
-      (jobStep) => {
+    () =>
+      jobSteps.map((jobStep) => {
         const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
         return {
           initialValues: generateInitialValues({ job, app, systems }),
-          validate: validateThunk ? validateThunk({ job, app, systems }) : undefined,
-          ...stepProps
-        } 
-      }
-    ),
-    [ app, job, systems ]
-  )
+          validate: validateThunk
+            ? validateThunk({ job, app, systems })
+            : undefined,
+          ...stepProps,
+        };
+      }),
+    [app, job, systems]
+  );
 
   return (
     <Wizard
@@ -115,8 +112,8 @@ const JobLauncherWizardRender: React.FC = () => {
       memo={`${app.id}${app.version}`}
       formSubmit={formSubmit}
     />
-  )
-}
+  );
+};
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
@@ -156,7 +153,9 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       error={error || systemsError || schedulerProfilesError}
     >
       {app && (
-        <JobLauncherProvider value={{ app, systems, defaultValues, schedulerProfiles }}>
+        <JobLauncherProvider
+          value={{ app, systems, defaultValues, schedulerProfiles }}
+        >
           <JobLauncherWizardRender />
         </JobLauncherProvider>
       )}

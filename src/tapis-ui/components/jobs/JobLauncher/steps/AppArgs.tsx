@@ -5,7 +5,6 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useField, FieldArrayRenderProps } from 'formik';
-import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
 import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import { getArgMode } from 'tapis-api/utils/jobArgs';
@@ -146,8 +145,7 @@ export const argsSchema = Yup.array(
 );
 
 export const Args: React.FC = () => {
-  const { job, app } = useJobLauncher();
-
+  const { app } = useJobLauncher();
 
   const appArgSpecs = useMemo(
     () => app.jobAttributes?.parameterSet?.appArgs ?? [],
@@ -200,7 +198,6 @@ export const ArgsSummary: React.FC = () => {
   );
 };
 
-
 const validationSchema = Yup.object().shape({
   parameterSet: Yup.object({
     appArgs: argsSchema,
@@ -208,7 +205,6 @@ const validationSchema = Yup.object().shape({
     scheduleOptions: argsSchema,
   }),
 });
-
 
 const step: JobStep = {
   id: 'args',
@@ -223,6 +219,6 @@ const step: JobStep = {
       schedulerOptions: job.parameterSet?.schedulerOptions,
     },
   }),
-}
+};
 
 export default step;

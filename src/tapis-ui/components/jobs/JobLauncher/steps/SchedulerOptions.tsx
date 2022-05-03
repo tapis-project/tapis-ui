@@ -5,7 +5,6 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useField, useFormikContext } from 'formik';
-import { FormikJobStepWrapper } from '../components';
 import { getArgMode } from 'tapis-api/utils/jobArgs';
 import { ArgField, argsSchema, assembleArgSpec } from './AppArgs';
 import { DescriptionList } from 'tapis-ui/_common';
@@ -198,7 +197,7 @@ const validationSchema = Yup.object().shape({
   }),
 });
 
-const step: JobStep =  {
+const step: JobStep = {
   id: 'schedulerOptions',
   name: 'Scheduler Options',
   render: <SchedulerOptions />,
@@ -208,7 +207,7 @@ const step: JobStep =  {
     parameterSet: {
       schedulerOptions: job.parameterSet?.schedulerOptions,
     },
-  })
-}
+  }),
+};
 
 export default step;

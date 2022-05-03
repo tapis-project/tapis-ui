@@ -1,11 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
-import {
-  useJobLauncher,
-  StepSummaryField,
-  FormikJobStepWrapper,
-} from '../components';
+import { useJobLauncher, StepSummaryField } from '../components';
 import {
   generateFileInputArrayFromAppInput,
   getIncompleteJobInputArrays,
@@ -444,20 +440,8 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 };
 
 export const FileInputArrays: React.FC = () => {
-  const { job } = useJobLauncher();
-
-  const initialValues = useMemo(
-    () => ({
-      fileInputArrays: job.fileInputArrays,
-    }),
-    [job]
-  );
-
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
       <h2>File Input Arrays</h2>
       <FieldArray
         name="fileInputArrays"
@@ -471,7 +455,7 @@ export const FileInputArrays: React.FC = () => {
           );
         }}
       />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -539,7 +523,6 @@ export const FileInputArraysSummary: React.FC = () => {
   );
 };
 
-
 const validationSchema = Yup.object().shape({
   fileInputArrays: Yup.array().of(
     Yup.object().shape({
@@ -552,7 +535,6 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-
 const step: JobStep = {
   id: 'fileInputArrays',
   name: 'File Input Arrays',
@@ -562,6 +544,6 @@ const step: JobStep = {
   generateInitialValues: ({ job }) => ({
     fileInputArrays: job.fileInputArrays,
   }),
-}
+};
 
 export default step;

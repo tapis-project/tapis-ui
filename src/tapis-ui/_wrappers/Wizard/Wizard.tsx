@@ -16,34 +16,29 @@ export const useWizard = () => {
 };
 
 export const WizardNavigation: React.FC = () => {
-  const { currentStep, previousStep, totalSteps, nextStep, goToStep } = useWizard();
+  const { currentStep, previousStep, totalSteps, nextStep, goToStep } =
+    useWizard();
   const { validateForm } = useFormikContext();
-  const onContinue = useCallback(
-    async () => {
-      try {
-        const errors = await validateForm();
-        if (!Object.keys(errors).length) {
-          nextStep && nextStep();
-        }        
-      } catch {
-        console.error("Form error");
+  const onContinue = useCallback(async () => {
+    try {
+      const errors = await validateForm();
+      if (!Object.keys(errors).length) {
+        nextStep && nextStep();
       }
-    },
-    [ validateForm, nextStep ]
-  )
-  const onSkip = useCallback(
-    async () => {
-      try {
-        const errors = await validateForm();
-        if (!Object.keys(errors).length && goToStep && !!totalSteps) {
-          goToStep(totalSteps);
-        }        
-      } catch {
-        console.error("Form error");
+    } catch {
+      console.error('Form error');
+    }
+  }, [validateForm, nextStep]);
+  const onSkip = useCallback(async () => {
+    try {
+      const errors = await validateForm();
+      if (!Object.keys(errors).length && goToStep && !!totalSteps) {
+        goToStep(totalSteps);
       }
-    },
-    [ validateForm, nextStep, goToStep, totalSteps ] 
-  );
+    } catch {
+      console.error('Form error');
+    }
+  }, [validateForm, goToStep, totalSteps]);
   return (
     <div className={styles.controls}>
       {!!currentStep && currentStep > 1 && (
@@ -56,7 +51,7 @@ export const WizardNavigation: React.FC = () => {
           </Button>
           <Button type="submit" color="secondary" onClick={onSkip}>
             Skip to End
-          </Button>  
+          </Button>
         </>
       )}
     </div>
@@ -99,7 +94,7 @@ function WizardSummary<T>({
       ))}
     </div>
   );
-};
+}
 
 type StepContainerProps<T> = {
   step: WizardStep<T>;
@@ -108,7 +103,6 @@ type StepContainerProps<T> = {
 
 function StepContainer<T>({ step, formSubmit }: StepContainerProps<T>) {
   const { validationSchema, initialValues, validate } = step;
-  const {currentStep} = useWizard();
   return (
     <Formik
       validationSchema={validationSchema}
@@ -124,7 +118,7 @@ function StepContainer<T>({ step, formSubmit }: StepContainerProps<T>) {
       </Form>
     </Formik>
   );
-};
+}
 
 type WizardProps<T> = {
   steps: Array<WizardStep<T>>;
@@ -132,7 +126,6 @@ type WizardProps<T> = {
   renderSubmit?: React.ReactNode;
   formSubmit: (values: Partial<T>) => void;
 };
-
 
 function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
   const [stepWizardProps, setStepWizardProps] = useState<
@@ -160,7 +153,7 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
     [setStepWizardProps, stepWizardProps]
   );
 
-  const { goToStep, nextStep } = stepWizardProps;
+  const { goToStep } = stepWizardProps;
 
   useEffect(
     () => {
@@ -188,10 +181,7 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
             />
           ))}
         </StepWizard>
-        <WizardSummary
-          steps={steps}
-          {...stepWizardProps}
-        />
+        <WizardSummary steps={steps} {...stepWizardProps} />
       </div>
     </WizardContext.Provider>
   );

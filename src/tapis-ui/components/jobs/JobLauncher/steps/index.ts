@@ -8,6 +8,16 @@ import SchedulerOptions from './SchedulerOptions';
 import Archive from './Archive';
 import JobSubmit from './JobSubmit';
 
-const jobSteps = [ JobStart, ExecOptions, FileInputs, FileInputArrays, AppArgs, EnvVariables, SchedulerOptions, Archive, JobSubmit ];
+const jobSteps = [
+  JobStart,
+  ExecOptions,
+  FileInputs,
+  FileInputArrays,
+  AppArgs,
+  EnvVariables,
+  SchedulerOptions,
+  Archive,
+  JobSubmit,
+];
 
 export default jobSteps;

@@ -1,7 +1,6 @@
-import { useMemo, useEffect, useState, useCallback } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { useJobLauncher, StepSummaryField, JobLauncherProvider } from '../components';
-import { FormikJobStepWrapper } from '../components';
+import { useJobLauncher, StepSummaryField } from '../components';
 import {
   FormikInput,
   FormikCheck,
@@ -373,10 +372,14 @@ const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
       }
     }
     return errors;
-  }
-}
+  };
+};
 
-const generateInitialValues = ({ job, app, systems }: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
+const generateInitialValues = ({
+  job,
+  app,
+  systems,
+}: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
   execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
   execSystemLogicalQueue: job.execSystemId
     ? getLogicalQueue(app, systems, job.execSystemId)
@@ -392,7 +395,7 @@ const generateInitialValues = ({ job, app, systems }: JobLauncherProviderParams)
   isMpi: job.isMpi,
   mpiCmd: job.mpiCmd,
   cmdPrefix: job.cmdPrefix,
-})
+});
 
 const step: JobStep = {
   id: 'execution',
@@ -401,7 +404,7 @@ const step: JobStep = {
   summary: <ExecOptionsSummary />,
   generateInitialValues,
   validateThunk,
-  validationSchema
-}
+  validationSchema,
+};
 
 export default step;

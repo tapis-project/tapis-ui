@@ -126,6 +126,6 @@ const step: JobStep = {
       envVariables: job.parameterSet?.envVariables,
     },
   }),
-}
+};
 
 export default step;

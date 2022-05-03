@@ -1,7 +1,4 @@
-import {
-  StepSummaryField,
-  useJobLauncher,
-} from '../components';
+import { StepSummaryField, useJobLauncher } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 import { JobStep, JobLauncherProviderParams } from '../';
@@ -54,15 +51,17 @@ export const JobStartSummary: React.FC = () => {
   );
 };
 
-const generateInitialValues = ({ job }: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
+const generateInitialValues = ({
+  job,
+}: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
   name: job.name,
-  description: job.description
-})
+  description: job.description,
+});
 
 const validationSchema = Yup.object({
   name: Yup.string().required(),
-  description: Yup.string(), 
-})
+  description: Yup.string(),
+});
 
 const step: JobStep = {
   id: 'start',
@@ -70,7 +69,7 @@ const step: JobStep = {
   render: <JobStart />,
   summary: <JobStartSummary />,
   generateInitialValues,
-  validationSchema
-}
+  validationSchema,
+};
 
 export default step;

@@ -1,12 +1,8 @@
 import { useCallback } from 'react';
 import { useJobLauncher } from '../components';
 import { JSONDisplay } from 'tapis-ui/_common';
-import {
-  fileInputsComplete,
-} from 'tapis-api/utils/jobFileInputs';
-import {
-  fileInputArraysComplete,
-} from 'tapis-api/utils/jobFileInputArrays';
+import { fileInputsComplete } from 'tapis-api/utils/jobFileInputs';
+import { fileInputArraysComplete } from 'tapis-api/utils/jobFileInputArrays';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
 import { StepSummaryField } from '../components';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -42,14 +38,11 @@ export const JobSubmit: React.FC = () => {
         <StepSummaryField
           field={summary}
           error="All required fields must be completed before the job can be submitted"
-        /> 
+        />
         <SubmitWrapper
           isLoading={isLoading}
           error={error}
-          success={isSuccess
-            ? ` `
-            : ''
-          }
+          success={isSuccess ? ` ` : ''}
           reverse={true}
         >
           <Button
@@ -85,7 +78,7 @@ export const JobSubmitSummary: React.FC = () => {
         key="job-submit-summary"
       />
     </div>
-  )  
+  );
 };
 
 const step: JobStep = {
@@ -95,6 +88,6 @@ const step: JobStep = {
   summary: <JobSubmitSummary />,
   validationSchema: {},
   generateInitialValues: () => ({}),
-}
+};
 
 export default step;

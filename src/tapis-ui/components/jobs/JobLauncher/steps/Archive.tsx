@@ -177,9 +177,6 @@ const ArchiveOptions: React.FC = () => {
 };
 
 export const Archive: React.FC = () => {
-  const { job } = useJobLauncher();
-
-
   return (
     <div>
       <h2>Archive Options</h2>
@@ -220,7 +217,6 @@ export const ArchiveSummary: React.FC = () => {
   );
 };
 
-
 const validationSchema = Yup.object().shape({
   archiveOnAppError: Yup.boolean(),
   archiveSystemId: Yup.string(),
@@ -242,7 +238,6 @@ const validationSchema = Yup.object().shape({
   }),
 });
 
-
 const step: JobStep = {
   id: 'archiving',
   name: 'Archiving',
@@ -257,6 +252,6 @@ const step: JobStep = {
       archiveFilter: job.parameterSet?.archiveFilter,
     },
   }),
-}
+};
 
 export default step;
