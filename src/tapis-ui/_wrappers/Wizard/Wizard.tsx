@@ -16,16 +16,28 @@ export const useWizard = () => {
 };
 
 export const WizardNavigation: React.FC = () => {
-  const { currentStep, previousStep, totalSteps } = useWizard();
-  const { errors } = useFormikContext();
-  console.log(errors);
+  const { currentStep, previousStep, totalSteps, nextStep } = useWizard();
+  const { validateForm } = useFormikContext();
+  const onContinue = useCallback(
+    async () => {
+      try {
+        const errors = await validateForm();
+        if (!Object.keys(errors).length) {
+          nextStep && nextStep();
+        }        
+      } catch {
+        console.error("Form error");
+      }
+    },
+    [ validateForm, nextStep ]
+  )
   return (
     <div className={styles.controls}>
       {!!currentStep && currentStep > 1 && (
         <Button onClick={previousStep}>Back</Button>
       )}
       {!!currentStep && !!totalSteps && currentStep < totalSteps && (
-        <Button type="submit" color="primary">
+        <Button type="submit" color="primary" onClick={onContinue}>
           Continue
         </Button>
       )}
@@ -81,7 +93,6 @@ type StepContainerProps<T> = {
 function StepContainer<T>({ step, formSubmit }: StepContainerProps<T>) {
   const { validationSchema, initialValues, validate } = step;
   const {currentStep} = useWizard();
-  console.log("Rendering", step.name, currentStep);
   return (
     <Formik
       validationSchema={validationSchema}
@@ -135,14 +146,6 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
 
   const { goToStep, nextStep } = stepWizardProps;
 
-  const formSubmitCallback  = useCallback(
-    (values: Partial<T>) => {
-      formSubmit(values);
-      nextStep && nextStep();
-    },
-    [ formSubmit, nextStep ]
-  )
-
   useEffect(
     () => {
       goToStep && goToStep(1);
@@ -165,7 +168,7 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
               step={step}
               key={`wizard-step-${step.id}`}
               stepName={step.id}
-              formSubmit={formSubmitCallback}
+              formSubmit={formSubmit}
             />
           ))}
         </StepWizard>

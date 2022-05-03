@@ -5,7 +5,6 @@ import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
 import ExecOptions from './steps/ExecOptions';
-import { JobJson, JobJsonSummary } from './steps/JobJson';
 import { Archive, ArchiveSummary } from './steps/Archive';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
 import { Args, ArgsSummary } from './steps/AppArgs';
@@ -37,6 +36,7 @@ import {
 import { useJobLauncher, JobLauncherProvider } from './components';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
 import JobStart from './steps/JobStart';
+import JobJson from './steps/JobJson';
 import * as Yup from 'yup';
 
 type JobLauncherWizardProps = {
@@ -189,7 +189,7 @@ const JobLauncherWizardRender: React.FC = () => {
     [add, job]
   );
 
-  const jobSteps = [ JobStart, ExecOptions ];
+  const jobSteps = [ JobStart, ExecOptions, JobJson ];
 
   const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(
     () => jobSteps.map(
