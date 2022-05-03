@@ -32,6 +32,7 @@ import arrayStyles from './FileInputArrays.module.scss';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import { JobStep } from '..';
 
 export type FieldWrapperProps = {
   fileInputArrayIndex: number;
@@ -445,18 +446,6 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 export const FileInputArrays: React.FC = () => {
   const { job } = useJobLauncher();
 
-  const validationSchema = Yup.object().shape({
-    fileInputArrays: Yup.array().of(
-      Yup.object().shape({
-        name: Yup.string().min(1).required('A fileInputArray name is required'),
-        sourceUrls: Yup.array(
-          Yup.string().min(1).required('A sourceUrl is required')
-        ).min(1),
-        targetDir: Yup.string().min(1).required('A targetDir is required'),
-      })
-    ),
-  });
-
   const initialValues = useMemo(
     () => ({
       fileInputArrays: job.fileInputArrays,
@@ -549,3 +538,30 @@ export const FileInputArraysSummary: React.FC = () => {
     </div>
   );
 };
+
+
+const validationSchema = Yup.object().shape({
+  fileInputArrays: Yup.array().of(
+    Yup.object().shape({
+      name: Yup.string().min(1).required('A fileInputArray name is required'),
+      sourceUrls: Yup.array(
+        Yup.string().min(1).required('A sourceUrl is required')
+      ).min(1),
+      targetDir: Yup.string().min(1).required('A targetDir is required'),
+    })
+  ),
+});
+
+
+const step: JobStep = {
+  id: 'fileInputArrays',
+  name: 'File Input Arrays',
+  render: <FileInputArrays />,
+  summary: <FileInputArraysSummary />,
+  validationSchema,
+  generateInitialValues: ({ job }) => ({
+    fileInputArrays: job.fileInputArrays,
+  }),
+}
+
+export default step;

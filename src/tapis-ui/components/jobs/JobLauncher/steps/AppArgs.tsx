@@ -9,6 +9,7 @@ import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
 import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
 import { getArgMode } from 'tapis-api/utils/jobArgs';
+import { JobStep } from '..';
 import * as Yup from 'yup';
 
 type ArgFieldProps = {
@@ -147,24 +148,6 @@ export const argsSchema = Yup.array(
 export const Args: React.FC = () => {
   const { job, app } = useJobLauncher();
 
-  const validationSchema = Yup.object().shape({
-    parameterSet: Yup.object({
-      appArgs: argsSchema,
-      containerArgs: argsSchema,
-      scheduleOptions: argsSchema,
-    }),
-  });
-
-  const initialValues = useMemo(
-    () => ({
-      parameterSet: {
-        appArgs: job.parameterSet?.appArgs,
-        containerArgs: job.parameterSet?.containerArgs,
-        schedulerOptions: job.parameterSet?.schedulerOptions,
-      },
-    }),
-    [job]
-  );
 
   const appArgSpecs = useMemo(
     () => app.jobAttributes?.parameterSet?.appArgs ?? [],
@@ -176,10 +159,7 @@ export const Args: React.FC = () => {
   );
 
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
       <h2>Arguments</h2>
       <ArgsFieldArray
         name="parameterSet.appArgs"
@@ -191,7 +171,7 @@ export const Args: React.FC = () => {
         argType="Container Argument"
         argSpecs={containerArgSpecs}
       />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -219,3 +199,30 @@ export const ArgsSummary: React.FC = () => {
     </div>
   );
 };
+
+
+const validationSchema = Yup.object().shape({
+  parameterSet: Yup.object({
+    appArgs: argsSchema,
+    containerArgs: argsSchema,
+    scheduleOptions: argsSchema,
+  }),
+});
+
+
+const step: JobStep = {
+  id: 'args',
+  name: 'Arguments',
+  render: <Args />,
+  summary: <ArgsSummary />,
+  validationSchema,
+  generateInitialValues: ({ job }) => ({
+    parameterSet: {
+      appArgs: job.parameterSet?.appArgs,
+      containerArgs: job.parameterSet?.containerArgs,
+      schedulerOptions: job.parameterSet?.schedulerOptions,
+    },
+  }),
+}
+
+export default step;

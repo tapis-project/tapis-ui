@@ -19,9 +19,9 @@ import {
   FormikTapisFile,
   FormikSelect,
 } from 'tapis-ui/_common/FieldWrapperFormik';
-import { FormikJobStepWrapper } from '../components';
 import * as Yup from 'yup';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import { JobStep } from '..';
 
 type ArrayGroupProps = {
   values: Array<string>;
@@ -179,48 +179,13 @@ const ArchiveOptions: React.FC = () => {
 export const Archive: React.FC = () => {
   const { job } = useJobLauncher();
 
-  const validationSchema = Yup.object().shape({
-    archiveOnAppError: Yup.boolean(),
-    archiveSystemId: Yup.string(),
-    archiveSystemDir: Yup.string(),
-    parameterSet: Yup.object({
-      archiveFilter: Yup.object({
-        includes: Yup.array(
-          Yup.string()
-            .min(1)
-            .required('A pattern must be specified for this include')
-        ),
-        excludes: Yup.array(
-          Yup.string()
-            .min(1)
-            .required('A pattern must be specified for this exclude')
-        ),
-        includeLaunchFiles: Yup.boolean(),
-      }),
-    }),
-  });
-
-  const initialValues = useMemo(
-    () => ({
-      archiveOnAppError: job.archiveOnAppError,
-      archiveSystemId: job.archiveSystemId,
-      archiveSystemDir: job.archiveSystemDir,
-      parameterSet: {
-        archiveFilter: job.parameterSet?.archiveFilter,
-      },
-    }),
-    [job]
-  );
 
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
       <h2>Archive Options</h2>
       <ArchiveOptions />
       <ArchiveFilterRender />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -254,3 +219,44 @@ export const ArchiveSummary: React.FC = () => {
     </div>
   );
 };
+
+
+const validationSchema = Yup.object().shape({
+  archiveOnAppError: Yup.boolean(),
+  archiveSystemId: Yup.string(),
+  archiveSystemDir: Yup.string(),
+  parameterSet: Yup.object({
+    archiveFilter: Yup.object({
+      includes: Yup.array(
+        Yup.string()
+          .min(1)
+          .required('A pattern must be specified for this include')
+      ),
+      excludes: Yup.array(
+        Yup.string()
+          .min(1)
+          .required('A pattern must be specified for this exclude')
+      ),
+      includeLaunchFiles: Yup.boolean(),
+    }),
+  }),
+});
+
+
+const step: JobStep = {
+  id: 'archiving',
+  name: 'Archiving',
+  render: <Archive />,
+  summary: <ArchiveSummary />,
+  validationSchema,
+  generateInitialValues: ({ job }) => ({
+    archiveOnAppError: job.archiveOnAppError,
+    archiveSystemId: job.archiveSystemId,
+    archiveSystemDir: job.archiveSystemDir,
+    parameterSet: {
+      archiveFilter: job.parameterSet?.archiveFilter,
+    },
+  }),
+}
+
+export default step;
