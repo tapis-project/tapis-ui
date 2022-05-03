@@ -16,7 +16,7 @@ export const useWizard = () => {
 };
 
 export const WizardNavigation: React.FC = () => {
-  const { currentStep, previousStep, totalSteps, nextStep } = useWizard();
+  const { currentStep, previousStep, totalSteps, nextStep, goToStep } = useWizard();
   const { validateForm } = useFormikContext();
   const onContinue = useCallback(
     async () => {
@@ -31,15 +31,33 @@ export const WizardNavigation: React.FC = () => {
     },
     [ validateForm, nextStep ]
   )
+  const onSkip = useCallback(
+    async () => {
+      try {
+        const errors = await validateForm();
+        if (!Object.keys(errors).length && goToStep && !!totalSteps) {
+          goToStep(totalSteps);
+        }        
+      } catch {
+        console.error("Form error");
+      }
+    },
+    [ validateForm, nextStep, goToStep, totalSteps ] 
+  );
   return (
     <div className={styles.controls}>
       {!!currentStep && currentStep > 1 && (
         <Button onClick={previousStep}>Back</Button>
       )}
       {!!currentStep && !!totalSteps && currentStep < totalSteps && (
-        <Button type="submit" color="primary" onClick={onContinue}>
-          Continue
-        </Button>
+        <>
+          <Button type="submit" color="primary" onClick={onContinue}>
+            Continue
+          </Button>
+          <Button type="submit" color="secondary" onClick={onSkip}>
+            Skip to End
+          </Button>  
+        </>
       )}
     </div>
   );
@@ -47,12 +65,10 @@ export const WizardNavigation: React.FC = () => {
 
 type WizardControlProps<T> = {
   steps: Array<WizardStep<T>>;
-  renderSubmit?: React.ReactNode;
 } & Partial<StepWizardChildProps>;
 
 function WizardSummary<T>({
   steps,
-  renderSubmit,
   ...stepWizardProps
 }: WizardControlProps<T>) {
   const { goToNamedStep } = stepWizardProps;
@@ -62,7 +78,7 @@ function WizardSummary<T>({
   );
   return (
     <div className={styles.summary}>
-      {!!renderSubmit && <div className={styles.submit}>{renderSubmit}</div>}
+      <h3>Summary</h3>
       {steps.map((step) => (
         <div
           className={styles['step-summary']}
@@ -175,7 +191,6 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
         <WizardSummary
           steps={steps}
           {...stepWizardProps}
-          renderSubmit={renderSubmit}
         />
       </div>
     </WizardContext.Provider>
