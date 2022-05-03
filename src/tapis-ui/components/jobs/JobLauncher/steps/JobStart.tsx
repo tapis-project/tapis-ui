@@ -1,10 +1,10 @@
 import {
-  FormikJobStepWrapper,
   StepSummaryField,
   useJobLauncher,
 } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
 import * as Yup from 'yup';
+import { JobStep, JobLauncherProviderParams } from '../';
 import { Jobs } from '@tapis/tapis-typescript';
 
 export const JobStart: React.FC = () => {
@@ -53,3 +53,24 @@ export const JobStartSummary: React.FC = () => {
     </div>
   );
 };
+
+const generateInitialValues = ({ job }: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
+  name: job.name,
+  description: job.description
+})
+
+const validationSchema = Yup.object({
+  name: Yup.string().required(),
+  description: Yup.string(), 
+})
+
+const step: JobStep = {
+  id: 'start',
+  name: 'Job Name',
+  render: <JobStart />,
+  summary: <JobStartSummary />,
+  generateInitialValues,
+  validationSchema
+}
+
+export default step;

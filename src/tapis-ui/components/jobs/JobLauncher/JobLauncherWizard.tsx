@@ -3,9 +3,8 @@ import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
 import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { JobStart, JobStartSummary } from './steps/JobStart';
 import { FileInputs, FileInputsSummary } from './steps/FileInputs';
-import { ExecOptions, ExecOptionsSummary } from './steps/ExecOptions';
+import ExecOptions from './steps/ExecOptions';
 import { JobJson, JobJsonSummary } from './steps/JobJson';
 import { Archive, ArchiveSummary } from './steps/Archive';
 import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
@@ -37,6 +36,7 @@ import {
 } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
 import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
+import JobStart from './steps/JobStart';
 import * as Yup from 'yup';
 
 type JobLauncherWizardProps = {
@@ -173,7 +173,6 @@ const JobLauncherWizardRender: React.FC = () => {
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
-      console.log("submit", value);
       if (value.isMpi) {
         value.cmdPrefix = undefined;
       } else {
@@ -190,6 +189,22 @@ const JobLauncherWizardRender: React.FC = () => {
     [add, job]
   );
 
+  const jobSteps = [ JobStart, ExecOptions ];
+
+  const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(
+    () => jobSteps.map(
+      (jobStep) => {
+        const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
+        return {
+          initialValues: generateInitialValues({ job, app, systems }),
+          validate: validateThunk ? validateThunk({ job, app, systems }) : undefined,
+          ...stepProps
+        } 
+      }
+    ),
+    [ app, job, systems ]
+  )
+  /*
   const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => [
     {
       id: 'start',
@@ -245,7 +260,6 @@ const JobLauncherWizardRender: React.FC = () => {
         cmdPrefix: job.cmdPrefix,
       }
     },
-    /*
     {
       id: 'fileInputs',
       name: 'File Inputs',
@@ -282,7 +296,6 @@ const JobLauncherWizardRender: React.FC = () => {
       render: <Archive />,
       summary: <ArchiveSummary />,
     },
-    */
     {
       id: 'jobJson',
       name: 'Job JSON',
@@ -294,79 +307,7 @@ const JobLauncherWizardRender: React.FC = () => {
     ],
     [ job, app, systems ]
   );
-
-  const queueValidation = useCallback(
-    (values: Partial<Jobs.ReqSubmitJob>) => {
-      const {
-        execSystemId,
-        execSystemLogicalQueue,
-        nodeCount,
-        coresPerNode,
-        memoryMB,
-        maxMinutes,
-        jobType,
-      } = values;
-      const errors: QueueErrors = {};
-      if (!execSystemId) {
-        return errors;
-      }
-      if (
-        jobType === Apps.JobTypeEnum.Batch &&
-        !execSystemLogicalQueue &&
-        !app.jobAttributes?.execSystemLogicalQueue
-      ) {
-        errors.execSystemLogicalQueue = `You must specify a logical queue for this batch job`;
-        return errors;
-      }
-      if (!execSystemLogicalQueue) {
-        return errors;
-      }
-      const queue = systems
-        .find((system) => system.id === execSystemId)
-        ?.batchLogicalQueues?.find(
-          (queue) => queue.name === execSystemLogicalQueue
-        );
-      if (!queue) {
-        return errors;
-      }
-
-      if (!!nodeCount) {
-        if (queue?.maxNodeCount && nodeCount > queue?.maxNodeCount) {
-          errors.nodeCount = `The maximum number of nodes for this queue is ${queue?.maxNodeCount}`;
-        }
-        if (queue?.minNodeCount && nodeCount < queue?.minNodeCount) {
-          errors.nodeCount = `The minimum number of nodes for this queue is ${queue?.minNodeCount}`;
-        }
-      }
-      if (!!coresPerNode) {
-        if (queue?.maxCoresPerNode && coresPerNode > queue?.maxCoresPerNode) {
-          errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`;
-        }
-        if (queue?.minCoresPerNode && coresPerNode < queue?.minCoresPerNode) {
-          errors.coresPerNode = `The minimum number of cores per node for this queue is ${queue?.minCoresPerNode}`;
-        }
-      }
-      if (!!memoryMB) {
-        if (queue?.maxMemoryMB && memoryMB > queue?.maxMemoryMB) {
-          errors.memoryMB = `The maximum amount of memory for this queue is ${queue?.maxMemoryMB} megabytes`;
-        }
-        if (queue?.minMemoryMB && memoryMB < queue?.minMemoryMB) {
-          errors.memoryMB = `The minimum amount of memory for this queue is ${queue?.minMemoryMB} megabytes`;
-        }
-      }
-      if (!!maxMinutes) {
-        if (queue?.maxMinutes && maxMinutes > queue?.maxMinutes) {
-          errors.maxMinutes = `The maximum number of minutes for a job on this queue is ${queue?.maxMinutes}`;
-        }
-        if (queue?.minMinutes && maxMinutes < queue?.minMinutes) {
-          errors.maxMinutes = `The minimum number of minutes for a job on this queue is ${queue?.minMinutes}`;
-        }
-      }
-      return errors;
-    },
-    [systems, app]
-  );
-
+  */
   return (
     <Wizard
       steps={steps}
