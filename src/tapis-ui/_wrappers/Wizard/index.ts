@@ -12,5 +12,4 @@ export type WizardStep<T> = {
 };
 
 export { useWizard, WizardNavigation } from './Wizard';
-export { default as WizardSubmitWrapper } from './WizardSubmitWrapper';
 export default Wizard;
