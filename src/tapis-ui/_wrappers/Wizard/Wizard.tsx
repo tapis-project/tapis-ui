@@ -133,7 +133,15 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
     [setStepWizardProps, stepWizardProps]
   );
 
-  const { goToStep } = stepWizardProps;
+  const { goToStep, nextStep } = stepWizardProps;
+
+  const formSubmitCallback  = useCallback(
+    (values: Partial<T>) => {
+      formSubmit(values);
+      nextStep && nextStep();
+    },
+    [ formSubmit, nextStep ]
+  )
 
   useEffect(
     () => {
@@ -157,7 +165,7 @@ function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
               step={step}
               key={`wizard-step-${step.id}`}
               stepName={step.id}
-              formSubmit={formSubmit}
+              formSubmit={formSubmitCallback}
             />
           ))}
         </StepWizard>

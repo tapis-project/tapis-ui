@@ -170,7 +170,6 @@ export const getLogicalQueue = (
 
 const JobLauncherWizardRender: React.FC = () => {
   const { add, job, app, systems } = useJobLauncher();
-  const { nextStep } = useWizard();
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
@@ -187,9 +186,8 @@ const JobLauncherWizardRender: React.FC = () => {
         };
       }
       add(value);
-      nextStep && nextStep();
     },
-    [nextStep, add, job]
+    [add, job]
   );
 
   const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => [
@@ -229,7 +227,7 @@ const JobLauncherWizardRender: React.FC = () => {
         mpiCmd: Yup.string(),
         cmdPrefix: Yup.string(),
       }),
-      initialValues:  {
+      initialValues: {
         execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
         execSystemLogicalQueue: job.execSystemId
           ? getLogicalQueue(app, systems, job.execSystemId)
