@@ -1,12 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
-import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { generateRequiredFileInputsFromApp } from 'tapis-api/utils/jobFileInputs';
-import { generateRequiredFileInputArraysFromApp } from 'tapis-api/utils/jobFileInputArrays';
-import { generateJobArgsFromSpec } from 'tapis-api/utils/jobArgs';
-
+import { Jobs } from '@tapis/tapis-typescript';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
+import generateJobDefaults from 'tapis-api/utils/jobDefaults';
 import {
   useList as useSystemsList,
   useSchedulerProfiles,
@@ -17,57 +14,6 @@ import jobSteps from './steps';
 type JobLauncherWizardProps = {
   appId: string;
   appVersion: string;
-};
-
-const generateDefaultValues = ({
-  app,
-  systems,
-}: {
-  app?: Apps.TapisApp;
-  systems: Array<Systems.TapisSystem>;
-}): Partial<Jobs.ReqSubmitJob> => {
-  if (!app) {
-    return {};
-  }
-  const systemDefaultQueue = systems.find(
-    (system) => system.id === app.jobAttributes?.execSystemId
-  )?.batchDefaultLogicalQueue;
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = {
-    name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-    description: app.description,
-    appId: app.id,
-    appVersion: app.version,
-    archiveOnAppError: app.jobAttributes?.archiveOnAppError ?? true,
-    archiveSystemId: app.jobAttributes?.archiveSystemId,
-    archiveSystemDir: app.jobAttributes?.archiveSystemDir,
-    nodeCount: app.jobAttributes?.nodeCount,
-    coresPerNode: app.jobAttributes?.coresPerNode,
-    jobType: app.jobType,
-    memoryMB: app.jobAttributes?.memoryMB,
-    maxMinutes: app.jobAttributes?.maxMinutes,
-    isMpi: app.jobAttributes?.isMpi,
-    mpiCmd: app.jobAttributes?.mpiCmd,
-    cmdPrefix: app.jobAttributes?.cmdPrefix,
-    execSystemId: app.jobAttributes?.execSystemId,
-    execSystemLogicalQueue:
-      app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
-    fileInputs: generateRequiredFileInputsFromApp(app),
-    fileInputArrays: generateRequiredFileInputArraysFromApp(app),
-    parameterSet: {
-      appArgs: generateJobArgsFromSpec(
-        app.jobAttributes?.parameterSet?.appArgs ?? []
-      ),
-      containerArgs: generateJobArgsFromSpec(
-        app.jobAttributes?.parameterSet?.containerArgs ?? []
-      ),
-      schedulerOptions: generateJobArgsFromSpec(
-        app.jobAttributes?.parameterSet?.schedulerOptions ?? []
-      ),
-      archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
-      envVariables: app.jobAttributes?.parameterSet?.envVariables,
-    },
-  };
-  return defaultValues;
 };
 
 const JobLauncherWizardRender: React.FC = () => {
@@ -91,12 +37,14 @@ const JobLauncherWizardRender: React.FC = () => {
     [add, job]
   );
 
+  // Map Array of JobSteps into an array of WizardSteps
   const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(
     () =>
       jobSteps.map((jobStep) => {
         const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
         return {
           initialValues: generateInitialValues({ job, app, systems }),
+          // generate a validation function from the JobStep's validateThunk, given the current hook values
           validate: validateThunk
             ? validateThunk({ job, app, systems })
             : undefined,
@@ -143,7 +91,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     [schedulerProfilesData]
   );
   const defaultValues = useMemo(
-    () => generateDefaultValues({ app, systems }),
+    () => generateJobDefaults({ app, systems }),
     [app, systems]
   );
 
