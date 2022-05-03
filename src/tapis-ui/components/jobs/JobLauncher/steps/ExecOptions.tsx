@@ -284,90 +284,14 @@ export const ExecOptions: React.FC = () => {
     cmdPrefix: Yup.string(),
   });
 
-  const queueValidation = useCallback(
-    (values: Partial<Jobs.ReqSubmitJob>) => {
-      const {
-        execSystemId,
-        execSystemLogicalQueue,
-        nodeCount,
-        coresPerNode,
-        memoryMB,
-        maxMinutes,
-        jobType,
-      } = values;
-      const errors: QueueErrors = {};
-      if (!execSystemId) {
-        return errors;
-      }
-      if (
-        jobType === Apps.JobTypeEnum.Batch &&
-        !execSystemLogicalQueue &&
-        !app.jobAttributes?.execSystemLogicalQueue
-      ) {
-        errors.execSystemLogicalQueue = `You must specify a logical queue for this batch job`;
-        return errors;
-      }
-      if (!execSystemLogicalQueue) {
-        return errors;
-      }
-      const queue = systems
-        .find((system) => system.id === execSystemId)
-        ?.batchLogicalQueues?.find(
-          (queue) => queue.name === execSystemLogicalQueue
-        );
-      if (!queue) {
-        return errors;
-      }
-
-      if (!!nodeCount) {
-        if (queue?.maxNodeCount && nodeCount > queue?.maxNodeCount) {
-          errors.nodeCount = `The maximum number of nodes for this queue is ${queue?.maxNodeCount}`;
-        }
-        if (queue?.minNodeCount && nodeCount < queue?.minNodeCount) {
-          errors.nodeCount = `The minimum number of nodes for this queue is ${queue?.minNodeCount}`;
-        }
-      }
-      if (!!coresPerNode) {
-        if (queue?.maxCoresPerNode && coresPerNode > queue?.maxCoresPerNode) {
-          errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`;
-        }
-        if (queue?.minCoresPerNode && coresPerNode < queue?.minCoresPerNode) {
-          errors.coresPerNode = `The minimum number of cores per node for this queue is ${queue?.minCoresPerNode}`;
-        }
-      }
-      if (!!memoryMB) {
-        if (queue?.maxMemoryMB && memoryMB > queue?.maxMemoryMB) {
-          errors.memoryMB = `The maximum amount of memory for this queue is ${queue?.maxMemoryMB} megabytes`;
-        }
-        if (queue?.minMemoryMB && memoryMB < queue?.minMemoryMB) {
-          errors.memoryMB = `The minimum amount of memory for this queue is ${queue?.minMemoryMB} megabytes`;
-        }
-      }
-      if (!!maxMinutes) {
-        if (queue?.maxMinutes && maxMinutes > queue?.maxMinutes) {
-          errors.maxMinutes = `The maximum number of minutes for a job on this queue is ${queue?.maxMinutes}`;
-        }
-        if (queue?.minMinutes && maxMinutes < queue?.minMinutes) {
-          errors.maxMinutes = `The minimum number of minutes for a job on this queue is ${queue?.minMinutes}`;
-        }
-      }
-      return errors;
-    },
-    [systems, app]
-  );
-
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-      validate={queueValidation}
-    >
+    <div>
       <h2>Execution Options</h2>
       <SystemSelector />
       <ExecSystemQueueOptions />
       <MPIOptions />
       <ExecSystemDirs />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 

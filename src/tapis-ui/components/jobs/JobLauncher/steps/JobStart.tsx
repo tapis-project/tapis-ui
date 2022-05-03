@@ -8,23 +8,10 @@ import * as Yup from 'yup';
 import { Jobs } from '@tapis/tapis-typescript';
 
 export const JobStart: React.FC = () => {
-  const { job, app } = useJobLauncher();
-
-  const validationSchema = Yup.object({
-    name: Yup.string().required(),
-    description: Yup.string(),
-  });
-
-  const initialValues: Partial<Jobs.ReqSubmitJob> = {
-    name: job.name,
-    description: job.description,
-  };
+  const { app } = useJobLauncher();
 
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
       <h2>
         Launching {app.id} v{app.version}
       </h2>
@@ -40,7 +27,7 @@ export const JobStart: React.FC = () => {
         label="Description"
         description="A description of this job"
       />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 

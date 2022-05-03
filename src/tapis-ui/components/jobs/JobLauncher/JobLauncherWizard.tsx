@@ -36,6 +36,8 @@ import {
   useSchedulerProfiles,
 } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
+import { useWizard, WizardNavigation } from 'tapis-ui/_wrappers/Wizard';
+import * as Yup from 'yup';
 
 type JobLauncherWizardProps = {
   appId: string;
@@ -124,51 +126,128 @@ const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
   );
 };
 
-const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
-  appId,
-  appVersion,
-}) => {
-  const { data, isLoading, error } = useAppDetail(
-    { appId, appVersion },
-    { refetchOnWindowFocus: false }
-  );
-  const {
-    data: systemsData,
-    isLoading: systemsIsLoading,
-    error: systemsError,
-  } = useSystemsList(
-    { select: 'allAttributes' },
-    { refetchOnWindowFocus: false }
-  );
-  const {
-    data: schedulerProfilesData,
-    isLoading: schedulerProfilesIsLoading,
-    error: schedulerProfilesError,
-  } = useSchedulerProfiles({ refetchOnWindowFocus: false });
-  const app = data?.result;
-  const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
-  const schedulerProfiles = useMemo(
-    () => schedulerProfilesData?.result ?? [],
-    [schedulerProfilesData]
-  );
-  const defaultValues = useMemo(
-    () => generateDefaultValues({ app, systems }),
-    [app, systems]
+type QueueErrors = {
+  nodeCount?: string;
+  coresPerNode?: string;
+  memoryMB?: string;
+  maxMinutes?: string;
+  execSystemLogicalQueue?: string;
+};
+
+const getLogicalQueues = (system?: Systems.TapisSystem) =>
+  system?.batchLogicalQueues ?? [];
+
+const getSystem = (systems: Array<Systems.TapisSystem>, systemId?: string) =>
+  !!systemId ? systems.find((system) => system.id === systemId) : undefined;
+
+
+export const getLogicalQueue = (
+  app: Apps.TapisApp,
+  systems: Array<Systems.TapisSystem>,
+  systemId?: string
+): string | undefined => {
+  if (!systemId) {
+    return undefined;
+  }
+  const system = getSystem(systems, systemId);
+  if (!system) {
+    return undefined;
+  }
+  const queues = getLogicalQueues(system);
+  if (!!app.jobAttributes?.execSystemLogicalQueue) {
+    const selectedSystemHasAppDefault = queues.some(
+      (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
+    );
+    if (selectedSystemHasAppDefault) {
+      return app.jobAttributes?.execSystemLogicalQueue;
+    }
+  }
+  if (!!system.batchDefaultLogicalQueue) {
+    return system.batchDefaultLogicalQueue;
+  }
+  return undefined;
+};
+
+const JobLauncherWizardRender: React.FC = () => {
+  const { add, job, app, systems } = useJobLauncher();
+  const { nextStep } = useWizard();
+
+  const formSubmit = useCallback(
+    (value: Partial<Jobs.ReqSubmitJob>) => {
+      console.log("submit", value);
+      if (value.isMpi) {
+        value.cmdPrefix = undefined;
+      } else {
+        value.mpiCmd = undefined;
+      }
+      if (value.parameterSet) {
+        value.parameterSet = {
+          ...job.parameterSet,
+          ...value.parameterSet,
+        };
+      }
+      add(value);
+      nextStep && nextStep();
+    },
+    [nextStep, add, job]
   );
 
-  const generateSteps = (): Array<WizardStep> => [
+  const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => [
     {
       id: 'start',
       name: `Job Name`,
       render: <JobStart />,
       summary: <JobStartSummary />,
+      validationSchema: Yup.object({
+        name: Yup.string().required(),
+        description: Yup.string(), 
+      }),
+      initialValues: {
+        name: job.name,
+        description: job.description
+      }
     },
     {
       id: 'execution',
       name: 'Execution Options',
       render: <ExecOptions />,
       summary: <ExecOptionsSummary />,
+      validationSchema: Yup.object({
+        execSystemId: Yup.string().required(
+          'An execution system must be selected for this job'
+        ),
+        execSystemLogicalQueue: Yup.string(),
+        execSystemExecDir: Yup.string(),
+        execSystemInputDir: Yup.string(),
+        execSystemOutputDir: Yup.string(),
+        jobType: Yup.string().required(),
+        nodeCount: Yup.number(),
+        coresPerNode: Yup.number(),
+        memoryMB: Yup.number(),
+        maxMinutes: Yup.number(),
+        isMpi: Yup.boolean(),
+        mpiCmd: Yup.string(),
+        cmdPrefix: Yup.string(),
+      }),
+      initialValues:  {
+        execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
+        execSystemLogicalQueue: job.execSystemId
+          ? getLogicalQueue(app, systems, job.execSystemId)
+          : undefined,
+        jobType: job.jobType,
+        execSystemExecDir: job.execSystemExecDir,
+        execSystemInputDir: job.execSystemInputDir,
+        execSystemOutputDir: job.execSystemOutputDir,
+        nodeCount: job.nodeCount,
+        coresPerNode: job.coresPerNode,
+        memoryMB: job.memoryMB,
+        maxMinutes: job.maxMinutes,
+        isMpi: job.isMpi,
+        mpiCmd: job.mpiCmd,
+        cmdPrefix: job.cmdPrefix,
+      }
     },
+    /*
     {
       id: 'fileInputs',
       name: 'File Inputs',
@@ -205,13 +284,133 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
       render: <Archive />,
       summary: <ArchiveSummary />,
     },
+    */
     {
       id: 'jobJson',
       name: 'Job JSON',
       render: <JobJson />,
       summary: <JobJsonSummary />,
+      validationSchema: {},
+      initialValues: {}
     },
-  ];
+    ],
+    [ job, app, systems ]
+  );
+
+  const queueValidation = useCallback(
+    (values: Partial<Jobs.ReqSubmitJob>) => {
+      const {
+        execSystemId,
+        execSystemLogicalQueue,
+        nodeCount,
+        coresPerNode,
+        memoryMB,
+        maxMinutes,
+        jobType,
+      } = values;
+      const errors: QueueErrors = {};
+      if (!execSystemId) {
+        return errors;
+      }
+      if (
+        jobType === Apps.JobTypeEnum.Batch &&
+        !execSystemLogicalQueue &&
+        !app.jobAttributes?.execSystemLogicalQueue
+      ) {
+        errors.execSystemLogicalQueue = `You must specify a logical queue for this batch job`;
+        return errors;
+      }
+      if (!execSystemLogicalQueue) {
+        return errors;
+      }
+      const queue = systems
+        .find((system) => system.id === execSystemId)
+        ?.batchLogicalQueues?.find(
+          (queue) => queue.name === execSystemLogicalQueue
+        );
+      if (!queue) {
+        return errors;
+      }
+
+      if (!!nodeCount) {
+        if (queue?.maxNodeCount && nodeCount > queue?.maxNodeCount) {
+          errors.nodeCount = `The maximum number of nodes for this queue is ${queue?.maxNodeCount}`;
+        }
+        if (queue?.minNodeCount && nodeCount < queue?.minNodeCount) {
+          errors.nodeCount = `The minimum number of nodes for this queue is ${queue?.minNodeCount}`;
+        }
+      }
+      if (!!coresPerNode) {
+        if (queue?.maxCoresPerNode && coresPerNode > queue?.maxCoresPerNode) {
+          errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`;
+        }
+        if (queue?.minCoresPerNode && coresPerNode < queue?.minCoresPerNode) {
+          errors.coresPerNode = `The minimum number of cores per node for this queue is ${queue?.minCoresPerNode}`;
+        }
+      }
+      if (!!memoryMB) {
+        if (queue?.maxMemoryMB && memoryMB > queue?.maxMemoryMB) {
+          errors.memoryMB = `The maximum amount of memory for this queue is ${queue?.maxMemoryMB} megabytes`;
+        }
+        if (queue?.minMemoryMB && memoryMB < queue?.minMemoryMB) {
+          errors.memoryMB = `The minimum amount of memory for this queue is ${queue?.minMemoryMB} megabytes`;
+        }
+      }
+      if (!!maxMinutes) {
+        if (queue?.maxMinutes && maxMinutes > queue?.maxMinutes) {
+          errors.maxMinutes = `The maximum number of minutes for a job on this queue is ${queue?.maxMinutes}`;
+        }
+        if (queue?.minMinutes && maxMinutes < queue?.minMinutes) {
+          errors.maxMinutes = `The minimum number of minutes for a job on this queue is ${queue?.minMinutes}`;
+        }
+      }
+      return errors;
+    },
+    [systems, app]
+  );
+
+  return (
+    <Wizard
+      steps={steps}
+      memo={`${app.id}${app.version}`}
+      renderSubmit={<JobLauncherWizardSubmit app={app} />}
+      formSubmit={formSubmit}
+    />
+  )
+}
+
+const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
+  appId,
+  appVersion,
+}) => {
+  const { data, isLoading, error } = useAppDetail(
+    { appId, appVersion },
+    { refetchOnWindowFocus: false }
+  );
+  const {
+    data: systemsData,
+    isLoading: systemsIsLoading,
+    error: systemsError,
+  } = useSystemsList(
+    { select: 'allAttributes' },
+    { refetchOnWindowFocus: false }
+  );
+  const {
+    data: schedulerProfilesData,
+    isLoading: schedulerProfilesIsLoading,
+    error: schedulerProfilesError,
+  } = useSchedulerProfiles({ refetchOnWindowFocus: false });
+  const app = data?.result;
+  const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
+  const schedulerProfiles = useMemo(
+    () => schedulerProfilesData?.result ?? [],
+    [schedulerProfilesData]
+  );
+  const defaultValues = useMemo(
+    () => generateDefaultValues({ app, systems }),
+    [app, systems]
+  );
+
 
   return (
     <QueryWrapper
@@ -222,11 +421,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
         <JobLauncherProvider
           value={{ app, systems, defaultValues, schedulerProfiles }}
         >
-          <Wizard
-            steps={generateSteps()}
-            memo={`${app.id}${app.version}`}
-            renderSubmit={<JobLauncherWizardSubmit app={app} />}
-          />
+          <JobLauncherWizardRender />
         </JobLauncherProvider>
       )}
     </QueryWrapper>

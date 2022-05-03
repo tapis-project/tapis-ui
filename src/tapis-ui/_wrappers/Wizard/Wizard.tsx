@@ -2,18 +2,13 @@ import React, { useState, useContext, useCallback, useEffect } from 'react';
 import StepWizard, { StepWizardChildProps } from 'react-step-wizard';
 import { Button } from 'reactstrap';
 import { WizardStep } from '.';
+import { Formik, Form, useFormikContext } from 'formik';
 import styles from './Wizard.module.scss';
 
 export type WizardContextType = Partial<StepWizardChildProps>;
 
 const WizardContext: React.Context<WizardContextType> =
   React.createContext<WizardContextType>({});
-
-type WizardProps = {
-  steps: Array<WizardStep>;
-  memo?: any;
-  renderSubmit?: React.ReactNode;
-};
 
 export const useWizard = () => {
   const props = useContext(WizardContext);
@@ -22,6 +17,8 @@ export const useWizard = () => {
 
 export const WizardNavigation: React.FC = () => {
   const { currentStep, previousStep, totalSteps } = useWizard();
+  const { errors } = useFormikContext();
+  console.log(errors);
   return (
     <div className={styles.controls}>
       {!!currentStep && currentStep > 1 && (
@@ -36,16 +33,16 @@ export const WizardNavigation: React.FC = () => {
   );
 };
 
-type WizardControlProps = {
-  steps: Array<WizardStep>;
+type WizardControlProps<T> = {
+  steps: Array<WizardStep<T>>;
   renderSubmit?: React.ReactNode;
 } & Partial<StepWizardChildProps>;
 
-const WizardSummary: React.FC<WizardControlProps> = ({
+function WizardSummary<T>({
   steps,
   renderSubmit,
   ...stepWizardProps
-}) => {
+}: WizardControlProps<T>) {
   const { goToNamedStep } = stepWizardProps;
   const editCallback = useCallback(
     (stepId: string) => goToNamedStep && goToNamedStep(stepId),
@@ -76,27 +73,41 @@ const WizardSummary: React.FC<WizardControlProps> = ({
   );
 };
 
-type StepContainerProps = {
-  step: WizardStep;
+type StepContainerProps<T> = {
+  step: WizardStep<T>;
+  formSubmit: (values: Partial<T>) => void;
 } & Partial<StepWizardChildProps>;
 
-const StepContainer: React.FC<StepContainerProps> = ({ step }) => {
-  return <div className={styles.step}>{step.render}</div>;
+function StepContainer<T>({ step, formSubmit }: StepContainerProps<T>) {
+  const { validationSchema, initialValues, validate } = step;
+  const {currentStep} = useWizard();
+  console.log("Rendering", step.name, currentStep);
+  return (
+    <Formik
+      validationSchema={validationSchema}
+      initialValues={initialValues}
+      validate={validate}
+      onSubmit={formSubmit}
+    >
+      <Form>
+        <div className={styles.step}>
+          {step.render}
+          <WizardNavigation />
+        </div>
+      </Form>
+    </Formik>
+  );
 };
 
-/* eslint-disable-next-line */
-const WizardProgress: React.FC<WizardControlProps> = ({
-  steps,
-  ...stepWizardProps
-}) => {
-  const { currentStep } = stepWizardProps;
-  if (currentStep === undefined) {
-    return null;
-  }
-  return <div>{steps[currentStep - 1].name}</div>;
+type WizardProps<T> = {
+  steps: Array<WizardStep<T>>;
+  memo?: any;
+  renderSubmit?: React.ReactNode;
+  formSubmit: (values: Partial<T>) => void;
 };
 
-function Wizard({ steps, memo, renderSubmit }: WizardProps) {
+
+function Wizard<T>({ steps, memo, renderSubmit, formSubmit }: WizardProps<T>) {
   const [stepWizardProps, setStepWizardProps] = useState<
     Partial<StepWizardChildProps>
   >({});
@@ -142,13 +153,12 @@ function Wizard({ steps, memo, renderSubmit }: WizardProps) {
           transitions={{}}
         >
           {steps.map((step) => (
-            <StepContainer
+            <StepContainer<T>
               step={step}
               key={`wizard-step-${step.id}`}
               stepName={step.id}
-            >
-              {step.render}
-            </StepContainer>
+              formSubmit={formSubmit}
+            />
           ))}
         </StepWizard>
         <WizardSummary
