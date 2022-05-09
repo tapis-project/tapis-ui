@@ -58,7 +58,7 @@ const generateInitialValues = ({
 });
 
 const validationSchema = Yup.object({
-  name: Yup.string().required(),
+  name: Yup.string().required().min(1).max(64),
   description: Yup.string(),
 });
 
