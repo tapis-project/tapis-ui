@@ -5,12 +5,12 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useField, useFormikContext } from 'formik';
-import { FormikJobStepWrapper } from '../components';
 import { getArgMode } from 'tapis-api/utils/jobArgs';
 import { ArgField, argsSchema, assembleArgSpec } from './AppArgs';
 import { DescriptionList } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 import styles from './SchedulerOptions.module.scss';
+import { JobStep } from '..';
 
 const findSchedulerProfile = (values: Partial<Jobs.ReqSubmitJob>) => {
   // Look at current schedulerOptions
@@ -164,31 +164,11 @@ const SchedulerOptionArray: React.FC = () => {
 };
 
 export const SchedulerOptions: React.FC = () => {
-  const { job } = useJobLauncher();
-
-  const validationSchema = Yup.object().shape({
-    parameterSet: Yup.object({
-      scheduleOptions: argsSchema,
-    }),
-  });
-
-  const initialValues = useMemo(
-    () => ({
-      parameterSet: {
-        schedulerOptions: job.parameterSet?.schedulerOptions,
-      },
-    }),
-    [job]
-  );
-
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
       <h2>Scheduler Options</h2>
       <SchedulerOptionArray />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -210,3 +190,24 @@ export const SchedulerOptionsSummary: React.FC = () => {
     </div>
   );
 };
+
+const validationSchema = Yup.object().shape({
+  parameterSet: Yup.object({
+    scheduleOptions: argsSchema,
+  }),
+});
+
+const step: JobStep = {
+  id: 'schedulerOptions',
+  name: 'Scheduler Options',
+  render: <SchedulerOptions />,
+  summary: <SchedulerOptionsSummary />,
+  validationSchema,
+  generateInitialValues: ({ job }) => ({
+    parameterSet: {
+      schedulerOptions: job.parameterSet?.schedulerOptions,
+    },
+  }),
+};
+
+export default step;

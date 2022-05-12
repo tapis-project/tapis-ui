@@ -1,7 +1,6 @@
-import { useMemo, useEffect, useState, useCallback } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 import { useJobLauncher, StepSummaryField } from '../components';
-import { FormikJobStepWrapper } from '../components';
 import {
   FormikInput,
   FormikCheck,
@@ -12,6 +11,7 @@ import { useFormikContext } from 'formik';
 import { Collapse } from 'tapis-ui/_common';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';
+import { JobStep, JobLauncherProviderParams } from '../';
 
 const getLogicalQueues = (system?: Systems.TapisSystem) =>
   system?.batchLogicalQueues ?? [];
@@ -247,127 +247,14 @@ type QueueErrors = {
 };
 
 export const ExecOptions: React.FC = () => {
-  const { job, app, systems } = useJobLauncher();
-  const initialValues: Partial<Jobs.ReqSubmitJob> = {
-    execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
-    execSystemLogicalQueue: job.execSystemId
-      ? getLogicalQueue(app, systems, job.execSystemId)
-      : undefined,
-    jobType: job.jobType,
-    execSystemExecDir: job.execSystemExecDir,
-    execSystemInputDir: job.execSystemInputDir,
-    execSystemOutputDir: job.execSystemOutputDir,
-    nodeCount: job.nodeCount,
-    coresPerNode: job.coresPerNode,
-    memoryMB: job.memoryMB,
-    maxMinutes: job.maxMinutes,
-    isMpi: job.isMpi,
-    mpiCmd: job.mpiCmd,
-    cmdPrefix: job.cmdPrefix,
-  };
-
-  const validationSchema = Yup.object({
-    execSystemId: Yup.string().required(
-      'An execution system must be selected for this job'
-    ),
-    execSystemLogicalQueue: Yup.string(),
-    execSystemExecDir: Yup.string(),
-    execSystemInputDir: Yup.string(),
-    execSystemOutputDir: Yup.string(),
-    jobType: Yup.string().required(),
-    nodeCount: Yup.number(),
-    coresPerNode: Yup.number(),
-    memoryMB: Yup.number(),
-    maxMinutes: Yup.number(),
-    isMpi: Yup.boolean(),
-    mpiCmd: Yup.string(),
-    cmdPrefix: Yup.string(),
-  });
-
-  const queueValidation = useCallback(
-    (values: Partial<Jobs.ReqSubmitJob>) => {
-      const {
-        execSystemId,
-        execSystemLogicalQueue,
-        nodeCount,
-        coresPerNode,
-        memoryMB,
-        maxMinutes,
-        jobType,
-      } = values;
-      const errors: QueueErrors = {};
-      if (!execSystemId) {
-        return errors;
-      }
-      if (
-        jobType === Apps.JobTypeEnum.Batch &&
-        !execSystemLogicalQueue &&
-        !app.jobAttributes?.execSystemLogicalQueue
-      ) {
-        errors.execSystemLogicalQueue = `You must specify a logical queue for this batch job`;
-        return errors;
-      }
-      if (!execSystemLogicalQueue) {
-        return errors;
-      }
-      const queue = systems
-        .find((system) => system.id === execSystemId)
-        ?.batchLogicalQueues?.find(
-          (queue) => queue.name === execSystemLogicalQueue
-        );
-      if (!queue) {
-        return errors;
-      }
-
-      if (!!nodeCount) {
-        if (queue?.maxNodeCount && nodeCount > queue?.maxNodeCount) {
-          errors.nodeCount = `The maximum number of nodes for this queue is ${queue?.maxNodeCount}`;
-        }
-        if (queue?.minNodeCount && nodeCount < queue?.minNodeCount) {
-          errors.nodeCount = `The minimum number of nodes for this queue is ${queue?.minNodeCount}`;
-        }
-      }
-      if (!!coresPerNode) {
-        if (queue?.maxCoresPerNode && coresPerNode > queue?.maxCoresPerNode) {
-          errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`;
-        }
-        if (queue?.minCoresPerNode && coresPerNode < queue?.minCoresPerNode) {
-          errors.coresPerNode = `The minimum number of cores per node for this queue is ${queue?.minCoresPerNode}`;
-        }
-      }
-      if (!!memoryMB) {
-        if (queue?.maxMemoryMB && memoryMB > queue?.maxMemoryMB) {
-          errors.memoryMB = `The maximum amount of memory for this queue is ${queue?.maxMemoryMB} megabytes`;
-        }
-        if (queue?.minMemoryMB && memoryMB < queue?.minMemoryMB) {
-          errors.memoryMB = `The minimum amount of memory for this queue is ${queue?.minMemoryMB} megabytes`;
-        }
-      }
-      if (!!maxMinutes) {
-        if (queue?.maxMinutes && maxMinutes > queue?.maxMinutes) {
-          errors.maxMinutes = `The maximum number of minutes for a job on this queue is ${queue?.maxMinutes}`;
-        }
-        if (queue?.minMinutes && maxMinutes < queue?.minMinutes) {
-          errors.maxMinutes = `The minimum number of minutes for a job on this queue is ${queue?.minMinutes}`;
-        }
-      }
-      return errors;
-    },
-    [systems, app]
-  );
-
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-      validate={queueValidation}
-    >
+    <div>
       <h2>Execution Options</h2>
       <SystemSelector />
       <ExecSystemQueueOptions />
       <MPIOptions />
       <ExecSystemDirs />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -398,3 +285,126 @@ export const ExecOptionsSummary: React.FC = () => {
     </div>
   );
 };
+
+const validationSchema = Yup.object({
+  execSystemId: Yup.string().required(
+    'An execution system must be selected for this job'
+  ),
+  execSystemLogicalQueue: Yup.string(),
+  execSystemExecDir: Yup.string(),
+  execSystemInputDir: Yup.string(),
+  execSystemOutputDir: Yup.string(),
+  jobType: Yup.string().required(),
+  nodeCount: Yup.number(),
+  coresPerNode: Yup.number(),
+  memoryMB: Yup.number(),
+  maxMinutes: Yup.number(),
+  isMpi: Yup.boolean(),
+  mpiCmd: Yup.string(),
+  cmdPrefix: Yup.string(),
+});
+
+const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
+  return (values: Partial<Jobs.ReqSubmitJob>) => {
+    const {
+      execSystemId,
+      execSystemLogicalQueue,
+      nodeCount,
+      coresPerNode,
+      memoryMB,
+      maxMinutes,
+      jobType,
+    } = values;
+    const errors: QueueErrors = {};
+    if (!execSystemId) {
+      return errors;
+    }
+    if (
+      jobType === Apps.JobTypeEnum.Batch &&
+      !execSystemLogicalQueue &&
+      !app.jobAttributes?.execSystemLogicalQueue
+    ) {
+      errors.execSystemLogicalQueue = `You must specify a logical queue for this batch job`;
+      return errors;
+    }
+    if (!execSystemLogicalQueue) {
+      return errors;
+    }
+    const queue = systems
+      .find((system) => system.id === execSystemId)
+      ?.batchLogicalQueues?.find(
+        (queue) => queue.name === execSystemLogicalQueue
+      );
+    if (!queue) {
+      return errors;
+    }
+
+    if (!!nodeCount) {
+      if (queue?.maxNodeCount && nodeCount > queue?.maxNodeCount) {
+        errors.nodeCount = `The maximum number of nodes for this queue is ${queue?.maxNodeCount}`;
+      }
+      if (queue?.minNodeCount && nodeCount < queue?.minNodeCount) {
+        errors.nodeCount = `The minimum number of nodes for this queue is ${queue?.minNodeCount}`;
+      }
+    }
+    if (!!coresPerNode) {
+      if (queue?.maxCoresPerNode && coresPerNode > queue?.maxCoresPerNode) {
+        errors.coresPerNode = `The maximum number of cores per node for this queue is ${queue?.maxCoresPerNode}`;
+      }
+      if (queue?.minCoresPerNode && coresPerNode < queue?.minCoresPerNode) {
+        errors.coresPerNode = `The minimum number of cores per node for this queue is ${queue?.minCoresPerNode}`;
+      }
+    }
+    if (!!memoryMB) {
+      if (queue?.maxMemoryMB && memoryMB > queue?.maxMemoryMB) {
+        errors.memoryMB = `The maximum amount of memory for this queue is ${queue?.maxMemoryMB} megabytes`;
+      }
+      if (queue?.minMemoryMB && memoryMB < queue?.minMemoryMB) {
+        errors.memoryMB = `The minimum amount of memory for this queue is ${queue?.minMemoryMB} megabytes`;
+      }
+    }
+    if (!!maxMinutes) {
+      if (queue?.maxMinutes && maxMinutes > queue?.maxMinutes) {
+        errors.maxMinutes = `The maximum number of minutes for a job on this queue is ${queue?.maxMinutes}`;
+      }
+      if (queue?.minMinutes && maxMinutes < queue?.minMinutes) {
+        errors.maxMinutes = `The minimum number of minutes for a job on this queue is ${queue?.minMinutes}`;
+      }
+    }
+    return errors;
+  };
+};
+
+const generateInitialValues = ({
+  job,
+  app,
+  systems,
+}: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
+  execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
+  execSystemLogicalQueue: job.execSystemId
+    ? getLogicalQueue(app, systems, job.execSystemId)
+    : undefined,
+  jobType: job.jobType,
+  execSystemExecDir: job.execSystemExecDir,
+  execSystemInputDir: job.execSystemInputDir,
+  execSystemOutputDir: job.execSystemOutputDir,
+  nodeCount: job.nodeCount,
+  coresPerNode: job.coresPerNode,
+  memoryMB: job.memoryMB,
+  maxMinutes: job.maxMinutes,
+  isMpi: job.isMpi,
+  mpiCmd: job.mpiCmd,
+  cmdPrefix: job.cmdPrefix,
+});
+
+const step: JobStep = {
+  id: 'execution',
+  name: 'Execution Options',
+  render: <ExecOptions />,
+  summary: <ExecOptionsSummary />,
+  generateInitialValues,
+  validateThunk,
+  validationSchema,
+};
+
+export default step;
