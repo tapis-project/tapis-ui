@@ -73,14 +73,6 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
-  const selectedSystemDefaultLogicalQueue = useMemo(() => {
-    const computedSystem = selectedSystem ?? app.jobAttributes?.execSystemId;
-    if (!computedSystem) {
-      return undefined;
-    }
-    return systems.find((system) => system.id === computedSystem)
-      ?.batchDefaultLogicalQueue;
-  }, [selectedSystem, systems, app]);
 
   useEffect(() => {
     const validSystems = isBatch
@@ -120,9 +112,7 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
-        <option value={undefined}>
-          Please select a system
-        </option>
+        <option value={undefined} />
         {selectableSystems.map((system) => (
           <option value={system.id} key={`execsystem-select-${system.id}`}>
             {system.id}
@@ -145,13 +135,7 @@ const SystemSelector: React.FC = () => {
           label="Batch Logical Queue"
           required={false}
         >
-          <option value={undefined}>
-            {app.jobAttributes?.execSystemLogicalQueue
-              ? `App default (${app.jobAttributes?.execSystemLogicalQueue})`
-              : selectedSystemDefaultLogicalQueue
-              ? `System default (${selectedSystemDefaultLogicalQueue})`
-              : 'Please select a logical queue'}
-          </option>
+          <option value={undefined} />
           {queues.map((queue) => (
             <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}
