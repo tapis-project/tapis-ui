@@ -120,7 +120,9 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
-        <option value={undefined} />
+        <option value={undefined}>
+          Please select a system
+        </option>
         {selectableSystems.map((system) => (
           <option value={system.id} key={`execsystem-select-${system.id}`}>
             {system.id}
