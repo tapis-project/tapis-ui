@@ -60,6 +60,8 @@ const SystemSelector: React.FC = () => {
     getLogicalQueues(getSystem(systems, job.execSystemId))
   );
 
+  const [selectableSystems, setSelectableSystems] = useState<Array<Systems.TapisSystem>>(systems);
+
   const selectedSystem = useMemo(
     () => (values as Jobs.ReqSubmitJob)?.execSystemId,
     [values]
@@ -72,11 +74,15 @@ const SystemSelector: React.FC = () => {
 
   useEffect(
     () => {
+      const validSystems = isBatch
+        ? systems.filter(system => !!system.batchLogicalQueues?.length)
+        : systems;
       const logicalQueue = isBatch
-        ? getLogicalQueue(app, systems, selectedSystem)
+        ? getLogicalQueue(app, validSystems, selectedSystem)
         : undefined;
-      const system = getSystem(systems, selectedSystem);
+      const system = getSystem(validSystems, selectedSystem);
       const queues = getLogicalQueues(system);
+      setSelectableSystems(validSystems);
       setQueues(queues);
       setFieldValue('execSystemLogicalQueue', logicalQueue);
       add({
@@ -97,7 +103,7 @@ const SystemSelector: React.FC = () => {
         required={true}
       >
         <option value={undefined} />
-        {systems.map((system) => (
+        {selectableSystems.map((system) => (
           <option value={system.id} key={`execsystem-select-${system.id}`}>
             {system.id}
           </option>
