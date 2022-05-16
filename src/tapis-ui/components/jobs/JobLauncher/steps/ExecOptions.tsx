@@ -54,7 +54,7 @@ export const getLogicalQueue = (
 
 const SystemSelector: React.FC = () => {
   const { setFieldValue, values } = useFormikContext();
-  const { job, app, add, systems } = useJobLauncher();
+  const { job, app, systems } = useJobLauncher();
 
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>(
     getLogicalQueues(getSystem(systems, job.execSystemId))
@@ -77,21 +77,25 @@ const SystemSelector: React.FC = () => {
       const validSystems = isBatch
         ? systems.filter(system => !!system.batchLogicalQueues?.length)
         : systems;
-      const logicalQueue = isBatch
-        ? getLogicalQueue(app, validSystems, selectedSystem)
-        : undefined;
-      const system = getSystem(validSystems, selectedSystem);
-      const queues = getLogicalQueues(system);
       setSelectableSystems(validSystems);
+      if (!isBatch) {
+        setFieldValue('execSystemLogicalQueue', undefined);
+      }
+    },
+    [systems, isBatch, setFieldValue, setSelectableSystems]
+  )
+
+  useEffect(
+    () => {
+      const logicalQueue = isBatch
+        ? getLogicalQueue(app, selectableSystems, selectedSystem)
+        : undefined;
+      const system = getSystem(selectableSystems, selectedSystem);
+      const queues = getLogicalQueues(system);
       setQueues(queues);
       setFieldValue('execSystemLogicalQueue', logicalQueue);
-      add({
-        execSystemId: selectedSystem,
-        execSystemLogicalQueue: logicalQueue,
-      });
     },
-    /* eslint-disable-next-line */
-    [selectedSystem, isBatch, setQueues, setFieldValue]
+    [selectableSystems, isBatch, selectedSystem, app, setFieldValue, setQueues]
   );
 
   return (
@@ -125,6 +129,7 @@ const SystemSelector: React.FC = () => {
           label="Batch Logical Queue"
           required={false}
         >
+          <option value={undefined} />
           {queues.map((queue) => (
             <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}

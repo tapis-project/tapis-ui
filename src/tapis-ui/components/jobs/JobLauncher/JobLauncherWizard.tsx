@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
-import { Jobs } from '@tapis/tapis-typescript';
+import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
 import generateJobDefaults from 'tapis-api/utils/jobDefaults';
 import {
@@ -21,6 +21,9 @@ const JobLauncherWizardRender: React.FC = () => {
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
+      if (value.jobType === Apps.JobTypeEnum.Fork) {
+        value.execSystemLogicalQueue = undefined;
+      }
       if (value.isMpi) {
         value.cmdPrefix = undefined;
       } else {
