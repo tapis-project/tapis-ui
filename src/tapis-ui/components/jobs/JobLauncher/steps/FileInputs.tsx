@@ -338,12 +338,12 @@ export const FileInputs: React.FC = () => {
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
+      <h2>File Inputs</h2>
       <FieldArray
         name="fileInputs"
         render={(arrayHelpers) => {
           return (
             <>
-              <h3>File Inputs</h3>
               <JobInputs arrayHelpers={arrayHelpers} />
               <OptionalInputs arrayHelpers={arrayHelpers} />
               <FixedInputs />

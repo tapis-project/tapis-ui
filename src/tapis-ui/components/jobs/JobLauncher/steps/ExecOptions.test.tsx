@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 import { tapisApp } from 'fixtures/apps.fixtures';
-import { getLogicalQueue } from './ExecSystem';
+import { getLogicalQueue } from './ExecOptions';
 
 describe('ExecSystem job launcher step', () => {
   it('Finds the default logical queue for an app', async () => {

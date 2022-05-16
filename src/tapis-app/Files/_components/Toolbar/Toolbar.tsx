@@ -12,7 +12,11 @@ import DeleteModal from './DeleteModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
-import { useDownload, DownloadStreamParams } from 'tapis-hooks/files';
+import {
+  useDownload,
+  DownloadStreamParams,
+  usePermissions,
+} from 'tapis-hooks/files';
 import { useNotifications } from 'tapis-app/_components/Notifications';
 
 type ToolbarButtonProps = {
@@ -59,6 +63,9 @@ const Toolbar: React.FC = () => {
   const { download } = useDownload();
   const { add } = useNotifications();
 
+  const { data } = usePermissions({ systemId, path: currentPath });
+  const permission = data?.result?.permission;
+
   const onDownload = useCallback(() => {
     selectedFiles.forEach((file) => {
       const params: DownloadStreamParams = {
@@ -99,14 +106,20 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Rename"
             icon="rename"
-            disabled={selectedFiles.length !== 1}
+            disabled={
+              selectedFiles.length !== 1 ||
+              permission !== Files.FilePermissionPermissionEnum.Modify
+            }
             onClick={() => setModal('rename')}
             aria-label="Rename"
           />
           <ToolbarButton
             text="Move"
             icon="move"
-            disabled={selectedFiles.length === 0}
+            disabled={
+              selectedFiles.length === 0 ||
+              permission !== Files.FilePermissionPermissionEnum.Modify
+            }
             onClick={() => setModal('move')}
             aria-label="Move"
           />
@@ -121,7 +134,7 @@ const Toolbar: React.FC = () => {
               <ToolbarButton
                 text="Permissions"
                 icon="gear"
-                disabled={selectedFiles.length !== 1}
+                disabled={selectedFiles.length !== 1 || permission !== Files.FilePermissionPermissionEnum.Modify}
                 onClick={() => setModal('permissions')}
               />
             */}
@@ -141,7 +154,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Upload"
             icon="upload"
-            disabled={false}
+            disabled={permission !== Files.FilePermissionPermissionEnum.Modify}
             onClick={() => {
               setModal('upload');
             }}
@@ -150,14 +163,17 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Folder"
             icon="add"
-            disabled={false}
+            disabled={permission !== Files.FilePermissionPermissionEnum.Modify}
             onClick={() => setModal('createdir')}
             aria-label="Add"
           />
           <ToolbarButton
             text="Delete"
             icon="trash"
-            disabled={selectedFiles.length === 0}
+            disabled={
+              selectedFiles.length === 0 ||
+              permission !== Files.FilePermissionPermissionEnum.Modify
+            }
             onClick={() => setModal('delete')}
             aria-label="Delete"
           />

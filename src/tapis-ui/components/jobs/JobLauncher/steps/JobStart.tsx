@@ -25,11 +25,9 @@ export const JobStart: React.FC = () => {
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
-      <div>
-        <i>
-          Launching {app.id} v{app.version}
-        </i>
-      </div>
+      <h2>
+        Launching {app.id} v{app.version}
+      </h2>
       <FormikInput
         name="name"
         required={true}

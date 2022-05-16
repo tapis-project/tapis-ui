@@ -18,6 +18,49 @@ export const DENSITY_CLASS_MAP = {
 export const DEFAULT_DENSITY = 'default';
 export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
 
+const DescriptionListArray = ({ value }) => {
+  if (value.length === 0) {
+    return (
+      <dd className={styles.value}>
+        <i>None</i>
+      </dd>
+    );
+  }
+  return (
+    <dl>
+      {value.map((val, index) => (
+        <div key={uuidv4()} className={styles['array-entry']}>
+          <dt className={styles.key}>
+            <i>{index}</i>
+          </dt>
+          <dd className={styles.value} data-testid="value">
+            <DescriptionListValue value={val} />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+};
+
+const DescriptionListValue = ({ value }) => {
+  if (value === undefined) {
+    return <i>Undefined</i>;
+  }
+  if (Array.isArray(value)) {
+    return <DescriptionListArray value={value} />;
+  }
+  if (value instanceof Set) {
+    return <DescriptionListArray value={Array.from(value)} />;
+  }
+  if (typeof value === 'object') {
+    return <DescriptionList data={value} />;
+  }
+  if (typeof value === 'string') {
+    return <>{value}</>;
+  }
+  return <>{JSON.stringify(value)}</>;
+};
+
 const DescriptionList = ({ className, data, density, direction }) => {
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
@@ -25,29 +68,24 @@ const DescriptionList = ({ className, data, density, direction }) => {
   const containerStyleNames = ['container', ...modifierClasses]
     .map((name) => styles[name])
     .join(' ');
-
+  const entries = Object.entries(data);
+  if (entries.length === 0) {
+    return (
+      <div>
+        <i>Empty object</i>
+      </div>
+    );
+  }
   return (
     <dl className={`${className} ${containerStyleNames}`} data-testid="list">
-      {Object.entries(data).map(([key, value]) => (
+      {entries.map(([key, value]) => (
         <React.Fragment key={key}>
           <dt className={styles.key} data-testid="key">
             {key}
           </dt>
-          {Array.isArray(value) ? (
-            value.map((val) => (
-              <dd className={styles.value} data-testid="value" key={uuidv4()}>
-                {typeof val === 'object' ? <DescriptionList data={val} /> : val}
-              </dd>
-            ))
-          ) : (
-            <dd className={styles.value} data-testid="value">
-              {typeof value === 'object' ? (
-                <DescriptionList data={value} />
-              ) : (
-                value
-              )}
-            </dd>
-          )}
+          <dd className={styles.value} data-testid="value">
+            <DescriptionListValue value={value} />
+          </dd>
         </React.Fragment>
       ))}
     </dl>

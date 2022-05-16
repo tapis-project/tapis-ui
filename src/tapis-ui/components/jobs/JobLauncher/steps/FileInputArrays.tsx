@@ -469,12 +469,12 @@ export const FileInputArrays: React.FC = () => {
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
+      <h2>File Input Arrays</h2>
       <FieldArray
         name="fileInputArrays"
         render={(arrayHelpers) => {
           return (
             <>
-              <h3>File Input Arrays</h3>
               <JobInputArrays arrayHelpers={arrayHelpers} />
               <OptionalInputArrays arrayHelpers={arrayHelpers} />
               <FixedInputArrays />

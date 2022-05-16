@@ -1,9 +1,10 @@
 import { act } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import Toolbar from './Toolbar';
+import { Files } from '@tapis/tapis-typescript';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
-import { useDownload } from 'tapis-hooks/files';
+import { useDownload, usePermissions } from 'tapis-hooks/files';
 import RenameModal from 'tapis-app/Files/_components/Toolbar/RenameModal';
 
 jest.mock('tapis-hooks/files');
@@ -15,6 +16,15 @@ describe('Toolbar', () => {
     (useDownload as jest.Mock).mockReturnValue({
       downloadAsync: jest.fn(),
       download: jest.fn(),
+    });
+    (usePermissions as jest.Mock).mockReturnValue({
+      data: {
+        result: {
+          permission: Files.FilePermissionPermissionEnum.Modify,
+        },
+      },
+      isLoading: false,
+      error: null,
     });
   });
   it('enables rename buttons', async () => {

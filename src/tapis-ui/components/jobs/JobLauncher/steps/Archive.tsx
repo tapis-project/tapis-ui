@@ -137,7 +137,6 @@ const ArchiveOptions: React.FC = () => {
   );
   return (
     <>
-      <h3>Archive Options</h3>
       <div className={fieldArrayStyles.item}>
         <FormikSelect
           name="archiveSystemId"
@@ -218,6 +217,7 @@ export const Archive: React.FC = () => {
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
+      <h2>Archive Options</h2>
       <ArchiveOptions />
       <ArchiveFilterRender />
     </FormikJobStepWrapper>

@@ -1,12 +1,14 @@
-import { useQuery } from 'react-query';
+import { useQuery, QueryObserverOptions } from 'react-query';
 import { details } from 'tapis-api/systems';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-const useDetails = (systemId: string) => {
+const useDetails = (
+  params: Systems.GetSystemRequest,
+  options: QueryObserverOptions<Systems.RespSystem, Error> = {}
+) => {
   const { accessToken, basePath } = useTapisConfig();
-  const params: Systems.GetSystemRequest = { systemId };
   const result = useQuery<Systems.RespSystem, Error>(
     [QueryKeys.details, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function

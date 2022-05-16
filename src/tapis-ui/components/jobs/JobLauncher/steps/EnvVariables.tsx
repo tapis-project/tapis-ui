@@ -59,7 +59,6 @@ const EnvVariablesRender: React.FC = () => {
       name={'parameterSet.envVariables'}
       render={(arrayHelpers) => (
         <div>
-          <h3>Environment Variables</h3>
           <div className={fieldArrayStyles['array-group']}>
             {envVariables.map((envVariable, index) => (
               <EnvVariableField index={index} arrayHelpers={arrayHelpers} />
@@ -109,6 +108,7 @@ export const EnvVariables: React.FC = () => {
       validationSchema={validationSchema}
       initialValues={initialValues}
     >
+      <h2>Environment Variables</h2>
       <EnvVariablesRender />
     </FormikJobStepWrapper>
   );
