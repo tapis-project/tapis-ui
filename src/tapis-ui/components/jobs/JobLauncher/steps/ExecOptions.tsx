@@ -78,6 +78,9 @@ const SystemSelector: React.FC = () => {
       ? systems.filter((system) => !!system.batchLogicalQueues?.length)
       : systems;
     setSelectableSystems(validSystems);
+    if (!validSystems.some(system => system.id === selectedSystem)) {
+      setFieldValue('execSystemId', undefined);
+    }
     if (!isBatch) {
       setFieldValue('execSystemLogicalQueue', undefined);
     }
@@ -104,9 +107,11 @@ const SystemSelector: React.FC = () => {
         name="execSystemId"
         description="The execution system for this job"
         label="Execution System"
-        required={true}
+        required={false}
       >
-        <option value={undefined} />
+        <option value={undefined}>
+          (app default)
+        </option>
         {selectableSystems.map((system) => (
           <option value={system.id} key={`execsystem-select-${system.id}`}>
             {system.id}
@@ -122,14 +127,16 @@ const SystemSelector: React.FC = () => {
         <option value={Apps.JobTypeEnum.Batch}>Batch</option>
         <option value={Apps.JobTypeEnum.Fork}>Fork</option>
       </FormikSelect>
-      {!!selectedSystem && isBatch && (
+      {isBatch && (
         <FormikSelect
           name="execSystemLogicalQueue"
           description="The batch queue on this execution system"
           label="Batch Logical Queue"
           required={false}
         >
-          <option value={undefined} />
+          <option value={undefined}>
+            (app or system default)
+          </option>
           {queues.map((queue) => (
             <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}
@@ -263,6 +270,7 @@ export const ExecOptions: React.FC = () => {
     () => (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch,
     [values]
   );
+
   return (
     <div>
       <h2>Execution Options</h2>
@@ -303,9 +311,7 @@ export const ExecOptionsSummary: React.FC = () => {
 };
 
 const validationSchema = Yup.object({
-  execSystemId: Yup.string().required(
-    'An execution system must be selected for this job'
-  ),
+  execSystemId: Yup.string(),
   execSystemLogicalQueue: Yup.string(),
   execSystemExecDir: Yup.string(),
   execSystemInputDir: Yup.string(),
@@ -367,7 +373,7 @@ const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
     }
 
     const queue = systems
-      .find((system) => system.id === execSystemId)
+      .find((system) => system.id === computedExecSystemId)
       ?.batchLogicalQueues?.find(
         (queue) => queue.name === computedLogicalQueue
       );
