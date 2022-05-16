@@ -73,7 +73,6 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
-
   useEffect(() => {
     const validSystems = isBatch
       ? systems.filter((system) => !!system.batchLogicalQueues?.length)
