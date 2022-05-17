@@ -133,7 +133,7 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
-        <option value={''} label={computedDefaultSystem} />
+        <option value={undefined} label={computedDefaultSystem} />
         {selectableSystems.map((system) => (
           <option
             value={system.id}
@@ -158,7 +158,7 @@ const SystemSelector: React.FC = () => {
           label="Batch Logical Queue"
           required={false}
         >
-          <option value={''} label={computedDefaultQueue} />
+          <option value={undefined} label={computedDefaultQueue} />
           {queues.map((queue) => (
             <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}
