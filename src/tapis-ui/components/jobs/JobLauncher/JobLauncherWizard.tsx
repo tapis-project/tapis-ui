@@ -21,7 +21,6 @@ const JobLauncherWizardRender: React.FC = () => {
 
   const formSubmit = useCallback(
     (value: Partial<Jobs.ReqSubmitJob>) => {
-      console.log('Values', value);
       if (value.jobType === Apps.JobTypeEnum.Fork) {
         value.execSystemLogicalQueue = undefined;
       }

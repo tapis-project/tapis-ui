@@ -9,6 +9,7 @@ import {
 } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
 import { Collapse } from 'tapis-ui/_common';
+import { computeDefaultQueue, computeDefaultSystem } from 'tapis-api/utils/jobExecSystem';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { JobStep, JobLauncherProviderParams } from '../';
@@ -73,6 +74,25 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
+  const computedDefaultSystem = useMemo(
+    () => {
+      const defaultSystem = computeDefaultSystem(app);
+      return defaultSystem ? `App default (${defaultSystem})` : 'Please select a system';
+    },
+    [ app ]
+  )
+
+  const computedDefaultQueue = useMemo(
+    () => {
+      const { source, queue } = computeDefaultQueue(values as Partial<Jobs.ReqSubmitJob>, app, systems);
+      if (!queue) {
+        return "Please select a queue"
+      }
+      return `${source!.charAt(0).toUpperCase() + source!.slice(1)} default (${queue})`
+    },
+    [ values, app, systems ]
+  )
+
   useEffect(() => {
     const validSystems = isBatch
       ? systems.filter((system) => !!system.batchLogicalQueues?.length)
@@ -81,7 +101,7 @@ const SystemSelector: React.FC = () => {
     if (!validSystems.some((system) => system.id === selectedSystem)) {
       // If current system is invalid (like a system with no logical queues for a batch job)
       // then use the application default
-      setFieldValue('execSystemId', app.jobAttributes?.execSystemId);
+      setFieldValue('execSystemId', undefined);
     }
     if (!isBatch) {
       setFieldValue('execSystemLogicalQueue', undefined);
@@ -92,7 +112,7 @@ const SystemSelector: React.FC = () => {
     const system = getSystem(validSystems, selectedSystem);
     const queues = getLogicalQueues(system);
     setQueues(queues);
-    setFieldValue('execSystemLogicalQueue', logicalQueue);
+    setFieldValue('execSystemLogicalQueue', undefined);
   }, [
     systems,
     isBatch,
@@ -111,7 +131,7 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
-        <option value={undefined} label="(default)"/>
+        <option value={''} label={computedDefaultSystem}/>
         {selectableSystems.map((system) => (
           <option 
             value={system.id} key={`execsystem-select-${system.id}`}
@@ -135,7 +155,7 @@ const SystemSelector: React.FC = () => {
           label="Batch Logical Queue"
           required={false}
         >
-          <option value={''} label="(default)"/>
+          <option value={''} label={computedDefaultQueue} />
           {queues.map((queue) => (
             <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}
@@ -282,21 +302,38 @@ export const ExecOptions: React.FC = () => {
 };
 
 export const ExecOptionsSummary: React.FC = () => {
-  const { job } = useJobLauncher();
+  const { job, app, systems } = useJobLauncher();
   const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } =
     job;
-  const summary = execSystemId
-    ? `${execSystemId} ${
-        execSystemLogicalQueue ? '(' + execSystemLogicalQueue + ')' : ''
-      }`
-    : undefined;
+  const computedSystem = execSystemId ?? computeDefaultSystem(app);
+  const { queue: defaultQueue } = computeDefaultQueue(job, app, systems);
+  const computedQueue = execSystemLogicalQueue ?? defaultQueue;
+  const isBatch = useMemo(
+    () => {
+      if (job.jobType === Apps.JobTypeEnum.Batch) {
+        return true;
+      }
+      if (app.jobType == Apps.JobTypeEnum.Batch) {
+        return true;
+      }
+      return false;
+    },
+    [ job, app ]
+  )
   return (
     <div>
       <StepSummaryField
-        field={summary}
+        field={computedSystem}
         error="An execution system is required"
         key="execution-system-id-summary"
       />
+      {isBatch && (
+        <StepSummaryField
+          field={computedQueue}
+          error="A logical queue is required"
+          key="execution-system-queue-summary"
+        />
+      )}
       <StepSummaryField
         field={`${
           isMpi
@@ -422,7 +459,7 @@ const generateInitialValues = ({
   app,
   systems,
 }: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
-  execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
+  execSystemId: job.execSystemId,
   execSystemLogicalQueue: job.execSystemId
     ? getLogicalQueue(app, systems, job.execSystemId)
     : undefined,

@@ -24,6 +24,8 @@ const FormikSelect: React.FC<React.PropsWithChildren<FormikInputProps>> = ({
         const { onChange: formikOnChange, ...otherFormikProps } = formikProps;
         const onChange = (event: ChangeEvent<HTMLInputElement>) => {
           // Use patched formik setFieldValue
+          // An option with no children and value set to undefined will preduce an empty string as the target value
+          // ex: <option value={undefined} label="Please select a value" />
           setFieldValue(formikContext, name, event.target.value === '' ? undefined : event.target.value);
         };
         return (

@@ -6,14 +6,14 @@ export const computeDefaultSystem = (app: Apps.TapisApp) => {
 }
 
 type DefaultQueue = {
-  source?: Apps.TapisApp | Systems.TapisSystem;
+  source?: "app" | "system";
   queue?: string;
 }
 
 export const computeDefaultQueue = (job: Partial<Jobs.ReqSubmitJob>, app: Apps.TapisApp, systems: Array<Systems.TapisSystem>): DefaultQueue => {
   if (app.jobAttributes?.execSystemLogicalQueue) {
     return {
-      source: app,
+      source: "app",
       queue: app.jobAttributes?.execSystemLogicalQueue
     }
   }
@@ -21,7 +21,7 @@ export const computeDefaultQueue = (job: Partial<Jobs.ReqSubmitJob>, app: Apps.T
   const defaultSystem = systems.find(system => system.id === selectedSystem);
   if (defaultSystem && defaultSystem.batchDefaultLogicalQueue) {
     return {
-      source: defaultSystem,
+      source: "system",
       queue: defaultSystem.batchDefaultLogicalQueue
     }
   }
