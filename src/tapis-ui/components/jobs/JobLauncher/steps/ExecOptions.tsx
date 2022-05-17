@@ -9,7 +9,10 @@ import {
 } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
 import { Collapse } from 'tapis-ui/_common';
-import { computeDefaultQueue, computeDefaultSystem } from 'tapis-api/utils/jobExecSystem';
+import {
+  computeDefaultQueue,
+  computeDefaultSystem,
+} from 'tapis-api/utils/jobExecSystem';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { JobStep, JobLauncherProviderParams } from '../';
@@ -74,24 +77,26 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
-  const computedDefaultSystem = useMemo(
-    () => {
-      const defaultSystem = computeDefaultSystem(app);
-      return defaultSystem ? `App default (${defaultSystem})` : 'Please select a system';
-    },
-    [ app ]
-  )
+  const computedDefaultSystem = useMemo(() => {
+    const defaultSystem = computeDefaultSystem(app);
+    return defaultSystem
+      ? `App default (${defaultSystem})`
+      : 'Please select a system';
+  }, [app]);
 
-  const computedDefaultQueue = useMemo(
-    () => {
-      const { source, queue } = computeDefaultQueue(values as Partial<Jobs.ReqSubmitJob>, app, systems);
-      if (!queue) {
-        return "Please select a queue"
-      }
-      return `${source!.charAt(0).toUpperCase() + source!.slice(1)} default (${queue})`
-    },
-    [ values, app, systems ]
-  )
+  const computedDefaultQueue = useMemo(() => {
+    const { source, queue } = computeDefaultQueue(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    if (!queue) {
+      return 'Please select a queue';
+    }
+    return `${
+      source!.charAt(0).toUpperCase() + source!.slice(1)
+    } default (${queue})`;
+  }, [values, app, systems]);
 
   useEffect(() => {
     const validSystems = isBatch
@@ -106,9 +111,6 @@ const SystemSelector: React.FC = () => {
     if (!isBatch) {
       setFieldValue('execSystemLogicalQueue', undefined);
     }
-    const logicalQueue = isBatch
-      ? getLogicalQueue(app, validSystems, selectedSystem)
-      : undefined;
     const system = getSystem(validSystems, selectedSystem);
     const queues = getLogicalQueues(system);
     setQueues(queues);
@@ -131,10 +133,11 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
-        <option value={''} label={computedDefaultSystem}/>
+        <option value={''} label={computedDefaultSystem} />
         {selectableSystems.map((system) => (
-          <option 
-            value={system.id} key={`execsystem-select-${system.id}`}
+          <option
+            value={system.id}
+            key={`execsystem-select-${system.id}`}
             label={system.id}
           />
         ))}
@@ -145,8 +148,8 @@ const SystemSelector: React.FC = () => {
         description="Jobs can either be Batch or Fork"
         required={true}
       >
-        <option value={Apps.JobTypeEnum.Batch} label="Batch"/>
-        <option value={Apps.JobTypeEnum.Fork} label="Fork"/>
+        <option value={Apps.JobTypeEnum.Batch} label="Batch" />
+        <option value={Apps.JobTypeEnum.Fork} label="Fork" />
       </FormikSelect>
       {isBatch && (
         <FormikSelect
@@ -308,18 +311,15 @@ export const ExecOptionsSummary: React.FC = () => {
   const computedSystem = execSystemId ?? computeDefaultSystem(app);
   const { queue: defaultQueue } = computeDefaultQueue(job, app, systems);
   const computedQueue = execSystemLogicalQueue ?? defaultQueue;
-  const isBatch = useMemo(
-    () => {
-      if (job.jobType === Apps.JobTypeEnum.Batch) {
-        return true;
-      }
-      if (app.jobType == Apps.JobTypeEnum.Batch) {
-        return true;
-      }
-      return false;
-    },
-    [ job, app ]
-  )
+  const isBatch = useMemo(() => {
+    if (job.jobType === Apps.JobTypeEnum.Batch) {
+      return true;
+    }
+    if (app.jobType === Apps.JobTypeEnum.Batch) {
+      return true;
+    }
+    return false;
+  }, [job, app]);
   return (
     <div>
       <StepSummaryField
@@ -460,9 +460,7 @@ const generateInitialValues = ({
   systems,
 }: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
   execSystemId: job.execSystemId,
-  execSystemLogicalQueue: job.execSystemId
-    ? getLogicalQueue(app, systems, job.execSystemId)
-    : undefined,
+  execSystemLogicalQueue: job.execSystemLogicalQueue,
   jobType: job.jobType,
   execSystemExecDir: job.execSystemExecDir,
   execSystemInputDir: job.execSystemInputDir,

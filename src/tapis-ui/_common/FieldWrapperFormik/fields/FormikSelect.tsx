@@ -1,7 +1,7 @@
 import { ChangeEvent } from 'react';
 import FieldWrapper from '../FieldWrapperFormik';
 import { Input } from 'reactstrap';
-import { FieldInputProps, useField, useFormikContext } from 'formik';
+import { FieldInputProps, useFormikContext } from 'formik';
 import { FormikInputProps } from '.';
 import { setFieldValue } from './formikPatch';
 
@@ -13,7 +13,7 @@ const FormikSelect: React.FC<React.PropsWithChildren<FormikInputProps>> = ({
   children,
   ...props
 }: FormikInputProps) => {
-  const formikContext  = useFormikContext();
+  const formikContext = useFormikContext();
   return (
     <FieldWrapper
       name={name}
@@ -26,7 +26,11 @@ const FormikSelect: React.FC<React.PropsWithChildren<FormikInputProps>> = ({
           // Use patched formik setFieldValue
           // An option with no children and value set to undefined will preduce an empty string as the target value
           // ex: <option value={undefined} label="Please select a value" />
-          setFieldValue(formikContext, name, event.target.value === '' ? undefined : event.target.value);
+          setFieldValue(
+            formikContext,
+            name,
+            event.target.value === '' ? undefined : event.target.value
+          );
         };
         return (
           <Input
@@ -41,7 +45,7 @@ const FormikSelect: React.FC<React.PropsWithChildren<FormikInputProps>> = ({
         );
       }}
     />
-  )
-}
+  );
+};
 
 export default FormikSelect;

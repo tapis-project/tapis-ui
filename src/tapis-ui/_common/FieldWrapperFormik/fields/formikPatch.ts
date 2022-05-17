@@ -3,24 +3,31 @@ import _ from 'lodash';
 
 /**
  * Adaptation of setFieldValue wrapper from https://github.com/jaredpalmer/formik/issues/2332#issuecomment-819571154
- * 
+ *
  * There is a bug in the setIn function of Formik that deletes form keys that have undefined values rather than
  * setting the field value to undefined. This is inconsistent with other types of Formik behavior, such as
  * empty text Inputs resulting in form keys with undefined values
- * 
- * @param formikContext 
- * @param field 
- * @param value 
- * @param shouldValidate 
+ *
+ * @param formikContext
+ * @param field
+ * @param value
+ * @param shouldValidate
  */
-export function setFieldValue(formikContext: FormikContextType<unknown>, field: string, value: any, shouldValidate?: boolean): void {
-  const { setValues, validateForm, validateOnChange, setFieldValue, values } = formikContext;
+export function setFieldValue(
+  formikContext: FormikContextType<unknown>,
+  field: string,
+  value: any,
+  shouldValidate?: boolean
+): void {
+  const { setValues, validateForm, validateOnChange, setFieldValue, values } =
+    formikContext;
   // Override default behavior by forcing undefined to be set on the state
   if (value === undefined) {
     const setInValues = setIn(values, field, undefined);
     setValues(setInValues);
 
-    const willValidate = shouldValidate === undefined ? validateOnChange : shouldValidate;
+    const willValidate =
+      shouldValidate === undefined ? validateOnChange : shouldValidate;
     if (willValidate) {
       validateForm(setInValues);
     }
@@ -49,8 +56,8 @@ function setIn(obj: any, path: string, value: any): any {
       resVal = resVal[currentPath] = _.clone(currentObj);
     } else {
       const nextPath: string = pathArray[i + 1];
-      resVal = resVal[currentPath]
-        = isInteger(nextPath) && Number(nextPath) >= 0 ? [] : {};
+      resVal = resVal[currentPath] =
+        isInteger(nextPath) && Number(nextPath) >= 0 ? [] : {};
     }
   }
 
