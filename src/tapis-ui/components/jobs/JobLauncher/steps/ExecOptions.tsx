@@ -111,11 +111,12 @@ const SystemSelector: React.FC = () => {
         label="Execution System"
         required={true}
       >
-        <option value={undefined} />
+        <option value={undefined} label="(default)"/>
         {selectableSystems.map((system) => (
-          <option value={system.id} key={`execsystem-select-${system.id}`}>
-            {system.id}
-          </option>
+          <option 
+            value={system.id} key={`execsystem-select-${system.id}`}
+            label={system.id}
+          />
         ))}
       </FormikSelect>
       <FormikSelect
@@ -124,8 +125,8 @@ const SystemSelector: React.FC = () => {
         description="Jobs can either be Batch or Fork"
         required={true}
       >
-        <option value={Apps.JobTypeEnum.Batch}>Batch</option>
-        <option value={Apps.JobTypeEnum.Fork}>Fork</option>
+        <option value={Apps.JobTypeEnum.Batch} label="Batch"/>
+        <option value={Apps.JobTypeEnum.Fork} label="Fork"/>
       </FormikSelect>
       {isBatch && (
         <FormikSelect
@@ -134,7 +135,7 @@ const SystemSelector: React.FC = () => {
           label="Batch Logical Queue"
           required={false}
         >
-          <option value={undefined} />
+          <option value={''} label="(default)"/>
           {queues.map((queue) => (
             <option value={queue.name} key={`queue-select-${queue.name}`}>
               {queue.name}
