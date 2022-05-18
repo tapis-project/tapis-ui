@@ -12,7 +12,9 @@ import { Collapse } from 'tapis-ui/_common';
 import {
   computeDefaultQueue,
   computeDefaultSystem,
+  computeDefaultJobType
 } from 'tapis-api/utils/jobExecSystem';
+import { capitalize } from './utils';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { JobStep, JobLauncherProviderParams } from '../';
@@ -77,26 +79,34 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
-  const computedDefaultSystem = useMemo(() => {
-    const defaultSystem = computeDefaultSystem(app);
-    return defaultSystem
-      ? `App default (${defaultSystem})`
-      : 'Please select a system';
-  }, [app]);
+  const { computedDefaultSystem, computedDefaultQueue, computedDefaultJobType } = useMemo(
+    () => {
+      const { source: systemSource, systemId } = computeDefaultSystem(app);
+      const computedDefaultSystem = systemSource
+        ? `App default (${systemId})`
+        : 'Please select a system';
+      const { source: queueSource, queue } = computeDefaultQueue(
+        values as Partial<Jobs.ReqSubmitJob>,
+        app,
+        systems
+      );
+      const queueSourceName = queueSource ?? 'please select a system';
+      const computedDefaultQueue = `${capitalize(queueSourceName)} default (${queue})`;
+      const { source: jobTypeSource, jobType } = computeDefaultJobType(
+        values as Partial<Jobs.ReqSubmitJob>,
+        app,
+        systems
+      );
+      const computedDefaultJobType = `${capitalize(jobTypeSource)} default (${jobType})`;
+      return {
+        computedDefaultSystem,
+        computedDefaultQueue,
+        computedDefaultJobType
+      }
+    },
+    [ values, app, systems]
 
-  const computedDefaultQueue = useMemo(() => {
-    const { source, queue } = computeDefaultQueue(
-      values as Partial<Jobs.ReqSubmitJob>,
-      app,
-      systems
-    );
-    if (!queue) {
-      return 'Please select a queue';
-    }
-    return `${
-      source!.charAt(0).toUpperCase() + source!.slice(1)
-    } default (${queue})`;
-  }, [values, app, systems]);
+  )
 
   useEffect(() => {
     const validSystems = isBatch
@@ -111,7 +121,7 @@ const SystemSelector: React.FC = () => {
     if (!isBatch) {
       setFieldValue('execSystemLogicalQueue', undefined);
     }
-    const system = getSystem(validSystems, selectedSystem);
+    const system = getSystem(validSystems, selectedSystem ?? app.jobAttributes?.execSystemId);
     const queues = getLogicalQueues(system);
     setQueues(queues);
     setFieldValue('execSystemLogicalQueue', undefined);
@@ -148,6 +158,7 @@ const SystemSelector: React.FC = () => {
         description="Jobs can either be Batch or Fork"
         required={true}
       >
+        <option value={undefined} label={computedDefaultJobType} />
         <option value={Apps.JobTypeEnum.Batch} label="Batch" />
         <option value={Apps.JobTypeEnum.Fork} label="Fork" />
       </FormikSelect>
@@ -157,6 +168,7 @@ const SystemSelector: React.FC = () => {
           description="The batch queue on this execution system"
           label="Batch Logical Queue"
           required={false}
+          disabled={queues.length === 0}
         >
           <option value={undefined} label={computedDefaultQueue} />
           {queues.map((queue) => (
@@ -306,20 +318,23 @@ export const ExecOptions: React.FC = () => {
 
 export const ExecOptionsSummary: React.FC = () => {
   const { job, app, systems } = useJobLauncher();
-  const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } =
-    job;
-  const computedSystem = execSystemId ?? computeDefaultSystem(app);
-  const { queue: defaultQueue } = computeDefaultQueue(job, app, systems);
-  const computedQueue = execSystemLogicalQueue ?? defaultQueue;
-  const isBatch = useMemo(() => {
-    if (job.jobType === Apps.JobTypeEnum.Batch) {
-      return true;
-    }
-    if (app.jobType === Apps.JobTypeEnum.Batch) {
-      return true;
-    }
-    return false;
-  }, [job, app]);
+  const { isMpi, mpiCmd, cmdPrefix } = job;
+
+  const { computedSystem, computedQueue, computedJobType } = useMemo(
+    () => {
+      const { execSystemLogicalQueue, execSystemId, jobType } = job;
+      const computedSystem = execSystemId ?? computeDefaultSystem(app)?.systemId;
+      const computedQueue = execSystemLogicalQueue ?? computeDefaultQueue(job, app, systems)?.queue;
+      const computedJobType = jobType ?? computeDefaultJobType(job, app, systems)?.jobType;
+      return {
+        computedSystem,
+        computedQueue,
+        computedJobType
+      }
+    },
+    [ job, app, systems ]
+  )
+
   return (
     <div>
       <StepSummaryField
@@ -327,7 +342,7 @@ export const ExecOptionsSummary: React.FC = () => {
         error="An execution system is required"
         key="execution-system-id-summary"
       />
-      {isBatch && (
+      {computedJobType === Apps.JobTypeEnum.Batch && (
         <StepSummaryField
           field={computedQueue}
           error="A logical queue is required"
