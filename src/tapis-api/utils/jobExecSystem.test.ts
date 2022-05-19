@@ -10,7 +10,7 @@ import {
 
 describe('Job Exec System utils', () => {
   it('determines default system', () => {
-    expect(computeDefaultSystem(tapisApp)).toEqual('testuser2.execution');
+    expect(computeDefaultSystem(tapisApp)).toEqual({ source: "app", systemId: "testuser2.execution"});
   });
   it('determines the default logical queue from an app', () => {
     expect(computeDefaultQueue({}, tapisApp, [tapisSystem])).toEqual({
@@ -24,7 +24,7 @@ describe('Job Exec System utils', () => {
     ) as Apps.TapisApp;
     tapisAppNoQueue.jobAttributes!.execSystemLogicalQueue = undefined;
     expect(computeDefaultQueue({}, tapisAppNoQueue, [tapisSystem])).toEqual({
-      source: 'system',
+      source: 'app system',
       queue: 'tapisNormal',
     });
   });

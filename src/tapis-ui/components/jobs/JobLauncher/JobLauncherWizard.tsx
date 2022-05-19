@@ -9,6 +9,7 @@ import {
   useSchedulerProfiles,
 } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
+import { JobStep } from '.';
 import jobSteps from './steps';
 
 type JobLauncherWizardProps = {
@@ -16,7 +17,7 @@ type JobLauncherWizardProps = {
   appVersion: string;
 };
 
-const JobLauncherWizardRender: React.FC = () => {
+export const JobLauncherWizardRender: React.FC<{ jobSteps: Array<JobStep> }> = ({ jobSteps }) => {
   const { add, job, app, systems } = useJobLauncher();
 
   const formSubmit = useCallback(
@@ -105,7 +106,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
         <JobLauncherProvider
           value={{ app, systems, defaultValues, schedulerProfiles }}
         >
-          <JobLauncherWizardRender />
+          <JobLauncherWizardRender jobSteps={jobSteps} />
         </JobLauncherProvider>
       )}
     </QueryWrapper>

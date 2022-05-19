@@ -1,34 +1,52 @@
 import '@testing-library/jest-dom/extend-expect';
-import { tapisSystem } from 'fixtures/systems.fixtures';
+import renderComponent from 'utils/testing';
 import { tapisApp } from 'fixtures/apps.fixtures';
-import { getLogicalQueue } from './ExecOptions';
+import { tapisSystem } from 'fixtures/systems.fixtures';
+import useJobLauncher from 'tapis-ui/components/jobs/JobLauncher/components/useJobLauncher';
+import ExecOptionsStep from './ExecOptions';
+import { JobLauncherWizardRender } from '../JobLauncherWizard';
+import { act } from '@testing-library/react';
+import { Systems } from '@tapis/tapis-typescript';
 
-describe('ExecSystem job launcher step', () => {
-  it('Finds the default logical queue for an app', async () => {
-    // If the app default logical queue is available in the selected system, then use that
-    expect(
-      getLogicalQueue(tapisApp, [tapisSystem], 'testuser2.execution')
-    ).toEqual('tapisNormal');
+jest.mock('tapis-ui/components/jobs/JobLauncher/components/useJobLauncher');
 
-    // If the app default logical queue is available in the selected system even if it's a different system, use that
-    const alternateSystem = JSON.parse(JSON.stringify(tapisSystem));
-    alternateSystem.id = 'alternateSystem';
-    expect(
-      getLogicalQueue(tapisApp, [alternateSystem], 'alternateSystem')
-    ).toEqual('tapisNormal');
-
-    // If the app default logical queue is not available in the selected system, use that system's default queue
-    alternateSystem.batchDefaultLogicalQueue = 'alternateQueue';
-    alternateSystem.batchLogicalQueues[0].name = 'alternateQueue';
-    expect(
-      getLogicalQueue(tapisApp, [alternateSystem], 'alternateSystem')
-    ).toEqual('alternateQueue');
-
-    // If the app default logical queue is not available in the selected system and there is no fallback, then
-    // logical queue result will be undefined
-    alternateSystem.batchDefaultLogicalQueue = undefined;
-    expect(
-      getLogicalQueue(tapisApp, [alternateSystem], 'alternateSystem')
-    ).not.toBeDefined();
+describe('ExecOptions step', () => {
+  it('Shows default systems', async () => {
+    (useJobLauncher as jest.Mock).mockReturnValue({
+      job: {},
+      app: tapisApp,
+      systems: [ tapisSystem ]
+    });
+    const { getAllByTestId } = renderComponent(<JobLauncherWizardRender jobSteps={[ ExecOptionsStep ]} />);
+    await act(async () => {});
+    const execSystemId = getAllByTestId("execSystemId")[0];
+    expect(execSystemId).toHaveValue('');
+  });
+  it('Shows queue options if the job is a batch job', async () => {
+    (useJobLauncher as jest.Mock).mockReturnValue({
+      job: {},
+      app: tapisApp,
+      systems: [ tapisSystem ]
+    });
+    const { getAllByTestId } = renderComponent(<JobLauncherWizardRender jobSteps={[ ExecOptionsStep ]} />);
+    await act(async () => { });
+    const execSystemLogicalQueue = getAllByTestId("execSystemLogicalQueue")[0];
+    expect(execSystemLogicalQueue).toBeDefined();
+    expect(execSystemLogicalQueue).toHaveValue('');
+  });
+  it('Does not show systems that are not capable of batch jobs', async () => {
+    const tapisSystemNoQueues = JSON.parse(JSON.stringify(tapisSystem)) as Systems.TapisSystem;
+    tapisSystemNoQueues.batchLogicalQueues = [];
+    tapisSystemNoQueues.id = "noqueues.execution";
+    (useJobLauncher as jest.Mock).mockReturnValue({
+      job: {},
+      app: tapisApp,
+      systems: [ tapisSystem, tapisSystemNoQueues ]
+    });
+    const { getAllByTestId, getAllByLabelText } = renderComponent(<JobLauncherWizardRender jobSteps={[ ExecOptionsStep ]} />);
+    await act(async () => { });
+    const execSystems = getAllByTestId(/execSystemId-/);
+    expect(execSystems.length).toEqual(1);
+    expect(execSystems[0]).toHaveProperty("label", "testuser2.execution");
   });
 });

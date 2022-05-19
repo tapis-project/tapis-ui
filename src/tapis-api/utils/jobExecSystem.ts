@@ -139,7 +139,7 @@ export const execSystemComplete = (
   const defaultSystem = computeDefaultSystem(app);
 
   // Check that an exec system can be computed
-  if (!job.execSystemId && !defaultSystem) {
+  if (!job.execSystemId && !defaultSystem?.systemId) {
     return false;
   }
 

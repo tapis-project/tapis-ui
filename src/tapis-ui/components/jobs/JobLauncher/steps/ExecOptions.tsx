@@ -25,39 +25,6 @@ const getLogicalQueues = (system?: Systems.TapisSystem) =>
 const getSystem = (systems: Array<Systems.TapisSystem>, systemId?: string) =>
   !!systemId ? systems.find((system) => system.id === systemId) : undefined;
 
-/**
- * Returns a default logical queue based on the following priority:
- * - If the selected system has the logical queue specified in the app, use that
- * - If the selected system has a default logical queue and the one in the app is not present, use that
- * - If no app logical queue is specified and no system default queue is specified, return undefined;
- */
-export const getLogicalQueue = (
-  app: Apps.TapisApp,
-  systems: Array<Systems.TapisSystem>,
-  systemId?: string
-): string | undefined => {
-  if (!systemId) {
-    return undefined;
-  }
-  const system = getSystem(systems, systemId);
-  if (!system) {
-    return undefined;
-  }
-  const queues = getLogicalQueues(system);
-  if (!!app.jobAttributes?.execSystemLogicalQueue) {
-    const selectedSystemHasAppDefault = queues.some(
-      (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
-    );
-    if (selectedSystemHasAppDefault) {
-      return app.jobAttributes?.execSystemLogicalQueue;
-    }
-  }
-  if (!!system.batchDefaultLogicalQueue) {
-    return system.batchDefaultLogicalQueue;
-  }
-  return undefined;
-};
-
 const SystemSelector: React.FC = () => {
   const { setFieldValue, values } = useFormikContext();
   const { job, app, systems } = useJobLauncher();
@@ -74,12 +41,7 @@ const SystemSelector: React.FC = () => {
     [values]
   );
 
-  const isBatch = useMemo(
-    () => (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch,
-    [values]
-  );
-
-  const { computedDefaultSystem, computedDefaultQueue, computedDefaultJobType } = useMemo(
+  const { computedDefaultSystem, computedDefaultQueue, computedDefaultJobType, isBatch } = useMemo(
     () => {
       const { source: systemSource, systemId } = computeDefaultSystem(app);
       const computedDefaultSystem = systemSource
@@ -98,10 +60,13 @@ const SystemSelector: React.FC = () => {
         systems
       );
       const computedDefaultJobType = `${capitalize(jobTypeSource)} default (${jobType})`;
+      const isBatch = (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch || 
+        jobType === Apps.JobTypeEnum.Batch;
       return {
         computedDefaultSystem,
         computedDefaultQueue,
-        computedDefaultJobType
+        computedDefaultJobType,
+        isBatch
       }
     },
     [ values, app, systems]
@@ -142,6 +107,7 @@ const SystemSelector: React.FC = () => {
         description="The execution system for this job"
         label="Execution System"
         required={true}
+        data-testid="execSystemId"
       >
         <option value={undefined} label={computedDefaultSystem} />
         {selectableSystems.map((system) => (
@@ -149,6 +115,7 @@ const SystemSelector: React.FC = () => {
             value={system.id}
             key={`execsystem-select-${system.id}`}
             label={system.id}
+            data-testid={`execSystemId-${system.id}`}
           />
         ))}
       </FormikSelect>
@@ -157,6 +124,7 @@ const SystemSelector: React.FC = () => {
         label="Job Type"
         description="Jobs can either be Batch or Fork"
         required={true}
+        data-testid="jobType"
       >
         <option value={undefined} label={computedDefaultJobType} />
         <option value={Apps.JobTypeEnum.Batch} label="Batch" />
@@ -169,12 +137,15 @@ const SystemSelector: React.FC = () => {
           label="Batch Logical Queue"
           required={false}
           disabled={queues.length === 0}
+          data-testid="execSystemLogicalQueue"
         >
           <option value={undefined} label={computedDefaultQueue} />
           {queues.map((queue) => (
-            <option value={queue.name} key={`queue-select-${queue.name}`}>
-              {queue.name}
-            </option>
+            <option 
+              value={queue.name}
+              key={`queue-select-${queue.name}`}
+              label={queue.name}
+            />
           ))}
         </FormikSelect>
       )}
