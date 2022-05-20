@@ -36,13 +36,9 @@ const SystemSelector: React.FC = () => {
   const [selectableSystems, setSelectableSystems] =
     useState<Array<Systems.TapisSystem>>(systems);
 
-  const selectedSystem = useMemo(
-    () => (values as Jobs.ReqSubmitJob)?.execSystemId,
-    [values]
-  );
-
-  const { computedDefaultSystem, computedDefaultQueue, computedDefaultJobType, isBatch } = useMemo(
+  const { computedDefaultSystem, computedDefaultQueue, computedDefaultJobType, isBatch, selectedSystem } = useMemo(
     () => {
+      // Compute labels for when undefined values are selected for systems, queues or jobType
       const { source: systemSource, systemId } = computeDefaultSystem(app);
       const computedDefaultSystem = systemSource
         ? `App default (${systemId})`
@@ -62,11 +58,13 @@ const SystemSelector: React.FC = () => {
       const computedDefaultJobType = `${capitalize(jobTypeSource)} default (${jobType})`;
       const isBatch = (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch || 
         jobType === Apps.JobTypeEnum.Batch;
+      const selectedSystem = (values as Jobs.ReqSubmitJob)?.execSystemId;
       return {
         computedDefaultSystem,
         computedDefaultQueue,
         computedDefaultJobType,
-        isBatch
+        isBatch,
+        selectedSystem
       }
     },
     [ values, app, systems]
@@ -74,6 +72,7 @@ const SystemSelector: React.FC = () => {
   )
 
   useEffect(() => {
+    // Handle changes to selectable execSystems and execSystemLogicalQueues
     const validSystems = isBatch
       ? systems.filter((system) => !!system.batchLogicalQueues?.length)
       : systems;
