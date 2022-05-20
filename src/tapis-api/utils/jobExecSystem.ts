@@ -1,27 +1,27 @@
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
 
 type DefaultSystem = {
-  source?: 'app'
-  systemId?: string
-}
+  source?: 'app';
+  systemId?: string;
+};
 
 /**
  * Computes the default execution system ID that will be used
- * 
+ *
  * @param app
- * @returns 
+ * @returns
  */
 export const computeDefaultSystem = (app: Apps.TapisApp): DefaultSystem => {
   if (app.jobAttributes?.execSystemId) {
     return {
       source: 'app',
-      systemId: app.jobAttributes?.execSystemId
-    }
+      systemId: app.jobAttributes?.execSystemId,
+    };
   }
   return {
     source: undefined,
-    systemId: undefined
-  }
+    systemId: undefined,
+  };
 };
 
 type DefaultQueue = {
@@ -32,11 +32,11 @@ type DefaultQueue = {
 /**
  * Computes the logical queue that will be used, if the job does not
  * specify one
- * 
+ *
  * @param job
- * @param app 
- * @param systems 
- * @returns 
+ * @param app
+ * @param systems
+ * @returns
  */
 export const computeDefaultQueue = (
   job: Partial<Jobs.ReqSubmitJob>,
@@ -53,23 +53,27 @@ export const computeDefaultQueue = (
 
   // If the job specifies a system, look for its default logical queue
   if (job.execSystemId) {
-    const selectedSystem = systems.find((system) => system.id === job.execSystemId);
+    const selectedSystem = systems.find(
+      (system) => system.id === job.execSystemId
+    );
     if (selectedSystem?.batchDefaultLogicalQueue) {
       return {
         source: 'system',
-        queue: selectedSystem.batchDefaultLogicalQueue
-      } 
+        queue: selectedSystem.batchDefaultLogicalQueue,
+      };
     }
   }
 
   // If the app specifies a system, look for its default logical queue
   if (app.jobAttributes?.execSystemId) {
-    const appSystem = systems.find((system) => system.id === app.jobAttributes?.execSystemId);
+    const appSystem = systems.find(
+      (system) => system.id === app.jobAttributes?.execSystemId
+    );
     if (appSystem?.batchDefaultLogicalQueue) {
       return {
         source: 'app system',
-        queue: appSystem.batchDefaultLogicalQueue
-      }
+        queue: appSystem.batchDefaultLogicalQueue,
+      };
     }
   }
 
@@ -81,55 +85,59 @@ export const computeDefaultQueue = (
 };
 
 type DefaultJobType = {
-  source: 'app' | 'app system' | 'system' | 'tapis',
-  jobType: Apps.JobTypeEnum
-}
+  source: 'app' | 'app system' | 'system' | 'tapis';
+  jobType: Apps.JobTypeEnum;
+};
 
 /**
  * Determines the default jobType if one is not specified in the jobType field in a job
  * using the algorithm specified at:
- * 
+ *
  * https://tapis.readthedocs.io/en/latest/technical/jobs.html#job-type
- * 
- * @param job 
- * @param app 
- * @param systems 
- * @returns 
+ *
+ * @param job
+ * @param app
+ * @param systems
+ * @returns
  */
 export const computeDefaultJobType = (
   job: Partial<Jobs.ReqSubmitJob>,
   app: Apps.TapisApp,
-  systems: Array<Systems.TapisSystem>,
+  systems: Array<Systems.TapisSystem>
 ): DefaultJobType => {
   if (app.jobType) {
     return {
       source: 'app',
-      jobType: app.jobType!
-    }
+      jobType: app.jobType!,
+    };
   }
   if (job?.execSystemId) {
-    const selectedSystem = systems.find(system => system.id === job.execSystemId);
+    const selectedSystem = systems.find(
+      (system) => system.id === job.execSystemId
+    );
     if (selectedSystem?.canRunBatch) {
       return {
         source: 'system',
-        jobType: Apps.JobTypeEnum.Batch
-      }
+        jobType: Apps.JobTypeEnum.Batch,
+      };
     }
   }
   if (app.jobAttributes?.execSystemId) {
-    const appSystem = systems.find(system => system.id === app.jobAttributes?.execSystemId);
+    const appSystem = systems.find(
+      (system) => system.id === app.jobAttributes?.execSystemId
+    );
     if (appSystem?.canRunBatch) {
       return {
         source: 'app system',
-        jobType: Apps.JobTypeEnum.Batch
-      }
+        jobType: Apps.JobTypeEnum.Batch,
+      };
     }
   }
   return {
     source: 'tapis',
-    jobType: Apps.JobTypeEnum.Fork
-  }
-}
+    jobType: Apps.JobTypeEnum.Fork,
+  };
+};
 
 export const execSystemComplete = (
   job: Partial<Jobs.ReqSubmitJob>,

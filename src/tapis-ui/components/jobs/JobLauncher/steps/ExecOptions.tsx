@@ -12,7 +12,7 @@ import { Collapse } from 'tapis-ui/_common';
 import {
   computeDefaultQueue,
   computeDefaultSystem,
-  computeDefaultJobType
+  computeDefaultJobType,
 } from 'tapis-api/utils/jobExecSystem';
 import { capitalize } from './utils';
 import * as Yup from 'yup';
@@ -36,40 +36,47 @@ const SystemSelector: React.FC = () => {
   const [selectableSystems, setSelectableSystems] =
     useState<Array<Systems.TapisSystem>>(systems);
 
-  const { computedDefaultSystem, computedDefaultQueue, computedDefaultJobType, isBatch, selectedSystem } = useMemo(
-    () => {
-      // Compute labels for when undefined values are selected for systems, queues or jobType
-      const { source: systemSource, systemId } = computeDefaultSystem(app);
-      const computedDefaultSystem = systemSource
-        ? `App default (${systemId})`
-        : 'Please select a system';
-      const { source: queueSource, queue } = computeDefaultQueue(
-        values as Partial<Jobs.ReqSubmitJob>,
-        app,
-        systems
-      );
-      const queueSourceName = queueSource ?? 'please select a system';
-      const computedDefaultQueue = `${capitalize(queueSourceName)} default (${queue})`;
-      const { source: jobTypeSource, jobType } = computeDefaultJobType(
-        values as Partial<Jobs.ReqSubmitJob>,
-        app,
-        systems
-      );
-      const computedDefaultJobType = `${capitalize(jobTypeSource)} default (${jobType})`;
-      const isBatch = (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch || 
-        jobType === Apps.JobTypeEnum.Batch;
-      const selectedSystem = (values as Jobs.ReqSubmitJob)?.execSystemId;
-      return {
-        computedDefaultSystem,
-        computedDefaultQueue,
-        computedDefaultJobType,
-        isBatch,
-        selectedSystem
-      }
-    },
-    [ values, app, systems]
-
-  )
+  const {
+    computedDefaultSystem,
+    computedDefaultQueue,
+    computedDefaultJobType,
+    isBatch,
+    selectedSystem,
+  } = useMemo(() => {
+    // Compute labels for when undefined values are selected for systems, queues or jobType
+    const { source: systemSource, systemId } = computeDefaultSystem(app);
+    const computedDefaultSystem = systemSource
+      ? `App default (${systemId})`
+      : 'Please select a system';
+    const { source: queueSource, queue } = computeDefaultQueue(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    const queueSourceName = queueSource ?? 'please select a system';
+    const computedDefaultQueue = `${capitalize(
+      queueSourceName
+    )} default (${queue})`;
+    const { source: jobTypeSource, jobType } = computeDefaultJobType(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    const computedDefaultJobType = `${capitalize(
+      jobTypeSource
+    )} default (${jobType})`;
+    const isBatch =
+      (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch ||
+      jobType === Apps.JobTypeEnum.Batch;
+    const selectedSystem = (values as Jobs.ReqSubmitJob)?.execSystemId;
+    return {
+      computedDefaultSystem,
+      computedDefaultQueue,
+      computedDefaultJobType,
+      isBatch,
+      selectedSystem,
+    };
+  }, [values, app, systems]);
 
   useEffect(() => {
     // Handle changes to selectable execSystems and execSystemLogicalQueues
@@ -85,7 +92,10 @@ const SystemSelector: React.FC = () => {
     if (!isBatch) {
       setFieldValue('execSystemLogicalQueue', undefined);
     }
-    const system = getSystem(validSystems, selectedSystem ?? app.jobAttributes?.execSystemId);
+    const system = getSystem(
+      validSystems,
+      selectedSystem ?? app.jobAttributes?.execSystemId
+    );
     const queues = getLogicalQueues(system);
     setQueues(queues);
     setFieldValue('execSystemLogicalQueue', undefined);
@@ -140,7 +150,7 @@ const SystemSelector: React.FC = () => {
         >
           <option value={undefined} label={computedDefaultQueue} />
           {queues.map((queue) => (
-            <option 
+            <option
               value={queue.name}
               key={`queue-select-${queue.name}`}
               label={queue.name}
@@ -290,20 +300,19 @@ export const ExecOptionsSummary: React.FC = () => {
   const { job, app, systems } = useJobLauncher();
   const { isMpi, mpiCmd, cmdPrefix } = job;
 
-  const { computedSystem, computedQueue, computedJobType } = useMemo(
-    () => {
-      const { execSystemLogicalQueue, execSystemId, jobType } = job;
-      const computedSystem = execSystemId ?? computeDefaultSystem(app)?.systemId;
-      const computedQueue = execSystemLogicalQueue ?? computeDefaultQueue(job, app, systems)?.queue;
-      const computedJobType = jobType ?? computeDefaultJobType(job, app, systems)?.jobType;
-      return {
-        computedSystem,
-        computedQueue,
-        computedJobType
-      }
-    },
-    [ job, app, systems ]
-  )
+  const { computedSystem, computedQueue, computedJobType } = useMemo(() => {
+    const { execSystemLogicalQueue, execSystemId, jobType } = job;
+    const computedSystem = execSystemId ?? computeDefaultSystem(app)?.systemId;
+    const computedQueue =
+      execSystemLogicalQueue ?? computeDefaultQueue(job, app, systems)?.queue;
+    const computedJobType =
+      jobType ?? computeDefaultJobType(job, app, systems)?.jobType;
+    return {
+      computedSystem,
+      computedQueue,
+      computedJobType,
+    };
+  }, [job, app, systems]);
 
   return (
     <div>
