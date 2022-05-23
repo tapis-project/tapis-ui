@@ -13,9 +13,7 @@ const generateJobDefaults = ({
   if (!app) {
     return {};
   }
-  const systemDefaultQueue = systems.find(
-    (system) => system.id === app.jobAttributes?.execSystemId
-  )?.batchDefaultLogicalQueue;
+
   const defaultValues: Partial<Jobs.ReqSubmitJob> = {
     name: `${app.id}-${app.version}`,
     description: app.description,
@@ -32,9 +30,6 @@ const generateJobDefaults = ({
     isMpi: app.jobAttributes?.isMpi,
     mpiCmd: app.jobAttributes?.mpiCmd,
     cmdPrefix: app.jobAttributes?.cmdPrefix,
-    execSystemId: app.jobAttributes?.execSystemId,
-    execSystemLogicalQueue:
-      app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
     fileInputs: generateRequiredFileInputsFromApp(app),
     fileInputArrays: generateRequiredFileInputArraysFromApp(app),
     parameterSet: {
