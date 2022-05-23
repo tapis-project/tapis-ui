@@ -369,7 +369,7 @@ type QueueErrors = {
 
 const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
   return (values: Partial<Jobs.ReqSubmitJob>) => {
-    const { nodeCount, coresPerNode, memoryMB, maxMinutes, jobType } = values;
+    const { execSystemId, execSystemLogicalQueue, nodeCount, coresPerNode, memoryMB, maxMinutes, jobType } = values;
     const errors: QueueErrors = {};
 
     const validation = validateExecSystem(
@@ -406,17 +406,16 @@ const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
       return errors;
     }
 
-    const computedExecSystemId = computeDefaultSystem(app).systemId;
+    const computedExecSystem = computeDefaultSystem(app);
     const computedLogicalQueue = computeDefaultQueue(
       values as Partial<Jobs.ReqSubmitJob>,
       app,
       systems
-    )?.queue;
-    const queue = systems
-      .find((system) => system.id === computedExecSystemId)
-      ?.batchLogicalQueues?.find(
-        (queue) => queue.name === computedLogicalQueue
-      );
+    );
+    const selectedSystem = systems.find(system => system.id === (execSystemId ?? computedExecSystem.systemId));
+    const queue = selectedSystem?.batchLogicalQueues?.find(
+      (queue) => queue.name === (execSystemLogicalQueue ?? computedLogicalQueue?.queue)
+    );
     if (!queue) {
       errors.execSystemLogicalQueue = `The specified queue does not exist on the selected execution system`;
       return errors;

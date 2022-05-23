@@ -22,7 +22,7 @@ describe('Job Exec System utils', () => {
       queue: 'tapisNormal',
     });
   });
-  it('determines the default logical queue from a system default', () => {
+  it('determines the default logical queue from the default system specified by the app', () => {
     const tapisAppNoQueue = JSON.parse(
       JSON.stringify(tapisApp)
     ) as Apps.TapisApp;
@@ -58,7 +58,7 @@ describe('Job Exec System utils', () => {
       queue: undefined,
     });
   });
-  it('detects a complete job request that satisfies exec system options', () => {
+  it('detects a valid job request that satisfies exec system options', () => {
     expect(validateExecSystem({}, tapisApp, [tapisSystem])).toBe(
       ValidateExecSystemResult.Complete
     );
