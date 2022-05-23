@@ -49,7 +49,7 @@ describe('ExecOptions step', () => {
       app: tapisApp,
       systems: [tapisSystem, tapisSystemNoQueues],
     });
-    const { getAllByTestId, getAllByLabelText } = renderComponent(
+    const { getAllByTestId } = renderComponent(
       <JobLauncherWizardRender jobSteps={[ExecOptionsStep]} />
     );
     await act(async () => {});
