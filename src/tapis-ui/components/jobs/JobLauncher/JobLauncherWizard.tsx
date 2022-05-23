@@ -55,7 +55,7 @@ export const JobLauncherWizardRender: React.FC<{ jobSteps: Array<JobStep> }> =
           ...stepProps,
         };
       });
-    }, [app, job, systems]);
+    }, [app, job, systems, jobSteps]);
 
     return (
       <Wizard

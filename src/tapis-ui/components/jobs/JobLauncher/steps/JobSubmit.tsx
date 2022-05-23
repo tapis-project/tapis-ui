@@ -4,7 +4,10 @@ import { JSONDisplay } from 'tapis-ui/_common';
 import { fileInputsComplete } from 'tapis-api/utils/jobFileInputs';
 import { fileInputArraysComplete } from 'tapis-api/utils/jobFileInputArrays';
 import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
-import { execSystemComplete } from 'tapis-api/utils/jobExecSystem';
+import {
+  validateExecSystem,
+  ValidateExecSystemResult,
+} from 'tapis-api/utils/jobExecSystem';
 import { StepSummaryField } from '../components';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Jobs } from '@tapis/tapis-typescript';
@@ -16,7 +19,8 @@ import arrayStyles from '../FieldArray.module.scss';
 export const JobSubmit: React.FC = () => {
   const { job, app, systems } = useJobLauncher();
   const isComplete =
-    execSystemComplete(job, app, systems) &&
+    validateExecSystem(job, app, systems) ===
+      ValidateExecSystemResult.Complete &&
     jobRequiredFieldsComplete(job) &&
     fileInputsComplete(app, job.fileInputs ?? []) &&
     fileInputArraysComplete(app, job.fileInputArrays ?? []);
@@ -68,7 +72,7 @@ export const JobSubmit: React.FC = () => {
 export const JobSubmitSummary: React.FC = () => {
   const { app, job, systems } = useJobLauncher();
   const isComplete =
-    execSystemComplete(job, app, systems) &&
+    validateExecSystem(job, app, systems) &&
     jobRequiredFieldsComplete(job) &&
     fileInputsComplete(app, job.fileInputs ?? []) &&
     fileInputArraysComplete(app, job.fileInputArrays ?? []);

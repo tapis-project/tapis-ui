@@ -5,7 +5,8 @@ import { tapisSystem } from 'fixtures/systems.fixtures';
 import {
   computeDefaultQueue,
   computeDefaultSystem,
-  execSystemComplete,
+  validateExecSystem,
+  ValidateExecSystemResult,
 } from './jobExecSystem';
 
 describe('Job Exec System utils', () => {
@@ -58,23 +59,32 @@ describe('Job Exec System utils', () => {
     });
   });
   it('detects a complete job request that satisfies exec system options', () => {
-    expect(execSystemComplete({}, tapisApp, [tapisSystem])).toBe(true);
+    expect(validateExecSystem({}, tapisApp, [tapisSystem])).toBe(
+      ValidateExecSystemResult.Complete
+    );
   });
-  it('detects a complete job request if a job is a Fork job', () => {
+  it('skips queue validation if a complete job request will be a FORK job', () => {
     expect(
-      execSystemComplete({ jobType: Apps.JobTypeEnum.Fork }, tapisApp, [
+      validateExecSystem({ jobType: Apps.JobTypeEnum.Fork }, tapisApp, [
         tapisSystem,
       ])
-    ).toBe(true);
+    ).toBe(ValidateExecSystemResult.Complete);
   });
-  it('detects an incomplete job request if an exec system is not specified', () => {
+  it('detects an invalid job request if the specified exec system is missing', () => {
+    expect(validateExecSystem({}, tapisApp, [])).toBe(
+      ValidateExecSystemResult.ErrorExecSystemNotFound
+    );
+  });
+  it('detects an invalid job request if an exec system is not specified', () => {
     const tapisAppNoSystem = JSON.parse(
       JSON.stringify(tapisApp)
     ) as Apps.TapisApp;
     tapisAppNoSystem.jobAttributes!.execSystemId = undefined;
-    expect(execSystemComplete({}, tapisAppNoSystem, [])).toBe(false);
+    expect(validateExecSystem({}, tapisAppNoSystem, [])).toBe(
+      ValidateExecSystemResult.ErrorNoExecSystem
+    );
   });
-  it('detects an incomplete job request if a queue cannot be found', () => {
+  it('detects an invalid job request if a queue cannot be found', () => {
     const tapisAppNoQueue = JSON.parse(
       JSON.stringify(tapisApp)
     ) as Apps.TapisApp;
@@ -84,7 +94,25 @@ describe('Job Exec System utils', () => {
     ) as Systems.TapisSystem;
     tapisSystemNoDefaultQueue.batchDefaultLogicalQueue = undefined;
     expect(
-      execSystemComplete({}, tapisAppNoQueue, [tapisSystemNoDefaultQueue])
-    ).toBe(false);
+      validateExecSystem({}, tapisAppNoQueue, [tapisSystemNoDefaultQueue])
+    ).toBe(ValidateExecSystemResult.ErrorNoQueue);
+  });
+  it('detects an invalid job request if the job is a batch job but the selected system has no queues', () => {
+    const tapisSystemNoQueue = JSON.parse(
+      JSON.stringify(tapisSystem)
+    ) as Systems.TapisSystem;
+    tapisSystemNoQueue.batchLogicalQueues = [];
+    expect(
+      validateExecSystem({ jobType: Apps.JobTypeEnum.Batch }, tapisApp, [
+        tapisSystemNoQueue,
+      ])
+    ).toBe(ValidateExecSystemResult.ErrorExecSystemNoQueues);
+  });
+  it('detects an invalid job request if the job specifies a queue that the exec system does not have', () => {
+    expect(
+      validateExecSystem({ execSystemLogicalQueue: 'badQueue' }, tapisApp, [
+        tapisSystem,
+      ])
+    ).toBe(ValidateExecSystemResult.ErrorQueueNotFound);
   });
 });

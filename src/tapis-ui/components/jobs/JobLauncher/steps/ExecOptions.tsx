@@ -13,6 +13,8 @@ import {
   computeDefaultQueue,
   computeDefaultSystem,
   computeDefaultJobType,
+  validateExecSystem,
+  ValidateExecSystemResult,
 } from 'tapis-api/utils/jobExecSystem';
 import { capitalize } from './utils';
 import * as Yup from 'yup';
@@ -346,7 +348,7 @@ const validationSchema = Yup.object({
   execSystemExecDir: Yup.string(),
   execSystemInputDir: Yup.string(),
   execSystemOutputDir: Yup.string(),
-  jobType: Yup.string().required(),
+  jobType: Yup.string(),
   nodeCount: Yup.number(),
   coresPerNode: Yup.number(),
   memoryMB: Yup.number(),
@@ -367,48 +369,56 @@ type QueueErrors = {
 
 const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
   return (values: Partial<Jobs.ReqSubmitJob>) => {
-    const {
-      execSystemId,
-      execSystemLogicalQueue,
-      nodeCount,
-      coresPerNode,
-      memoryMB,
-      maxMinutes,
-      jobType,
-    } = values;
+    const { nodeCount, coresPerNode, memoryMB, maxMinutes, jobType } = values;
     const errors: QueueErrors = {};
 
-    const computedExecSystemId =
-      execSystemId ?? app.jobAttributes?.execSystemId;
-    if (!computedExecSystemId) {
+    const validation = validateExecSystem(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    if (validation === ValidateExecSystemResult.ErrorNoExecSystem) {
       errors.execSystemId = `This app does not have a default execution system. You must specify one for this job`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorExecSystemNotFound) {
+      errors.execSystemId = `The specified exec system cannot be found`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorExecSystemNoQueues) {
+      errors.execSystemId = `The specified exec system is not capable of batch jobs`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorNoQueue) {
+      errors.execSystemLogicalQueue = `Neither the application nor the selected system specifies a default queue. You must specify one for this job`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorQueueNotFound) {
+      errors.execSystemLogicalQueue = `The specified queue cannot be found on the selected system`;
+    }
+
+    // Skip queue validation if the job is a FORK job
+    if (
+      jobType === Apps.JobTypeEnum.Fork ||
+      computeDefaultJobType(values as Partial<Jobs.ReqSubmitJob>, app, systems)
+        ?.jobType === Apps.JobTypeEnum.Fork
+    ) {
       return errors;
     }
 
-    if (jobType !== Apps.JobTypeEnum.Batch) {
-      return errors;
-    }
-
-    const systemDefaultLogicalQueue = systems.find(
-      (system) => system.id === computedExecSystemId
-    )?.batchDefaultLogicalQueue;
-    const computedLogicalQueue =
-      execSystemLogicalQueue ??
-      app.jobAttributes?.execSystemLogicalQueue ??
-      systemDefaultLogicalQueue;
-
-    if (!computedLogicalQueue) {
-      errors.execSystemLogicalQueue = `This app does not specify a default logical queue. You must specify one for this batch job`;
-      return errors;
-    }
-
+    const computedExecSystemId = computeDefaultSystem(app).systemId;
+    const computedLogicalQueue = computeDefaultQueue(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    )?.queue;
     const queue = systems
       .find((system) => system.id === computedExecSystemId)
       ?.batchLogicalQueues?.find(
         (queue) => queue.name === computedLogicalQueue
       );
     if (!queue) {
-      errors.execSystemLogicalQueue = `The specified logical queue does not exist on the selected execution system`;
+      errors.execSystemLogicalQueue = `The specified queue does not exist on the selected execution system`;
       return errors;
     }
 

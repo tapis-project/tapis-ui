@@ -139,35 +139,69 @@ export const computeDefaultJobType = (
   };
 };
 
-export const execSystemComplete = (
+export enum ValidateExecSystemResult {
+  Complete = 'COMPLETE',
+  ErrorNoExecSystem = 'ERROR_NO_EXEC_SYSTEM',
+  ErrorExecSystemNotFound = 'ERROR_EXEC_SYSTEM_NOT_FOUND',
+  ErrorExecSystemNoQueues = 'ERROR_EXEC_SYSTEM_NO_QUEUES',
+  ErrorNoQueue = 'ERROR_NO_QUEUE',
+  ErrorQueueNotFound = 'ERROR_QUEUE_NOT_FOUND',
+}
+
+export const validateExecSystem = (
   job: Partial<Jobs.ReqSubmitJob>,
   app: Apps.TapisApp,
   systems: Array<Systems.TapisSystem>
-) => {
+): ValidateExecSystemResult => {
   const defaultSystem = computeDefaultSystem(app);
 
   // Check that an exec system can be computed
   if (!job.execSystemId && !defaultSystem?.systemId) {
-    return false;
+    return ValidateExecSystemResult.ErrorNoExecSystem;
   }
 
-  // Check that a job type has been specified
-  if (!job.jobType && !app.jobType) {
-    return false;
+  const computedSystem = systems.find(
+    (system) => system.id === (job.execSystemId ?? defaultSystem?.systemId)
+  );
+  if (!computedSystem) {
+    return ValidateExecSystemResult.ErrorExecSystemNotFound;
   }
-  // If the job type will be a batch job, ensure that a queue is specified
+
+  // If the job will be a FORK job, skip queue validation
+  const computedJobType = computeDefaultJobType(job, app, systems);
   if (
-    (!!job.jobType && job.jobType === Apps.JobTypeEnum.Batch) ||
-    (!job.jobType && app.jobType === Apps.JobTypeEnum.Batch)
+    job.jobType !== Apps.JobTypeEnum.Batch &&
+    computedJobType.jobType === Apps.JobTypeEnum.Fork
   ) {
-    // Check to see if the job has a specified queue
-    if (!job.execSystemLogicalQueue) {
-      // If no queue exists, there must be a fallback to the app or system default
-      const defaultQueue = computeDefaultQueue(job, app, systems);
-      if (!defaultQueue.source) {
-        return false;
-      }
-    }
+    return ValidateExecSystemResult.Complete;
   }
-  return true;
+
+  // If the job will be a BATCH job, make sure that the selected execution system
+  // has queues
+  if (!computedSystem.batchLogicalQueues?.length) {
+    return ValidateExecSystemResult.ErrorExecSystemNoQueues;
+  }
+
+  const defaultQueue = computeDefaultQueue(job, app, systems);
+
+  // If the job type will be a BATCH job, ensure that a queue is specified
+  // If no queue exists, there must be a fallback to the app or system default
+  if (!job.execSystemLogicalQueue && !defaultQueue.queue) {
+    return ValidateExecSystemResult.ErrorNoQueue;
+  }
+
+  // Check to see that the logical queue selected exists on the selected system
+  const selectedSystem = systems.find(
+    (system) => system.id === (job.execSystemId ?? defaultSystem?.systemId)
+  );
+  if (
+    !selectedSystem?.batchLogicalQueues?.some(
+      (queue) =>
+        queue.name === (job.execSystemLogicalQueue ?? defaultQueue.queue)
+    )
+  ) {
+    return ValidateExecSystemResult.ErrorQueueNotFound;
+  }
+
+  return ValidateExecSystemResult.Complete;
 };
