@@ -9,6 +9,7 @@ import {
   useSchedulerProfiles,
 } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
+import { JobStep } from '.';
 import jobSteps from './steps';
 
 type JobLauncherWizardProps = {
@@ -16,54 +17,54 @@ type JobLauncherWizardProps = {
   appVersion: string;
 };
 
-const JobLauncherWizardRender: React.FC = () => {
-  const { add, job, app, systems } = useJobLauncher();
+export const JobLauncherWizardRender: React.FC<{ jobSteps: Array<JobStep> }> =
+  ({ jobSteps }) => {
+    const { add, job, app, systems } = useJobLauncher();
 
-  const formSubmit = useCallback(
-    (value: Partial<Jobs.ReqSubmitJob>) => {
-      console.log('Values', value);
-      if (value.jobType === Apps.JobTypeEnum.Fork) {
-        value.execSystemLogicalQueue = undefined;
-      }
-      if (value.isMpi) {
-        value.cmdPrefix = undefined;
-      } else {
-        value.mpiCmd = undefined;
-      }
-      if (value.parameterSet) {
-        value.parameterSet = {
-          ...job.parameterSet,
-          ...value.parameterSet,
+    const formSubmit = useCallback(
+      (value: Partial<Jobs.ReqSubmitJob>) => {
+        if (value.jobType === Apps.JobTypeEnum.Fork) {
+          value.execSystemLogicalQueue = undefined;
+        }
+        if (value.isMpi) {
+          value.cmdPrefix = undefined;
+        } else {
+          value.mpiCmd = undefined;
+        }
+        if (value.parameterSet) {
+          value.parameterSet = {
+            ...job.parameterSet,
+            ...value.parameterSet,
+          };
+        }
+        add(value);
+      },
+      [add, job]
+    );
+
+    // Map Array of JobSteps into an array of WizardSteps
+    const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => {
+      return jobSteps.map((jobStep) => {
+        const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
+        return {
+          initialValues: generateInitialValues({ job, app, systems }),
+          // generate a validation function from the JobStep's validateThunk, given the current hook values
+          validate: validateThunk
+            ? validateThunk({ job, app, systems })
+            : undefined,
+          ...stepProps,
         };
-      }
-      add(value);
-    },
-    [add, job]
-  );
+      });
+    }, [app, job, systems, jobSteps]);
 
-  // Map Array of JobSteps into an array of WizardSteps
-  const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => {
-    return jobSteps.map((jobStep) => {
-      const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
-      return {
-        initialValues: generateInitialValues({ job, app, systems }),
-        // generate a validation function from the JobStep's validateThunk, given the current hook values
-        validate: validateThunk
-          ? validateThunk({ job, app, systems })
-          : undefined,
-        ...stepProps,
-      };
-    });
-  }, [app, job, systems]);
-
-  return (
-    <Wizard
-      steps={steps}
-      memo={`${app.id}${app.version}`}
-      formSubmit={formSubmit}
-    />
-  );
-};
+    return (
+      <Wizard
+        steps={steps}
+        memo={`${app.id}${app.version}`}
+        formSubmit={formSubmit}
+      />
+    );
+  };
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
@@ -106,7 +107,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
         <JobLauncherProvider
           value={{ app, systems, defaultValues, schedulerProfiles }}
         >
-          <JobLauncherWizardRender />
+          <JobLauncherWizardRender jobSteps={jobSteps} />
         </JobLauncherProvider>
       )}
     </QueryWrapper>

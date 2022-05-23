@@ -9,6 +9,14 @@ import {
 } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
 import { Collapse } from 'tapis-ui/_common';
+import {
+  computeDefaultQueue,
+  computeDefaultSystem,
+  computeDefaultJobType,
+  validateExecSystem,
+  ValidateExecSystemResult,
+} from 'tapis-api/utils/jobExecSystem';
+import { capitalize } from './utils';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { JobStep, JobLauncherProviderParams } from '../';
@@ -18,39 +26,6 @@ const getLogicalQueues = (system?: Systems.TapisSystem) =>
 
 const getSystem = (systems: Array<Systems.TapisSystem>, systemId?: string) =>
   !!systemId ? systems.find((system) => system.id === systemId) : undefined;
-
-/**
- * Returns a default logical queue based on the following priority:
- * - If the selected system has the logical queue specified in the app, use that
- * - If the selected system has a default logical queue and the one in the app is not present, use that
- * - If no app logical queue is specified and no system default queue is specified, return undefined;
- */
-export const getLogicalQueue = (
-  app: Apps.TapisApp,
-  systems: Array<Systems.TapisSystem>,
-  systemId?: string
-): string | undefined => {
-  if (!systemId) {
-    return undefined;
-  }
-  const system = getSystem(systems, systemId);
-  if (!system) {
-    return undefined;
-  }
-  const queues = getLogicalQueues(system);
-  if (!!app.jobAttributes?.execSystemLogicalQueue) {
-    const selectedSystemHasAppDefault = queues.some(
-      (queue) => queue.name === app.jobAttributes?.execSystemLogicalQueue
-    );
-    if (selectedSystemHasAppDefault) {
-      return app.jobAttributes?.execSystemLogicalQueue;
-    }
-  }
-  if (!!system.batchDefaultLogicalQueue) {
-    return system.batchDefaultLogicalQueue;
-  }
-  return undefined;
-};
 
 const SystemSelector: React.FC = () => {
   const { setFieldValue, values } = useFormikContext();
@@ -63,17 +38,49 @@ const SystemSelector: React.FC = () => {
   const [selectableSystems, setSelectableSystems] =
     useState<Array<Systems.TapisSystem>>(systems);
 
-  const selectedSystem = useMemo(
-    () => (values as Jobs.ReqSubmitJob)?.execSystemId,
-    [values]
-  );
-
-  const isBatch = useMemo(
-    () => (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch,
-    [values]
-  );
+  const {
+    defaultSystemLabel,
+    defaultQueueLabel,
+    defaultJobTypeLabel,
+    isBatch,
+    selectedSystem,
+  } = useMemo(() => {
+    // Compute labels for when undefined values are selected for systems, queues or jobType
+    const { source: systemSource, systemId } = computeDefaultSystem(app);
+    const defaultSystemLabel = systemSource
+      ? `App default (${systemId})`
+      : 'Please select a system';
+    const { source: queueSource, queue } = computeDefaultQueue(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    const defaultQueueLabel = queueSource
+      ? `${capitalize(queueSource)} default (${queue})`
+      : 'Please select a queue';
+    const { source: jobTypeSource, jobType } = computeDefaultJobType(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    const defaultJobTypeLabel = `${capitalize(
+      jobTypeSource
+    )} default (${jobType})`;
+    const isBatch =
+      (values as Jobs.ReqSubmitJob)?.jobType === Apps.JobTypeEnum.Batch ||
+      jobType === Apps.JobTypeEnum.Batch;
+    const selectedSystem = (values as Jobs.ReqSubmitJob)?.execSystemId;
+    return {
+      defaultSystemLabel,
+      defaultQueueLabel,
+      defaultJobTypeLabel,
+      isBatch,
+      selectedSystem,
+    };
+  }, [values, app, systems]);
 
   useEffect(() => {
+    // Handle changes to selectable execSystems and execSystemLogicalQueues
     const validSystems = isBatch
       ? systems.filter((system) => !!system.batchLogicalQueues?.length)
       : systems;
@@ -81,18 +88,18 @@ const SystemSelector: React.FC = () => {
     if (!validSystems.some((system) => system.id === selectedSystem)) {
       // If current system is invalid (like a system with no logical queues for a batch job)
       // then use the application default
-      setFieldValue('execSystemId', app.jobAttributes?.execSystemId);
+      setFieldValue('execSystemId', undefined);
     }
     if (!isBatch) {
       setFieldValue('execSystemLogicalQueue', undefined);
     }
-    const logicalQueue = isBatch
-      ? getLogicalQueue(app, validSystems, selectedSystem)
-      : undefined;
-    const system = getSystem(validSystems, selectedSystem);
+    const system = getSystem(
+      validSystems,
+      selectedSystem ?? app.jobAttributes?.execSystemId
+    );
     const queues = getLogicalQueues(system);
     setQueues(queues);
-    setFieldValue('execSystemLogicalQueue', logicalQueue);
+    setFieldValue('execSystemLogicalQueue', undefined);
   }, [
     systems,
     isBatch,
@@ -110,12 +117,16 @@ const SystemSelector: React.FC = () => {
         description="The execution system for this job"
         label="Execution System"
         required={true}
+        data-testid="execSystemId"
       >
-        <option value={undefined} />
+        <option value={undefined} label={defaultSystemLabel} />
         {selectableSystems.map((system) => (
-          <option value={system.id} key={`execsystem-select-${system.id}`}>
-            {system.id}
-          </option>
+          <option
+            value={system.id}
+            key={`execsystem-select-${system.id}`}
+            label={system.id}
+            data-testid={`execSystemId-${system.id}`}
+          />
         ))}
       </FormikSelect>
       <FormikSelect
@@ -123,9 +134,11 @@ const SystemSelector: React.FC = () => {
         label="Job Type"
         description="Jobs can either be Batch or Fork"
         required={true}
+        data-testid="jobType"
       >
-        <option value={Apps.JobTypeEnum.Batch}>Batch</option>
-        <option value={Apps.JobTypeEnum.Fork}>Fork</option>
+        <option value={undefined} label={defaultJobTypeLabel} />
+        <option value={Apps.JobTypeEnum.Batch} label="Batch" />
+        <option value={Apps.JobTypeEnum.Fork} label="Fork" />
       </FormikSelect>
       {isBatch && (
         <FormikSelect
@@ -133,12 +146,16 @@ const SystemSelector: React.FC = () => {
           description="The batch queue on this execution system"
           label="Batch Logical Queue"
           required={false}
+          disabled={queues.length === 0}
+          data-testid="execSystemLogicalQueue"
         >
-          <option value={undefined} />
+          <option value={undefined} label={defaultQueueLabel} />
           {queues.map((queue) => (
-            <option value={queue.name} key={`queue-select-${queue.name}`}>
-              {queue.name}
-            </option>
+            <option
+              value={queue.name}
+              key={`queue-select-${queue.name}`}
+              label={queue.name}
+            />
           ))}
         </FormikSelect>
       )}
@@ -281,21 +298,37 @@ export const ExecOptions: React.FC = () => {
 };
 
 export const ExecOptionsSummary: React.FC = () => {
-  const { job } = useJobLauncher();
-  const { execSystemId, execSystemLogicalQueue, isMpi, mpiCmd, cmdPrefix } =
-    job;
-  const summary = execSystemId
-    ? `${execSystemId} ${
-        execSystemLogicalQueue ? '(' + execSystemLogicalQueue + ')' : ''
-      }`
-    : undefined;
+  const { job, app, systems } = useJobLauncher();
+  const { isMpi, mpiCmd, cmdPrefix } = job;
+
+  const { computedSystem, computedQueue, computedJobType } = useMemo(() => {
+    const { execSystemLogicalQueue, execSystemId, jobType } = job;
+    const computedSystem = execSystemId ?? computeDefaultSystem(app)?.systemId;
+    const computedQueue =
+      execSystemLogicalQueue ?? computeDefaultQueue(job, app, systems)?.queue;
+    const computedJobType =
+      jobType ?? computeDefaultJobType(job, app, systems)?.jobType;
+    return {
+      computedSystem,
+      computedQueue,
+      computedJobType,
+    };
+  }, [job, app, systems]);
+
   return (
     <div>
       <StepSummaryField
-        field={summary}
+        field={computedSystem}
         error="An execution system is required"
         key="execution-system-id-summary"
       />
+      {computedJobType === Apps.JobTypeEnum.Batch && (
+        <StepSummaryField
+          field={computedQueue}
+          error="A logical queue is required"
+          key="execution-system-queue-summary"
+        />
+      )}
       <StepSummaryField
         field={`${
           isMpi
@@ -314,7 +347,7 @@ const validationSchema = Yup.object({
   execSystemExecDir: Yup.string(),
   execSystemInputDir: Yup.string(),
   execSystemOutputDir: Yup.string(),
-  jobType: Yup.string().required(),
+  jobType: Yup.string(),
   nodeCount: Yup.number(),
   coresPerNode: Yup.number(),
   memoryMB: Yup.number(),
@@ -346,37 +379,61 @@ const validateThunk = ({ app, systems }: JobLauncherProviderParams) => {
     } = values;
     const errors: QueueErrors = {};
 
-    const computedExecSystemId =
-      execSystemId ?? app.jobAttributes?.execSystemId;
-    if (!computedExecSystemId) {
+    const validation = validateExecSystem(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    if (validation === ValidateExecSystemResult.ErrorNoExecSystem) {
       errors.execSystemId = `This app does not have a default execution system. You must specify one for this job`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorExecSystemNotFound) {
+      errors.execSystemId = `The specified exec system cannot be found`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorExecSystemNoQueues) {
+      errors.execSystemId = `The specified exec system is not capable of batch jobs`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorNoQueue) {
+      errors.execSystemLogicalQueue = `Neither the application nor the selected system specifies a default queue. You must specify one for this job`;
+    }
+
+    if (validation === ValidateExecSystemResult.ErrorQueueNotFound) {
+      errors.execSystemLogicalQueue = `The specified queue cannot be found on the selected system`;
+    }
+
+    // Skip queue validation if the job is a FORK job
+    if (
+      jobType === Apps.JobTypeEnum.Fork ||
+      computeDefaultJobType(values as Partial<Jobs.ReqSubmitJob>, app, systems)
+        ?.jobType === Apps.JobTypeEnum.Fork
+    ) {
       return errors;
     }
 
-    if (jobType !== Apps.JobTypeEnum.Batch) {
+    const computedExecSystem = computeDefaultSystem(app);
+    const computedLogicalQueue = computeDefaultQueue(
+      values as Partial<Jobs.ReqSubmitJob>,
+      app,
+      systems
+    );
+    const selectedSystem = systems.find(
+      (system) => system.id === (execSystemId ?? computedExecSystem.systemId)
+    );
+
+    if (!selectedSystem?.batchLogicalQueues?.length) {
+      errors.execSystemLogicalQueue = `The selected system does not have any batch logical queues`;
       return errors;
     }
 
-    const systemDefaultLogicalQueue = systems.find(
-      (system) => system.id === computedExecSystemId
-    )?.batchDefaultLogicalQueue;
-    const computedLogicalQueue =
-      execSystemLogicalQueue ??
-      app.jobAttributes?.execSystemLogicalQueue ??
-      systemDefaultLogicalQueue;
-
-    if (!computedLogicalQueue) {
-      errors.execSystemLogicalQueue = `This app does not specify a default logical queue. You must specify one for this batch job`;
-      return errors;
-    }
-
-    const queue = systems
-      .find((system) => system.id === computedExecSystemId)
-      ?.batchLogicalQueues?.find(
-        (queue) => queue.name === computedLogicalQueue
-      );
+    const queue = selectedSystem?.batchLogicalQueues?.find(
+      (queue) =>
+        queue.name === (execSystemLogicalQueue ?? computedLogicalQueue?.queue)
+    );
     if (!queue) {
-      errors.execSystemLogicalQueue = `The specified logical queue does not exist on the selected execution system`;
+      errors.execSystemLogicalQueue = `The specified queue does not exist on the selected execution system`;
       return errors;
     }
 
@@ -421,10 +478,8 @@ const generateInitialValues = ({
   app,
   systems,
 }: JobLauncherProviderParams): Partial<Jobs.ReqSubmitJob> => ({
-  execSystemId: job.execSystemId ?? app.jobAttributes?.execSystemId,
-  execSystemLogicalQueue: job.execSystemId
-    ? getLogicalQueue(app, systems, job.execSystemId)
-    : undefined,
+  execSystemId: job.execSystemId,
+  execSystemLogicalQueue: job.execSystemLogicalQueue,
   jobType: job.jobType,
   execSystemExecDir: job.execSystemExecDir,
   execSystemInputDir: job.execSystemInputDir,
