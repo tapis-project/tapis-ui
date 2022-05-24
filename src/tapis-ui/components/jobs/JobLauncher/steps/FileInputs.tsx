@@ -13,12 +13,12 @@ import {
 } from 'tapis-api/utils/jobFileInputs';
 import { Collapse } from 'tapis-ui/_common';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
-import { FormikJobStepWrapper } from '../components';
 import {
   FormikInput,
   FormikCheck,
   FormikTapisFile,
 } from 'tapis-ui/_common/FieldWrapperFormik';
+import { JobStep } from '..';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 
@@ -313,31 +313,8 @@ const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 };
 
 export const FileInputs: React.FC = () => {
-  const { job } = useJobLauncher();
-
-  const validationSchema = Yup.object().shape({
-    fileInputs: Yup.array().of(
-      Yup.object().shape({
-        name: Yup.string().min(1).required('A fileInput name is required'),
-        sourceUrl: Yup.string().min(1).required('A sourceUrl is required'),
-        targetPath: Yup.string().min(1).required('A targetPath is required'),
-        autoMountLocal: Yup.boolean(),
-      })
-    ),
-  });
-
-  const initialValues = useMemo(
-    () => ({
-      fileInputs: job.fileInputs,
-    }),
-    [job]
-  );
-
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
       <h2>File Inputs</h2>
       <FieldArray
         name="fileInputs"
@@ -351,7 +328,7 @@ export const FileInputs: React.FC = () => {
           );
         }}
       />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -416,3 +393,27 @@ export const FileInputsSummary: React.FC = () => {
     </div>
   );
 };
+
+const validationSchema = Yup.object().shape({
+  fileInputs: Yup.array().of(
+    Yup.object().shape({
+      name: Yup.string().min(1).required('A fileInput name is required'),
+      sourceUrl: Yup.string().min(1).required('A sourceUrl is required'),
+      targetPath: Yup.string().min(1).required('A targetPath is required'),
+      autoMountLocal: Yup.boolean(),
+    })
+  ),
+});
+
+const step: JobStep = {
+  id: 'fileInputs',
+  name: 'File Inputs',
+  render: <FileInputs />,
+  summary: <FileInputsSummary />,
+  validationSchema,
+  generateInitialValues: ({ job }) => ({
+    fileInputs: job.fileInputs,
+  }),
+};
+
+export default step;

@@ -1,128 +1,70 @@
 import React, { useCallback, useMemo } from 'react';
 import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'tapis-ui/_wrappers';
-import { WizardSubmitWrapper } from 'tapis-ui/_wrappers/Wizard';
-import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { JobStart, JobStartSummary } from './steps/JobStart';
-import { FileInputs, FileInputsSummary } from './steps/FileInputs';
-import { ExecOptions, ExecOptionsSummary } from './steps/ExecOptions';
-import { JobJson, JobJsonSummary } from './steps/JobJson';
-import { Archive, ArchiveSummary } from './steps/Archive';
-import { EnvVariables, EnvVariablesSummary } from './steps/EnvVariables';
-import { Args, ArgsSummary } from './steps/AppArgs';
-import {
-  FileInputArrays,
-  FileInputArraysSummary,
-} from './steps/FileInputArrays';
-import {
-  generateRequiredFileInputsFromApp,
-  fileInputsComplete,
-} from 'tapis-api/utils/jobFileInputs';
-import {
-  generateRequiredFileInputArraysFromApp,
-  fileInputArraysComplete,
-} from 'tapis-api/utils/jobFileInputArrays';
-import {
-  SchedulerOptions,
-  SchedulerOptionsSummary,
-} from './steps/SchedulerOptions';
-import { generateJobArgsFromSpec } from 'tapis-api/utils/jobArgs';
-import { jobRequiredFieldsComplete } from 'tapis-api/utils/jobRequiredFields';
-import { Button } from 'reactstrap';
-import { useSubmit } from 'tapis-hooks/jobs';
+import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
+import generateJobDefaults from 'tapis-api/utils/jobDefaults';
 import {
   useList as useSystemsList,
   useSchedulerProfiles,
 } from 'tapis-hooks/systems';
 import { useJobLauncher, JobLauncherProvider } from './components';
+import { JobStep } from '.';
+import jobSteps from './steps';
 
 type JobLauncherWizardProps = {
   appId: string;
   appVersion: string;
 };
 
-const generateDefaultValues = ({
-  app,
-  systems,
-}: {
-  app?: Apps.TapisApp;
-  systems: Array<Systems.TapisSystem>;
-}): Partial<Jobs.ReqSubmitJob> => {
-  if (!app) {
-    return {};
-  }
-  const systemDefaultQueue = systems.find(
-    (system) => system.id === app.jobAttributes?.execSystemId
-  )?.batchDefaultLogicalQueue;
-  const defaultValues: Partial<Jobs.ReqSubmitJob> = {
-    name: `${app.id}-${app.version}-${new Date().toISOString().slice(0, -5)}`,
-    description: app.description,
-    appId: app.id,
-    appVersion: app.version,
-    archiveOnAppError: app.jobAttributes?.archiveOnAppError ?? true,
-    archiveSystemId: app.jobAttributes?.archiveSystemId,
-    archiveSystemDir: app.jobAttributes?.archiveSystemDir,
-    nodeCount: app.jobAttributes?.nodeCount,
-    coresPerNode: app.jobAttributes?.coresPerNode,
-    jobType: app.jobType,
-    memoryMB: app.jobAttributes?.memoryMB,
-    maxMinutes: app.jobAttributes?.maxMinutes,
-    isMpi: app.jobAttributes?.isMpi,
-    mpiCmd: app.jobAttributes?.mpiCmd,
-    cmdPrefix: app.jobAttributes?.cmdPrefix,
-    execSystemId: app.jobAttributes?.execSystemId,
-    execSystemLogicalQueue:
-      app.jobAttributes?.execSystemLogicalQueue ?? systemDefaultQueue,
-    fileInputs: generateRequiredFileInputsFromApp(app),
-    fileInputArrays: generateRequiredFileInputArraysFromApp(app),
-    parameterSet: {
-      appArgs: generateJobArgsFromSpec(
-        app.jobAttributes?.parameterSet?.appArgs ?? []
-      ),
-      containerArgs: generateJobArgsFromSpec(
-        app.jobAttributes?.parameterSet?.containerArgs ?? []
-      ),
-      schedulerOptions: generateJobArgsFromSpec(
-        app.jobAttributes?.parameterSet?.schedulerOptions ?? []
-      ),
-      archiveFilter: app.jobAttributes?.parameterSet?.archiveFilter,
-      envVariables: app.jobAttributes?.parameterSet?.envVariables,
-    },
-  };
-  return defaultValues;
-};
+export const JobLauncherWizardRender: React.FC<{ jobSteps: Array<JobStep> }> =
+  ({ jobSteps }) => {
+    const { add, job, app, systems } = useJobLauncher();
 
-const JobLauncherWizardSubmit: React.FC<{ app: Apps.TapisApp }> = ({ app }) => {
-  const { job } = useJobLauncher();
-  const isComplete =
-    jobRequiredFieldsComplete(job) &&
-    fileInputsComplete(app, job.fileInputs ?? []) &&
-    fileInputArraysComplete(app, job.fileInputArrays ?? []);
-  const { isLoading, error, isSuccess, submit, data } = useSubmit(
-    app.id!,
-    app.version!
-  );
-  const onSubmit = useCallback(() => {
-    submit(job as Jobs.ReqSubmitJob);
-  }, [submit, job]);
-  return (
-    <WizardSubmitWrapper
-      isLoading={isLoading}
-      error={error}
-      success={
-        isSuccess
-          ? `Successfully submitted job ${data?.result?.uuid ?? ''}`
-          : ''
-      }
-      title={`Job Submission Summary`}
-    >
-      <Button disabled={!isComplete} color="primary" onClick={onSubmit}>
-        Submit
-      </Button>
-    </WizardSubmitWrapper>
-  );
-};
+    const formSubmit = useCallback(
+      (value: Partial<Jobs.ReqSubmitJob>) => {
+        if (value.jobType === Apps.JobTypeEnum.Fork) {
+          value.execSystemLogicalQueue = undefined;
+        }
+        if (value.isMpi) {
+          value.cmdPrefix = undefined;
+        } else {
+          value.mpiCmd = undefined;
+        }
+        if (value.parameterSet) {
+          value.parameterSet = {
+            ...job.parameterSet,
+            ...value.parameterSet,
+          };
+        }
+        add(value);
+      },
+      [add, job]
+    );
+
+    // Map Array of JobSteps into an array of WizardSteps
+    const steps: Array<WizardStep<Jobs.ReqSubmitJob>> = useMemo(() => {
+      return jobSteps.map((jobStep) => {
+        const { generateInitialValues, validateThunk, ...stepProps } = jobStep;
+        return {
+          initialValues: generateInitialValues({ job, app, systems }),
+          // generate a validation function from the JobStep's validateThunk, given the current hook values
+          validate: validateThunk
+            ? validateThunk({ job, app, systems })
+            : undefined,
+          ...stepProps,
+        };
+      });
+    }, [app, job, systems, jobSteps]);
+
+    return (
+      <Wizard
+        steps={steps}
+        memo={`${app.id}${app.version}`}
+        formSubmit={formSubmit}
+      />
+    );
+  };
 
 const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
@@ -152,66 +94,9 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     [schedulerProfilesData]
   );
   const defaultValues = useMemo(
-    () => generateDefaultValues({ app, systems }),
+    () => generateJobDefaults({ app, systems }),
     [app, systems]
   );
-
-  const generateSteps = (): Array<WizardStep> => [
-    {
-      id: 'start',
-      name: `Job Name`,
-      render: <JobStart />,
-      summary: <JobStartSummary />,
-    },
-    {
-      id: 'execution',
-      name: 'Execution Options',
-      render: <ExecOptions />,
-      summary: <ExecOptionsSummary />,
-    },
-    {
-      id: 'fileInputs',
-      name: 'File Inputs',
-      render: <FileInputs />,
-      summary: <FileInputsSummary />,
-    },
-    {
-      id: 'fileInputArrays',
-      name: 'File Input Arrays',
-      render: <FileInputArrays />,
-      summary: <FileInputArraysSummary />,
-    },
-    {
-      id: 'args',
-      name: 'Arguments',
-      render: <Args />,
-      summary: <ArgsSummary />,
-    },
-    {
-      id: 'envVariables',
-      name: 'Environment Variables',
-      render: <EnvVariables />,
-      summary: <EnvVariablesSummary />,
-    },
-    {
-      id: 'schedulerOptions',
-      name: 'Scheduler Options',
-      render: <SchedulerOptions />,
-      summary: <SchedulerOptionsSummary />,
-    },
-    {
-      id: 'archiving',
-      name: 'Archiving',
-      render: <Archive />,
-      summary: <ArchiveSummary />,
-    },
-    {
-      id: 'jobJson',
-      name: 'Job JSON',
-      render: <JobJson />,
-      summary: <JobJsonSummary />,
-    },
-  ];
 
   return (
     <QueryWrapper
@@ -222,11 +107,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
         <JobLauncherProvider
           value={{ app, systems, defaultValues, schedulerProfiles }}
         >
-          <Wizard
-            steps={generateSteps()}
-            memo={`${app.id}${app.version}`}
-            renderSubmit={<JobLauncherWizardSubmit app={app} />}
-          />
+          <JobLauncherWizardRender jobSteps={jobSteps} />
         </JobLauncherProvider>
       )}
     </QueryWrapper>
