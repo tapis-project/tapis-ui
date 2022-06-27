@@ -33,11 +33,11 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
         ) : null}
       </Label>
       <Field name={name} as={Component} id={name} />
-      <ErrorMessage name={name} className="form-field__help">
-        {(message) => (
-          <div className={styles['form-field__help']}>{message}</div>
-        )}
-      </ErrorMessage>
+      {meta.error &&(
+        <FormText className={styles['form-field__help']} color="dark">
+          {meta.error}
+        </FormText>
+      )}
       {description && !meta.error && (
         <FormText className={styles['form-field__help']} color="muted">
           {description}
