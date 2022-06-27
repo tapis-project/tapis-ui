@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormGroup, Label, FormText, Badge } from 'reactstrap';
 import styles from './FieldWrapperFormik.module.css';
-import { ErrorMessage, Field, useField } from 'formik';
+import { Field, useField } from 'formik';
 export type FieldWrapperProps = {
   name: string;
   label: string;
@@ -33,11 +33,11 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
         ) : null}
       </Label>
       <Field name={name} as={Component} id={name} />
-      <ErrorMessage name={name} className="form-field__help">
-        {(message) => (
-          <div className={styles['form-field__help']}>{message}</div>
-        )}
-      </ErrorMessage>
+      {meta.error && (
+        <FormText className={styles['form-field__help']} color="dark">
+          {meta.error}
+        </FormText>
+      )}
       {description && !meta.error && (
         <FormText className={styles['form-field__help']} color="muted">
           {description}

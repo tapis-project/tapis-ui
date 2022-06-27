@@ -109,13 +109,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
           + Browse for Files
         </Button>
       </div>
-      {modal && (
-        <FileSelectModal
-          toggle={close}
-          selectMode={{ mode: 'multi', types: ['file', 'dir'] }}
-          onSelect={onSelect}
-        />
-      )}
+      {modal && <FileSelectModal toggle={close} onSelect={onSelect} />}
     </FormGroup>
   );
 };
@@ -175,7 +169,6 @@ const JobInputArrayField: React.FC<JobInputArrayFieldProps> = ({
             label="Source URLs"
             required={true}
             description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
-            key={uuidv4()}
           >
             <SourceUrlsField
               fileInputArrayIndex={index}
@@ -339,12 +332,12 @@ const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({
         required={true}
         description="Input TAPIS files as pathnames, TAPIS URIs or web URLs"
       >
-        {inputArray.sourceUrls?.map((sourceUrl) => (
+        {inputArray.sourceUrls?.map((sourceUrl, index) => (
           <Input
             bsSize="sm"
             defaultValue={sourceUrl}
             disabled={true}
-            key={uuidv4()}
+            key={`fixed-input-array-${inputArray.name}-${index}`}
           />
         ))}
       </FieldWrapper>
@@ -429,7 +422,7 @@ const JobInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
           item={jobInputArray}
           index={index}
           remove={arrayHelpers.remove}
-          key={`fileInputArrays.${index}`}
+          key={`render-fileInputArrays.${index}`}
         />
       ))}
       <Button onClick={() => arrayHelpers.push({ sourceUrls: [''] })} size="sm">
