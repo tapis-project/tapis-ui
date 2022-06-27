@@ -109,12 +109,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
           + Browse for Files
         </Button>
       </div>
-      {modal && (
-        <FileSelectModal
-          toggle={close}
-          onSelect={onSelect}
-        />
-      )}
+      {modal && <FileSelectModal toggle={close} onSelect={onSelect} />}
     </FormGroup>
   );
 };
