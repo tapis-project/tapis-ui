@@ -127,7 +127,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
           />
         ) : (
           <SystemListing
-            className={styles['nav-list']}
+            className={`${styles['nav-list']}`}
             onNavigate={onSystemNavigate}
           />
         )}
