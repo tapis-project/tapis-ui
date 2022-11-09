@@ -9,6 +9,7 @@ import Dashboard from '../Dashboard';
 import Jobs from '../Jobs';
 import Systems from '../Systems';
 import Files from '../Files';
+import Workflows from '../Workflows';
 import UIPatterns from '../UIPatterns';
 
 const Router: React.FC = () => {
@@ -40,6 +41,9 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute path="/files">
         <Files />
+      </ProtectedRoute>
+      <ProtectedRoute path="/workflows">
+        <Workflows />
       </ProtectedRoute>
       <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
