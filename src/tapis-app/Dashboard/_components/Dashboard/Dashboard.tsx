@@ -72,14 +72,6 @@ const Dashboard: React.FC = () => {
       <SectionHeader className="dashboard__section-header">
         Dashboard for {process.env.REACT_APP_TAPIS_TENANT_URL}
       </SectionHeader>
-      <div className={styles.header}>
-        <h5>Welcome to TAPIS-UI</h5>
-        <div>
-          This web application demonstrates how to leverage the TAPIS API and{' '}
-          <i>tapis-ui</i> React components to build a serverless interface for
-          High Performance Computing systems.
-        </div>
-      </div>
       <div className={styles.cards}>
         {accessToken ? (
           <>

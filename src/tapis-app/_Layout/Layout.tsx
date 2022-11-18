@@ -8,7 +8,7 @@ import './Layout.scss';
 const Layout: React.FC = () => {
   const header = (
     <div>
-      <SectionHeader className="tapis-ui__header">TAPIS UI</SectionHeader>
+      <SectionHeader className="tapis-ui__header">TapisUI</SectionHeader>
     </div>
   );
 
