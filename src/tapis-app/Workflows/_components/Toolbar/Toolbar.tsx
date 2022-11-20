@@ -96,11 +96,11 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         )}
         {buttons.includes("createidentity") && (
           <ToolbarButton
-            text="Create Identity"
+            text="New Identity"
             icon="add"
             disabled={false}
             onClick={() => setModal('createidentity')}
-            aria-label="Create archive"
+            aria-label="Create identity"
           />
         )}
         {buttons.includes("addgroupuser") && (

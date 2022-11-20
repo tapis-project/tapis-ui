@@ -19,11 +19,11 @@ const PipelineEditor: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
     <QueryWrapper isLoading={isLoading} error={error}>
       {pipeline ? (
         <div id={`pipeline`}>
-            <h2>{pipeline.id} | <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>View Runs</Link></h2>
+            <h2>{pipeline.id} <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>View Runs</Link></h2>
             
             <div id="tasks">
-              <SectionHeader>Tasks</SectionHeader>
               <Toolbar buttons={["createtask"]} groupId={groupId} pipelineId={pipelineId}/>
+              <SectionHeader>Tasks</SectionHeader>
               {pipeline.tasks?.length ? pipeline.tasks?.map(task => {
                 return (
                   <div id={`task-${task.id}`}>

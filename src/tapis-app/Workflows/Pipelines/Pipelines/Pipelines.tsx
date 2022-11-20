@@ -15,7 +15,7 @@ const Pipelines: React.FC<PipelinesProps> = ({groupId}) => {
             <PipelineList groupId={groupId}/>
           </div>
         ): (
-          <SectionMessage type="info">Select a group</SectionMessage>
+          <SectionMessage type="info">Select a group to view pipelines</SectionMessage>
         )}
     </div>
   )

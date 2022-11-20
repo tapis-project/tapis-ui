@@ -20,7 +20,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({groupId, pipelineId}) => {
             <p>{pipelineRun.uuid}</p>
         </div>
         )) : (
-          <SectionMessage type="info">No pipelineruns</SectionMessage>
+          <SectionMessage type="info">No runs to show for pipeline '{pipelineId}'</SectionMessage>
         )
       }
     </QueryWrapper>

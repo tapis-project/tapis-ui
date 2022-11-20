@@ -22,22 +22,22 @@ const Menu: React.FC = () => {
           </NavItem>
           <NavItem className={styles["nav-item"]}>
             <Link to="/workflows/pipelines">
-              <Button>Pipelines</Button>
+              <Button><Icon name="publications"></Icon> Pipelines</Button>
             </Link>
           </NavItem>
           <NavItem className={styles["nav-item"]}>
             <Link to="/workflows/groups">
-              <Button>Groups</Button>
+              <Button><Icon name="user"></Icon> Groups</Button>
             </Link>
           </NavItem>
           <NavItem className={styles["nav-item"]}>
             <Link to="/workflows/archives">
-              <Button>Archives</Button>
+              <Button><Icon name="folder"></Icon> Archives</Button>
             </Link>
           </NavItem>
           <NavItem className={styles["nav-item"]}>
             <Link to="/workflows/identities">
-              <Button>Identities</Button>
+              <Button><Icon name="user"></Icon> Identities</Button>
             </Link>
           </NavItem>
         </Nav>

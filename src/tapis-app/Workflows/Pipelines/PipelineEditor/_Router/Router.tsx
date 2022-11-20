@@ -10,7 +10,6 @@ import { default as PipelineEditor } from '../PipelineEditor';
 const Router: React.FC = () => {
   return (
     <Switch>
-      Pipeline Editor
       <Route
         path={`/workflows/pipelines/:groupId/:pipelineId`}
         render={({
