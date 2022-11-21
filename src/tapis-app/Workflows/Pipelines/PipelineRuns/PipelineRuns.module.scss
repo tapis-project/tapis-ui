@@ -5,13 +5,20 @@
     margin-bottom: 10px
 }
 
-.pipeline-run-body {
-    padding: 8px;
-    border: 1px solid #dddddd;
-    background-color: #ffffff;
-}
-
 .pipeline-run-body p {
     padding: 0;
     margin: 0;
+}
+
+.section-header {
+    margin-top: 16px;
+    border-bottom: 1px solid #dddddd;
+}
+
+.task-executions {
+    padding-top: 8px;
+}
+
+.task-executions p {
+    padding: 8px;
 }

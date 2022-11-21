@@ -1,10 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Workflows } from "@tapis/tapis-typescript"
-import { useList } from "tapis-hooks/workflows/pipelineruns"
+import { useList as useListPipelineRuns } from "tapis-hooks/workflows/pipelineruns"
+import { useList as useListTaskExecutions } from "tapis-hooks/workflows/taskexecutions"
 import { useDetails } from "tapis-hooks/workflows/pipelines"
 import { SectionMessage, Collapse } from 'tapis-ui/_common';
 import { QueryWrapper } from "tapis-ui/_wrappers"
 import styles from "./PipelineRuns.module.scss"
+import { Table, Button } from "reactstrap"
+
+type TaskExecutionsProps = {
+  groupId: string,
+  pipelineId: string,
+  pipelineRunUuid: string,
+}
+
+const TaskExecutions: React.FC<TaskExecutionsProps> = ({
+  groupId,
+  pipelineId,
+  pipelineRunUuid
+}) => {
+  const { data, isLoading, error } = useListTaskExecutions({groupId, pipelineId, pipelineRunUuid})
+  const taskExecutions = data?.result ?? []
+
+  return (
+    <QueryWrapper isLoading={isLoading} error={error}>
+      <div>
+        {taskExecutions.length > 0 ? (
+          <Table dark bordered style={{margin: 0}}>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>task</th>
+              <th>status</th>
+              <th>started at</th>
+              <th>ended at</th>
+              <th>uuid</th>
+            </tr>
+          </thead>
+          {taskExecutions.length && taskExecutions.map((taskExecution, i) => {
+            return (
+                <tbody>
+                  <tr>
+                    <td>{i}</td>
+                    <td>{taskExecution.task}</td>
+                    <td>{taskExecution.status}</td>
+                    <td>{taskExecution.started_at}</td>
+                    <td>{taskExecution.ended_at}</td>
+                    <td>{taskExecution.uuid}</td>
+                  </tr>
+                </tbody>
+            )
+          })}
+        </Table>
+        ) : (
+          <SectionMessage type="info">No task executions</SectionMessage>
+        )}
+        
+      </div>
+    </QueryWrapper>
+  )
+}
 
 type PipelineRunProps = {
   groupId: string,
@@ -19,8 +74,14 @@ const truncate = (str: string) => {
 }
 
 const PipelineRun: React.FC<PipelineRunProps> = ({groupId, pipelineId, pipelineRun}) => {
+  const [ showTaskExecutions, setShowTaskExecutions ] = useState(false)
   const { data, isLoading, error } = useDetails({groupId, pipelineId})
   const pipeline: Workflows.Pipeline = data?.result!
+
+  const toggle = () => {
+    setShowTaskExecutions(!showTaskExecutions)
+  }
+
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       {pipeline && (
@@ -29,10 +90,42 @@ const PipelineRun: React.FC<PipelineRunProps> = ({groupId, pipelineId, pipelineR
           className={styles["pipeline-run-container"]}
         >
             <div id={`pipelinerun-${pipelineRun.uuid}`} className={styles["pipeline-run-body"]}>
-              <p><b>status: </b>{pipelineRun.status}</p>
-              <p><b>pipeline uuid: </b>{pipelineRun.pipeline}</p>
-              <p><b>started at: </b>{pipelineRun.started_at}</p>
-              <p><b>ended at: </b>{pipelineRun.ended_at}</p>
+              <Table dark bordered style={{margin: 0}}>
+                <thead>
+                  <tr>
+                    <th>pipeline</th>
+                    <th>status</th>
+                    <th>started at</th>
+                    <th>ended at</th>
+                    <th>uuid</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{pipeline.id}</td>
+                    <td>{pipelineRun.status}</td>
+                    <td>{pipelineRun.started_at}</td>
+                    <td>{pipelineRun.ended_at}</td>
+                    <td>{pipelineRun.uuid}</td>
+                  </tr>
+                </tbody>
+              </Table>
+              <div className={styles["section-header"]}>
+                <h2>Task Executions</h2>
+              </div>
+              <div className={styles["task-executions"]}>
+                {showTaskExecutions ? (
+                  <TaskExecutions
+                    groupId={groupId}
+                    pipelineId={pipelineId}
+                    pipelineRunUuid={pipelineRun.uuid!}
+                  />
+                ) : (
+                  <Button onClick={toggle}>
+                    Load Task Executions
+                  </Button>
+                )}
+              </div>
             </div>
         </Collapse>
       )}
@@ -46,18 +139,17 @@ type PipelineRunsProps = {
 }
 
 const PipelineRuns: React.FC<PipelineRunsProps> = ({groupId, pipelineId}) => {
-  const { data, isLoading, error } = useList({groupId, pipelineId})
+  const { data, isLoading, error } = useListPipelineRuns({groupId, pipelineId})
   const pipelineRuns: Array<Workflows.PipelineRun> = data?.result ?? []
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <div id="pipelineruns">
-      {pipelineRuns.length ? pipelineRuns.map((pipelineRun) => (
+        {pipelineRuns.length ? pipelineRuns.map((pipelineRun) => (
           <PipelineRun groupId={groupId} pipelineId={pipelineId} pipelineRun={pipelineRun} />
         )) : (
           <SectionMessage type="info">No runs to show for pipeline '{pipelineId}'</SectionMessage>
-          )
-        }
+        )}
       </div>
     </QueryWrapper>
   )
