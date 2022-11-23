@@ -1,7 +1,7 @@
 import React from 'react';
 import { Workflows } from "@tapis/tapis-typescript"
 import { useList } from "tapis-hooks/workflows/groupusers"
-import { SectionMessage } from 'tapis-ui/_common';
+import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from "tapis-ui/_wrappers"
 import { Toolbar } from "../../_components"
 import styles from "./Users.module.scss"
@@ -26,7 +26,11 @@ const Users: React.FC<UsersProps> = ({groupId}) => {
               let last: string = i == users.length - 1 ? styles["last"] : ""
               return (
                   <div className={`${styles["user"]} ${evenodd} ${last}`}>
-                    {user.username}
+                    <Icon name="user" className={styles["icon"]}/>
+                    <span>
+                      {user.username}
+                      {user.is_admin && <i className={styles["admin"]}>admin</i>}
+                    </span> 
                   </div>
               )
             }) : (

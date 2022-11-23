@@ -7,7 +7,7 @@ import { CreateTaskModal } from "./CreateTaskModal"
 import { CreateGroupModal } from './CreateGroupModal';
 import { CreateArchiveModal } from './CreateArchiveModal';
 import { CreateIdentityModal } from './CreateIdentityModal';
-import { AddGroupUserModal } from './AddGroupUserModal';
+import { AddGroupUsersModal } from './AddGroupUsersModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -105,10 +105,10 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         )}
         {buttons.includes("addgroupuser") && (
           <ToolbarButton
-            text="Add User"
+            text="Add Users"
             icon="add"
             disabled={false}
-            onClick={() => setModal('addgroupuser')}
+            onClick={() => setModal('addgroupusers')}
             aria-label="Add user"
           />
         )}
@@ -119,7 +119,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         {modal === 'creategroup' && <CreateGroupModal toggle={toggle} />}
         {modal === 'createarchive' && <CreateArchiveModal groupId={groupId} toggle={toggle} />}
         {modal === 'createidentity' && <CreateIdentityModal groupId={groupId} toggle={toggle} />}
-        {modal === 'addgroupuser' && <AddGroupUserModal groupId={groupId} toggle={toggle} />}
+        {modal === 'addgroupusers' && <AddGroupUsersModal groupId={groupId} toggle={toggle} />}
       </div>
     </div>
   );

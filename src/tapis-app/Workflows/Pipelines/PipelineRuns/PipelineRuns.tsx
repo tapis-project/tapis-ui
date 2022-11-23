@@ -33,7 +33,7 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
               <th>task</th>
               <th>status</th>
               <th>started at</th>
-              <th>ended at</th>
+              <th>last modified</th>
               <th>uuid</th>
             </tr>
           </thead>
@@ -45,7 +45,7 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                     <td>{taskExecution.task}</td>
                     <td>{taskExecution.status}</td>
                     <td>{taskExecution.started_at}</td>
-                    <td>{taskExecution.ended_at}</td>
+                    <td>{taskExecution.last_modified}</td>
                     <td>{taskExecution.uuid}</td>
                   </tr>
                 </tbody>
@@ -96,7 +96,7 @@ const PipelineRun: React.FC<PipelineRunProps> = ({groupId, pipelineId, pipelineR
                     <th>pipeline</th>
                     <th>status</th>
                     <th>started at</th>
-                    <th>ended at</th>
+                    <th>last modified</th>
                     <th>uuid</th>
                   </tr>
                 </thead>
@@ -105,7 +105,7 @@ const PipelineRun: React.FC<PipelineRunProps> = ({groupId, pipelineId, pipelineR
                     <td>{pipeline.id}</td>
                     <td>{pipelineRun.status}</td>
                     <td>{pipelineRun.started_at}</td>
-                    <td>{pipelineRun.ended_at}</td>
+                    <td>{pipelineRun.last_modified}</td>
                     <td>{pipelineRun.uuid}</td>
                   </tr>
                 </tbody>

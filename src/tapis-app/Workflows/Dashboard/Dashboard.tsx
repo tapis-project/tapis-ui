@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
       <Toolbar buttons={["creategroup", "createpipeline", "createarchive", "createidentity"]}/>
       <div id="dashboard-cards" className={styles["card-container"]}>
         <DashboardCard
-          icon="data-files"
+          icon="publications"
           name="Pipelines"
           text="View Workflow pipelines"
           link="/workflows/pipelines"
@@ -82,7 +82,7 @@ const Dashboard: React.FC = () => {
           loading={pipelines?.isLoading}
         />
         <DashboardCard
-          icon="data-files"
+          icon="user"
           name="Groups"
           text="View Workflow groups"
           link="/workflows/groups"
@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
           loading={groups?.isLoading}
         />
         <DashboardCard
-          icon="data-files"
+          icon="folder"
           name="Archives"
           text="View Workflow groups"
           link="/workflows/archives"
@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
           loading={archives?.isLoading}
         />
         <DashboardCard
-          icon="data-files"
+          icon="user"
           name="Identities"
           text="View Workflow identities"
           link="/workflows/identities"

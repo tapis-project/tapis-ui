@@ -3,12 +3,16 @@ import { Sidebar } from 'tapis-app/_components';
 import { Router } from 'tapis-app/_Router';
 import { SectionHeader, PageLayout } from 'tapis-ui/_common';
 import { NotificationsProvider } from 'tapis-app/_components/Notifications';
+import { Link } from "react-router-dom"
 import './Layout.scss';
 
 const Layout: React.FC = () => {
   const header = (
     <div>
-      <SectionHeader className="tapis-ui__header">TapisUI</SectionHeader>
+      <SectionHeader className="tapis-ui__header">
+        TapisUI
+        <Link to="/logout" className="logout">Logout</Link>
+      </SectionHeader>
     </div>
   );
 

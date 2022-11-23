@@ -2,18 +2,19 @@ import React, { useCallback } from 'react';
 import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik, FieldArray, Field } from 'formik';
-import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
+import { FormikInput, GenericModal, Icon, SectionMessage } from 'tapis-ui/_common';
 import { focusManager } from 'react-query';
-import { useCreate } from 'tapis-hooks/workflows/groups';
-import styles from "./CreateGroupModal.module.scss"
+import { useCreate } from 'tapis-hooks/workflows/groupusers';
+import styles from "./AddGroupUsersModal.module.scss"
 import { Workflows } from "@tapis/tapis-typescript"
 import * as Yup from 'yup';
 
-type CreateGroupModalProps = {
+type AddGroupUserModalProps = {
   toggle: () => void;
+  groupId?: string
 };
 
-const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
+const AddGroupUsersModal: React.FC<AddGroupUserModalProps> = ({ toggle, groupId }) => {
   const { create, isLoading, error, isSuccess } = useCreate();
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
@@ -22,14 +23,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
   }, []);
 
   const validationSchema = Yup.object({
-    groupId: Yup.string()
-      .min(1)
-      .max(255, 'Group id cannot be longer than 255 characters')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      )
-      .required('groupId is a required field'),
     users: Yup.array()
       .of(
         Yup.object().shape({
@@ -37,50 +30,42 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
           is_admin: Yup.bool().default(false)
         })
       )
+      .min(1, "Must provide at least 1 user")
   });
 
   const initialValues = {
-    groupId: "",
-    users: []
+    users: [{username: "", is_admin: false}]
   };
 
-  type CreateGroupFormProps = {
-    groupId: string,
+  type AddGroupUserFormProps = {
     users: Array<Workflows.ReqGroupUser>
   }
 
-  const onSubmit = ({ groupId, users }: CreateGroupFormProps) => {
-    create({id: groupId, users}, { onSuccess });
+  const onSubmit = ({ users }: AddGroupUserFormProps) => {
+    create({groupId: groupId!, user: users[0]}, { onSuccess });
   }
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Create Group"
+      title={groupId ? `Add Users` : "Error: groupId is missing"}
       body={
         <div>
-          <Formik
+          {groupId ? (
+            <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
             render={({values}) => (
               <Form id="newgroup-form">
-                <FormikInput
-                  name="groupId"
-                  label="Group Id"
-                  required={true}
-                  description={`Creates a new group`}
-                  aria-label="Input"
-                />
+                <h2>Group: {groupId}</h2>
                 <FieldArray
                   name="users"
                   render={(arrayHelpers) => (
                     <div>
-                      <h2>Users</h2>
-                      <i className={styles["subheader"]}>Note: You are automatically added to this group</i>
                       <div className={styles["user-inputs"]}>
                         {values.users.length > 0 && (
-                          values.users.map((_, index) => (
+                          values.users.map((user, index) => (
                             <div key={index} className={styles["user-input"]}>
                               <FormikInput
                                 name={`users.${index}.username`}
@@ -90,27 +75,34 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
                                 aria-label="Input"
                               />
                               <label>
-                                <Field type="checkbox" name={`users.${index}.is_admin`} /> is admin?
+                                <Field
+                                  type="checkbox"
+                                  name={`users.${index}.is_admin`}
+                                  checked={user.is_admin}
+                                /> is admin?
                               </label>
-                              <Button
-                                className={styles["remove-button"]}
-                                type="button"
-                                color="danger"
-                                onClick={() => arrayHelpers.remove(index)}
-                                size="sm"
-                              >
-                                <Icon name="trash"/>
-                              </Button>
+                              {index != 0 && (
+                                <Button
+                                  className={styles["remove-button"]}
+                                  type="button"
+                                  color="danger"
+                                  onClick={() => arrayHelpers.remove(index)}
+                                  size="sm"
+                                >
+                                  <Icon name="trash"/>
+                                </Button>
+                              )}
                             </div>
                           ))
                         )}
                       </div>
+                      {/* TODO Support for adding multiple users
                       <Button
                         type="button"
                         className={styles["add-button"]}
                         onClick={() => arrayHelpers.push({username: "", is_admin: false})}>
-                          + Add user
-                      </Button>
+                          +
+                      </Button> */}
                     </div>
                   )}
                 />
@@ -119,6 +111,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
             )}
           >
           </Formik>
+          ) : (
+            <SectionMessage type="error">Error: No groupId found</SectionMessage>
+          )}
         </div>
       }
       footer={
@@ -135,7 +130,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
             aria-label="Submit"
             type="submit"
           >
-            Create Group
+            Add
           </Button>
         </SubmitWrapper>
       }
@@ -143,4 +138,4 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
   );
 };
 
-export default CreateGroupModal;
+export default AddGroupUsersModal;
