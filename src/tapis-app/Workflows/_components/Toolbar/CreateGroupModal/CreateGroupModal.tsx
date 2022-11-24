@@ -77,7 +77,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
                   render={(arrayHelpers) => (
                     <div>
                       <h2>Users</h2>
-                      <i className={styles["subheader"]}>Note: You are automatically added to this group</i>
+                      <i className={styles["subheader"]}>Note: You are automatically added as an admin to this group</i>
                       <div className={styles["user-inputs"]}>
                         {values.users.length > 0 && (
                           values.users.map((_, index) => (

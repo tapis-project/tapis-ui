@@ -1,10 +1,54 @@
-import React from 'react';
-import { Workflows } from "@tapis/tapis-typescript"
-import { useList } from "tapis-hooks/workflows/groupusers"
+import React, { useCallback } from 'react';
+import { Workflows } from "@tapis/tapis-typescript";
+import { useList, useDelete } from "tapis-hooks/workflows/groupusers";
 import { SectionMessage, Icon } from 'tapis-ui/_common';
-import { QueryWrapper } from "tapis-ui/_wrappers"
-import { Toolbar } from "../../_components"
-import styles from "./Users.module.scss"
+import { QueryWrapper } from "tapis-ui/_wrappers";
+import { Toolbar } from "../../_components";
+import { useTapisConfig } from 'tapis-hooks';
+import styles from "./Users.module.scss";
+import { Button, Spinner } from "reactstrap";
+import { focusManager } from "react-query"
+
+type RemoveGroupUserButtonProps = {
+  username: string;
+  user: Workflows.GroupUser;
+  groupId: string;
+}
+
+const RemoveUserButton: React.FC<RemoveGroupUserButtonProps> = ({user, groupId, username}) => {
+  const {
+    removeAsync,
+    isError,
+    isSuccess,
+    error: removeError,
+    isLoading: removeInProgress,
+    reset
+  } = useDelete()
+
+  const onSuccess = useCallback(() => {
+    // Calling the focus manager triggers react-query's
+    // automatic refetch on window focus
+    focusManager.setFocused(true);
+    reset()
+  }, []);
+  return (
+    !removeInProgress && (!isSuccess || isError) ? (
+      <Button
+        color="danger"
+        type="button"
+        disabled={removeInProgress || isSuccess || isError}
+        onClick={() => {
+          removeAsync({groupId, username: user.username!}, {onSuccess})
+        }}
+      >
+        <Icon name="trash" />
+        {/* {isError && removeError?.message} */}
+      </Button>
+    ) : (
+      <Spinner />
+    )
+  )
+}
 
 type UsersProps = {
   groupId: string
@@ -12,7 +56,15 @@ type UsersProps = {
 
 const Users: React.FC<UsersProps> = ({groupId}) => {
   const { data, isLoading, error } = useList({groupId})
+  const { claims } = useTapisConfig()
   const users: Array<Workflows.GroupUser> = data?.result ?? []
+
+  const isCurrentUser = (username: string) => username == claims["tapis/username"]
+  const canDeleteUser = (user: Workflows.GroupUser) => {
+    return users.filter(
+        (user) => isCurrentUser(user.username!) && user.is_admin
+      ).length > 0 && !isCurrentUser(user.username!)
+  }
 
   return (
     <div>
@@ -26,11 +78,25 @@ const Users: React.FC<UsersProps> = ({groupId}) => {
               let last: string = i == users.length - 1 ? styles["last"] : ""
               return (
                   <div className={`${styles["user"]} ${evenodd} ${last}`}>
-                    <Icon name="user" className={styles["icon"]}/>
-                    <span>
-                      {user.username}
-                      {user.is_admin && <i className={styles["admin"]}>admin</i>}
-                    </span> 
+                    <div>
+                      <Icon name="user" className={styles["icon"]}/>
+                      <span>
+                        {user.username}
+                        {user.is_admin && <i className={styles["admin"]}>admin</i>}
+                      </span>
+                    </div>
+                    <div className={styles["flex"]}>
+                      <div className={styles["flex-grow"]}></div>
+                      <div>
+                        {canDeleteUser(user) && (
+                          <RemoveUserButton
+                            user={user}
+                            username={claims["tapis/username"]}
+                            groupId={groupId}
+                          />
+                        )}
+                      </div>
+                    </div> 
                   </div>
               )
             }) : (

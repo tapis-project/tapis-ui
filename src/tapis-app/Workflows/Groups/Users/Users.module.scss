@@ -11,8 +11,20 @@
 }
 
 .user {
+    display: grid;
+    grid-template-columns: 85% 15%;
+    align-items: center;
     border-bottom: 1px solid #cccccc;
     padding: 20px;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex-grow {
+    flex-grow: 1;
 }
 
 .icon {
@@ -35,4 +47,8 @@
 
 .even {
     background-color: #ffffff;
+}
+
+.spinner {
+    
 }
