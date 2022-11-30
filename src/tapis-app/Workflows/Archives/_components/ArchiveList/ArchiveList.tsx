@@ -19,7 +19,7 @@ const ArchiveList: React.FC<ArchiveListParams> = ({ groupId }) => {
     <QueryWrapper isLoading={isLoading} error={error}>
       <div id='-archives-list'>
         <h2>Archives <span className={styles["count"]}>{archives.length}</span></h2>
-        <Toolbar buttons={["createarchive"]}/>
+        <Toolbar buttons={["createarchive"]} groupId={groupId}/>
         <div className={styles["container"]}>
           {archives.length ? archives.map((archive, i) => {
             let evenodd:string = i%2 > 0 ? styles["odd"] : styles["even"]

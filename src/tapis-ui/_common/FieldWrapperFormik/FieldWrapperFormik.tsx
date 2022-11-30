@@ -7,6 +7,7 @@ export type FieldWrapperProps = {
   label: string;
   required: boolean;
   description: string;
+  isHidden?: boolean;
   as: React.ComponentType<any>;
 };
 const FieldWrapper: React.FC<FieldWrapperProps> = ({
@@ -14,6 +15,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
   label,
   required,
   description,
+  isHidden = false,
   as: Component,
 }) => {
   const [, meta] = useField(name);
@@ -26,7 +28,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
         htmlFor={name}
       >
         {label}
-        {required ? (
+        {(required && !isHidden) ? (
           <Badge color="danger" style={{ marginLeft: '10px' }}>
             Required
           </Badge>

@@ -3,7 +3,6 @@ import { useList } from 'tapis-hooks/workflows/groups';
 import { Workflows } from '@tapis/tapis-typescript';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
-import { SectionMessage } from 'tapis-ui/_common';
 
 type GroupsNavProps = {
   baseUrl: string

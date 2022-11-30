@@ -20,21 +20,25 @@ type FormProps = {
   onSubmit: any
 }
 
+const baseValidationSchema = {
+  name: Yup.string()
+    .min(1)
+    .max(255)
+    .required("An identity requires a name")
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
+  description: Yup.string()
+    .min(1)
+    .max(512),
+  type: Yup.string()
+    .oneOf(Object.values(Workflows.EnumIdentityType))
+    .required("Select an identity type"),
+}
+
 const GithubIdentityForm: React.FC<FormProps> = ({onSubmit}) => {
   const validationSchema = Yup.object({
-    name: Yup.string()
-      .min(1)
-      .max(255)
-      .required("An identity requires a name")
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
-    description: Yup.string()
-      .min(1)
-      .max(512),
-    type: Yup.string()
-      .oneOf(Object.values(Workflows.EnumIdentityType))
-      .required("Select an identity type"),
+    ...baseValidationSchema,
     credentials: Yup.object({
       username: Yup.string()
         .min(1)
@@ -54,8 +58,10 @@ const GithubIdentityForm: React.FC<FormProps> = ({onSubmit}) => {
           name: "",
           description: "",
           type: Workflows.EnumIdentityType.Github,
-          personal_access_token: "",
-          username: ""
+          credentials: {
+            personal_access_token: "",
+            username: ""
+          }
         }}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
@@ -108,19 +114,7 @@ const GithubIdentityForm: React.FC<FormProps> = ({onSubmit}) => {
 
 const DockerhubIdentityForm: React.FC<FormProps> = ({onSubmit}) => {
   const validationSchema = Yup.object({
-    name: Yup.string()
-      .min(1)
-      .max(255)
-      .required("An identity requires a name")
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
-    description: Yup.string()
-      .min(1)
-      .max(512),
-    type: Yup.string()
-      .oneOf(Object.values(Workflows.EnumIdentityType))
-      .required("Select an identity type"),
+    ...baseValidationSchema,
     credentials: Yup.object({
       username: Yup.string()
       .min(1)
@@ -194,11 +188,9 @@ const DockerhubIdentityForm: React.FC<FormProps> = ({onSubmit}) => {
   )
 }
 
-type CreateIdentityModalProps = {
-  toggle: () => void;
-};
-
-const CreateIdentityModal: React.FC<CreateIdentityModalProps> = ({ toggle }) => {
+const CreateIdentityModal: React.FC<{toggle: () => void}> = ({
+  toggle
+}) => {
   const { create, isLoading, isSuccess, error } = useCreate()
   const [ selectedType, setSelectedType ] = useState<string|undefined>(undefined)
   const onSuccess = useCallback(() => {
