@@ -24,7 +24,7 @@ const DestinationSet: React.FC<DestinationSetProps> = ({index}) => {
       DestinationComponent = <DockerhubDestination index={index}/>
       break;
     default:
-      DestinationComponent = <>Invalid destination type</>
+      DestinationComponent = <></>
   }
   
   return (

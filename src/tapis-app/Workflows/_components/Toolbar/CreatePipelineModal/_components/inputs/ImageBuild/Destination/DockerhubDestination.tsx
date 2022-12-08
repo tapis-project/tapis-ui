@@ -6,7 +6,7 @@ import styles from "./Destination.module.scss"
 
 const DockerhubDestination: React.FC<{index: number}> = ({index}) => {
   return (
-    <div id="Destination-details">
+    <div id="destination-details">
       <div className={styles["grid-2"]}>
         <FormikInput
           name={`tasks.${index}.destination.url`}
@@ -22,12 +22,12 @@ const DockerhubDestination: React.FC<{index: number}> = ({index}) => {
           description={`The version of the image to be pulled`}
           aria-label="Input"
         />
-        <Credentials
-            scope="destination"
-            type={Workflows.EnumDestinationType.Dockerhub}
-            index={index}
-        />
       </div>
+      <Credentials
+        scope="destination"
+        type={Workflows.EnumDestinationType.Dockerhub}
+        index={index}
+      />
     </div>
   )
 }

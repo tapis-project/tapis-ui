@@ -1,8 +1,8 @@
 import React from "react"
 import { Workflows } from "@tapis/tapis-typescript"
 import {
-  ImageBuildTaskInputs,
-  RequestTaskInputs,
+  ImageBuildTask,
+  RequestTask,
 } from "./inputs"
 
 type TaskInputSetProps = {
@@ -13,9 +13,9 @@ type TaskInputSetProps = {
 const TaskInputSet: React.FC<TaskInputSetProps> = ({type, index}) => {
   switch (type) {
     case Workflows.EnumTaskType.ImageBuild:
-      return <ImageBuildTaskInputs index={index}/>
+      return <ImageBuildTask index={index}/>
     case Workflows.EnumTaskType.Request:
-      return <RequestTaskInputs index={index}/>
+      return <RequestTask index={index}/>
     default:
       return <>Unsupported task type</>
     }

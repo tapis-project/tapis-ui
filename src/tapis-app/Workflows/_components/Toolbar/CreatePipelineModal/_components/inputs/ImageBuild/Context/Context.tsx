@@ -32,7 +32,7 @@ const Context: React.FC<ContextProps> = ({index}) => {
       ContextComponent = <GitlabContext index={index}/>
       break;
     default:
-      ContextComponent = <>Invalid context type</>
+      ContextComponent = <></>
   }
 
   return (
