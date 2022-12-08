@@ -70,7 +70,7 @@ const PipelineList: React.FC<PipelineListParams> = ({ groupId }) => {
     <QueryWrapper isLoading={isLoading} error={error}>
       <div id={groupId + '-pipeline-list'} className={styles["card-container"]}>
         <h2>Pipelines <span className={styles["count"]}>{pipelines.length}</span></h2>
-        <Toolbar buttons={["createpipeline"]}/>
+        <Toolbar buttons={["createpipeline"]} groupId={groupId}/>
         {pipelines.length ? (
           <div id="pipeline-list">
             {pipelines.map((pipeline) => (

@@ -12,7 +12,7 @@ import styles from "./CreateArchiveModel.module.scss"
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 
 type FormProps = {
-  onSubmit: any
+  onSubmit: (reqArchive: Workflows.ReqArchive) => void
 }
 
 const baseValidationSchema = {
@@ -103,7 +103,7 @@ const S3ArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
 const TapisSystemArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
   const { data, isLoading, error } = useList({limit: -1}) // Fetch the systems
   const systems = data?.result ?? []
-  console.log(systems.length)
+  
   const validationSchema = Yup.object({
     ...baseValidationSchema,
     system_id: Yup.string()
@@ -122,7 +122,7 @@ const TapisSystemArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
     <QueryWrapper isLoading={isLoading} error={error}>
       <Formik
         initialValues={{
-          name: "",
+          id: "",
           description: "",
           type: Workflows.EnumArchiveType.System,
           system_id: "",

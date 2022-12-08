@@ -12,3 +12,7 @@
   color: #eb6e6e;
   padding-top: 5px;
 }
+
+.hidden {
+  display: none;
+}

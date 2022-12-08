@@ -71,14 +71,14 @@ const Dashboard: React.FC = () => {
 
   return (
     <div id="dashboard">
-      <Toolbar buttons={["creategroup", "createpipeline", "createarchive", "createidentity"]}/>
+      <Toolbar buttons={["creategroup", "createidentity"]}/>
       <div id="dashboard-cards" className={styles["card-container"]}>
         <DashboardCard
           icon="publications"
           name="Pipelines"
           text="View Workflow pipelines"
           link="/workflows/pipelines"
-          counter={`${pipelines?.data?.result?.length} pipelines across ${groupIds.length} groups`}
+          counter={`${pipelines?.data?.result?.length} pipelines`}
           loading={pipelines?.isLoading}
         />
         <DashboardCard
@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
           name="Archives"
           text="View Workflow groups"
           link="/workflows/archives"
-          counter={`${archives?.data?.result?.length} archives across ${groupIds.length} groups`}
+          counter={`${archives?.data?.result?.length} archives`}
           loading={archives?.isLoading}
         />
         <DashboardCard

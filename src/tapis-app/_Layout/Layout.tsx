@@ -1,20 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sidebar } from 'tapis-app/_components';
 import { Router } from 'tapis-app/_Router';
 import { SectionHeader, PageLayout } from 'tapis-ui/_common';
 import { NotificationsProvider } from 'tapis-app/_components/Notifications';
-import { Link } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import './Layout.scss';
 import { useTapisConfig } from 'tapis-hooks';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 
 const Layout: React.FC = () => {
   const { claims } = useTapisConfig()
+  const history = useHistory()
+  const [ isOpen, setIsOpen ] = useState<boolean>(false)
+  
   const header = (
-    <div>
-      <SectionHeader className="tapis-ui__header">
-        TapisUI
-        <Link to="/logout" className="logout" style={{textTransform: "none"}}>{claims["sub"]}</Link>
-      </SectionHeader>
+    <div className="tapis-ui__header">
+      <div>TapisUI</div>
+      <div></div>
+      <div>
+        {claims["sub"] && (
+          <ButtonDropdown
+          size="sm"
+          isOpen={isOpen}
+          toggle={() => setIsOpen(!isOpen)}
+          className="dropdown-button"
+        >
+          <DropdownToggle caret>
+            {claims["sub"]}
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={() => history.push("/logout")}>
+              Logout
+            </DropdownItem>
+          </DropdownMenu>
+        </ButtonDropdown>
+        )}
+      </div>
     </div>
   );
 

@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik, FieldArray, Field } from 'formik';
-import { FormikInput, GenericModal, Icon, SectionMessage } from 'tapis-ui/_common';
+import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
 import { focusManager } from 'react-query';
 import { useCreate } from 'tapis-hooks/workflows/groupusers';
 import styles from "./AddGroupUsersModal.module.scss"

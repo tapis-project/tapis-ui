@@ -112,9 +112,8 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Add user"
           />
         )}
-        {modal === 'createpipeline' && (
-          <CreatePipelineModal toggle={toggle} groupId={groupId} />
-        )}
+        {(modal === 'createpipeline' && groupId) &&
+          <CreatePipelineModal toggle={toggle} groupId={groupId} />}
         {modal === 'createtask' && <CreateTaskModal groupId={groupId} pipelineId={pipelineId} toggle={toggle} />}
         {modal === 'creategroup' && <CreateGroupModal toggle={toggle} />}
         {(modal === 'createarchive' && groupId) && <CreateArchiveModal groupId={groupId} toggle={toggle} />}

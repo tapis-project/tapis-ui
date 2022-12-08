@@ -114,7 +114,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
                     </div>
                   )}
                 />
-              
             </Form>
             )}
           >

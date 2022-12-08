@@ -86,7 +86,7 @@ const PipelineRun: React.FC<PipelineRunProps> = ({groupId, pipelineId, pipelineR
     <QueryWrapper isLoading={isLoading} error={error}>
       {pipeline && (
         <Collapse
-          title={`${pipeline.id} ${truncate(pipelineRun.uuid!)}: ${pipelineRun.status}`}
+          title={`${pipelineRun.uuid}: ${pipelineRun.status}`}
           className={styles["pipeline-run-container"]}
         >
             <div id={`pipelinerun-${pipelineRun.uuid}`} className={styles["pipeline-run-body"]}>
@@ -145,6 +145,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({groupId, pipelineId}) => {
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <div id="pipelineruns">
+        <h2>Pipeline: <b>{pipelineId}</b></h2>
         {pipelineRuns.length ? pipelineRuns.map((pipelineRun) => (
           <PipelineRun groupId={groupId} pipelineId={pipelineId} pipelineRun={pipelineRun} />
         )) : (
