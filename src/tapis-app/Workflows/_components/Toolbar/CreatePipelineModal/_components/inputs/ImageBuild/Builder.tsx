@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import { Workflows } from "@tapis/tapis-typescript";
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import styles from "./ImageBuilderInput.module.scss";
+import styles from "./Builder.module.scss";
 import { Field } from "formik"
 
-const BuilderInputs: React.FC<{index: number}> = ({index}) => {
+const Builder: React.FC<{index: number}> = ({index}) => {
     const [ type, setType ] = useState<string>("")
     return (
       <div className={styles["grid-2"]}>
@@ -31,4 +31,4 @@ const BuilderInputs: React.FC<{index: number}> = ({index}) => {
     )
 }
 
-export default BuilderInputs
+export default Builder

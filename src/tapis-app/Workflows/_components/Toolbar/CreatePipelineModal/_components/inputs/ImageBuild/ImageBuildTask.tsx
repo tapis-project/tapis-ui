@@ -1,8 +1,8 @@
 import { FormikInput } from "tapis-ui/_common"
-import { Context, Destination, BuilderInputs } from "."
+import { Context, Destination, Builder } from "./"
 import styles from "./ImageBuildTask.module.scss"
 
-const ImageBuildTaskInputs: React.FC<{index: number}> = ({index}) => {
+const ImageBuildTask: React.FC<{index: number}> = ({index}) => {
   return <div id={`task-inputs-${index}`} className={styles["container"]}>
     <p><b>{index + 1}.</b> Image Build Task</p>
     <div>
@@ -24,7 +24,7 @@ const ImageBuildTaskInputs: React.FC<{index: number}> = ({index}) => {
         value="image_build"
       />
     </div>
-    <BuilderInputs index={index} />
+    <Builder index={index} />
     <div className={styles["section"]}>
       <h2>Context</h2>
       <Context index={index}/>
@@ -36,4 +36,4 @@ const ImageBuildTaskInputs: React.FC<{index: number}> = ({index}) => {
   </div>
 }
 
-export default ImageBuildTaskInputs
+export default ImageBuildTask

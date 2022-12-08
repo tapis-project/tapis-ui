@@ -1,7 +1,7 @@
 import React from "react"
 import { FormikInput } from "tapis-ui/_common"
 
-const RequestTaskInputs: React.FC<{index: number}> = ({index}) => {
+const RequestTask: React.FC<{index: number}> = ({index}) => {
   return <>
     <p>Request Task</p>
     <FormikInput
@@ -14,4 +14,4 @@ const RequestTaskInputs: React.FC<{index: number}> = ({index}) => {
   </>
 }
 
-export default RequestTaskInputs
+export default RequestTask
