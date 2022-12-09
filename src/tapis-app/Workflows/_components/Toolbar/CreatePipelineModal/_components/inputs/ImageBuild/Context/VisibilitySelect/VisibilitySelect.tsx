@@ -4,6 +4,7 @@ import { useList } from "tapis-hooks/workflows/identities"
 import { QueryWrapper } from "tapis-ui/_wrappers"
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { Credentials } from "../../Credentials"
+import styles from "./VisibilitySelect.module.scss"
 
 type VisibilitySelectProps = {
   index: number,
@@ -15,6 +16,8 @@ const VisibilitySelect: React.FC<VisibilitySelectProps> = ({index, type}) => {
   const identities = data?.result ?? []
   const [ visibility, setVisibility ] = useState<string>("")
   const [ identityAsCreds, setIdentityAsCreds ] = useState<boolean>(false)
+
+  const identitiesByType = (type: string) => identities.filter((ident) => ident.type === type)
 
   return (
     <div id="context-visibility">
@@ -33,6 +36,24 @@ const VisibilitySelect: React.FC<VisibilitySelectProps> = ({index, type}) => {
       </FormikSelect>
       {visibility === "private" && (
         <div id="context-credentials">
+          <div className={styles["radio-button-container"]}>
+            <label>
+              <input
+                type="radio"
+                checked={!identityAsCreds}
+                onClick={() => {setIdentityAsCreds(!identityAsCreds)}}
+              /> Provide credentials
+            </label>
+          </div>
+          <div className={styles["radio-button-container"]}>
+            <label>
+              <input
+                type="radio"
+                checked={identityAsCreds}
+                onClick={() => {setIdentityAsCreds(!identityAsCreds)}}
+              /> Use an external identity
+            </label>
+          </div>
           {identityAsCreds ? (
             <QueryWrapper isLoading={isLoading} error={error}>
               <FormikSelect
@@ -40,12 +61,12 @@ const VisibilitySelect: React.FC<VisibilitySelectProps> = ({index, type}) => {
                 label={"identity"}
                 required={true}
                 description={'Note: This identity will be used on every run of this pipeline.'}
-                disabled={identities.length === 0}
+                disabled={identitiesByType(type).length === 0}
               >
                 <option disabled selected={true} value={""}>
-                  {identities.length > 0 ? " -- select an option -- " : " -- no identities availalble -- "}
+                  {identitiesByType(type).length > 0 ? " -- select an option -- " : ` -- no ${type} identities found -- `}
                 </option>
-                {identities.map((identity) => {
+                {identitiesByType(type).map((identity) => {
                   return <option value={identity.uuid}>{identity.name}</option>
                 })}
               </FormikSelect>

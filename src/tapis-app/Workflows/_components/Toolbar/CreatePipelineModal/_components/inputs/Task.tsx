@@ -3,14 +3,14 @@ import { Workflows } from "@tapis/tapis-typescript"
 import {
   ImageBuildTask,
   RequestTask,
-} from "./inputs"
+} from "."
 
-type TaskInputSetProps = {
+type TaskProps = {
   type: string,
   index: number
 }
 
-const TaskInputSet: React.FC<TaskInputSetProps> = ({type, index}) => {
+const Task: React.FC<TaskProps> = ({type, index}) => {
   switch (type) {
     case Workflows.EnumTaskType.ImageBuild:
       return <ImageBuildTask index={index}/>
@@ -21,4 +21,4 @@ const TaskInputSet: React.FC<TaskInputSetProps> = ({type, index}) => {
     }
 }
 
-export default TaskInputSet
+export default Task
