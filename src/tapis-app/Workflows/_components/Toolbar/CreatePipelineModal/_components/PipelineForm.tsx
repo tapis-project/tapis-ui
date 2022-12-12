@@ -1,8 +1,7 @@
 import React, { useState, useContext, createContext } from 'react';
-import { Button, Input } from 'reactstrap';
 import { QueryWrapper, } from 'tapis-ui/_wrappers';
-import { Form, Formik, FieldArray } from 'formik';
-import { FormikInput, Collapse, Icon, FieldWrapper } from 'tapis-ui/_common';
+import { Form, Formik } from 'formik';
+import { FormikInput, Collapse } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from "yup"
 import { useList } from 'tapis-hooks/workflows/archives';
@@ -11,89 +10,102 @@ import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { TaskArray } from '../_components/inputs';
 import { useFormik } from "formik"
 
-
-
 type FormProps = {
   onSubmit: (reqPipeline: Workflows.ReqPipeline) => void,
   groupId: string
 }
 
-const PipelineForm: React.FC<FormProps> = ({onSubmit, groupId}) => {
+const baseInitialValues: Workflows.ReqPipeline = {
+  id: "",
+  description: "",
+  type: Workflows.EnumPipelineType.Workflow,
+  archive_ids: [],
+  execution_profile: {
+    max_retries: 0,
+    max_exec_time: 3600,
+    invocation_mode: Workflows.EnumInvocationMode.Async,
+    retry_policy: Workflows.EnumRetryPolicy.ExponentialBackoff
+  },
+  tasks: []
+}
 
-  const baseInitialValues: Workflows.ReqPipeline = {
-    id: "",
-    description: "",
-    type: Workflows.EnumPipelineType.Workflow,
-    archive_ids: [],
-    execution_profile: {
-      max_retries: 0,
-      max_exec_time: 3600,
-      invocation_mode: Workflows.EnumInvocationMode.Async,
-      retry_policy: Workflows.EnumRetryPolicy.ExponentialBackoff
-    },
-    tasks: []
-  }
-  
-  const baseValidationSchema = {
-    id: Yup.string()
-      .min(1)
-      .max(255)
-      .required("An pipeline requires an id")
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
-    type: Yup.string()
-      .oneOf(Object.values(Workflows.EnumPipelineType))
-      .required("type is required"),
-    description: Yup.string()
-      .min(1)
-      .max(1024),
-    archive_ids: Yup.array()
-      .of(Yup.string()),
-    execution_profile: Yup.object({
-      max_retries: Yup.number()
-        .min(-1)
-        .max(1000),
-      max_exec_time: Yup.number()
-        .min(0),
-      retry_policy: Yup.string()
-        .oneOf(Object.values(Workflows.EnumRetryPolicy)),
-      invocation_mode: Yup.string()
-        .oneOf(Object.values(Workflows.EnumInvocationMode))
-    }),
-    tasks: Yup.array()
-  }
+const baseValidationSchema = {
+  id: Yup.string()
+    .min(1)
+    .max(255)
+    .required("An pipeline requires an id")
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
+  type: Yup.string()
+    .oneOf(Object.values(Workflows.EnumPipelineType))
+    .required("type is required"),
+  description: Yup.string()
+    .min(1)
+    .max(1024),
+  archive_ids: Yup.array()
+    .of(Yup.string()),
+  execution_profile: Yup.object({
+    max_retries: Yup.number()
+      .min(-1)
+      .max(1000),
+    max_exec_time: Yup.number()
+      .min(0),
+    retry_policy: Yup.string()
+      .oneOf(Object.values(Workflows.EnumRetryPolicy)),
+    invocation_mode: Yup.string()
+      .oneOf(Object.values(Workflows.EnumInvocationMode))
+  }),
+  tasks: Yup.array()
+}
 
-  const form = useFormik({
-    initialValues: baseInitialValues,
-    validationSchema: baseValidationSchema,
-    onSubmit: (values) => onSubmit(values),
-    validateOnBlur: true,
-  });
+const validationSchema = Yup.object({
+  ...baseValidationSchema,
+})
 
-  const {
-    values,
-    errors,
-    touched,
-    handleChange,
-    handleSubmit,
-    validateForm,
-    handleBlur,
-  } = form;
+type PipelineFormContextState = {
+  initialValues: Workflows.ReqPipeline,
+  validationSchema: Yup.ObjectSchema<any>
+}
 
+type PipelineFormContextType = {
+  state: PipelineFormContextState,
+  setContextState: any
+}
+
+const baseContextState = {
+  initialValues: baseInitialValues,
+  validationSchema
+}
+
+const basePipelineFormContext: PipelineFormContextType = {
+  state: baseContextState,
+  setContextState: () => {}
+}
+
+export const PipelineFormContext = createContext(basePipelineFormContext)
+
+const WithPipelineFormContext: React.FC<FormProps> = ({groupId, onSubmit}) => {
+  const [ contextState, setContextState ] = useState(baseContextState)
+
+  return (
+    <PipelineFormContext.Provider value={{state: contextState, setContextState}}>
+      <PipelineForm groupId={groupId} onSubmit={onSubmit}/>
+    </PipelineFormContext.Provider>
+  )
+}
+
+const PipelineForm: React.FC<FormProps> = ({groupId, onSubmit}) => {
   const { data, isLoading, error } = useList({groupId}) // Fetch the archives
   const archives = data?.result ?? []
-  
-  const validationSchema = Yup.object({
-    ...baseValidationSchema,
-  })
+  const formContext = useContext(PipelineFormContext)
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Formik
-        initialValues={baseInitialValues}
-        validationSchema={validationSchema!}
-        
+        initialValues={formContext.state.initialValues}
+        validationSchema={formContext.state.validationSchema}
+        enableReinitialize={true}
         onSubmit={onSubmit}
         render={({values}) => (
           <Form id="newpipeline-form">
@@ -192,4 +204,4 @@ const PipelineForm: React.FC<FormProps> = ({onSubmit, groupId}) => {
   )
 }
 
-export default PipelineForm
+export default WithPipelineFormContext
