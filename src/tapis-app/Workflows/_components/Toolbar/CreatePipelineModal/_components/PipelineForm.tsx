@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext } from 'react';
+import React from 'react';
 import { QueryWrapper, } from 'tapis-ui/_wrappers';
 import { Form, Formik } from 'formik';
 import { FormikInput, Collapse } from 'tapis-ui/_common';
@@ -7,15 +7,13 @@ import * as Yup from "yup"
 import { useList } from 'tapis-hooks/workflows/archives';
 import styles from "../CreatePipelineModel.module.scss"
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { TaskArray } from '../_components/inputs';
-import { useFormik } from "formik"
 
 type FormProps = {
   onSubmit: (reqPipeline: Workflows.ReqPipeline) => void,
   groupId: string
 }
 
-const baseInitialValues: Workflows.ReqPipeline = {
+const initialValues: Workflows.ReqPipeline = {
   id: "",
   description: "",
   type: Workflows.EnumPipelineType.Workflow,
@@ -25,8 +23,7 @@ const baseInitialValues: Workflows.ReqPipeline = {
     max_exec_time: 3600,
     invocation_mode: Workflows.EnumInvocationMode.Async,
     retry_policy: Workflows.EnumRetryPolicy.ExponentialBackoff
-  },
-  tasks: []
+  }
 }
 
 const baseValidationSchema = {
@@ -63,48 +60,15 @@ const validationSchema = Yup.object({
   ...baseValidationSchema,
 })
 
-type PipelineFormContextState = {
-  initialValues: Workflows.ReqPipeline,
-  validationSchema: Yup.ObjectSchema<any>
-}
-
-type PipelineFormContextType = {
-  state: PipelineFormContextState,
-  setContextState: any
-}
-
-const baseContextState = {
-  initialValues: baseInitialValues,
-  validationSchema
-}
-
-const basePipelineFormContext: PipelineFormContextType = {
-  state: baseContextState,
-  setContextState: () => {}
-}
-
-export const PipelineFormContext = createContext(basePipelineFormContext)
-
-const WithPipelineFormContext: React.FC<FormProps> = ({groupId, onSubmit}) => {
-  const [ contextState, setContextState ] = useState(baseContextState)
-
-  return (
-    <PipelineFormContext.Provider value={{state: contextState, setContextState}}>
-      <PipelineForm groupId={groupId} onSubmit={onSubmit}/>
-    </PipelineFormContext.Provider>
-  )
-}
-
 const PipelineForm: React.FC<FormProps> = ({groupId, onSubmit}) => {
   const { data, isLoading, error } = useList({groupId}) // Fetch the archives
   const archives = data?.result ?? []
-  const formContext = useContext(PipelineFormContext)
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Formik
-        initialValues={formContext.state.initialValues}
-        validationSchema={formContext.state.validationSchema}
+        initialValues={initialValues}
+        validationSchema={validationSchema}
         enableReinitialize={true}
         onSubmit={onSubmit}
         render={({values}) => (
@@ -196,7 +160,6 @@ const PipelineForm: React.FC<FormProps> = ({groupId, onSubmit}) => {
                 </FormikSelect>
               </Collapse>
             </div>
-            <TaskArray values={values}/>
           </Form>
         )}
       />
@@ -204,4 +167,4 @@ const PipelineForm: React.FC<FormProps> = ({groupId, onSubmit}) => {
   )
 }
 
-export default WithPipelineFormContext
+export default PipelineForm

@@ -47,16 +47,18 @@ const PipelineEditor: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
     <QueryWrapper isLoading={isLoading} error={error}>
       {pipeline && (
         <div id={`pipeline`}>
-            <h2>{pipeline.id} <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>View Runs</Link></h2>
-            <Toolbar buttons={["createtask"]} groupId={groupId} pipelineId={pipelineId}/>
-            <SectionHeader>Tasks</SectionHeader>
-            <div id="tasks" className={`${styles["tasks"]}`}>
-              {pipeline.tasks?.length ? pipeline.tasks?.map(task => {
-                return <Task task={task} />
-              }) : (
-                <SectionMessage type="info">No tasks to show</SectionMessage>
-              )}
-            </div>
+          <h2>{pipeline.id} <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>View Runs</Link></h2>
+          <Toolbar buttons={["createtask"]} groupId={groupId} pipelineId={pipelineId}/>
+          <SectionHeader>Tasks</SectionHeader>
+            {pipeline.tasks?.length ? pipeline.tasks?.map(task => {
+              return (
+                <div id="tasks" className={`${styles["tasks"]}`}>
+                  <Task task={task} />
+                </div>
+              )
+            }) : (
+              <SectionMessage type="info">No tasks</SectionMessage>
+            )}
         </div>
       )}
     </QueryWrapper>
