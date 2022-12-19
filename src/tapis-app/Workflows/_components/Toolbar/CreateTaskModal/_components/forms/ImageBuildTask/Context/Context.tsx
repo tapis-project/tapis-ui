@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Workflows } from "@tapis/tapis-typescript"
 import {
   GithubContext,
@@ -9,17 +9,62 @@ import {
 import { Button, Input } from "reactstrap"
 import { FieldWrapper, FormikInput, Icon } from "tapis-ui/_common"
 import styles from "./Context.module.scss"
+import { useImageBuildTaskContext } from "../ImageBuildTask"
+import { useFormikContext } from "formik"
+
+type WithFormUpdateProps = React.PropsWithChildren<{}> & {
+  state: object
+}
+
+const WithFormUpdates: React.FC<WithFormUpdateProps> = ({
+  children,
+  state
+}) => {
+  const { context } = useImageBuildTaskContext()
+  const { values } = useFormikContext<Partial<Workflows.ImageBuildTask>>()
+  
+  useEffect(() => {
+    context.setInitialValues({
+      ...values,
+      context: state
+    })
+    return () => {
+      delete values.context
+      context.setInitialValues(values)
+    }
+  }, [])
+  return (<>{children}</>)
+}
 
 const Context: React.FC = () => {
   const [ type, setType ] = useState<string>("")
-  
   let ContextComponent = <></>
   switch (type) {
     case Workflows.EnumContextType.Github:
-      ContextComponent = <GithubContext />
+      ContextComponent = (
+        <WithFormUpdates state={{
+            url: "",
+            branch: "",
+            build_file_path: "",
+            sub_path: "",
+            visibility: "",
+            type
+          }
+        }>
+          <GithubContext />
+        </WithFormUpdates>
+      )
       break;
     case Workflows.EnumContextType.Dockerhub:
-      ContextComponent = <DockerhubContext />
+      ContextComponent = (
+        <WithFormUpdates state={{
+          url: "",
+          image_tag: "",
+          type
+        }}>
+          <DockerhubContext />
+        </WithFormUpdates>
+      )
       break;
     case Workflows.EnumContextType.Local:
       ContextComponent = <LocalContext />
@@ -48,7 +93,7 @@ const Context: React.FC = () => {
             {Object.values(Workflows.EnumContextType).map((type) => {
               // TODO Remove when all supported
               const supported = [ "github", "dockerhub" ]
-              return <option disabled={!supported.includes(type)} value={type}>{type}</option>
+              return <option key={`context-type-${type}`} disabled={!supported.includes(type)} value={type}>{type}</option>
             })}
           </Input>
         </FieldWrapper>

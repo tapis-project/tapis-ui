@@ -1,10 +1,10 @@
-import { Workflows } from "@tapis/tapis-typescript";
 import React from "react"
+import { Workflows } from "@tapis/tapis-typescript";
 import { FormikInput } from "tapis-ui/_common"
 import styles from "./Context.module.scss"
 import { VisibilitySelect } from "./VisibilitySelect";
 
-const GithubContext: React.FC = () => {
+const GithubContext: React.FC = () => {  
   return (
     <div id="context-details">
       <div className={styles["grid-2"]}>

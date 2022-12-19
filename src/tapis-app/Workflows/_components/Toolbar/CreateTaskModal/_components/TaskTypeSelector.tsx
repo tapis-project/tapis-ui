@@ -30,7 +30,7 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({
             {Object.values(Workflows.EnumTaskType).map((type) => {
               // TODO Remove when all supported
               const supported = [ "image_build", "request" ]
-              return <option disabled={!supported.includes(type)} value={type}>{type}</option>
+              return <option disabled={!supported.includes(type)} key={`option-${type}`} value={type}>{type}</option>
             })}
           </Input>
         </FieldWrapper>

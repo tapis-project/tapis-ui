@@ -52,7 +52,7 @@ const PipelineEditor: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
           <SectionHeader>Tasks</SectionHeader>
             {pipeline.tasks?.length ? pipeline.tasks?.map(task => {
               return (
-                <div id="tasks" className={`${styles["tasks"]}`}>
+                <div id="tasks" key={task.id} className={`${styles["tasks"]}`}>
                   <Task task={task} />
                 </div>
               )

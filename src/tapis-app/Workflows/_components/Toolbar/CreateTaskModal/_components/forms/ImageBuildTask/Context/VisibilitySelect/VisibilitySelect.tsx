@@ -1,22 +1,47 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Workflows } from "@tapis/tapis-typescript";
 import { useList } from "tapis-hooks/workflows/identities"
-import { QueryWrapper } from "tapis-ui/_wrappers"
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { Credentials } from "../../Credentials"
 import styles from "./VisibilitySelect.module.scss"
+import { useFormikContext } from "formik"
+import { useImageBuildTaskContext } from "../../ImageBuildTask"
+import { CredentialsSourceSelect } from "../../Credentials"
 
 type VisibilitySelectProps = {
   type: Workflows.EnumContextType
 }
 
 const VisibilitySelect: React.FC<VisibilitySelectProps> = ({type}) => {
-  const { data, isLoading, error } = useList()
-  const identities = data?.result ?? []
   const [ visibility, setVisibility ] = useState<string>("")
-  const [ identityAsCreds, setIdentityAsCreds ] = useState<boolean>(false)
+  const { setFieldValue } = useFormikContext()
+  
+  const { context } = useImageBuildTaskContext()
+  const { values } = useFormikContext<Partial<Workflows.ImageBuildTask>>()
+  // useEffect(() => {    
+  //   context.setInitialValues({
+  //     ...values,
+  //     context: {
+  //       // credentials: {
+  //       //   personal_access_token: "",
+  //       //   username: ""
+  //       // },
+  //       url: "",
+  //       branch: "",
+  //       build_file_path: "",
+  //       sub_path: "",
+  //       visibility: "",
+  //       // identity_uuid: ""
+  //     }
+  //   })
 
-  const identitiesByType = (type: string) => identities.filter((ident) => ident.type === type)
+  //   return () => {
+  //     delete values.context
+  //     context.setInitialValues(values)
+  //   }
+  // }, [])
+
+  
 
   return (
     <div id="context-visibility">
@@ -26,54 +51,18 @@ const VisibilitySelect: React.FC<VisibilitySelectProps> = ({type}) => {
         label={"visibility"}
         required={true}
         description={'Note: Private sources require credentials to access'}
-        onChange={(e) => {setVisibility(e.target.value)}}
+        onChange={(e) => {
+          setVisibility(e.target.value)
+          setFieldValue("context.visibility", e.target.value)
+        }}
       >
         <option disabled selected={true} value={""}>-- select an option --</option>
         {Object.values(Workflows.EnumContextVisibility).map((vis) => {
-          return <option selected={visibility === vis} value={vis}>{vis}</option>
+          return <option key={`context-visiblity-${vis}`} selected={visibility === vis} value={vis}>{vis}</option>
         })}
       </FormikSelect>
       {visibility === "private" && (
-        <div id="context-credentials">
-          <div className={styles["radio-button-container"]}>
-            <label>
-              <input
-                type="radio"
-                checked={!identityAsCreds}
-                onClick={() => {setIdentityAsCreds(!identityAsCreds)}}
-              /> Provide credentials
-            </label>
-          </div>
-          <div className={styles["radio-button-container"]}>
-            <label>
-              <input
-                type="radio"
-                checked={identityAsCreds}
-                onClick={() => {setIdentityAsCreds(!identityAsCreds)}}
-              /> Use an external identity
-            </label>
-          </div>
-          {identityAsCreds ? (
-            <QueryWrapper isLoading={isLoading} error={error}>
-              <FormikSelect
-                name={`context.identity_uuid`}
-                label={"identity"}
-                required={true}
-                description={'Note: This identity will be used on every run of this pipeline.'}
-                disabled={identitiesByType(type).length === 0}
-              >
-                <option disabled selected={true} value={""}>
-                  {identitiesByType(type).length > 0 ? " -- select an option -- " : ` -- no ${type} identities found -- `}
-                </option>
-                {identitiesByType(type).map((identity) => {
-                  return <option value={identity.uuid}>{identity.name}</option>
-                })}
-              </FormikSelect>
-            </QueryWrapper>
-          ) : (
-            <Credentials scope="context" type={type}/>
-          )}
-        </div>
+        <CredentialsSourceSelect scope={"context"} type={type}/>
       )}
     </div>
   )
