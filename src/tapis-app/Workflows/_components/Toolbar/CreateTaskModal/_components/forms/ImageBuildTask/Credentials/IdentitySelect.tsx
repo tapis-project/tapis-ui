@@ -1,10 +1,11 @@
-import React, { useEffect } from "react"
 import { Workflows } from "@tapis/tapis-typescript";
-import { useList } from "tapis-hooks/workflows/identities"
-import { QueryWrapper } from "tapis-ui/_wrappers"
+import React from "react";
+import { useList } from "tapis-hooks/workflows/identities";
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { WithFormUpdates } from "../../_common"
-import { State } from "../../_common/WithFormUpdates"
+import { QueryWrapper } from "tapis-ui/_wrappers";
+import * as Yup from "yup";
+import { WithFormUpdates } from "../../_common";
+import { State } from "../../_common/WithFormUpdates";
 
 type Scope = "context" | "destination"
 type IdentitySelectProps = {
@@ -19,23 +20,48 @@ const IdentitySelect: React.FC<IdentitySelectProps> = ({
   const { data, isLoading, error } = useList()
   const identities = data?.result ?? []
   
-  const update = (state: State, scope: Scope) => {
+  const update = (
+    state: State,
+    validationSchema: Partial<Yup.AnyObjectSchema>,
+    scope: Scope
+  ) => {
     state[scope]["identity_uuid"] = ""
-    return state
+    return {
+      state,
+      validationSchema: validationSchema.shape!({
+        context: Yup.reach(validationSchema, "context").shape({
+          identity_uuid: Yup.string()
+            .uuid()
+            .required("Choose an identity")
+        })
+      })
+    }
   }
 
-  const remove = (state: State, scope: Scope) => {
+  const remove = (
+    state: State,
+    validationSchema: Partial<Yup.AnyObjectSchema>,
+    scope: Scope
+  ) => {
     let scopeObject = state[scope]
     delete scopeObject.identity_uuid
-    return state
+    return {
+      state,
+      validationSchema: validationSchema.shape!({
+        context: Yup.reach(validationSchema, "context")
+          .shape({
+            identity_uuid: undefined
+          })
+      })
+    }
   }
 
   const identitiesByType = (type: string) => identities.filter((ident) => ident.type === type)
 
   return (
     <WithFormUpdates
-      update={(state) => update(state, scope)}
-      remove={(state) => remove(state, scope)}
+      update={(state, validationSchema) => update(state, validationSchema, scope)}
+      remove={(state, validationSchema) => remove(state, validationSchema, scope)}
     >
       <QueryWrapper isLoading={isLoading} error={error}>
         <FormikSelect

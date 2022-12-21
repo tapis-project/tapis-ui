@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from "react"
 import { Workflows } from "@tapis/tapis-typescript";
-import { useList } from "tapis-hooks/workflows/identities"
+import { useFormikContext } from "formik";
+import React, { useState } from "react";
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { Credentials } from "../../Credentials"
-import styles from "./VisibilitySelect.module.scss"
-import { useFormikContext } from "formik"
-import { useImageBuildTaskContext } from "../../ImageBuildTask"
-import { CredentialsSourceSelect } from "../../Credentials"
+import { CredentialsSourceSelect } from "../../Credentials";
 
 type VisibilitySelectProps = {
   type: Workflows.EnumContextType
@@ -15,33 +11,6 @@ type VisibilitySelectProps = {
 const VisibilitySelect: React.FC<VisibilitySelectProps> = ({type}) => {
   const [ visibility, setVisibility ] = useState<string>("")
   const { setFieldValue } = useFormikContext()
-  
-  const { context } = useImageBuildTaskContext()
-  const { values } = useFormikContext<Partial<Workflows.ImageBuildTask>>()
-  // useEffect(() => {    
-  //   context.setInitialValues({
-  //     ...values,
-  //     context: {
-  //       // credentials: {
-  //       //   personal_access_token: "",
-  //       //   username: ""
-  //       // },
-  //       url: "",
-  //       branch: "",
-  //       build_file_path: "",
-  //       sub_path: "",
-  //       visibility: "",
-  //       // identity_uuid: ""
-  //     }
-  //   })
-
-  //   return () => {
-  //     delete values.context
-  //     context.setInitialValues(values)
-  //   }
-  // }, [])
-
-  
 
   return (
     <div id="context-visibility">

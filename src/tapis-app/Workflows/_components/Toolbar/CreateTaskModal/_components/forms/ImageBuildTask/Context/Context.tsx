@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState } from "react"
 import { Workflows } from "@tapis/tapis-typescript"
 import {
   GithubContext,
@@ -9,59 +9,107 @@ import {
 import { Button, Input } from "reactstrap"
 import { FieldWrapper, FormikInput, Icon } from "tapis-ui/_common"
 import styles from "./Context.module.scss"
-import { useImageBuildTaskContext } from "../ImageBuildTask"
-import { useFormikContext } from "formik"
-
-type WithFormUpdateProps = React.PropsWithChildren<{}> & {
-  state: object
-}
-
-const WithFormUpdates: React.FC<WithFormUpdateProps> = ({
-  children,
-  state
-}) => {
-  const { context } = useImageBuildTaskContext()
-  const { values } = useFormikContext<Partial<Workflows.ImageBuildTask>>()
-  
-  useEffect(() => {
-    context.setInitialValues({
-      ...values,
-      context: state
-    })
-    return () => {
-      delete values.context
-      context.setInitialValues(values)
-    }
-  }, [])
-  return (<>{children}</>)
-}
+import { WithFormUpdates } from "../../_common"
+import * as Yup from "yup"
+import { Mutator } from "../../_common/WithFormUpdates"
 
 const Context: React.FC = () => {
   const [ type, setType ] = useState<string>("")
+  const removeMutator: Mutator = (state, validationSchema) => {
+    delete state.context
+    return {
+      state,
+      validationSchema: validationSchema.shape!({
+        context: Yup.object().required("context is required")
+      })
+    }
+  }
   let ContextComponent = <></>
   switch (type) {
     case Workflows.EnumContextType.Github:
       ContextComponent = (
-        <WithFormUpdates state={{
-            url: "",
-            branch: "",
-            build_file_path: "",
-            sub_path: "",
-            visibility: "",
-            type
-          }
-        }>
+        <WithFormUpdates
+          update={(state, validationSchema) => {
+            const modifiedState = {
+              ...state,
+              context: {
+                url: "",
+                branch: "",
+                build_file_path: "",
+                sub_path: "",
+                visibility: "",
+                type
+              }
+            }
+            return {
+              state: modifiedState,
+              validationSchema: validationSchema.shape!({
+                context: Yup.object({
+                  url: Yup.string()
+                    .required("url is required")
+                    .min(1)
+                    .max(1024),
+                  branch: Yup.string()
+                    .required("branch is required")
+                    .min(1)
+                    .max(256),
+                  build_file_path: Yup.string()
+                    .required("must provide a path to the build file")
+                    .min(1)
+                    .max(512),
+                  sub_path: Yup.string()
+                    .min(1)
+                    .max(512),
+                  visibility: Yup.string()
+                    .required("visibility is required")
+                    .oneOf(Object.values(Workflows.EnumContextVisibility)),
+                  type: Yup.string().
+                    required("type is required")
+                    .oneOf(Object.values(Workflows.EnumContextType))
+
+                }).required("context is required")
+              })
+            }
+          }}
+          remove={removeMutator}
+        >
           <GithubContext />
         </WithFormUpdates>
       )
       break;
     case Workflows.EnumContextType.Dockerhub:
       ContextComponent = (
-        <WithFormUpdates state={{
-          url: "",
-          image_tag: "",
-          type
-        }}>
+        <WithFormUpdates
+          update={(state, validationSchema) => {
+            const modifiedState = {
+              ...state,
+              context: {
+                url: "",
+                image_tag: "",
+                type
+              }
+            }
+            return {
+              state: modifiedState,
+              validationSchema: validationSchema.shape!({
+                context: Yup.object({
+                  url: Yup.string()
+                    .required("url is required")
+                    .min(1)
+                    .max(1024),
+                  image_tag: Yup.string()
+                    .required("image tag is required")
+                    .min(1)
+                    .max(256),
+                  type: Yup.string().
+                    required("type is required")
+                    .oneOf(Object.values(Workflows.EnumContextType))
+                }).required("context is required")
+              })
+            }
+          }}
+          remove={removeMutator}
+        >
           <DockerhubContext />
         </WithFormUpdates>
       )

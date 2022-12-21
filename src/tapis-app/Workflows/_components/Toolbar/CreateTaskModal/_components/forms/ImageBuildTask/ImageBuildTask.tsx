@@ -14,7 +14,7 @@ type ImageBuildTaskProps = {
   ) => void
 }
 
-// Note: Type hack override
+// Note: Type hack. "builder" from string | null to string
 type InitialValues = Partial<Omit<Workflows.ReqImageBuildTask, "builder"> & {
   builder: string
 }>
@@ -39,8 +39,42 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({onSubmit}) => {
     builder: "",
     cache: false
   }
+
+  const defaultValidationSchema = Yup.object().shape({
+    id: Yup.string()
+    .min(1)
+    .max(255)
+    .required("A task requires an id")
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
+    type: Yup.string()
+      .oneOf(Object.values(Workflows.EnumTaskType))
+      .required("type is required"),
+    description: Yup.string()
+      .min(1)
+      .max(1024),
+    builder: Yup.string()
+      .oneOf(Object.values(Workflows.EnumBuilder))
+      .required("builder is required"),
+    cache: Yup.boolean(),
+    execution_profile: Yup.object({
+      max_retries: Yup.number()
+        .min(-1)
+        .max(1000),
+      max_exec_time: Yup.number()
+        .min(0),
+      retry_policy: Yup.string()
+        .oneOf(Object.values(Workflows.EnumRetryPolicy)),
+      invocation_mode: Yup.string()
+        .oneOf(Object.values(Workflows.EnumInvocationMode))
+    }),
+    context: Yup.object({}).required("context is required"),
+    destination: Yup.object({}).required("destination is required")
+  })
   const [ initialValues, setInitialValues ] = useState(defaultInitialValues)
-  const [ validationSchema, setValidationSchema ] = useState(Yup.object())
+  const [ validationSchema, setValidationSchema ] = 
+    useState<Yup.AnyObjectSchema>(defaultValidationSchema)
 
   return (
     <ImageBuildContext.Provider value={{
@@ -56,41 +90,6 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({onSubmit}) => {
 
 const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({onSubmit}) => {
   const { context } = useImageBuildTaskContext()
-  // const [ initialValues, setInitialValues ] = useState({
-  //   id: "",
-  //   description: "",
-  //   type: Workflows.EnumTaskType.ImageBuild,
-  //   builder: null,
-    // context: {
-    //   type: "",
-      // branch: "",
-      // build_file_path: "",
-      // sub_path: "",
-      // filename: "",
-      // visibility: null,
-      // url: "",
-      // tag: "",
-      // credentials: {
-        // username: "",
-        // personal_access_token: "",
-        // access_token: ""
-      // }, 
-      // identity_uuid: ""
-    // },
-    // destination: {
-    //   type: "",
-    //   credentials: {
-        // username: "",
-        // personal_access_token: "",
-        // access_token: ""
-      // },
-      // filename: "",
-      // url: "",
-      // tag: "",
-    //   identity_uuid: ""
-    // }
-  // })
-  // const validationSchema = Yup.object()
   
   return (
     <div id={`task-form`} className={styles["container"]}>

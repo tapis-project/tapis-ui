@@ -5,7 +5,7 @@ import styles from "./Builder.module.scss";
 import { Field, useFormikContext } from "formik"
 
 const Builder: React.FC = () => {
-    const [ type, setType ] = useState<string>("")
+    const [ type, setType ] = useState<string|null>(null)
     const [ cacheChecked, setCacheChecked ] = useState<boolean>(false)
     const { setFieldValue } = useFormikContext()
 
@@ -25,7 +25,7 @@ const Builder: React.FC = () => {
             }
           }}
         >
-          <option disabled selected={type === ""} value={""}>-- select an option --</option>
+          <option disabled selected={type === null} value={""}>-- select an option --</option>
           {Object.values(Workflows.EnumBuilder).map((builder) => {
             return <option value={builder} selected={type === builder}>{builder}</option>
           })}
