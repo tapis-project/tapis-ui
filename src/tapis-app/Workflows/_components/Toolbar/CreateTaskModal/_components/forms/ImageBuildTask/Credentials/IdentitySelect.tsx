@@ -5,7 +5,7 @@ import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { QueryWrapper } from "tapis-ui/_wrappers";
 import * as Yup from "yup";
 import { WithFormUpdates } from "../../_common";
-import { State } from "../../_common/WithFormUpdates";
+import { State, ValidationSchema } from "../../_common/WithFormUpdates";
 
 type Scope = "context" | "destination"
 type IdentitySelectProps = {
@@ -22,7 +22,7 @@ const IdentitySelect: React.FC<IdentitySelectProps> = ({
   
   const update = (
     state: State,
-    validationSchema: Partial<Yup.AnyObjectSchema>,
+    validationSchema: ValidationSchema,
     scope: Scope
   ) => {
     state[scope]["identity_uuid"] = ""
@@ -40,7 +40,7 @@ const IdentitySelect: React.FC<IdentitySelectProps> = ({
 
   const remove = (
     state: State,
-    validationSchema: Partial<Yup.AnyObjectSchema>,
+    validationSchema: ValidationSchema,
     scope: Scope
   ) => {
     let scopeObject = state[scope]

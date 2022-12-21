@@ -31,8 +31,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   // const [ validationSchema, setValidationSchema ] = useState<Yup.ObjectSchema<any>|undefined>(undefined)
   // const [ initialValues, setInitialValues ] = useState<Workflows.ReqTask|undefined>(undefined)
   const onSubmit = (reqTask: Workflows.ReqTask) => {
-    console.log(reqTask)
-    // create({groupId: groupId!, pipelineId: pipelineId!, reqTask}, {onSuccess});
+    create({groupId: groupId!, pipelineId: pipelineId!, reqTask}, {onSuccess});
   }
 
   return (

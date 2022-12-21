@@ -1,36 +1,58 @@
-import React, { useState } from "react"
 import { Workflows } from "@tapis/tapis-typescript"
-import {
-  DockerhubDestination,
-  LocalDestination,
-} from "."
+import React, { useState } from "react"
 import { Button, Input } from "reactstrap"
 import { FieldWrapper, Icon } from "tapis-ui/_common"
-import styles from "./Destination.module.scss"
+import {
+  DockerhubDestination,
+  LocalDestination
+} from "."
 import { WithFormUpdates } from "../../_common"
+import styles from "./Destination.module.scss"
+import * as Yup from "yup"
+import { Mutator } from "../../_common/WithFormUpdates"
 
 const DestinationSet: React.FC = () => {
   const [ type, setType ] = useState<string>("")
+
+  const removeMutator: Mutator = (state, validationSchema) => {
+    delete state.destination
+    return {
+      state,
+      validationSchema: validationSchema.shape!({
+        destiantion: Yup.object().required("destination is required")
+      })
+    }
+  }
   
   let DestinationComponent = <></>
   switch (type) {
     case Workflows.EnumDestinationType.Local:
       DestinationComponent = (
         <WithFormUpdates
-          update={(state) => {
-            let newState = {
+          update={(state, validationSchema) => {
+            const modifiedState = {
               ...state,
               destination: {
                 filename: "",
                 type
               }
             }
-            return newState
+            return {
+              state: modifiedState,
+              validationSchema: validationSchema.shape!({
+                destination: Yup.object({
+                  filename: Yup.string()
+                    .required("filename is required")
+                    .min(1)
+                    .max(1024),
+                  type: Yup.string().
+                    required("type is required")
+                    .oneOf(Object.values(Workflows.EnumDestinationType))
+                }).required("destination is required")
+              })
+            }
           }}
-          remove={(state) => {
-            delete state.destination
-            return state
-          }}
+          remove={removeMutator}
         >
           <LocalDestination />
         </WithFormUpdates>
@@ -39,12 +61,12 @@ const DestinationSet: React.FC = () => {
     case Workflows.EnumDestinationType.Dockerhub:
       DestinationComponent = (
         <WithFormUpdates
-          update={(state) => {
+          update={(state, validationSchema) => {
             // NOTE!!! When setting the destination prop via "state.destination = ...",
             // why does the destination property not show when logging "state" to the console but
             // does show the value of "state.destination" when logging to the console? Does
             // "state.destination" become its own object
-            return {
+            const modifiedState = {
               ...state,
               destination: {
                 url: "",
@@ -52,11 +74,26 @@ const DestinationSet: React.FC = () => {
                 type
               }
             }
+            return {
+              state: modifiedState,
+              validationSchema: validationSchema.shape!({
+                destination: Yup.object({
+                  url: Yup.string()
+                    .required("url is required")
+                    .min(1)
+                    .max(2048),
+                  tag: Yup.string()
+                    .required("tag is required")
+                    .min(1)
+                    .max(128),
+                  type: Yup.string().
+                    required("type is required")
+                    .oneOf(Object.values(Workflows.EnumDestinationType))
+                }).required("destination is required")
+              })
+            }
           }}
-          remove={(state) => {
-            delete state.destination
-            return state
-          }}
+          remove={removeMutator}
         >
           <DockerhubDestination />
         </WithFormUpdates>

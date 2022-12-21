@@ -22,7 +22,7 @@ const Credentials: React.FC<CredentialsProps> = ({
     return {
       state,
       validationSchema: validationSchema.shape!({
-        context: Yup.reach(validationSchema, "context")
+        [scope]: Yup.reach(validationSchema, scope)
           .shape({
             credentials: undefined
           })
@@ -48,7 +48,7 @@ const Credentials: React.FC<CredentialsProps> = ({
             return {
               state: modifiedState,
               validationSchema: validationSchema.shape!({
-                context: Yup.reach(validationSchema, "context").shape({
+                [scope]: Yup.reach(validationSchema, scope).shape({
                   credentials: Yup.object({
                     username: Yup.string()
                       .min(1)
@@ -85,7 +85,7 @@ const Credentials: React.FC<CredentialsProps> = ({
             return {
               state: modifiedState,
               validationSchema: validationSchema.shape!({
-                context: Yup.reach(validationSchema, "context").shape({
+                [scope]: Yup.reach(validationSchema, scope).shape({
                   credentials: Yup.object({
                     username: Yup.string()
                       .min(1)

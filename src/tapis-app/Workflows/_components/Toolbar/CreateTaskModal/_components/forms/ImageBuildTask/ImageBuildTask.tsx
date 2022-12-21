@@ -1,10 +1,10 @@
-import React, { useState, useContext } from "react"
-import { Workflows } from "@tapis/tapis-typescript"
-import { Details } from "../_common"
-import { Context, Destination, Builder } from "./"
-import { Form, Formik, useFormikContext } from 'formik';
-import styles from "./ImageBuildTask.module.scss"
-import * as Yup from "yup"
+import { Workflows } from "@tapis/tapis-typescript";
+import { Form, Formik } from 'formik';
+import React, { useContext, useState } from "react";
+import * as Yup from "yup";
+import { Details } from "../_common";
+import { Builder, Context, Destination } from "./";
+import styles from "./ImageBuildTask.module.scss";
 
 type ImageBuildTaskProps = {
   onSubmit: (
