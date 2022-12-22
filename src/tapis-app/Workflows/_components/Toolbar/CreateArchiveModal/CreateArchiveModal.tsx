@@ -29,9 +29,9 @@ const baseValidationSchema = {
 }
 
 const S3ArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
-  const validationSchema = Yup.object({
-    ...baseValidationSchema,
-  })
+  // const validationSchema = Yup.object({
+  //   ...baseValidationSchema,
+  // })
 
   return (
     <div>
