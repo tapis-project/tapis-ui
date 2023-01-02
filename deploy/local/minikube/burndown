@@ -1,0 +1,5 @@
+#!/bin/bash
+
+here=$(dirname $0)
+
+kubectl delete -f "$here/deployment.yml"

@@ -12,8 +12,15 @@ COPY package-lock.json ./
 # Copy the rest of the files
 COPY ./ ./
 
+RUN npm install -g server
+
 # Install all files in the package json
 RUN npm install
 
-# Start the container
 CMD ["npm", "run", "start"]
+
+# RUN npm run build
+
+# Start the container
+# CMD ["serve", "-s", "build"]
+# CMD ["npm", "run", "build"]
