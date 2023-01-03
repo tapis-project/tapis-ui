@@ -8,29 +8,22 @@
         "burndown": "./burndown",
         "burnup": "./burnup"
     },
-    "categories": {
-        "api": [],
-        "frontend": [
-            {
-                "name": "tapisui",
-                "type": "frontend",
-                "k8sServiceName": "tapisui-service",
-                "k8sDeploymentName": "tapisui-deployment",
-                "rootDir": "./",
-                "deployDir": "./deploy/",
-                "dockerfilePath": "Dockerfile",
-                "displayName": "UI",
-                "language": "typescript",
-                "framework": "react",
-                "image": "tapis/tapisui",
-                "buildable": true,
-                "exposeable": true,
-                "uses": []
-            }
-        ],
-        "broker": [],
-        "database": [],
-        "proxy": [],
-        "service": []
-    } 
+    "services": [
+        {
+            "type": "frontend",
+            "name": "tapisui",
+            "k8sServiceName": "tapisui-service",
+            "k8sDeploymentName": "tapisui-deployment",
+            "rootDir": "./",
+            "deployDir": "./deploy/",
+            "dockerfilePath": "Dockerfile",
+            "displayName": "UI",
+            "language": "typescript",
+            "framework": "react",
+            "image": "tapis/tapisui",
+            "buildable": true,
+            "exposeable": true,
+            "uses": []
+        }
+    ] 
 }

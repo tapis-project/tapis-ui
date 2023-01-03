@@ -12,8 +12,6 @@ COPY package-lock.json ./
 # Copy the rest of the files
 COPY ./ ./
 
-RUN npm install -g server
-
 # Install all files in the package json
 RUN npm install
 
