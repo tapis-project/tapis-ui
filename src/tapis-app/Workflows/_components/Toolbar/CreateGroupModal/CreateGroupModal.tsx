@@ -130,7 +130,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
           <Button
             form="newgroup-form"
             color="primary"
-            disabled={isSuccess || isSuccess}
+            disabled={isLoading || isSuccess}
             aria-label="Submit"
             type="submit"
           >

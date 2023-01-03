@@ -5,7 +5,7 @@ import {
   Switch,
 } from 'react-router-dom';
 
-import { default as PipelineEditor } from '../PipelineEditor';
+import { default as Pipeline } from '../Pipeline';
 
 const Router: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ const Router: React.FC = () => {
         }: RouteComponentProps<{
           groupId: string;
           pipelineId: string;
-        }>) => <PipelineEditor groupId={groupId} pipelineId={pipelineId}/>
+        }>) => <Pipeline groupId={groupId} pipelineId={pipelineId}/>
       }
       />
 

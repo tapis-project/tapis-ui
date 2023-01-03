@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDetails, useList } from 'tapis-hooks/workflows/pipelines';
 import { Workflows } from '@tapis/tapis-typescript';
@@ -15,6 +15,7 @@ import {
   Button, 
 } from 'reactstrap';
 import { Toolbar } from "../../../../_components"
+import { RunPipelineModal } from "../../_components"
 
 type PipelineCardProps = {
   pipelineId: string
@@ -25,6 +26,8 @@ const PipelineCard: React.FC<PipelineCardProps> = ({
   pipelineId,
   groupId
 }) => {
+  const [ showModal, setShowModal ] = useState<boolean>(false)
+  const toggle = () => {setShowModal(!showModal)}
   const { data, isLoading, error } = useDetails({ groupId, pipelineId })
   const pipeline: Workflows.Pipeline = data?.result!
 
@@ -40,20 +43,39 @@ const PipelineCard: React.FC<PipelineCardProps> = ({
               <CardText><b>owner</b> {pipeline.owner}</CardText>
               <CardText><b>uuid</b> {pipeline.uuid}</CardText>
             </CardBody>
-            <CardFooter>
-              <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}`}>
-                <Button className={styles["card-button"]}>
-                  <Icon name="edit-document"/> Edit
+            <CardFooter className={styles["card-footer"]}>
+              <div>
+                <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}`}>
+                  <Button className={styles["card-button"]}>
+                    <Icon name="edit-document"/> Edit
+                  </Button>
+                </Link>
+                <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>
+                  <Button className={styles["card-button"]}>
+                    View Runs
+                  </Button>
+                </Link>
+              </div>
+              <div></div>
+              <div>
+                <Button
+                  color="primary"
+                  className={styles["card-button"]}
+                  onClick={toggle}
+                >
+                  Run
                 </Button>
-              </Link>
-              <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>
-                <Button className={styles["card-button"]}>
-                  View Runs
-                </Button>
-              </Link>
+              </div>
             </CardFooter>
         </Card>
       )}
+      {showModal && groupId && pipelineId &&
+        <RunPipelineModal
+          groupId={groupId}
+          pipelineId={pipelineId}
+          toggle={toggle}
+        />
+      }
     </QueryWrapper>
   );
 };

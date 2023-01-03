@@ -5,7 +5,7 @@ import { SectionMessage, SectionHeader } from 'tapis-ui/_common';
 import { QueryWrapper } from "tapis-ui/_wrappers"
 import { Link } from "react-router-dom"
 import { Toolbar } from "../../_components"
-import styles from "./PipelineEditor.module.scss"
+import styles from "./Pipeline.module.scss"
 
 type TaskProps = {
   task: Workflows.Task
@@ -39,7 +39,7 @@ type PipelineProps = {
   pipelineId: string
 }
 
-const PipelineEditor: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
+const Pipeline: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
   const { data, isLoading, error } = useDetails({groupId, pipelineId})
   const pipeline: Workflows.Pipeline = data?.result!
 
@@ -65,4 +65,4 @@ const PipelineEditor: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
   )
 };
 
-export default PipelineEditor;
+export default Pipeline;

@@ -12,6 +12,11 @@
   margin-top: 1em;
 }
 
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
 .card-button {
   margin-right: 8px;
 }

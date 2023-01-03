@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 
 import { default as Pipelines } from '../Pipelines';
-import { default as PipelineEditor } from '../PipelineEditor';
+import { default as Pipeline } from '../Pipeline';
 import { default as PipelineRuns } from "../PipelineRuns"
 
 const Router: React.FC = () => {
@@ -22,7 +22,7 @@ const Router: React.FC = () => {
       </Route>
 
       <Route path={`${path}/:groupId/:pipelineId`} exact>
-        <PipelineEditor />
+        <Pipeline />
       </Route>
 
       <Route path={`${path}/:groupId/:pipelineId/runs`}>
