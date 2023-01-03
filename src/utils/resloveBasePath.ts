@@ -3,8 +3,6 @@ export const resolveBasePath = () => {
   const tapisEnv: string | undefined = process.env.TAPIS_ENV;
   const baseUrl: string | undefined = process.env.TAPIS_BASE_URL;
 
-  console.log(tapisSiteId, tapisEnv, baseUrl);
-
   let envStr = tapisEnv ? `.${tapisEnv}.` : '';
   if (tapisSiteId && baseUrl) {
     // Note: Using the site as the tenant is temporary

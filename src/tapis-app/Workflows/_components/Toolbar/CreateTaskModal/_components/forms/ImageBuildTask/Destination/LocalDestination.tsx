@@ -1,4 +1,3 @@
-import { Workflows } from '@tapis/tapis-typescript';
 import React from 'react';
 import { FormikInput } from 'tapis-ui/_common';
 import styles from './Destination.module.scss';

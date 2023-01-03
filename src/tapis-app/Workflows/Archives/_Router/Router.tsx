@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Route,
-  useRouteMatch,
-  RouteComponentProps,
-  Switch,
-} from 'react-router-dom';
+import { Route, useRouteMatch, Switch } from 'react-router-dom';
 
 import { default as ArchivesLayout } from '../Archives';
 import { default as ArchiveLayout } from '../Archive';

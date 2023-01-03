@@ -87,7 +87,7 @@ const AddGroupUsersModal: React.FC<AddGroupUserModalProps> = ({
                                 />{' '}
                                 is admin?
                               </label>
-                              {index != 0 && (
+                              {index !== 0 && (
                                 <Button
                                   className={styles['remove-button']}
                                   type="button"

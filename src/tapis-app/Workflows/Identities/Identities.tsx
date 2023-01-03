@@ -21,7 +21,8 @@ const Identities: React.FC = () => {
         {identities.length ? (
           identities.map((identity, i) => {
             let evenodd: string = i % 2 > 0 ? styles['odd'] : styles['even'];
-            let last: string = i == identities.length - 1 ? styles['last'] : '';
+            let last: string =
+              i === identities.length - 1 ? styles['last'] : '';
             return (
               <Link
                 to={`/workflows/identities/${identity.uuid}`}

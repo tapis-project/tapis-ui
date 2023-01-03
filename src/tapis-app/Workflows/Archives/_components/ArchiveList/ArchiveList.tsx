@@ -26,7 +26,8 @@ const ArchiveList: React.FC<ArchiveListParams> = ({ groupId }) => {
           {archives.length ? (
             archives.map((archive, i) => {
               let evenodd: string = i % 2 > 0 ? styles['odd'] : styles['even'];
-              let last: string = i == archives.length - 1 ? styles['last'] : '';
+              let last: string =
+                i === archives.length - 1 ? styles['last'] : '';
               return (
                 <Link
                   to={`/workflows/archives/${groupId}/${archive.id}`}

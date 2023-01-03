@@ -1,15 +1,9 @@
 import React from 'react';
-import {
-  Route,
-  useRouteMatch,
-  RouteComponentProps,
-  Switch,
-} from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { default as Archives } from '../Archives';
 
 const Router: React.FC = () => {
-  const { path } = useRouteMatch();
   return (
     <Switch>
       <Route path={`/workflows/archives`} exact>

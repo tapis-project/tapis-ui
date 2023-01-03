@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from 'tapis-app/_components';
 import { Router } from 'tapis-app/_Router';
-import { SectionHeader, PageLayout } from 'tapis-ui/_common';
+import { PageLayout } from 'tapis-ui/_common';
 import { NotificationsProvider } from 'tapis-app/_components/Notifications';
 import { useHistory } from 'react-router-dom';
 import './Layout.scss';

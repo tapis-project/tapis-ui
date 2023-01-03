@@ -21,7 +21,7 @@ const Groups: React.FC = () => {
         {groups.length ? (
           groups.map((group, i) => {
             let evenodd: string = i % 2 > 0 ? styles['odd'] : styles['even'];
-            let last: string = i == groups.length - 1 ? styles['last'] : '';
+            let last: string = i === groups.length - 1 ? styles['last'] : '';
             return (
               <Link
                 to={`/workflows/groups/${group.id}`}

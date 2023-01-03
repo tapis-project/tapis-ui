@@ -195,23 +195,23 @@ const CreateIdentityModal: React.FC<{ toggle: () => void }> = ({ toggle }) => {
     focusManager.setFocused(true);
   }, []);
 
-  const onSubmit = ({
-    name,
-    type,
-    description,
-    credentials,
-  }: CreateIdentityFormProps) => {
-    create({ name, type, description, credentials }, { onSuccess });
-  };
-
   const renderIdentityForm = useCallback(() => {
+    const onSubmit = ({
+      name,
+      type,
+      description,
+      credentials,
+    }: CreateIdentityFormProps) => {
+      create({ name, type, description, credentials }, { onSuccess });
+    };
+
     switch (selectedType) {
       case Workflows.EnumIdentityType.Dockerhub:
         return <DockerhubIdentityForm onSubmit={onSubmit} />;
       case Workflows.EnumIdentityType.Github:
         return <GithubIdentityForm onSubmit={onSubmit} />;
     }
-  }, [selectedType]);
+  }, [selectedType, create, onSuccess]);
 
   return (
     <GenericModal
@@ -232,7 +232,7 @@ const CreateIdentityModal: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             >
               <option
                 disabled
-                selected={selectedType == undefined}
+                selected={selectedType === undefined}
                 value={undefined}
               >
                 {' '}
@@ -240,7 +240,7 @@ const CreateIdentityModal: React.FC<{ toggle: () => void }> = ({ toggle }) => {
               </option>
               {Object.values(Workflows.EnumIdentityType).map((type) => {
                 return (
-                  <option selected={selectedType == type} value={type}>
+                  <option selected={selectedType === type} value={type}>
                     {type}
                   </option>
                 );

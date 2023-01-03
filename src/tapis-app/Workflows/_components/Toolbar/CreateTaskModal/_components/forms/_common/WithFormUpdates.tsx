@@ -30,31 +30,28 @@ const WithFormUpdates: React.FC<WithFormUpdateProps> = ({
   update,
   remove,
 }) => {
-  const mutators = {
-    update,
-    remove,
-  };
-  const mutate = (
-    type: 'update' | 'remove',
-    state: object,
-    validationSchema: Partial<Yup.AnyObjectSchema>
-  ) => {
-    let { state: modifiedState, validationSchema: modifiedValidationSchema } =
-      mutators[type](state, validationSchema);
-    context.setInitialValues(modifiedState);
-    context.setValidationSchema(modifiedValidationSchema);
-  };
-
   const { context } = useImageBuildTaskContext();
   const { values } = useFormikContext();
 
   useEffect(() => {
+    const mutators = { update, remove };
+
+    const mutate = (
+      type: 'update' | 'remove',
+      state: object,
+      validationSchema: Partial<Yup.AnyObjectSchema>
+    ) => {
+      let { state: modifiedState, validationSchema: modifiedValidationSchema } =
+        mutators[type](state, validationSchema);
+      context.setInitialValues(modifiedState);
+      context.setValidationSchema(modifiedValidationSchema);
+    };
     let state = JSON.parse(JSON.stringify(values)); // Deep copy
     mutate('update', state, context.validationSchema);
     return () => {
       mutate('remove', state, context.validationSchema);
     };
-  }, []);
+  }, [context.validationSchema, values, context, update, remove]);
   return <>{children}</>;
 };
 

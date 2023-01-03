@@ -10,7 +10,6 @@ import { Button, Spinner } from 'reactstrap';
 import { focusManager } from 'react-query';
 
 type RemoveGroupUserButtonProps = {
-  username: string;
   user: Workflows.GroupUser;
   groupId: string;
 };
@@ -18,7 +17,6 @@ type RemoveGroupUserButtonProps = {
 const RemoveUserButton: React.FC<RemoveGroupUserButtonProps> = ({
   user,
   groupId,
-  username,
 }) => {
   const {
     removeAsync,
@@ -34,7 +32,7 @@ const RemoveUserButton: React.FC<RemoveGroupUserButtonProps> = ({
     // automatic refetch on window focus
     focusManager.setFocused(true);
     reset();
-  }, []);
+  }, [reset]);
   return !removeInProgress && (!isSuccess || isError) ? (
     <Button
       color="danger"
@@ -45,7 +43,7 @@ const RemoveUserButton: React.FC<RemoveGroupUserButtonProps> = ({
       }}
     >
       <Icon name="trash" />
-      {/* {isError && removeError?.message} */}
+      {isError && removeError?.message}
     </Button>
   ) : (
     <Spinner />
@@ -62,7 +60,7 @@ const Users: React.FC<UsersProps> = ({ groupId }) => {
   const users: Array<Workflows.GroupUser> = data?.result ?? [];
 
   const isCurrentUser = (username: string) =>
-    username == claims['tapis/username'];
+    username === claims['tapis/username'];
   const canDeleteUser = (user: Workflows.GroupUser) => {
     return (
       users.filter((user) => isCurrentUser(user.username!) && user.is_admin)
@@ -83,7 +81,7 @@ const Users: React.FC<UsersProps> = ({ groupId }) => {
               users.map((user, i) => {
                 let evenodd: string =
                   i % 2 > 0 ? styles['odd'] : styles['even'];
-                let last: string = i == users.length - 1 ? styles['last'] : '';
+                let last: string = i === users.length - 1 ? styles['last'] : '';
                 return (
                   <div className={`${styles['user']} ${evenodd} ${last}`}>
                     <div>
@@ -99,11 +97,7 @@ const Users: React.FC<UsersProps> = ({ groupId }) => {
                       <div className={styles['flex-grow']}></div>
                       <div>
                         {canDeleteUser(user) && (
-                          <RemoveUserButton
-                            user={user}
-                            username={claims['tapis/username']}
-                            groupId={groupId}
-                          />
+                          <RemoveUserButton user={user} groupId={groupId} />
                         )}
                       </div>
                     </div>

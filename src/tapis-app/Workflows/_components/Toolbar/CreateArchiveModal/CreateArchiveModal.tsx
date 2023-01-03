@@ -190,18 +190,18 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const onSubmit = (reqArchive: Workflows.ReqArchive) => {
-    create({ groupId: groupId!, reqArchive }, { onSuccess });
-  };
-
   const renderArchiveForm = useCallback(() => {
+    const onSubmit = (reqArchive: Workflows.ReqArchive) => {
+      create({ groupId: groupId!, reqArchive }, { onSuccess });
+    };
+
     switch (selectedType) {
       case Workflows.EnumArchiveType.System:
         return <TapisSystemArchiveForm onSubmit={onSubmit} />;
       case Workflows.EnumArchiveType.S3:
         return <S3ArchiveForm onSubmit={onSubmit} />;
     }
-  }, [selectedType]);
+  }, [selectedType, create, groupId, onSuccess]);
 
   return (
     <GenericModal
@@ -218,7 +218,7 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
             >
               <option
                 disabled
-                selected={selectedType == undefined}
+                selected={selectedType === undefined}
                 value={undefined}
               >
                 {' '}
@@ -226,7 +226,7 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
               </option>
               {Object.values(Workflows.EnumArchiveType).map((type) => {
                 return (
-                  <option selected={selectedType == type} value={type}>
+                  <option selected={selectedType === type} value={type}>
                     {type}
                   </option>
                 );

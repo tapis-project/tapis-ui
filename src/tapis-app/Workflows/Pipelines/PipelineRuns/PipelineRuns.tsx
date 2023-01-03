@@ -71,12 +71,6 @@ type PipelineRunProps = {
   pipelineRun: Workflows.PipelineRun;
 };
 
-// Returns last section of pipelineRun uuid
-const truncate = (str: string) => {
-  let parts = str.split('-');
-  return `...${parts[parts.length - 1]}`;
-};
-
 const PipelineRun: React.FC<PipelineRunProps> = ({
   groupId,
   pipelineId,
