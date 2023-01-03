@@ -29,7 +29,7 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
         >
           {text}
         </Button>
-        &nbsp;/&nbsp; 
+        &nbsp;/&nbsp;
       </span>
     );
   }

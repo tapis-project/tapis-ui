@@ -4,10 +4,10 @@ import { GenericModal } from 'tapis-ui/_common';
 import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { focusManager } from 'react-query';
-import styles from "./CreateTaskModal.module.scss"
-import { Task } from "./_components/forms"
-import { TaskTypeSelector } from "./_components"
-import { useCreate } from "tapis-hooks/workflows/tasks"
+import styles from './CreateTaskModal.module.scss';
+import { Task } from './_components/forms';
+import { TaskTypeSelector } from './_components';
+import { useCreate } from 'tapis-hooks/workflows/tasks';
 
 type CreateTaskModalProps = {
   toggle: () => void;
@@ -20,19 +20,22 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   groupId,
   pipelineId,
 }) => {
-  const { create, isLoading, isSuccess, error } = useCreate()
+  const { create, isLoading, isSuccess, error } = useCreate();
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
     focusManager.setFocused(true);
   }, []);
 
-  const [ type, setType ] = useState<string>("")
+  const [type, setType] = useState<string>('');
   // const [ validationSchema, setValidationSchema ] = useState<Yup.ObjectSchema<any>|undefined>(undefined)
   // const [ initialValues, setInitialValues ] = useState<Workflows.ReqTask|undefined>(undefined)
   const onSubmit = (reqTask: Workflows.ReqTask) => {
-    create({groupId: groupId!, pipelineId: pipelineId!, reqTask}, {onSuccess});
-  }
+    create(
+      { groupId: groupId!, pipelineId: pipelineId!, reqTask },
+      { onSuccess }
+    );
+  };
 
   return (
     <GenericModal
@@ -40,7 +43,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       size="lg"
       title="Create Task"
       body={
-        <div className={styles["form-container"]}>
+        <div className={styles['form-container']}>
           {type ? (
             <Task type={type} onSubmit={onSubmit} />
           ) : (

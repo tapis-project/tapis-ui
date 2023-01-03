@@ -21,8 +21,7 @@ const Router: React.FC = () => {
         }: RouteComponentProps<{
           groupId: string;
           pipelineId: string;
-        }>) => <PipelineRuns groupId={groupId} pipelineId={pipelineId}/>
-      }
+        }>) => <PipelineRuns groupId={groupId} pipelineId={pipelineId} />}
       />
     </Switch>
   );

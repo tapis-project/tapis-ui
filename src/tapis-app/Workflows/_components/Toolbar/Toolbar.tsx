@@ -3,12 +3,12 @@ import { Button } from 'reactstrap';
 import { Icon } from 'tapis-ui/_common';
 import styles from './Toolbar.module.scss';
 import { CreatePipelineModal } from './CreatePipelineModal';
-import { CreateTaskModal } from "./CreateTaskModal"
+import { CreateTaskModal } from './CreateTaskModal';
 import { CreateGroupModal } from './CreateGroupModal';
 import { CreateArchiveModal } from './CreateArchiveModal';
 import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
-import { RunPipelineModal } from "./RunPipelineModal"
+import { RunPipelineModal } from './RunPipelineModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -48,7 +48,7 @@ type WorkflowsToolbarProps = {
 const Toolbar: React.FC<WorkflowsToolbarProps> = ({
   groupId,
   pipelineId,
-  buttons = []
+  buttons = [],
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
 
@@ -59,7 +59,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
   return (
     <div id="pipeline-toolbar">
       <div className={styles['toolbar-wrapper']}>
-        {buttons.includes("creategroup") && (
+        {buttons.includes('creategroup') && (
           <ToolbarButton
             text="New Group"
             icon="add"
@@ -68,7 +68,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create group"
           />
         )}
-        {buttons.includes("createpipeline") && (
+        {buttons.includes('createpipeline') && (
           <ToolbarButton
             text="New Pipeline"
             icon="add"
@@ -77,7 +77,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create pipeline"
           />
         )}
-        {buttons.includes("createtask") && (
+        {buttons.includes('createtask') && (
           <ToolbarButton
             text="New Task"
             icon="add"
@@ -86,7 +86,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create task"
           />
         )}
-        {buttons.includes("createarchive") && (
+        {buttons.includes('createarchive') && (
           <ToolbarButton
             text="New Archive"
             icon="add"
@@ -95,7 +95,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create archive"
           />
         )}
-        {buttons.includes("createidentity") && (
+        {buttons.includes('createidentity') && (
           <ToolbarButton
             text="New Identity"
             icon="add"
@@ -104,7 +104,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create identity"
           />
         )}
-        {buttons.includes("addgroupuser") && (
+        {buttons.includes('addgroupuser') && (
           <ToolbarButton
             text="Add Users"
             icon="add"
@@ -113,7 +113,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Add user"
           />
         )}
-        {buttons.includes("runpipeline") && (
+        {buttons.includes('runpipeline') && (
           <ToolbarButton
             text="Run Pipeline"
             icon="publications"
@@ -122,15 +122,31 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Add user"
           />
         )}
-        {(modal === 'createpipeline' && groupId) &&
-          <CreatePipelineModal toggle={toggle} groupId={groupId} />}
-        {modal === 'createtask' && <CreateTaskModal groupId={groupId} pipelineId={pipelineId} toggle={toggle} />}
-        {modal === 'runpipeline' && groupId && pipelineId &&
-          <RunPipelineModal groupId={groupId} pipelineId={pipelineId} toggle={toggle} />}
+        {modal === 'createpipeline' && groupId && (
+          <CreatePipelineModal toggle={toggle} groupId={groupId} />
+        )}
+        {modal === 'createtask' && (
+          <CreateTaskModal
+            groupId={groupId}
+            pipelineId={pipelineId}
+            toggle={toggle}
+          />
+        )}
+        {modal === 'runpipeline' && groupId && pipelineId && (
+          <RunPipelineModal
+            groupId={groupId}
+            pipelineId={pipelineId}
+            toggle={toggle}
+          />
+        )}
         {modal === 'creategroup' && <CreateGroupModal toggle={toggle} />}
-        {(modal === 'createarchive' && groupId) && <CreateArchiveModal groupId={groupId} toggle={toggle} />}
+        {modal === 'createarchive' && groupId && (
+          <CreateArchiveModal groupId={groupId} toggle={toggle} />
+        )}
         {modal === 'createidentity' && <CreateIdentityModal toggle={toggle} />}
-        {(modal === 'addgroupusers' && groupId) && <AddGroupUsersModal groupId={groupId} toggle={toggle} />}
+        {modal === 'addgroupusers' && groupId && (
+          <AddGroupUsersModal groupId={groupId} toggle={toggle} />
+        )}
       </div>
     </div>
   );

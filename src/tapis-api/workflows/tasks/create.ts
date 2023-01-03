@@ -1,4 +1,4 @@
-import { Workflows }from '@tapis/tapis-typescript';
+import { Workflows } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const create = (
@@ -12,9 +12,7 @@ const create = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespResourceURL>(() =>
-    api.createTask(params)
-  );
+  return errorDecoder<Workflows.RespResourceURL>(() => api.createTask(params));
 };
 
 export default create;

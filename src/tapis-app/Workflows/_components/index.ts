@@ -1,3 +1,3 @@
 export { Toolbar } from './Toolbar';
 export { GroupsNav } from './GroupsNav';
-export { Menu } from "./Menu"
+export { Menu } from './Menu';

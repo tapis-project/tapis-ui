@@ -4,31 +4,32 @@ import { QueryWrapper, SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik } from 'formik';
 import { FormikInput, FieldWrapper, GenericModal } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
-import * as Yup from "yup"
+import * as Yup from 'yup';
 import { useCreate } from 'tapis-hooks/workflows/archives';
 import { useList } from 'tapis-hooks/systems';
 import { focusManager } from 'react-query';
-import styles from "./CreateArchiveModel.module.scss"
+import styles from './CreateArchiveModel.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 
 type FormProps = {
-  onSubmit: (reqArchive: Workflows.ReqArchive) => void
-}
+  onSubmit: (reqArchive: Workflows.ReqArchive) => void;
+};
 
 const baseValidationSchema = {
   id: Yup.string()
     .min(1)
     .max(255)
-    .required("An archive requires an id")
+    .required('An archive requires an id')
     .matches(
       /^[a-zA-Z0-9_.-]+$/,
-      "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
+      "Must contain only alphanumeric characters and the following: '.', '_', '-'"
+    ),
   type: Yup.string()
     .oneOf(Object.values(Workflows.EnumArchiveType))
-    .required("Select an archive type"),
-}
+    .required('Select an archive type'),
+};
 
-const S3ArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
+const S3ArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
   // const validationSchema = Yup.object({
   //   ...baseValidationSchema,
   // })
@@ -97,36 +98,35 @@ const S3ArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
         </Form>
       </Formik> */}
     </div>
-  )
-}
+  );
+};
 
-const TapisSystemArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
-  const { data, isLoading, error } = useList({limit: -1}) // Fetch the systems
-  const systems = data?.result ?? []
-  
+const TapisSystemArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
+  const { data, isLoading, error } = useList({ limit: -1 }); // Fetch the systems
+  const systems = data?.result ?? [];
+
   const validationSchema = Yup.object({
     ...baseValidationSchema,
     system_id: Yup.string()
       .min(1)
       .max(255)
-      .required("An Tapis System archive requires a system_id")
+      .required('An Tapis System archive requires a system_id')
       .matches(
         /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"),
-    archive_dir: Yup.string()
-      .min(1)
-      .max(255)
-  })
+        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
+      ),
+    archive_dir: Yup.string().min(1).max(255),
+  });
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Formik
         initialValues={{
-          id: "",
-          description: "",
+          id: '',
+          description: '',
           type: Workflows.EnumArchiveType.System,
-          system_id: "",
-          archive_dir: "/"
+          system_id: '',
+          archive_dir: '/',
         }}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
@@ -137,7 +137,7 @@ const TapisSystemArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
             value={Workflows.EnumArchiveType.System}
             label=""
             required={true}
-            description={""}
+            description={''}
             aria-label="Input"
             type="hidden"
           />
@@ -150,13 +150,13 @@ const TapisSystemArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
           />
           <FormikSelect
             name="system_id"
-            label={"Tapis system"}
+            label={'Tapis system'}
             required={true}
-            description={"A Tapis system"}
+            description={'A Tapis system'}
           >
-              {Object.values(systems).map((system) => {
-                return <option value={system.id}>{system.id}</option>
-              })}
+            {Object.values(systems).map((system) => {
+              return <option value={system.id}>{system.id}</option>;
+            })}
           </FormikSelect>
           <FormikInput
             name="archive_dir"
@@ -168,20 +168,22 @@ const TapisSystemArchiveForm: React.FC<FormProps> = ({onSubmit}) => {
         </Form>
       </Formik>
     </QueryWrapper>
-  )
-}
+  );
+};
 
 type CreateArchiveModalProps = {
-  toggle: () => void,
-  groupId: string
-}
+  toggle: () => void;
+  groupId: string;
+};
 
 const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
   groupId,
-  toggle
+  toggle,
 }) => {
-  const { create, isLoading, isSuccess, error } = useCreate()
-  const [ selectedType, setSelectedType ] = useState<string|undefined>(undefined)
+  const { create, isLoading, isSuccess, error } = useCreate();
+  const [selectedType, setSelectedType] = useState<string | undefined>(
+    undefined
+  );
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
@@ -189,36 +191,45 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
   }, []);
 
   const onSubmit = (reqArchive: Workflows.ReqArchive) => {
-    create({groupId: groupId!, reqArchive}, {onSuccess});
-  }
+    create({ groupId: groupId!, reqArchive }, { onSuccess });
+  };
 
   const renderArchiveForm = useCallback(() => {
     switch (selectedType) {
       case Workflows.EnumArchiveType.System:
-        return <TapisSystemArchiveForm onSubmit={onSubmit}/>
+        return <TapisSystemArchiveForm onSubmit={onSubmit} />;
       case Workflows.EnumArchiveType.S3:
-        return <S3ArchiveForm onSubmit={onSubmit}/>
+        return <S3ArchiveForm onSubmit={onSubmit} />;
     }
-  }, [selectedType])
+  }, [selectedType]);
 
   return (
     <GenericModal
       toggle={toggle}
       title="Create Archive"
       body={
-        <div className={styles["archive-form-container"]}>
-          <FieldWrapper
-            label={"Archive type"}
-            required={true}
-            description={""}
-          >
+        <div className={styles['archive-form-container']}>
+          <FieldWrapper label={'Archive type'} required={true} description={''}>
             <Input
               type="select"
-              onChange={(e) => {setSelectedType(e.target.value)}}
+              onChange={(e) => {
+                setSelectedType(e.target.value);
+              }}
             >
-              <option disabled selected={selectedType == undefined} value={undefined}> -- select an option -- </option>
+              <option
+                disabled
+                selected={selectedType == undefined}
+                value={undefined}
+              >
+                {' '}
+                -- select an option --{' '}
+              </option>
               {Object.values(Workflows.EnumArchiveType).map((type) => {
-                return <option selected={selectedType == type} value={type}>{type}</option>
+                return (
+                  <option selected={selectedType == type} value={type}>
+                    {type}
+                  </option>
+                );
               })}
             </Input>
           </FieldWrapper>

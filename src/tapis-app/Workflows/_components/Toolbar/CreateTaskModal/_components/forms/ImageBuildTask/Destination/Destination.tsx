@@ -1,30 +1,27 @@
-import { Workflows } from "@tapis/tapis-typescript"
-import React, { useState } from "react"
-import { Button, Input } from "reactstrap"
-import { FieldWrapper, Icon } from "tapis-ui/_common"
-import {
-  DockerhubDestination,
-  LocalDestination
-} from "."
-import { WithFormUpdates } from "../../_common"
-import styles from "./Destination.module.scss"
-import * as Yup from "yup"
-import { Mutator } from "../../_common/WithFormUpdates"
+import { Workflows } from '@tapis/tapis-typescript';
+import React, { useState } from 'react';
+import { Button, Input } from 'reactstrap';
+import { FieldWrapper, Icon } from 'tapis-ui/_common';
+import { DockerhubDestination, LocalDestination } from '.';
+import { WithFormUpdates } from '../../_common';
+import styles from './Destination.module.scss';
+import * as Yup from 'yup';
+import { Mutator } from '../../_common/WithFormUpdates';
 
 const DestinationSet: React.FC = () => {
-  const [ type, setType ] = useState<string>("")
+  const [type, setType] = useState<string>('');
 
   const removeMutator: Mutator = (state, validationSchema) => {
-    delete state.destination
+    delete state.destination;
     return {
       state,
       validationSchema: validationSchema.shape!({
-        destiantion: Yup.object().required("destination is required")
-      })
-    }
-  }
-  
-  let DestinationComponent = <></>
+        destiantion: Yup.object().required('destination is required'),
+      }),
+    };
+  };
+
+  let DestinationComponent = <></>;
   switch (type) {
     case Workflows.EnumDestinationType.Local:
       DestinationComponent = (
@@ -33,30 +30,30 @@ const DestinationSet: React.FC = () => {
             const modifiedState = {
               ...state,
               destination: {
-                filename: "",
-                type
-              }
-            }
+                filename: '',
+                type,
+              },
+            };
             return {
               state: modifiedState,
               validationSchema: validationSchema.shape!({
                 destination: Yup.object({
                   filename: Yup.string()
-                    .required("filename is required")
+                    .required('filename is required')
                     .min(1)
                     .max(1024),
-                  type: Yup.string().
-                    required("type is required")
-                    .oneOf(Object.values(Workflows.EnumDestinationType))
-                }).required("destination is required")
-              })
-            }
+                  type: Yup.string()
+                    .required('type is required')
+                    .oneOf(Object.values(Workflows.EnumDestinationType)),
+                }).required('destination is required'),
+              }),
+            };
           }}
           remove={removeMutator}
         >
           <LocalDestination />
         </WithFormUpdates>
-      )
+      );
       break;
     case Workflows.EnumDestinationType.Dockerhub:
       DestinationComponent = (
@@ -69,56 +66,60 @@ const DestinationSet: React.FC = () => {
             const modifiedState = {
               ...state,
               destination: {
-                url: "",
-                tag: "",
-                type
-              }
-            }
+                url: '',
+                tag: '',
+                type,
+              },
+            };
             return {
               state: modifiedState,
               validationSchema: validationSchema.shape!({
                 destination: Yup.object({
                   url: Yup.string()
-                    .required("url is required")
+                    .required('url is required')
                     .min(1)
                     .max(2048),
-                  tag: Yup.string()
-                    .required("tag is required")
-                    .min(1)
-                    .max(128),
-                  type: Yup.string().
-                    required("type is required")
-                    .oneOf(Object.values(Workflows.EnumDestinationType))
-                }).required("destination is required")
-              })
-            }
+                  tag: Yup.string().required('tag is required').min(1).max(128),
+                  type: Yup.string()
+                    .required('type is required')
+                    .oneOf(Object.values(Workflows.EnumDestinationType)),
+                }).required('destination is required'),
+              }),
+            };
           }}
           remove={removeMutator}
         >
           <DockerhubDestination />
         </WithFormUpdates>
-      )
+      );
       break;
     default:
-      DestinationComponent = <></>
+      DestinationComponent = <></>;
   }
-  
+
   return (
     <div id="destination-input-set">
-      <div className={styles["grid-2-auto-auto"]}>
+      <div className={styles['grid-2-auto-auto']}>
         <FieldWrapper
-          label={"destination"}
+          label={'destination'}
           required={true}
-          description={"Where the image build will be persisted"}
+          description={'Where the image build will be persisted'}
         >
           <Input
             type="select"
-            disabled={type !== ""}
+            disabled={type !== ''}
             onChange={(e) => setType(e.target.value)}
           >
-            <option disabled selected={type === ""} value={""}> -- select an option -- </option>
+            <option disabled selected={type === ''} value={''}>
+              {' '}
+              -- select an option --{' '}
+            </option>
             {Object.values(Workflows.EnumDestinationType).map((type) => {
-              return <option key={`destination-${type}`} value={type}>{type}</option>
+              return (
+                <option key={`destination-${type}`} value={type}>
+                  {type}
+                </option>
+              );
             })}
           </Input>
         </FieldWrapper>
@@ -126,15 +127,16 @@ const DestinationSet: React.FC = () => {
           <Button
             type="button"
             color="danger"
-            className={styles["button"]}
-            onClick={() => type && setType("")}>
-              <Icon name="trash"/> remove
+            className={styles['button']}
+            onClick={() => type && setType('')}
+          >
+            <Icon name="trash" /> remove
           </Button>
         )}
       </div>
       {DestinationComponent}
     </div>
-  )
-}
+  );
+};
 
-export default DestinationSet
+export default DestinationSet;

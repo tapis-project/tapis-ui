@@ -16,7 +16,7 @@ const Router: React.FC = () => {
       <Route path={path} exact>
         <Groups />
       </Route>
-      
+
       <Route
         path={`${path}/:groupId`}
         render={({
@@ -25,8 +25,7 @@ const Router: React.FC = () => {
           },
         }: RouteComponentProps<{
           groupId: string;
-        }>) => <Users groupId={groupId}/>
-      }
+        }>) => <Users groupId={groupId} />}
       />
     </Switch>
   );

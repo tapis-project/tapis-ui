@@ -1,13 +1,13 @@
-import React from "react"
-import { Workflows } from "@tapis/tapis-typescript";
-import { FormikInput } from "tapis-ui/_common"
-import styles from "./Context.module.scss"
-import { VisibilitySelect } from "./VisibilitySelect";
+import React from 'react';
+import { Workflows } from '@tapis/tapis-typescript';
+import { FormikInput } from 'tapis-ui/_common';
+import styles from './Context.module.scss';
+import { VisibilitySelect } from './VisibilitySelect';
 
-const GithubContext: React.FC = () => {  
+const GithubContext: React.FC = () => {
   return (
     <div id="context-details">
-      <div className={styles["grid-2"]}>
+      <div className={styles['grid-2']}>
         <FormikInput
           name={`context.url`}
           label="url"
@@ -32,16 +32,16 @@ const GithubContext: React.FC = () => {
         />
         <FormikInput
           name={`context.sub_path`}
-          placeholder={"Ex. src/"}
+          placeholder={'Ex. src/'}
           label="sub path"
           required={false}
           description={`Build context path. The directory in the source code to build from.`}
           aria-label="Input"
         />
       </div>
-      <VisibilitySelect type={Workflows.EnumContextType.Github}/>
+      <VisibilitySelect type={Workflows.EnumContextType.Github} />
     </div>
-  )
-}
+  );
+};
 
-export default GithubContext
+export default GithubContext;

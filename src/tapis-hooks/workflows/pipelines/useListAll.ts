@@ -5,8 +5,8 @@ import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
 export type ListAllPipelinesParams = {
-  groupIds: Array<string>
-}
+  groupIds: Array<string>;
+};
 
 const useListAll = (
   params: ListAllPipelinesParams,

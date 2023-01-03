@@ -1,54 +1,53 @@
 .count {
-    border-radius: 3px;
-    border: 1px solid #cccccc;
-    padding: 2px;
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 2px;
 }
 
 .container {
-    margin-top: 16px;
-    border-radius: 3px;
-    border: 1px solid #cccccc;
+  margin-top: 16px;
+  border-radius: 3px;
+  border: 1px solid #cccccc;
 }
 
 .user {
-    display: grid;
-    grid-template-columns: 85% 15%;
-    align-items: center;
-    border-bottom: 1px solid #cccccc;
-    padding: 20px;
+  display: grid;
+  grid-template-columns: 85% 15%;
+  align-items: center;
+  border-bottom: 1px solid #cccccc;
+  padding: 20px;
 }
 
 .flex {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .flex-grow {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .icon {
-    margin-right: .5em;
+  margin-right: 0.5em;
 }
 
 .admin {
-    color: #777777;
-    padding-left: .5em;
-    padding-right: .5em;
+  color: #777777;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .last {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .odd {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .even {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 .spinner {
-    
 }

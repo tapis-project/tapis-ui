@@ -6,13 +6,16 @@ const list = (
   basePath: string,
   jwt: string
 ) => {
-  const api: Workflows.PipelineRunsApi = apiGenerator<Workflows.PipelineRunsApi>(
-    Workflows,
-    Workflows.PipelineRunsApi,
-    basePath,
-    jwt
+  const api: Workflows.PipelineRunsApi =
+    apiGenerator<Workflows.PipelineRunsApi>(
+      Workflows,
+      Workflows.PipelineRunsApi,
+      basePath,
+      jwt
+    );
+  return errorDecoder<Workflows.RespPipelineRunList>(() =>
+    api.listPipelineRuns(params)
   );
-  return errorDecoder<Workflows.RespPipelineRunList>(() => api.listPipelineRuns(params));
 };
 
 export default list;

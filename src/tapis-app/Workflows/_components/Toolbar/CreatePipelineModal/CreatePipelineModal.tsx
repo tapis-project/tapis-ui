@@ -5,19 +5,19 @@ import { GenericModal } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
 import { useCreate } from 'tapis-hooks/workflows/pipelines';
 import { focusManager } from 'react-query';
-import styles from "./CreatePipelineModel.module.scss"
-import { PipelineForm } from "./_components"
+import styles from './CreatePipelineModel.module.scss';
+import { PipelineForm } from './_components';
 
 type CreatePipelineModalProps = {
-  toggle: () => void,
-  groupId: string
-}
+  toggle: () => void;
+  groupId: string;
+};
 
 const CreatePipelineModal: React.FC<CreatePipelineModalProps> = ({
   groupId,
-  toggle
+  toggle,
 }) => {
-  const { create, isLoading, isSuccess, error } = useCreate()
+  const { create, isLoading, isSuccess, error } = useCreate();
   const onSuccess = useCallback(() => {
     // Calling the focus manager triggers react-query's
     // automatic refetch on window focus
@@ -25,8 +25,8 @@ const CreatePipelineModal: React.FC<CreatePipelineModalProps> = ({
   }, []);
 
   const onSubmit = (reqPipeline: Workflows.ReqPipeline) => {
-    create({groupId: groupId!, reqPipeline}, {onSuccess});
-  }
+    create({ groupId: groupId!, reqPipeline }, { onSuccess });
+  };
 
   return (
     <GenericModal
@@ -34,8 +34,8 @@ const CreatePipelineModal: React.FC<CreatePipelineModalProps> = ({
       title="Create Pipeline"
       size="lg"
       body={
-        <div className={styles["pipeline-form-container"]}>
-          <PipelineForm onSubmit={onSubmit} groupId={groupId}/>
+        <div className={styles['pipeline-form-container']}>
+          <PipelineForm onSubmit={onSubmit} groupId={groupId} />
         </div>
       }
       footer={

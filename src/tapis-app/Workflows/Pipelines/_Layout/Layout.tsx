@@ -1,5 +1,5 @@
-import React from "react"
-import { Router } from "../_Router"
+import React from 'react';
+import { Router } from '../_Router';
 
 const Layout: React.FC = () => {
   return <Router />;

@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  Route,
-  RouteComponentProps,
-  Switch,
-} from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { default as Pipeline } from '../Pipeline';
 
@@ -19,10 +15,8 @@ const Router: React.FC = () => {
         }: RouteComponentProps<{
           groupId: string;
           pipelineId: string;
-        }>) => <Pipeline groupId={groupId} pipelineId={pipelineId}/>
-      }
+        }>) => <Pipeline groupId={groupId} pipelineId={pipelineId} />}
       />
-
     </Switch>
   );
 };

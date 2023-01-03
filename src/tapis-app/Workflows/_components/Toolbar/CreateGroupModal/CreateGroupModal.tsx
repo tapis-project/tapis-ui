@@ -5,8 +5,8 @@ import { Form, Formik, FieldArray, Field } from 'formik';
 import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
 import { focusManager } from 'react-query';
 import { useCreate } from 'tapis-hooks/workflows/groups';
-import styles from "./CreateGroupModal.module.scss"
-import { Workflows } from "@tapis/tapis-typescript"
+import styles from './CreateGroupModal.module.scss';
+import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 
 type CreateGroupModalProps = {
@@ -30,28 +30,30 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
         "Must contain only alphanumeric characters and the following: '.', '_', '-'"
       )
       .required('groupId is a required field'),
-    users: Yup.array()
-      .of(
-        Yup.object().shape({
-          username: Yup.string().min(1).max(128).required("Username must be provided"),
-          is_admin: Yup.bool().default(false)
-        })
-      )
+    users: Yup.array().of(
+      Yup.object().shape({
+        username: Yup.string()
+          .min(1)
+          .max(128)
+          .required('Username must be provided'),
+        is_admin: Yup.bool().default(false),
+      })
+    ),
   });
 
   const initialValues = {
-    groupId: "",
-    users: []
+    groupId: '',
+    users: [],
   };
 
   type CreateGroupFormProps = {
-    groupId: string,
-    users: Array<Workflows.ReqGroupUser>
-  }
+    groupId: string;
+    users: Array<Workflows.ReqGroupUser>;
+  };
 
   const onSubmit = ({ groupId, users }: CreateGroupFormProps) => {
-    create({id: groupId, users}, { onSuccess });
-  }
+    create({ id: groupId, users }, { onSuccess });
+  };
 
   return (
     <GenericModal
@@ -63,7 +65,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
-            render={({values}) => (
+            render={({ values }) => (
               <Form id="newgroup-form">
                 <FormikInput
                   name="groupId"
@@ -77,11 +79,14 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
                   render={(arrayHelpers) => (
                     <div>
                       <h2>Users</h2>
-                      <i className={styles["subheader"]}>Note: You are automatically added as an admin to this group</i>
-                      <div className={styles["user-inputs"]}>
-                        {values.users.length > 0 && (
+                      <i className={styles['subheader']}>
+                        Note: You are automatically added as an admin to this
+                        group
+                      </i>
+                      <div className={styles['user-inputs']}>
+                        {values.users.length > 0 &&
                           values.users.map((_, index) => (
-                            <div key={index} className={styles["user-input"]}>
+                            <div key={index} className={styles['user-input']}>
                               <FormikInput
                                 name={`users.${index}.username`}
                                 label="Username"
@@ -90,34 +95,39 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
                                 aria-label="Input"
                               />
                               <label>
-                                <Field type="checkbox" name={`users.${index}.is_admin`} /> is admin?
+                                <Field
+                                  type="checkbox"
+                                  name={`users.${index}.is_admin`}
+                                />{' '}
+                                is admin?
                               </label>
                               <Button
-                                className={styles["remove-button"]}
+                                className={styles['remove-button']}
                                 type="button"
                                 color="danger"
                                 onClick={() => arrayHelpers.remove(index)}
                                 size="sm"
                               >
-                                <Icon name="trash"/>
+                                <Icon name="trash" />
                               </Button>
                             </div>
-                          ))
-                        )}
+                          ))}
                       </div>
                       <Button
                         type="button"
-                        className={styles["add-button"]}
-                        onClick={() => arrayHelpers.push({username: "", is_admin: false})}>
-                          + Add user
+                        className={styles['add-button']}
+                        onClick={() =>
+                          arrayHelpers.push({ username: '', is_admin: false })
+                        }
+                      >
+                        + Add user
                       </Button>
                     </div>
                   )}
                 />
-            </Form>
+              </Form>
             )}
-          >
-          </Formik>
+          ></Formik>
         </div>
       }
       footer={

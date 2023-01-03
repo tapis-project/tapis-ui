@@ -5,19 +5,19 @@ import { Form, Formik } from 'formik';
 import { FormikInput, GenericModal } from 'tapis-ui/_common';
 import { focusManager } from 'react-query';
 import { useRun } from 'tapis-hooks/workflows/pipelines';
-import styles from "./RunPipelineModal.module.scss"
+import styles from './RunPipelineModal.module.scss';
 import * as Yup from 'yup';
 
 type RunPipelineModalProps = {
   toggle: () => void;
-  groupId: string,
-  pipelineId: string
+  groupId: string;
+  pipelineId: string;
 };
 
 const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
   toggle,
   groupId,
-  pipelineId
+  pipelineId,
 }) => {
   const { run, isLoading, error, isSuccess } = useRun();
   const onSuccess = useCallback(() => {
@@ -47,21 +47,24 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
 
   const initialValues = {
     groupId,
-    pipelineId
+    pipelineId,
   };
 
   type RunPipelineFormProps = {
-    groupId: string,
-    pipelineId: string
-  }
+    groupId: string;
+    pipelineId: string;
+  };
 
   const onSubmit = ({ groupId, pipelineId }: RunPipelineFormProps) => {
-    run({
-      groupId,
-      pipelineId,
-      reqRunPipeline: {directives: []}
-    }, { onSuccess });
-  }
+    run(
+      {
+        groupId,
+        pipelineId,
+        reqRunPipeline: { directives: [] },
+      },
+      { onSuccess }
+    );
+  };
 
   return (
     <GenericModal
@@ -75,11 +78,11 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
             onSubmit={onSubmit}
             render={(_) => (
               <Form id="runpipeline-form">
-                <div className={styles["grid-2"]}>
+                <div className={styles['grid-2']}>
                   <FormikInput
                     name="groupId"
                     type="text"
-                    label={"group id"}
+                    label={'group id'}
                     required={true}
                     value={groupId}
                     disabled={true}
@@ -89,7 +92,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                   <FormikInput
                     name="pipelineId"
                     type="text"
-                    label={"pipeline id"}
+                    label={'pipeline id'}
                     required={true}
                     description=""
                     value={pipelineId}
@@ -99,8 +102,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                 </div>
               </Form>
             )}
-          >
-          </Formik>
+          ></Formik>
         </div>
       }
       footer={

@@ -6,7 +6,7 @@ import {
   Switch,
 } from 'react-router-dom';
 
-import { default as Pipelines } from "../Pipelines"
+import { default as Pipelines } from '../Pipelines';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -24,8 +24,7 @@ const Router: React.FC = () => {
           },
         }: RouteComponentProps<{
           groupId: string;
-        }>) => <Pipelines groupId={groupId} />
-      }
+        }>) => <Pipelines groupId={groupId} />}
       />
     </Switch>
   );

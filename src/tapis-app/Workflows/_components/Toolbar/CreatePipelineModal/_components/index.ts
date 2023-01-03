@@ -1,1 +1,1 @@
-export { default as PipelineForm } from "./PipelineForm"
+export { default as PipelineForm } from './PipelineForm';

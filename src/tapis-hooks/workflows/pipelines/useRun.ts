@@ -4,7 +4,7 @@ import { run } from 'tapis-api/workflows/pipelines';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type RunPipelineHookParams = Workflows.RunPipelineRequest
+type RunPipelineHookParams = Workflows.RunPipelineRequest;
 
 const useRun = () => {
   const { basePath, accessToken } = useTapisConfig();

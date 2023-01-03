@@ -1,12 +1,12 @@
-import { Workflows } from "@tapis/tapis-typescript";
-import React from "react"
-import { FormikInput } from "tapis-ui/_common"
-import styles from "./Destination.module.scss"
+import { Workflows } from '@tapis/tapis-typescript';
+import React from 'react';
+import { FormikInput } from 'tapis-ui/_common';
+import styles from './Destination.module.scss';
 
 const LocalDestination: React.FC = () => {
   return (
     <div id="Destination-details">
-      <div className={styles["grid-2"]}>
+      <div className={styles['grid-2']}>
         <FormikInput
           name={`destination.filename`}
           placeholder={`"my_image.tar.gz" or "my_mage.SIF"`}
@@ -17,7 +17,7 @@ const LocalDestination: React.FC = () => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LocalDestination
+export default LocalDestination;

@@ -1,13 +1,9 @@
 import React from 'react';
-import {
-  Route,
-  useRouteMatch,
-  Switch,
-} from 'react-router-dom';
+import { Route, useRouteMatch, Switch } from 'react-router-dom';
 
 import { default as Pipelines } from '../Pipelines';
 import { default as Pipeline } from '../Pipeline';
-import { default as PipelineRuns } from "../PipelineRuns"
+import { default as PipelineRuns } from '../PipelineRuns';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();

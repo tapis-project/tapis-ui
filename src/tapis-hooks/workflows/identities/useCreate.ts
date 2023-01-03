@@ -4,7 +4,7 @@ import { create } from 'tapis-api/workflows/identities';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type CreateIdentityHookParams = Workflows.ReqIdentity
+type CreateIdentityHookParams = Workflows.ReqIdentity;
 
 const useCreate = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -17,7 +17,7 @@ const useCreate = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Workflows.RespResourceURL, Error, CreateIdentityHookParams>(
       [QueryKeys.create, basePath, jwt],
-      (params) => create({reqIdentity: params}, basePath, jwt)
+      (params) => create({ reqIdentity: params }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -31,7 +31,11 @@ const useCreate = () => {
     create: (
       params: CreateIdentityHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Workflows.RespResourceURL, Error, CreateIdentityHookParams>
+      options?: MutateOptions<
+        Workflows.RespResourceURL,
+        Error,
+        CreateIdentityHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);

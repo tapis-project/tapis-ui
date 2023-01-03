@@ -12,9 +12,7 @@ const details = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespPipeline>(() =>
-    api.getPipeline(params)
-  );
+  return errorDecoder<Workflows.RespPipeline>(() => api.getPipeline(params));
 };
 
 export default details;

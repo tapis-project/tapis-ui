@@ -13,19 +13,18 @@ const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
-      <Route path={"/workflows/identities"} exact>
+      <Route path={'/workflows/identities'} exact>
         <Identities />
       </Route>
       <Route
-        path={"/workflows/identities/:identityUuid"}
+        path={'/workflows/identities/:identityUuid'}
         render={({
           match: {
             params: { identityUuid },
           },
         }: RouteComponentProps<{
-          identityUuid: string
-        }>) => <Identity identityUuid={identityUuid}/>
-      }
+          identityUuid: string;
+        }>) => <Identity identityUuid={identityUuid} />}
       />
     </Switch>
   );

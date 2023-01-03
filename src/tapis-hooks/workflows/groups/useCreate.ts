@@ -20,7 +20,7 @@ const useCreate = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Workflows.RespResourceURL, Error, CreateGroupHookParams>(
       [QueryKeys.create, basePath, jwt],
-      (params) => create({reqGroup: params}, basePath, jwt)
+      (params) => create({ reqGroup: params }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -34,7 +34,11 @@ const useCreate = () => {
     create: (
       params: CreateGroupHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Workflows.RespResourceURL, Error, CreateGroupHookParams>
+      options?: MutateOptions<
+        Workflows.RespResourceURL,
+        Error,
+        CreateGroupHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);

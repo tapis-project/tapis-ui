@@ -6,8 +6,8 @@ import {
   Switch,
 } from 'react-router-dom';
 
-import { default as ArchivesLayout } from "../Archives"
-import { default as ArchiveLayout } from "../Archive"
+import { default as ArchivesLayout } from '../Archives';
+import { default as ArchiveLayout } from '../Archive';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();

@@ -4,7 +4,7 @@ import { create } from 'tapis-api/workflows/archives';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type CreateArchiveHookParams = Workflows.CreateArchiveRequest
+type CreateArchiveHookParams = Workflows.CreateArchiveRequest;
 
 const useCreate = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -31,7 +31,11 @@ const useCreate = () => {
     create: (
       params: CreateArchiveHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Workflows.RespResourceURL, Error, CreateArchiveHookParams>
+      options?: MutateOptions<
+        Workflows.RespResourceURL,
+        Error,
+        CreateArchiveHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);

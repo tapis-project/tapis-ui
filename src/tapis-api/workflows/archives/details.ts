@@ -12,9 +12,7 @@ const details = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespArchive>(() =>
-    api.getArchive(params)
-  );
+  return errorDecoder<Workflows.RespArchive>(() => api.getArchive(params));
 };
 
 export default details;

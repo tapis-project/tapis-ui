@@ -12,7 +12,9 @@ const list = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespArchiveList>(() => api.listArchives(params));
+  return errorDecoder<Workflows.RespArchiveList>(() =>
+    api.listArchives(params)
+  );
 };
 
 export default list;

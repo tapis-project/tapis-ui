@@ -6,13 +6,16 @@ const list = (
   basePath: string,
   jwt: string
 ) => {
-  const api: Workflows.TaskExecutionsApi = apiGenerator<Workflows.TaskExecutionsApi>(
-    Workflows,
-    Workflows.TaskExecutionsApi,
-    basePath,
-    jwt
+  const api: Workflows.TaskExecutionsApi =
+    apiGenerator<Workflows.TaskExecutionsApi>(
+      Workflows,
+      Workflows.TaskExecutionsApi,
+      basePath,
+      jwt
+    );
+  return errorDecoder<Workflows.RespTaskExecutionList>(() =>
+    api.listTaskExecutions(params)
   );
-  return errorDecoder<Workflows.RespTaskExecutionList>(() => api.listTaskExecutions(params));
 };
 
 export default list;

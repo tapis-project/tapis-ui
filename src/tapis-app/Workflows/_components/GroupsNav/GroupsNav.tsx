@@ -5,10 +5,10 @@ import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 
 type GroupsNavProps = {
-  baseUrl: string
-}
+  baseUrl: string;
+};
 
-const GroupsNav: React.FC<GroupsNavProps> = ({baseUrl}) => {
+const GroupsNav: React.FC<GroupsNavProps> = ({ baseUrl }) => {
   const { data, isLoading, error } = useList();
   const groups: Array<Workflows.Group> = data?.result ?? [];
 
@@ -23,7 +23,13 @@ const GroupsNav: React.FC<GroupsNavProps> = ({baseUrl}) => {
               </NavItem>
             ))
           ) : (
-            <i>No groups found.<br/><br/>Create a new group or request access to an existing group from a group admin.</i>
+            <i>
+              No groups found.
+              <br />
+              <br />
+              Create a new group or request access to an existing group from a
+              group admin.
+            </i>
           )}
         </Navbar>
       </QueryWrapper>

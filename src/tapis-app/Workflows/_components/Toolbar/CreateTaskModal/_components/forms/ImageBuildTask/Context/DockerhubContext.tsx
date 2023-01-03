@@ -1,13 +1,13 @@
-import { Workflows } from "@tapis/tapis-typescript";
-import React from "react"
-import { FormikInput } from "tapis-ui/_common"
-import styles from "./Context.module.scss"
-import { VisibilitySelect } from "./VisibilitySelect";
+import { Workflows } from '@tapis/tapis-typescript';
+import React from 'react';
+import { FormikInput } from 'tapis-ui/_common';
+import styles from './Context.module.scss';
+import { VisibilitySelect } from './VisibilitySelect';
 
 const DockerhubContext: React.FC = () => {
   return (
     <div id="context-details">
-      <div className={styles["grid-2"]}>
+      <div className={styles['grid-2']}>
         <FormikInput
           name={`context.url`}
           label="url"
@@ -23,9 +23,9 @@ const DockerhubContext: React.FC = () => {
           aria-label="Input"
         />
       </div>
-      <VisibilitySelect type={Workflows.EnumContextType.Dockerhub}/>
+      <VisibilitySelect type={Workflows.EnumContextType.Dockerhub} />
     </div>
-  )
-}
+  );
+};
 
-export default DockerhubContext
+export default DockerhubContext;

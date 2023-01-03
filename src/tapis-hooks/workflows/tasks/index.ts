@@ -1,1 +1,1 @@
-export { default as useCreate } from "./useCreate"
+export { default as useCreate } from './useCreate';

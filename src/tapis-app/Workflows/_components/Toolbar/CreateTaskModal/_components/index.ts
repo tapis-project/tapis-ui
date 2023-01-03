@@ -1,1 +1,1 @@
-export { default as TaskTypeSelector } from "./TaskTypeSelector"
+export { default as TaskTypeSelector } from './TaskTypeSelector';

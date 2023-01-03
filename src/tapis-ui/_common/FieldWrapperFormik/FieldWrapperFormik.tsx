@@ -21,7 +21,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
   const [, meta] = useField(name);
   return (
     <FormGroup>
-      <span className={isHidden ? styles["hidden"] : ""}>
+      <span className={isHidden ? styles['hidden'] : ''}>
         <Label
           className="form-field__label"
           size="sm"
@@ -29,7 +29,7 @@ const FieldWrapper: React.FC<FieldWrapperProps> = ({
           htmlFor={name}
         >
           {label}
-          {(required && !isHidden) ? (
+          {required && !isHidden ? (
             <Badge color="danger" style={{ marginLeft: '10px' }}>
               Required
             </Badge>

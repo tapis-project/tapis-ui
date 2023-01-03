@@ -20,15 +20,13 @@ const Router: React.FC = () => {
         path={`/workflows/archives/:groupId`}
         exact
         render={({
-            match: {
-              params: { groupId },
-            },
-          }: RouteComponentProps<{
-            groupId: string;
-          }>) => <Archives groupId={groupId}/>
-        }
+          match: {
+            params: { groupId },
+          },
+        }: RouteComponentProps<{
+          groupId: string;
+        }>) => <Archives groupId={groupId} />}
       />
-
     </Switch>
   );
 };

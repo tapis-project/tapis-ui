@@ -1,13 +1,13 @@
-import React from "react"
-import { Workflows } from "@tapis/tapis-typescript"
-import { FormikInput } from "tapis-ui/_common"
-import { CredentialsSourceSelect } from "../Credentials"
-import styles from "./Destination.module.scss"
+import React from 'react';
+import { Workflows } from '@tapis/tapis-typescript';
+import { FormikInput } from 'tapis-ui/_common';
+import { CredentialsSourceSelect } from '../Credentials';
+import styles from './Destination.module.scss';
 
 const DockerhubDestination: React.FC = () => {
   return (
     <div id="destination-details">
-      <div className={styles["grid-2"]}>
+      <div className={styles['grid-2']}>
         <FormikInput
           name={`destination.url`}
           label="url"
@@ -25,12 +25,12 @@ const DockerhubDestination: React.FC = () => {
       </div>
       <div id="destination-credentials">
         <CredentialsSourceSelect
-          scope={"destination"}
+          scope={'destination'}
           type={Workflows.EnumDestinationType.Dockerhub}
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DockerhubDestination
+export default DockerhubDestination;

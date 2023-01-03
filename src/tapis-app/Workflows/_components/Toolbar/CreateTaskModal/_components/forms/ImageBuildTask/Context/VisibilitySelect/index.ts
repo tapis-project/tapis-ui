@@ -1,1 +1,1 @@
-export { default as VisibilitySelect } from "./VisibilitySelect"
+export { default as VisibilitySelect } from './VisibilitySelect';

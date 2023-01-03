@@ -1,14 +1,14 @@
-import React from "react"
-import { FormikInput } from "tapis-ui/_common"
-import styles from "./Credentials.module.scss"
+import React from 'react';
+import { FormikInput } from 'tapis-ui/_common';
+import styles from './Credentials.module.scss';
 
 type GithubCredentialsProps = {
-  scope: "context" | "destination"
-}
+  scope: 'context' | 'destination';
+};
 
-const GithubCredentials: React.FC<GithubCredentialsProps> = ({scope}) => {
+const GithubCredentials: React.FC<GithubCredentialsProps> = ({ scope }) => {
   return (
-    <div id={`${scope}-credentials-details`} className={styles["grid-2"]}>
+    <div id={`${scope}-credentials-details`} className={styles['grid-2']}>
       <FormikInput
         name={`${scope}.credentials.username`}
         label="username"
@@ -24,7 +24,7 @@ const GithubCredentials: React.FC<GithubCredentialsProps> = ({scope}) => {
         aria-label="Input"
       />
     </div>
-  )
-}
+  );
+};
 
-export default GithubCredentials
+export default GithubCredentials;

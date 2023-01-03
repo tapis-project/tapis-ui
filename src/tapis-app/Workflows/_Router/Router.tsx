@@ -1,14 +1,10 @@
 import React from 'react';
-import {
-  Route,
-  useRouteMatch,
-  Switch,
-} from 'react-router-dom';
+import { Route, useRouteMatch, Switch } from 'react-router-dom';
 import { Dashboard } from '../Dashboard';
-import { default as PipelinesLayout } from '../Pipelines'
+import { default as PipelinesLayout } from '../Pipelines';
 import { default as ArchivesLayout } from '../Archives';
 import { default as GroupsLayout } from '../Groups';
-import { default as IdentitiesLayout } from "../Identities"
+import { default as IdentitiesLayout } from '../Identities';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();

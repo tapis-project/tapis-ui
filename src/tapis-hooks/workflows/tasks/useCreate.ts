@@ -4,7 +4,7 @@ import { create } from 'tapis-api/workflows/tasks';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
-type CreateTaskHookParams = Workflows.CreateTaskRequest
+type CreateTaskHookParams = Workflows.CreateTaskRequest;
 
 const useCreate = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -31,7 +31,11 @@ const useCreate = () => {
     create: (
       params: CreateTaskHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Workflows.RespResourceURL, Error, CreateTaskHookParams>
+      options?: MutateOptions<
+        Workflows.RespResourceURL,
+        Error,
+        CreateTaskHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);

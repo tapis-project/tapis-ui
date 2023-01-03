@@ -12,7 +12,9 @@ const list = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespGroupList>(() => api.listGroupUsers(params));
+  return errorDecoder<Workflows.RespGroupList>(() =>
+    api.listGroupUsers(params)
+  );
 };
 
 export default list;

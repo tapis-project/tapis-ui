@@ -1,13 +1,13 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Workflows } from '@tapis/tapis-typescript';
-import { remove } from "tapis-api/workflows/groupusers"
+import { remove } from 'tapis-api/workflows/groupusers';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
 type RemoveGroupUserHookParams = {
-    groupId: string
-    username: string
-}
+  groupId: string;
+  username: string;
+};
 
 const useDelete = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -28,12 +28,7 @@ const useDelete = () => {
     reset,
   } = useMutation<Workflows.RespGroupUser, Error, RemoveGroupUserHookParams>(
     [QueryKeys.remove, basePath, jwt],
-    (params) =>
-      remove(
-        params,
-        basePath,
-        jwt
-      )
+    (params) => remove(params, basePath, jwt)
   );
 
   // Return hook object with loading states and login function

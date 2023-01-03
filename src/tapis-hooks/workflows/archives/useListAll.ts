@@ -5,8 +5,8 @@ import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
 export type ListAllArchivesParams = {
-  groupIds: Array<string>
-}
+  groupIds: Array<string>;
+};
 
 const useListAll = (
   params: ListAllArchivesParams,

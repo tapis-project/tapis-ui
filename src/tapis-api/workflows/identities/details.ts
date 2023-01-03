@@ -12,9 +12,7 @@ const details = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespIdentity>(() =>
-    api.getIdentity(params)
-  );
+  return errorDecoder<Workflows.RespIdentity>(() => api.getIdentity(params));
 };
 
 export default details;

@@ -1,11 +1,11 @@
-import { Workflows } from "@tapis/tapis-typescript"
-import { FormikInput } from "tapis-ui/_common"
+import { Workflows } from '@tapis/tapis-typescript';
+import { FormikInput } from 'tapis-ui/_common';
 
 type DetailsProps = {
-  type: Workflows.EnumTaskType
-}
+  type: Workflows.EnumTaskType;
+};
 
-const Details: React.FC<DetailsProps> = ({type}) => {
+const Details: React.FC<DetailsProps> = ({ type }) => {
   return (
     <div id={`details`}>
       <FormikInput
@@ -38,7 +38,7 @@ const Details: React.FC<DetailsProps> = ({type}) => {
       {/* Output */}
       {/* Dependencies */}
     </div>
-  )
-}
+  );
+};
 
-export default Details
+export default Details;
