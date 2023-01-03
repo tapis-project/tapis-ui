@@ -15,7 +15,7 @@ import {
   Button, 
 } from 'reactstrap';
 import { Toolbar } from "../../../../_components"
-import { RunPipelineModal } from "../../_components"
+import { RunPipelineModal } from "../../../../_components/Toolbar/RunPipelineModal"
 
 type PipelineCardProps = {
   pipelineId: string

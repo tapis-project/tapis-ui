@@ -8,6 +8,7 @@ import { CreateGroupModal } from './CreateGroupModal';
 import { CreateArchiveModal } from './CreateArchiveModal';
 import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
+import { RunPipelineModal } from "./RunPipelineModal"
 
 type ToolbarButtonProps = {
   text: string;
@@ -112,9 +113,20 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Add user"
           />
         )}
+        {buttons.includes("runpipeline") && (
+          <ToolbarButton
+            text="Run Pipeline"
+            icon="publications"
+            disabled={false}
+            onClick={() => setModal('runpipeline')}
+            aria-label="Add user"
+          />
+        )}
         {(modal === 'createpipeline' && groupId) &&
           <CreatePipelineModal toggle={toggle} groupId={groupId} />}
         {modal === 'createtask' && <CreateTaskModal groupId={groupId} pipelineId={pipelineId} toggle={toggle} />}
+        {modal === 'runpipeline' && groupId && pipelineId &&
+          <RunPipelineModal groupId={groupId} pipelineId={pipelineId} toggle={toggle} />}
         {modal === 'creategroup' && <CreateGroupModal toggle={toggle} />}
         {(modal === 'createarchive' && groupId) && <CreateArchiveModal groupId={groupId} toggle={toggle} />}
         {modal === 'createidentity' && <CreateIdentityModal toggle={toggle} />}

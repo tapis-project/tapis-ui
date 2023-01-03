@@ -48,7 +48,7 @@ const Pipeline: React.FC<PipelineProps> = ({groupId, pipelineId}) => {
       {pipeline && (
         <div id={`pipeline`}>
           <h2>{pipeline.id} <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>View Runs</Link></h2>
-          <Toolbar buttons={["createtask"]} groupId={groupId} pipelineId={pipelineId}/>
+          <Toolbar buttons={["createtask", "runpipeline"]} groupId={groupId} pipelineId={pipelineId}/>
           <SectionHeader>Tasks</SectionHeader>
             {pipeline.tasks?.length ? pipeline.tasks?.map(task => {
               return (
