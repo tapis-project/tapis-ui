@@ -57,7 +57,7 @@ const Login: React.FC = () => {
           <Button
             type="submit"
             className="btn btn-primary"
-            disabled={isLoading || accessToken !== null}
+            disabled={isLoading || accessToken != null}
           >
             Log In
           </Button>
