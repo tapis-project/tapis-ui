@@ -1,15 +1,9 @@
 export const resolveBasePath = () => {
-  const tapisSiteId: string | undefined = process.env.TAPIS_SITE_ID;
-  const tapisEnv: string | undefined = process.env.TAPIS_ENV;
-  const baseUrl: string | undefined = process.env.TAPIS_BASE_URL;
-
-  let envStr = tapisEnv ? `.${tapisEnv}.` : '';
-  if (tapisSiteId && baseUrl) {
-    // Note: Using the site as the tenant is temporary
-    // TODO: Remove
-    return `https://${tapisSiteId}${envStr}${baseUrl}`;
+  let baseUrl = window.location.href.split(window.location.pathname)[0].replace(/^https:\/\/ui\./, "https://")
+  // Direct request from local dev env to dev.develop
+  if ( /127\.0\.0\.1|localhost|0\.0\.0\.0/.test(baseUrl) ) {
+    return "https://dev.develop.tapis.io"
   }
 
-  // Default to dev tenant and develop envrionment
-  return 'https://dev.develop.tapis.io';
+  return baseUrl;
 };
