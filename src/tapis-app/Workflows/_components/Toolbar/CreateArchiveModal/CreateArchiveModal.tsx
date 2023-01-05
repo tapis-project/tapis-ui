@@ -7,9 +7,10 @@ import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 import { useCreate } from 'tapis-hooks/workflows/archives';
 import { useList } from 'tapis-hooks/systems';
-import { focusManager } from 'react-query';
 import styles from './CreateArchiveModel.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { default as queryKeys } from 'tapis-hooks/workflows/archives/queryKeys';
+import { useQueryClient } from 'react-query';
 
 type FormProps = {
   onSubmit: (reqArchive: Workflows.ReqArchive) => void;
@@ -45,7 +46,7 @@ const S3ArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
-        <Form id="newarchive-form">
+      <Form id="newarchive-form">
           <FormikInput
             name="type"
             value={Workflows.EnumArchiveType.S3}
@@ -54,7 +55,7 @@ const S3ArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
             description={""}
             aria-label="Input"
             type="hidden"
-          />
+            />
           <FormikInput
             name="type"
             value={Workflows.EnumArchiveType.S3}
@@ -70,33 +71,33 @@ const S3ArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
             required={true}
             description={`Id for the archive`}
             aria-label="Input"
-          />
+            />
           <FormikInput
-            name="description"
-            label="Description"
-            required={false}
-            description={""}
-            aria-label="Input"
-            type="textarea"
+          name="description"
+          label="Description"
+          required={false}
+          description={""}
+          aria-label="Input"
+          type="textarea"
           />
           
           <h2>Credentials</h2>
           <FormikInput
-            name="credentials.username"
-            label="Github username"
-            required={true}
-            description={`Username for Github`}
-            aria-label="Input"
+          name="credentials.username"
+          label="Github username"
+          required={true}
+          description={`Username for Github`}
+          aria-label="Input"
           />
           <FormikInput
-            name="credentials.personal_access_token"
-            label="Personal access token"
-            required={true}
-            description={`Personal access token for Github`}
-            aria-label="Input"
+          name="credentials.personal_access_token"
+          label="Personal access token"
+          required={true}
+          description={`Personal access token for Github`}
+          aria-label="Input"
           />
-        </Form>
-      </Formik> */}
+          </Form>
+        </Formik> */}
     </div>
   );
 };
@@ -154,6 +155,10 @@ const TapisSystemArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
             required={true}
             description={'A Tapis system'}
           >
+            <option disabled selected>
+              -- select a system --
+            </option>
+            ;
             {Object.values(systems).map((system) => {
               return <option value={system.id}>{system.id}</option>;
             })}
@@ -184,11 +189,11 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
   const [selectedType, setSelectedType] = useState<string | undefined>(
     undefined
   );
+  const queryClient = useQueryClient();
+
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    queryClient.invalidateQueries(queryKeys.list);
+  }, [queryClient]);
 
   const renderArchiveForm = useCallback(() => {
     const onSubmit = (reqArchive: Workflows.ReqArchive) => {

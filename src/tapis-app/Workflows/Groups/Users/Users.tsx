@@ -7,7 +7,8 @@ import { Toolbar } from '../../_components';
 import { useTapisConfig } from 'tapis-hooks';
 import styles from './Users.module.scss';
 import { Button, Spinner } from 'reactstrap';
-import { focusManager } from 'react-query';
+import { default as queryKeys } from 'tapis-hooks/workflows/groupusers/queryKeys';
+import { useQueryClient } from 'react-query';
 
 type RemoveGroupUserButtonProps = {
   user: Workflows.GroupUser;
@@ -26,13 +27,13 @@ const RemoveUserButton: React.FC<RemoveGroupUserButtonProps> = ({
     isLoading: removeInProgress,
     reset,
   } = useDelete();
+  const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
+    queryClient.invalidateQueries(queryKeys.list);
     reset();
-  }, [reset]);
+  }, [reset, queryClient]);
+
   return !removeInProgress && (!isSuccess || isError) ? (
     <Button
       color="danger"

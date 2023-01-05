@@ -3,7 +3,8 @@ import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik, FieldArray, Field } from 'formik';
 import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
-import { focusManager } from 'react-query';
+import { useQueryClient } from 'react-query';
+import { default as queryKeys } from 'tapis-hooks/workflows/groupusers/queryKeys';
 import { useCreate } from 'tapis-hooks/workflows/groupusers';
 import styles from './AddGroupUsersModal.module.scss';
 import { Workflows } from '@tapis/tapis-typescript';
@@ -19,11 +20,10 @@ const AddGroupUsersModal: React.FC<AddGroupUserModalProps> = ({
   groupId,
 }) => {
   const { create, isLoading, error, isSuccess } = useCreate();
+  const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    queryClient.invalidateQueries(queryKeys.list);
+  }, [queryClient]);
 
   const validationSchema = Yup.object({
     users: Yup.array()
@@ -120,7 +120,7 @@ const AddGroupUsersModal: React.FC<AddGroupUserModalProps> = ({
         <SubmitWrapper
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully created group` : ''}
+          success={isSuccess ? `Successfully added user` : ''}
           reverse={true}
         >
           <Button

@@ -6,8 +6,9 @@ import { FormikInput, FieldWrapper, GenericModal } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 import { useCreate } from 'tapis-hooks/workflows/identities';
-import { focusManager } from 'react-query';
 import styles from './CreateIdentityModel.module.scss';
+import { default as queryKeys } from 'tapis-hooks/workflows/identities/queryKeys';
+import { useQueryClient } from 'react-query';
 
 type CreateIdentityFormProps = {
   name: string;
@@ -189,11 +190,10 @@ const CreateIdentityModal: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const [selectedType, setSelectedType] = useState<string | undefined>(
     undefined
   );
+  const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    queryClient.invalidateQueries(queryKeys.list);
+  }, [queryClient]);
 
   const renderIdentityForm = useCallback(() => {
     const onSubmit = ({

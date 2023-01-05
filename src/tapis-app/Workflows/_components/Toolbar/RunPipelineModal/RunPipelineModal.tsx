@@ -1,9 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik } from 'formik';
 import { FormikInput, GenericModal } from 'tapis-ui/_common';
-import { focusManager } from 'react-query';
 import { useRun } from 'tapis-hooks/workflows/pipelines';
 import styles from './RunPipelineModal.module.scss';
 import * as Yup from 'yup';
@@ -20,11 +19,6 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
   pipelineId,
 }) => {
   const { run, isLoading, error, isSuccess } = useRun();
-  const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
 
   const validationSchema = Yup.object({
     groupId: Yup.string()
@@ -61,8 +55,8 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
         groupId,
         pipelineId,
         reqRunPipeline: { directives: [] },
-      },
-      { onSuccess }
+      }
+      // { onSuccess }
     );
   };
 

@@ -3,11 +3,12 @@ import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik, FieldArray, Field } from 'formik';
 import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
-import { focusManager } from 'react-query';
 import { useCreate } from 'tapis-hooks/workflows/groups';
 import styles from './CreateGroupModal.module.scss';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
+import { default as queryKeys } from 'tapis-hooks/workflows/groups/queryKeys';
+import { useQueryClient } from 'react-query';
 
 type CreateGroupModalProps = {
   toggle: () => void;
@@ -15,11 +16,11 @@ type CreateGroupModalProps = {
 
 const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
   const { create, isLoading, error, isSuccess } = useCreate();
+  const queryClient = useQueryClient();
+
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    queryClient.invalidateQueries(queryKeys.list);
+  }, [queryClient]);
 
   const validationSchema = Yup.object({
     groupId: Yup.string()
