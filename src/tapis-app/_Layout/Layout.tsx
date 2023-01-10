@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { useList } from 'tapis-hooks/tenants';
 import './Layout.scss';
 import { useTapisConfig } from 'tapis-hooks';
+import { useLogin } from 'tapis-hooks/authenticator';
 import {
   ButtonDropdown,
   DropdownToggle,
@@ -21,6 +22,7 @@ const Layout: React.FC = () => {
   const tenants = data?.result ?? [];
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { logout } = useLogin();
 
   const header = (
     <div className="tapis-ui__header">
@@ -41,7 +43,12 @@ const Layout: React.FC = () => {
               <QueryWrapper isLoading={isLoading} error={error}>
                 {tenants.map((tenant) => {
                   return (
-                    <DropdownItem onClick={() => history.push('/logout')}>
+                    <DropdownItem
+                      onClick={() => {
+                        logout();
+                        window.location.href = tenant.base_url + '/tapis-ui/';
+                      }}
+                    >
                       {tenant.tenant_id}
                     </DropdownItem>
                   );
