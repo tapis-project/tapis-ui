@@ -69,7 +69,7 @@ jobs:
         # Map a step output to a job output
         shell: bash
         run: |
-          echo $(git rev-parse --abbrev-ref HEAD)
+          echo "branch_name=${GITHUB_REF#refs/heads/}"
           echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: extract_branch
 
