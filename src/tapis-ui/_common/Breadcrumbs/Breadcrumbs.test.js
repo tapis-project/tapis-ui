@@ -53,7 +53,7 @@ describe('Breadcrumbs component', () => {
 
   it('renders 5 Breadcrumbs with an ellipsis', () => {
     const { getAllByText, queryAllByText } = renderComponent(
-      <Breadcrumbs breadcrumbs={_5_DIRS} />
+      <Breadcrumbs breadcrumbs={_5_DIRS} truncate={true}/>
     )
     // Check that breadcrumbs are providing the appropriate text
     expect(queryAllByText(/files/).length).toEqual(1)

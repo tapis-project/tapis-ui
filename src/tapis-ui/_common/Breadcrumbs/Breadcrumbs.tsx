@@ -50,11 +50,12 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
 
 type BreadcrumbsProps = {
   breadcrumbs: Array<BreadcrumbType>;
+  truncate?: boolean;
 };
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs, truncate }) => {
   let truncatedBreadcrumbs = breadcrumbs;
-  if (breadcrumbs.length >= 5) {
+  if (truncate && breadcrumbs.length >= 5) {
     // First 2 breadcrumbs
     truncatedBreadcrumbs = [...breadcrumbs.slice(0, 2)];
 

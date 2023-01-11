@@ -96,5 +96,21 @@
 }
 
 .tapis-ui__header {
-  padding-left: 10px;
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 24px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.dropdown-button {
+  display: inline-block;
+}
+
+.logout {
+  margin-right: 1em;
+  text-decoration: none;
+  cursor: pointer;
+  color: #000000;
 }

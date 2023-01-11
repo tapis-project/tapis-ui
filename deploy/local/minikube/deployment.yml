@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tapisui-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tapisui-deployment
+  template:
+    metadata:
+      labels:
+        app: tapisui-deployment
+    spec:
+      containers:
+        - env:
+            - name: TAPIS_SITE_ID
+              value: tacc
+            - name: TAPIS_ENV
+              value: develop
+            - name: TAPIS_BASE_URL
+              value: tapis.io
+          image: tapis/tapisui:latest
+          imagePullPolicy: Always
+          name: tapisui
+          ports:
+            - containerPort: 3000
+          resources: {}
+          tty: true

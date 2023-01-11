@@ -16,6 +16,7 @@ const FormikInput: React.FC<FormikInputProps> = ({
     label={label}
     required={required}
     description={description}
+    isHidden={props.type && props.type === 'hidden'}
     as={(formikProps: FieldInputProps<any>) => (
       <Input bsSize="sm" {...props} {...formikProps} />
     )}

@@ -1,0 +1,28 @@
+.user-inputs {
+  display: grid;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.user-input {
+  position: relative;
+  padding: 0.5em;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.remove-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+
+.add-button {
+  margin-top: 1em;
+}
+
+.subheader {
+  color: #777777;
+  font-size: small;
+}

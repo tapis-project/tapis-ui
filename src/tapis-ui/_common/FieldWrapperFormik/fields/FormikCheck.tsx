@@ -17,7 +17,7 @@ const FormikCheck: React.FC<FormikInputProps> = ({
           name={name}
           as={(formikProps: FieldInputProps<any>) => (
             <Input
-              bsSize="sm"
+              bsSize={props['bsSize'] ?? 'sm'}
               type="checkbox"
               {...props}
               {...formikProps}
