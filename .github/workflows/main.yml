@@ -66,7 +66,9 @@ jobs:
       - name: Extract_Branch_Name
         # Map a step output to a job output
         shell: bash
-        run: echo "${GITHUB_REF#refs/heads/}" && echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        run: |
+          echo "branch_name=${GITHUB_REF#refs/heads/}"
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: extract_branch
 
   Check_Is_Production_Release:
@@ -82,9 +84,12 @@ jobs:
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
           fi
+          echo $GITHUB_OUTPUT
         id: check_is_production_release
 
   Extract_Production_Release_Version:
+    needs:
+      - Check_Is_Production_Release
     if: needs.Check_Is_Production_Release.outputs.is_production_release == true
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
@@ -97,7 +102,7 @@ jobs:
   
   Set_Image_Tag:
     needs: 
-      - Check_Is_Production_Release
+      - Extract_Production_Release_Version
       - Get_Branch_Name
     outputs:
       image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
