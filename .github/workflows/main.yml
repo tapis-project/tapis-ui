@@ -93,12 +93,13 @@ jobs:
   Extract_Production_Release_Version:
     needs:
       - Check_Is_Production_Release
-    if: needs.Check_Is_Production_Release.outputs.is_production_release == true
+    # if: needs.Check_Is_Production_Release.outputs.is_production_release == true
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Extract Production Release Version
+        if: needs.Check_Is_Production_Release.outputs.is_production_release == true
         shell: bash
         run: echo version=$(echo ${{ needs.Get_Branch_Name.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
         id: extract_version
