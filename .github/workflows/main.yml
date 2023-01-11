@@ -103,6 +103,9 @@ jobs:
       - name: Extract_Image_Tag
         shell: bash
         run: |
+          echo "${{ needs.Check_Is_Production_Release.outputs.is_production_release }}"
+          echo "image_tag=${{ needs.Extract_Production_Release_Version.outputs.version }}"
+          echo "image_tag=${{ needs.Get_Branch_Name.outputs.branch_name }}"
           if [ "${{ needs.Check_Is_Production_Release.outputs.is_production_release }}" == true ]; then
             echo "image_tag=${{ needs.Extract_Production_Release_Version.outputs.version }}" >> $GITHUB_OUTPUT;
           else
