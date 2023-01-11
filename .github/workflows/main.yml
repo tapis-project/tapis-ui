@@ -85,14 +85,14 @@ jobs:
         id: check_is_production_release
 
   Extract_Production_Release_Version:
-    if: needs.Check_Is_Production_Release.outputs.is_production_release == true
+    if: jobs.Check_Is_Production_Release.outputs.is_production_release == true
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Extract Production Release Version
         shell: bash
-        run: echo version=$(echo ${{ needs.Get_Branch_Name.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
+        run: echo version=$(echo ${{ jobs.Get_Branch_Name.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
         id: extract_version
   
   Set_Image_Tag:
@@ -103,13 +103,13 @@ jobs:
       - name: Extract_Image_Tag
         shell: bash
         run: |
-          echo "${{ needs.Check_Is_Production_Release.outputs.is_production_release }}"
-          echo "image_tag=${{ needs.Extract_Production_Release_Version.outputs.version }}"
-          echo "image_tag=${{ needs.Get_Branch_Name.outputs.branch_name }}"
-          if [ "${{ needs.Check_Is_Production_Release.outputs.is_production_release }}" == true ]; then
-            echo "image_tag=${{ needs.Extract_Production_Release_Version.outputs.version }}" >> $GITHUB_OUTPUT;
+          echo "${{ jobs.Check_Is_Production_Release.outputs.is_production_release }}"
+          echo "image_tag=${{ jobs.Extract_Production_Release_Version.outputs.version }}"
+          echo "image_tag=${{ jobs.Get_Branch_Name.outputs.branch_name }}"
+          if [ "${{ jobs.Check_Is_Production_Release.outputs.is_production_release }}" == true ]; then
+            echo "image_tag=${{ jobs.Extract_Production_Release_Version.outputs.version }}" >> $GITHUB_OUTPUT;
           else
-            echo "image_tag=${{ needs.Get_Branch_Name.outputs.branch_name }}" >> $GITHUB_OUTPUT;
+            echo "image_tag=${{ jobs.Get_Branch_Name.outputs.branch_name }}" >> $GITHUB_OUTPUT;
           fi
         id: set_image_tag
 
@@ -125,7 +125,7 @@ jobs:
           username: ${{ secrets.TAPIS_DOCKERHUB_USERNAME }}
           password: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
       - name: Build Tapis UI Image
-        run: docker build -f Dockerfile -t tapis/tapisui:${{ needs.Set_Image_Tag.outputs.image_tag }} .
+        run: docker build -f Dockerfile -t tapis/tapisui:${{ jobs.Set_Image_Tag.outputs.image_tag }} .
       - name: Push the image to dockerhub with latest tag
         run: docker push --all-tags tapis/workflows-pipelines
 
