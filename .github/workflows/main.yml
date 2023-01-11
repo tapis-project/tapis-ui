@@ -97,7 +97,7 @@ jobs:
   
   Set_Image_Tag:
     outputs:
-      image_tag: ${{ steps.set_image_tag.outputs.version }}
+      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
     runs-on: ubuntu-latest
     steps:
       - name: Extract_Image_Tag
