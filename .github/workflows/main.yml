@@ -63,8 +63,6 @@ jobs:
     outputs:
       branch_name: ${{ steps.extract_branch.outputs.branch_name }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Extract_Branch_Name
         # Map a step output to a job output
         shell: bash
@@ -74,6 +72,8 @@ jobs:
         id: extract_branch
 
   Check_Is_Production_Release:
+    needs: 
+      - Get_Branch_Name
     runs-on: ubuntu-latest
     outputs:
       is_production_release: ${{ steps.check_is_production_release.outputs.is_production_release }}
@@ -81,7 +81,8 @@ jobs:
       - name: Check_Production_Release
         shell: bash
         run: |
-          if [ "${{ contains(steps.extract_branch.outputs.branch, 'release-') }}" != true ]; then
+          echo "branch_name ${{ needs.Get_Branch_Name.outputs.branch_name }}"
+          if [ "${{ contains(needs.Get_Branch_Name.outputs.branch_name, 'release-') }}" != true ]; then
             echo "is_production_release=true" >> $GITHUB_OUTPUT;
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
