@@ -136,7 +136,12 @@ jobs:
           username: ${{ secrets.TAPIS_DOCKERHUB_USERNAME }}
           password: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
       - name: Build Tapis UI Image
-        run: docker build -f Dockerfile -t tapis/tapisui:${{ needs.Set_Image_Tag.outputs.image_tag }} .
+        run: |
+          BRANCH="${{ needs.Get_Branch_Name.outputs.branch_name }}"
+          if [[ "${{ contains(needs.Get_Branch_Name.outputs.branch_name, 'refs/pull/') }}" ]]; then
+            BRANCH=dev
+          fi
+          docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
       - name: Push the image to dockerhub with latest tag
         run: docker push --all-tags tapis/workflows-pipelines
 
