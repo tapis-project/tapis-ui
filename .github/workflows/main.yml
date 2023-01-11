@@ -68,6 +68,7 @@ jobs:
         shell: bash
         run: |
           echo "branch_name=${GITHUB_REF#refs/heads/}"
+          echo $(git rev-parse --abbrev-ref HEAD)
           echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: extract_branch
 
