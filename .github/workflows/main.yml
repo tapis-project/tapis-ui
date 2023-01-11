@@ -96,7 +96,6 @@ jobs:
         id: extract_version
   
   Set_Image_Tag:
-    if: needs.Check_Is_Production_Release.outputs.is_production_release == true
     outputs:
       image_tag: ${{ steps.set_image_tag.outputs.version }}
     runs-on: ubuntu-latest
