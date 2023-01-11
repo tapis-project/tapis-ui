@@ -112,7 +112,7 @@ jobs:
 
   Build_Push_Image:
     runs-on: ubuntu-latest
-    name: Build Push Production Image
+    name: Build Push Image
     steps:
       - name: Checkout
         uses: actions/checkout@v3
