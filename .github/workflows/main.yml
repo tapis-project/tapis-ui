@@ -96,6 +96,9 @@ jobs:
         id: extract_version
   
   Set_Image_Tag:
+    needs: 
+      - Check_Is_Production_Release
+      - Get_Branch_Name
     outputs:
       image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
     runs-on: ubuntu-latest
@@ -111,6 +114,8 @@ jobs:
         id: set_image_tag
 
   Build_Push_Image:
+    needs:
+      - Set_Image_Tag
     runs-on: ubuntu-latest
     name: Build_Push_Image
     steps:
