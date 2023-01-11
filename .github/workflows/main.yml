@@ -72,8 +72,7 @@ jobs:
         id: check_is_production_release
         shell: bash
         run: |
-          echo "branch_name ${{ steps.extract_branch.outputs.branch_name }}"
-          if [ "${{ contains(steps.extract_branch.outputs.branch_name, 'release-') }}" != true ]; then
+          if [ "${{ contains(steps.extract_branch.outputs.branch_name, 'release-') }}" = true ]; then
             echo "is_production_release=true" >> $GITHUB_OUTPUT;
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
