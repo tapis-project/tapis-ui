@@ -57,74 +57,109 @@ jobs:
       - name: Client Side Linting
         run: |
           npm run lint
-  
-  Get_Branch_Name:
+
+  Resolve_Image_Tag:
     runs-on: ubuntu-latest
     outputs:
-      branch_name: ${{ steps.extract_branch.outputs.branch_name }}
+      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
     steps:
       - name: Extract_Branch_Name
         # Map a step output to a job output
         shell: bash
-        run: |
-          echo "branch_name=${GITHUB_REF#refs/heads/}"
-          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: extract_branch
-
-  Check_Is_Production_Release:
-    needs: 
-      - Get_Branch_Name
-    runs-on: ubuntu-latest
-    outputs:
-      is_production_release: ${{ steps.check_is_production_release.outputs.is_production_release }}
-    steps:
-      - name: Check_Production_Release
+      - name: Check_Is_Production_Release
+        id: check_is_production_release
         shell: bash
         run: |
-          echo "branch_name ${{ needs.Get_Branch_Name.outputs.branch_name }}"
-          if [ "${{ contains(needs.Get_Branch_Name.outputs.branch_name, 'release-') }}" != true ]; then
+          echo "branch_name ${{ steps.extract_branch.outputs.branch_name }}"
+          if [ "${{ contains(steps.extract_branch.outputs.branch_name, 'release-') }}" != true ]; then
             echo "is_production_release=true" >> $GITHUB_OUTPUT;
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
           fi
           echo $GITHUB_OUTPUT
-        id: check_is_production_release
-
-  Extract_Production_Release_Version:
-    needs:
-      - Check_Is_Production_Release
-    # if: needs.Check_Is_Production_Release.outputs.is_production_release == true
-    outputs:
-      version: ${{ steps.extract_version.outputs.version }}
-    runs-on: ubuntu-latest
-    steps:
       - name: Extract Production Release Version
-        if: needs.Check_Is_Production_Release.outputs.is_production_release == true
+        if: steps.check_is_production_release.outputs.branch_name == true
         shell: bash
-        run: echo version=$(echo ${{ needs.Get_Branch_Name.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
+        run: echo version=$(echo ${{ steps.extract_branch.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
         id: extract_version
-  
-  Set_Image_Tag:
-    needs: 
-      - Extract_Production_Release_Version
-      - Get_Branch_Name
-    outputs:
-      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
-    runs-on: ubuntu-latest
-    steps:
       - name: Extract_Image_Tag
         shell: bash
         run: |
-          if [ "${{ needs.Check_Is_Production_Release.outputs.is_production_release }}" == true ]; then
-            echo "image_tag=${{ needs.Extract_Production_Release_Version.outputs.version }}" >> $GITHUB_OUTPUT;
+          if [ "${{ steps.check_is_production_release.outputs.is_production_release }}" == true ]; then
+            echo "image_tag=${{ steps.extract_version.outputs.version }}" >> $GITHUB_OUTPUT;
           else
-            echo "image_tag=${{ needs.Get_Branch_Name.outputs.branch_name }}" >> $GITHUB_OUTPUT;
+            echo "image_tag=${{ steps.extract_branch.outputs.branch_name }}" >> $GITHUB_OUTPUT;
           fi
         id: set_image_tag
+    
+  
+  # Get_Branch_Name:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     branch_name: ${{ steps.extract_branch.outputs.branch_name }}
+  #   steps:
+  #     - name: Extract_Branch_Name
+  #       # Map a step output to a job output
+  #       shell: bash
+  #       run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+  #       id: extract_branch
+
+  # Check_Is_Production_Release:
+  #   needs: 
+  #     - Get_Branch_Name
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     is_production_release: ${{ steps.check_is_production_release.outputs.is_production_release }}
+  #   steps:
+  #     - name: Check_Production_Release
+  #       shell: bash
+  #       run: |
+  #         echo "branch_name ${{ needs.Get_Branch_Name.outputs.branch_name }}"
+  #         if [ "${{ contains(needs.Get_Branch_Name.outputs.branch_name, 'release-') }}" != true ]; then
+  #           echo "is_production_release=true" >> $GITHUB_OUTPUT;
+  #         else
+  #           echo "is_production_release=false" >> $GITHUB_OUTPUT;
+  #         fi
+  #         echo $GITHUB_OUTPUT
+  #       id: check_is_production_release
+
+  # Extract_Production_Release_Version:
+  #   needs:
+  #     - Check_Is_Production_Release
+  #   # if: needs.Check_Is_Production_Release.outputs.is_production_release == true
+  #   outputs:
+  #     version: ${{ steps.extract_version.outputs.version }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Extract Production Release Version
+  #       if: needs.Check_Is_Production_Release.outputs.is_production_release == true
+  #       shell: bash
+  #       run: echo version=$(echo ${{ needs.Get_Branch_Name.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
+  #       id: extract_version
+  
+  # Set_Image_Tag:
+  #   needs: 
+  #     - Extract_Production_Release_Version
+  #     - Get_Branch_Name
+  #   outputs:
+  #     image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Extract_Image_Tag
+  #       shell: bash
+  #       run: |
+  #         if [ "${{ needs.Check_Is_Production_Release.outputs.is_production_release }}" == true ]; then
+  #           echo "image_tag=${{ needs.Extract_Production_Release_Version.outputs.version }}" >> $GITHUB_OUTPUT;
+  #         else
+  #           echo "image_tag=${{ needs.Get_Branch_Name.outputs.branch_name }}" >> $GITHUB_OUTPUT;
+  #         fi
+  #       id: set_image_tag
 
   Build_Push_Image:
     needs:
-      - Set_Image_Tag
+      - Resolve_Image_Tag
     runs-on: ubuntu-latest
     name: Build_Push_Image
     steps:
@@ -138,11 +173,10 @@ jobs:
       - name: Build_Tapis_UI_Image
         run: |
           BRANCH="${{ needs.Set_Image_Tag.outputs.image_tag }}"
-          echo "image tag: $BRANCH"
           if [[ "${{ contains(needs.Set_Image_Tag.outputs.image_tag, 'refs/pull/') }}" ]]; then
             BRANCH=dev
           fi
-      #     docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
-      # - name: Push_All_Tags
-      #   run: docker push --all-tags tapis/tapisui
+          docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
+      - name: Push_All_Tags
+        run: docker push --all-tags tapis/tapisui
 
