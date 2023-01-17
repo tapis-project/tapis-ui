@@ -78,7 +78,7 @@ jobs:
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
           fi
       - name: Extract Production Release Version
-        if: ${{ steps.check_is_production_release.outputs.is_production_release == "true" }}
+        if: ${{ steps.check_is_production_release.outputs.is_production_release == 'true' }}
         shell: bash
         run: echo version=$(echo ${{ steps.extract_branch.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
         id: extract_version
