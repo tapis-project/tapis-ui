@@ -110,8 +110,8 @@ jobs:
           password: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
       - name: Build_Tapis_UI_Image
         run: |
-          BRANCH="${{ needs.Set_Image_Tag.outputs.image_tag }}"
-          if [[ "${{ contains(needs.Set_Image_Tag.outputs.image_tag, 'refs/pull/') }}" ]]; then
+          BRANCH="${{ needs.Resolve_Image_Tag.outputs.image_tag }}"
+          if [[ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" ]]; then
             BRANCH=dev
           fi
           docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
