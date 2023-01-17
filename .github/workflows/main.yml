@@ -77,9 +77,8 @@ jobs:
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
           fi
-          echo $GITHUB_OUTPUT
       - name: Extract Production Release Version
-        if: steps.check_is_production_release.outputs.is_production_release == true
+        if: ${{ steps.check_is_production_release.outputs.is_production_release == 'true' }}
         shell: bash
         run: echo version=$(echo ${{ steps.extract_branch.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
         id: extract_version
@@ -111,10 +110,10 @@ jobs:
       - name: Build_Tapis_UI_Image
         run: |
           BRANCH="${{ needs.Resolve_Image_Tag.outputs.image_tag }}"
-          if [[ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" ]]; then
+          if [ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" == true ]; then
             BRANCH=dev
           fi
-          docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
+          docker build -f Dockerfile -t tapis/tapisui:$BRANCH .
       - name: Push_All_Tags
         run: docker push --all-tags tapis/tapisui
 
