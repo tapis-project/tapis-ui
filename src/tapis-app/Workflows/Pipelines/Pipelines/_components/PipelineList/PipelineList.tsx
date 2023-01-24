@@ -28,7 +28,7 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
     setShowModal(!showModal);
   };
   const { data, isLoading, error } = useDetails({ groupId, pipelineId });
-  const pipeline: Workflows.Pipeline = data?.result!
+  const pipeline: Workflows.Pipeline = data?.result!;
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -41,13 +41,21 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
           </CardHeader>
           <CardBody>
             <CardText>
-              <p><b>tasks</b> {pipeline.tasks?.length}</p>
-              <p><b>owner</b> {pipeline.owner}</p>
-              <p><b>uuid</b> {pipeline.uuid}</p>
+              <p>
+                <b>tasks</b> {pipeline.tasks?.length}
+              </p>
+              <p>
+                <b>owner</b> {pipeline.owner}
+              </p>
+              <p>
+                <b>uuid</b> {pipeline.uuid}
+              </p>
               {pipeline.current_run && (
                 <div>
                   <b>last run </b>
-                  <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.current_run}`}>
+                  <Link
+                    to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.current_run}`}
+                  >
                     {pipeline.current_run}
                   </Link>
                 </div>
@@ -55,7 +63,9 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
               {pipeline.last_run && (
                 <div>
                   <b>previous run </b>
-                  <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.last_run}`}>
+                  <Link
+                    to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.last_run}`}
+                  >
                     {pipeline.last_run}
                   </Link>
                 </div>
@@ -104,8 +114,9 @@ type PipelineListParams = {
 const PipelineList: React.FC<PipelineListParams> = ({ groupId }) => {
   const { data, isLoading, error } = useList({ groupId });
   const result: Array<Workflows.Pipeline> = data?.result ?? [];
-  const pipelines = result.sort((a, b) => 
-    (a.id! > b.id!) ? 1 : (a.id! < b.id! ? -1 : 0))
+  const pipelines = result.sort((a, b) =>
+    a.id! > b.id! ? 1 : a.id! < b.id! ? -1 : 0
+  );
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>

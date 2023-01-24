@@ -116,4 +116,3 @@ jobs:
           docker build -f Dockerfile -t tapis/tapisui:$BRANCH .
       - name: Push_All_Tags
         run: docker push --all-tags tapis/tapisui
-

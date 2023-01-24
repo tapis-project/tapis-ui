@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { default as PipelineRuns } from '../PipelineRuns';
-import { default as TaskExecutions } from "../TaskExecutions"
+import { default as TaskExecutions } from '../TaskExecutions';
 
 const Router: React.FC = () => {
   return (
@@ -29,7 +29,13 @@ const Router: React.FC = () => {
           groupId: string;
           pipelineId: string;
           pipelineRunUuid: string;
-        }>) => <TaskExecutions groupId={groupId} pipelineId={pipelineId} pipelineRunUuid={pipelineRunUuid}/>}
+        }>) => (
+          <TaskExecutions
+            groupId={groupId}
+            pipelineId={pipelineId}
+            pipelineRunUuid={pipelineRunUuid}
+          />
+        )}
       />
     </Switch>
   );

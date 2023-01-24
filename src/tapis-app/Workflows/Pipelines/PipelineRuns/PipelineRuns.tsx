@@ -5,7 +5,7 @@ import { SectionMessage, SectionHeader } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import styles from './PipelineRuns.module.scss';
 import { Table } from 'reactstrap';
-import { Link } from "react-router-dom"
+import { Link } from 'react-router-dom';
 import { Toolbar } from '../../_components';
 import { RunPipelineModal } from '../../_components/Toolbar/RunPipelineModal';
 
@@ -24,13 +24,13 @@ const PipelineRun: React.FC<PipelineRunProps> = ({
 }) => {
   return (
     <tr>
-      <td className={styles["center"]}>{order}</td>
+      <td className={styles['center']}>{order}</td>
       <td>{pipelineRun.status}</td>
       <td>{pipelineRun.started_at}</td>
       <td>{pipelineRun.last_modified}</td>
       <td>{pipelineRun.uuid}</td>
-      <td className={styles["center"]}>
-        <Link 
+      <td className={styles['center']}>
+        <Link
           to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipelineRun.uuid}`}
         >
           View
@@ -51,27 +51,29 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
     pipelineId,
   });
   const result: Array<Workflows.PipelineRun> = data?.result ?? [];
-  const pipelineRuns = result.sort((a, b) => 
-    (a.started_at! < b.started_at!) ? 1 : (a.started_at! > b.started_at! ? -1 : 0)
-  )
+  const pipelineRuns = result.sort((a, b) =>
+    a.started_at! < b.started_at! ? 1 : a.started_at! > b.started_at! ? -1 : 0
+  );
   const [showModal, setShowModal] = useState<boolean>(false);
   const toggle = () => {
     setShowModal(!showModal);
   };
 
   return (
-    <div className={styles["grid"]}>
-      <SectionHeader>
-        {pipelineId}
-      </SectionHeader>
-      <Toolbar buttons={['runpipeline']} pipelineId={pipelineId} groupId={groupId} />
+    <div className={styles['grid']}>
+      <SectionHeader>{pipelineId}</SectionHeader>
+      <Toolbar
+        buttons={['runpipeline']}
+        pipelineId={pipelineId}
+        groupId={groupId}
+      />
       <QueryWrapper isLoading={isLoading} error={error}>
         <div id="pipelineruns">
-          { pipelineRuns.length ? (
+          {pipelineRuns.length ? (
             <Table dark bordered style={{ margin: 0 }}>
               <thead>
                 <tr>
-                  <th className={styles["center"]}>#</th>
+                  <th className={styles['center']}>#</th>
                   <th>status</th>
                   <th>started at</th>
                   <th>last modified</th>
@@ -80,23 +82,21 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                 </tr>
               </thead>
               <tbody>
-                {
-                  pipelineRuns.map((pipelineRun, i) => (
-                    <PipelineRun
-                      order={pipelineRuns.length - i}
-                      groupId={groupId}
-                      pipelineId={pipelineId}
-                      pipelineRun={pipelineRun}
-                    />
-                  ))
-                }
+                {pipelineRuns.map((pipelineRun, i) => (
+                  <PipelineRun
+                    order={pipelineRuns.length - i}
+                    groupId={groupId}
+                    pipelineId={pipelineId}
+                    pipelineRun={pipelineRun}
+                  />
+                ))}
               </tbody>
             </Table>
           ) : (
             <SectionMessage type="info">
               No runs to show for pipeline '{pipelineId}'
             </SectionMessage>
-          ) }
+          )}
         </div>
       </QueryWrapper>
       {showModal && groupId && pipelineId && (

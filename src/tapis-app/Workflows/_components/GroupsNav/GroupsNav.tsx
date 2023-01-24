@@ -12,7 +12,8 @@ const GroupsNav: React.FC<GroupsNavProps> = ({ baseUrl }) => {
   const { data, isLoading, error } = useList();
   const result: Array<Workflows.Group> = data?.result ?? [];
   const groups = result.sort((a, b) =>
-    (a.id! > b.id!) ? 1 : (a.id! < b.id! ? -1 : 0))
+    a.id! > b.id! ? 1 : a.id! < b.id! ? -1 : 0
+  );
 
   return (
     <div>

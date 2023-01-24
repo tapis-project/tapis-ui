@@ -22,10 +22,9 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
   });
   // TODO Remove 'as' after typescript binding update
   const result = data?.result ?? [];
-  const taskExecutions = result.sort((a, b) => 
-    (a.started_at! > b.started_at!) ? 1 : (a.started_at! < b.started_at! ? -1 : 0)
-  )
-
+  const taskExecutions = result.sort((a, b) =>
+    a.started_at! > b.started_at! ? 1 : a.started_at! < b.started_at! ? -1 : 0
+  );
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
