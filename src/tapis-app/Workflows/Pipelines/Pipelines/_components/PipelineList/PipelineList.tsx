@@ -28,7 +28,7 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
     setShowModal(!showModal);
   };
   const { data, isLoading, error } = useDetails({ groupId, pipelineId });
-  const pipeline: Workflows.Pipeline = data?.result!;
+  const pipeline: Workflows.Pipeline = data?.result!
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -41,13 +41,25 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
           </CardHeader>
           <CardBody>
             <CardText>
-              <b>tasks</b> {pipeline.tasks?.length}
-            </CardText>
-            <CardText>
-              <b>owner</b> {pipeline.owner}
-            </CardText>
-            <CardText>
-              <b>uuid</b> {pipeline.uuid}
+              <p><b>tasks</b> {pipeline.tasks?.length}</p>
+              <p><b>owner</b> {pipeline.owner}</p>
+              <p><b>uuid</b> {pipeline.uuid}</p>
+              {pipeline.current_run && (
+                <div>
+                  <b>last run </b>
+                  <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.current_run}`}>
+                    {pipeline.current_run}
+                  </Link>
+                </div>
+              )}
+              {pipeline.last_run && (
+                <div>
+                  <b>previous run </b>
+                  <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.last_run}`}>
+                    {pipeline.last_run}
+                  </Link>
+                </div>
+              )}
             </CardText>
           </CardBody>
           <CardFooter className={styles['card-footer']}>

@@ -1,8 +1,23 @@
+.center {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  gap: .5em;
+}
+
 .pipeline-run-container {
   border: 1px solid #dddddd;
   border-radius: 3px;
   padding: 16px;
   margin-bottom: 10px;
+}
+
+.pipeline-run-body {
+  padding: 1em;
+  border: 1px solid #dddddd;
+  margin-bottom: 1em;
 }
 
 .pipeline-run-body p {
@@ -13,6 +28,10 @@
 .section-header {
   margin-top: 16px;
   border-bottom: 1px solid #dddddd;
+}
+
+.separator {
+  margin-top: 1em;
 }
 
 .task-executions {
