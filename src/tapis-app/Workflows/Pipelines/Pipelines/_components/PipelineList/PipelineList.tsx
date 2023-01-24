@@ -103,7 +103,9 @@ type PipelineListParams = {
 
 const PipelineList: React.FC<PipelineListParams> = ({ groupId }) => {
   const { data, isLoading, error } = useList({ groupId });
-  const pipelines: Array<Workflows.Pipeline> = data?.result ?? [];
+  const result: Array<Workflows.Pipeline> = data?.result ?? [];
+  const pipelines = result.sort((a, b) => 
+    (a.id! > b.id!) ? 1 : (a.id! < b.id! ? -1 : 0))
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
