@@ -30,7 +30,7 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ setType }) => {
                 'image_build',
                 'request',
                 'tapis_job',
-                'tapis_actor',
+                // 'tapis_actor',
               ];
               return (
                 <option

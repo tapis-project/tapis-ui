@@ -143,7 +143,7 @@ const TapisActorTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
                 value={message}
                 language="json"
                 placeholder="Please enter valid json"
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => setMessage(JSON.stringify(e.target.value))}
                 padding={15}
                 color="black"
                 style={{

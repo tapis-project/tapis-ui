@@ -1,18 +1,76 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Details } from '../_common';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import { FormikInput, FieldWrapper } from 'tapis-ui/_common';
-import { Form, Formik } from 'formik';
+import { FieldWrapper } from 'tapis-ui/_common';
+import { Form, Formik, useFormikContext, getIn } from 'formik';
 import * as Yup from 'yup';
+import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
+import validJson from 'utils/yupIsValidJson';
+
+const TAPIS_JOB_TEMPLATE = {
+  name: '',
+  appId: '',
+  isMpi: false,
+  jobType: 'FORK',
+  memoryMB: 100,
+  nodeCount: 1,
+  appVersion: '0.1',
+  maxMinutes: 10,
+  description: '',
+  coresPerNode: 1,
+  parameterSet: {
+    appArgs: [],
+    envVariables: [],
+    archiveFilter: {
+      excludes: [],
+      includes: [],
+      includeLaunchFiles: true,
+    },
+    containerArgs: [],
+    schedulerOptions: [],
+  },
+  fileInputs: [],
+  fileInputArrays: [],
+  archiveOnAppError: false,
+};
+
+const TapisJobFormikForm: React.FC = () => {
+  const { setFieldValue, errors } = useFormikContext();
+  const onChange = useCallback(
+    (value) => {
+      setFieldValue('tapis_job_def', value);
+    },
+    [setFieldValue]
+  );
+  return (
+    <Form id="newtask-form">
+      <p>Tapis Job Task</p>
+      <Details type={Workflows.EnumTaskType.TapisJob} />
+      <FieldWrapper
+        label={'tapis job definition'}
+        required={true}
+        description={`The tapis job definition to run`}
+        error={getIn(errors, 'tapis_job_def')}
+      >
+        <CodeMirror
+          theme="light"
+          value={JSON.stringify(TAPIS_JOB_TEMPLATE, null, 2)}
+          height="200px"
+          extensions={[json()]}
+          onChange={onChange}
+        />
+      </FieldWrapper>
+    </Form>
+  );
+};
 
 const TapisJobTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
-  const [tapisJobDef, setTapisJobDef] = useState<string>('');
   const initialValues = {
     id: '',
     description: '',
     type: Workflows.EnumTaskType.TapisJob,
-    tapis_job_def: {},
+    tapis_job_def: JSON.stringify(TAPIS_JOB_TEMPLATE),
   };
   const validationSchema = Yup.object({
     id: Yup.string()
@@ -27,7 +85,7 @@ const TapisJobTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
       .oneOf(Object.values(Workflows.EnumTaskType))
       .required('type is required'),
     description: Yup.string().min(1).max(1024),
-    tapis_job_def: Yup.object().required('Must provide a tapis job def'),
+    tapis_job_def: validJson().required('Tapis job definition is required'),
     execution_profile: Yup.object({
       max_retries: Yup.number().min(-1).max(1000),
       max_exec_time: Yup.number().min(0),
@@ -45,42 +103,15 @@ const TapisJobTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={onSubmit}
-        enableReinitialize
+        onSubmit={(props) => {
+          let values = {
+            ...props,
+            tapis_job_def: JSON.parse(props.tapis_job_def),
+          };
+          onSubmit(values);
+        }}
       >
-        <Form id="newtask-form">
-          <p>Tapis Job Task</p>
-          <Details type={Workflows.EnumTaskType.TapisJob} />
-          <FieldWrapper
-            label={'tapis job definition'}
-            required={true}
-            description={`The tapis job definition to run`}
-          >
-            <FormikInput
-              name={`tapis_job_def`}
-              label="message"
-              required={true}
-              type="hidden"
-              description={''}
-              aria-label="Input"
-              value={tapisJobDef}
-            />
-            <CodeEditor
-              value={tapisJobDef}
-              language="json"
-              placeholder="Please enter valid json"
-              onChange={(e) => setTapisJobDef(e.target.value)}
-              padding={15}
-              color="black"
-              style={{
-                fontSize: 12,
-                backgroundColor: '#f5f5f5',
-                fontFamily:
-                  'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-              }}
-            />
-          </FieldWrapper>
-        </Form>
+        <TapisJobFormikForm />
       </Formik>
     </div>
   );
