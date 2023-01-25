@@ -19,9 +19,10 @@ const Layout: React.FC = () => {
   const { claims } = useTapisConfig();
   const { data, isLoading, error } = useList();
   const result = data?.result ?? [];
-  const tenants = result.sort((a, b) =>
-    a.tenant_id! > b.tenant_id! ? 1 : a.tenant_id! < b.tenant_id! ? -1 : 0
-  );
+  const tenants = result;
+  // const tenants = result.sort((a, b) =>
+  //   a.tenant_id! > b.tenant_id! ? 1 : a.tenant_id! < b.tenant_id! ? -1 : 0
+  // );
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 

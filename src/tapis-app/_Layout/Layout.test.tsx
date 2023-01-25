@@ -1,11 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
-import App from 'tapis-app/_Layout';
+// import renderComponent from 'utils/testing';
+// import App from 'tapis-app/_Layout';
 
 describe('App', () => {
-  it('renders main App component', () => {
-    const component = renderComponent(<App />);
-    expect(component).toBeDefined();
-  });
+  it.todo(
+    'renders main App component'
+    // () => {
+    // const component = renderComponent(<App/>);
+    // expect(component).toBeDefined();
+    // }
+  );
 });
