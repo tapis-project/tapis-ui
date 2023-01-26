@@ -23,7 +23,7 @@
   margin: 0;
 
   /* FAQ: It is simpler to do this in CSS than in JavaScript */
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
 
   display: flex;
   justify-content: space-between;

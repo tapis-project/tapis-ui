@@ -41,13 +41,35 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
           </CardHeader>
           <CardBody>
             <CardText>
-              <b>tasks</b> {pipeline.tasks?.length}
-            </CardText>
-            <CardText>
-              <b>owner</b> {pipeline.owner}
-            </CardText>
-            <CardText>
-              <b>uuid</b> {pipeline.uuid}
+              <p>
+                <b>tasks</b> {pipeline.tasks?.length}
+              </p>
+              <p>
+                <b>owner</b> {pipeline.owner}
+              </p>
+              <p>
+                <b>uuid</b> {pipeline.uuid}
+              </p>
+              {pipeline.current_run && (
+                <div>
+                  <b>last run </b>
+                  <Link
+                    to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.current_run}`}
+                  >
+                    {pipeline.current_run}
+                  </Link>
+                </div>
+              )}
+              {pipeline.last_run && (
+                <div>
+                  <b>previous run </b>
+                  <Link
+                    to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.last_run}`}
+                  >
+                    {pipeline.last_run}
+                  </Link>
+                </div>
+              )}
             </CardText>
           </CardBody>
           <CardFooter className={styles['card-footer']}>
@@ -56,9 +78,6 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
                 <Button className={styles['card-button']}>
                   <Icon name="edit-document" /> Edit
                 </Button>
-              </Link>
-              <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>
-                <Button className={styles['card-button']}>View Runs</Button>
               </Link>
             </div>
             <div></div>
@@ -91,7 +110,10 @@ type PipelineListParams = {
 
 const PipelineList: React.FC<PipelineListParams> = ({ groupId }) => {
   const { data, isLoading, error } = useList({ groupId });
-  const pipelines: Array<Workflows.Pipeline> = data?.result ?? [];
+  const result: Array<Workflows.Pipeline> = data?.result ?? [];
+  const pipelines = result.sort((a, b) =>
+    a.id! > b.id! ? 1 : a.id! < b.id! ? -1 : 0
+  );
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>

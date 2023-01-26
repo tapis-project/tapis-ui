@@ -1,3 +1,19 @@
+.grid {
+  display: grid;
+  gap: 1em;
+}
+
+.count {
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 2px;
+}
+
+
+.center {
+  text-align: center;
+}
+
 .tasks {
   padding-top: 10px;
   display: grid;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { ImageBuildTask, RequestTask } from '.';
+import { ImageBuildTask, RequestTask, TapisJobTask, TapisActorTask } from '.';
 
 type TaskProps = {
   type: string;
@@ -13,6 +13,10 @@ const Task: React.FC<TaskProps> = ({ type, onSubmit }) => {
       return <ImageBuildTask onSubmit={onSubmit} />;
     case Workflows.EnumTaskType.Request:
       return <RequestTask onSubmit={onSubmit} />;
+    case Workflows.EnumTaskType.TapisJob:
+      return <TapisJobTask onSubmit={onSubmit} />;
+    case Workflows.EnumTaskType.TapisActor:
+      return <TapisActorTask onSubmit={onSubmit} />;
     default:
       return <>Unsupported task type</>;
   }

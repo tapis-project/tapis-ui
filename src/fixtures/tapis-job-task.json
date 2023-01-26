@@ -1,0 +1,26 @@
+{
+  "name": "tapis-job-test",
+  "description": "My sample application",
+  "appId": "tacc-sample-app-userid",
+  "appVersion": "0.1",
+  "archiveOnAppError": false,
+  "nodeCount": 1,
+  "coresPerNode": 1,
+  "jobType": "FORK",
+  "memoryMB": 100,
+  "maxMinutes": 10,
+  "isMpi": false,
+  "fileInputs": [],
+  "fileInputArrays": [],
+  "parameterSet": {
+    "appArgs": [],
+    "containerArgs": [],
+    "schedulerOptions": [],
+    "archiveFilter": {
+      "includes": [],
+      "excludes": [],
+      "includeLaunchFiles": true
+    },
+    "envVariables": []
+  }
+}

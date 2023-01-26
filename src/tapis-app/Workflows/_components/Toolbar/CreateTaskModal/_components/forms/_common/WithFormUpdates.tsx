@@ -51,7 +51,10 @@ const WithFormUpdates: React.FC<WithFormUpdateProps> = ({
     return () => {
       mutate('remove', state, context.validationSchema);
     };
-  }, [context.validationSchema, values, context, update, remove]);
+    /* eslint-disable-next-line */
+  }, []);
+  // NOTE! Adding any of these values to the array below causes an infinite loop
+  // }, [context.validationSchema, values, context, update, remove]);
   return <>{children}</>;
 };
 
