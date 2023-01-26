@@ -79,9 +79,6 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
                   <Icon name="edit-document" /> Edit
                 </Button>
               </Link>
-              <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs`}>
-                <Button className={styles['card-button']}>View Runs</Button>
-              </Link>
             </div>
             <div></div>
             <div>
