@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details } from '../_common';
+import { Details, detailsValidationSchema } from '../_common';
 // import styles from '../../Task.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { FormikInput, FieldWrapper } from 'tapis-ui/_common';
@@ -8,13 +8,14 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import styles from './TapisActorTask.module.scss';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { TaskFormProps } from '../Task';
 
 enum MessageDataType {
   String = 'string',
   Json = 'JSON',
 }
 
-const TapisActorTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
+const TapisActorTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
   const [message, setMessage] = useState<string>('');
   const [messageDataType, setMessageDataType] = useState<MessageDataType>(
     MessageDataType.Json
@@ -27,30 +28,9 @@ const TapisActorTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
     tapis_actor_message: '',
   };
   const validationSchema = Yup.object({
-    id: Yup.string()
-      .min(1)
-      .max(255)
-      .required('A task requires an id')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      ),
-    type: Yup.string()
-      .oneOf(Object.values(Workflows.EnumTaskType))
-      .required('type is required'),
-    description: Yup.string().min(1).max(1024),
+    ...detailsValidationSchema,
     tapis_actor_id: Yup.string().required('Must provide a tapis actor id'),
     tapis_actor_message: Yup.string().required('Must provide a tapis actor id'),
-    execution_profile: Yup.object({
-      max_retries: Yup.number().min(-1).max(1000),
-      max_exec_time: Yup.number().min(0),
-      retry_policy: Yup.string().oneOf(
-        Object.values(Workflows.EnumRetryPolicy)
-      ),
-      invocation_mode: Yup.string().oneOf(
-        Object.values(Workflows.EnumInvocationMode)
-      ),
-    }),
   });
 
   return (
@@ -63,7 +43,7 @@ const TapisActorTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
       >
         <Form id="newtask-form">
           <p>Tapis Actor Task</p>
-          <Details type={Workflows.EnumTaskType.TapisActor} />
+          <Details type={Workflows.EnumTaskType.TapisActor} pipeline={pipeline} />
           <FormikSelect
             name={`tapis_actor_id`}
             label={'tapis actor'}

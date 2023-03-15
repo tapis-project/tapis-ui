@@ -2,9 +2,10 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { Form, Formik } from 'formik';
 import React, { useContext, useState } from 'react';
 import * as Yup from 'yup';
-import { Details } from '../_common';
+import { Details, detailsValidationSchema } from '../_common';
 import { Builder, Context, Destination } from './';
 import styles from './ImageBuildTask.module.scss';
+import { TaskFormProps } from "../Task"
 
 type ImageBuildTaskProps = {
   onSubmit: (
@@ -12,6 +13,7 @@ type ImageBuildTaskProps = {
     // Because the type changes as we modify initial values, we use any
     reqTask: any
   ) => void;
+  pipeline: Workflows.Pipeline
 };
 
 // Note: Type hack. "builder" from string | null to string
@@ -35,7 +37,7 @@ export const useImageBuildTaskContext = () => {
   return { context: useContext(ImageBuildContext) };
 };
 
-const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({ onSubmit }) => {
+const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({ onSubmit, pipeline }) => {
   const defaultInitialValues = {
     id: '',
     description: '',
@@ -45,32 +47,11 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({ onSubmit }) => {
   };
 
   const defaultValidationSchema = Yup.object().shape({
-    id: Yup.string()
-      .min(1)
-      .max(255)
-      .required('A task requires an id')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      ),
-    type: Yup.string()
-      .oneOf(Object.values(Workflows.EnumTaskType))
-      .required('type is required'),
-    description: Yup.string().min(1).max(1024),
+    ...detailsValidationSchema,
     builder: Yup.string()
       .oneOf(Object.values(Workflows.EnumBuilder))
       .required('builder is required'),
     cache: Yup.boolean(),
-    execution_profile: Yup.object({
-      max_retries: Yup.number().min(-1).max(1000),
-      max_exec_time: Yup.number().min(0),
-      retry_policy: Yup.string().oneOf(
-        Object.values(Workflows.EnumRetryPolicy)
-      ),
-      invocation_mode: Yup.string().oneOf(
-        Object.values(Workflows.EnumInvocationMode)
-      ),
-    }),
     context: Yup.object({}).required('context is required'),
     destination: Yup.object({}).required('destination is required'),
   });
@@ -88,12 +69,12 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({ onSubmit }) => {
         setValidationSchema,
       }}
     >
-      <ImageBuildTask onSubmit={onSubmit} />
+      <ImageBuildTask onSubmit={onSubmit} pipeline={pipeline}/>
     </ImageBuildContext.Provider>
   );
 };
 
-const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({ onSubmit }) => {
+const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({ onSubmit, pipeline }) => {
   const { context } = useImageBuildTaskContext();
 
   return (
@@ -107,7 +88,7 @@ const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({ onSubmit }) => {
         <Form id="newtask-form">
           <p>Image Build Task</p>
           <div>
-            <Details type={Workflows.EnumTaskType.ImageBuild} />
+            <Details type={Workflows.EnumTaskType.ImageBuild} pipeline={pipeline} />
             <Builder />
           </div>
           <div className={styles['section']}>
