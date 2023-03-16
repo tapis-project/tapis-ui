@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details } from '../_common';
+import { Details, detailsValidationSchema } from '../_common';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { Form, Formik, useFormikContext, getIn } from 'formik';
 import * as Yup from 'yup';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import validJson from 'utils/yupIsValidJson';
+import { TaskFormProps } from '../Task';
 
 const TAPIS_JOB_TEMPLATE = {
   name: '',
@@ -35,7 +36,9 @@ const TAPIS_JOB_TEMPLATE = {
   archiveOnAppError: false,
 };
 
-const TapisJobFormikForm: React.FC = () => {
+const TapisJobFormikForm: React.FC<{ pipeline: Workflows.Pipeline }> = ({
+  pipeline,
+}) => {
   const { setFieldValue, errors } = useFormikContext();
   const onChange = useCallback(
     (value) => {
@@ -46,7 +49,7 @@ const TapisJobFormikForm: React.FC = () => {
   return (
     <Form id="newtask-form">
       <p>Tapis Job Task</p>
-      <Details type={Workflows.EnumTaskType.TapisJob} />
+      <Details type={Workflows.EnumTaskType.TapisJob} pipeline={pipeline} />
       <FieldWrapper
         label={'tapis job definition'}
         required={true}
@@ -65,7 +68,7 @@ const TapisJobFormikForm: React.FC = () => {
   );
 };
 
-const TapisJobTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
+const TapisJobTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
   const initialValues = {
     id: '',
     description: '',
@@ -73,29 +76,8 @@ const TapisJobTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
     tapis_job_def: JSON.stringify(TAPIS_JOB_TEMPLATE),
   };
   const validationSchema = Yup.object({
-    id: Yup.string()
-      .min(1)
-      .max(255)
-      .required('A task requires an id')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      ),
-    type: Yup.string()
-      .oneOf(Object.values(Workflows.EnumTaskType))
-      .required('type is required'),
-    description: Yup.string().min(1).max(1024),
+    ...detailsValidationSchema,
     tapis_job_def: validJson().required('Tapis job definition is required'),
-    execution_profile: Yup.object({
-      max_retries: Yup.number().min(-1).max(1000),
-      max_exec_time: Yup.number().min(0),
-      retry_policy: Yup.string().oneOf(
-        Object.values(Workflows.EnumRetryPolicy)
-      ),
-      invocation_mode: Yup.string().oneOf(
-        Object.values(Workflows.EnumInvocationMode)
-      ),
-    }),
   });
 
   return (
@@ -111,7 +93,7 @@ const TapisJobTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
           onSubmit(values);
         }}
       >
-        <TapisJobFormikForm />
+        <TapisJobFormikForm pipeline={pipeline} />
       </Formik>
     </div>
   );

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details } from '../_common';
+import { Details, detailsValidationSchema } from '../_common';
 // import styles from '../../Task.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { FormikInput } from 'tapis-ui/_common';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
+import { TaskFormProps } from '../Task';
 
-const RequestTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
+const RequestTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
   const initialValues = {
     id: '',
     description: '',
@@ -15,7 +16,9 @@ const RequestTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
     http_method: '',
     url: '',
   };
-  const validationSchema = Yup.object();
+  const validationSchema = Yup.object({
+    ...detailsValidationSchema,
+  });
 
   return (
     <div id={`request-task`}>
@@ -27,7 +30,7 @@ const RequestTask: React.FC<{ onSubmit: any }> = ({ onSubmit }) => {
       >
         <Form id="newtask-form">
           <p>Request Task</p>
-          <Details type={Workflows.EnumTaskType.Request} />
+          <Details type={Workflows.EnumTaskType.Request} pipeline={pipeline} />
           <FormikSelect
             name={`http_method`}
             label={'http method'}

@@ -27,6 +27,7 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ setType }) => {
             {Object.values(Workflows.EnumTaskType).map((type) => {
               // TODO Remove when all supported
               const supported = [
+                'function',
                 'image_build',
                 'request',
                 'tapis_job',
@@ -51,7 +52,7 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ setType }) => {
             selected && setType(selected);
           }}
         >
-          + Add task
+          {'Next >'}
         </Button>
       </div>
     </div>
