@@ -5,7 +5,6 @@ import * as Yup from 'yup';
 import { Details, detailsValidationSchema } from '../_common';
 import { Builder, Context, Destination } from './';
 import styles from './ImageBuildTask.module.scss';
-import { TaskFormProps } from '../Task';
 
 type ImageBuildTaskProps = {
   onSubmit: (
