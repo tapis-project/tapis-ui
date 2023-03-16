@@ -2,18 +2,23 @@ import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Details, detailsValidationSchema } from '../_common';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { FormikInput, FieldWrapper, Icon, SectionHeader } from 'tapis-ui/_common';
-import { Form, Formik, FieldArray} from 'formik';
+import {
+  FormikInput,
+  FieldWrapper,
+  Icon,
+  SectionHeader,
+} from 'tapis-ui/_common';
+import { Form, Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import styles from './FunctionTask.module.scss';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Button } from 'reactstrap';
-import { encode } from "base-64"
+import { encode } from 'base-64';
 import { TaskFormProps } from '../Task';
 
 const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
   // eslint-disable-next-line
-  const defaultCode = `# Use the execution context to fetch input data, save data to outputs,\n# and terminate the task with the stdout and stderr functions\nfrom owe_python_sdk import execution_context as ctx`
+  const defaultCode = `# Use the execution context to fetch input data, save data to outputs,\n# and terminate the task with the stdout and stderr functions\nfrom owe_python_sdk import execution_context as ctx`;
   const initialValues = {
     id: '',
     description: '',
@@ -25,54 +30,72 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
     command: '',
     installer: '',
     runtime: '',
-    packages: [] as Array<string>
+    packages: [] as Array<string>,
   };
   const validationSchema = Yup.object({
     ...detailsValidationSchema,
     code: Yup.string().required('Must provide code for the task'),
     command: Yup.string().min(1),
-    installer: Yup.string().oneOf(Object.values(Workflows.EnumInstaller)).required("Package installer is required"),
-    packages: Yup.array().of(Yup.string().min(1).max(128).required("The package's name and version are required: Ex. tapipy==1.20.0")),
-    runtime: Yup.string().oneOf(Object.values(Workflows.EnumRuntimeEnvironment)).required("Runtime is required")
+    installer: Yup.string()
+      .oneOf(Object.values(Workflows.EnumInstaller))
+      .required('Package installer is required'),
+    packages: Yup.array().of(
+      Yup.string()
+        .min(1)
+        .max(128)
+        .required(
+          "The package's name and version are required: Ex. tapipy==1.20.0"
+        )
+    ),
+    runtime: Yup.string()
+      .oneOf(Object.values(Workflows.EnumRuntimeEnvironment))
+      .required('Runtime is required'),
   });
-  
+
   return (
     <div id={`function-task`}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-
-          onSubmit({...values, code: encode(values.code)})
+          onSubmit({ ...values, code: encode(values.code) });
         }}
         enableReinitialize
       >
-        {({setFieldValue, values}) =>  (
+        {({ setFieldValue, values }) => (
           <Form id="newtask-form">
             <p>Function Task</p>
-            <Details type={Workflows.EnumTaskType.Function} pipeline={pipeline}/>
-            <SectionHeader className={styles["header"]}>
-              <span>
-                Runtime Environment{' '}
-              </span>
+            <Details
+              type={Workflows.EnumTaskType.Function}
+              pipeline={pipeline}
+            />
+            <SectionHeader className={styles['header']}>
+              <span>Runtime Environment </span>
             </SectionHeader>
-            <div className={styles["grid-2"]}>
+            <div className={styles['grid-2']}>
               <FormikSelect
                 name={`runtime`}
                 label={'runtime'}
                 required={true}
-                description={'The runtime envrionment and language of the function'}
+                description={
+                  'The runtime envrionment and language of the function'
+                }
               >
                 <option disabled value={''} selected={true}>
                   -- select an option --
                 </option>
-                {Object.values(Workflows.EnumRuntimeEnvironment).map((runtime) => {
-                  return (
-                    <option value={runtime} selected={runtime === values.runtime}>
-                      {runtime}
-                    </option>
-                  );
-                })}
+                {Object.values(Workflows.EnumRuntimeEnvironment).map(
+                  (runtime) => {
+                    return (
+                      <option
+                        value={runtime}
+                        selected={runtime === values.runtime}
+                      >
+                        {runtime}
+                      </option>
+                    );
+                  }
+                )}
               </FormikSelect>
               <FormikSelect
                 name={`installer`}
@@ -84,11 +107,7 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
                   -- select an option --
                 </option>
                 {Object.values(Workflows.EnumInstaller).map((installer) => {
-                  return (
-                    <option value={installer}>
-                      {installer}
-                    </option>
-                  );
+                  return <option value={installer}>{installer}</option>;
                 })}
               </FormikSelect>
             </div>
@@ -97,7 +116,8 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
               render={(arrayHelpers) => (
                 <div>
                   <div className={styles['package-inputs']}>
-                    {values.packages && values.packages.length > 0 &&
+                    {values.packages &&
+                      values.packages.length > 0 &&
                       values.packages.map((_, index) => (
                         <div key={index} className={styles['package-input']}>
                           <FormikInput
@@ -121,17 +141,16 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
                   </div>
                   <Button
                     type="button"
-                    className={styles["add-button"]}
-                    onClick={() => arrayHelpers.push('')}>
-                      Add package +
+                    className={styles['add-button']}
+                    onClick={() => arrayHelpers.push('')}
+                  >
+                    Add package +
                   </Button>
                 </div>
               )}
             />
-            <SectionHeader className={styles["header"]}>
-              <span>
-                Execution{' '}
-              </span>
+            <SectionHeader className={styles['header']}>
+              <span>Execution </span>
             </SectionHeader>
             <FormikInput
               name={`command`}
@@ -161,7 +180,7 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
                 language={'python'}
                 placeholder={`Please enter valid code`}
                 onChange={(e) => {
-                  setFieldValue('code', e.target.value)
+                  setFieldValue('code', e.target.value);
                 }}
                 padding={15}
                 color="black"

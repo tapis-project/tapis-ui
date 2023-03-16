@@ -17,7 +17,7 @@ const RequestTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
     url: '',
   };
   const validationSchema = Yup.object({
-    ...detailsValidationSchema
+    ...detailsValidationSchema,
   });
 
   return (
@@ -30,7 +30,7 @@ const RequestTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
       >
         <Form id="newtask-form">
           <p>Request Task</p>
-          <Details type={Workflows.EnumTaskType.Request} pipeline={pipeline}/>
+          <Details type={Workflows.EnumTaskType.Request} pipeline={pipeline} />
           <FormikSelect
             name={`http_method`}
             label={'http method'}

@@ -52,7 +52,7 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ setType }) => {
             selected && setType(selected);
           }}
         >
-          {"Next >"}
+          {'Next >'}
         </Button>
       </div>
     </div>

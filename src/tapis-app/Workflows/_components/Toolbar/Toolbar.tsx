@@ -125,7 +125,7 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         {modal === 'createpipeline' && groupId && (
           <CreatePipelineModal toggle={toggle} groupId={groupId} />
         )}
-        {(modal === 'createtask' && groupId && pipelineId) && (
+        {modal === 'createtask' && groupId && pipelineId && (
           <CreateTaskModal
             groupId={groupId}
             pipelineId={pipelineId}

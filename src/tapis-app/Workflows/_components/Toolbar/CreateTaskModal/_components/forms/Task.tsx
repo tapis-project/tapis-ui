@@ -1,27 +1,33 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { ImageBuildTask, RequestTask, TapisJobTask, TapisActorTask, FunctionTask } from '.';
+import {
+  ImageBuildTask,
+  RequestTask,
+  TapisJobTask,
+  TapisActorTask,
+  FunctionTask,
+} from '.';
 
 type TaskProps = {
   type: string;
-  pipeline: Workflows.Pipeline
+  pipeline: Workflows.Pipeline;
   onSubmit: (reqTask: Workflows.ReqTask) => void;
 };
 
-export type TaskFormProps = { pipeline: Workflows.Pipeline, onSubmit: any }
+export type TaskFormProps = { pipeline: Workflows.Pipeline; onSubmit: any };
 
 const Task: React.FC<TaskProps> = ({ type, pipeline, onSubmit }) => {
   switch (type) {
     case Workflows.EnumTaskType.ImageBuild:
-      return <ImageBuildTask onSubmit={onSubmit} pipeline={pipeline}/>;
+      return <ImageBuildTask onSubmit={onSubmit} pipeline={pipeline} />;
     case Workflows.EnumTaskType.Request:
-      return <RequestTask onSubmit={onSubmit} pipeline={pipeline}/>;
+      return <RequestTask onSubmit={onSubmit} pipeline={pipeline} />;
     case Workflows.EnumTaskType.TapisJob:
-      return <TapisJobTask onSubmit={onSubmit} pipeline={pipeline}/>;
+      return <TapisJobTask onSubmit={onSubmit} pipeline={pipeline} />;
     case Workflows.EnumTaskType.TapisActor:
-      return <TapisActorTask onSubmit={onSubmit} pipeline={pipeline}/>;
+      return <TapisActorTask onSubmit={onSubmit} pipeline={pipeline} />;
     case Workflows.EnumTaskType.Function:
-      return <FunctionTask onSubmit={onSubmit} pipeline={pipeline}/>;
+      return <FunctionTask onSubmit={onSubmit} pipeline={pipeline} />;
     default:
       return <>Unsupported task type</>;
   }

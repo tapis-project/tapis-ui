@@ -1,14 +1,14 @@
 import { FormikInput, Icon, SectionHeader } from 'tapis-ui/_common';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useFormikContext, FieldArray } from "formik"
-import styles from "./Details.module.scss"
-import { Button } from "reactstrap"
+import { useFormikContext, FieldArray } from 'formik';
+import styles from './Details.module.scss';
+import { Button } from 'reactstrap';
 import { Workflows } from '@tapis/tapis-typescript';
-import * as Yup from "yup"
+import * as Yup from 'yup';
 
 type DetailsProps = {
   type: Workflows.EnumTaskType;
-  pipeline: Workflows.Pipeline
+  pipeline: Workflows.Pipeline;
 };
 
 export const detailsValidationSchema = {
@@ -26,29 +26,30 @@ export const detailsValidationSchema = {
   description: Yup.string().min(1).max(1024),
   depends_on: Yup.array().of(
     Yup.object({
-      id: Yup.string().min(1).max(128).required("'id' of task dependency required")
+      id: Yup.string()
+        .min(1)
+        .max(128)
+        .required("'id' of task dependency required"),
     })
   ),
   execution_profile: Yup.object({
     max_retries: Yup.number().min(-1).max(1000),
     max_exec_time: Yup.number().min(0),
-    retry_policy: Yup.string().oneOf(
-      Object.values(Workflows.EnumRetryPolicy)
-    ),
+    retry_policy: Yup.string().oneOf(Object.values(Workflows.EnumRetryPolicy)),
     invocation_mode: Yup.string().oneOf(
       Object.values(Workflows.EnumInvocationMode)
     ),
   }),
-}
+};
 
 const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
-  const { values } = useFormikContext<Workflows.ReqTask>()
+  const { values } = useFormikContext<Workflows.ReqTask>();
   const isSelectedDependency = (
     task_id: string,
     dependencies: Array<Workflows.TaskDependency>
   ) => {
-    return dependencies.filter((dep) => dep.id === task_id).length > 0
-  }
+    return dependencies.filter((dep) => dep.id === task_id).length > 0;
+  };
 
   return (
     <div id={`details`}>
@@ -81,7 +82,7 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
       {/* Input */}
       {/* Output */}
 
-      <SectionHeader className={styles["header"]}>
+      <SectionHeader className={styles['header']}>
         <span>
           Dependencies{' '}
           <span className={styles['count']}>
@@ -94,14 +95,17 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
         render={(arrayHelpers) => (
           <div>
             <div className={styles['key-val-inputs']}>
-              {values.depends_on && values.depends_on.length > 0 &&
+              {values.depends_on &&
+                values.depends_on.length > 0 &&
                 values.depends_on.map((_, index) => (
                   <div key={index} className={styles['key-val-input']}>
                     <FormikSelect
                       name={`depends_on.${index}.id`}
                       label={'task id'}
                       required={true}
-                      description={'The id of the task this task is dependent upon'}
+                      description={
+                        'The id of the task this task is dependent upon'
+                      }
                     >
                       <option disabled value={''} selected={true}>
                         -- select an option --
@@ -109,7 +113,10 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
                       {Object.values(pipeline.tasks || []).map((task) => {
                         return (
                           <option
-                            disabled={isSelectedDependency(task.id, values.depends_on || [])}
+                            disabled={isSelectedDependency(
+                              task.id,
+                              values.depends_on || []
+                            )}
                             value={task.id}
                           >
                             {task.id}
@@ -131,10 +138,14 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
             </div>
             <Button
               type="button"
-              disabled={(values.depends_on || []).length === (pipeline.tasks ||[]).length}
-              className={styles["add-button"]}
-              onClick={() => arrayHelpers.push({id: "", can_fail: false})}>
-                Add dependency +
+              disabled={
+                (values.depends_on || []).length ===
+                (pipeline.tasks || []).length
+              }
+              className={styles['add-button']}
+              onClick={() => arrayHelpers.push({ id: '', can_fail: false })}
+            >
+              Add dependency +
             </Button>
           </div>
         )}

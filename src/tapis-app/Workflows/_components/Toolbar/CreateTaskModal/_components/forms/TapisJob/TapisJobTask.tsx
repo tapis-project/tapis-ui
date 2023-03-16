@@ -36,7 +36,9 @@ const TAPIS_JOB_TEMPLATE = {
   archiveOnAppError: false,
 };
 
-const TapisJobFormikForm: React.FC<{pipeline: Workflows.Pipeline}> = ({ pipeline }) => {
+const TapisJobFormikForm: React.FC<{ pipeline: Workflows.Pipeline }> = ({
+  pipeline,
+}) => {
   const { setFieldValue, errors } = useFormikContext();
   const onChange = useCallback(
     (value) => {
@@ -47,7 +49,7 @@ const TapisJobFormikForm: React.FC<{pipeline: Workflows.Pipeline}> = ({ pipeline
   return (
     <Form id="newtask-form">
       <p>Tapis Job Task</p>
-      <Details type={Workflows.EnumTaskType.TapisJob} pipeline={pipeline}/>
+      <Details type={Workflows.EnumTaskType.TapisJob} pipeline={pipeline} />
       <FieldWrapper
         label={'tapis job definition'}
         required={true}
@@ -91,7 +93,7 @@ const TapisJobTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
           onSubmit(values);
         }}
       >
-        <TapisJobFormikForm pipeline={pipeline}/>
+        <TapisJobFormikForm pipeline={pipeline} />
       </Formik>
     </div>
   );

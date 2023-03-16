@@ -43,7 +43,10 @@ const TapisActorTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
       >
         <Form id="newtask-form">
           <p>Tapis Actor Task</p>
-          <Details type={Workflows.EnumTaskType.TapisActor} pipeline={pipeline} />
+          <Details
+            type={Workflows.EnumTaskType.TapisActor}
+            pipeline={pipeline}
+          />
           <FormikSelect
             name={`tapis_actor_id`}
             label={'tapis actor'}

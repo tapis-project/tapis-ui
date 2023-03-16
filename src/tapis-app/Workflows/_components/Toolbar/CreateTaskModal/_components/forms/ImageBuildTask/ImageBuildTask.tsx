@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { Details, detailsValidationSchema } from '../_common';
 import { Builder, Context, Destination } from './';
 import styles from './ImageBuildTask.module.scss';
-import { TaskFormProps } from "../Task"
+import { TaskFormProps } from '../Task';
 
 type ImageBuildTaskProps = {
   onSubmit: (
@@ -13,7 +13,7 @@ type ImageBuildTaskProps = {
     // Because the type changes as we modify initial values, we use any
     reqTask: any
   ) => void;
-  pipeline: Workflows.Pipeline
+  pipeline: Workflows.Pipeline;
 };
 
 // Note: Type hack. "builder" from string | null to string
@@ -37,7 +37,10 @@ export const useImageBuildTaskContext = () => {
   return { context: useContext(ImageBuildContext) };
 };
 
-const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({ onSubmit, pipeline }) => {
+const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({
+  onSubmit,
+  pipeline,
+}) => {
   const defaultInitialValues = {
     id: '',
     description: '',
@@ -69,12 +72,15 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({ onSubmit, pipeli
         setValidationSchema,
       }}
     >
-      <ImageBuildTask onSubmit={onSubmit} pipeline={pipeline}/>
+      <ImageBuildTask onSubmit={onSubmit} pipeline={pipeline} />
     </ImageBuildContext.Provider>
   );
 };
 
-const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({ onSubmit, pipeline }) => {
+const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({
+  onSubmit,
+  pipeline,
+}) => {
   const { context } = useImageBuildTaskContext();
 
   return (
@@ -88,7 +94,10 @@ const ImageBuildTask: React.FC<ImageBuildTaskProps> = ({ onSubmit, pipeline }) =
         <Form id="newtask-form">
           <p>Image Build Task</p>
           <div>
-            <Details type={Workflows.EnumTaskType.ImageBuild} pipeline={pipeline} />
+            <Details
+              type={Workflows.EnumTaskType.ImageBuild}
+              pipeline={pipeline}
+            />
             <Builder />
           </div>
           <div className={styles['section']}>

@@ -26,10 +26,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const {
     data,
     isLoading: isLoadingPipeline,
-    error: errorPipeline
+    error: errorPipeline,
   } = useDetails({ groupId, pipelineId });
   const pipeline: Workflows.Pipeline = data?.result!;
-  
+
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
@@ -51,14 +51,12 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       title="Create Task"
       body={
         <div className={styles['form-container']}>
-          { isLoadingPipeline ? (
-              <LoadingSpinner />
-            ) : (
-              type ? (
-                <Task type={type} pipeline={pipeline} onSubmit={onSubmit}/>
-              ) : (
-                <TaskTypeSelector setType={setType} />
-              )
+          {isLoadingPipeline ? (
+            <LoadingSpinner />
+          ) : type ? (
+            <Task type={type} pipeline={pipeline} onSubmit={onSubmit} />
+          ) : (
+            <TaskTypeSelector setType={setType} />
           )}
         </div>
       }
