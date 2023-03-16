@@ -13,6 +13,7 @@ const RequestTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
     id: '',
     description: '',
     type: Workflows.EnumTaskType.Request,
+    depends_on: [] as Array<Workflows.TaskDependency>,
     http_method: '',
     url: '',
   };

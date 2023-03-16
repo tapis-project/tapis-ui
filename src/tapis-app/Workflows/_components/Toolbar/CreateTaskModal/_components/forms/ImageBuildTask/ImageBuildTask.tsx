@@ -46,6 +46,7 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({
     type: Workflows.EnumTaskType.ImageBuild,
     builder: '',
     cache: false,
+    depends_on: [] as Array<Workflows.TaskDependency>,
   };
 
   const defaultValidationSchema = Yup.object().shape({

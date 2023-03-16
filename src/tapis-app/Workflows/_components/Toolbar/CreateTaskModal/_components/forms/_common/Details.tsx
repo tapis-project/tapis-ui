@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { FormikInput, Icon, Collapse } from 'tapis-ui/_common';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext, FieldArray } from 'formik';
@@ -43,46 +42,42 @@ export const detailsValidationSchema = {
   }),
 };
 
-type ValueFromProps = {
-  pipeline: Workflows.Pipeline
-  index: number
-  key: string
-}
+// type ValueFromProps = {
+//   pipeline: Workflows.Pipeline;
+//   index: number;
+//   key: string;
+// };
 
-enum EnumValueFromTypes {
-  Env = "env",
-  Params = "params",
-  TaskOutput = "task_output"
-}
+// enum EnumValueFromTypes {
+//   Env = 'env',
+//   Params = 'params',
+//   TaskOutput = 'task_output',
+// }
 
-const ValueFrom: React.FC<ValueFromProps> = ({pipeline, index, key}) => {
-  const [ valueFromType, setValueFromType ] = useState<string>()
-  const { values } = useFormikContext()
-  return (
-    <div>
-      <select>
-        <option disabled value={''} selected={true}>
-          -- select an option --
-        </option>
-        {Object.values(EnumValueFromTypes).map((type) => {
-          return (
-            <option id={`input.${index}`}>
-              {type}
-            </option>
-          );
-        })}
-      </select>
-    </div>
-  )
-}
+// const ValueFrom: React.FC<ValueFromProps> = ({ pipeline, index, key }) => {
+//   const [valueFromType, setValueFromType] = useState<string>();
+//   const { values } = useFormikContext();
+//   return (
+//     <div>
+//       <select>
+//         <option disabled value={''} selected={true}>
+//           -- select an option --
+//         </option>
+//         {Object.values(EnumValueFromTypes).map((type) => {
+//           return <option id={`input.${index}`}>{type}</option>;
+//         })}
+//       </select>
+//     </div>
+//   );
+// };
 
 type ReqTaskTransform = Workflows.ReqTask & {
-  input: Array<{key: string, value: string}>
-  output: Array<{type: string, value: string}>
-}
+  input: Array<{ key: string; value: string }>;
+  output: Array<{ type: string; value: string }>;
+};
 
 const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
-  const { values, setFieldValue } = useFormikContext<ReqTaskTransform>();
+  const { values } = useFormikContext<ReqTaskTransform>();
   const isSelectedDependency = (
     task_id: string,
     dependencies: Array<Workflows.TaskDependency>
@@ -92,7 +87,7 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
 
   return (
     <div id={`details`}>
-      <div className={styles["grid-2"]}>
+      <div className={styles['grid-2']}>
         <FormikInput
           name={`id`}
           label="task id"
@@ -198,7 +193,7 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
         name="depends_on"
         render={(arrayHelpers) => (
           <Collapse title="Task dependencies">
-            <div className={styles['key-val-inputs'] + " " + styles["grid-2"]}>
+            <div className={styles['key-val-inputs'] + ' ' + styles['grid-2']}>
               {values.depends_on &&
                 values.depends_on.length > 0 &&
                 values.depends_on.map((_, i) => (
