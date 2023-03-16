@@ -24,6 +24,7 @@ const TapisActorTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
     id: '',
     description: '',
     type: Workflows.EnumTaskType.TapisActor,
+    depends_on: [] as Array<Workflows.TaskDependency>,
     tapis_actor_id: '',
     tapis_actor_message: '',
   };
