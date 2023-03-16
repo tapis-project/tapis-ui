@@ -73,6 +73,7 @@ const TapisJobTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
     id: '',
     description: '',
     type: Workflows.EnumTaskType.TapisJob,
+    depends_on: [] as Array<Workflows.TaskDependency>,
     tapis_job_def: JSON.stringify(TAPIS_JOB_TEMPLATE),
   };
   const validationSchema = Yup.object({
