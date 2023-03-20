@@ -1,6 +1,10 @@
 import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details, detailsValidationSchema } from '../_common';
+import {
+  Details,
+  detailsValidationSchema,
+  detailsInitialValues,
+} from '../_common';
 import { FieldWrapper } from 'tapis-ui/_common';
 import { Form, Formik, useFormikContext, getIn } from 'formik';
 import * as Yup from 'yup';
@@ -70,10 +74,8 @@ const TapisJobFormikForm: React.FC<{ pipeline: Workflows.Pipeline }> = ({
 
 const TapisJobTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
   const initialValues = {
-    id: '',
-    description: '',
+    ...detailsInitialValues,
     type: Workflows.EnumTaskType.TapisJob,
-    depends_on: [] as Array<Workflows.TaskDependency>,
     tapis_job_def: JSON.stringify(TAPIS_JOB_TEMPLATE),
   };
   const validationSchema = Yup.object({

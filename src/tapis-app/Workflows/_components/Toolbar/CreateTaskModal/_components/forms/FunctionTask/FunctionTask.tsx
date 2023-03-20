@@ -1,6 +1,10 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details, detailsValidationSchema } from '../_common';
+import {
+  Details,
+  detailsValidationSchema,
+  detailsInitialValues,
+} from '../_common';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import {
   FormikInput,
@@ -20,12 +24,8 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
   // eslint-disable-next-line
   const defaultCode = `# Use the execution context to fetch input data, save data to outputs,\n# and terminate the task with the stdout and stderr functions\nfrom owe_python_sdk import execution_context as ctx`;
   const initialValues = {
-    id: '',
-    description: '',
+    ...detailsInitialValues,
     type: Workflows.EnumTaskType.Function,
-    depends_on: [] as Array<Workflows.TaskDependency>,
-    input: [],
-    outuput: [],
     code: defaultCode,
     command: '',
     installer: '',

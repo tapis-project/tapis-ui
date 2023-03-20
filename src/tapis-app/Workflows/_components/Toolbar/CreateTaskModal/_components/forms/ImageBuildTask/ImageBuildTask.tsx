@@ -2,28 +2,32 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { Form, Formik } from 'formik';
 import React, { useContext, useState } from 'react';
 import * as Yup from 'yup';
-import { Details, detailsValidationSchema } from '../_common';
+import {
+  Details,
+  DetailsInitialValuesType,
+  detailsValidationSchema,
+  detailsInitialValues,
+} from '../_common';
 import { Builder, Context, Destination } from './';
 import styles from './ImageBuildTask.module.scss';
 
 type ImageBuildTaskProps = {
   onSubmit: (
     // Note: Requires the type of initialValues to fully satisfy the type below.
-    // Because the type changes as we modify initial values, we use any
+    // Because the type changes as we modify initial values, we use type 'any'
     reqTask: any
   ) => void;
   pipeline: Workflows.Pipeline;
 };
 
-// Note: Type hack. "builder" from string | null to string
-type InitialValues = Partial<
-  Omit<Workflows.ReqImageBuildTask, 'builder'> & {
-    builder: string;
-  }
->;
+// NOTE: Type hack. "builder" from string | null to string
+type InitialValuesType = Partial<
+  Omit<Workflows.ReqImageBuildTask, 'builder' | 'input'> & { builder: string }
+> &
+  DetailsInitialValuesType;
 
 type ImageBuildContextType = {
-  initialValues: InitialValues;
+  initialValues: InitialValuesType;
   setInitialValues: React.Dispatch<any>;
   validationSchema: Partial<Yup.ObjectSchema<any>>;
   setValidationSchema: React.Dispatch<any>;
@@ -41,12 +45,10 @@ const WithImageBuildContext: React.FC<ImageBuildTaskProps> = ({
   pipeline,
 }) => {
   const defaultInitialValues = {
-    id: '',
-    description: '',
+    ...detailsInitialValues,
     type: Workflows.EnumTaskType.ImageBuild,
     builder: '',
     cache: false,
-    depends_on: [] as Array<Workflows.TaskDependency>,
   };
 
   const defaultValidationSchema = Yup.object().shape({

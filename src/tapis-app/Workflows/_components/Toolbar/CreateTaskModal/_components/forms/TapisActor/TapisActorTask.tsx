@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details, detailsValidationSchema } from '../_common';
+import {
+  Details,
+  detailsValidationSchema,
+  detailsInitialValues,
+} from '../_common';
 // import styles from '../../Task.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { FormikInput, FieldWrapper } from 'tapis-ui/_common';
@@ -21,10 +25,8 @@ const TapisActorTask: React.FC<TaskFormProps> = ({ onSubmit, pipeline }) => {
     MessageDataType.Json
   );
   const initialValues = {
-    id: '',
-    description: '',
+    ...detailsInitialValues,
     type: Workflows.EnumTaskType.TapisActor,
-    depends_on: [] as Array<Workflows.TaskDependency>,
     tapis_actor_id: '',
     tapis_actor_message: '',
   };
