@@ -1,9 +1,9 @@
-.pipeline-form-container {
-  max-height: 400px;
+.form-container {
+  max-height: 380px;
   overflow-y: auto;
 }
 
-.execution-profile {
+.section-container {
   border: 1px solid #dddddd;
   border-radius: 3px;
   padding: 0.5em;
@@ -63,4 +63,51 @@
   display: grid;
   grid-template-columns: 2fr auto auto;
   gap: 1em;
+}
+
+.key-val-env-vars {
+  display: grid;
+  gap: 16px;
+}
+
+.key-val-env-var {
+  position: relative;
+  padding: 0.5em;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.remove-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+
+.add-button {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  align-items: center;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1em;
+  align-items: center;
+}
+
+.count {
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 2px;
+}
+
+.header {
+  margin-bottom: 1em;
 }

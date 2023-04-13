@@ -9,6 +9,26 @@ import { PipelineForm } from './_components';
 import { default as queryKeys } from 'tapis-hooks/workflows/pipelines/queryKeys';
 import { useQueryClient } from 'react-query';
 
+type BaseEnvVarType = {
+  id: string;
+  valueType: 'value' | 'source';
+};
+
+type LiteralEnvVarType = BaseEnvVarType & {
+  value: string | number;
+};
+
+type SourceEnvVarType = {
+  source: string;
+  sourceKey: string;
+};
+
+type EnvVarType = LiteralEnvVarType & SourceEnvVarType;
+
+export type ReqPipelineTransform = Omit<Workflows.ReqPipeline, 'env'> & {
+  env: Array<EnvVarType>;
+};
+
 type CreatePipelineModalProps = {
   toggle: () => void;
   groupId: string;
@@ -25,8 +45,46 @@ const CreatePipelineModal: React.FC<CreatePipelineModalProps> = ({
     queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
-  const onSubmit = (reqPipeline: Workflows.ReqPipeline) => {
-    create({ groupId: groupId!, reqPipeline }, { onSuccess });
+  type EnvVarsTransformFn = (envVars: Array<EnvVarType>) => {
+    [key: string]: object;
+  };
+
+  const envVarsArrayToInputObject: EnvVarsTransformFn = (envVars) => {
+    const env: { [key: string]: object } = {};
+    envVars.forEach((envVar) => {
+      switch (envVar.valueType) {
+        case 'value':
+          env[envVar.id] = {
+            type: 'string',
+            value: envVar.value,
+          };
+          break;
+        case 'source':
+          env[envVar.id] = {
+            type: 'string',
+            value_from: { [envVar.source]: envVar.sourceKey },
+          };
+          break;
+      }
+    });
+    return env;
+  };
+
+  const onSubmit = (reqPipeline: ReqPipelineTransform) => {
+    let modifiedReqPipeline: Omit<Workflows.ReqPipeline, 'env'> & {
+      env: { [key: string]: object };
+    } = {
+      ...reqPipeline,
+      env: envVarsArrayToInputObject(reqPipeline.env),
+    };
+
+    create(
+      {
+        groupId: groupId!,
+        reqPipeline: modifiedReqPipeline as Workflows.ReqPipeline,
+      },
+      { onSuccess }
+    );
   };
 
   return (
@@ -35,7 +93,7 @@ const CreatePipelineModal: React.FC<CreatePipelineModalProps> = ({
       title="Create Pipeline"
       size="lg"
       body={
-        <div className={styles['pipeline-form-container']}>
+        <div className={styles['form-container']}>
           <PipelineForm onSubmit={onSubmit} groupId={groupId} />
         </div>
       }

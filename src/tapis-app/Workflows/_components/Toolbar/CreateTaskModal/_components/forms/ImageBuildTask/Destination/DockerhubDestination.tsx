@@ -19,7 +19,7 @@ const DockerhubDestination: React.FC = () => {
           name={`destination.tag`}
           label="image tag"
           required={true}
-          description={`The version of the image to be pulled`}
+          description={`Image tag`}
           aria-label="Input"
         />
       </div>

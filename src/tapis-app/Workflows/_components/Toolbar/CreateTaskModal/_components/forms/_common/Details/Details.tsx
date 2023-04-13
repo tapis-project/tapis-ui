@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { FormikInput, Icon, Collapse, FieldWrapper } from 'tapis-ui/_common';
+import {
+  FormikInput,
+  Icon,
+  Collapse,
+  FieldWrapper,
+  SectionHeader,
+} from 'tapis-ui/_common';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext, FieldArray } from 'formik';
 import styles from './Details.module.scss';
@@ -31,7 +37,12 @@ export const detailsValidationSchema = {
   ),
   input: Yup.array().of(
     Yup.object({
-      id: Yup.string().required('Input id is required'),
+      id: Yup.string()
+        .matches(
+          /^[_]?[A-Z0-9]{1,}[A-Z0-9_]{0,}$/g,
+          "Uppercase, integers, and '_' only. Ids that start with '_' must be followed by one or more uppercase letters or numbers"
+        )
+        .required('Input id is required'),
       source: Yup.string()
         .oneOf(['literal', 'env', 'params', 'task_output'])
         .required('Input source is required'),
@@ -111,44 +122,15 @@ enum EnumInputValueType {
 type InputValueProps = {
   index: number;
   source: 'literal' | 'env' | 'params' | 'task_output';
-  dependencies?: Array<Workflows.TaskDependency>;
+  dependencies: Array<Workflows.TaskDependency>;
+  env: { [key: string]: object };
 };
 
 const InputValue: React.FC<InputValueProps> = ({
   index,
   source,
   dependencies,
-}) => {
-  switch (source) {
-    case EnumInputValueType.Literal:
-      return (
-        <InputValueSource index={index} source={EnumInputValueType.Literal} />
-      );
-    case EnumInputValueType.Env:
-      return <InputValueSource index={index} source={EnumInputValueType.Env} />;
-    case EnumInputValueType.Params:
-      return (
-        <InputValueSource index={index} source={EnumInputValueType.Params} />
-      );
-    case EnumInputValueType.TaskOutput:
-      return (
-        <InputValueSource
-          index={index}
-          source={EnumInputValueType.TaskOutput}
-          dependencies={dependencies}
-        />
-      );
-    default:
-      return (
-        <InputValueSource index={index} source={EnumInputValueType.Literal} />
-      );
-  }
-};
-
-const InputValueSource: React.FC<InputValueProps> = ({
-  index,
-  source,
-  dependencies = [],
+  env = {},
 }) => {
   return (
     <div id={`input-value-source-${index}`}>
@@ -157,9 +139,9 @@ const InputValueSource: React.FC<InputValueProps> = ({
         <FormikInput
           id={`input.${index}.id`}
           name={`input.${index}.id`}
-          label="input name"
+          label="input id"
           required={true}
-          description={`Name of the input`}
+          description={`Id of the input`}
           aria-label="Input"
           value=""
         />
@@ -186,18 +168,31 @@ const InputValueSource: React.FC<InputValueProps> = ({
             value=""
           />
         )}
-        {(source === EnumInputValueType.Env ||
-          source === EnumInputValueType.Params) && (
+        {source === EnumInputValueType.Env && (
+          <div className={styles['grid-2']}>
+            <FormikSelect
+              name={`input.${index}.sourceKey`}
+              label={'env key'}
+              required={true}
+              description={'The environment variable to use as input'}
+            >
+              <option disabled value={''} selected={true}>
+                -- select an option --
+              </option>
+              {Object.keys(env).map((envVar) => {
+                return <option value={envVar}>{envVar}</option>;
+              })}
+            </FormikSelect>
+            <div></div>
+          </div>
+        )}
+        {source === EnumInputValueType.Params && (
           <FormikInput
             id={`input.${index}.sourceKey`}
             name={`input.${index}.sourceKey`}
             label={`${source} key`}
             required
-            description={
-              source === EnumInputValueType.Env
-                ? 'Envrionment variable name'
-                : 'Workflow submission parameter name'
-            }
+            description={'Workflow submission parameter name'}
             aria-label="Input"
             value={source}
           />
@@ -294,164 +289,191 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
         type="textarea"
         value=""
       />
-      <div id={'task-dependencies'}>
-        <FieldArray
-          name="depends_on"
-          render={(arrayHelpers) => (
-            <Collapse title="Task dependencies">
-              <div
-                className={styles['key-val-inputs'] + ' ' + styles['grid-2']}
-              >
-                {values.depends_on &&
-                  values.depends_on.length > 0 &&
-                  values.depends_on.map((dep, i) => (
-                    <div key={i} className={styles['key-val-input']}>
-                      <FormikSelect
-                        name={`depends_on.${i}.id`}
-                        label={'task id'}
-                        required={true}
-                        description={
-                          'The id of the task this task is dependent upon'
-                        }
-                      >
-                        <option disabled value={''} selected={true}>
-                          -- select an option --
-                        </option>
-                        {Object.values(pipeline.tasks || []).map((task) => {
-                          return (
-                            <option
-                              disabled={isSelectedDependency(
-                                task.id,
-                                values.depends_on || []
-                              )}
-                              value={task.id}
-                            >
-                              {task.id}
-                            </option>
-                          );
-                        })}
-                      </FormikSelect>
-                      <Button
-                        className={styles['remove-button']}
-                        type="button"
-                        color="danger"
-                        onClick={() => arrayHelpers.remove(i)}
-                        size="sm"
-                        disabled={inputDependsOnTaskDependency(
-                          values.input,
-                          dep
-                        )}
-                      >
-                        <Icon name="trash" />
-                      </Button>
-                    </div>
-                  ))}
-              </div>
-              <Button
-                type="button"
-                disabled={
-                  (values.depends_on || []).length ===
-                  (pipeline.tasks || []).length
-                }
-                className={styles['add-button']}
-                onClick={() => arrayHelpers.push({ id: '', can_fail: false })}
-              >
-                Add dependency +
-              </Button>
-            </Collapse>
-          )}
-        />
-      </div>
-      <div id="task-input">
-        <FieldArray
-          name="input"
-          render={(arrayHelpers) => {
-            return (
-              <Collapse title="Inputs">
-                <div className={styles['key-val-inputs']}>
-                  {values.input &&
-                    values.input.length > 0 &&
-                    values.input.map((_, i) => (
-                      <div key={i} className={styles['key-val-input']}>
-                        <InputValue
-                          index={i}
-                          source={values.input[i].source}
-                          dependencies={values.depends_on || []}
-                        />
-                        <Button
-                          className={styles['remove-button']}
-                          type="button"
-                          color="danger"
-                          disabled={false}
-                          onClick={() => arrayHelpers.remove(i)}
-                          size="sm"
-                        >
-                          <Icon name="trash" />
-                        </Button>
-                      </div>
-                    ))}
-                </div>
+      <div className={styles['section-container']}>
+        <Collapse title="Dependencies & Task I/O">
+          <div id={'task-dependencies'}>
+            <FieldArray
+              name="depends_on"
+              render={(arrayHelpers) => (
                 <div>
-                  <div className={styles['grid-2']}>
-                    <FieldWrapper
-                      label={'Input value type'}
-                      required={true}
-                      description={
-                        'Type input input value (literal value or value from source)'
-                      }
-                    >
-                      <Input
-                        type="select"
-                        onChange={(e) => {
-                          setSelectedInputValueType(e.target.value);
-                        }}
-                      >
-                        <option
-                          disabled
-                          value={''}
-                          selected={selectedInputValueType === undefined}
-                        >
-                          -- select input value type --
-                        </option>
-                        {Object.values(EnumInputValueType).map((type) => {
-                          return (
-                            <option
-                              id={`input-value-type-selector`}
-                              value={type}
-                            >
-                              {type === EnumInputValueType.Literal
-                                ? `value (literal)`
-                                : `value from ${type}`}
+                  <SectionHeader className={styles['header']}>
+                    <span>Dependencies</span>
+                  </SectionHeader>
+                  <div
+                    className={
+                      styles['key-val-inputs'] + ' ' + styles['grid-2']
+                    }
+                  >
+                    {values.depends_on && values.depends_on.length > 0 ? (
+                      values.depends_on.map((dep, i) => (
+                        <div key={i} className={styles['key-val-input']}>
+                          <FormikSelect
+                            name={`depends_on.${i}.id`}
+                            label={'task id'}
+                            required={true}
+                            description={
+                              'The id of the task this task is dependent upon'
+                            }
+                          >
+                            <option disabled value={''} selected={true}>
+                              -- select an option --
                             </option>
-                          );
-                        })}
-                      </Input>
-                    </FieldWrapper>
+                            {Object.values(pipeline.tasks || []).map((task) => {
+                              return (
+                                <option
+                                  disabled={isSelectedDependency(
+                                    task.id,
+                                    values.depends_on || []
+                                  )}
+                                  value={task.id}
+                                >
+                                  {task.id}
+                                </option>
+                              );
+                            })}
+                          </FormikSelect>
+                          <Button
+                            className={styles['remove-button']}
+                            type="button"
+                            color="danger"
+                            onClick={() => arrayHelpers.remove(i)}
+                            size="sm"
+                            disabled={inputDependsOnTaskDependency(
+                              values.input,
+                              dep
+                            )}
+                          >
+                            <Icon name="trash" />
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <i>
+                        No dependcies selected.{' '}
+                        <b>{(pipeline.tasks || []).length}</b> tasks available
+                      </i>
+                    )}
                   </div>
                   <Button
                     type="button"
-                    disabled={selectedInputValueType === undefined}
+                    disabled={
+                      (values.depends_on || []).length ===
+                      (pipeline.tasks || []).length
+                    }
                     className={styles['add-button']}
-                    onClick={() => {
-                      arrayHelpers.push({
-                        id: '',
-                        value: '',
-                        source: selectedInputValueType,
-                        sourceKey: '',
-                        task_id: '',
-                        output_id: '',
-                      });
-
-                      setSelectedInputValueType(undefined);
-                    }}
+                    onClick={() =>
+                      arrayHelpers.push({ id: '', can_fail: false })
+                    }
                   >
-                    Add input +
+                    + Add dependency
                   </Button>
                 </div>
-              </Collapse>
-            );
-          }}
-        />
+              )}
+            />
+          </div>
+          <div id="task-input">
+            <FieldArray
+              name="input"
+              render={(arrayHelpers) => {
+                return (
+                  <div>
+                    <SectionHeader className={styles['header']}>
+                      <span>Inputs</span>
+                    </SectionHeader>
+                    <div className={styles['key-val-inputs']}>
+                      {values.input &&
+                        values.input.length > 0 &&
+                        values.input.map((_, i) => (
+                          <div key={i} className={styles['key-val-input']}>
+                            <InputValue
+                              index={i}
+                              source={values.input[i].source}
+                              dependencies={values.depends_on || []}
+                              env={pipeline.env || {}}
+                            />
+                            <Button
+                              className={styles['remove-button']}
+                              type="button"
+                              color="danger"
+                              disabled={false}
+                              onClick={() => arrayHelpers.remove(i)}
+                              size="sm"
+                            >
+                              <Icon name="trash" />
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
+                    <div>
+                      <div className={styles['grid-2']}>
+                        <FieldWrapper
+                          label={'Input value type'}
+                          required={true}
+                          description={
+                            'Input value type (literal value or value from source)'
+                          }
+                        >
+                          <Input
+                            type="select"
+                            onChange={(e) => {
+                              setSelectedInputValueType(e.target.value);
+                            }}
+                          >
+                            <option
+                              disabled
+                              value={''}
+                              selected={selectedInputValueType === undefined}
+                            >
+                              -- select input value type --
+                            </option>
+                            {Object.values(EnumInputValueType).map((type) => {
+                              return (
+                                <option
+                                  id={`input-value-type-selector`}
+                                  value={type}
+                                  disabled={
+                                    (type === 'task_output' &&
+                                      (values.depends_on || []).length < 1) ||
+                                    (type === 'env' &&
+                                      Object.keys(pipeline.env || {}).length <
+                                        1)
+                                  }
+                                >
+                                  {type === EnumInputValueType.Literal
+                                    ? `value (literal)`
+                                    : `value from ${type}`}
+                                </option>
+                              );
+                            })}
+                          </Input>
+                        </FieldWrapper>
+                      </div>
+                      <Button
+                        type="button"
+                        disabled={selectedInputValueType === undefined}
+                        className={styles['add-button']}
+                        onClick={() => {
+                          arrayHelpers.push({
+                            id: '',
+                            value: '',
+                            source: selectedInputValueType,
+                            sourceKey: '',
+                            task_id: '',
+                            output_id: '',
+                          });
+
+                          setSelectedInputValueType(undefined);
+                        }}
+                      >
+                        + Add input
+                      </Button>
+                    </div>
+                  </div>
+                );
+              }}
+            />
+          </div>
+        </Collapse>
       </div>
     </div>
   );
