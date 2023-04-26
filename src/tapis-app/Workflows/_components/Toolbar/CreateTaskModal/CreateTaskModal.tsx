@@ -8,7 +8,7 @@ import { Task } from './_components/forms';
 import { TaskTypeSelector } from './_components';
 import { useCreate } from 'tapis-hooks/workflows/tasks';
 import { useDetails } from 'tapis-hooks/workflows/pipelines';
-import { default as queryKeys } from 'tapis-hooks/workflows/pipelines/queryKeys';
+import { default as queryKeys } from 'tapis-hooks/workflows/tasks/queryKeys';
 import { useQueryClient } from 'react-query';
 
 type CreateTaskModalProps = {
@@ -60,7 +60,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.details);
+    queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
   const [type, setType] = useState<string>('');

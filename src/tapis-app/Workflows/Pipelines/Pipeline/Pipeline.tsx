@@ -1,33 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { useDetails } from 'tapis-hooks/workflows/pipelines';
-import { SectionMessage, SectionHeader } from 'tapis-ui/_common';
+import { SectionMessage, SectionHeader, Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Link } from 'react-router-dom';
 import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
-// import ReactFlow, { ReactFlowProvider } from 'reactflow';
-import 'reactflow/dist/style.css';
-// import ReactFlow, {
-//   Node,
-//   useNodesState,
-//   useEdgesState,
-//   addEdge,
-//   Connection,
-//   Edge,
-// } from 'reactflow';
-// this is important! You need to import the styles from the lib to make it work
-// import 'reactflow/dist/style.css';
+import { useList, useDelete } from 'tapis-hooks/workflows/tasks';
+import { default as queryKeys } from 'tapis-hooks/workflows/tasks/queryKeys';
+import { useQueryClient } from 'react-query';
 
 type TaskProps = {
   task: Workflows.Task;
+  groupId: string;
+  pipelineId: string;
 };
 
-const Task: React.FC<TaskProps> = ({ task }) => {
+const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
+  const { removeAsync, isLoading, isError, error, isSuccess, reset } =
+    useDelete();
+  const queryClient = useQueryClient();
+  const onSuccess = useCallback(() => {
+    queryClient.invalidateQueries(queryKeys.list);
+    reset();
+  }, [queryClient, reset]);
+
   return (
     <div id={`task-${task.id}`} className={`${styles['task']}`}>
-      <div className={`${styles['task-header']}`}>{task.id}</div>
+      <div className={`${styles['task-header']}`}>
+        {task.id}
+        <Button
+          className={styles['remove-button']}
+          type="button"
+          color="danger"
+          onClick={() => {
+            removeAsync(
+              { groupId, pipelineId, taskId: task.id },
+              { onSuccess }
+            );
+          }}
+          size="sm"
+          disabled={isLoading || isSuccess}
+        >
+          <QueryWrapper isLoading={isLoading} error={error}>
+            <Icon name="trash" />
+          </QueryWrapper>
+        </Button>
+      </div>
       <div className={`${styles['task-body']}`}>
         <p>
           <b>type: </b>
@@ -37,6 +57,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
           <b>description: </b>
           {task.description || <i>None</i>}
         </p>
+        {isError && error}
       </div>
       {!!task?.depends_on?.length && (
         <div>
@@ -65,9 +86,11 @@ enum ViewEnum {
 type ViewProps = {
   type: ViewEnum;
   tasks: Array<Workflows.Task>;
+  groupId: string;
+  pipelineId: string;
 };
 
-const View: React.FC<ViewProps> = ({ type, tasks }) => {
+const View: React.FC<ViewProps> = ({ type, tasks, groupId, pipelineId }) => {
   switch (type) {
     case ViewEnum.Default:
       return (
@@ -75,7 +98,7 @@ const View: React.FC<ViewProps> = ({ type, tasks }) => {
           {tasks.map((task) => {
             return (
               <div id="tasks" key={task.id} className={`${styles['tasks']}`}>
-                <Task task={task} />
+                <Task task={task} groupId={groupId} pipelineId={pipelineId} />
               </div>
             );
           })}
@@ -89,37 +112,32 @@ const View: React.FC<ViewProps> = ({ type, tasks }) => {
 };
 
 const DagView: React.FC<{ tasks: Array<Workflows.Task> }> = ({ tasks }) => {
-  return (
-    <div className="Flow">
-      DAG view unavailable
-      {/* <ReactFlow
-        nodes={[]}
-        // onNodesChange={() => }
-        edges={[]}
-        // onEdgesChange={onEdgesChange}
-        // onConnect={onConnect}
-        fitView
-        // nodeTypes={nodeTypes}
-      /> */}
-    </div>
-  );
+  return <div>DAG view unavailable</div>;
 };
 
 const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
   const [view, setView] = useState<ViewEnum>(ViewEnum.Default);
-  const { data, isLoading, error } = useDetails({ groupId, pipelineId });
-  const pipeline: Workflows.Pipeline = data?.result!;
+  const {
+    data: pipelineData,
+    isLoading: isLoadingPipeline,
+    error: pipelineError,
+  } = useDetails({ groupId, pipelineId });
+  const {
+    data: tasksData,
+    isLoading: isLoadingTasks,
+    error: listTasksError,
+  } = useList({ groupId, pipelineId });
+
+  const pipeline: Workflows.Pipeline = pipelineData?.result!;
+  const tasks: Array<Workflows.Task> = tasksData?.result! || [];
 
   return (
-    <QueryWrapper isLoading={isLoading} error={error}>
+    <QueryWrapper isLoading={isLoadingPipeline} error={pipelineError}>
       {pipeline && (
         <div id={`pipeline`} className={styles['grid']}>
           <SectionHeader>
             <span>
-              Tasks{' '}
-              <span className={styles['count']}>
-                {pipeline.tasks?.length || 0}
-              </span>
+              Tasks <span className={styles['count']}>{tasks.length}</span>
             </span>
             <ButtonGroup>
               <Button
@@ -181,11 +199,18 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
               </td>
             </tbody>
           </Table>
-          {pipeline.tasks?.length ? (
-            <View type={view} tasks={pipeline.tasks} />
-          ) : (
-            <SectionMessage type="info">No tasks</SectionMessage>
-          )}
+          <QueryWrapper isLoading={isLoadingTasks} error={listTasksError}>
+            {tasks.length ? (
+              <View
+                type={view}
+                tasks={tasks}
+                groupId={groupId}
+                pipelineId={pipelineId}
+              />
+            ) : (
+              <SectionMessage type="info">No tasks</SectionMessage>
+            )}
+          </QueryWrapper>
         </div>
       )}
     </QueryWrapper>
