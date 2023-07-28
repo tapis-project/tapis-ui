@@ -1,5 +1,5 @@
 import { FormikInput, Collapse } from 'tapis-ui/_common';
-import styles from '../CreateSystemModal.module.scss';
+import styles from '../../CreateSystemModal.module.scss';
 import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';

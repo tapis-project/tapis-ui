@@ -5,7 +5,7 @@ import {
   SchedulerTypeEnum,
   SystemTypeEnum,
 } from '@tapis/tapis-typescript-systems';
-import styles from '../CreateSystemModal.module.scss';
+import styles from '../../CreateSystemModal.module.scss';
 import { useMemo } from 'react';
 import { Systems } from '@tapis/tapis-typescript';
 import BatchLogicalQueuesSettings from './BatchLogicalQueuesSettings';
