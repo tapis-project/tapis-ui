@@ -4,7 +4,6 @@ import { Dashboard } from '../Dashboard';
 import { default as PipelinesLayout } from '../Pipelines';
 import { default as ArchivesLayout } from '../Archives';
 import { default as GroupsLayout } from '../Groups';
-import { default as IdentitiesLayout } from '../Identities';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -26,9 +25,9 @@ const Router: React.FC = () => {
         <PipelinesLayout />
       </Route>
 
-      <Route path={`${path}/identities`}>
+      {/* <Route path={`${path}/identities`}>
         <IdentitiesLayout />
-      </Route>
+      </Route> */}
 
       {/* <Route
         path={`${path}/groups/:groupId`}
