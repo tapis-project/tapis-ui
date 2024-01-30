@@ -59,14 +59,7 @@ const SchedulerProfiles: React.FC = () => {
     <div className={fieldArrayStyles.array}>
       <h3>Scheduler Profiles</h3>
       {schedulerProfiles.map(
-        ({
-          name,
-          description,
-          hiddenOptions,
-          moduleLoads,
-          owner,
-          tenant,
-        }) => (
+        ({ name, description, hiddenOptions, moduleLoads, owner, tenant }) => (
           <Collapse
             key={`scheduler-profiles-${name}`}
             className={fieldArrayStyles['array-group']}

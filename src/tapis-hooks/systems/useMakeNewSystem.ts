@@ -21,7 +21,7 @@ const useMakeNewSystem = () => {
     useMutation<Systems.RespBasic, Error, MkNewSystemHookParams>(
       [QueryKeys.makeNewSystem, basePath, jwt],
       ({ reqPostSystem, skipCredentialCheck }) =>
-        makeNewSystem({reqPostSystem, skipCredentialCheck}, basePath, jwt)
+        makeNewSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
