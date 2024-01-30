@@ -7,7 +7,7 @@ import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 type TagsFieldProps = {
   item: string;
   index: number;
-  remove: (index: number) => Systems.ReqCreateSystem | undefined;
+  remove: (index: number) => Systems.ReqPostSystem | undefined;
 };
 const TagsField: React.FC<TagsFieldProps> = ({ item, index, remove }) => {
   return (
@@ -32,7 +32,7 @@ const TagsInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
 }) => {
   const { values } = useFormikContext();
 
-  const tags = (values as Partial<Systems.ReqCreateSystem>)?.tags ?? [];
+  const tags = (values as Partial<Systems.ReqPostSystem>)?.tags ?? [];
 
   return (
     <Collapse

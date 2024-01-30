@@ -8,7 +8,7 @@ import { KeyValuePair } from '@tapis/tapis-typescript-systems';
 type JobEnvVariablesFieldProps = {
   item: KeyValuePair;
   index: number;
-  remove: (index: number) => Systems.ReqCreateSystem | undefined;
+  remove: (index: number) => Systems.ReqPostSystem | undefined;
 };
 
 const JobEnvVariablesField: React.FC<JobEnvVariablesFieldProps> = ({
@@ -57,7 +57,7 @@ const JobEnvVariablesInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
     const { values } = useFormikContext();
 
     const jobEnvVariables =
-      (values as Partial<Systems.ReqCreateSystem>)?.jobEnvVariables ?? [];
+      (values as Partial<Systems.ReqPostSystem>)?.jobEnvVariables ?? [];
 
     return (
       <Collapse

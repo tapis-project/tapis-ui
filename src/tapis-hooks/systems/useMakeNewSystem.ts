@@ -5,7 +5,7 @@ import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
 type MkNewSystemHookParams = {
-  reqPostSystem: Systems.ReqCreateSystem;
+  reqPostSystem: Systems.ReqPostSystem;
   skipCredentialCheck: boolean;
 };
 
@@ -21,7 +21,7 @@ const useMakeNewSystem = () => {
     useMutation<Systems.RespBasic, Error, MkNewSystemHookParams>(
       [QueryKeys.makeNewSystem, basePath, jwt],
       ({ reqPostSystem, skipCredentialCheck }) =>
-        makeNewSystem(reqPostSystem, basePath, jwt, skipCredentialCheck)
+        makeNewSystem({reqPostSystem, skipCredentialCheck}, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -33,7 +33,7 @@ const useMakeNewSystem = () => {
     error,
     reset,
     makeNewSystem: (
-      reqPostSystem: Systems.ReqCreateSystem,
+      reqPostSystem: Systems.ReqPostSystem,
       skipCredentialCheck: boolean = true,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<Systems.RespBasic, Error, MkNewSystemHookParams>

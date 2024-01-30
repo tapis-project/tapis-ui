@@ -27,13 +27,13 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified }) => {
   //reading if the systemType is S3 at its current state
   const isS3 = useMemo(
     () =>
-      (values as Partial<Systems.ReqCreateSystem>).systemType ===
+      (values as Partial<Systems.ReqPostSystem>).systemType ===
       SystemTypeEnum.S3,
     [values]
   );
 
   //reading the runtimeType at its current state
-  const runtimeType = (values as Partial<Systems.ReqCreateSystem>).jobRuntimes;
+  const runtimeType = (values as Partial<Systems.ReqPostSystem>).jobRuntimes;
 
   if (simplified) {
     return (

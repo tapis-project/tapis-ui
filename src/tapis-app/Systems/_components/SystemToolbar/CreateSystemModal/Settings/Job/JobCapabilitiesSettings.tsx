@@ -16,7 +16,7 @@ const datatypes = Object.values(DatatypeEnum);
 type JobCapabilitiesFieldProps = {
   item: Capability;
   index: number;
-  remove: (index: number) => Systems.ReqCreateSystem | undefined;
+  remove: (index: number) => Systems.ReqPostSystem | undefined;
 };
 
 const JobCapabilitiesField: React.FC<JobCapabilitiesFieldProps> = ({
@@ -90,7 +90,7 @@ const JobCapabilitiesInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
     const { values } = useFormikContext();
 
     const jobCapabilities =
-      (values as Partial<Systems.ReqCreateSystem>)?.jobCapabilities ?? [];
+      (values as Partial<Systems.ReqPostSystem>)?.jobCapabilities ?? [];
 
     return (
       <Collapse

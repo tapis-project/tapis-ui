@@ -19,13 +19,13 @@ const BatchSettings: React.FC = () => {
 
   //reading the canRunBatch at its current state
   const canRunBatch = useMemo(
-    () => (values as Partial<Systems.ReqCreateSystem>).canRunBatch,
+    () => (values as Partial<Systems.ReqPostSystem>).canRunBatch,
     [values]
   );
   //reading if the systemType is Linux at its current state
   const isLinux = useMemo(
     () =>
-      (values as Partial<Systems.ReqCreateSystem>).systemType ===
+      (values as Partial<Systems.ReqPostSystem>).systemType ===
       SystemTypeEnum.Linux,
     [values]
   );

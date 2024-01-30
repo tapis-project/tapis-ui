@@ -8,7 +8,7 @@ import { LogicalQueue } from '@tapis/tapis-typescript-systems';
 type BatchLQFieldProps = {
   item: LogicalQueue;
   index: number;
-  remove: (index: number) => Systems.ReqCreateSystem | undefined;
+  remove: (index: number) => Systems.ReqPostSystem | undefined;
 };
 
 const BatchLogicalQueuesField: React.FC<BatchLQFieldProps> = ({
@@ -131,7 +131,7 @@ const BatchLogicalQueuesInputs: React.FC<{
   const { values } = useFormikContext();
 
   const batchLogicalQueues =
-    (values as Partial<Systems.ReqCreateSystem>)?.batchLogicalQueues ?? [];
+    (values as Partial<Systems.ReqPostSystem>)?.batchLogicalQueues ?? [];
 
   return (
     <Collapse

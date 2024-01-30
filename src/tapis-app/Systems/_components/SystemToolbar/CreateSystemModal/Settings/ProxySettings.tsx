@@ -11,7 +11,7 @@ const ProxySettings: React.FC = () => {
 
   //reading the useProxy at its current state
   const useProxy = useMemo(
-    () => (values as Partial<Systems.ReqCreateSystem>).useProxy,
+    () => (values as Partial<Systems.ReqPostSystem>).useProxy,
     [values]
   );
 

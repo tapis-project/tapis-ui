@@ -2,10 +2,9 @@ import { Systems } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const makeNewSystem = (
-  reqCreateSystem: Systems.ReqCreateSystem,
+  reqCreateSystem: Systems.CreateSystemRequest,
   basePath: string,
-  jwt: string,
-  skipCredentialCheck?: boolean
+  jwt: string
 ) => {
   const api: Systems.SystemsApi = apiGenerator<Systems.SystemsApi>(
     Systems,
@@ -14,7 +13,7 @@ const makeNewSystem = (
     jwt
   );
   return errorDecoder<Systems.RespBasic>(() =>
-    api.createSystem({ reqCreateSystem, skipCredentialCheck })
+    api.createSystem(reqCreateSystem)
   );
 };
 

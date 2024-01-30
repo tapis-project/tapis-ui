@@ -62,9 +62,8 @@ const SchedulerProfiles: React.FC = () => {
         ({
           name,
           description,
-          moduleLoadCommand,
           hiddenOptions,
-          modulesToLoad,
+          moduleLoads,
           owner,
           tenant,
         }) => (
@@ -77,8 +76,7 @@ const SchedulerProfiles: React.FC = () => {
               <div>{description}</div>
               <DescriptionList
                 data={{
-                  moduleLoadCommand,
-                  modulesToLoad,
+                  moduleLoads,
                   hiddenOptions,
                   owner,
                   tenant,

@@ -10,10 +10,10 @@ export const singularityRuntime: Systems.JobRuntime = {
   version: '0.0.1',
 };
 
-export const jobRuntimes: Set<Systems.JobRuntime> = new Set([
+export const jobRuntimes: Array<Systems.JobRuntime> = [
   { ...dockerRuntime },
   { ...singularityRuntime },
-]);
+];
 
 export const tapisSystem: Systems.TapisSystem = {
   tenant: 'tacc',
