@@ -52,21 +52,21 @@ const SystemToolbar: React.FC = () => {
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
-            text="Create a New System"
+            text="Create"
             icon="add"
             disabled={false}
             onClick={() => setModal('createsystem')}
             aria-label="createSystem"
           />
           <ToolbarButton
-            text="Delete a System"
+            text="Delete"
             icon="trash"
             disabled={false}
             onClick={() => setModal('deletesystem')}
             aria-label="deleteSystem"
           />
           <ToolbarButton
-            text="Re-Add a System"
+            text="Undelete"
             icon="add"
             disabled={false}
             onClick={() => setModal('undeletesystem')}

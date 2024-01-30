@@ -396,7 +396,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             aria-label="Submit"
             type="submit"
           >
-            Create a new system
+            Create
           </Button>
         </SubmitWrapper>
       }
