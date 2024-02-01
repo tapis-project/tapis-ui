@@ -19,10 +19,11 @@ const Layout: React.FC<JobDetailProps> = ({ jobUuid }) => {
   //   return <div>Error: {error.message}</div>;
   // }
 
-  if (error) {
-    console.error(error); // Log the error for debugging
-    return <div>Something went wrong. Please try again later.</div>;
-  }
+  // Use this block below to hide error message and only show in console
+  // if (error) {
+  //   console.error(error); // Log the error for debugging
+  //   return <div>Something went wrong. Please try again later.</div>;
+  // }
 
   const header = (
     <LayoutHeader type={"sub-header"}>
