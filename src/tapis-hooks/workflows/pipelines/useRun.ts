@@ -29,7 +29,11 @@ const useRun = () => {
     run: (
       params: RunPipelineHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Workflows.RespPipelineRun, Error, RunPipelineHookParams>
+      options?: MutateOptions<
+        Workflows.RespPipelineRun,
+        Error,
+        RunPipelineHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);
