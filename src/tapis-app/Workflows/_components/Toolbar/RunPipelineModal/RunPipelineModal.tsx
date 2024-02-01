@@ -85,7 +85,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
       {
         groupId,
         pipelineId,
-        reqRunPipeline: { params: modifiedParams, directives: [] },
+        reqRunPipeline: { args: modifiedParams },
       }
       // { onSuccess }
     );

@@ -6,13 +6,13 @@ const run = (
   basePath: string,
   jwt: string
 ) => {
-  const api: Workflows.EventsApi = apiGenerator<Workflows.EventsApi>(
+  const api: Workflows.PipelinesApi = apiGenerator<Workflows.PipelinesApi>(
     Workflows,
-    Workflows.EventsApi,
+    Workflows.PipelinesApi,
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespEvent>(() => api.runPipeline(params));
+  return errorDecoder<Workflows.RespPipelineRun>(() => api.runPipeline(params));
 };
 
 export default run;
