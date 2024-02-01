@@ -40,18 +40,18 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             color="primary"
             aria-label="Submit"
             type="submit"
-            onClick={onConfirm}
+            onClick={toggle}
           >
-            Confirm
+            Cancel
           </Button>
           <Button
             form="newsystem-form"
             color="primary"
             aria-label="Submit"
             type="submit"
-            onClick={toggle}
+            onClick={onConfirm}
           >
-            Cancel
+            Confirm
           </Button>
         </SubmitWrapper>
       }
