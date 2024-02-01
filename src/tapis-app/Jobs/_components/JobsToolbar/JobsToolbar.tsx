@@ -44,9 +44,6 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   const { pathname } = useLocation();
   const { isLoading, isError, isSuccess, error, cancel } = useCancel();
 
-  
-
-
   const toggle = () => {
     setModal(undefined);
   };
@@ -54,16 +51,16 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   return (
     <div id="file-operation-toolbar">
       {pathname && (
-        <div className={styles["toolbar-wrapper"]}>
+        <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
             text="Cancel Job"
             icon="trash"
             disabled={false}
-            onClick={() => setModal("ConfirmModal")}
+            onClick={() => setModal('ConfirmModal')}
             aria-label="createSystem"
           />
 
-          {modal === "ConfirmModal" && (
+          {modal === 'ConfirmModal' && (
             <ConfirmModal
               toggle={toggle}
               onConfirm={() => {

@@ -1,5 +1,5 @@
-import { Jobs } from "@tapis/tapis-typescript";
-import { apiGenerator, errorDecoder } from "tapis-api/utils";
+import { Jobs } from '@tapis/tapis-typescript';
+import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 export const cancel = (
   jobCancelReq: Jobs.CancelJobRequest,
@@ -12,9 +12,7 @@ export const cancel = (
     basePath,
     jwt
   );
-  return errorDecoder<Jobs.RespCancelJob>(() =>
-    api.cancelJob(jobCancelReq)
-  );
+  return errorDecoder<Jobs.RespCancelJob>(() => api.cancelJob(jobCancelReq));
 };
 
 export default cancel;
