@@ -14,7 +14,15 @@ const Layout: React.FC<JobDetailProps> = ({ jobUuid }) => {
   // eslint-disable-next-line
   const { data, isLoading, error } = useDetails(jobUuid);
 
-  if (error) {return <div>{error}</div>}
+  // Don't need the below because error message is already shown, as an error not as plain text like below would do
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
+
+  if (error) {
+    console.error(error); // Log the error for debugging
+    return <div>Something went wrong. Please try again later.</div>;
+  }
 
   const header = (
     <LayoutHeader type={"sub-header"}>
