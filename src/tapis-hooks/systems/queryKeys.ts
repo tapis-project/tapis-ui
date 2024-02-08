@@ -4,6 +4,8 @@ const QueryKeys = {
   listSchedulerProfiles: 'systems/listScehdulerProfiles',
   makeNewSystem: 'systems/makeNewSystem',
   deleteSystem: 'systems/deleteSystem',
+  shareSystemPublic: 'systems/shareSystemPublic',
+  unShareSystemPublic: 'systems/unShareSystemPublic',
 };
 
 export default QueryKeys;

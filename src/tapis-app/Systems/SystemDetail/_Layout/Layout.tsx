@@ -1,9 +1,13 @@
 import { SystemDetail } from 'tapis-ui/components/systems';
 import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
+import SystemLayoutToolbar from './SystemLayoutToolbar';
 
 const Layout: React.FC<{ systemId: string }> = ({ systemId }) => {
   const header = (
-    <LayoutHeader type={'sub-header'}>System Details</LayoutHeader>
+    <LayoutHeader type={'sub-header'}>
+      System Details
+      <SystemLayoutToolbar />
+    </LayoutHeader>
   );
 
   const body = (

@@ -5,3 +5,5 @@ export { default as useSchedulerProfiles } from './useSchedulerProfiles';
 export { default as useMakeNewSystem } from './useMakeNewSystem';
 export { default as useDeleteSystem } from './useDeleteSystem';
 export { default as useUndeleteSystem } from './useUndeleteSystem';
+export { default as useShareSystemPublic } from './useShareSystemPublic';
+export { default as useUnShareSystemPublic } from './useUnShareSystemPublic';
