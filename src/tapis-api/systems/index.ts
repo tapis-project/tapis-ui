@@ -4,3 +4,5 @@ export { default as listSchedulerProfiles } from './schedulerProfiles';
 export { default as makeNewSystem } from './makeNewSystem';
 export { default as deleteSystem } from './deleteSystem';
 export { default as undeleteSystem } from './undeleteSystem';
+export { default as shareSystemPublic } from './shareSystemPublic';
+export { default as unShareSystemPublic } from './unShareSystemPublic';
