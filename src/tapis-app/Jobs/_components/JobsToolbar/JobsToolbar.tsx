@@ -5,7 +5,7 @@ import styles from './JobsToolbar.module.scss';
 import { useLocation, useHistory } from 'react-router-dom';
 import ConfirmModal from 'tapis-ui/_common/ConfirmModal';
 import { useCancel, useDetails } from 'tapis-hooks/jobs';
-import { Jobs } from "@tapis/tapis-typescript";
+import { Jobs } from '@tapis/tapis-typescript';
 
 type ToolbarButtonProps = {
   text: string;
@@ -55,14 +55,14 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   const handleClickFiles = () => {
     if (job) {
       const path = `/files/${job.execSystemId}${job.execSystemOutputDir}`;
-      history.push(path); 
+      history.push(path);
     }
   };
 
   return (
     <div id="file-operation-toolbar">
       {pathname && (
-        <div className={styles["toolbar-wrapper"]}>
+        <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
             text="See Files"
             icon="copy"
@@ -74,11 +74,11 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
             text="Cancel Job"
             icon="trash"
             disabled={false}
-            onClick={() => setModal("ConfirmModal")}
+            onClick={() => setModal('ConfirmModal')}
             aria-label="createSystem"
           />
 
-          {modal === "ConfirmModal" && (
+          {modal === 'ConfirmModal' && (
             <ConfirmModal
               toggle={toggle}
               onConfirm={() => {
@@ -97,4 +97,3 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
 };
 
 export default JobsToolbar;
-
