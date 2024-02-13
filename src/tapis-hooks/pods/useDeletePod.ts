@@ -1,14 +1,14 @@
 import { useMutation, MutateOptions } from 'react-query';
-import { Systems } from '@tapis/tapis-typescript';
-import { deleteSystem } from '../../tapis-api/systems';
+import { Pods } from '@tapis/tapis-typescript';
+import { deletePod } from '../../tapis-api/pods';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-type DeleteSystemHookParams = {
-  systemId: string;
+type DeletePodHookParams = {
+  podId: string;
 };
 
-const useDeleteSystem = () => {
+const useDeletePod = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -17,9 +17,9 @@ const useDeleteSystem = () => {
   //
   // In this case, mkdir helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, DeleteSystemHookParams>(
-      [QueryKeys.deleteSystem, basePath, jwt],
-      ({ systemId }) => deleteSystem(systemId, basePath, jwt)
+    useMutation<Pods.DeletePodResponse, Error, DeletePodHookParams>(
+      [QueryKeys.deletePod, basePath, jwt],
+      ({ podId }) => deletePod(podId, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -30,15 +30,15 @@ const useDeleteSystem = () => {
     data,
     error,
     reset,
-    deleteSystem: (
-      systemId: string,
+    deletePod: (
+      podId: string,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Systems.RespBasic, Error, DeleteSystemHookParams>
+      options?: MutateOptions<Pods.DeletePodResponse, Error, DeletePodHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({ systemId }, options);
+      return mutate({ podId }, options);
     },
   };
 };
 
-export default useDeleteSystem;
+export default useDeletePod;

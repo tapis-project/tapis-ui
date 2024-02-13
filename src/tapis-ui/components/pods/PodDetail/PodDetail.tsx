@@ -1,23 +1,22 @@
 import React from 'react';
 import { useDetails } from 'tapis-hooks/pods';
-import { Systems } from '@tapis/tapis-typescript';
+import { Pods } from '@tapis/tapis-typescript';
 import { DescriptionList, Tabs, JSONDisplay } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
-const PodDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
+const PodDetail: React.FC<{ podId: string }> = ({ podId }) => {
   const { data, isLoading, error } = useDetails({
-    systemId,
-    select: 'allAttributes',
+    podId,
   });
-  const system: Systems.TapisSystem | undefined = data?.result;
+  const pod: Pods.PodResponseModel | undefined = data?.result;
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <h3>{system?.id}</h3>
-      {system && (
+      <h3>{pod?.pod_id}</h3>
+      {pod && (
         <Tabs
           tabs={{
-            Details: <DescriptionList data={system} />,
-            JSON: <JSONDisplay json={system} />,
+            Details: <DescriptionList data={pod} />,
+            JSON: <JSONDisplay json={pod} />,
           }}
         />
       )}

@@ -1,18 +1,14 @@
 import { Pods } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
-const details = (
-  params: Pods.GetPodRequest,
-  basePath: string,
-  jwt: string
-) => {
+const deletePod = (podId: string, basePath: string, jwt: string) => {
   const api: Pods.PodsApi = apiGenerator<Pods.PodsApi>(
     Pods,
     Pods.PodsApi,
     basePath,
     jwt
   );
-  return errorDecoder<Pods.PodResponse>(() => api.getPod(params));
+  return errorDecoder<Pods.DeletePodResponse>(() => api.deletePod({ podId }));
 };
 
-export default details;
+export default deletePod;

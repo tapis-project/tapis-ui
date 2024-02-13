@@ -49,3 +49,25 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Cgarcia Notes
 Fixtures mainly used for test inputs
+
+
+
+```
+  const { mutate, isLoading, isError, isSuccess, data, error, reset } =
+    useMutation<Pods.RespBasic, Error, DeletePodHookParams>(
+      [QueryKeys.deletePod, basePath, jwt],
+      ({ podId }) => deletePod(podId, basePath, jwt)
+    );
+```
+
+>Could you explain what this is? It this typescript notation? It's a variable equal to a function with items in <> and inputs in () with the running function after => ?
+
+Yes, you're correct! The code you provided is written in TypeScript, which is a statically typed superset of JavaScript. TypeScript allows you to add type annotations to your code, providing additional information about the types of variables, function parameters, and return values.
+
+In the code you shared, we have a variable declaration using destructuring assignment. The variable is named mutate and it is being assigned the value returned by the useMutation hook. The useMutation hook is a custom hook provided by a library or framework, commonly used in React applications.
+
+The useMutation hook takes three type parameters: Pods.RespBasic, Error, and DeletePodHookParams. These type parameters specify the expected types of the data, error, and parameters used by the hook.
+
+The hook also takes two arguments. The first argument is an array [QueryKeys.deletePod, basePath, jwt], which likely represents dependencies that trigger the hook to re-run when they change. The second argument is a function that will be called when the hook is executed. This function takes an object with a property podId as its parameter and returns the result of calling the deletePod function with the podId, basePath, and jwt as arguments.
+
+So, in summary, the code is using the useMutation hook to perform a mutation operation. It is destructuring the returned values into variables like mutate, isLoading, isError, etc. The hook is configured with type parameters and arguments, including a callback function that will be executed when the hook is triggered.

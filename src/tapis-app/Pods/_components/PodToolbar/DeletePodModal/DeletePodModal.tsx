@@ -5,7 +5,7 @@ import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../PodToolbar';
 import { Form, Formik } from 'formik';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useDeleteSystem, useList } from 'tapis-hooks/pods';
+import { useDeletePod, useList } from 'tapis-hooks/pods';
 import { useEffect, useCallback } from 'react';
 import styles from './DeletePodModal.module.scss';
 import * as Yup from 'yup';
@@ -29,7 +29,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [queryClient]);
 
   const { deleteSystem, isLoading, error, isSuccess, reset } =
-    useDeleteSystem();
+    useDeletePod();
 
   useEffect(() => {
     reset();

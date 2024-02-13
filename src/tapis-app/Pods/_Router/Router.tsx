@@ -5,7 +5,7 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-import SystemDetail from '../SystemDetail';
+import PodDetail from '../PodDetail';
 import { SectionMessage } from 'tapis-ui/_common';
 
 const Router: React.FC = () => {
@@ -15,18 +15,18 @@ const Router: React.FC = () => {
     <Switch>
       <Route path={`${path}`} exact>
         <SectionMessage type="info">
-          Select a system from the list.
+          Select a pod from the list.
         </SectionMessage>
       </Route>
 
       <Route
-        path={`${path}/:systemId`}
+        path={`${path}/:podId`}
         render={({
           match: {
-            params: { systemId },
+            params: { podId },
           },
-        }: RouteComponentProps<{ systemId: string }>) => (
-          <SystemDetail systemId={systemId} />
+        }: RouteComponentProps<{ podId: string }>) => (
+          <PodDetail podId={podId} />
         )}
       />
     </Switch>
