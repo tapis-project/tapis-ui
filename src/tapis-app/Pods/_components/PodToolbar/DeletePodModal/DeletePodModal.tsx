@@ -1,5 +1,5 @@
 import { Button } from 'reactstrap';
-import { Systems } from '@tapis/tapis-typescript';
+import { Pods } from '@tapis/tapis-typescript';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../PodToolbar';
@@ -20,15 +20,15 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     claims['sub'].lastIndexOf('@')
   );
   const { data } = useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
-  const systems: Array<Systems.TapisSystem> = data?.result ?? [];
+  const pods: Array<Pods.PodResponseModel> = data?.result ?? [];
 
-  //Allows the system list to update without the user having to refresh the page
+  //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
-  const { deleteSystem, isLoading, error, isSuccess, reset } =
+  const { deletePod, isLoading, error, isSuccess, reset } =
     useDeletePod();
 
   useEffect(() => {
@@ -36,21 +36,21 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [reset]);
 
   const validationSchema = Yup.object({
-    systemId: Yup.string(),
+    podId: Yup.string(),
   });
 
   const initialValues = {
-    systemId: '',
+    podId: '',
   };
 
-  const onSubmit = ({ systemId }: { systemId: string }) => {
-    deleteSystem(systemId, { onSuccess });
+  const onSubmit = ({ podId }: { podId: string }) => {
+    deletePod(podId, { onSuccess });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Delete System"
+      title="Delete Pod"
       body={
         <div className={styles['modal-settings']}>
           <Formik
@@ -59,23 +59,23 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             onSubmit={onSubmit}
           >
             {() => (
-              <Form id="newsystem-form">
+              <Form id="newpod-form">
                 <FormikSelect
-                  name="systemId"
-                  description="The system id"
-                  label="System ID"
+                  name="podId"
+                  description="The pod id"
+                  label="Pod ID"
                   required={true}
-                  data-testid="systemId"
+                  data-testid="podId"
                 >
                   <option disabled value={''}>
-                    Select a system to delete
+                    Select a pod to delete
                   </option>
-                  {systems.length ? (
-                    systems.map((system) => {
-                      return <option>{system.id}</option>;
+                  {pods.length ? (
+                    pods.map((pod) => {
+                      return <option>{pod.pod_id}</option>;
                     })
                   ) : (
-                    <i>No systems found</i>
+                    <i>No pods found</i>
                   )}
                 </FormikSelect>
               </Form>
@@ -88,17 +88,17 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully deleted a system` : ''}
+          success={isSuccess ? `Successfully deleted a pod` : ''}
           reverse={true}
         >
           <Button
-            form="newsystem-form"
+            form="newpod-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"
             type="submit"
           >
-            Delete system
+            Delete pod
           </Button>
         </SubmitWrapper>
       }
