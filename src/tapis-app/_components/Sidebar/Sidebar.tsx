@@ -33,6 +33,9 @@ const Sidebar: React.FC = () => {
             <NavItem to="/workflows" icon="publications">
               Workflows
             </NavItem>
+            <NavItem to="/ml-hub" icon="share">
+              ML Hub
+            </NavItem>
           </>
         )}
       </Navbar>
