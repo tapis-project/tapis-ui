@@ -45,6 +45,9 @@ const Router: React.FC = () => {
       <ProtectedRoute path="/workflows">
         <Workflows />
       </ProtectedRoute>
+      <ProtectedRoute path="/ml-hub">
+        {/* TODO: create ML Hub */}
+      </ProtectedRoute>
       <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
         <UIPatterns />
