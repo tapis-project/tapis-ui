@@ -27,7 +27,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <GenericModal
       toggle={toggle}
-      title={title || "Confirm"}
+      title={title || 'Confirm'}
       body={message || 'Are you sure you want to continue?'}
       footer={
         <SubmitWrapper

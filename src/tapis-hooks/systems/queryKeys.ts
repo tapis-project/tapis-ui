@@ -6,7 +6,7 @@ const QueryKeys = {
   deleteSystem: 'systems/deleteSystem',
   shareSystemPublic: 'systems/shareSystemPublic',
   unShareSystemPublic: 'systems/unShareSystemPublic',
-  createChildSystem: 'systems/createChildSystem'
+  createChildSystem: 'systems/createChildSystem',
 };
 
 export default QueryKeys;
