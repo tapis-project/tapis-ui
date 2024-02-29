@@ -5,6 +5,7 @@ import styles from './SystemLayoutToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import ShareSystemPublicModal from './ShareSystemPublicModal';
 import UnShareSystemPublicModal from './UnShareSystemPublicModal';
+import CreateChildSystemModal from './CreateChildSystemModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -64,12 +65,21 @@ const SystemLayoutToolbar: React.FC = () => {
             onClick={() => setModal('unsharesystempublic')}
             aria-label="unShareSystemPublic"
           />
-
+          <ToolbarButton
+            text="Create Child System"
+            icon="add"
+            disabled={false}
+            onClick={() => setModal('ConfirmModal-CreateChildSystem')}
+            aria-label="unShareSystemPublic"
+          />
           {modal === 'sharesystempublic' && (
             <ShareSystemPublicModal toggle={toggle} />
           )}
           {modal === 'unsharesystempublic' && (
             <UnShareSystemPublicModal toggle={toggle} />
+          )}
+          {modal === 'ConfirmModal-CreateChildSystem' && (
+            <CreateChildSystemModal toggle={toggle} />
           )}
         </div>
       )}

@@ -5,6 +5,7 @@ import { SubmitWrapper } from 'tapis-ui/_wrappers';
 
 type ConfirmModalProps = {
   toggle: () => void;
+  title?: string;
   message?: string;
   onConfirm: () => void;
   isLoading: boolean;
@@ -15,6 +16,7 @@ type ConfirmModalProps = {
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   toggle,
+  title,
   message,
   onConfirm,
   isLoading,
@@ -25,7 +27,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <GenericModal
       toggle={toggle}
-      title="Confirm"
+      title={title || 'Confirm'}
       body={message || 'Are you sure you want to continue?'}
       footer={
         <SubmitWrapper
