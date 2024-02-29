@@ -11,6 +11,7 @@ import Systems from '../Systems';
 import Files from '../Files';
 import Workflows from '../Workflows';
 import UIPatterns from '../UIPatterns';
+import Streams from '../Streams';
 
 const Router: React.FC = () => {
   const { logout } = useLogin();
@@ -47,6 +48,9 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute path="/ml-hub">
         {/* TODO: create ML Hub */}
+      </ProtectedRoute>
+      <ProtectedRoute path="/streams">
+        <Streams />
       </ProtectedRoute>
       <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
