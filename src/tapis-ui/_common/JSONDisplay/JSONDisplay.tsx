@@ -67,6 +67,9 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({ json, className }) => {
       ),
     [json, simplified]
   );
+  // Determine line length of JSON to set textarea rows. As that's prettier than a second scrollbar.
+  const lines = jsonString.split('\n');
+  const lineLengths = lines.length
   return (
     <div className={className}>
       <div className={styles.controls}>
@@ -82,7 +85,7 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({ json, className }) => {
         type="textarea"
         value={jsonString}
         className={styles.json}
-        rows="20"
+        rows={lineLengths}
         disabled={true}
       />
     </div>
