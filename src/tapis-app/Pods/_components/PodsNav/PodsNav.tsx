@@ -11,6 +11,7 @@ const PodsNav: React.FC = () => {
   const { data, isLoading, error } = useList();
   const definitions: Array<Pods.PodResponseModel> = data?.result ?? [];
 
+  // Display returns upper case first letter, lower case rest for the pod.status
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Navbar>
@@ -21,7 +22,7 @@ const PodsNav: React.FC = () => {
               icon="visualization"
               key={pod.pod_id}
             >
-              {`${pod.pod_id}`} 
+                {`${pod.pod_id} - ${pod.status?.charAt(0)}${pod.status?.slice(1).toLowerCase()}`}
             </NavItem>
           ))
         ) : (

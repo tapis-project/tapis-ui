@@ -2,39 +2,183 @@ import { Button, Input, FormGroup, Label } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../PodToolbar';
-import { Form, Formik } from 'formik';
-import { FormikInput } from 'tapis-ui/_common';
+import { Form, Formik, FieldArray } from 'formik';
+import { FormikInput, Collapse, FieldWrapper, Icon } from 'tapis-ui/_common';
 import { FormikSelect, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useMakeNewSystem } from 'tapis-hooks/pods';
+import { useMakeNewPod } from 'tapis-hooks/pods';
 import { useEffect, useCallback, useState } from 'react';
 import styles from './CreatePodModal.module.scss';
 import * as Yup from 'yup';
-import {
-  SystemTypeEnum,
-  AuthnEnum,
-  RuntimeTypeEnum,
-  SchedulerTypeEnum,
-  LogicalQueue,
-  Capability,
-  KeyValuePair,
-} from '@tapis/tapis-typescript-systems';
 import { useQueryClient } from 'react-query';
 import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
-import AdvancedSettings from './Settings/AdvancedSettings';
+import { Pods } from '@tapis/tapis-typescript';
+
+
+
+export enum PodProtocolEnum {
+  http = "http",
+  tcp = "tcp",
+  postgres = "postgres",
+  local_only = "local_only"
+}
+
+export enum PodVolumeEnum {
+  tapisvolume = "tapisvolume",
+  tapissnapshot = "tapissnapshot",
+  pvc = "pvc"
+}
 
 //Arrays that are used in the drop-down menus
-const systemTypes = Object.values(SystemTypeEnum);
-const authnMethods = Object.values(AuthnEnum);
+const podProtocols = Object.values(PodProtocolEnum);
+const podVolumeTypes = Object.values(PodVolumeEnum);
+
+
+const EnvVarValueSource: React.FC<{ index: number }> = ({ index }) => {
+  return (
+    <div id={`env-value-source-${index}`} className={styles['grid-2']}>
+      <div >
+        <FormikInput
+          id={`environment_variables.${index}.id`}
+          name={`environment_variables.${index}.id`}
+          label="key"
+          required={true}
+          description={`ex. _MY_VAR, var3, VAR`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+      <div>
+        <FormikInput
+          id={`environment_variables.${index}.value`}
+          name={`environment_variables.${index}.value`}
+          label="value"
+          required={false}
+          description={`ex. 123, test, my-value`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+    </div>
+  );
+};
+
+const NetworkingValueSource: React.FC<{ index: number }> = ({ index }) => {
+  return (
+    <div id={`networking-value-source-${index}`} className={styles['grid-3']}>
+      <div >
+        <FormikInput
+          id={`networking.${index}.id`}
+          name={`networking.${index}.id`}
+          label="key"
+          required={true}
+          description={`default sets main url`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+      <div>
+        <FormikSelect
+          id={`networking.${index}.protocol`}
+          name={`networking.${index}.protocol`}
+          label="protocol"
+          required={true}
+          description={`network protocol`}
+          aria-label="Input"
+          value=""
+        >
+        <option disabled value={''}>
+          Select a network protocol
+        </option>
+        {podProtocols.map((values) => {
+          return <option>{values}</option>;
+        })}
+        </FormikSelect>
+      </div>
+      <div>
+        <FormikInput
+          id={`networking.${index}.port`}
+          name={`networking.${index}.port`}
+          label="port"
+          required={true}
+          description={`port to route`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+    </div>
+  );
+};
+
+
+const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
+  return (
+    <div id={`volume_mounts-value-source-${index}`} className={styles['grid-half']}>
+      <div >
+        <FormikInput
+          id={`volume_mounts.${index}.id`}
+          name={`volume_mounts.${index}.id`}
+          label="id"
+          required={true}
+          description={`Name of tapisvolume/snapshot; unique name for pvc`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+      <div>
+        <FormikSelect
+          id={`volume_mounts.${index}.type`}
+          name={`volume_mounts.${index}.type`}
+          label="type"
+          required={true}
+          description={`Volume type to use`}
+          aria-label="Input"
+          value=""
+        >
+        <option disabled value={''}>
+          Select a volume type
+        </option>
+        {podVolumeTypes.map((values) => {
+          return <option>{values}</option>;
+        })}
+        </FormikSelect>
+      </div>
+      <div>
+        <FormikInput
+          id={`volume_mounts.${index}.mount_path`}
+          name={`volume_mounts.${index}.mount_path`}
+          label="mount_path"
+          required={false}
+          description={`Path to mount volume in pod`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+      <div>
+        <FormikInput
+          id={`volume_mounts.${index}.sub_path`}
+          name={`volume_mounts.${index}.sub_path`}
+          label="sub_path"
+          required={false}
+          description={`Path from volume to mount`}
+          aria-label="Input"
+          value=""
+        />
+      </div>
+    </div>
+  );
+};
+
+
 
 const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  //Allows the system list to update without the user having to refresh the page
+  //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
-  const { makeNewSystem, isLoading, error, isSuccess, reset } =
-    useMakeNewSystem();
+  const { makeNewPod, isLoading, error, isSuccess, reset } =
+    useMakeNewPod();
 
   useEffect(() => {
     reset();
@@ -46,255 +190,221 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
 
+
   const validationSchema = Yup.object({
-    sysname: Yup.string()
+    pod_id: Yup.string()
       .min(1)
-      .max(80, 'System name should not be longer than 80 characters')
+      .max(80, 'Pod id should not be longer than 80 characters')
       .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
+        /^[a-z0-9]+$/,
+        "Must contain only lowercase alphanumeric characters"
       )
-      .required('System name is a required field'),
-    description: Yup.string().max(
-      2048,
-      'Description schould not be longer than 2048 characters'
-    ),
-    host: Yup.string()
+      .required('Pod ID is a required field'),
+    pod_template: Yup.string()
       .min(1)
-      .max(256, 'Host name should not be longer than 256 characters')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      )
-      .required('Host name is a required field'),
-    rootDir: Yup.string()
+      .max(128, 'Pod Template should not be longer than 128 characters')
+      .required("Pod Template is a required field"),
+    description: Yup.string()
       .min(1)
-      .max(4096, 'Root Directory should not be longer than 4096 characters'),
-    jobWorkingDir: Yup.string()
-      .min(1)
-      .max(
-        4096,
-        'Job Working Directory should not be longer than 4096 characters'
-      ),
-    effectiveUserId: Yup.string().max(
-      60,
-      'Effective User ID should not be longer than 60 characters'
+      .max(2048, 'Description should not be longer than 2048 characters'),
+    command: Yup.array().of(
+      Yup.string())
+        .min(1)
+        .max(128, 'Pod Template should not be longer than 128 characters'),
+    environment_variables: Yup.array().of(
+      Yup.object({
+        id: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters')
+          .required('id is a required field'),
+        value: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters')
+          .required('value is a required field'),
+      })
     ),
-    batchSchedulerProfile: Yup.string().max(
-      80,
-      'Batch Scheduler Profile should not be longer than 80 characters'
+    volume_mounts: Yup.array().of(
+      Yup.object({
+        id: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters')
+          .required('id is a required field'),
+        type: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters')
+          .required('type is a required field'),
+        mount_path: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters')
+          .required('mount_path is a required field'),
+        sub_path: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters'),
+      })
     ),
-    batchDefaultLogicalQueue: Yup.string().max(
-      128,
-      'Batch Default Logical Queue should not be longer than 128 characters'
+    networking: Yup.array().of(
+      Yup.object({
+        id: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters'),
+        protocol: Yup.string()
+          .min(1)
+          .max(128, 'Pod Template should not be longer than 128 characters'),
+        port: Yup.number()
+          .min(1000)
+          .max(99999, 'Port must be between 1000 and 99999'),
+      })
     ),
-    proxyHost: Yup.string().max(
-      256,
-      'Proxy Host should not be longer than 256 characters'
-    ),
-    dtnSystemId: Yup.string().max(
-      80,
-      'DTN System ID should not be longer than 80 characters'
-    ),
-    mpiCmd: Yup.string().max(
-      126,
-      'mpiCmd should not be longer than 126 characters'
-    ),
+    resources: Yup.object({
+      cpu_request: Yup.string()
+        .min(1)
+        .max(128, 'Pod Template should not be longer than 128 characters'),
+      cpu_limit: Yup.string()
+        .min(1)
+        .max(128, 'Pod Template should not be longer than 128 characters'),
+      mem_request: Yup.string()
+        .min(1)
+        .max(128, 'Pod Template should not be longer than 128 characters'),
+      mem_limit: Yup.string()
+        .min(1)
+        .max(128, 'Pod Template should not be longer than 128 characters'),
+      gpus: Yup.string()
+        .min(1)
+        .max(128, 'Pod Template should not be longer than 128 characters'),
+    })
   });
 
+
   const initialValues = {
-    sysname: '',
+    pod_id: '',
     description: undefined,
-    systemType: SystemTypeEnum.Linux,
-    host: 'stampede2.tacc.utexas.edu',
-    defaultAuthnMethod: AuthnEnum.Password,
-    canExec: true,
-    rootDir: '/',
-    jobRuntimes: RuntimeTypeEnum.Singularity,
-    version: undefined,
-    effectiveUserId: undefined, //default =  ${apiUserId}
-    bucketName: undefined,
+    command: undefined,
+    pod_template: '',
+    time_to_stop_default: 43200,
+    time_to_stop_instance: undefined,
+    environment_variables: [],
+    networking: [],
+    volume_mounts: [],
+    resources: {
+      cpu_request: 250,
+      cpu_limit: 2000,
+      mem_request: 256,
+      mem_limit: 3072,
+      gpus: 0,
+    },
+  };
+  
+  /// Environment Variables area
+  //////////////////////////////
+  type EnvVarType = {
+    id: string;
+    value: string;
+  };  
 
-    //batch
-    canRunBatch: true,
-    batchScheduler: SchedulerTypeEnum.Slurm,
-    batchSchedulerProfile: 'tacc',
-    batchDefaultLogicalQueue: 'tapisNormal',
-
-    batchLogicalQueues: [
-      {
-        name: 'tapisNormal',
-        hpcQueueName: 'normal',
-        maxJobs: 50,
-        maxJobsPerUser: 10,
-        minNodeCount: 1,
-        maxNodeCount: 16,
-        minCoresPerNode: 1,
-        maxCoresPerNode: 68,
-        minMemoryMB: 1,
-        maxMemoryMB: 16384,
-        minMinutes: 1,
-        maxMinutes: 60,
-      },
-    ],
-
-    //proxy
-    useProxy: false,
-    proxyHost: undefined,
-    proxyPort: 0,
-
-    //dtn
-    isDtn: false,
-    dtnSystemId: undefined,
-    dtnMountPoint: undefined,
-    dtnMountSourcePath: undefined,
-
-    //cmd
-    enableCmdPrefix: false,
-    mpiCmd: undefined,
-
-    jobWorkingDir: 'HOST_EVAL($SCRATCH)',
-    jobMaxJobs: undefined,
-    jobMaxJobsPerUser: undefined,
-    jobCapabilities: [],
-    jobEnvVariables: [],
-
-    tags: [],
+  type EnvVarsTransformFn = (envVars: Array<EnvVarType>) => {
+    [key: string]: string;
   };
 
+  const envVarsArrayToInputObject: EnvVarsTransformFn = (envVars) => {
+    const env: { [key: string]: string } = {};
+    envVars.forEach((envVar) => {
+      env[envVar.id] = envVar.value;
+    });
+    console.log(env);
+    return env;
+  };
+ 
+
+  /// Networking area
+  ///////////////////
+  type NetworkingType = {
+    id: string;
+    protocol: PodProtocolEnum
+    port: string;
+  };  
+
+  type NetworkingTransformFn = (envVars: Array<NetworkingType>) => {
+    [key: string]: object;
+  };
+
+  const networkingArrayToInputObject: NetworkingTransformFn = (envVars) => {
+    const env: { [key: string]: object } = {};
+    envVars.forEach((envVar) => {
+      env[envVar.id] = {
+        protocol: envVar.protocol,
+        port: envVar.port,
+      };      
+        
+    });
+    console.log(env);
+    return env;
+  };
+
+  /// Volume Mounts area
+  ///////////////////
+  type VolumeMountsType = {
+    id: string;
+    type: PodProtocolEnum;
+    mount_path: string;
+    sub_path: string;
+  };  
+
+  type volumeMountsTransformFn = (volumes: Array<VolumeMountsType>) => {
+    [key: string]: object;
+  };
+
+  const volume_mountsArrayToInputObject: volumeMountsTransformFn = (volumes) => {
+    const formatted_volumes: { [key: string]: object } = {};
+    volumes.forEach((volume) => {
+      formatted_volumes[volume.id] = {
+        type: volume.type,
+        mount_path: volume.mount_path,
+        sub_path: volume.sub_path,
+      };      
+        
+    });
+    console.log(formatted_volumes);
+    return formatted_volumes;
+  };
+
+  /// onSubmit is made up of an object X properties. I destructure the object, allowing me to select properties from the object in my function, after =>.
   const onSubmit = ({
-    sysname,
+    pod_id,
     description,
-    systemType,
-    host,
-    defaultAuthnMethod,
-    canExec,
-    rootDir,
-    jobWorkingDir,
-    jobRuntimes,
-    version,
-    effectiveUserId,
-    bucketName,
-
-    //batch
-    canRunBatch,
-    batchScheduler,
-    batchSchedulerProfile,
-    batchDefaultLogicalQueue,
-    batchLogicalQueues,
-
-    //proxy
-    useProxy,
-    proxyHost,
-    proxyPort,
-
-    //dtn
-    isDtn,
-    dtnSystemId,
-    dtnMountPoint,
-    dtnMountSourcePath,
-
-    //cmd
-    enableCmdPrefix,
-    mpiCmd,
-
-    jobMaxJobs,
-    jobMaxJobsPerUser,
-    jobCapabilities,
-    jobEnvVariables,
-
-    tags,
+    command,
+    pod_template,
+    time_to_stop_default,
+    time_to_stop_instance,
+    environment_variables,
+    networking,
+    volume_mounts,
+    resources
   }: {
-    sysname: string;
+    pod_id: string;
     description: string | undefined;
-    systemType: SystemTypeEnum;
-    host: string;
-    defaultAuthnMethod: AuthnEnum;
-    canExec: boolean;
-    rootDir: string;
-    jobWorkingDir: string;
-    jobRuntimes: RuntimeTypeEnum;
-    version: string | undefined;
-    effectiveUserId: string | undefined;
-    bucketName: string | undefined;
-
-    //batch
-    canRunBatch: boolean;
-    batchScheduler: SchedulerTypeEnum;
-    batchSchedulerProfile: string;
-    batchDefaultLogicalQueue: string;
-    batchLogicalQueues: Array<LogicalQueue>;
-
-    //proxy
-    useProxy: boolean;
-    proxyHost: string | undefined;
-    proxyPort: number;
-
-    //dtn
-    isDtn: boolean;
-    dtnSystemId: string | undefined;
-    dtnMountPoint: string | undefined;
-    dtnMountSourcePath: string | undefined;
-
-    //cmd
-    enableCmdPrefix: boolean;
-    mpiCmd: string | undefined;
-
-    jobMaxJobs: number | undefined;
-    jobMaxJobsPerUser: number | undefined;
-    jobCapabilities: Array<Capability>;
-    jobEnvVariables: Array<KeyValuePair>;
-
-    tags: Array<string> | undefined;
+    command: string | undefined;
+    pod_template: string;
+    time_to_stop_default: number | undefined;
+    time_to_stop_instance: number | undefined;
+    environment_variables: Array<EnvVarType>;
+    networking: Array<NetworkingType>;
+    volume_mounts: Array<VolumeMountsType>;
+    resources: { cpu_request: number, cpu_limit: number, mem_request: number, mem_limit: number, gpus: number };
   }) => {
-    //Converting the string into a boolean value
-    const jobRuntimesArray = [{ runtimeType: jobRuntimes, version }];
 
-    makeNewSystem(
+    makeNewPod(
       {
-        id: sysname,
+        pod_id: pod_id,
         description,
-        systemType,
-        host,
-        defaultAuthnMethod,
-        canExec,
-        rootDir,
-        jobWorkingDir,
-        jobRuntimes: jobRuntimesArray,
-        effectiveUserId,
-        bucketName,
-
-        //batch
-        canRunBatch,
-        batchScheduler,
-        batchSchedulerProfile,
-        batchDefaultLogicalQueue,
-        batchLogicalQueues,
-
-        //proxy
-        useProxy,
-        proxyHost,
-        proxyPort,
-
-        //dtn
-        isDtn,
-        dtnSystemId,
-        dtnMountPoint,
-        dtnMountSourcePath,
-
-        //cmd
-        // enableCmdPrefix,
-        // mpiCmd,
-
-        jobMaxJobs,
-        jobMaxJobsPerUser,
-        jobCapabilities,
-        jobEnvVariables,
-
-        tags,
+        command: command ? JSON.parse((command)) : undefined,
+        pod_template: pod_template,
+        time_to_stop_default: time_to_stop_default,
+        time_to_stop_instance: time_to_stop_instance,
+        environment_variables: envVarsArrayToInputObject(environment_variables),
+        networking: networkingArrayToInputObject(networking),
+        volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
+        resources: resources
       },
-      true,
-      { onSuccess }
     );
   };
 
@@ -308,76 +418,233 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
-          >
-            {() => (
-              <Form id="newsystem-form">
-                <FormGroup check>
-                  <Label check size="sm" className={`form-field__label`}>
-                    <Input type="checkbox" onChange={onChange} />
-                    Advanced Settings
-                  </Label>
-                </FormGroup>
+            render={({ values }) => (
+              <Form id="newpod-form">
                 <FormikInput
-                  name="sysname"
-                  label="System Name"
+                  name="pod_id"
+                  label="Pod ID"
                   required={true}
-                  description={`System name`}
+                  description={`Pod ID, unique per-tenant, lowercase alpha-numeric`}
                   aria-label="Input"
+                />
+                <FormikInput
+                  name="pod_template"
+                  description="Template/Docker image to use, must be on allowlist. ex. mongo:6.0"
+                  label="Pod Template"
+                  required={true}
+                  data-testid="pod_template"
                 />
                 <FormikInput
                   name="description"
                   label="Description"
                   required={false}
-                  description={`System description`}
+                  description={`Pod Description`}
                   aria-label="Input"
                 />
-                <FormikSelect
-                  name="systemType"
-                  description="The system type"
-                  label="System Type"
-                  required={true}
-                  data-testid="systemType"
-                >
-                  <option disabled value={''}>
-                    Select a system type
-                  </option>
-                  {systemTypes.map((values) => {
-                    return <option>{values}</option>;
-                  })}
-                </FormikSelect>
-                <FormikInput
-                  name="host"
-                  label="Host"
-                  required={true}
-                  description={`Host of the system`}
-                  aria-label="Input"
-                />
-                <FormikSelect
-                  name="defaultAuthnMethod"
-                  description="Authentication method for the system"
-                  label="Default Authentication Method"
-                  required={true}
-                  data-testid="defaultAuthnMethod"
-                >
-                  <option disabled value="">
-                    Select a default athenication method
-                  </option>
-                  {authnMethods.map((values) => {
-                    return <option>{values}</option>;
-                  })}
-                </FormikSelect>
-                {true ? (
-                  <FormikCheck
-                    name="canExec"
-                    required={true}
-                    label="Can Execute"
-                    description={'Decides if the system can execute'}
+                <Collapse title="Advanced">
+                  <FormikInput
+                    name="command"
+                    label="Command"
+                    required={false}
+                    description={`Pod Command - Overwrites docker image. ex. ["sleep", "5000"]`}
+                    aria-label="Input"
                   />
-                ) : null}
+                  <FormikInput
+                    name="time_to_stop_default"
+                    label="Time To Stop - Default"
+                    required={false}
+                    description={`Default TTS - Seconds until pod is stopped, set each time pod is started`}
+                    aria-label="Input"
+                  />
+                  <FormikInput
+                    name="time_to_stop_instance"
+                    label="Time To Stop - Instance"
+                    required={false}
+                    description={`Instance TTS - Seconds until pod is stopped, for only current "run"`}
+                    aria-label="Input"
+                  />
 
-                <AdvancedSettings simplified={simplified} />
+                </Collapse>
+                <Collapse title="Environment Variables">
+                  <FieldArray
+                    name="environment_variables"
+                    render={(arrayHelpers) => (
+                      <div>
+                        <div className={styles['key-val-env-vars']}>
+                          {values.environment_variables &&
+                            values.environment_variables.length > 0 &&
+                            values.environment_variables.map((_, i) => (
+                              <div
+                                key={i}
+                                className={styles['key-val-env-var']}
+                              >
+                                <EnvVarValueSource
+                                  index={i}
+                                />
+                                <Button
+                                  className={styles['remove-button']}
+                                  type="button"
+                                  color="danger"
+                                  disabled={false}
+                                  onClick={() => arrayHelpers.remove(i)}
+                                  size="sm"
+                                >
+                                  <Icon name="trash" />
+                                </Button>
+                              </div>
+                            ))}
+                        </div>
+                        <Button
+                          type="button"
+                          className={styles['add-button']}
+                          onClick={() => {
+                            arrayHelpers.push({});
+                          }}
+                        >
+                          + Add "environment_variable" object
+                        </Button>
+                      </div>
+                    )}
+                  />
+                </Collapse>
+
+                <Collapse title="Networking">
+                  <FieldArray
+                    name="networking"
+                    render={(arrayHelpers) => (
+                      <div>
+                        <div className={styles['key-val-env-vars']}>
+                          {values.networking &&
+                            values.networking.length > 0 &&
+                            values.networking.map((_, i) => (
+                              <div
+                                key={i}
+                                className={styles['key-val-env-var']}
+                              >
+                                <NetworkingValueSource
+                                  index={i}
+                                />
+                                <Button
+                                  className={styles['remove-button']}
+                                  type="button"
+                                  color="danger"
+                                  disabled={false}
+                                  onClick={() => arrayHelpers.remove(i)}
+                                  size="sm"
+                                >
+                                  <Icon name="trash" />
+                                </Button>
+                              </div>
+                            ))}
+                        </div>
+                        <Button
+                          type="button"
+                          className={styles['add-button']}
+                          onClick={() => {
+                            arrayHelpers.push({
+                              id: 'default',
+                              protocol: 'http',
+                              port: '5000',
+                            });
+                          }}
+                        >
+                          + Add "networking" object
+                        </Button>
+                      </div>
+                    )}
+                  />
+                </Collapse>
+
+                <Collapse title="Volume Mounts">
+                  <FieldArray
+                    name="volume_mounts"
+                    render={(arrayHelpers) => (
+                      <div>
+                        <div className={styles['key-val-env-vars']}>
+                          {values.volume_mounts &&
+                            values.volume_mounts.length > 0 &&
+                            values.volume_mounts.map((_, i) => (
+                              <div
+                                key={i}
+                                className={styles['key-val-env-var']}
+                              >
+                                <VolumeMountsValueSource
+                                  index={i}
+                                />
+                                <Button
+                                  className={styles['remove-button']}
+                                  type="button"
+                                  color="danger"
+                                  disabled={false}
+                                  onClick={() => arrayHelpers.remove(i)}
+                                  size="sm"
+                                >
+                                  <Icon name="trash" />
+                                </Button>
+                              </div>
+                            ))}
+                        </div>
+                        <Button
+                          type="button"
+                          className={styles['add-button']}
+                          onClick={() => {
+                            arrayHelpers.push({
+                              id: '',
+                              type: 'tapisvolume',
+                              mount_path: '/tapis_volume_mount',
+                              sub_path: '',
+                            });
+                          }}
+                        >
+                          + Add "volume" object
+                        </Button>
+                      </div>
+                    )}
+                  />
+                </Collapse>
+
+                <Collapse title="Compute Resources">
+                  <div id={`compute_resources`} className={styles['grid-5']}>
+                    <FormikInput
+                      name="resources.cpu_limit"
+                      label="cpu_limit"
+                      required={false}
+                      description={'millicpus'}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="resources.cpu_request"
+                      label="cpu_request"
+                      required={false}
+                      description={'millicpus'}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="resources.mem_limit"
+                      label="mem_limit"
+                      required={false}
+                      description={'megabytes'}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="resources.mem_request"
+                      label="mem_request"
+                      required={false}
+                      description={'megabytes'}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="resources.gpus"
+                      label="gpus"
+                      required={false}
+                      description={'integers'}
+                      aria-label="Input"
+                    />
+                  </div>
+                </Collapse>
               </Form>
             )}
+            >
           </Formik>
         </div>
       }
@@ -386,11 +653,11 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully created a new system` : ''}
+          success={isSuccess ? `Successfully created a new pod` : ''}
           reverse={true}
         >
           <Button
-            form="newsystem-form"
+            form="newpod-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"

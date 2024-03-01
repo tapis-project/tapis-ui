@@ -1,15 +1,14 @@
 import { useMutation, MutateOptions } from 'react-query';
-import { Systems } from '@tapis/tapis-typescript';
-import { makeNewSystem } from '../../tapis-api/systems';
+import { Pods } from '@tapis/tapis-typescript';
+import { makeNewPod } from '../../tapis-api/pods';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-type MkNewSystemHookParams = {
-  reqPostSystem: Systems.ReqPostSystem;
-  skipCredentialCheck: boolean;
+type MkNewPodHookParams = {
+  newPod: Pods.NewPod;
 };
 
-const useMakeNewSystem = () => {
+const useMakeNewPod = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -18,10 +17,10 @@ const useMakeNewSystem = () => {
   //
   // In this case, mkdir helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, MkNewSystemHookParams>(
-      [QueryKeys.makeNewSystem, basePath, jwt],
-      ({ reqPostSystem, skipCredentialCheck }) =>
-        makeNewSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
+    useMutation<Pods.PodResponse, Error, MkNewPodHookParams>(
+      [QueryKeys.makeNewPod, basePath, jwt],
+      ({ newPod }) =>
+        makeNewPod({ newPod }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -32,16 +31,15 @@ const useMakeNewSystem = () => {
     data,
     error,
     reset,
-    makeNewSystem: (
-      reqPostSystem: Systems.ReqPostSystem,
-      skipCredentialCheck: boolean = true,
+    makeNewPod: (
+      newPod: Pods.NewPod,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Systems.RespBasic, Error, MkNewSystemHookParams>
+      options?: MutateOptions<Pods.PodResponse, Error, MkNewPodHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({ reqPostSystem, skipCredentialCheck }, options);
+      return mutate({ newPod }, options);
     },
   };
 };
 
-export default useMakeNewSystem;
+export default useMakeNewPod;

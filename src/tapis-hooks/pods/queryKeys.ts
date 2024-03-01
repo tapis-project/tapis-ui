@@ -1,7 +1,7 @@
 const QueryKeys = {
   list: 'pods/list',
   details: 'pods/details',
-  makeNewSystem: 'pods/makeNewSystem',
+  makeNewPod: 'pods/makeNewPod',
   deletePod: 'pods/deletePod',
 };
 
