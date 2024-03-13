@@ -1,30 +1,13 @@
-import { Systems } from '@tapis/tapis-typescript';
+import { Pods } from '@tapis/tapis-typescript';
 
-export const dockerRuntime: Systems.JobRuntime = {
-  runtimeType: Systems.RuntimeTypeEnum.Docker,
-  version: '0.0.1',
-};
-
-export const singularityRuntime: Systems.JobRuntime = {
-  runtimeType: Systems.RuntimeTypeEnum.Singularity,
-  version: '0.0.1',
-};
-
-export const jobRuntimes: Array<Systems.JobRuntime> = [
-  { ...dockerRuntime },
-  { ...singularityRuntime },
-];
-
-export const tapisSystem: Systems.TapisSystem = {
+export const tapisSystem = {
   tenant: 'tacc',
   id: 'testuser2.execution',
   description: 'Tapis v3 execution system - patched',
-  systemType: Systems.SystemTypeEnum.Linux,
   owner: 'nathandf',
   host: '129.114.17.113',
   enabled: true,
   effectiveUserId: 'testuser2',
-  defaultAuthnMethod: Systems.AuthnEnum.PkiKeys,
   authnCredential: undefined,
   bucketName: undefined,
   rootDir: '/home/testuser2/prod/',
@@ -38,12 +21,10 @@ export const tapisSystem: Systems.TapisSystem = {
   isDtn: false,
   canExec: true,
   canRunBatch: true,
-  jobRuntimes: jobRuntimes,
   jobWorkingDir: 'work',
   jobEnvVariables: [],
   jobMaxJobs: 2147483647,
   jobMaxJobsPerUser: 2147483647,
-  batchScheduler: Systems.SchedulerTypeEnum.Slurm,
   batchLogicalQueues: [
     {
       name: 'tapisNormal',

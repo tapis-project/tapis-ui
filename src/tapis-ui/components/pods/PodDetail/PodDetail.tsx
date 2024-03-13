@@ -15,8 +15,8 @@ const PodDetail: React.FC<{ podId: string }> = ({ podId }) => {
       {pod && (
         <Tabs
           tabs={{
-            Details: <DescriptionList data={pod} />,
             JSON: <JSONDisplay json={pod} />,
+            Details: <DescriptionList data={pod} />,
           }}
         />
       )}
