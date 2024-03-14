@@ -1,17 +1,17 @@
-import { Button, Input, FormGroup, Label } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { GenericModal } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../PodToolbar';
 import { Form, Formik, FieldArray } from 'formik';
-import { FormikInput, Collapse, FieldWrapper, Icon } from 'tapis-ui/_common';
-import { FormikSelect, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput, Collapse, Icon } from 'tapis-ui/_common';
+import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { useMakeNewPod } from 'tapis-hooks/pods';
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback } from 'react'; //useState
 import styles from './CreatePodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
-import { Pods } from '@tapis/tapis-typescript';
+//import { Pods } from '@tapis/tapis-typescript';
 
 
 
@@ -185,10 +185,10 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [reset]);
 
   //used for the advanced checkbox
-  const [simplified, setSimplified] = useState(false);
-  const onChange = useCallback(() => {
-    setSimplified(!simplified);
-  }, [setSimplified, simplified]);
+  // const [simplified, setSimplified] = useState(false);
+  // const onChange = useCallback(() => {
+  //   setSimplified(!simplified);
+  // }, [setSimplified, simplified]);
 
 
   const validationSchema = Yup.object({
@@ -405,6 +405,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
         resources: resources
       },
+      { onSuccess }
     );
   };
 
