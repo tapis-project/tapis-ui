@@ -1,5 +1,3 @@
-//import { Pods } from '@tapis/tapis-typescript';
-
 export const tapisPod = {
   pod_id: 'testpod2',
   pod_template: 'template/postgres',

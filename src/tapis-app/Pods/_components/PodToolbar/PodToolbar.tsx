@@ -54,19 +54,19 @@ const PodToolbar: React.FC = () => {
             text="Create"
             icon="add"
             disabled={false}
-            onClick={() => setModal('createsystem')}
-            aria-label="createSystem"
+            onClick={() => setModal('createpod')}
+            aria-label="createPod"
           />
           <ToolbarButton
             text="Delete"
             icon="trash"
             disabled={false}
-            onClick={() => setModal('deletesystem')}
-            aria-label="deleteSystem"
+            onClick={() => setModal('deletepod')}
+            aria-label="deletePod"
           />
 
-          {modal === 'createsystem' && <CreatePodModal toggle={toggle} />}
-          {modal === 'deletesystem' && <DeletePodModal toggle={toggle} />}
+          {modal === 'createpod' && <CreatePodModal toggle={toggle} />}
+          {modal === 'deletepod' && <DeletePodModal toggle={toggle} />}
         </div>
       )}
     </div>
