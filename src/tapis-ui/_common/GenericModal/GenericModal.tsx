@@ -17,7 +17,13 @@ const GenericModal: React.FC<GenericModalProps> = ({
   ...props
 }) => {
   return (
-    <Modal backdrop="static" keyboard={true} isOpen={true} toggle={toggle} {...props}>
+    <Modal
+      backdrop="static"
+      keyboard={true}
+      isOpen={true}
+      toggle={toggle}
+      {...props}
+    >
       <ModalHeader toggle={toggle} charCode="&#x2715;">
         <span>{title}</span>
       </ModalHeader>

@@ -7,8 +7,6 @@ import { tapisPod } from 'fixtures/pods.fixtures';
 
 jest.mock('tapis-hooks/pods');
 
-
-
 // These tests are not yet implemented for pods.
 // They're from Systems, no use in pods, yet.
 describe('Pod Listing', () => {

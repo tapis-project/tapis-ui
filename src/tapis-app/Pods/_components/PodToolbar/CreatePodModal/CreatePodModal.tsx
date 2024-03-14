@@ -13,30 +13,27 @@ import { useQueryClient } from 'react-query';
 import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
 //import { Pods } from '@tapis/tapis-typescript';
 
-
-
 export enum PodProtocolEnum {
-  http = "http",
-  tcp = "tcp",
-  postgres = "postgres",
-  local_only = "local_only"
+  http = 'http',
+  tcp = 'tcp',
+  postgres = 'postgres',
+  local_only = 'local_only',
 }
 
 export enum PodVolumeEnum {
-  tapisvolume = "tapisvolume",
-  tapissnapshot = "tapissnapshot",
-  pvc = "pvc"
+  tapisvolume = 'tapisvolume',
+  tapissnapshot = 'tapissnapshot',
+  pvc = 'pvc',
 }
 
 //Arrays that are used in the drop-down menus
 const podProtocols = Object.values(PodProtocolEnum);
 const podVolumeTypes = Object.values(PodVolumeEnum);
 
-
 const EnvVarValueSource: React.FC<{ index: number }> = ({ index }) => {
   return (
     <div id={`env-value-source-${index}`} className={styles['grid-2']}>
-      <div >
+      <div>
         <FormikInput
           id={`environment_variables.${index}.id`}
           name={`environment_variables.${index}.id`}
@@ -65,7 +62,7 @@ const EnvVarValueSource: React.FC<{ index: number }> = ({ index }) => {
 const NetworkingValueSource: React.FC<{ index: number }> = ({ index }) => {
   return (
     <div id={`networking-value-source-${index}`} className={styles['grid-3']}>
-      <div >
+      <div>
         <FormikInput
           id={`networking.${index}.id`}
           name={`networking.${index}.id`}
@@ -86,12 +83,12 @@ const NetworkingValueSource: React.FC<{ index: number }> = ({ index }) => {
           aria-label="Input"
           value=""
         >
-        <option disabled value={''}>
-          Select a network protocol
-        </option>
-        {podProtocols.map((values) => {
-          return <option>{values}</option>;
-        })}
+          <option disabled value={''}>
+            Select a network protocol
+          </option>
+          {podProtocols.map((values) => {
+            return <option>{values}</option>;
+          })}
         </FormikSelect>
       </div>
       <div>
@@ -109,11 +106,13 @@ const NetworkingValueSource: React.FC<{ index: number }> = ({ index }) => {
   );
 };
 
-
 const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
   return (
-    <div id={`volume_mounts-value-source-${index}`} className={styles['grid-half']}>
-      <div >
+    <div
+      id={`volume_mounts-value-source-${index}`}
+      className={styles['grid-half']}
+    >
+      <div>
         <FormikInput
           id={`volume_mounts.${index}.id`}
           name={`volume_mounts.${index}.id`}
@@ -134,12 +133,12 @@ const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
           aria-label="Input"
           value=""
         >
-        <option disabled value={''}>
-          Select a volume type
-        </option>
-        {podVolumeTypes.map((values) => {
-          return <option>{values}</option>;
-        })}
+          <option disabled value={''}>
+            Select a volume type
+          </option>
+          {podVolumeTypes.map((values) => {
+            return <option>{values}</option>;
+          })}
         </FormikSelect>
       </div>
       <div>
@@ -168,8 +167,6 @@ const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
   );
 };
 
-
-
 const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
@@ -177,8 +174,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
-  const { makeNewPod, isLoading, error, isSuccess, reset } =
-    useMakeNewPod();
+  const { makeNewPod, isLoading, error, isSuccess, reset } = useMakeNewPod();
 
   useEffect(() => {
     reset();
@@ -190,27 +186,26 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   //   setSimplified(!simplified);
   // }, [setSimplified, simplified]);
 
-
   const validationSchema = Yup.object({
     pod_id: Yup.string()
       .min(1)
       .max(80, 'Pod id should not be longer than 80 characters')
       .matches(
         /^[a-z0-9]+$/,
-        "Must contain only lowercase alphanumeric characters"
+        'Must contain only lowercase alphanumeric characters'
       )
       .required('Pod ID is a required field'),
     pod_template: Yup.string()
       .min(1)
       .max(128, 'Pod Template should not be longer than 128 characters')
-      .required("Pod Template is a required field"),
+      .required('Pod Template is a required field'),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
-    command: Yup.array().of(
-      Yup.string())
-        .min(1)
-        .max(128, 'Pod Template should not be longer than 128 characters'),
+    command: Yup.array()
+      .of(Yup.string())
+      .min(1)
+      .max(128, 'Pod Template should not be longer than 128 characters'),
     environment_variables: Yup.array().of(
       Yup.object({
         id: Yup.string()
@@ -271,9 +266,8 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       gpus: Yup.string()
         .min(1)
         .max(128, 'Pod Template should not be longer than 128 characters'),
-    })
+    }),
   });
-
 
   const initialValues = {
     pod_id: '',
@@ -293,13 +287,13 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       gpus: 0,
     },
   };
-  
+
   /// Environment Variables area
   //////////////////////////////
   type EnvVarType = {
     id: string;
     value: string;
-  };  
+  };
 
   type EnvVarsTransformFn = (envVars: Array<EnvVarType>) => {
     [key: string]: string;
@@ -313,15 +307,14 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     console.log(env);
     return env;
   };
- 
 
   /// Networking area
   ///////////////////
   type NetworkingType = {
     id: string;
-    protocol: PodProtocolEnum
+    protocol: PodProtocolEnum;
     port: string;
-  };  
+  };
 
   type NetworkingTransformFn = (envVars: Array<NetworkingType>) => {
     [key: string]: object;
@@ -333,8 +326,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       env[envVar.id] = {
         protocol: envVar.protocol,
         port: envVar.port,
-      };      
-        
+      };
     });
     console.log(env);
     return env;
@@ -347,21 +339,22 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     type: PodProtocolEnum;
     mount_path: string;
     sub_path: string;
-  };  
+  };
 
   type volumeMountsTransformFn = (volumes: Array<VolumeMountsType>) => {
     [key: string]: object;
   };
 
-  const volume_mountsArrayToInputObject: volumeMountsTransformFn = (volumes) => {
+  const volume_mountsArrayToInputObject: volumeMountsTransformFn = (
+    volumes
+  ) => {
     const formatted_volumes: { [key: string]: object } = {};
     volumes.forEach((volume) => {
       formatted_volumes[volume.id] = {
         type: volume.type,
         mount_path: volume.mount_path,
         sub_path: volume.sub_path,
-      };      
-        
+      };
     });
     console.log(formatted_volumes);
     return formatted_volumes;
@@ -378,7 +371,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     environment_variables,
     networking,
     volume_mounts,
-    resources
+    resources,
   }: {
     pod_id: string;
     description: string | undefined;
@@ -389,21 +382,26 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     environment_variables: Array<EnvVarType>;
     networking: Array<NetworkingType>;
     volume_mounts: Array<VolumeMountsType>;
-    resources: { cpu_request: number, cpu_limit: number, mem_request: number, mem_limit: number, gpus: number };
+    resources: {
+      cpu_request: number;
+      cpu_limit: number;
+      mem_request: number;
+      mem_limit: number;
+      gpus: number;
+    };
   }) => {
-
     makeNewPod(
       {
         pod_id: pod_id,
         description,
-        command: command ? JSON.parse((command)) : undefined,
+        command: command ? JSON.parse(command) : undefined,
         pod_template: pod_template,
         time_to_stop_default: time_to_stop_default,
         time_to_stop_instance: time_to_stop_instance,
         environment_variables: envVarsArrayToInputObject(environment_variables),
         networking: networkingArrayToInputObject(networking),
         volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
-        resources: resources
+        resources: resources,
       },
       { onSuccess }
     );
@@ -464,7 +462,6 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     description={`Instance TTS - Seconds until pod is stopped, for only current "run"`}
                     aria-label="Input"
                   />
-
                 </Collapse>
                 <Collapse title="Environment Variables">
                   <FieldArray
@@ -479,9 +476,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                                 key={i}
                                 className={styles['key-val-env-var']}
                               >
-                                <EnvVarValueSource
-                                  index={i}
-                                />
+                                <EnvVarValueSource index={i} />
                                 <Button
                                   className={styles['remove-button']}
                                   type="button"
@@ -522,9 +517,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                                 key={i}
                                 className={styles['key-val-env-var']}
                               >
-                                <NetworkingValueSource
-                                  index={i}
-                                />
+                                <NetworkingValueSource index={i} />
                                 <Button
                                   className={styles['remove-button']}
                                   type="button"
@@ -569,9 +562,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                                 key={i}
                                 className={styles['key-val-env-var']}
                               >
-                                <VolumeMountsValueSource
-                                  index={i}
-                                />
+                                <VolumeMountsValueSource index={i} />
                                 <Button
                                   className={styles['remove-button']}
                                   type="button"
@@ -645,8 +636,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 </Collapse>
               </Form>
             )}
-            >
-          </Formik>
+          ></Formik>
         </div>
       }
       footer={

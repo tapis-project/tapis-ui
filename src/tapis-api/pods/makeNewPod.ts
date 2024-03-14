@@ -12,9 +12,7 @@ const makeNewPod = (
     basePath,
     jwt
   );
-  return errorDecoder<Pods.PodResponse>(() =>
-    api.createPod(reqCreatePod)
-  );
+  return errorDecoder<Pods.PodResponse>(() => api.createPod(reqCreatePod));
 };
 
 export default makeNewPod;

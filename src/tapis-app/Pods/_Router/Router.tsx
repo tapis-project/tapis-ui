@@ -14,9 +14,7 @@ const Router: React.FC = () => {
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <SectionMessage type="info">
-          Select a pod from the list.
-        </SectionMessage>
+        <SectionMessage type="info">Select a pod from the list.</SectionMessage>
       </Route>
 
       <Route

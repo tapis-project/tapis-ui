@@ -19,8 +19,7 @@ const useMakeNewPod = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Pods.PodResponse, Error, MkNewPodHookParams>(
       [QueryKeys.makeNewPod, basePath, jwt],
-      ({ newPod }) =>
-        makeNewPod({ newPod }, basePath, jwt)
+      ({ newPod }) => makeNewPod({ newPod }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

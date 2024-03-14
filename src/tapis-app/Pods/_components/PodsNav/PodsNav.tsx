@@ -22,7 +22,9 @@ const PodsNav: React.FC = () => {
               icon="visualization"
               key={pod.pod_id}
             >
-                {`${pod.pod_id} - ${pod.status?.charAt(0)}${pod.status?.slice(1).toLowerCase()}`}
+              {`${pod.pod_id} - ${pod.status?.charAt(0)}${pod.status
+                ?.slice(1)
+                .toLowerCase()}`}
             </NavItem>
           ))
         ) : (

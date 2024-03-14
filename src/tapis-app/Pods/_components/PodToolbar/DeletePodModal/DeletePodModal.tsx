@@ -28,8 +28,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
-  const { deletePod, isLoading, error, isSuccess, reset } =
-    useDeletePod();
+  const { deletePod, isLoading, error, isSuccess, reset } = useDeletePod();
 
   useEffect(() => {
     reset();

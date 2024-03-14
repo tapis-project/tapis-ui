@@ -33,7 +33,11 @@ const useDeletePod = () => {
     deletePod: (
       podId: string,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Pods.DeletePodResponse, Error, DeletePodHookParams>
+      options?: MutateOptions<
+        Pods.DeletePodResponse,
+        Error,
+        DeletePodHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate({ podId }, options);
