@@ -1,54 +1,52 @@
 import { Pods } from '@tapis/tapis-typescript';
 
-export const tapisSystem = {
-  tenant: 'tacc',
-  id: 'testuser2.execution',
-  description: 'Tapis v3 execution system - patched',
-  owner: 'nathandf',
-  host: '129.114.17.113',
-  enabled: true,
-  effectiveUserId: 'testuser2',
-  authnCredential: undefined,
-  bucketName: undefined,
-  rootDir: '/home/testuser2/prod/',
-  port: -1,
-  useProxy: false,
-  proxyHost: undefined,
-  proxyPort: -1,
-  dtnSystemId: undefined,
-  dtnMountPoint: undefined,
-  dtnMountSourcePath: undefined,
-  isDtn: false,
-  canExec: true,
-  canRunBatch: true,
-  jobWorkingDir: 'work',
-  jobEnvVariables: [],
-  jobMaxJobs: 2147483647,
-  jobMaxJobsPerUser: 2147483647,
-  batchLogicalQueues: [
-    {
-      name: 'tapisNormal',
-      hpcQueueName: 'debug',
-      maxJobs: 50,
-      maxJobsPerUser: 10,
-      minNodeCount: 1,
-      maxNodeCount: 16,
-      minCoresPerNode: 1,
-      maxCoresPerNode: 68,
-      minMemoryMB: 1,
-      maxMemoryMB: 16384,
-      minMinutes: 1,
-      maxMinutes: 60,
-    },
-  ],
-  batchDefaultLogicalQueue: 'tapisNormal',
-  batchSchedulerProfile: undefined,
-  jobCapabilities: [],
-  tags: [],
-  notes: {},
-  importRefId: undefined,
-  uuid: 'f398646d-b4f5-4c8a-89be-182def19de1e',
-  deleted: false,
-  created: '2021-11-29T19:09:37.535745Z',
-  updated: '2021-12-06T17:18:05.625441Z',
+export const tapisPod = {
+  pod_id: 'testpod2',
+  pod_template: 'template/postgres',
+  description: 'Test pod fixture for testing',
+  command: undefined,
+  environment_variables: {},
+  data_requests: [],
+  roles_required: [],
+  status_requested: 'ON',
+  volume_mounts: {
+    test4: {
+      type: 'tapisvolume',
+      mount_path: '/var/lib/postgresql/data',
+      sub_path: ''
+    }
+  },
+  time_to_stop_default: -1,
+  time_to_stop_instance: undefined,
+  networking: {
+    default: {
+      protocol: 'postgres',
+      port: 5432,
+      url: 'test4.pods.tacc.develop.tapis.io'
+    }
+  },
+  resources: {
+    cpu_request: 250,
+    cpu_limit: 2000,
+    mem_request: 256,
+    mem_limit: 3072,
+    gpus: 0
+  },
+  time_to_stop_ts: null,
+  status: 'AVAILABLE',
+  status_container: {
+    phase: 'Running',
+    start_time: '2024-02-13T20:58:32.000000',
+    message: 'Pod is running.'
+  },
+  data_attached: [],
+  roles_inherited: [],
+  creation_ts: '2024-02-13T20:58:31.358557',
+  update_ts: '2024-02-13T20:58:31.358649',
+  start_instance_ts: '2024-02-13T20:59:08.175504',
+  action_logs: [
+    '24/02/13 20:58: Pod object created by \'cgarcia\'',
+    '24/02/13 20:58: spawner set status to CREATING',
+    '24/02/13 20:59: health set status to AVAILABLE'
+  ]
 };
