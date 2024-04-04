@@ -1,5 +1,5 @@
 import React from 'react';
-import { JobsNav } from '../_components';
+import { JobsNav, JobsLayoutToolbar } from '../_components';
 import { Router } from '../_Router';
 import {
   PageLayout,
@@ -12,6 +12,7 @@ const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
       <div>Jobs</div>
+      <JobsLayoutToolbar />
     </LayoutHeader>
   );
 
