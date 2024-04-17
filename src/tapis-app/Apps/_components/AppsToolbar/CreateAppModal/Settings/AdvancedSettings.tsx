@@ -1,22 +1,20 @@
-import AppAttributes from "./AppAttributes";
-import JobAttributes from "./JobAttributes"
-import TagsSettings from "./TagsSettings"
-
+import AppAttributes from './AppAttributes';
+import JobAttributes from './JobAttributes';
+import TagsSettings from './TagsSettings';
 
 type AdvancedSettingsProp = {
   simplified: boolean;
 };
 
 const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified }) => {
-
   if (simplified) {
     return (
       <div>
-        <hr/>
+        <hr />
         <AppAttributes />
-        <hr/> 
+        <hr />
         <JobAttributes />
-        <hr/>
+        <hr />
         <TagsSettings />
       </div>
     );

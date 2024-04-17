@@ -1,6 +1,5 @@
-import { Apps } from "@tapis/tapis-typescript";
-import { apiGenerator, errorDecoder } from "tapis-api/utils";
-
+import { Apps } from '@tapis/tapis-typescript';
+import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
 const createApp = (
   createAppVersionRequest: Apps.CreateAppVersionRequest,
@@ -19,4 +18,3 @@ const createApp = (
 };
 
 export default createApp;
-

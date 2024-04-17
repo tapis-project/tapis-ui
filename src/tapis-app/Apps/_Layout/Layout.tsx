@@ -6,7 +6,7 @@ import {
   LayoutHeader,
   LayoutNavWrapper,
 } from 'tapis-ui/_common';
-import AppsToolbar from "../_components/AppsToolbar";
+import AppsToolbar from '../_components/AppsToolbar';
 
 import { Router } from '../_Router';
 

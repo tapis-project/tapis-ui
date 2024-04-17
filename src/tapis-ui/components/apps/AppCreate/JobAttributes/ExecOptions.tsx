@@ -1,14 +1,18 @@
 import { useMemo, useEffect, useState } from 'react';
 import { Apps, Systems } from '@tapis/tapis-typescript';
-import { FormikInput, FormikCheck, FormikSelect, FormikTapisFile } from 'tapis-ui/_common/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikCheck,
+  FormikSelect,
+  FormikTapisFile,
+} from 'tapis-ui/_common/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
 import { Collapse } from 'tapis-ui/_common';
 import React from 'react';
-import fieldArrayStyles from "./FieldArray.module.scss";
+import fieldArrayStyles from './FieldArray.module.scss';
 import { useList } from 'tapis-hooks/systems';
-import { ListTypeEnum } from "@tapis/tapis-typescript-systems";
-import { JobTypeEnum } from "@tapis/tapis-typescript-apps";
-
+import { ListTypeEnum } from '@tapis/tapis-typescript-systems';
+import { JobTypeEnum } from '@tapis/tapis-typescript-apps';
 
 const ExecSystemDirs: React.FC = () => {
   const { values } = useFormikContext();
@@ -129,40 +133,47 @@ const MPIOptions: React.FC = () => {
   );
 };
 
-
 export const ExecOptions: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<Apps.ReqPostApp>();
-  const isBatch = useMemo(() => values?.jobType === JobTypeEnum.Batch, [values?.jobType]);
+  const isBatch = useMemo(
+    () => values?.jobType === JobTypeEnum.Batch,
+    [values?.jobType]
+  );
 
-  const { data, isLoading, isError } = useList({ listType: ListTypeEnum.All, select: "allAttributes" });
+  const { data, isLoading, isError } = useList({
+    listType: ListTypeEnum.All,
+    select: 'allAttributes',
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedSystem, setSelectedSystem] = useState<Systems.TapisSystem | null>(null);
+  const [selectedSystem, setSelectedSystem] =
+    useState<Systems.TapisSystem | null>(null);
   const [queues, setQueues] = useState<Array<Systems.LogicalQueue>>([]);
 
   const getLogicalQueues = (system?: Systems.TapisSystem) =>
     system?.batchLogicalQueues ?? [];
 
-  
   useEffect(() => {
-
     const systemId = values.jobAttributes?.execSystemId;
     const system = data?.result?.find((sys) => sys.id === systemId) || null;
     setSelectedSystem(system);
 
-
     if (system) {
-      const newQueues = getLogicalQueues(system); 
+      const newQueues = getLogicalQueues(system);
       setQueues(newQueues);
     } else {
       setQueues([]);
     }
 
     if (!isBatch) {
-      setFieldValue("jobAttributes.execSystemLogicalQueue", undefined);
+      setFieldValue('jobAttributes.execSystemLogicalQueue', undefined);
     }
-
-  }, [data?.result, values.jobAttributes?.execSystemId, setFieldValue, isBatch]);
+  }, [
+    data?.result,
+    values.jobAttributes?.execSystemId,
+    setFieldValue,
+    isBatch,
+  ]);
 
   if (isLoading) return <div>Loading systems...</div>;
   if (isError) return <div>Error fetching systems.</div>;
@@ -174,9 +185,9 @@ export const ExecOptions: React.FC = () => {
         <FormikSelect
           name="jobAttributes.execSystemId"
           label="Execution System"
-          required={true} 
-          description={''}        
-          >
+          required={true}
+          description={''}
+        >
           <option value="">Please select a system</option>
           {data?.result?.map((system) => (
             <option key={system.id} value={system.id}>
@@ -188,9 +199,9 @@ export const ExecOptions: React.FC = () => {
         <FormikSelect
           name="jobType"
           label="Job Type"
-          required={true} 
-          description={''}        
-          >
+          required={true}
+          description={''}
+        >
           <option value="">Please select a job type</option>
           <option value={JobTypeEnum.Batch}>Batch</option>
           <option value={JobTypeEnum.Fork}>Fork</option>
@@ -200,9 +211,9 @@ export const ExecOptions: React.FC = () => {
           <FormikSelect
             name="jobAttributes.execSystemLogicalQueue"
             label="Batch Logical Queue"
-            required={false} 
-            description={''}          
-            >
+            required={false}
+            description={''}
+          >
             <option value="">Please select a queue</option>
             {queues.map((queue) => (
               <option key={queue.name} value={queue.name}>

@@ -11,7 +11,7 @@ import {
   FormikSelect,
 } from 'tapis-ui/_common/FieldWrapperFormik';
 
-import {FileInputModeEnum} from "@tapis/tapis-typescript-apps"
+import { FileInputModeEnum } from '@tapis/tapis-typescript-apps';
 
 type FileInputFieldProps = {
   item: Jobs.JobFileInput;
@@ -33,7 +33,7 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
     <>
       <Collapse
         open={!sourceUrl}
-        title={name ?? "File Input"}
+        title={name ?? 'File Input'}
         note={note}
         className={fieldArrayStyles.item}
       >
@@ -43,8 +43,8 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
           required={true}
           description={`${
             isRequired
-              ? "This input is required and cannot be renamed"
-              : "Name of this input"
+              ? 'This input is required and cannot be renamed'
+              : 'Name of this input'
           }`}
           disabled={isRequired}
         />
@@ -74,7 +74,7 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
           required={false}
           data-testid="file Input Type"
         >
-          <option value={""} selected>
+          <option value={''} selected>
             -- select input value type --
           </option>
           {fileInputModeValues.map((values) => {
@@ -97,12 +97,11 @@ const JobInputField: React.FC<FileInputFieldProps> = ({
   );
 };
 
-
 const JobInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   arrayHelpers,
 }) => {
   const { values } = useFormikContext();
-  let requiredText ='';
+  let requiredText = '';
   const jobInputs = (values as Partial<Jobs.ReqSubmitJob>)?.fileInputs ?? [];
 
   return (

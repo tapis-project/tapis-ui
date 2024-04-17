@@ -48,12 +48,12 @@ const AppsToolbar: React.FC = () => {
   return (
     <div id="file-operation-toolbar">
       {pathname && (
-        <div className={styles["toolbar-wrapper"]}>
+        <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
             text="Create a New App"
             icon="add"
             disabled={false}
-            onClick={() => setModal("createApp")}
+            onClick={() => setModal('createApp')}
             aria-label="createApp"
           />
 

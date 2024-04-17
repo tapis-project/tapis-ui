@@ -38,14 +38,16 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   const { push } = arrayHelpers;
 
   const sourceUrls: Array<string> = useMemo(
-    () => values.jobAttributes?.fileInputArrays?.[fileInputArrayIndex]?.sourceUrls ?? [],
+    () =>
+      values.jobAttributes?.fileInputArrays?.[fileInputArrayIndex]
+        ?.sourceUrls ?? [],
     [values, fileInputArrayIndex]
   );
 
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       files.forEach((file) => {
-        const newSourceUrl = `tapis://${systemId ?? "here"}${file.path}`;
+        const newSourceUrl = `tapis://${systemId ?? 'here'}${file.path}`;
         if (!sourceUrls.some((sourceUrl) => sourceUrl === newSourceUrl)) {
           push(newSourceUrl);
         }
@@ -67,8 +69,11 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   );
 
   const addUrlField = () => {
-    const newUrls = [...sourceUrls, ""];
-    setFieldValue(`jobAttributes.fileInputArrays.${fileInputArrayIndex}.sourceUrls`, newUrls);
+    const newUrls = [...sourceUrls, ''];
+    setFieldValue(
+      `jobAttributes.fileInputArrays.${fileInputArrayIndex}.sourceUrls`,
+      newUrls
+    );
   };
 
   return (
@@ -99,7 +104,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
                 />
               )}
             </Field>
-            
+
             <ErrorMessage
               name={`jobAttributes.fileInputArrays.${fileInputArrayIndex}.sourceUrls.${index}`}
               className="form-field__help"
@@ -108,7 +113,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
         ))}
       </div>
       <div>
-        <Button size="sm" style={{ marginRight: "5px" }} onClick={addUrlField}>
+        <Button size="sm" style={{ marginRight: '5px' }} onClick={addUrlField}>
           + Add Source URL
         </Button>
         <Button size="sm" onClick={() => open()}>
@@ -140,12 +145,12 @@ const AppInputArrayField: React.FC<AppInputArrayFieldProps> = ({
   const inputMode: Apps.FileInputModeEnum | undefined = undefined;
   const isRequired = inputMode === Apps.FileInputModeEnum.Required;
   const note = `${
-    inputMode ? upperCaseFirstLetter(inputMode) : "User Defined"
+    inputMode ? upperCaseFirstLetter(inputMode) : 'User Defined'
   }`;
   return (
     <Collapse
       open={!sourceUrls}
-      title={name ?? "File Input Array"}
+      title={name ?? 'File Input Array'}
       note={note}
       className={fieldArrayStyles.item}
     >
@@ -155,8 +160,8 @@ const AppInputArrayField: React.FC<AppInputArrayFieldProps> = ({
         required={true}
         description={`${
           isRequired
-            ? "This input is required and cannot be renamed"
-            : "Name of this input"
+            ? 'This input is required and cannot be renamed'
+            : 'Name of this input'
         }`}
         disabled={isRequired}
       />
@@ -191,7 +196,13 @@ const AppInputArrayField: React.FC<AppInputArrayFieldProps> = ({
         description="Description of this input"
       />
       {!isRequired && (
-        <Button onClick={() => {console.log('Remove index', index); remove(index); }} size="sm">
+        <Button
+          onClick={() => {
+            console.log('Remove index', index);
+            remove(index);
+          }}
+          size="sm"
+        >
           Remove
         </Button>
       )}
@@ -280,7 +291,8 @@ const OptionalInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
     );
 
     const formFileInputArrays =
-      (values as Partial<Apps.ReqPostApp>)?.jobAttributes?.fileInputArrays ?? [];
+      (values as Partial<Apps.ReqPostApp>)?.jobAttributes?.fileInputArrays ??
+      [];
 
     return !!optionalInputArrays.length ? (
       <Collapse
@@ -320,15 +332,14 @@ const OptionalInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
     ) : null;
   };
 
-
 const AppInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
   arrayHelpers,
 }) => {
-  const { values, setFieldValue } = useFormikContext<Partial<Apps.ReqPostApp>>();
+  const { values, setFieldValue } =
+    useFormikContext<Partial<Apps.ReqPostApp>>();
   let requiredText = '';
   const appInputArrays =
     (values as Partial<Apps.ReqPostApp>)?.jobAttributes?.fileInputArrays ?? [];
-
 
   return (
     <Collapse
@@ -353,9 +364,9 @@ const AppInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> = ({
       <Button
         onClick={() => {
           const fileInputArrays = values.jobAttributes?.fileInputArrays || [];
-          const newFileInputArray = { sourceUrls: [""] };
+          const newFileInputArray = { sourceUrls: [''] };
           const newFileInputArrays = [...fileInputArrays, newFileInputArray];
-          setFieldValue("jobAttributes.fileInputArrays", newFileInputArrays);
+          setFieldValue('jobAttributes.fileInputArrays', newFileInputArrays);
         }}
         size="sm"
       >

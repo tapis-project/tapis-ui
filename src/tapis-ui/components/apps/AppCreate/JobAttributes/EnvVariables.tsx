@@ -20,7 +20,9 @@ const EnvVariableField: React.FC<EnvVariableFieldProps> = ({
   index,
   arrayHelpers,
 }) => {
-  const [field] = useField(`jobAttributes.parameterSet.envVariables.${index}.key`);
+  const [field] = useField(
+    `jobAttributes.parameterSet.envVariables.${index}.key`
+  );
   const key = useMemo(() => field.value, [field]);
   return (
     <Collapse
@@ -50,38 +52,39 @@ const EnvVariableField: React.FC<EnvVariableFieldProps> = ({
 const EnvVariablesRender: React.FC = () => {
   const { values } = useFormikContext();
   const envVariables =
-    (values as Partial<Apps.ReqPostApp>).jobAttributes?.parameterSet?.envVariables ?? [];
-  
-  
-    return (
-      <FieldArray
-        name={"jobAttributes.parameterSet.envVariables"}
-        render={(arrayHelpers) => (
-          <>
-            <div className={fieldArrayStyles.array}>
-              <h3>{`Environment Variables`}</h3>
-              <div className={fieldArrayStyles["array-group"]}>
-                {envVariables.map((envVariable, index) => (
-                  <EnvVariableField index={index} arrayHelpers={arrayHelpers} />
-                ))}
-              </div>
-              <Button
-                onClick={() => 
-                  arrayHelpers.push({ 
-                    key: "", 
-                    value: "", 
-                    description: "",
-                    arg: ""
-                  })}
-                size="sm"
-              >
-                + Add
-              </Button>
+    (values as Partial<Apps.ReqPostApp>).jobAttributes?.parameterSet
+      ?.envVariables ?? [];
+
+  return (
+    <FieldArray
+      name={'jobAttributes.parameterSet.envVariables'}
+      render={(arrayHelpers) => (
+        <>
+          <div className={fieldArrayStyles.array}>
+            <h3>{`Environment Variables`}</h3>
+            <div className={fieldArrayStyles['array-group']}>
+              {envVariables.map((envVariable, index) => (
+                <EnvVariableField index={index} arrayHelpers={arrayHelpers} />
+              ))}
             </div>
-          </>
-        )}
-      />
-    );
+            <Button
+              onClick={() =>
+                arrayHelpers.push({
+                  key: '',
+                  value: '',
+                  description: '',
+                  arg: '',
+                })
+              }
+              size="sm"
+            >
+              + Add
+            </Button>
+          </div>
+        </>
+      )}
+    />
+  );
 };
 
 export const EnvVariables: React.FC = () => {

@@ -21,7 +21,7 @@ import {
 } from 'tapis-ui/_common/FieldWrapperFormik';
 import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
 import { useList } from 'tapis-hooks/systems';
-import { ListTypeEnum } from "@tapis/tapis-typescript-systems";
+import { ListTypeEnum } from '@tapis/tapis-typescript-systems';
 
 type ArrayGroupProps = {
   values: Array<string>;
@@ -98,11 +98,11 @@ const ArrayGroup: React.FC<ArrayGroupProps> = ({
 const ArchiveFilterRender: React.FC = () => {
   const { values } = useFormikContext();
   const includes =
-    (values as Partial<Apps.ReqPostApp>).jobAttributes?.parameterSet?.archiveFilter
-      ?.includes ?? [];
+    (values as Partial<Apps.ReqPostApp>).jobAttributes?.parameterSet
+      ?.archiveFilter?.includes ?? [];
   const excludes =
-    (values as Partial<Apps.ReqPostApp>).jobAttributes?.parameterSet?.archiveFilter
-      ?.excludes ?? [];
+    (values as Partial<Apps.ReqPostApp>).jobAttributes?.parameterSet
+      ?.archiveFilter?.excludes ?? [];
   return (
     <div>
       <h3>Archive Filters</h3>
@@ -188,5 +188,4 @@ export const Archive: React.FC = () => {
   );
 };
 
-
-export default Archive
+export default Archive;

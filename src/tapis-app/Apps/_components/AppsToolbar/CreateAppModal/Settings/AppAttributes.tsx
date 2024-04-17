@@ -1,13 +1,12 @@
 import { FormikInput, Collapse } from 'tapis-ui/_common';
 import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
-import styles from "../CreateAppModal.module.scss";
+import styles from '../CreateAppModal.module.scss';
 
 const AppAttributes: React.FC = () => {
-
   return (
     <div>
       <h2>Application Attributes</h2>
-      <Collapse title="Application Attributes" className={styles["array"]}>
+      <Collapse title="Application Attributes" className={styles['array']}>
         <FormikInput
           name="owner"
           label="Application Owner"
@@ -20,7 +19,7 @@ const AppAttributes: React.FC = () => {
           required={false}
           label="Application Enabled?"
           description={
-            "Indicates if application currently enabled for use. Default is TRUE."
+            'Indicates if application currently enabled for use. Default is TRUE.'
           }
         />
         <FormikCheck
@@ -28,7 +27,7 @@ const AppAttributes: React.FC = () => {
           required={false}
           label="Application Version Locked?"
           description={
-            "Indicates if version is currently locked. Locking disallows updates. Default is FALSE"
+            'Indicates if version is currently locked. Locking disallows updates. Default is FALSE'
           }
         />
         <FormikInput
@@ -57,7 +56,7 @@ const AppAttributes: React.FC = () => {
           required={false}
           label="Strict File Inputs?"
           description={
-            "Indicates if a job request is allowed to have unnamed file inputs. If TRUE then a job request may only use named file inputs defined in the app. Default is FALSE."
+            'Indicates if a job request is allowed to have unnamed file inputs. If TRUE then a job request may only use named file inputs defined in the app. Default is FALSE.'
           }
         />
       </Collapse>

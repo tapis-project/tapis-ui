@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Button, Input, FormGroup, Label, Collapse } from "reactstrap";
-import { useFormikContext, FieldArray } from "formik";
-import { Apps } from "@tapis/tapis-typescript";
+import React, { useState } from 'react';
+import { Button, Input, FormGroup, Label, Collapse } from 'reactstrap';
+import { useFormikContext, FieldArray } from 'formik';
+import { Apps } from '@tapis/tapis-typescript';
 
 const TagsSettings: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<Apps.ReqPostApp>();
-  const [newTag, setNewTag] = useState("");
+  const [newTag, setNewTag] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   const tags = values.tags ?? [];
@@ -13,17 +13,17 @@ const TagsSettings: React.FC = () => {
   const toggleCollapse = () => setIsOpen(!isOpen);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && newTag.trim() !== "") {
+    if (e.key === 'Enter' && newTag.trim() !== '') {
       e.preventDefault(); // Prevent form submission
       const newTags = [...tags, newTag.trim()];
-      setFieldValue("tags", newTags);
-      setNewTag(""); // Clear input for next tag
+      setFieldValue('tags', newTags);
+      setNewTag(''); // Clear input for next tag
     }
   };
 
   const handleRemoveTag = (index: number) => {
     const newTags = tags.filter((_, tagIndex) => index !== tagIndex);
-    setFieldValue("tags", newTags);
+    setFieldValue('tags', newTags);
   };
 
   return (
@@ -31,18 +31,18 @@ const TagsSettings: React.FC = () => {
       <Button
         color="secondary"
         onClick={toggleCollapse}
-        style={{ marginBottom: "1rem" }}
+        style={{ marginBottom: '1rem' }}
       >
         Manage Tags
       </Button>
       <Collapse isOpen={isOpen}>
-          <Input
-            type="text"
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            onKeyDown={handleAddTag}
-            placeholder="Type tag and press Enter"
-          />
+        <Input
+          type="text"
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+          onKeyDown={handleAddTag}
+          placeholder="Type tag and press Enter"
+        />
         <FieldArray
           name="tags"
           render={() => (

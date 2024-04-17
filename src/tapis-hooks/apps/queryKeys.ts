@@ -1,6 +1,6 @@
 const QueryKeys = {
-  list: "apps/list",
-  createApp: "apps/createApp",
+  list: 'apps/list',
+  createApp: 'apps/createApp',
 };
 
 export default QueryKeys;
