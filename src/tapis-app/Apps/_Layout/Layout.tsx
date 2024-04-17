@@ -6,6 +6,7 @@ import {
   LayoutHeader,
   LayoutNavWrapper,
 } from 'tapis-ui/_common';
+import AppsToolbar from "../_components/AppsToolbar";
 
 import { Router } from '../_Router';
 
@@ -13,6 +14,7 @@ const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
       <div>Apps</div>
+      <AppsToolbar />
     </LayoutHeader>
   );
 

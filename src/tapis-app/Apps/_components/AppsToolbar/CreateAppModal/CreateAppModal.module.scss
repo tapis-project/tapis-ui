@@ -1,0 +1,24 @@
+.modal-settings {
+  max-height: 38rem;
+  overflow-y: scroll;
+}
+
+.item {
+  border: 1px dotted lightgray;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 1em;
+}
+
+.array {
+  border: 1px solid gray;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.hidden {
+  display: none;
+}
+
+.section-divider {
+  margin-bottom: 100px;
+}
