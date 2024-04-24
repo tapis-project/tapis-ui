@@ -1,8 +1,8 @@
-import { useMutation, MutateOptions } from "react-query";
-import { useTapisConfig } from "../context";
-import QueryKeys from "./queryKeys";
-import { Apps } from "@tapis/tapis-typescript";
-import { createApp } from "tapis-api/apps";
+import { useMutation, MutateOptions } from 'react-query';
+import { useTapisConfig } from '../context';
+import QueryKeys from './queryKeys';
+import { Apps } from '@tapis/tapis-typescript';
+import { createApp } from 'tapis-api/apps';
 
 type createAppParams = {
   createAppVersionRequest: Apps.CreateAppVersionRequest;
@@ -11,7 +11,7 @@ type createAppParams = {
 
 const useCreateApp = () => {
   const { basePath, accessToken } = useTapisConfig();
-  const jwt = accessToken?.access_token || "";
+  const jwt = accessToken?.access_token || '';
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Apps.RespBasic, Error, createAppParams>(
