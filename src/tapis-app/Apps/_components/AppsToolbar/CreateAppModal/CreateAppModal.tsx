@@ -18,7 +18,6 @@ import {
   RuntimeEnum,
   RuntimeOptionEnum,
   JobTypeEnum,
-  // JobAttributes,
 } from '@tapis/tapis-typescript-apps';
 
 import {
@@ -28,7 +27,6 @@ import {
   ParameterSetLogConfig,
   AppFileInput,
   AppFileInputArray,
-  // ReqSubscribe
 } from '@tapis/tapis-typescript-apps';
 
 const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
@@ -49,58 +47,55 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [setSimplified, simplified]);
 
   const runtimeValues = Object.values(RuntimeEnum);
-  // const runtimeOptionsValues = Object.values(RuntimeOptionEnum); // as RuntimeOptionEnum[];
+  const runtimeOptionsValues = Object.values(RuntimeOptionEnum); // as RuntimeOptionEnum[];
 
   const validationSchema = Yup.object({
     id: Yup.string()
-      .min(1, 'ID must be at least 1 character long')
-      .max(80, 'ID should not be longer than 80 characters')
+      .min(1, "ID must be at least 1 character long")
+      .max(80, "ID should not be longer than 80 characters")
       .matches(
         /^[a-zA-Z0-9_.-]+$/,
         "ID must contain only alphanumeric characters, '.', '_', or '-'"
       )
-      .required('ID is a required field'),
+      .required("ID is a required field"),
     version: Yup.string()
-      .min(1, 'Version must be at least 1 character long')
-      .max(80, 'Version should not be longer than 80 characters')
+      .min(1, "Version must be at least 1 character long")
+      .max(80, "Version should not be longer than 80 characters")
       .matches(
         /^[a-zA-Z0-9_.-]+$/,
         "Version must contain only alphanumeric characters, '.', '_', or '-'"
       )
-      .required('Version is a required field'),
+      .required("Version is a required field"),
     containerImage: Yup.string()
-      .min(1, 'Container Image must be at least 1 character long')
-      .max(80, 'Container Image should not be longer than 80 characters')
+      .min(1, "Container Image must be at least 1 character long")
+      .max(80, "Container Image should not be longer than 80 characters")
       .matches(
         /^[a-zA-Z0-9_.\-/:]+$/,
         "Container Image must contain only alphanumeric characters, '.', '_', '-', '/', ':'"
       )
-      .required('Container Image is a required field'),
+      .required("Container Image is a required field"),
     description: Yup.string().max(
       2048,
-      'Description should not be longer than 2048 characters'
+      "Description should not be longer than 2048 characters"
     ),
     owner: Yup.string().max(
       60,
-      'Owner should not be longer than 60 characters'
+      "Owner should not be longer than 60 characters"
     ),
     enabled: Yup.boolean(),
     locked: Yup.boolean(),
     runtimeVersion: Yup.string(),
-    // runtimeOptions: Yup.string()
-    //   .nullable(true) // Allows null if nothing is selected
-    //   .oneOf(
-    //     [...runtimeOptionsValues, ''],
-    //     "Invalid runtime option"
-    //   )
-    //   .required("Runtime option is required unless using Docker"),
-    maxJobs: Yup.number().integer('Max Jobs must be an integer').nullable(),
+    runtimeOptions: Yup.string()
+      .nullable(true)
+      .oneOf([...runtimeOptionsValues, ""], "Invalid runtime option")
+      .required("Runtime option is required unless using Docker"),
+    maxJobs: Yup.number().integer("Max Jobs must be an integer").nullable(),
     maxJobsPerUser: Yup.number()
-      .integer('Max Jobs Per User must be an integer')
+      .integer("Max Jobs Per User must be an integer")
       .nullable(),
     strictFileInputs: Yup.boolean(),
     tags: Yup.array().of(
-      Yup.string().max(50, 'Tags should not be longer than 50 characters')
+      Yup.string().max(50, "Tags should not be longer than 50 characters")
     ),
     jobAttributes: Yup.object({
       dynamicExecSystem: Yup.boolean(),
@@ -117,28 +112,28 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       cmdPrefix: Yup.string(),
       nodeCount: Yup.number()
         .integer()
-        .min(1, 'Node count must be at least 1')
+        .min(1, "Node count must be at least 1")
         .nullable(),
       coresPerNode: Yup.number()
         .integer()
-        .min(1, 'Cores per node must be at least 1')
+        .min(1, "Cores per node must be at least 1")
         .nullable(),
       memoryMB: Yup.number()
         .integer()
-        .min(1, 'Memory in MB must be at least 1')
+        .min(1, "Memory in MB must be at least 1")
         .nullable(),
       maxMinutes: Yup.number()
         .integer()
-        .min(1, 'Max minutes must be at least 1')
+        .min(1, "Max minutes must be at least 1")
         .nullable(),
       parameterSet: Yup.object({
         envVariables: Yup.array(
           Yup.object({
             key: Yup.string()
               .min(1)
-              .required('A key name is required for this environment variable'),
+              .required("A key name is required for this environment variable"),
             value: Yup.string().required(
-              'A value is required for this environment variable'
+              "A value is required for this environment variable"
             ),
           })
         ),
@@ -146,21 +141,21 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           includes: Yup.array(
             Yup.string()
               .min(1)
-              .required('A pattern must be specified for this include')
+              .required("A pattern must be specified for this include")
           ),
           excludes: Yup.array(
             Yup.string()
               .min(1)
-              .required('A pattern must be specified for this exclude')
+              .required("A pattern must be specified for this exclude")
           ),
           includeLaunchFiles: Yup.boolean(),
         }),
         fileInputs: Yup.array().of(
           Yup.object().shape({
-            name: Yup.string().min(1).required('A fileInput name is required'),
+            name: Yup.string().min(1).required("A fileInput name is required"),
             targetPath: Yup.string()
               .min(1)
-              .required('A targetPath is required'),
+              .required("A targetPath is required"),
             autoMountLocal: Yup.boolean(),
           })
         ),
@@ -168,8 +163,8 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           Yup.object().shape({
             name: Yup.string()
               .min(1)
-              .required('A fileInputArray name is required'),
-            targetDir: Yup.string().min(1).required('A targetDir is required'),
+              .required("A fileInputArray name is required"),
+            targetDir: Yup.string().min(1).required("A targetDir is required"),
           })
         ),
       }),
@@ -183,7 +178,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     containerImage: '',
     description: undefined,
     runtime: undefined,
-    runtimeOptions: [RuntimeOptionEnum.SingularityRun],
+    runtimeOptions: undefined,
     jobType: undefined,
 
     // Advanced Attributes
@@ -284,7 +279,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     containerImage: string;
     description: string | undefined;
     runtime: RuntimeEnum | undefined;
-    runtimeOptions: RuntimeOptionEnum[] | undefined;
+    runtimeOptions: RuntimeOptionEnum | undefined;
     jobType: JobTypeEnum | undefined;
     owner: string | undefined;
     enabled: boolean | undefined;
@@ -378,6 +373,8 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       },
     });
 
+    const runtimeOptionsArray = runtimeOptions ? [runtimeOptions] : undefined;
+
     createApp(
       {
         reqPostApp: {
@@ -386,7 +383,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           containerImage,
           description,
           runtime,
-          runtimeOptions: [RuntimeOptionEnum.SingularityRun], // This is bad, default is non but backend doesnt allow it
+          runtimeOptions: runtimeOptionsArray,
           jobType,
           owner,
           enabled,
@@ -440,7 +437,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       toggle={toggle}
       title="Create New App"
       body={
-        <div className={styles['modal-settings']}>
+        <div className={styles["modal-settings"]}>
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -488,28 +485,26 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   required={false}
                   data-testid="runtime"
                 >
-                  <option defaultValue={''}>Please select a runtime</option>
+                  <option defaultValue={""}>Please select a runtime</option>
                   {runtimeValues.map((values) => {
                     return <option>{values}</option>;
                   })}
                 </FormikSelect>
 
-                {/* {formikProps.values.runtime !== RuntimeEnum.Docker && (
+                {formikProps.values.runtime !== RuntimeEnum.Docker && (
                   <FormikSelect
                     name="runtimeOptions"
                     description="The runtime command for the application"
                     label="Runtime Options"
-                    required={
-                      formikProps.values.runtime === RuntimeEnum.Singularity
-                    }
+                    required={false}
                     data-testid="runtimeOptions"
                   >
-                    <option value="">Please select a runtime command</option>
-                    {runtimeOptionsValues.map((option) => {
-                      return <option value={Array(String(option))}> {[option]} </option>;
+                    <option defaultValue={""}>Please select a runtime option</option>
+                    {runtimeOptionsValues.map((values) => {
+                      return <option>{values}</option>;
                     })}
                   </FormikSelect>
-                )} */}
+                )}
 
                 <FormGroup check>
                   <Label check size="sm" className={`form-field__label`}>
@@ -526,10 +521,10 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       }
       footer={
         <SubmitWrapper
-          className={styles['modal-footer']}
+          className={styles["modal-footer"]}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully created a new app` : ''}
+          success={isSuccess ? `Successfully created a new app` : ""}
           reverse={true}
         >
           <Button
