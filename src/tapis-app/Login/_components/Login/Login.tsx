@@ -57,6 +57,7 @@ const Login: React.FC = () => {
           <Button
             type="submit"
             className="btn btn-primary"
+            style={{ width: '5.5em' }} //explicitly set width otherwise button forces text overflow on press.
             disabled={isLoading || accessToken != null}
           >
             Log In

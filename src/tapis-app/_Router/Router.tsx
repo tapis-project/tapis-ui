@@ -8,6 +8,7 @@ import Login from '../Login';
 import Dashboard from '../Dashboard';
 import Jobs from '../Jobs';
 import Systems from '../Systems';
+import Pods from '../Pods';
 import Files from '../Files';
 import Workflows from '../Workflows';
 import UIPatterns from '../UIPatterns';
@@ -47,6 +48,9 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute path="/ml-hub">
         {/* TODO: create ML Hub */}
+      </ProtectedRoute>
+      <ProtectedRoute path="/pods">
+        <Pods />
       </ProtectedRoute>
       <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
