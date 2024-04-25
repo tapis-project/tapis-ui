@@ -7,11 +7,12 @@ import {
   TapisActorTask,
   FunctionTask,
 } from '.';
+import { ReqTaskTransform } from '../../CreateTaskModal';
 
 type TaskProps = {
   type: string;
   pipeline: Workflows.Pipeline;
-  onSubmit: (reqTask: Workflows.ReqTask) => void;
+  onSubmit: (reqTask: ReqTaskTransform) => void;
 };
 
 export type TaskFormProps = { pipeline: Workflows.Pipeline; onSubmit: any };

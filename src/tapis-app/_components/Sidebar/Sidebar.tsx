@@ -1,3 +1,4 @@
+// TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
 import React from 'react';
 import { useTapisConfig } from 'tapis-hooks';
 import styles from './Sidebar.module.scss';
@@ -32,6 +33,12 @@ const Sidebar: React.FC = () => {
             </NavItem>
             <NavItem to="/workflows" icon="publications">
               Workflows
+            </NavItem>
+            <NavItem to="/ml-hub" icon="share">
+              ML Hub
+            </NavItem>
+            <NavItem to="/pods" icon="visualization">
+              Pods
             </NavItem>
           </>
         )}

@@ -31,6 +31,14 @@
   background-color: #eeeeee;
   padding: 8px;
   border-bottom: 1px solid #dddddd;
+  position: relative;
+}
+
+.remove-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 2px;
 }
 
 .task-body {

@@ -30,6 +30,13 @@
   align-items: center;
 }
 
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1em;
+  align-items: center;
+}
+
 .count {
   border-radius: 3px;
   border: 1px solid #cccccc;
@@ -38,4 +45,15 @@
 
 .header {
   margin-bottom: 1em;
+}
+
+.section-container {
+  display: grid;
+  gap: 1em;
+}
+
+.section {
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  padding: 0.5em;
 }

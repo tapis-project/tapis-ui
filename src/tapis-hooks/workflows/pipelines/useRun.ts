@@ -13,7 +13,7 @@ const useRun = () => {
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Workflows.RespEvent, Error, RunPipelineHookParams>(
+    useMutation<Workflows.RespPipelineRun, Error, RunPipelineHookParams>(
       [QueryKeys.run, basePath, jwt],
       (params) => run(params, basePath, jwt)
     );
@@ -29,7 +29,11 @@ const useRun = () => {
     run: (
       params: RunPipelineHookParams,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Workflows.RespEvent, Error, RunPipelineHookParams>
+      options?: MutateOptions<
+        Workflows.RespPipelineRun,
+        Error,
+        RunPipelineHookParams
+      >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(params, options);

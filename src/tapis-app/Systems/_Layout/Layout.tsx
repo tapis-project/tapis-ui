@@ -6,12 +6,14 @@ import {
   LayoutNavWrapper,
 } from 'tapis-ui/_common';
 import { SystemsNav } from '../_components';
+import SystemToolbar from '../_components/SystemToolbar';
 import { Router } from '../_Router';
 
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
       <div>System List</div>
+      <SystemToolbar />
     </LayoutHeader>
   );
 

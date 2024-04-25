@@ -1,6 +1,10 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Details, detailsValidationSchema } from '../_common';
+import {
+  Details,
+  detailsValidationSchema,
+  detailsInitialValues,
+} from '../_common';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import {
   FormikInput,
@@ -16,16 +20,19 @@ import { Button } from 'reactstrap';
 import { encode } from 'base-64';
 import { TaskFormProps } from '../Task';
 
+// const Runtimes = Workflows.EnumRuntimeEnvironment
+
+enum Runtimes {
+  PythonSingularity = 'tapis/workflows-python-singularity:0.1.0',
+  Python39 = 'python:3.9',
+}
+
 const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
   // eslint-disable-next-line
-  const defaultCode = `# Use the execution context to fetch input data, save data to outputs,\n# and terminate the task with the stdout and stderr functions\nfrom owe_python_sdk import execution_context as ctx`;
+  const defaultCode = `# Use the execution context to fetch input data, save data to outputs,\n# and terminate the task with the stdout and stderr functions\nfrom owe_python_sdk.runtime import execution_context as ctx`;
   const initialValues = {
-    id: '',
-    description: '',
+    ...detailsInitialValues,
     type: Workflows.EnumTaskType.Function,
-    depends_on: [] as Array<Workflows.TaskDependency>,
-    input: [],
-    outuput: [],
     code: defaultCode,
     command: '',
     installer: '',
@@ -48,7 +55,7 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
         )
     ),
     runtime: Yup.string()
-      .oneOf(Object.values(Workflows.EnumRuntimeEnvironment))
+      .oneOf(Object.values(Runtimes))
       .required('Runtime is required'),
   });
 
@@ -65,133 +72,144 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
         {({ setFieldValue, values }) => (
           <Form id="newtask-form">
             <p>Function Task</p>
-            <Details
-              type={Workflows.EnumTaskType.Function}
-              pipeline={pipeline}
-            />
-            <SectionHeader className={styles['header']}>
-              <span>Runtime Environment </span>
-            </SectionHeader>
-            <div className={styles['grid-2']}>
-              <FormikSelect
-                name={`runtime`}
-                label={'runtime'}
-                required={true}
-                description={
-                  'The runtime envrionment and language of the function'
-                }
-              >
-                <option disabled value={''} selected={true}>
-                  -- select an option --
-                </option>
-                {Object.values(Workflows.EnumRuntimeEnvironment).map(
-                  (runtime) => {
-                    return (
-                      <option
-                        value={runtime}
-                        selected={runtime === values.runtime}
-                      >
-                        {runtime}
-                      </option>
-                    );
-                  }
-                )}
-              </FormikSelect>
-              <FormikSelect
-                name={`installer`}
-                label={'installer'}
-                required={true}
-                description={'The package installer to use'}
-              >
-                <option disabled selected={true} value={''}>
-                  -- select an option --
-                </option>
-                {Object.values(Workflows.EnumInstaller).map((installer) => {
-                  return <option value={installer}>{installer}</option>;
-                })}
-              </FormikSelect>
-            </div>
-            <FieldArray
-              name="packages"
-              render={(arrayHelpers) => (
-                <div>
-                  <div className={styles['package-inputs']}>
-                    {values.packages &&
-                      values.packages.length > 0 &&
-                      values.packages.map((_, index) => (
-                        <div key={index} className={styles['package-input']}>
-                          <FormikInput
-                            name={`packages.${index}`}
-                            label="Package"
-                            required={true}
-                            description={`The package's name and version: Ex. tapipy==1.20.0`}
-                            aria-label="Input"
-                          />
-                          <Button
-                            className={styles['remove-button']}
-                            type="button"
-                            color="danger"
-                            onClick={() => arrayHelpers.remove(index)}
-                            size="sm"
-                          >
-                            <Icon name="trash" />
-                          </Button>
-                        </div>
-                      ))}
-                  </div>
-                  <Button
-                    type="button"
-                    className={styles['add-button']}
-                    onClick={() => arrayHelpers.push('')}
+            <div className={styles['section-container']}>
+              <Details
+                type={Workflows.EnumTaskType.Function}
+                pipeline={pipeline}
+              />
+              <div className={styles['section']}>
+                <SectionHeader className={styles['header']}>
+                  <span>Runtime Environment </span>
+                </SectionHeader>
+                <div className={styles['grid-2']}>
+                  <FormikSelect
+                    name={`runtime`}
+                    label={'runtime'}
+                    required={true}
+                    description={
+                      'The runtime envrionment and language of the function'
+                    }
                   >
-                    Add package +
-                  </Button>
+                    <option disabled value={''} selected={true}>
+                      -- select an option --
+                    </option>
+                    {Object.values(Runtimes).map((runtime) => {
+                      return (
+                        <option
+                          value={runtime}
+                          selected={runtime === values.runtime}
+                        >
+                          {runtime}
+                        </option>
+                      );
+                    })}
+                  </FormikSelect>
+                  <FormikSelect
+                    name={`installer`}
+                    label={'installer'}
+                    required={true}
+                    description={'The package installer to use'}
+                  >
+                    <option disabled selected={true} value={''}>
+                      -- select an option --
+                    </option>
+                    {Object.values(Workflows.EnumInstaller).map((installer) => {
+                      return <option value={installer}>{installer}</option>;
+                    })}
+                  </FormikSelect>
                 </div>
-              )}
-            />
-            <SectionHeader className={styles['header']}>
-              <span>Execution </span>
-            </SectionHeader>
-            <FormikInput
-              name={`command`}
-              label="command"
-              required={false}
-              description={`single-line bash commmand to run before running the entrypoint code`}
-              aria-label="Input"
-              value=""
-              disabled
-            />
-            <FieldWrapper
-              label={'code'}
-              required={true}
-              description={`Code to execute`}
-            >
-              <FormikInput
-                name={`code`}
-                label="code"
-                required={true}
-                type="hidden"
-                description={''}
-                aria-label="Input"
-                value={values.code}
-              />
-              <CodeEditor
-                value={values.code}
-                language={'python'}
-                placeholder={`Please enter valid code`}
-                onChange={(e) => {
-                  setFieldValue('code', e.target.value);
-                }}
-                padding={15}
-                color="black"
-                style={{
-                  fontSize: 12,
-                  backgroundColor: '#f5f5f5',
-                  fontFamily:
-                    'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                }}
-              />
-            </FieldWrapper>
+                <FieldArray
+                  name="packages"
+                  render={(arrayHelpers) => (
+                    <div>
+                      <div
+                        className={
+                          styles['package-inputs'] + ' ' + styles['grid-3']
+                        }
+                      >
+                        {values.packages &&
+                          values.packages.length > 0 &&
+                          values.packages.map((_, index) => (
+                            <div
+                              key={index}
+                              className={styles['package-input']}
+                            >
+                              <FormikInput
+                                name={`packages.${index}`}
+                                label="Package"
+                                required={true}
+                                description={`The package's name and version: Ex. tapipy==1.20.0`}
+                                aria-label="Input"
+                              />
+                              <Button
+                                className={styles['remove-button']}
+                                type="button"
+                                color="danger"
+                                onClick={() => arrayHelpers.remove(index)}
+                                size="sm"
+                              >
+                                <Icon name="trash" />
+                              </Button>
+                            </div>
+                          ))}
+                      </div>
+                      <Button
+                        type="button"
+                        className={styles['add-button']}
+                        onClick={() => arrayHelpers.push('')}
+                      >
+                        + Add package
+                      </Button>
+                    </div>
+                  )}
+                />
+              </div>
+              <div className={styles['section']}>
+                <SectionHeader className={styles['header']}>
+                  <span>Execution </span>
+                </SectionHeader>
+                <FormikInput
+                  name={`command`}
+                  label="command"
+                  required={false}
+                  description={`single-line bash commmand to run before running the entrypoint code`}
+                  aria-label="Input"
+                  value=""
+                  disabled
+                />
+                <FieldWrapper
+                  label={'code'}
+                  required={true}
+                  description={`Code to execute`}
+                >
+                  <FormikInput
+                    name={`code`}
+                    label="code"
+                    required={true}
+                    type="hidden"
+                    description={''}
+                    aria-label="Input"
+                    value={values.code}
+                  />
+                  <CodeEditor
+                    value={values.code}
+                    language={'python'}
+                    placeholder={`Please enter valid code`}
+                    onChange={(e) => {
+                      setFieldValue('code', e.target.value);
+                    }}
+                    padding={15}
+                    color="black"
+                    style={{
+                      fontSize: 12,
+                      backgroundColor: '#f5f5f5',
+                      fontFamily:
+                        'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                    }}
+                  />
+                </FieldWrapper>
+              </div>
+            </div>
           </Form>
         )}
       </Formik>

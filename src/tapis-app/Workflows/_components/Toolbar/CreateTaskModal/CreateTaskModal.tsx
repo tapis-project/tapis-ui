@@ -8,13 +8,40 @@ import { Task } from './_components/forms';
 import { TaskTypeSelector } from './_components';
 import { useCreate } from 'tapis-hooks/workflows/tasks';
 import { useDetails } from 'tapis-hooks/workflows/pipelines';
-import { default as queryKeys } from 'tapis-hooks/workflows/pipelines/queryKeys';
+import { default as queryKeys } from 'tapis-hooks/workflows/tasks/queryKeys';
 import { useQueryClient } from 'react-query';
 
 type CreateTaskModalProps = {
   toggle: () => void;
   groupId: string;
   pipelineId: string;
+};
+
+type BaseInputType = {
+  id: string;
+  source: 'literal' | 'env' | 'params' | 'task_output';
+};
+
+type LiteralInputType = BaseInputType & {
+  value: string | number;
+};
+
+type SourceInputType = {
+  sourceKey: string;
+};
+
+type TaskOutputSourceInputType = {
+  task_id: string;
+  output_id: string;
+};
+
+export type InputType = LiteralInputType &
+  SourceInputType &
+  TaskOutputSourceInputType;
+
+export type ReqTaskTransform = Omit<Workflows.ReqTask, 'input' | 'output'> & {
+  input: Array<InputType>;
+  // output: {[key: string]: object};
 };
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
@@ -33,13 +60,67 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.details);
+    queryClient.invalidateQueries(queryKeys.list);
   }, [queryClient]);
 
   const [type, setType] = useState<string>('');
-  const onSubmit = (reqTask: Workflows.ReqTask) => {
+
+  type InputTypeTransformFn = (inputs: Array<InputType>) => {
+    [key: string]: object;
+  };
+
+  const inputsArrayToInputObject: InputTypeTransformFn = (inputs) => {
+    const input: { [key: string]: object } = {};
+    inputs.forEach((inp) => {
+      switch (inp.source) {
+        case 'literal':
+          input[inp.id] = {
+            type: 'string',
+            value: inp.value,
+          };
+          break;
+        case 'env':
+          input[inp.id] = {
+            type: 'string',
+            value_from: { env: inp.sourceKey },
+          };
+          break;
+        case 'params':
+          input[inp.id] = {
+            type: 'string',
+            value_from: { params: inp.sourceKey },
+          };
+          break;
+        case 'task_output':
+          input[inp.id] = {
+            type: 'string',
+            value_from: {
+              task_output: {
+                task_id: inp.task_id,
+                output_id: inp.output_id,
+              },
+            },
+          };
+          break;
+      }
+    });
+    return input;
+  };
+
+  const onSubmit = (reqTask: ReqTaskTransform) => {
+    let modifiedReqTask: Omit<Workflows.ReqTask, 'input'> & {
+      input: { [key: string]: object };
+    } = {
+      ...reqTask,
+      input: inputsArrayToInputObject(reqTask.input),
+    };
+
     create(
-      { groupId: groupId!, pipelineId: pipelineId!, reqTask },
+      {
+        groupId: groupId!,
+        pipelineId: pipelineId!,
+        reqTask: modifiedReqTask as Workflows.ReqTask,
+      },
       { onSuccess }
     );
   };

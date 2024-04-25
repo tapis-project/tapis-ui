@@ -223,24 +223,28 @@ const ExecSystemQueueOptions: React.FC = () => {
         label="Node Count"
         description="The number of nodes to use for this job"
         required={false}
+        type="number"
       />
       <FormikInput
         name="coresPerNode"
         label="Cores Per Node"
         description="The number of cores to use per node"
         required={false}
+        type="number"
       />
       <FormikInput
         name="memoryMB"
         label="Memory, in Megabytes"
         description="The amount of memory to use per node in megabytes"
         required={false}
+        type="number"
       />
       <FormikInput
         name="maxMinutes"
         label="Maximum Minutes"
         description="The maximum amount of time in minutes for this job"
         required={false}
+        type="number"
       />
     </Collapse>
   );
