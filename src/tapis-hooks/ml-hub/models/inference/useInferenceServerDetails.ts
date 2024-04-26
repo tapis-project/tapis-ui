@@ -15,7 +15,8 @@ const useInferenceServerDetails = (
     [QueryKeys.inferenceServerDetails, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    () => inferenceServerDetails(params, basePath, accessToken?.access_token ?? ''),
+    () =>
+      inferenceServerDetails(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
     }
