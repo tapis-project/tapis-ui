@@ -12,7 +12,9 @@ const listByAuthor = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() => api.listModelsByAuthor(params));
+  return errorDecoder<Models.RespModelObject>(() =>
+    api.listModelsByAuthor(params)
+  );
 };
 
 export default listByAuthor;

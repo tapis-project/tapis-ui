@@ -12,7 +12,9 @@ const listByDataset = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() => api.listModelsByDataset(params));
+  return errorDecoder<Models.RespModelObject>(() =>
+    api.listModelsByDataset(params)
+  );
 };
 
 export default listByDataset;

@@ -24,4 +24,3 @@ const useListByLibrary = (
 };
 
 export default useListByLibrary;
-

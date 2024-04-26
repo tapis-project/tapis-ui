@@ -12,7 +12,9 @@ const listByLanguage = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() => api.listModelsByLanguage(params));
+  return errorDecoder<Models.RespModelObject>(() =>
+    api.listModelsByLanguage(params)
+  );
 };
 
 export default listByLanguage;

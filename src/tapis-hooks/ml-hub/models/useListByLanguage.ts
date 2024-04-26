@@ -24,4 +24,3 @@ const useListByLanguage = (
 };
 
 export default useListByLanguage;
-

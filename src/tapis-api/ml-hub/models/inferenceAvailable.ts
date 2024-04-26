@@ -12,7 +12,9 @@ const downloadLinks = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelServer>(() => api.getModelInferenceServer(params));
+  return errorDecoder<Models.RespModelServer>(() =>
+    api.getModelInferenceServer(params)
+  );
 };
 
 export default downloadLinks;

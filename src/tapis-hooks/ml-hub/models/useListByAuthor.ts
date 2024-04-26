@@ -24,4 +24,3 @@ const useListByAuthor = (
 };
 
 export default useListByAuthor;
-

@@ -12,7 +12,9 @@ const downloadLinks = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelDownload>(() => api.downloadModel(params));
+  return errorDecoder<Models.RespModelDownload>(() =>
+    api.downloadModel(params)
+  );
 };
 
 export default downloadLinks;
