@@ -9,7 +9,7 @@ const useList = (
     options: QueryObserverOptions<Models.RespModelObject, Error> = {}
   ) => {
     // const { accessToken, basePath } = useTapisConfig();
-    const { accessToken } = useTapisConfig(); // remove and uncomment line above if ml-hub is listed in NGINX
+    const { accessToken } = useTapisConfig(); // remove  this line and uncomment line above if ml-hub is listed in NGINX
     const result = useQuery<Models.RespModelObject, Error>(
       [QueryKeys.list, accessToken],
       // Default to no token. This will generate a 403 when calling the list function
