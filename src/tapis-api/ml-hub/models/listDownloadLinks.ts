@@ -1,7 +1,7 @@
 import { Models } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from 'tapis-api/utils';
 
-const downloadLinks = (
+const listDownloadLinks = (
   params: Models.DownloadModelRequest,
   basePath: string,
   jwt: string
@@ -17,4 +17,4 @@ const downloadLinks = (
   );
 };
 
-export default downloadLinks;
+export default listDownloadLinks;
