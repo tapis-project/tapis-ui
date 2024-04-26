@@ -3,7 +3,7 @@ import { listByQuery } from 'tapis-api/ml-hub/models';
 import { Models } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
-import basePath from './modelsPath'; // remove if ml-hub is listed in NGINX
+import basePath from './basePath'; // remove if ml-hub is listed in NGINX
 
 const useListByQuery = (
   params: Models.ListModelsByQueryRequest,
