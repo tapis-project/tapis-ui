@@ -1,0 +1,10 @@
+.pipeline-dag {
+    padding: 24px;
+    background-color: #02040A;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(auto-fill, 64px);
+    grid-row-gap: .5em;
+    grid-column-gap: 1em;
+}

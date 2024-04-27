@@ -25,10 +25,6 @@ const Router: React.FC = () => {
         <PipelinesLayout />
       </Route>
 
-      {/* <Route path={`${path}/identities`}>
-        <IdentitiesLayout />
-      </Route> */}
-
       {/* <Route
         path={`${path}/groups/:groupId`}
         exact

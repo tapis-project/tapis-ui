@@ -37,13 +37,6 @@ const Menu: React.FC = () => {
               </Button>
             </Link>
           </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/workflows/identities">
-              <Button>
-                <Icon name="user"></Icon> Identities
-              </Button>
-            </Link>
-          </NavItem>
         </Nav>
       </Collapse>
     </Navbar>

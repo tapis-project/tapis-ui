@@ -6,7 +6,6 @@ import { CreatePipelineModal } from './CreatePipelineModal';
 import { CreateTaskModal } from './CreateTaskModal';
 import { CreateGroupModal } from './CreateGroupModal';
 import { CreateArchiveModal } from './CreateArchiveModal';
-import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
 import { RunPipelineModal } from './RunPipelineModal';
 
@@ -95,15 +94,6 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create archive"
           />
         )}
-        {buttons.includes('createidentity') && (
-          <ToolbarButton
-            text="New Identity"
-            icon="add"
-            disabled={false}
-            onClick={() => setModal('createidentity')}
-            aria-label="Create identity"
-          />
-        )}
         {buttons.includes('addgroupuser') && (
           <ToolbarButton
             text="Add Users"
@@ -143,7 +133,6 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         {modal === 'createarchive' && groupId && (
           <CreateArchiveModal groupId={groupId} toggle={toggle} />
         )}
-        {modal === 'createidentity' && <CreateIdentityModal toggle={toggle} />}
         {modal === 'addgroupusers' && groupId && (
           <AddGroupUsersModal groupId={groupId} toggle={toggle} />
         )}

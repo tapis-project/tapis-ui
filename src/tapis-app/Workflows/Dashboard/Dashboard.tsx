@@ -2,7 +2,6 @@ import React from 'react';
 import { useList as useListGroups } from 'tapis-hooks/workflows/groups';
 import { useListAll as useListAllPipelines } from 'tapis-hooks/workflows/pipelines';
 import { useListAll as useListAllArchives } from 'tapis-hooks/workflows/archives';
-import { useList as useListIdentities } from 'tapis-hooks/workflows/identities';
 import { Link } from 'react-router-dom';
 import { LoadingSpinner, Icon } from 'tapis-ui/_common';
 import {
@@ -65,13 +64,12 @@ const Dashboard: React.FC = () => {
   const groups = useListGroups();
   const groupIds: Array<string> = [];
   groups.data?.result.map((group) => groupIds.push(group.id!));
-  const identities = useListIdentities();
   const archives = useListAllArchives({ groupIds });
   const pipelines = useListAllPipelines({ groupIds });
 
   return (
     <div id="dashboard">
-      <Toolbar buttons={['creategroup', 'createidentity']} />
+      <Toolbar buttons={['creategroup']} />
       <div id="dashboard-cards" className={styles['card-container']}>
         <DashboardCard
           icon="publications"
@@ -96,14 +94,6 @@ const Dashboard: React.FC = () => {
           link="/workflows/archives"
           counter={`${archives?.data?.result?.length} archives`}
           loading={archives?.isLoading}
-        />
-        <DashboardCard
-          icon="user"
-          name="Identities"
-          text="View Workflow identities"
-          link="/workflows/identities"
-          counter={`${identities?.data?.result?.length} identities`}
-          loading={identities?.isLoading}
         />
       </div>
     </div>

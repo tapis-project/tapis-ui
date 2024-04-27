@@ -10,6 +10,7 @@ import { Button, ButtonGroup, Table } from 'reactstrap';
 import { useList, useDelete } from 'tapis-hooks/workflows/tasks';
 import { default as queryKeys } from 'tapis-hooks/workflows/tasks/queryKeys';
 import { useQueryClient } from 'react-query';
+import { PipelineDAGView } from 'tapis-app/Workflows/_components/PipelineDAGView';
 
 type TaskProps = {
   task: Workflows.Task;
@@ -105,14 +106,10 @@ const View: React.FC<ViewProps> = ({ type, tasks, groupId, pipelineId }) => {
         </div>
       );
     case ViewEnum.Dag:
-      return <DagView tasks={tasks} />;
+      return <PipelineDAGView tasks={tasks} />;
     default:
       return <></>;
   }
-};
-
-const DagView: React.FC<{ tasks: Array<Workflows.Task> }> = ({ tasks }) => {
-  return <div>DAG view unavailable</div>;
 };
 
 const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {

@@ -1,0 +1,53 @@
+.node {
+  width: 300px;
+  height: 48px;
+  border-radius: 3px;
+  font-weight: 600;
+  border: 1px solid #999999;
+  background-color: #161B22;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.node:hover {
+  border-color: #008000;
+}
+
+.node-name {
+  width: 90%;
+  max-height: 100%;
+  display: block;
+  margin: 0 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 3em;
+  color: #ffffff;
+}
+
+.node-anchor {
+  border: 1px solid #FFFFFF;
+  background-color: #BBBBBB;
+  position: absolute;
+}
+
+.node-anchor:hover {
+  background-color: #008000;
+}
+
+.right-anchor {
+  height: 20px;
+  width: 20px;
+  right: -10px;
+  top: 12.5px;
+  border-radius: 50%;
+}
+
+.left-anchor {
+  height: 20px;
+  width: 20px;
+  left: -10px;
+  top: 12.5px;
+  border-radius: 50%;
+}
