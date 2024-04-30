@@ -59,7 +59,13 @@ const Dashboard: React.FC = () => {
           link="/ml-hub/models"
         />
         <DashboardCard
-          icon="conversation"
+          icon="search-folder"
+          name="Datasets Hub"
+          text="View available Datasets"
+          link="/ml-hub/datasets"
+        />
+        <DashboardCard
+          icon="multiple-coversation"
           name="Inference Server"
           text="View available inference server for ML models"
           link="/ml-hub/inference"

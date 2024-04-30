@@ -24,9 +24,16 @@ const Menu: React.FC = () => {
             </Link>
           </NavItem>
           <NavItem className={styles['nav-item']}>
+            <Link to="/ml-hub/datasets">
+              <Button>
+                <Icon name="search-folder"></Icon> Datasets
+              </Button>
+            </Link>
+          </NavItem>
+          <NavItem className={styles['nav-item']}>
             <Link to="/ml-hub/inference">
               <Button>
-                <Icon name="conversation"></Icon> Inference
+                <Icon name="multiple-coversation"></Icon> Inference
               </Button>
             </Link>
           </NavItem>
