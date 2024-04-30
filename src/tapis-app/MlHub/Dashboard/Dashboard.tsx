@@ -35,8 +35,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
         </div>
       </CardHeader>
       <CardBody>
-        <CardTitle tag="h5">
-        </CardTitle>
+        <CardTitle tag="h5"></CardTitle>
         <CardText>{text}</CardText>
       </CardBody>
       <CardFooter className={styles['card-footer']}>
@@ -48,7 +47,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-
   return (
     <div id="dashboard">
       <div id="dashboard-cards" className={styles['card-container']}>
