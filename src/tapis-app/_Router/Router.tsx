@@ -11,6 +11,7 @@ import Systems from '../Systems';
 import Pods from '../Pods';
 import Files from '../Files';
 import Workflows from '../Workflows';
+import MlHub from '../MlHub';
 import UIPatterns from '../UIPatterns';
 
 const Router: React.FC = () => {
@@ -47,7 +48,7 @@ const Router: React.FC = () => {
         <Workflows />
       </ProtectedRoute>
       <ProtectedRoute path="/ml-hub">
-        {/* TODO: create ML Hub */}
+        <MlHub />
       </ProtectedRoute>
       <ProtectedRoute path="/pods">
         <Pods />
