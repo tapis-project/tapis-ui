@@ -45,7 +45,7 @@ const UnhideJobModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 label="Job Uuid"
                 required={true}
                 description={`Job Uuid`}
-                aria-label="Input"
+                aria-label="jobUuid"
               />
             </Form>
           </Formik>
