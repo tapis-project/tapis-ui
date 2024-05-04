@@ -107,6 +107,14 @@ const Dashboard: React.FC = () => {
               counter={`${jobs?.data?.result?.length} jobs`}
               loading={jobs?.isLoading}
             />
+            <DashboardCard
+              icon="simulation"
+              name="ML Hub"
+              text="View available models and datasets, run inference and training on ML models"
+              link="/ml-hub"
+              counter={`${4} services`}
+              loading={apps?.isLoading}
+            />
           </>
         ) : (
           <Card>
