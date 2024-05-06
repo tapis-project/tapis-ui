@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes, { any } from "prop-types";
 
-import styles from './SectionHeader.module.css';
+import styles from "./SectionHeader.module.css";
 
 /**
  * A header for a `Section[…]` component
@@ -39,15 +39,15 @@ function SectionHeader({
   isForForm,
   isForTable,
 }) {
-  let styleName = '';
-  const styleNameList = [styles['root']];
-  const HeadingTagName = isForForm || isForTable ? 'h3' : 'h2';
+  let styleName = "";
+  const styleNameList = [styles["root"]];
+  const HeadingTagName = isForForm || isForTable ? "h3" : "h2";
 
-  if (isForForm) styleNameList.push(styles['for-form']);
-  if (isForTable) styleNameList.push(styles['for-table']);
+  if (isForForm) styleNameList.push(styles["for-form"]);
+  if (isForTable) styleNameList.push(styles["for-table"]);
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
-  styleName = styleNameList.join(' ');
+  styleName = styleNameList.join(" ");
 
   return (
     <header className={`${styleName} ${className}`}>
@@ -60,9 +60,9 @@ function SectionHeader({
 }
 SectionHeader.propTypes = {
   /** Any actions (buttons, links, forms, etc) */
-  actions: PropTypes.node,
+  actions: any,
   /** The text a.k.a. title */
-  children: PropTypes.node,
+  children: any,
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** Whether this header is for a form */
@@ -71,9 +71,9 @@ SectionHeader.propTypes = {
   isForTable: PropTypes.bool,
 };
 SectionHeader.defaultProps = {
-  actions: '',
-  className: '',
-  children: '',
+  actions: "",
+  className: "",
+  children: "",
   isForForm: false,
   isForTable: false,
 };
