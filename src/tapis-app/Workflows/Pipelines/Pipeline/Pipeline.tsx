@@ -79,7 +79,7 @@ type PipelineProps = {
   pipelineId: string;
 };
 
-enum ViewEnum {
+export enum ViewEnum {
   Default = 'Default',
   Dag = 'Dag',
 }
