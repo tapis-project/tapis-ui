@@ -101,10 +101,24 @@
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "gh-pages": "^6.1.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "react-app-rewired": "^2.2.1",
     "redux-mock-store": "^1.5.4",
-    "redux-saga-test-plan": "^4.0.3"
+    "redux-saga-test-plan": "^4.0.3",
+    "ts-jest": "^29.1.2"
+  },
+  "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
+    "testEnvironment": "jest-environment-jsdom",
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    },
+    "modulePaths": [
+      "<rootDir>/src"
+    ]
   }
 }
