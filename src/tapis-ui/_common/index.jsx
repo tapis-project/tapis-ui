@@ -5,7 +5,7 @@ export { default as Section } from './Section';
 export { default as SectionHeader } from './SectionHeader';
 export { default as SectionContent } from './SectionContent';
 export { FormField } from './Form';
-export { FileInputDropZoneFormField } from './Form';
+// export { FileInputDropZoneFormField } from "./Form";
 export { FileInputDropZone } from './Form';
 export { default as InfiniteScrollTable } from './InfiniteScrollTable';
 export { default as Expand } from './Expand';

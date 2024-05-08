@@ -5,7 +5,7 @@ import SectionHeader from 'tapis-ui/_common/SectionHeader';
 
 export const PARAMETER_CLASS_MAP = {
   isForForm: 'for-form',
-  isForTable: 'for-table'
+  isForTable: 'for-table',
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 
@@ -13,9 +13,7 @@ describe('SectionHeader', () => {
   describe('elements', () => {
     it('renders elements with appropriate roles', () => {
       const { getByRole } = render(
-        <SectionHeader
-          actions={<button type="button">Button</button>}
-        >
+        <SectionHeader actions={<button type="button">Button</button>}>
           Heading
         </SectionHeader>
       );
@@ -28,10 +26,7 @@ describe('SectionHeader', () => {
   describe('content and classes', () => {
     it('renders all passed content and classes', () => {
       const { container, getByText } = render(
-        <SectionHeader
-          className="root-test"
-          actions={<button>Button</button>}
-        >
+        <SectionHeader className="root-test" actions={<button>Button</button>}>
           Heading
         </SectionHeader>
       );
@@ -50,18 +45,20 @@ describe('SectionHeader', () => {
   });
 
   describe('parameter class names', () => {
-    it.each(PARAMETERS)('renders accurate class and tag for boolean parameter "%s"', parameter => {
-      const parameterObj = {[parameter]: true};
-      const { container, getByText } = render(
-        <SectionHeader
-          {...parameterObj}>
-          Heading
-        </SectionHeader>
-      );
-      const className = PARAMETER_CLASS_MAP[parameter];
+    it.each(PARAMETERS)(
+      'renders accurate class and tag for boolean parameter "%s"',
+      (parameter) => {
+        const parameterObj = { [parameter]: true };
+        const { container, getByText } = render(
+          <SectionHeader {...parameterObj}>Heading</SectionHeader>
+        );
+        const className = PARAMETER_CLASS_MAP[parameter];
 
-      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
-      expect(getByText('Heading').tagName.toLowerCase()).toEqual('h3');
-    });
+        expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(
+          null
+        );
+        expect(getByText('Heading').tagName.toLowerCase()).toEqual('h3');
+      }
+    );
   });
 });

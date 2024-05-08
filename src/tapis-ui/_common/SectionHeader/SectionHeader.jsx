@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { any } from 'prop-types';
 
 import styles from './SectionHeader.module.css';
 
@@ -60,9 +60,9 @@ function SectionHeader({
 }
 SectionHeader.propTypes = {
   /** Any actions (buttons, links, forms, etc) */
-  actions: PropTypes.node,
+  actions: any,
   /** The text a.k.a. title */
-  children: PropTypes.node,
+  children: any,
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** Whether this header is for a form */

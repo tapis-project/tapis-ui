@@ -6,6 +6,7 @@ import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 import { useDownload, usePermissions } from 'tapis-hooks/files';
 import RenameModal from 'tapis-app/Files/_components/Toolbar/RenameModal';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('tapis-hooks/files');
 jest.mock('tapis-app/Files/_components/FilesContext');

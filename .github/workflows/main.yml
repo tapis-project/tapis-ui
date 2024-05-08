@@ -10,13 +10,13 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   Client_Side_Unit_Tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 18.x
 
       - uses: actions/cache@v1
         with:
@@ -36,13 +36,13 @@ jobs:
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
   Client_Side_Linting:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 18.x
 
       - uses: actions/cache@v1
         with:
@@ -94,6 +94,7 @@ jobs:
         id: set_image_tag
 
   Build_Push_Image:
+    if: github.event_name != 'pull_request'
     needs:
       - Resolve_Image_Tag
       - Client_Side_Linting
@@ -117,4 +118,3 @@ jobs:
           docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
       - name: Push_All_Tags
         run: docker push --all-tags tapis/tapisui
-

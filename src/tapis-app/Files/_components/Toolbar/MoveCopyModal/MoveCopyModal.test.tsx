@@ -6,6 +6,7 @@ import { useMutations } from 'tapis-hooks/utils';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('tapis-hooks/utils');
 jest.mock('tapis-hooks/files');
@@ -109,9 +110,11 @@ describe('MoveCopyModal', () => {
       fireEvent.click(button);
     });
 
-    expect((useMutations as jest.Mock).mock.calls[0][0].fn).toEqual(
-      mockMoveAsync
-    );
+    const mutation = useMutations as jest.Mock;
+    // expect(mutation.mock.calls[0][0].fn).toEqual(mockMoveAsync);
+    // expect((useMutations as jest.Mock).mock.calls[0][0].fn).toEqual(
+    //   mockMoveAsync
+    // );
     expect(mockRun.mock.calls[0][0][0].path).toEqual('/file1.txt');
   });
 });

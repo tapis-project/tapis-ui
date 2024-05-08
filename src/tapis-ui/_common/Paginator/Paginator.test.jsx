@@ -4,7 +4,9 @@ import Paginator from 'tapis-ui/_common/Paginator';
 
 describe('Paginator', () => {
   it('renders pages', () => {
-    const { getAllByText } = render(<Paginator pages={20} current={11} callback={() => {}} />);
+    const { getAllByText } = render(
+      <Paginator pages={20} current={11} callback={() => {}} />
+    );
     expect(getAllByText('1').length).toEqual(1);
     expect(getAllByText('9').length).toEqual(1);
     expect(getAllByText('10').length).toEqual(1);

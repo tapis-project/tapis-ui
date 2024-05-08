@@ -2,15 +2,11 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Section from 'tapis-ui/_common/Section';
 
-
 describe('Section', () => {
   describe('elements and classes', () => {
     it('renders elements with appropriate roles', () => {
       const { getByRole } = render(
-        <Section
-          header="Header"
-          content={<p>Content</p>}
-        />
+        <Section header="Header" content={<p>Content</p>} />
       );
       // WARNING: Only one `main` is allowed per page
       expect(getByRole('main').textContent).toEqual('Content');
@@ -32,7 +28,12 @@ describe('Section', () => {
           contentClassName="content-test"
           // sidebar={<nav>Sidebar</nav>}
           // sidebarClassName="sidebar-test"
-          messages={<><strong>Message</strong><strong>List</strong></>}
+          messages={
+            <>
+              <strong>Message</strong>
+              <strong>List</strong>
+            </>
+          }
           messagesClassName="messages-test"
         />
       );
@@ -41,11 +42,15 @@ describe('Section', () => {
       expect(getByText('Header Actions')).not.toEqual(null);
       expect(container.getElementsByClassName('header-test').length).toEqual(1);
       expect(getByText('Content')).not.toEqual(null);
-      expect(container.getElementsByClassName('content-test').length).toEqual(1);
+      expect(container.getElementsByClassName('content-test').length).toEqual(
+        1
+      );
       // expect(getByText('Sidebar')).not.toEqual(null);
       // expect(container.getElementsByClassName('sidebar-test').length).toEqual(1);
       expect(container.querySelector(`[class*="messages"]`)).not.toEqual(null);
-      expect(container.getElementsByClassName('messages-test').length).toEqual(1);
+      expect(container.getElementsByClassName('messages-test').length).toEqual(
+        1
+      );
     });
   });
 });

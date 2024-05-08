@@ -1,5 +1,9 @@
 import React from 'react';
-import { render, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import SectionMessage from 'tapis-ui/_common/SectionMessage';
 
 const TEST_CONTENT = '…';
@@ -9,11 +13,7 @@ describe('SectionMessage', () => {
   describe('visibility', () => {
     test('removed when dismissed', async () => {
       const { getByRole, queryByRole } = render(
-        <SectionMessage
-          type={TEST_TYPE}
-          scope="section"
-          canDismiss
-        >
+        <SectionMessage type={TEST_TYPE} scope="section" canDismiss>
           {TEST_CONTENT}
         </SectionMessage>
       );

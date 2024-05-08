@@ -4,6 +4,7 @@ import TransferCancel from './TransferCancel';
 import { useDetails, useCancel } from 'tapis-hooks/files/transfers';
 import { Files } from '@tapis/tapis-typescript';
 import { transferTask } from 'fixtures/files.fixtures';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('tapis-hooks/files/transfers');
 

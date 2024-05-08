@@ -4,7 +4,6 @@ import { Alert } from 'reactstrap';
 import SectionMessages from 'tapis-ui/_common/Section/SectionMessages';
 import * as MESSAGES from '../../_constants/welcomeMessages';
 
-
 describe('SectionMessages', () => {
   describe('content and classes', () => {
     it('renders passed children and class', () => {
@@ -23,9 +22,7 @@ describe('SectionMessages', () => {
 
   describe('weclome message', () => {
     it('renders known welcome message', () => {
-      const { getByText } = render(
-        <SectionMessages routeName="DASHBOARD" />
-      );
+      const { getByText } = render(<SectionMessages routeName="DASHBOARD" />);
       expect(getByText(MESSAGES['DASHBOARD'])).not.toEqual(null);
     });
 
@@ -38,9 +35,7 @@ describe('SectionMessages', () => {
     });
 
     it('renders custom welcome message', () => {
-      const { getByText } = render(
-        <SectionMessages welcomeText="Hello" />
-      );
+      const { getByText } = render(<SectionMessages welcomeText="Hello" />);
       expect(getByText('Hello')).not.toEqual(null);
     });
   });

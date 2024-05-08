@@ -20,13 +20,10 @@ function testClassnamesByType(type, getByRole, getByTestId) {
 }
 
 describe('Message', () => {
-  it.each(MSG.TYPES)('has correct text for type %s', type => {
+  it.each(MSG.TYPES)('has correct text for type %s', (type) => {
     if (type === 'warn') console.warn = jest.fn(); // mute deprecation warning
     const { getByTestId } = render(
-      <Message
-        type={type}
-        scope={TEST_SCOPE}
-      >
+      <Message type={type} scope={TEST_SCOPE}>
         {TEST_CONTENT}
       </Message>
     );
@@ -34,25 +31,19 @@ describe('Message', () => {
   });
 
   describe('elements', () => {
-    test.each(MSG.TYPES)('include icon when type is %s', type => {
+    test.each(MSG.TYPES)('include icon when type is %s', (type) => {
       if (type === 'warn') console.warn = jest.fn(); // mute deprecation warning
       const { getByRole } = render(
-        <Message
-          type={type}
-          scope={TEST_SCOPE}
-        >
+        <Message type={type} scope={TEST_SCOPE}>
           {TEST_CONTENT}
         </Message>
       );
       expect(getByRole('img')).toBeDefined(); // WARNING: Relies on `Icon`
     });
-    test.each(MSG.TYPES)('include text when type is %s', type => {
+    test.each(MSG.TYPES)('include text when type is %s', (type) => {
       if (type === 'warn') console.warn = jest.fn(); // mute deprecation warning
       const { getByTestId } = render(
-        <Message
-          type={type}
-          scope={TEST_SCOPE}
-        >
+        <Message type={type} scope={TEST_SCOPE}>
           {TEST_CONTENT}
         </Message>
       );
@@ -60,11 +51,7 @@ describe('Message', () => {
     });
     test('include button when message is dismissible', () => {
       const { getByRole } = render(
-        <Message
-          type={TEST_TYPE}
-          scope="section"
-          canDismiss
-        >
+        <Message type={TEST_TYPE} scope="section" canDismiss>
           {TEST_CONTENT}
         </Message>
       );
@@ -75,11 +62,7 @@ describe('Message', () => {
   describe('visibility', () => {
     test('invisible when `isVisible` is `false`', () => {
       const { queryByRole } = render(
-        <Message
-          type={TEST_TYPE}
-          scope="section"
-          isVisible={false}
-        >
+        <Message type={TEST_TYPE} scope="section" isVisible={false}>
           {TEST_CONTENT}
         </Message>
       );
@@ -106,44 +89,37 @@ describe('Message', () => {
   });
 
   describe('className', () => {
-    it.each(MSG.TYPES)('is accurate when type is %s', type => {
+    it.each(MSG.TYPES)('is accurate when type is %s', (type) => {
       const { getByRole, getByTestId } = render(
-        <Message
-          type={type}
-          scope={TEST_SCOPE}
-        >
+        <Message type={type} scope={TEST_SCOPE}>
           {TEST_CONTENT}
         </Message>
       );
 
       testClassnamesByType(type, getByRole, getByTestId);
     });
-    it.each(MSG.SCOPES)('has accurate className when scope is "%s"', scope => {
-      const { getByRole, getByTestId } = render(
-        <Message
-          type={TEST_TYPE}
-          scope={scope}
-        >
-          {TEST_CONTENT}
-        </Message>
-      );
-      const root = getByRole('status');
-      const modifierClassName = MSG.SCOPE_MAP[scope || MSG.DEFAULT_SCOPE];
+    it.each(MSG.SCOPES)(
+      'has accurate className when scope is "%s"',
+      (scope) => {
+        const { getByRole, getByTestId } = render(
+          <Message type={TEST_TYPE} scope={scope}>
+            {TEST_CONTENT}
+          </Message>
+        );
+        const root = getByRole('status');
+        const modifierClassName = MSG.SCOPE_MAP[scope || MSG.DEFAULT_SCOPE];
 
-      testClassnamesByType(TEST_TYPE, getByRole, getByTestId);
-      expect(root.className).toMatch(new RegExp(modifierClassName));
-    });
+        testClassnamesByType(TEST_TYPE, getByRole, getByTestId);
+        expect(root.className).toMatch(new RegExp(modifierClassName));
+      }
+    );
   });
 
   describe('property limitation', () => {
     test('is announced for `canDismiss` and `scope`', () => {
       console.error = jest.fn();
       render(
-        <Message
-          type={TEST_TYPE}
-          scope="inline"
-          canDismiss
-        >
+        <Message type={TEST_TYPE} scope="inline" canDismiss>
           {TEST_CONTENT}
         </Message>
       );
@@ -154,29 +130,16 @@ describe('Message', () => {
     test('is announced for `type="warn"`', () => {
       console.info = jest.fn();
       render(
-        <Message
-          type="warn"
-          scope={TEST_SCOPE}
-        >
+        <Message type="warn" scope={TEST_SCOPE}>
           {TEST_CONTENT}
         </Message>
       );
-      expect(console.info).toHaveBeenCalledWith(
-        MSG.ERROR_TEXT.deprecatedType
-      );
+      expect(console.info).toHaveBeenCalledWith(MSG.ERROR_TEXT.deprecatedType);
     });
     test('is announced for missing `scope` value', () => {
       console.info = jest.fn();
-      render(
-        <Message
-          type={TEST_TYPE}
-        >
-          {TEST_CONTENT}
-        </Message>
-      );
-      expect(console.info).toHaveBeenCalledWith(
-        MSG.ERROR_TEXT.missingScope
-      );
+      render(<Message type={TEST_TYPE}>{TEST_CONTENT}</Message>);
+      expect(console.info).toHaveBeenCalledWith(MSG.ERROR_TEXT.missingScope);
     });
   });
 });

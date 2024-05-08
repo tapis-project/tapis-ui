@@ -7,5 +7,5 @@ describe('Loading Spinner component', () => {
     const { getByTestId, getByText } = render(<LoadingSpinner />);
     expect(getByTestId(/loading-spinner/)).toBeDefined();
     expect(getByText(/Loading.../)).toBeDefined();
-  })
-})
+  });
+});

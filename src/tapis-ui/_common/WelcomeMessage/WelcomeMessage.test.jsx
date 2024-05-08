@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import WelcomeMessage from 'tapis-ui/_common/WelcomeMessage';
 
-
 describe('WelcomeMessage', () => {
   describe('elements', () => {
     it('includes class, message, and role appropriately', () => {

@@ -3,7 +3,6 @@ import { render } from '@testing-library/react';
 import InfiniteScrollTable from 'tapis-ui/_common/InfiniteScrollTable';
 import '@testing-library/jest-dom/extend-expect';
 
-
 const tableData = [
   {
     col1: 'Hello',
@@ -33,10 +32,7 @@ const tableColumns = [
 describe('InfiniteScrollTable', () => {
   it('renders a table', () => {
     const { getByText } = render(
-      <InfiniteScrollTable
-        tableColumns={tableColumns}
-        tableData={tableData}
-      />
+      <InfiniteScrollTable tableColumns={tableColumns} tableData={tableData} />
     );
 
     expect(getByText(/Hello/)).toBeDefined();
@@ -49,7 +45,7 @@ describe('InfiniteScrollTable', () => {
         tableData={tableData}
         isLoading={true}
       />
-    )
+    );
 
     expect(getByTestId(/loading-spinner/)).toBeDefined();
   });
