@@ -52,10 +52,9 @@
   },
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "TZ=UTC react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "test && vite build",
+    "test": "TZ=UTC jest",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write .",
     "gh-pages": "react-scripts build && gh-pages -d build"
