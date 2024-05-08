@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   FormGroup,
@@ -8,22 +8,22 @@ import {
   Badge,
   InputGroup,
   InputGroupAddon,
-} from 'reactstrap';
+} from "reactstrap";
 
-import { useField } from 'formik';
-import PropTypes from 'prop-types';
-import './FormField.scss';
+import { useField } from "formik";
+import PropTypes from "prop-types";
+import "./FormField.scss";
 
 /** A limited-choice wrapper for `FormField` */
 const FormFieldWrapper = ({ children, type }) => {
   let wrapper;
 
   switch (type) {
-    case 'InputGroup':
+    case "InputGroup":
       wrapper = <InputGroup>{children}</InputGroup>;
       break;
 
-    case 'FormGroup':
+    case "FormGroup":
     default:
       wrapper = <FormGroup>{children}</FormGroup>;
   }
@@ -34,10 +34,10 @@ FormFieldWrapper.propTypes = {
   /** The content for the wrapper */
   children: PropTypes.node.isRequired,
   /** Which wrapper to use */
-  type: PropTypes.oneOf(['InputGroup', 'FormGroup', '']),
+  type: PropTypes.oneOf(["InputGroup", "FormGroup", ""]),
 };
 FormFieldWrapper.defaultProps = {
-  type: 'FormGroup',
+  type: "FormGroup",
 };
 
 /**
@@ -65,7 +65,7 @@ const FormField = ({
   const [openAgaveFileModal, setOpenAgaveFileModal] = useState(false);
   const { id, name } = props;
   const hasAddon = addon !== undefined;
-  const wrapperType = hasAddon ? 'InputGroup' : '';
+  const wrapperType = hasAddon ? "InputGroup" : "";
 
   const FieldLabel = () => (
     /* !!!: Temporary extra markup to make simpler PR diff */
@@ -74,11 +74,11 @@ const FormField = ({
         className="form-field__label"
         for={id || name}
         size="sm"
-        style={{ display: 'flex', alignItems: 'center' }}
+        style={{ display: "flex", alignItems: "center" }}
       >
-        {label}{' '}
+        {label}{" "}
         {required ? (
-          <Badge color="danger" style={{ marginLeft: '10px' }}>
+          <Badge color="danger" style={{ marginLeft: "10px" }}>
             Required
           </Badge>
         ) : null}
@@ -102,11 +102,11 @@ const FormField = ({
   // Allowing ineffectual prop combinations would lead to confusion
   if (addon && agaveFile) {
     throw new Error(
-      'You must not pass `addon` and `agaveFile`, because `agaveFile` triggers its own field add-on'
+      "You must not pass `addon` and `agaveFile`, because `agaveFile` triggers its own field add-on"
     );
   }
   if ((!agaveFile && SelectModal) || (agaveFile && !SelectModal)) {
-    throw new Error('An `agaveFile` and a `SelectModal` must both be passed');
+    throw new Error("An `agaveFile` and a `SelectModal` must both be passed");
   }
 
   return (
@@ -144,9 +144,9 @@ const FormField = ({
         ) : (
           /* !!!: Temporary bad indentation to make simpler PR diff */
           <>
-            {hasAddon && addonType === 'prepend' ? addon : null}
+            {hasAddon && addonType === "prepend" ? addon : null}
             <Input {...field} {...props} bsSize="sm" />
-            {hasAddon && addonType === 'append' ? addon : null}
+            {hasAddon && addonType === "append" ? addon : null}
           </>
         )}
         {!hasAddon ? <FieldNote /> : null}
@@ -166,7 +166,7 @@ FormField.propTypes = {
   /** An [`<InputGroupAddon>`](https://reactstrap.github.io/components/input-group/) to add */
   addon: PropTypes.node,
   /** The [`<InputGroupAddon>` `addonType`](https://reactstrap.github.io/components/input-group/) to add */
-  addonType: PropTypes.oneOf(['prepend', 'append']),
+  addonType: PropTypes.oneOf(["prepend", "append"]),
 };
 FormField.defaultProps = {
   id: undefined,
