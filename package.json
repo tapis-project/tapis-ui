@@ -92,8 +92,6 @@
     "@types/react-table": "^7.7.7",
     "@types/redux-logger": "^3.0.8",
     "@types/redux-mock-store": "^1.0.3",
-    "@types/redux-saga": "^0.10.5",
-    "@types/redux-thunk": "^2.1.0",
     "@types/rx": "^4.1.2",
     "@types/streamsaver": "^2.0.1",
     "@types/uuid": "^8.3.1",
