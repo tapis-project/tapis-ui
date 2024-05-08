@@ -1,18 +1,18 @@
-import { useCallback, useState, useEffect } from 'react';
-import { Breadcrumbs } from 'tapis-ui/_common';
-import { Systems } from '@tapis/tapis-typescript';
-import { BreadcrumbType } from 'tapis-ui/_common/Breadcrumbs/Breadcrumbs';
-import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
-import FileListing from 'tapis-ui/components/files/FileListing';
+import { useCallback, useState, useEffect } from "react";
+import { Breadcrumbs } from "tapis-ui/_common";
+import { Systems } from "@tapis/tapis-typescript";
+import { BreadcrumbType } from "tapis-ui/_common/Breadcrumbs/Breadcrumbs";
+import breadcrumbsFromPathname from "tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname";
+import FileListing from "tapis-ui/components/files/FileListing";
 import {
   OnNavigateCallback,
   OnSelectCallback,
   SelectMode,
-} from 'tapis-ui/components/files/FileListing/FileListing';
-import { SystemListing } from 'tapis-ui/components/systems';
-import { normalize } from 'path';
-import styles from './FileExplorer.module.scss';
-import { Files } from '@tapis/tapis-typescript';
+} from "tapis-ui/components/files/FileListing/FileListing";
+import { SystemListing } from "tapis-ui/components/systems";
+import normalize from "normalize-path";
+import styles from "./FileExplorer.module.scss";
+import { Files } from "@tapis/tapis-typescript";
 
 type FileExplorerProps = {
   systemId?: string;
@@ -22,7 +22,7 @@ type FileExplorerProps = {
   onNavigate?: (systemId: string | null, path: string | null) => void;
   onSelect?: OnSelectCallback;
   onUnselect?: OnSelectCallback;
-  fields?: Array<'size' | 'lastModified'>;
+  fields?: Array<"size" | "lastModified">;
   selectedFiles?: Array<Files.FileInfo>;
   selectMode?: SelectMode;
 };
@@ -35,7 +35,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   onNavigate,
   onSelect,
   onUnselect,
-  fields = ['size'],
+  fields = ["size"],
   selectedFiles,
   selectMode,
 }) => {
@@ -60,8 +60,8 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
         onNavigate && onNavigate(null, null);
       }
       setCurrentSystem(system?.id);
-      setCurrentPath('/');
-      onNavigate && onNavigate(system?.id ?? null, '/');
+      setCurrentPath("/");
+      onNavigate && onNavigate(system?.id ?? null, "/");
     },
     [setCurrentPath, setCurrentSystem, onNavigate]
   );
@@ -76,15 +76,15 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
 
   useEffect(() => {
     const breadcrumbs: Array<BreadcrumbType> = breadcrumbsFromPathname(
-      currentPath ?? ''
+      currentPath ?? ""
     );
     const newCrumbs: Array<BreadcrumbType> = breadcrumbs.map((breadcrumb) => ({
       ...breadcrumb,
       onClick: onBreadcrumbNavigate,
     }));
     newCrumbs.unshift({
-      text: currentSystem ?? '',
-      to: '/',
+      text: currentSystem ?? "",
+      to: "/",
       onClick: onBreadcrumbNavigate,
     });
     setTargetBreadcrumbs(newCrumbs);
@@ -99,8 +99,8 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   const breadcrumbs: Array<BreadcrumbType> = [];
   if (allowSystemChange) {
     breadcrumbs.push({
-      text: 'Files',
-      to: '/',
+      text: "Files",
+      to: "/",
       onClick: () => onSystemNavigate(null),
     });
   }
@@ -115,9 +115,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       <div>
         {currentSystem ? (
           <FileListing
-            className={`${styles['nav-list']}`}
+            className={`${styles["nav-list"]}`}
             systemId={currentSystem}
-            path={currentPath ?? '/'}
+            path={currentPath ?? "/"}
             onNavigate={onFileNavigate}
             onSelect={onSelect}
             onUnselect={onUnselect}
@@ -127,7 +127,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
           />
         ) : (
           <SystemListing
-            className={`${styles['nav-list']}`}
+            className={`${styles["nav-list"]}`}
             onNavigate={onSystemNavigate}
           />
         )}

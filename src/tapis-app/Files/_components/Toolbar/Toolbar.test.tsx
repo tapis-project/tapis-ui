@@ -1,17 +1,18 @@
-import { act } from '@testing-library/react';
-import renderComponent from 'utils/testing';
-import Toolbar from './Toolbar';
-import { Files } from '@tapis/tapis-typescript';
-import { fileInfo } from 'fixtures/files.fixtures';
-import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
-import { useDownload, usePermissions } from 'tapis-hooks/files';
-import RenameModal from 'tapis-app/Files/_components/Toolbar/RenameModal';
+import { act } from "@testing-library/react";
+import renderComponent from "utils/testing";
+import Toolbar from "./Toolbar";
+import { Files } from "@tapis/tapis-typescript";
+import { fileInfo } from "fixtures/files.fixtures";
+import { useFilesSelect } from "tapis-app/Files/_components/FilesContext";
+import { useDownload, usePermissions } from "tapis-hooks/files";
+import RenameModal from "tapis-app/Files/_components/Toolbar/RenameModal";
+import "@testing-library/jest-dom/extend-expect";
 
-jest.mock('tapis-hooks/files');
-jest.mock('tapis-app/Files/_components/FilesContext');
-jest.mock('tapis-app/Files/_components/Toolbar/RenameModal');
+jest.mock("tapis-hooks/files");
+jest.mock("tapis-app/Files/_components/FilesContext");
+jest.mock("tapis-app/Files/_components/Toolbar/RenameModal");
 
-describe('Toolbar', () => {
+describe("Toolbar", () => {
   beforeEach(() => {
     (useDownload as jest.Mock).mockReturnValue({
       downloadAsync: jest.fn(),
@@ -27,7 +28,7 @@ describe('Toolbar', () => {
       error: null,
     });
   });
-  it('enables rename buttons', async () => {
+  it("enables rename buttons", async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo],
     });
@@ -36,9 +37,9 @@ describe('Toolbar', () => {
 
     const { getByLabelText } = renderComponent(<Toolbar />);
 
-    const renameBtn = getByLabelText('Rename');
+    const renameBtn = getByLabelText("Rename");
     expect(renameBtn).toBeDefined();
-    expect(renameBtn.closest('button')).not.toHaveAttribute('disabled');
+    expect(renameBtn.closest("button")).not.toHaveAttribute("disabled");
 
     // Try clicking the rename button
     await act(async () => {
@@ -47,27 +48,27 @@ describe('Toolbar', () => {
     expect(RenameModal as jest.Mock).toHaveBeenCalled();
   });
 
-  it('enables the move, copy, download and delete buttons', async () => {
+  it("enables the move, copy, download and delete buttons", async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo, { ...fileInfo, type: 'dir' }],
+      selectedFiles: [fileInfo, { ...fileInfo, type: "dir" }],
     });
 
     const { getByLabelText } = renderComponent(<Toolbar />);
 
-    const moveBtn = getByLabelText('Move');
+    const moveBtn = getByLabelText("Move");
     expect(moveBtn).toBeDefined();
-    expect(moveBtn.closest('button')).not.toHaveAttribute('disabled');
+    expect(moveBtn.closest("button")).not.toHaveAttribute("disabled");
 
-    const copyBtn = getByLabelText('Copy');
+    const copyBtn = getByLabelText("Copy");
     expect(copyBtn).toBeDefined();
-    expect(copyBtn.closest('button')).not.toHaveAttribute('disabled');
+    expect(copyBtn.closest("button")).not.toHaveAttribute("disabled");
 
-    const deleteBtn = getByLabelText('Delete');
+    const deleteBtn = getByLabelText("Delete");
     expect(deleteBtn).toBeDefined();
-    expect(deleteBtn.closest('button')).not.toHaveAttribute('disabled');
+    expect(deleteBtn.closest("button")).not.toHaveAttribute("disabled");
 
-    const downloadBtn = getByLabelText('Download');
+    const downloadBtn = getByLabelText("Download");
     expect(downloadBtn).toBeDefined();
-    expect(downloadBtn.closest('button')).not.toHaveAttribute('disabled');
+    expect(downloadBtn.closest("button")).not.toHaveAttribute("disabled");
   });
 });
