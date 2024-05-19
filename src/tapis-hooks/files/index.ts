@@ -1,5 +1,4 @@
 import { Files } from '@tapis/tapis-typescript';
-
 export { default as useList } from './useList';
 export { default as useMkdir } from './useMkdir';
 export { default as useMove } from './useMove';
@@ -10,6 +9,8 @@ export { default as usePermissions } from './usePermissions';
 export { default as useNativeOp } from './useNativeOp';
 export { default as useDelete } from './useDelete';
 export { default as useDownload } from './useDownload';
+export { default as queryKeys } from "./queryKeys"
+export * as Transfers from "./transfers"
 
 export type MoveCopyHookParams = {
   systemId: string;
