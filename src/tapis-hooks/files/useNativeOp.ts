@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { nativeOp } from 'tapis-api/files';
+import { Files as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import { NativeOpParams } from '.';
 import QueryKeys from './queryKeys';
@@ -25,7 +25,7 @@ const useNativeOp = () => {
   } = useMutation<Files.NativeLinuxOpResultResponse, Error, NativeOpParams>(
     [QueryKeys.nativeOp, basePath, jwt],
     ({ systemId, path, recursive, operation, argument }) =>
-      nativeOp(
+      API.nativeOp(
         systemId,
         path,
         recursive ? true : false,

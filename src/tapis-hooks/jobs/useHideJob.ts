@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
-import { hideJob } from '../../tapis-api/jobs';
+import { Jobs as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
@@ -19,7 +19,7 @@ const useHideJob = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Jobs.RespHideJob, Error, HideJobHookParams>(
       [QueryKeys.hideJob, basePath, jwt],
-      ({ jobUuid }) => hideJob(jobUuid, basePath, jwt)
+      ({ jobUuid }) => API.hideJob(jobUuid, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

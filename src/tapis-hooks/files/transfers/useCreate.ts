@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { create } from 'tapis-api/files/transfers';
+import { Files as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -23,7 +23,7 @@ const useCreate = () => {
     reset,
   } = useMutation<Files.TransferTaskResponse, Error, Files.TransferTaskRequest>(
     [QueryKeys.create, basePath, jwt],
-    (request) => create(request, basePath, jwt)
+    (request) => API.Transfers.create(request, basePath, jwt)
   );
 
   // Return hook object with loading states and login function

@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { deleteFile } from 'tapis-api/files';
+import { Files as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -28,7 +28,7 @@ const useDelete = () => {
     reset,
   } = useMutation<Files.FileStringResponse, Error, DeleteHookParams>(
     [QueryKeys.delete, basePath, jwt],
-    ({ systemId, path }) => deleteFile(systemId, path, basePath, jwt)
+    ({ systemId, path }) => API.deleteFile(systemId, path, basePath, jwt)
   );
 
   // Return hook object with loading states and login function

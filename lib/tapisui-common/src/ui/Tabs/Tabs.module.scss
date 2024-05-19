@@ -1,0 +1,56 @@
+.tab {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  border-right: 1px solid;
+
+  height: 2rem;
+  align-items: center;
+  margin-left: 0.5em;
+  margin-right: 2px;
+  margin-bottom: 0px;
+  font-size: 0.7em !important;
+  border-radius: 0px !important;
+  background-color: #f4f4f4 !important;
+  color: #333333 !important;
+  border-color: #afafaf;
+  padding: 0;
+
+  a {
+    color: #333333;
+    height: 3em;
+    font-size: 1em;
+  }
+
+  /// controls effect on hover
+  :hover {
+    height: 2rem;
+    margin-bottom: 1px;
+
+    text-decoration: none;
+    // background-color: rgba(28, 0, 119, 0.25) !important;
+    color: #333333 !important;
+
+    border: 1px solid transparent !important;
+    // border-color: rgb(255, 0, 0) !important;
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    border-top: 1px solid #545b62 !important;
+    border-left: 1px solid #545b62 !important;
+    border-right: 1px solid #545b62 !important;
+    margin-left: -1px;
+    margin-right: -0.75px;
+    margin-top: -0.75px;
+    // margin-bottom: 5px;
+    // border-bottom: 1px solid #545b62 !important;
+  }
+}
+
+.active {
+  background-color: rgba(157, 133, 239, 0.25) !important;
+}
+
+.pane {
+  padding: 0.5em 0.5em 0.5em 0.5em;
+}

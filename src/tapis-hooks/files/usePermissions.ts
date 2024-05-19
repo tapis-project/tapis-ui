@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { permissions } from 'tapis-api/files';
+import { Files as API } from '@tapis/tapisui-api'
 import { Files } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
@@ -10,7 +10,7 @@ const usePermissions = (params: Files.GetPermissionsRequest) => {
     [QueryKeys.permissions, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    () => permissions(params, basePath, accessToken?.access_token ?? ''),
+    () => API.permissions(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
     }

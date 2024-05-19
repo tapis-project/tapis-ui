@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Workflows } from '@tapis/tapis-typescript';
-import { create } from 'tapis-api/workflows/groups';
+import { Workflows as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -20,7 +20,7 @@ const useCreate = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Workflows.RespResourceURL, Error, CreateGroupHookParams>(
       [QueryKeys.create, basePath, jwt],
-      (params) => create({ reqGroup: params }, basePath, jwt)
+      (params) => API.Groups.create({ reqGroup: params }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

@@ -2,7 +2,7 @@ import { useMutation, MutateOptions } from 'react-query';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 import { Apps } from '@tapis/tapis-typescript';
-import { createApp } from 'tapis-api/apps';
+import { Apps as API } from '@tapis/tapisui-api'
 
 type createAppParams = {
   createAppVersionRequest: Apps.CreateAppVersionRequest;
@@ -17,7 +17,7 @@ const useCreateApp = () => {
     useMutation<Apps.RespBasic, Error, createAppParams>(
       [QueryKeys.createApp, basePath, jwt],
       ({ createAppVersionRequest }) =>
-        createApp(createAppVersionRequest, basePath, jwt)
+        API.createApp(createAppVersionRequest, basePath, jwt)
     );
 
   return {

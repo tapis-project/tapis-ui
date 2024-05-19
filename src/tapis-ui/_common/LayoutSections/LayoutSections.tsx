@@ -2,9 +2,10 @@ import React from 'react';
 import { SectionHeader as CommonSectionHeader } from 'tapis-ui/_common';
 import styles from './LayoutSections.module.scss';
 
-export const LayoutHeader: React.FC<
-  React.PropsWithChildren<{ type?: string }>
-> = ({ children, type }) => {
+export const LayoutHeader: React.FC<React.PropsWithChildren<{ type?: string }>> = ({
+  children,
+  type 
+}) => {
   return (
     <div className={type && styles[type]}>
       <CommonSectionHeader>{children}</CommonSectionHeader>

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
-import { submit } from 'tapis-api/jobs';
+import { Jobs as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -16,7 +16,7 @@ const useSubmit = (appId: string, appVersion: string) => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Jobs.RespSubmitJob, Error, Jobs.ReqSubmitJob>(
       [QueryKeys.submit, appId, appVersion, basePath, jwt],
-      (request: Jobs.ReqSubmitJob) => submit(request, basePath, jwt)
+      (request: Jobs.ReqSubmitJob) => API.submit(request, basePath, jwt)
     );
 
   // We want this hook to automatically reset if a different appId or appVersion

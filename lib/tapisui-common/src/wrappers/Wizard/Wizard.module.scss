@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+}
+
+.container > * {
+  flex: 50%;
+  background-color: var(--global-color-primary--x-light);
+  border: 1px solid var(--global-color-primary--light);
+  margin-right: 1em;
+  padding: 1em 1em 1em 1em;
+}
+
+.step-summary {
+  padding-bottom: 1em;
+  .name {
+    display: flex;
+    justify-content: space-between;
+  }
+  .content {
+    font-size: smaller;
+    padding-left: 1em;
+  }
+  .edit {
+    padding: 0 0 0 0 !important;
+  }
+}
+
+.step {
+  padding-top: 1em;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.controls > * {
+  margin-left: 0.25em;
+}
+
+.submit {
+  border-bottom: 1px solid var(--global-color-primary--normal);
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+}

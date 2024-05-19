@@ -1,7 +1,7 @@
 import { MoveCopyHookParams } from '.';
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { moveCopy } from 'tapis-api/files';
+import { Files as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -25,7 +25,7 @@ const useMove = () => {
   } = useMutation<Files.FileStringResponse, Error, MoveCopyHookParams>(
     [QueryKeys.move, basePath, jwt],
     ({ systemId, path, newPath }) =>
-      moveCopy(
+      API.moveCopy(
         systemId,
         path,
         newPath,

@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
-import { undeleteSystem } from '../../tapis-api/systems';
+import { Systems as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
@@ -19,7 +19,7 @@ const useUndeleteSystem = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespBasic, Error, UndeleteSystemHookParams>(
       [QueryKeys.deleteSystem, basePath, jwt],
-      ({ systemId }) => undeleteSystem(systemId, basePath, jwt)
+      ({ systemId }) => API.undeleteSystem(systemId, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

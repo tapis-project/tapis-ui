@@ -1,0 +1,32 @@
+@import '../../styles/tools/mixins.scss';
+
+/* Prevent from butting up against its label (like inside `DescriptionList`) */
+dd .container {
+  margin-top: 0.25rem; /* copied from Bootstrap `.mt-1` styles */
+  margin-bottom: 0.25rem; /* WARN: copied from above, because it "looks good" */
+
+  border-radius: 0; /* overwrite Bootstrap `Card`'s `.card` */
+}
+
+/* Children */
+
+.summary {
+  height: 1.75rem; /* ~28px (23px design * 1.2 design-to-app ratio) */
+  padding: 0 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+}
+
+.header {
+  display: inline-block;
+
+  padding-right: 1em;
+
+  @include truncate-with-ellipsis;
+}
+
+/* States */
+
+/* TODO: Wait for `details/summary` (supports `[open]`) to use border fix */
+/* FAQ: With `Collapse`, border fix is too much effort for too little reward */
+// .container:not([open]) .summary {
+//   border-bottom: 0;
+// }

@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Workflows } from '@tapis/tapis-typescript';
-import { create } from 'tapis-api/workflows/groupusers';
+import { Workflows as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -21,7 +21,7 @@ const useCreate = () => {
     useMutation<Workflows.RespResourceURL, Error, CreateGroupUserHookParams>(
       [QueryKeys.create, basePath, jwt],
       (params) =>
-        create(
+        API.GroupUsers.create(
           { groupId: params.groupId, reqGroupUser: params.user },
           basePath,
           jwt

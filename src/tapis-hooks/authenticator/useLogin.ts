@@ -1,6 +1,6 @@
 import { useMutation } from 'react-query';
 import { Authenticator } from '@tapis/tapis-typescript';
-import { login } from 'tapis-api/authenticator';
+import { Authenticator as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -28,7 +28,7 @@ const useLogin = () => {
     LoginHookParams
   >(
     [QueryKeys.login, basePath],
-    ({ username, password }) => login(username, password, basePath),
+    ({ username, password }) => API.login(username, password, basePath),
     { onSuccess }
   );
 

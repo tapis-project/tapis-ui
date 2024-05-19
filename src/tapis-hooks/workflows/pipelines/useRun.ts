@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Workflows } from '@tapis/tapis-typescript';
-import { run } from 'tapis-api/workflows/pipelines';
+import { Workflows as API } from "@tapis/tapisui-api"
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -15,7 +15,7 @@ const useRun = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Workflows.RespPipelineRun, Error, RunPipelineHookParams>(
       [QueryKeys.run, basePath, jwt],
-      (params) => run(params, basePath, jwt)
+      (params) => API.Pipelines.run(params, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

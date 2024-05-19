@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
-import { createChildSystem } from 'tapis-api/systems';
+import { Systems as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
@@ -17,7 +17,7 @@ const useCreateChildSystem = () => {
     useMutation<Systems.RespBasic, Error, createChildSystemParams>(
       [QueryKeys.createChildSystem, basePath, jwt],
       ({ reqPostChildSystem, parentId }) =>
-        createChildSystem(reqPostChildSystem, parentId, basePath, jwt)
+        API.createChildSystem(reqPostChildSystem, parentId, basePath, jwt)
     );
 
   return {

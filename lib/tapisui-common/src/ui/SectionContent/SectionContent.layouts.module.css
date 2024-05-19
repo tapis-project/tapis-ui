@@ -1,0 +1,116 @@
+/* 1 Row */
+
+/* TODO: Duplicate this as '.sidebar-and-content' */
+.one-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+/* 1 Column */
+
+.one-column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+/* 2 Columns */
+/* TODO: Try (again) to use CSS Grid */
+
+/* Always */
+
+/* FAQ: Use padding, so that fake column border does not have gaps */
+.two-column > * {
+  padding-bottom: 2.5rem; /* 40px (~32px design * 1.2 design-to-app ratio) (rounded) */
+}
+
+/* Wide */
+@media only screen and (min-width: 992px) {
+  /* Setup */
+
+  .two-column {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .two-column > * {
+    flex-grow: 1;
+  }
+
+  /* Layout */
+
+  /* CAVEAT: If section is not tall enough to stack all panels, then:
+             - at most two panels are shown beside each other
+             - only some of the righthand panel is shown
+             - extra panels are hidden offscreen */
+
+  .two-column {
+    --side-panel-order: 9999; /* HACK: Simulate "last" position */
+    --gutter-width: var(
+      --global-space--section-left
+    ); /* deviated from design to use a similar global spacing */
+    --default-panel-width: 50%;
+
+    /* Hide panels that are pushed off the side of the screen */
+    overflow-x: hidden;
+  }
+
+  /* Create a fake column border */
+  /* NOTE: A utility class has not been created, because:
+           - This is used in a media query, which `composes` does not support.
+           - This flex-based layout, thus this one use case, is temporary. */
+  .two-column {
+    /* Allow border to stretch (in Webkit) */
+    /* FAQ: Child (the border) size percentage requires parent (flex box) to have definite size (see https://stackoverflow.com/a/33644245) */
+    /* WARNING: If parent element of this has `flex-wrap: wrap`, then this will stretch just like the border */
+    height: 100%;
+  }
+  .two-column::before {
+    /* structure */
+    content: '';
+    height: 100%;
+    width: 0;
+
+    /* skin */
+    order: var(--side-panel-order);
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+    margin-left: var(--gutter-width);
+    margin-right: var(--gutter-width);
+  }
+
+  /* Stretch panels only wide enough to create two columns */
+  .two-column > * {
+    width: 100%;
+    max-width: var(--default-panel-width);
+  }
+
+  /* Panel Order */ /* (required to see border) */
+  /* TODO: Make this customizable */
+
+  /* Move first X panels to right column, and shrink column */
+  /* FAQ: Within `*:nth-child(-n+x)`, `x` equals number of extra panels */
+  .two-column > *:nth-child(-n + 1) {
+    order: var(--side-panel-order);
+    max-width: calc(40% - var(--gutter-width));
+  }
+
+  /* Expand left column */
+  /* FAQ: Within `*:nth-child(n+y)`, `y` equals number of extra panels + 1 */
+  .two-column > *:nth-child(n + 2) {
+    max-width: calc(60% - var(--gutter-width));
+  }
+}
+
+/* Narrow */
+@media only screen and (max-width: 991px) {
+  .two-column {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .two-column > * {
+    flex-grow: 1;
+    width: 100%;
+  }
+}

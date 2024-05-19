@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
-import { shareSystemPublic } from '../../tapis-api/systems';
+import { Systems as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
@@ -19,7 +19,7 @@ const useShareSystemPublic = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespBasic, Error, ShareSystemPublicHookParams>(
       [QueryKeys.shareSystemPublic, basePath, jwt],
-      ({ systemId }) => shareSystemPublic(systemId, basePath, jwt)
+      ({ systemId }) => API.shareSystemPublic(systemId, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

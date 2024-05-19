@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Pods } from '@tapis/tapis-typescript';
-import { startPod } from '../../tapis-api/pods';
+import { Pods as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
@@ -19,7 +19,7 @@ const useStartPod = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Pods.PodResponse, Error, StartPodHookParams>(
       [QueryKeys.startPod, basePath, jwt],
-      ({ podId }) => startPod(podId, basePath, jwt)
+      ({ podId }) => API.startPod(podId, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

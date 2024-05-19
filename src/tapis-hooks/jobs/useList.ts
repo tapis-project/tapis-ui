@@ -1,5 +1,5 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
-import { list } from 'tapis-api/jobs';
+import { Jobs as API } from '@tapis/tapisui-api'
 import { Jobs } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
@@ -17,7 +17,7 @@ const useList = (
     [QueryKeys.list, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    () => list(params, basePath, accessToken?.access_token ?? ''),
+    () => API.list(params, basePath, accessToken?.access_token ?? ''),
     {
       ...options,
       enabled: !!accessToken,

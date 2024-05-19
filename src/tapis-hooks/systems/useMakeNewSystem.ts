@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
-import { makeNewSystem } from '../../tapis-api/systems';
+import { Systems as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
@@ -21,7 +21,7 @@ const useMakeNewSystem = () => {
     useMutation<Systems.RespBasic, Error, MkNewSystemHookParams>(
       [QueryKeys.makeNewSystem, basePath, jwt],
       ({ reqPostSystem, skipCredentialCheck }) =>
-        makeNewSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
+        API.makeNewSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

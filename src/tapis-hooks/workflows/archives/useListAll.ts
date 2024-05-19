@@ -1,8 +1,11 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
 import { listAll } from 'tapis-api/workflows/archives';
+// import { Workflows as WorkflowsAPI } from '@tapis/tapisui-api';
 import { Workflows } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
+
+// const listAll = WorkflowsAPI.Archives.listAll
 
 export type ListAllArchivesParams = {
   groupIds: Array<string>;

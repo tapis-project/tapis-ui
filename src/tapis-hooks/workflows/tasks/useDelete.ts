@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Workflows } from '@tapis/tapis-typescript';
-import { remove } from 'tapis-api/workflows/tasks';
+import { Workflows as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -29,7 +29,7 @@ const useDelete = () => {
     reset,
   } = useMutation<Workflows.RespString, Error, Workflows.DeleteTaskRequest>(
     [QueryKeys.remove, basePath, jwt],
-    (params) => remove(params, basePath, jwt)
+    (params) => API.Tasks.remove(params, basePath, jwt)
   );
 
   // Return hook object with loading states and login function

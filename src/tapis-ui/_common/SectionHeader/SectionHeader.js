@@ -62,7 +62,7 @@ SectionHeader.propTypes = {
   /** Any actions (buttons, links, forms, etc) */
   actions: PropTypes.node,
   /** The text a.k.a. title */
-  children: PropTypes.node,
+  children: PropTypes.any, // NOTE changed to PropTypes.any from PropTypes.node for dependency incompatibility issues
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** Whether this header is for a form */

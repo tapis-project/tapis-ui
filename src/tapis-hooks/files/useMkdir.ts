@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { mkdir } from 'tapis-api/files';
+import { Files as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -20,7 +20,7 @@ const useMkdir = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Files.FileStringResponse, Error, MkdirHookParams>(
       [QueryKeys.mkdir, basePath, jwt],
-      ({ systemId, path }) => mkdir(systemId, path, basePath, jwt)
+      ({ systemId, path }) => API.mkdir(systemId, path, basePath, jwt)
     );
 
   // Return hook object with loading states and login function

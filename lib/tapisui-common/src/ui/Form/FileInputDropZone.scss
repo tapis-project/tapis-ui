@@ -1,0 +1,56 @@
+.dropzone-area {
+  background-color: #f4f4f4;
+  height: 235px;
+}
+
+.no-attachment-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .icon-upload {
+    color: #70707026;
+    display: flex;
+    font-size: 12rem;
+    position: absolute;
+  }
+}
+
+.select-files-button {
+  border: 2px solid;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f4f4f4;
+  z-index: 1;
+}
+
+.attachment-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.attachment-list {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.attachment-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.attachment-remove {
+  font-size: 0.75rem;
+}
+
+.rejected-file-message {
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}

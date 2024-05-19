@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
-import { cancel } from 'tapis-api/jobs';
+import { Jobs as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -23,7 +23,7 @@ const useCancel = () => {
     reset,
   } = useMutation<Jobs.RespCancelJob, Error, Jobs.CancelJobRequest>(
     [QueryKeys.cancel, basePath, jwt],
-    (jobCancelReq) => cancel(jobCancelReq, basePath, jwt)
+    (jobCancelReq) => API.cancel(jobCancelReq, basePath, jwt)
   );
 
   // Return hook object with loading states and login function

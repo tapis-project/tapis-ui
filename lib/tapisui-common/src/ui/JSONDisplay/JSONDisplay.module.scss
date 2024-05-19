@@ -1,0 +1,33 @@
+.json {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+
+.copyButtonRight {
+  margin-left: auto;
+  height: 2rem;
+  align-items: center;
+  font-size: 0.7em !important;
+  border-radius: 0 !important;
+  background-color: #f4f4f4 !important;
+  color: #333333 !important;
+}
+
+.toolbar-btn {
+  height: 2rem;
+  align-items: center;
+  margin-left: 0.5em;
+  font-size: 0.7em !important;
+  border-radius: 0 !important;
+  background-color: #f4f4f4 !important;
+  color: #333333 !important;
+}
+
+.nav-background {
+  background-color: rgba(157, 133, 239, 0.25) !important;
+}

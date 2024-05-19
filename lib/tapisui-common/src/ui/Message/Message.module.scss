@@ -1,0 +1,150 @@
+/* WARNING: No official design */
+/* FAQ: Styles are a mix of static design and dev design */
+/* SEE: https://confluence.tacc.utexas.edu/x/gYCeBw */
+
+/* Root */
+
+.container {
+  // SEE: "Modifiers"
+  // --buffer-vert: 0;
+  // --buffer-horz: 0;
+
+  /* Vertically center child elements */
+  flex-direction: row;
+  align-items: start; /* FAQ: Effect visible only if text wraps */
+
+  padding: var(--buffer-vert) var(--buffer-horz);
+}
+.is-scope-inline {
+  --buffer-vert: 0;
+  --buffer-horz: 0;
+
+  display: inline-flex;
+}
+.is-scope-section {
+  --buffer-vert: 0.5em;
+  --buffer-horz: 1em;
+
+  display: flex;
+}
+p.is-scope-section {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Children */
+
+.text a {
+  white-space: nowrap;
+}
+// .type-icon,
+// .close-button {
+//   align-self: start;
+// }
+.type-icon {
+  margin-right: 0.25em; /* ~4px */
+  margin-top: 0.125em; /* HACK: Align better with 14px–17px sibling font */
+}
+.close-button {
+  margin-left: auto;
+  /* FAQ: Ignore padding by moving over it */
+  transform: translateX(var(--buffer-horz));
+
+  border: none;
+  background: transparent;
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+.close-icon {
+  /* … */
+}
+
+/* Modifiers */
+
+/* Modifiers: Type */
+
+/* Design decided icon is not necessary for informational messages */
+.is-info .icon {
+  display: none;
+}
+
+/* Modifiers: Scope */
+
+.is-scope-inline {
+  &.is-info .icon {
+    color: var(--global-color-info--normal);
+  }
+  &.is-warn .icon {
+    color: var(--global-color-warning--normal);
+  }
+  &.is-error,
+  &.is-error .icon {
+    color: var(--global-color-danger--normal);
+  }
+  &.is-success .icon {
+    color: var(--global-color-success--normal);
+  }
+}
+
+.is-scope-section {
+  border-width: var(--global-border-width--normal);
+  border-style: solid;
+
+  /* Children */
+  & .type-icon {
+    margin-right: 1rem;
+  }
+
+  /* Modifiers */
+  &.is-info {
+    border-color: var(--global-color-info--normal);
+    background-color: var(--global-color-info--weak);
+    & .icon {
+      color: var(--global-color-info--normal);
+    }
+  }
+  &.is-warn {
+    border-color: var(--global-color-warning--normal);
+    background-color: var(--global-color-warning--weak);
+    & .icon {
+      color: var(--global-color-warning--normal);
+    }
+  }
+  &.is-error {
+    border-color: var(--global-color-danger--normal);
+    background-color: var(--global-color-danger--weak);
+    & .icon {
+      color: var(--global-color-danger--normal);
+    }
+  }
+  &.is-success {
+    border-color: var(--global-color-success--normal);
+    background-color: var(--global-color-success--weak);
+    & .icon {
+      color: var(--global-color-success--normal);
+    }
+  }
+}
+
+/* Modifiers: Complex */
+
+.is-scope-inline {
+  /* WARNING: This accessibility solution is only because of lack of design */
+  /* FAQ: Can not explicitely declare `.wb-link`, because its a global class */
+  /* Avoid clash of red text and purple `.wb-link` */
+  .is-error a {
+    color: var(
+      --global-color-danger--normal
+    ) !important /* override overly-specific `.workbench-content .wb-link` */;
+  }
+  /* Distinguish text and `.wb-link`, and link states default and hover */
+  .is-warn a,
+  .is-error a {
+    text-decoration-line: underline;
+  }
+  .is-warn a:hover,
+  .is-error a:hover {
+    text-decoration-style: double;
+  }
+}

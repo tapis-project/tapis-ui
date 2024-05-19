@@ -7,7 +7,7 @@ export default function validJson() {
       if (value !== undefined) {
         JSON.parse(value);
       }
-    } catch (e) {
+    } catch (e: any) {
       return createError({ path, message: e.message });
     }
 

@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { cancel } from 'tapis-api/files/transfers';
+import { Files as API } from '@tapis/tapisui-api'
 import { useTapisConfig } from 'tapis-hooks';
 import QueryKeys from './queryKeys';
 
@@ -23,7 +23,7 @@ const useMove = () => {
     reset,
   } = useMutation<Files.FileStringResponse, Error, string>(
     [QueryKeys.cancel, basePath, jwt],
-    (transferTaskId) => cancel(transferTaskId, basePath, jwt)
+    (transferTaskId) => API.Transfers.cancel(transferTaskId, basePath, jwt)
   );
 
   // Return hook object with loading states and login function
