@@ -5,7 +5,7 @@ import { useTapisConfig } from 'tapis-hooks';
 import {
   concatResults,
   tapisNextPageParam,
-} from 'tapis-hooks/utils/infiniteQuery';
+} from '../utils/infiniteQuery';
 import QueryKeys from './queryKeys';
 
 // Does not use defaultParams because systemId and path are required

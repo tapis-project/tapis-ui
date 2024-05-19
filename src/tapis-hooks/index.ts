@@ -9,9 +9,12 @@ import * as Pods from "./pods"
 import * as Systems from "./systems"
 import * as Tenants from "./tenants"
 import * as Workflows from "./workflows"
+import * as utils from "./utils"
 
 export type { TapisContextType }
+export type { ResultPages } from "./utils"
 export {
+    utils,
     useTapisConfig,
     TapisContext,
     TapisProvider,
