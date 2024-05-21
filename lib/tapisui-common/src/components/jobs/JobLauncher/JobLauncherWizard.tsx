@@ -2,12 +2,9 @@ import React, { useCallback, useMemo } from 'react';
 import { WizardStep } from 'wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'wrappers';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
-import { useDetail as useAppDetail } from 'tapis-hooks/apps';
+import { Apps as AppsHooks } from '@tapis/tapisui-hooks'
 import generateJobDefaults from 'utils/jobDefaults';
-import {
-  useList as useSystemsList,
-  useSchedulerProfiles,
-} from 'tapis-hooks/systems';
+import { Systems as SystemsHooks } from '@tapis/tapisui-hooks'
 import { useJobLauncher, JobLauncherProvider } from './components';
 import { JobStep } from '.';
 import jobSteps from './steps';
@@ -70,7 +67,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
   appId,
   appVersion,
 }) => {
-  const { data, isLoading, error } = useAppDetail(
+  const { data, isLoading, error } = AppsHooks.useDetail(
     { appId, appVersion },
     { refetchOnWindowFocus: false }
   );
@@ -78,7 +75,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     data: systemsData,
     isLoading: systemsIsLoading,
     error: systemsError,
-  } = useSystemsList(
+  } = SystemsHooks.useList(
     { select: 'allAttributes' },
     { refetchOnWindowFocus: false }
   );
@@ -86,7 +83,7 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     data: schedulerProfilesData,
     isLoading: schedulerProfilesIsLoading,
     error: schedulerProfilesError,
-  } = useSchedulerProfiles({ refetchOnWindowFocus: false });
+  } = SystemsHooks.useSchedulerProfiles({ refetchOnWindowFocus: false });
   const app = data?.result;
   const systems = useMemo(() => systemsData?.result ?? [], [systemsData]);
   const schedulerProfiles = useMemo(

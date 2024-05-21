@@ -11,7 +11,7 @@ import {
 import { StepSummaryField } from '../components';
 import { SubmitWrapper } from 'wrappers';
 import { Jobs } from '@tapis/tapis-typescript';
-import { useSubmit } from 'tapis-hooks/jobs';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { JobStep } from '..';
 import { Button } from 'reactstrap';
 import arrayStyles from '../FieldArray.module.scss';
@@ -25,7 +25,7 @@ export const JobSubmit: React.FC = () => {
     fileInputsComplete(app, job.fileInputs ?? []) &&
     fileInputArraysComplete(app, job.fileInputArrays ?? []);
 
-  const { isLoading, error, isSuccess, submit, data } = useSubmit(
+  const { isLoading, error, isSuccess, submit, data } = Hooks.useSubmit(
     app.id!,
     app.version!
   );

@@ -2,14 +2,14 @@ import { act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import FileSelectModal from './FileSelectModal';
-import { useList } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 
 jest.mock('tapis-hooks/files');
 
 describe('File Select Modal', () => {
   it('renders File Select Modal component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults: [fileInfo],
       isLoading: false,
       error: null,
@@ -23,7 +23,7 @@ describe('File Select Modal', () => {
   });
 
   it('performs file selection', async () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults: [{ ...fileInfo }],
       isLoading: false,
       error: null,

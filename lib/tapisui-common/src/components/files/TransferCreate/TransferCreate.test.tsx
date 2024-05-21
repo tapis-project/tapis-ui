@@ -1,7 +1,8 @@
 import { act, screen, fireEvent, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import TransferCancel from './TransferCreate';
-import { useCreate } from 'tapis-hooks/files/transfers';
+// import { useCreate } from 'tapis-hooks/files/transfers';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 
 jest.mock('tapis-hooks/files/transfers');
@@ -10,7 +11,7 @@ describe('TransferCreate', () => {
   it('submits a file transfer', async () => {
     const createMock = jest.fn();
     const resetMock = jest.fn();
-    (useCreate as jest.Mock).mockReturnValue({
+    (Hooks.Transfers.useCreate as jest.Mock).mockReturnValue({
       create: createMock,
       isLoading: false,
       error: null,
