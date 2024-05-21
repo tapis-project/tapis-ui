@@ -2,7 +2,7 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import FileListing from './FileListing';
-import { useList } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 
@@ -10,7 +10,7 @@ jest.mock('tapis-hooks/files');
 
 describe('Files', () => {
   it('renders File Listing component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults: [fileInfo],
       isLoading: false,
       error: null,
@@ -24,7 +24,7 @@ describe('Files', () => {
   });
 
   it('performs file selection', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults: [{ ...fileInfo }],
       isLoading: false,
       error: null,
@@ -48,7 +48,7 @@ describe('Files', () => {
   });
 
   it('performs file unselection', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults: [{ ...fileInfo }],
       isLoading: false,
       error: null,
@@ -77,7 +77,7 @@ describe('Files', () => {
       { ...fileInfo },
       { ...fileInfo, name: 'file2.txt' },
     ];
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults,
       isLoading: false,
       error: null,
