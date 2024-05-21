@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
-import { generateFileInputArrayFromAppInput } from 'tapis-api/utils/jobFileInputArrays';
+import { generateFileInputArrayFromAppInput } from 'utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper, useModal } from 'ui';
 import { FileSelectModal } from 'components/files';
 import {

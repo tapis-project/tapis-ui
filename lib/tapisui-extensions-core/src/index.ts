@@ -9,9 +9,8 @@ export enum EnumTapisCoreService {
 }
 
 export const registeredExtensions = {
-  "https://icicle.tapis.io": {
-    "package": "@icicle/tapisui-extensions-icicle",
-    "baseUrls": ["https://icicle.tapis.io"]
+  "@icicle/tapisui-extensions-icicle": {
+    "baseUrls": ["https://icicle.tapis.io", "https://icicle.develop.tapis.io", "https://icicle.staging.tapis.io"]
   }
 }
 

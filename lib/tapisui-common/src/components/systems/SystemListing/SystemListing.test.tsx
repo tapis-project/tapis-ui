@@ -2,14 +2,14 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import SystemListing from './SystemListing';
-import { useList } from 'tapis-hooks/systems';
+import { Systems } from '@tapis/tapisui-hooks';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 
 jest.mock('tapis-hooks/systems');
 
 describe('System Listing', () => {
   it('renders System Listing component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Systems.useList as jest.Mock).mockReturnValue({
       data: { result: [tapisSystem] },
       isLoading: false,
       error: null,
@@ -19,7 +19,7 @@ describe('System Listing', () => {
   });
 
   it('performs system selection', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Systems.useList as jest.Mock).mockReturnValue({
       data: { result: [tapisSystem] },
       isLoading: false,
       error: null,
@@ -38,7 +38,7 @@ describe('System Listing', () => {
   });
 
   it('performs system navigation', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Systems.useList as jest.Mock).mockReturnValue({
       data: { result: [tapisSystem] },
       isLoading: false,
       error: null,

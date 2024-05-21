@@ -1,18 +1,18 @@
 import React from 'react';
-import { useDetails, useLogs } from 'tapis-hooks/pods';
+import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import { DescriptionList, Tabs, JSONDisplay } from 'ui';
 import { QueryWrapper } from 'wrappers';
 
 const PodDetail: React.FC<{ podId: string }> = ({ podId }) => {
-  const { data, isLoading, error } = useDetails({
+  const { data, isLoading, error } = Hooks.useDetails({
     podId,
   });
   const {
     data: data2,
     isLoading: isLoading2,
     error: error2,
-  } = useLogs({
+  } = Hooks.useLogs({
     podId,
   });
   const pod: Pods.PodResponseModel | undefined = data?.result;
