@@ -8,8 +8,8 @@ import {
   getAppInputArraysIncludedByDefault,
 } from 'tapis-api/utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper } from 'ui';
-import { useModal } from 'tapis-ui/_common/GenericModal';
-import { FileSelectModal } from 'tapis-ui/components/files';
+import { useModal } from 'uiGenericModal';
+import { FileSelectModal } from 'components/files';
 import {
   FieldArray,
   useFormikContext,
@@ -21,13 +21,13 @@ import {
 import {
   FormikInput,
   FormikTapisFileInput,
-} from 'tapis-ui/_common/FieldWrapperFormik';
+} from 'ui-formik/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 import arrayStyles from './FileInputArrays.module.scss';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
-import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import formStyles from 'ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
 import { JobStep } from '..';
 
 export type FieldWrapperProps = {

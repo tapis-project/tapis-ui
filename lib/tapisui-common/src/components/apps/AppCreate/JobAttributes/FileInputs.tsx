@@ -9,7 +9,7 @@ import {
   FormikCheck,
   FormikTapisFile,
   FormikSelect,
-} from 'tapis-ui/_common/FieldWrapperFormik';
+} from 'ui-formik/FieldWrapperFormik';
 
 import { FileInputModeEnum } from '@tapis/tapis-typescript-apps';
 

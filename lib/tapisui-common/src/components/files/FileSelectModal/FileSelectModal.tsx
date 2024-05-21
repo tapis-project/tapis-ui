@@ -1,8 +1,8 @@
 import { useCallback, useState, useMemo } from 'react';
 import { Files } from '@tapis/tapis-typescript';
 import { GenericModal } from 'ui';
-import { FileExplorer } from 'tapis-ui/components/files';
-import { SelectMode } from 'tapis-ui/components/files/FileListing/FileListing';
+import { FileExplorer } from 'components/files';
+import { SelectMode } from 'components/files/FileListing/FileListing';
 import { Button } from 'reactstrap';
 
 type FileSelectModalProps = {

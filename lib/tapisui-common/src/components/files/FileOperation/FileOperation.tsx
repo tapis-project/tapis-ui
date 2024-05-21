@@ -7,7 +7,7 @@ import {
   FormikInput,
   FormikSelect,
   FormikCheck,
-} from 'tapis-ui/_common/FieldWrapperFormik';
+} from 'ui-formik/FieldWrapperFormik';
 import { SubmitWrapper } from 'wrappers';
 import { focusManager } from 'react-query';
 import * as Yup from 'yup';

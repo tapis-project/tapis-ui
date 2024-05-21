@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import { tapisApp } from 'fixtures/apps.fixtures';
-import useJobLauncher from 'tapis-ui/components/jobs/JobLauncher/components/useJobLauncher';
+import useJobLauncher from 'components/jobs/JobLauncher/components/useJobLauncher';
 import { FileInputArraysSummary } from './FileInputArrays';
 import { Apps } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-ui/components/jobs/JobLauncher/components/useJobLauncher');
+jest.mock('components/jobs/JobLauncher/components/useJobLauncher');
 
 describe('FileInputArraysSummary step', () => {
   it('Shows fileInputArrays summary', () => {

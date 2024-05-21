@@ -19,7 +19,7 @@ import {
   FormikTapisFile,
   FormikSelect,
 } from 'ui-formik/FieldWrapperFormik';
-import formStyles from 'tapis-ui/_common/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import formStyles from 'ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
 import { Systems } from '@tapis/tapisui-hooks';
 import { ListTypeEnum } from '@tapis/tapis-typescript-systems';
 

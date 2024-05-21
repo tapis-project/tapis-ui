@@ -19,18 +19,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "./src",
-    "paths": {
-      "ui": ["ui"],
-      "ui/*": ["ui/*"],
-      "ui-formik": ["ui-formik"],
-      "ui-formik/*": ["ui-formik/*"],
-      "wrappers": ["wrappers"],
-      "wrappers/*": ["wrappers/*"],
-      "components": ["components"],
-      "components/*": ["components/*"],
-      "utils": ["utils"]
-    }
+    "baseUrl": "./src"
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

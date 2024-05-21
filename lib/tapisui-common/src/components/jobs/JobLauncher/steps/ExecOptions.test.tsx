@@ -2,13 +2,13 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import { tapisApp } from 'fixtures/apps.fixtures';
 import { tapisSystem } from 'fixtures/systems.fixtures';
-import useJobLauncher from 'tapis-ui/components/jobs/JobLauncher/components/useJobLauncher';
+import useJobLauncher from 'components/jobs/JobLauncher/components/useJobLauncher';
 import ExecOptionsStep from './ExecOptions';
 import { JobLauncherWizardRender } from '../JobLauncherWizard';
 import { act } from '@testing-library/react';
 import { Systems } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-ui/components/jobs/JobLauncher/components/useJobLauncher');
+jest.mock('components/jobs/JobLauncher/components/useJobLauncher');
 
 describe('ExecOptions step', () => {
   it('Shows default systems', async () => {

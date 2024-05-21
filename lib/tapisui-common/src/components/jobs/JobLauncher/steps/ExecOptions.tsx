@@ -6,7 +6,7 @@ import {
   FormikCheck,
   FormikSelect,
   FormikTapisFile,
-} from 'tapis-ui/_common/FieldWrapperFormik';
+} from 'ui-formik/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
 import { Collapse } from 'ui';
 import {

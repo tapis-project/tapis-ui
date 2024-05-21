@@ -4,7 +4,7 @@ import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
 import { FormikInputProps } from '.';
 import { Files } from '@tapis/tapis-typescript';
-import { FileSelectModal } from 'tapis-ui/components/files';
+import { FileSelectModal } from 'components/files';
 import { InputProps } from 'reactstrap';
 import { useModal } from 'ui';
 import { SelectMode } from 'components';

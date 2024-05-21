@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
-import FieldWrapper from 'tapis-ui/_common/FieldWrapper';
+import FieldWrapper from 'uiFieldWrapper';
 import { Input } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
@@ -17,7 +17,7 @@ import {
   FormikInput,
   FormikCheck,
   FormikTapisFile,
-} from 'tapis-ui/_common/FieldWrapperFormik';
+} from 'ui-formik/FieldWrapperFormik';
 import { JobStep } from '..';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';

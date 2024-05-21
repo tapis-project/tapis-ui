@@ -2,9 +2,8 @@ import React, { useMemo, useCallback } from 'react';
 import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
 import { generateFileInputArrayFromAppInput } from 'tapis-api/utils/jobFileInputArrays';
-import { Collapse, Icon, FieldWrapper } from 'ui';
-import { useModal } from 'tapis-ui/_common/GenericModal';
-import { FileSelectModal } from 'tapis-ui/components/files';
+import { Collapse, Icon, FieldWrapper, useModal } from 'ui';
+import { FileSelectModal } from 'components/files';
 import {
   FieldArray,
   useFormikContext,
@@ -16,11 +15,11 @@ import {
 import {
   FormikInput,
   FormikTapisFileInput,
-} from 'tapis-ui/_common/FieldWrapperFormik';
+} from 'ui-formik/FieldWrapperFormik';
 import arrayStyles from './FileInputArrays.module.scss';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from './FieldArray.module.scss';
-import { useJobLauncher } from 'tapis-ui/components/jobs/JobLauncher/components';
+import { useJobLauncher } from 'components/jobs/JobLauncher/components';
 
 export type FieldWrapperProps = {
   fileInputArrayIndex: number;

@@ -6,7 +6,7 @@ import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'ui';
 import { FieldArray, useField, FieldArrayRenderProps } from 'formik';
 import { FormikInput } from 'ui-formik';
-import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikCheck } from 'ui-formik/FieldWrapperFormik';
 import { getArgMode } from 'tapis-api/utils/jobArgs';
 import { JobStep } from '..';
 import * as Yup from 'yup';
