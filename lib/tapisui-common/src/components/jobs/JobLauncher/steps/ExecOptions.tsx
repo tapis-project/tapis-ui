@@ -15,7 +15,7 @@ import {
   computeDefaultJobType,
   validateExecSystem,
   ValidateExecSystemResult,
-} from 'tapis-api/utils/jobExecSystem';
+} from 'utils/jobExecSystem';
 import { capitalize } from './utils';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';

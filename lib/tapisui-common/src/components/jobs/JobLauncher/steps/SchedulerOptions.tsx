@@ -5,7 +5,7 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'ui';
 import { FieldArray, useField, useFormikContext } from 'formik';
-import { getArgMode } from 'tapis-api/utils/jobArgs';
+import { getArgMode } from 'utils/jobArgs';
 import { ArgField, argsSchema, assembleArgSpec } from './AppArgs';
 import { DescriptionList } from 'ui';
 import * as Yup from 'yup';
