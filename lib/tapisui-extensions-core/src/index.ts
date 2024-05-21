@@ -1,3 +1,5 @@
+import { Workflows } from "@tapis/tapis-typescript"
+
 export enum EnumTapisCoreService {
   Systems = "systems",
   Files = "files",
@@ -34,6 +36,16 @@ type Logo = {
   logoText?: string
 }
 
+type WorkflowsSubComponents = {
+  dagView: unknown,
+  dagViewSidebarTemplateTasks: Array<Workflows.TemplateTask>
+  home: unknown
+}
+
+type SubComponentMapping = {
+  workflows?: WorkflowsSubComponents
+}
+
 export type Configuration = {
   multiTenantFeatures?: boolean
   authentication?: OAuth2
@@ -47,7 +59,8 @@ export type Service = {
   id: string
   sidebarName: string
   icon: string
-  component: unknown
+  component?: unknown
+  serviceSubComponents?: SubComponentMapping
 }
 
 type RegisteredService = Service & {
