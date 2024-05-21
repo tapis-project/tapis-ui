@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useDetails, useList } from 'tapis-hooks/workflows/pipelines';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
@@ -27,7 +27,7 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
   const toggle = () => {
     setShowModal(!showModal);
   };
-  const { data, isLoading, error } = useDetails({ groupId, pipelineId });
+  const { data, isLoading, error } = Hooks.Pipelines.useDetails({ groupId, pipelineId });
   const pipeline: Workflows.Pipeline = data?.result!;
 
   return (
@@ -109,7 +109,7 @@ type PipelineListParams = {
 };
 
 const PipelineList: React.FC<PipelineListParams> = ({ groupId }) => {
-  const { data, isLoading, error } = useList({ groupId });
+  const { data, isLoading, error } = Hooks.Pipelines.useList({ groupId });
   const result: Array<Workflows.Pipeline> = data?.result ?? [];
   const pipelines = result.sort((a, b) =>
     a.id! > b.id! ? 1 : a.id! < b.id! ? -1 : 0

@@ -6,7 +6,7 @@ import { NotificationsProvider } from 'tapis-app/_components/Notifications';
 import { useHistory } from 'react-router-dom';
 import { useList } from 'tapis-hooks/tenants';
 import './Layout.scss';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import {
   ButtonDropdown,
   DropdownToggle,

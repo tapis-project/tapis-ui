@@ -4,7 +4,7 @@ import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { ToolbarModalProps } from '../SystemLayoutToolbar';
 import { Form, Formik } from 'formik';
 import { FormikInput } from 'tapis-ui/_common';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useCreateChildSystem } from 'tapis-hooks/systems';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';

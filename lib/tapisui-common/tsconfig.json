@@ -19,14 +19,17 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "src",
+    "baseUrl": "./src",
     "paths": {
-      "@ui": ["ui"],
-      "@ui/*": ["ui/*"],
-      "@wrappers": ["wrappers"],
-      "@wrappers/*": ["wrappers/*"],
-      "@components": ["components"],
-      "@components/*": ["components/*"]
+      "ui": ["ui"],
+      "ui/*": ["ui/*"],
+      "ui-formik": ["ui-formik"],
+      "ui-formik/*": ["ui-formik/*"],
+      "wrappers": ["wrappers"],
+      "wrappers/*": ["wrappers/*"],
+      "components": ["components"],
+      "components/*": ["components/*"],
+      "utils": ["utils"]
     }
   },
   "include": ["src"]

@@ -4,7 +4,7 @@ import { useList, useDelete } from 'tapis-hooks/workflows/groupusers';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Toolbar } from '../../_components';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Users.module.scss';
 import { Button, Spinner } from 'reactstrap';
 import { default as queryKeys } from 'tapis-hooks/workflows/groupusers/queryKeys';

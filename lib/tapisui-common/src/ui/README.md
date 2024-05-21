@@ -19,7 +19,7 @@ It can be caused by attempts to import a common component via the following the 
 // assuming importer has its own folder
 import … from '..';
 // a syntax allowed outside of `_common`
-import … from '@ui';
+import … from 'ui';
 ```
 
 If you have two common components to import into another common component, then import each individually:

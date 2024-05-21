@@ -11,7 +11,7 @@ import styles from './TooltipModal.module.scss';
 // import * as Yup from 'yup';
 // import { useQueryClient } from 'react-query';
 // import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
-// import { useTapisConfig } from 'tapis-hooks';
+// import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const TooltipModal: React.FC<
   ToolbarModalProps & { tooltipText: string; tooltipTitle?: string }

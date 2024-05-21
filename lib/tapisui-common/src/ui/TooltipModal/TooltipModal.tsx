@@ -1,5 +1,5 @@
 import React from 'react';
-import { GenericModal } from '@ui';
+import { GenericModal } from 'ui';
 import styles from './TooltipModal.module.scss';
 
 export type TooltipModalProps = {

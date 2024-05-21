@@ -1,5 +1,5 @@
 import React from 'react';
-import { LoadingSpinner, Message } from '@ui';
+import { LoadingSpinner, Message } from 'ui';
 import styles from './SubmitWrapper.module.scss';
 
 type SubmitWrapperProps = React.PropsWithChildren<{

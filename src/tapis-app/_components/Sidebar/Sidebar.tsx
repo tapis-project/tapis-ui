@@ -1,6 +1,6 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
 import React from 'react';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
 

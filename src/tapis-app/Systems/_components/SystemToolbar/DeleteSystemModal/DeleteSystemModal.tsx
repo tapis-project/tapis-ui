@@ -11,7 +11,7 @@ import styles from './DeleteSystemModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { default as queryKeys } from 'tapis-hooks/systems/queryKeys';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const DeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();

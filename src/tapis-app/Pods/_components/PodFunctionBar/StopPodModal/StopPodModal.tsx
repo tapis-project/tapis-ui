@@ -11,7 +11,7 @@ import styles from './StopPodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
 
 const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {

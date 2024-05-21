@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardText,
 } from 'reactstrap';
-import { useTapisConfig } from 'tapis-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useList as useSystemsList } from 'tapis-hooks/systems';
 import { useList as useJobsList } from 'tapis-hooks/jobs';
 import { useList as useAppsList } from 'tapis-hooks/apps';
