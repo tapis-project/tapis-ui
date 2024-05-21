@@ -10,7 +10,7 @@ import {
   useField,
   FieldArrayRenderProps,
 } from 'formik';
-import { FormikInput } from 'ui-formik';
+import { FormikInput } from 'ui-formik/FieldWrapperFormik';
 import { JobStep } from '..';
 import * as Yup from 'yup';
 

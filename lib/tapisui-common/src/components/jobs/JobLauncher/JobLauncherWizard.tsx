@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { WizardStep } from 'tapis-ui/_wrappers/Wizard';
+import { WizardStep } from 'wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'wrappers';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { useDetail as useAppDetail } from 'tapis-hooks/apps';
-import generateJobDefaults from 'tapis-api/utils/jobDefaults';
+import generateJobDefaults from 'utils/jobDefaults';
 import {
   useList as useSystemsList,
   useSchedulerProfiles,

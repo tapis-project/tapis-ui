@@ -6,9 +6,9 @@ import {
   generateFileInputArrayFromAppInput,
   getIncompleteJobInputArrays,
   getAppInputArraysIncludedByDefault,
-} from 'tapis-api/utils/jobFileInputArrays';
+} from 'utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper } from 'ui';
-import { useModal } from 'uiGenericModal';
+import { useModal } from 'ui';
 import { FileSelectModal } from 'components/files';
 import {
   FieldArray,

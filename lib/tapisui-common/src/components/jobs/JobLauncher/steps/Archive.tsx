@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { Jobs } from '@tapis/tapis-typescript';
-import FieldWrapper from 'uiFieldWrapper';
-import { Input } from 'reactstrap';
-import { Button } from 'reactstrap';
+import FieldWrapper from 'ui/FieldWrapper';
+import { Input, Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from 'ui';
