@@ -1,1 +1,2 @@
-export * from "./FieldWrapperFormik"
+import * as FieldWrapperFormik from "./FieldWrapperFormik"
+export { FieldWrapperFormik }
