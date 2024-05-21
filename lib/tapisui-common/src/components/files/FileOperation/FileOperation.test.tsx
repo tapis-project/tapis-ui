@@ -1,7 +1,7 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import FileOperation from './FileOperation';
-import { useNativeOp } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('tapis-hooks/files');
@@ -10,7 +10,7 @@ describe('FileOperation', () => {
   it('submits with valid inputs', async () => {
     const nativeOpMock = jest.fn();
     const resetMock = jest.fn();
-    (useNativeOp as jest.Mock).mockReturnValue({
+    (Hooks.useNativeOp as jest.Mock).mockReturnValue({
       nativeOp: nativeOpMock,
       isLoading: false,
       error: null,

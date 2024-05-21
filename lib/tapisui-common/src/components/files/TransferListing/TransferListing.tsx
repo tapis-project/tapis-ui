@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Files } from '@tapis/tapis-typescript';
-import { useList } from 'tapis-hooks/files/transfers';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Column, Row } from 'react-table';
 import { Icon, InfiniteScrollTable } from 'ui';
 import { QueryWrapper } from 'wrappers';
@@ -16,7 +16,7 @@ const TransferListing: React.FC<TransferListingProps> = ({
   className,
 }) => {
   const { concatenatedResults, isLoading, error, hasNextPage, fetchNextPage } =
-    useList({});
+    Hooks.Transfers.useList({});
 
   const infiniteScrollCallback = useCallback(() => {
     if (hasNextPage) {

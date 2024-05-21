@@ -1,6 +1,6 @@
 import React from 'react';
 import { QueryWrapper } from 'wrappers';
-import { useStat } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { DescriptionList } from 'ui';
 
 type FileStatProps = {
@@ -14,7 +14,7 @@ const FileStat: React.FC<FileStatProps> = ({
   path,
   className = '',
 }) => {
-  const { data, isLoading, error } = useStat({ systemId, path });
+  const { data, isLoading, error } = Hooks.useStat({ systemId, path });
 
   const stat = data?.result;
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useCancel, useDetails } from 'tapis-hooks/files/transfers';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { SubmitWrapper, QueryWrapper } from 'wrappers';
@@ -18,7 +18,7 @@ const FileOperation: React.FC<TransferCancelProps> = ({
     data,
     isLoading: detailsIsLoading,
     error: detailsError,
-  } = useDetails(transferTaskId);
+  } = Hooks.Transfers.useDetails(transferTaskId);
 
   const transfer: Files.TransferTask | undefined = data?.result;
   const cancelableStatuses = [
@@ -32,7 +32,7 @@ const FileOperation: React.FC<TransferCancelProps> = ({
     (status) => status === transfer?.status
   );
 
-  const { cancel, isLoading, error, isSuccess, reset } = useCancel();
+  const { cancel, isLoading, error, isSuccess, reset } = Hooks.Transfers.useCancel();
 
   const onClick = useCallback(() => {
     cancel(transferTaskId);

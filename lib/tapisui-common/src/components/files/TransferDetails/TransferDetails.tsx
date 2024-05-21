@@ -1,12 +1,12 @@
 import React from 'react';
-import { useDetails } from 'tapis-hooks/files/transfers';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { DescriptionList } from 'ui';
 import { QueryWrapper } from 'wrappers';
 
 const SystemDetail: React.FC<{ transferTaskId: string; className?: string }> =
   ({ transferTaskId, className = '' }) => {
-    const { data, isLoading, error } = useDetails(transferTaskId);
+    const { data, isLoading, error } = Hooks.Transfers.useDetails(transferTaskId);
     const task: Files.TransferTask | undefined = data?.result;
     return (
       <QueryWrapper isLoading={isLoading} error={error} className={className}>

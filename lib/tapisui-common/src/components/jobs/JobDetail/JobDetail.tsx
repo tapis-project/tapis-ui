@@ -1,11 +1,11 @@
 import React from 'react';
-import { useDetails } from 'tapis-hooks/jobs';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { Jobs } from '@tapis/tapis-typescript';
 import { DescriptionList } from 'ui';
 import { QueryWrapper } from 'wrappers';
 
 const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
-  const { data, isLoading, error } = useDetails(jobUuid);
+  const { data, isLoading, error } = Hooks.useDetails(jobUuid);
   const job: Jobs.Job | undefined = data?.result;
 
   // console.log(job?.execSystemOutputDir);

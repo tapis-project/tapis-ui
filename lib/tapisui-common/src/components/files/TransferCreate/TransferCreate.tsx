@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useCreate } from 'tapis-hooks/files/transfers';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'wrappers';
@@ -23,7 +23,7 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   destinationPath,
   className = '',
 }) => {
-  const { create, data, isLoading, error, isSuccess, reset } = useCreate();
+  const { create, data, isLoading, error, isSuccess, reset } = Hooks.Transfers.useCreate();
 
   const onSubmit = useCallback(
     ({ tag }: { tag: string }) => {

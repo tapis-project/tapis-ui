@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useNativeOp } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { Form, Formik } from 'formik';
@@ -27,7 +27,7 @@ const FileOperation: React.FC<FileOperationProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { nativeOp, isLoading, error, isSuccess, reset } = useNativeOp();
+  const { nativeOp, isLoading, error, isSuccess, reset } = Hooks.useNativeOp();
 
   useEffect(() => {
     reset();
