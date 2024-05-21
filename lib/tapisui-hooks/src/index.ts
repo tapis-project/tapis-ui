@@ -1,5 +1,5 @@
 import { useTapisConfig, TapisContext, TapisContextType } from './context';
-import { default as TapisProvider } from './provider';
+import { TapisProvider } from './provider';
 import * as Apps from "./apps"
 import * as Authenticator from "./authenticator"
 import * as Files from "./files"

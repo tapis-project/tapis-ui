@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import { useLogin } from 'tapis-hooks/authenticator';
-import { useTapisConfig } from 'tapis-hooks/context';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { FormikInput } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Formik, Form } from 'formik';
