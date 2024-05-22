@@ -4,7 +4,6 @@
     "target": "es5",
     "lib": [
       "dom",
-      "dom.iterable",
       "esnext"
     ],
     "jsx": "react-jsx",
@@ -20,6 +19,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
+    "types": [
+      "node",
+      "jest",
+      "@testing-library/jest-dom"
+    ],
+    "typeRoots": [
+      "./types",
+      "node_modules/@types"
+    ],
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
