@@ -1,8 +1,5 @@
 import React from 'react';
-import { useList as useListGroups } from 'tapis-hooks/workflows/groups';
-import { useListAll as useListAllPipelines } from 'tapis-hooks/workflows/pipelines';
-import { useListAll as useListAllArchives } from 'tapis-hooks/workflows/archives';
-import { useList as useListIdentities } from 'tapis-hooks/workflows/identities';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Link } from 'react-router-dom';
 import { LoadingSpinner, Icon } from 'tapis-ui/_common';
 import {
@@ -62,12 +59,12 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-  const groups = useListGroups();
+  const groups = Hooks.Groups.useList();
   const groupIds: Array<string> = [];
   groups.data?.result.map((group) => groupIds.push(group.id!));
-  const identities = useListIdentities();
-  const archives = useListAllArchives({ groupIds });
-  const pipelines = useListAllPipelines({ groupIds });
+  const identities = Hooks.Identities.useList();
+  const archives = Hooks.Archives.useListAll({ groupIds });
+  const pipelines = Hooks.Pipelines.useListAll({ groupIds });
 
   return (
     <div id="dashboard">

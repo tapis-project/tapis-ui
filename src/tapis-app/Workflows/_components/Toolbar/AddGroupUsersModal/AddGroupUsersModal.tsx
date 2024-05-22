@@ -4,8 +4,7 @@ import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik, FieldArray, Field } from 'formik';
 import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
 import { useQueryClient } from 'react-query';
-import { default as queryKeys } from 'tapis-hooks/workflows/groupusers/queryKeys';
-import { useCreate } from 'tapis-hooks/workflows/groupusers';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './AddGroupUsersModal.module.scss';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
@@ -19,10 +18,10 @@ const AddGroupUsersModal: React.FC<AddGroupUserModalProps> = ({
   toggle,
   groupId,
 }) => {
-  const { create, isLoading, error, isSuccess } = useCreate();
+  const { create, isLoading, error, isSuccess } = Hooks.GroupUsers.useCreate();
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.GroupUsers.queryKeys.list);
   }, [queryClient]);
 
   const validationSchema = Yup.object({

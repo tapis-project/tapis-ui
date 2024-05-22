@@ -3,11 +3,10 @@ import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { Form, Formik, FieldArray, Field } from 'formik';
 import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
-import { useCreate } from 'tapis-hooks/workflows/groups';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './CreateGroupModal.module.scss';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
-import { default as queryKeys } from 'tapis-hooks/workflows/groups/queryKeys';
 import { useQueryClient } from 'react-query';
 
 type CreateGroupModalProps = {
@@ -15,11 +14,11 @@ type CreateGroupModalProps = {
 };
 
 const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
-  const { create, isLoading, error, isSuccess } = useCreate();
+  const { create, isLoading, error, isSuccess } = Hooks.Groups.useCreate();
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Groups.queryKeys.list);
   }, [queryClient]);
 
   const validationSchema = Yup.object({

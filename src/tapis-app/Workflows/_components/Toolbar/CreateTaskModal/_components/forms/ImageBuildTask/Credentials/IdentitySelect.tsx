@@ -1,6 +1,6 @@
 import { Workflows } from '@tapis/tapis-typescript';
 import React from 'react';
-import { useList } from 'tapis-hooks/workflows/identities';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import * as Yup from 'yup';
@@ -14,7 +14,7 @@ type IdentitySelectProps = {
 };
 
 const IdentitySelect: React.FC<IdentitySelectProps> = ({ scope, type }) => {
-  const { data, isLoading, error } = useList();
+  const { data, isLoading, error } = Hooks.Identities.useList();
   const identities = data?.result ?? [];
 
   const update = (

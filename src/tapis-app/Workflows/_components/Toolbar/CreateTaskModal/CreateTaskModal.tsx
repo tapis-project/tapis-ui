@@ -6,9 +6,7 @@ import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import styles from './CreateTaskModal.module.scss';
 import { Task } from './_components/forms';
 import { TaskTypeSelector } from './_components';
-import { useCreate } from 'tapis-hooks/workflows/tasks';
-import { useDetails } from 'tapis-hooks/workflows/pipelines';
-import { default as queryKeys } from 'tapis-hooks/workflows/tasks/queryKeys';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { useQueryClient } from 'react-query';
 
 type CreateTaskModalProps = {
@@ -49,18 +47,18 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   groupId,
   pipelineId,
 }) => {
-  const { create, isLoading, isSuccess, error } = useCreate();
+  const { create, isLoading, isSuccess, error } = Hooks.Tasks.useCreate();
   const {
     data,
     isLoading: isLoadingPipeline,
     error: errorPipeline,
-  } = useDetails({ groupId, pipelineId });
+  } = Hooks.Pipelines.useDetails({ groupId, pipelineId });
   const pipeline: Workflows.Pipeline = data?.result!;
 
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
   }, [queryClient]);
 
   const [type, setType] = useState<string>('');

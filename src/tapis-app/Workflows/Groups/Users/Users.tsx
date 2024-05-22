@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useList, useDelete } from 'tapis-hooks/workflows/groupusers';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Toolbar } from '../../_components';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Users.module.scss';
 import { Button, Spinner } from 'reactstrap';
-import { default as queryKeys } from 'tapis-hooks/workflows/groupusers/queryKeys';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { useQueryClient } from 'react-query';
 
 type RemoveGroupUserButtonProps = {
@@ -26,11 +25,11 @@ const RemoveUserButton: React.FC<RemoveGroupUserButtonProps> = ({
     error: removeError,
     isLoading: removeInProgress,
     reset,
-  } = useDelete();
+  } = Hooks.GroupUsers.useDelete();
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.GroupUsers.queryKeys.list);
     reset();
   }, [reset, queryClient]);
 
@@ -56,7 +55,7 @@ type UsersProps = {
 };
 
 const Users: React.FC<UsersProps> = ({ groupId }) => {
-  const { data, isLoading, error } = useList({ groupId });
+  const { data, isLoading, error } = Hooks.GroupUsers.useList({ groupId });
   const { claims } = useTapisConfig();
   const users: Array<Workflows.GroupUser> = data?.result ?? [];
 

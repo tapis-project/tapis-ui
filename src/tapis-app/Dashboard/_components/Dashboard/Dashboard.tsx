@@ -9,10 +9,12 @@ import {
   CardFooter,
   CardText,
 } from 'reactstrap';
-import { useTapisConfig } from '@tapis/tapisui-hooks';
-import { useList as useSystemsList } from 'tapis-hooks/systems';
-import { useList as useJobsList } from 'tapis-hooks/jobs';
-import { useList as useAppsList } from 'tapis-hooks/apps';
+import {
+  useTapisConfig,
+  Systems as SystemsHooks,
+  Jobs as JobsHooks,
+  Apps as AppsHooks
+} from '@tapis/tapisui-hooks';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 
@@ -63,9 +65,9 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const { accessToken, claims } = useTapisConfig();
-  const systems = useSystemsList({});
-  const jobs = useJobsList({});
-  const apps = useAppsList({ select: 'jobAttributes,version' });
+  const systems = SystemsHooks.useList({});
+  const jobs = JobsHooks.useList({});
+  const apps = AppsHooks.useList({ select: 'jobAttributes,version' });
 
   return (
     <div>

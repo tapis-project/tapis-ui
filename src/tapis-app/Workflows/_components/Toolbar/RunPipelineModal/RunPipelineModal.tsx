@@ -8,7 +8,7 @@ import {
   Icon,
   SectionHeader,
 } from 'tapis-ui/_common';
-import { useRun } from 'tapis-hooks/workflows/pipelines';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './RunPipelineModal.module.scss';
 import * as Yup from 'yup';
 // import { Workflows } from '@tapis/tapis-typescript';
@@ -24,7 +24,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
   groupId,
   pipelineId,
 }) => {
-  const { run, isLoading, error, isSuccess } = useRun();
+  const { run, isLoading, error, isSuccess } = Hooks.Pipelines.useRun();
 
   const validationSchema = Yup.object({
     groupId: Yup.string()

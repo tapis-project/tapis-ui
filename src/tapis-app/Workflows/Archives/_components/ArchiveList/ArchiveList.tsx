@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useList } from 'tapis-hooks/workflows/archives';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Workflows } from '@tapis/tapis-typescript';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import styles from './ArchiveList.module.scss';
@@ -12,7 +12,7 @@ type ArchiveListParams = {
 };
 
 const ArchiveList: React.FC<ArchiveListParams> = ({ groupId }) => {
-  const { data, isLoading, error } = useList({ groupId });
+  const { data, isLoading, error } = Hooks.Archives.useList({ groupId });
   const archives: Array<Workflows.Archive> = data?.result ?? [];
 
   return (

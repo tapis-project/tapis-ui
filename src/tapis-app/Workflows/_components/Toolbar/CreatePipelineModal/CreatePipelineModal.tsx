@@ -3,10 +3,9 @@ import { Button } from 'reactstrap';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
 import { GenericModal } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useCreate } from 'tapis-hooks/workflows/pipelines';
 import styles from './CreatePipelineModel.module.scss';
 import { PipelineForm } from './_components';
-import { default as queryKeys } from 'tapis-hooks/workflows/pipelines/queryKeys';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { useQueryClient } from 'react-query';
 
 type BaseEnvVarType = {
@@ -38,11 +37,11 @@ const CreatePipelineModal: React.FC<CreatePipelineModalProps> = ({
   groupId,
   toggle,
 }) => {
-  const { create, isLoading, isSuccess, error } = useCreate();
+  const { create, isLoading, isSuccess, error } = Hooks.Pipelines.useCreate();
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Pipelines.queryKeys.list);
   }, [queryClient]);
 
   type EnvVarsTransformFn = (envVars: Array<EnvVarType>) => {

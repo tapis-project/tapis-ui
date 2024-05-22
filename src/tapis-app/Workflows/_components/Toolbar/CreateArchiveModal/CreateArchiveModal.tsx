@@ -5,11 +5,9 @@ import { Form, Formik } from 'formik';
 import { FormikInput, FieldWrapper, GenericModal } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
-import { useCreate } from 'tapis-hooks/workflows/archives';
-import { useList } from 'tapis-hooks/systems';
+import { Workflows as WorkflowsHooks, Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import styles from './CreateArchiveModel.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { default as queryKeys } from 'tapis-hooks/workflows/archives/queryKeys';
 import { useQueryClient } from 'react-query';
 
 type FormProps = {
@@ -103,7 +101,7 @@ const S3ArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
 };
 
 const TapisSystemArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
-  const { data, isLoading, error } = useList({ limit: -1 }); // Fetch the systems
+  const { data, isLoading, error } = SystemsHooks.useList({ limit: -1 }); // Fetch the systems
   const systems = data?.result ?? [];
 
   const validationSchema = Yup.object({
@@ -185,14 +183,14 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
   groupId,
   toggle,
 }) => {
-  const { create, isLoading, isSuccess, error } = useCreate();
+  const { create, isLoading, isSuccess, error } = WorkflowsHooks.Archives.useCreate();
   const [selectedType, setSelectedType] = useState<string | undefined>(
     undefined
   );
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(WorkflowsHooks.Archives.queryKeys.list);
   }, [queryClient]);
 
   const renderArchiveForm = useCallback(() => {

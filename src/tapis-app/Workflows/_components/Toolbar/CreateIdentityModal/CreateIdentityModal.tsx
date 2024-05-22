@@ -5,9 +5,8 @@ import { Form, Formik } from 'formik';
 import { FormikInput, FieldWrapper, GenericModal } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
-import { useCreate } from 'tapis-hooks/workflows/identities';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './CreateIdentityModel.module.scss';
-import { default as queryKeys } from 'tapis-hooks/workflows/identities/queryKeys';
 import { useQueryClient } from 'react-query';
 
 type CreateIdentityFormProps = {
@@ -186,13 +185,13 @@ const DockerhubIdentityForm: React.FC<FormProps> = ({ onSubmit }) => {
 };
 
 const CreateIdentityModal: React.FC<{ toggle: () => void }> = ({ toggle }) => {
-  const { create, isLoading, isSuccess, error } = useCreate();
+  const { create, isLoading, isSuccess, error } = Hooks.Identities.useCreate();
   const [selectedType, setSelectedType] = useState<string | undefined>(
     undefined
   );
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Identities.queryKeys.list);
   }, [queryClient]);
 
   const renderIdentityForm = useCallback(() => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useDetails } from 'tapis-hooks/workflows/identities';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
 type IdentityProps = {
@@ -8,7 +8,7 @@ type IdentityProps = {
 };
 
 const Identity: React.FC<IdentityProps> = ({ identityUuid }) => {
-  const { data, isLoading, error } = useDetails({ identityUuid });
+  const { data, isLoading, error } = Hooks.Identities.useDetails({ identityUuid });
   const identity: Workflows.Identity = data?.result!;
 
   return (

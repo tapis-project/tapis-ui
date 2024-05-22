@@ -4,7 +4,7 @@ import { Form, Formik, FieldArray } from 'formik';
 import { FormikInput, Collapse, FieldWrapper, Icon } from 'tapis-ui/_common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
-import { useList } from 'tapis-hooks/workflows/archives';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from '../CreatePipelineModel.module.scss';
 import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
 import { Button, Input } from 'reactstrap';
@@ -206,7 +206,7 @@ const EnvVarValueSource: React.FC<EnvVarValueProps> = ({
 };
 
 const PipelineForm: React.FC<FormProps> = ({ groupId, onSubmit }) => {
-  const { data, isLoading, error } = useList({ groupId }); // Fetch the archives
+  const { data, isLoading, error } = Hooks.Pipelines.useList({ groupId }); // Fetch the archives
   const [selectedEnvVarValueType, setSelectedEnvVarValueType] = useState<
     string | undefined
   >(undefined);

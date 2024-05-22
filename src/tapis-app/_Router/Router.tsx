@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
-import { useLogin } from 'tapis-hooks/authenticator';
+import { Authenticator } from '@tapis/tapisui-hooks';
 
 import Apps from '../Apps';
 import Login from '../Login';
@@ -15,7 +15,7 @@ import MlHub from '../MlHub';
 import UIPatterns from '../UIPatterns';
 
 const Router: React.FC = () => {
-  const { logout } = useLogin();
+  const { logout } = Authenticator.useLogin();
 
   return (
     <Switch>

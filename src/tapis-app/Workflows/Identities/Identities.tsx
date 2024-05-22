@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useList } from 'tapis-hooks/workflows/identities';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { SectionMessage, Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Toolbar } from '../_components';
 import styles from './Identities.module.scss';
 
 const Identities: React.FC = () => {
-  const { data, isLoading, error } = useList();
+  const { data, isLoading, error } = Hooks.Identities.useList();
   const identities: Array<Workflows.Identity> = data?.result ?? [];
 
   return (

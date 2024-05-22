@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import { useLogin } from 'tapis-hooks/authenticator';
+import { Authenticator as AuthenticatorHooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { FormikInput } from 'tapis-ui/_common';
 import { SubmitWrapper } from 'tapis-ui/_wrappers';
@@ -8,7 +8,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 const Login: React.FC = () => {
-  const { login, isLoading, error } = useLogin();
+  const { login, isLoading, error } = AuthenticatorHooks.useLogin();
   const { accessToken } = useTapisConfig();
 
   const onSubmit = ({

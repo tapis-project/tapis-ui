@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useDetails } from 'tapis-hooks/workflows/archives';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 
 type S3ArchiveProps = {
@@ -78,7 +78,7 @@ type ArchivesProps = {
 };
 
 const Archive: React.FC<ArchivesProps> = ({ groupId, archiveId }) => {
-  const { data, isLoading, error } = useDetails({ groupId, archiveId });
+  const { data, isLoading, error } = Hooks.Archives.useDetails({ groupId, archiveId });
   const archive: Workflows.Archive = data?.result!;
 
   return (

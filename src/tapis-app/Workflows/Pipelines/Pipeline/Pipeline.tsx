@@ -1,14 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useDetails } from 'tapis-hooks/workflows/pipelines';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { SectionMessage, SectionHeader, Icon } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Link } from 'react-router-dom';
 import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
-import { useList, useDelete } from 'tapis-hooks/workflows/tasks';
-import { default as queryKeys } from 'tapis-hooks/workflows/tasks/queryKeys';
 import { useQueryClient } from 'react-query';
 
 type TaskProps = {
@@ -19,10 +17,10 @@ type TaskProps = {
 
 const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
   const { removeAsync, isLoading, isError, error, isSuccess, reset } =
-    useDelete();
+    Hooks.Tasks.useDelete();
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
     reset();
   }, [queryClient, reset]);
 
@@ -121,12 +119,12 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
     data: pipelineData,
     isLoading: isLoadingPipeline,
     error: pipelineError,
-  } = useDetails({ groupId, pipelineId });
+  } = Hooks.Pipelines.useDetails({ groupId, pipelineId });
   const {
     data: tasksData,
     isLoading: isLoadingTasks,
     error: listTasksError,
-  } = useList({ groupId, pipelineId });
+  } = Hooks.Tasks.useList({ groupId, pipelineId });
 
   const pipeline: Workflows.Pipeline = pipelineData?.result!;
   const tasks: Array<Workflows.Task> = tasksData?.result! || [];

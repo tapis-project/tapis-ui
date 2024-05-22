@@ -1,5 +1,5 @@
 import React from 'react';
-import { useList } from 'tapis-hooks/workflows/taskexecutions';
+import { Workflows } from '@tapis/tapisui-hooks';
 import { SectionMessage } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import { Table } from 'reactstrap';
@@ -15,7 +15,7 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
   pipelineId,
   pipelineRunUuid,
 }) => {
-  const { data, isLoading, error } = useList({
+  const { data, isLoading, error } = Workflows.TaskExecutions.useList({
     groupId,
     pipelineId,
     pipelineRunUuid,

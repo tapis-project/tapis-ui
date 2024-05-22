@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { useList } from 'tapis-hooks/workflows/pipelineruns';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { SectionMessage, SectionHeader } from 'tapis-ui/_common';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
 import styles from './PipelineRuns.module.scss';
@@ -46,7 +46,7 @@ type PipelineRunsProps = {
 };
 
 const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
-  const { data, isLoading, error } = useList({
+  const { data, isLoading, error } = Hooks.PipelineRuns.useList({
     groupId,
     pipelineId,
   });
