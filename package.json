@@ -13,7 +13,7 @@
     "@tapis/tapis-typescript": "^0.0.27",
     "@tapis/tapisui-api": "file:./lib/tapisui-api",
     "@tapis/tapisui-hooks": "^0.0.1",
-    "@tapis/tapisui-common": "^0.0.1",
+    "@tapis/tapisui-common": "^0.0.3",
     "@tapis/tapisui-extensions-core": "file:./lib/tapisui-extensions-core",
     "@uiw/react-codemirror": "^4.19.7",
     "@uiw/react-textarea-code-editor": "^2.0.6",

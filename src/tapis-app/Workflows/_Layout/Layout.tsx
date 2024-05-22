@@ -5,7 +5,7 @@ import {
   LayoutBody,
   LayoutHeader,
   Breadcrumbs,
-} from 'tapis-ui/_common';
+} from '@tapis/tapisui-common';
 import { useLocation } from 'react-router';
 import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
 import styles from './Layout.module.scss';

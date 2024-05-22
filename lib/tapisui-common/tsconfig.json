@@ -18,7 +18,8 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
       "ui": ["./ui"],
@@ -29,6 +30,10 @@
       "wrappers": ["./wrappers"]
     }
   },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
   "include": [
     "src"
   ]
