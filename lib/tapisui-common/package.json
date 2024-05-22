@@ -1,6 +1,6 @@
 {
   "name": "@tapis/tapisui-common",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Common React components for TapisUI",
   "main": "index.js",
   "scripts": {

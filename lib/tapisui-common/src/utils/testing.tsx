@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Router } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { TapisProvider } from '@tapis/tapisui-hooks';
-export default function renderComponent(component: any, history: any = null): React.ReactNode {
+export default function renderComponent(component: any, history: any = null): any {
   if (history) {
     return render(
       <TapisProvider basePath="tapis.test">
