@@ -12,6 +12,11 @@
   "types": "./dist/index.d.ts",
   "author": "",
   "license": "ISC",
+  "files": [
+    "dist",
+    "src/**/*.scss",
+    "src/**/*.css"
+  ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "tsconfig-paths": "^4.2.0",
