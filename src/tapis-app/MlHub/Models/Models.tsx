@@ -25,11 +25,10 @@ const Models: React.FC = () => {
           {Object.entries(models).map((model) => (
             <tr>
               <td>
-                <Link to={`/ml-hub/models/${model[0]}`}>
-                  <span>
-                    <Icon name="gear" /> {model[0]}
-                  </span>
-                </Link>
+                <Icon name="gear" />
+                <span>
+                  <Link to={`/ml-hub/models/${model[0]}`}> {model[0]} </Link>
+                </span>
               </td>
               <td>{model[1].pipeline_tag ? model[1].pipeline_tag : 'None'}</td>
               <td>{model[1].downloads}</td>
