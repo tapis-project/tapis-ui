@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
-import { SubmitWrapper, QueryWrapper } from 'wrappers';
+import { SubmitWrapper, QueryWrapper } from '../../../wrappers';
 import { focusManager } from 'react-query';
 
 type TransferCancelProps = {

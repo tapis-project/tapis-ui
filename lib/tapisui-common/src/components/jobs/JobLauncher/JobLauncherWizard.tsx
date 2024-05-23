@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { WizardStep } from 'wrappers/Wizard';
-import { QueryWrapper, Wizard } from 'wrappers';
+import { WizardStep } from '../../../wrappers/Wizard';
+import { QueryWrapper, Wizard } from '../../../wrappers';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { Apps as AppsHooks } from '@tapis/tapisui-hooks'
 import generateJobDefaults from '../../../utils/jobDefaults';

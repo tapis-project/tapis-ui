@@ -1,5 +1,5 @@
 import React from 'react';
-import { QueryWrapper } from 'wrappers';
+import { QueryWrapper } from '../../../wrappers';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { DescriptionList } from '../../../ui';
 
