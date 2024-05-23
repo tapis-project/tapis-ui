@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal } from 'ui';
-import { SubmitWrapper } from 'wrappers';
+import { GenericModal } from '../../ui';
+import { SubmitWrapper } from '../../wrappers';
 
 type ConfirmModalProps = {
   toggle: () => void;

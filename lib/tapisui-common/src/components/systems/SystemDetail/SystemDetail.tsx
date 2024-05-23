@@ -1,8 +1,8 @@
 import React from 'react';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
-import { DescriptionList, Tabs, JSONDisplay } from 'ui';
-import { QueryWrapper } from 'wrappers';
+import { DescriptionList, Tabs, JSONDisplay } from '../../../ui';
+import { QueryWrapper } from '../../../wrappers';
 
 const SystemDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
   const { data, isLoading, error } = Hooks.useDetails({

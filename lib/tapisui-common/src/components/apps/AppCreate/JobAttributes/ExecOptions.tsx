@@ -5,9 +5,9 @@ import {
   FormikCheck,
   FormikSelect,
   FormikTapisFile,
-} from 'ui-formik/FieldWrapperFormik';
+} from '../../../../ui-formik/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
-import { Collapse } from 'ui';
+import { Collapse } from '../../../../ui';
 import React from 'react';
 import fieldArrayStyles from './FieldArray.module.scss';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';

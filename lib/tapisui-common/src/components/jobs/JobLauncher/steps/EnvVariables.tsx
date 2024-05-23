@@ -3,14 +3,14 @@ import { Jobs } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
-import { Collapse } from 'ui';
+import { Collapse } from '../../../../ui';
 import {
   FieldArray,
   useFormikContext,
   useField,
   FieldArrayRenderProps,
 } from 'formik';
-import { FormikInput } from 'ui-formik/FieldWrapperFormik';
+import { FormikInput } from '../../../../ui-formik/FieldWrapperFormik';
 import { JobStep } from '..';
 import * as Yup from 'yup';
 

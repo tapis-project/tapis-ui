@@ -2,8 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { Files } from '@tapis/tapis-typescript';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Column, Row } from 'react-table';
-import { Icon, InfiniteScrollTable } from 'ui';
-import { QueryWrapper } from 'wrappers';
+import { Icon, InfiniteScrollTable } from '../../../ui';
+import { QueryWrapper } from '../../../wrappers';
 import styles from './TransferListing.module.scss';
 
 type TransferListingProps = {

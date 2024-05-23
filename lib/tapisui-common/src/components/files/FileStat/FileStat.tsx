@@ -1,7 +1,7 @@
 import React from 'react';
 import { QueryWrapper } from 'wrappers';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { DescriptionList } from 'ui';
+import { DescriptionList } from '../../../ui';
 
 type FileStatProps = {
   systemId: string;

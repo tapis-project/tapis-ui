@@ -2,8 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { Systems } from '@tapis/tapis-typescript';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { Column, Row } from 'react-table';
-import { Icon, InfiniteScrollTable } from 'ui';
-import { QueryWrapper } from 'wrappers';
+import { Icon, InfiniteScrollTable } from '../../../ui';
+import { QueryWrapper } from '../../../wrappers';
 import { Button } from 'reactstrap';
 import styles from './SystemListing.module.scss';
 

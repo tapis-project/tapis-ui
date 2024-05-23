@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Icon } from 'ui';
+import { Icon } from '../../ui';
 import styles from './Navbar.module.scss';
 
 export const NavItem: React.FC<{ to: string; icon?: string }> = ({

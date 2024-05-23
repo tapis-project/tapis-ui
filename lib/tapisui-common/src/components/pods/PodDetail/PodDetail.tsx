@@ -1,8 +1,8 @@
 import React from 'react';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
-import { DescriptionList, Tabs, JSONDisplay } from 'ui';
-import { QueryWrapper } from 'wrappers';
+import { DescriptionList, Tabs, JSONDisplay } from '../../../ui';
+import { QueryWrapper } from '../../../wrappers';
 
 const PodDetail: React.FC<{ podId: string }> = ({ podId }) => {
   const { data, isLoading, error } = Hooks.useDetails({

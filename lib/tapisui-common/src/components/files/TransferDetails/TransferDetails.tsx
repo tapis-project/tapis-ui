@@ -1,7 +1,7 @@
 import React from 'react';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
-import { DescriptionList } from 'ui';
+import { DescriptionList } from '../../../ui';
 import { QueryWrapper } from 'wrappers';
 
 const SystemDetail: React.FC<{ transferTaskId: string; className?: string }> =

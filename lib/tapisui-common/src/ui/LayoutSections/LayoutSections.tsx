@@ -1,5 +1,5 @@
 import React from 'react';
-import { SectionHeader as CommonSectionHeader } from 'ui';
+import { SectionHeader as CommonSectionHeader } from '../../ui';
 import styles from './LayoutSections.module.scss';
 
 export const LayoutHeader: React.FC<

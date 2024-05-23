@@ -1,10 +1,10 @@
 import React from 'react';
 import { Apps } from '@tapis/tapis-typescript';
-import { FieldWrapper } from 'ui';
+import { FieldWrapper } from '../../../../ui';
 import { Input } from 'reactstrap';
 import { Button } from 'reactstrap';
 import fieldArrayStyles from './FieldArray.module.scss';
-import { Collapse } from 'ui';
+import { Collapse } from '../../../../ui';
 import {
   FieldArray,
   useFormikContext,
@@ -18,8 +18,8 @@ import {
   FormikCheck,
   FormikTapisFile,
   FormikSelect,
-} from 'ui-formik/FieldWrapperFormik';
-import formStyles from 'ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
+} from '../../../../ui-formik/FieldWrapperFormik';
+import formStyles from '../../../../ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
 import { Systems } from '@tapis/tapisui-hooks';
 import { ListTypeEnum } from '@tapis/tapis-typescript-systems';
 

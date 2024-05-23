@@ -1,8 +1,8 @@
 import React from 'react';
 import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { Jobs } from '@tapis/tapis-typescript';
-import { DescriptionList } from 'ui';
-import { QueryWrapper } from 'wrappers';
+import { DescriptionList } from '../../../ui';
+import { QueryWrapper } from '../../../wrappers';
 
 const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   const { data, isLoading, error } = Hooks.useDetails(jobUuid);

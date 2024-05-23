@@ -1,6 +1,6 @@
 import { useCallback, useState, useMemo } from 'react';
 import { Files } from '@tapis/tapis-typescript';
-import { GenericModal } from 'ui';
+import { GenericModal } from '../../../ui';
 import { FileExplorer } from '../../../components/files';
 import { SelectMode } from '../../../components/files/FileListing/FileListing';
 import { Button } from 'reactstrap';

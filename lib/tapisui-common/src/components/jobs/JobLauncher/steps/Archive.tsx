@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Jobs } from '@tapis/tapis-typescript';
-import FieldWrapper from 'ui/FieldWrapper';
+import FieldWrapper from '../../../../ui/FieldWrapper';
 import { Input, Button } from 'reactstrap';
 import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
-import { Collapse } from 'ui';
+import { Collapse } from '../../../../ui';
 import {
   FieldArray,
   useFormikContext,
@@ -17,9 +17,9 @@ import {
   FormikCheck,
   FormikTapisFile,
   FormikSelect,
-} from 'ui-formik/FieldWrapperFormik';
+} from '../../../../ui-formik/FieldWrapperFormik';
 import * as Yup from 'yup';
-import formStyles from 'ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import formStyles from '../../../../ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
 import { JobStep } from '..';
 
 type ArrayGroupProps = {

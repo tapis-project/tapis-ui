@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Button, Badge } from 'reactstrap';
 import { Collapse as BootstrapCollapse } from 'reactstrap';
-import { Icon } from 'ui';
+import { Icon } from '../../ui';
 import styles from './Collapse.module.scss';
 
 type CollapseProperties = React.PropsWithChildren<{

@@ -1,8 +1,8 @@
 import { useMemo, useState, useCallback } from 'react';
 import { Input, FormGroup, Label, Button } from 'reactstrap';
-import { CopyButton, TooltipModal } from 'ui';
+import { CopyButton, TooltipModal } from '../../ui';
 import styles from './JSONDisplay.module.scss';
-import { Icon } from 'ui';
+import { Icon } from '../../ui';
 
 const simplifyObject = (obj: any) => {
   const result = JSON.parse(JSON.stringify(obj));

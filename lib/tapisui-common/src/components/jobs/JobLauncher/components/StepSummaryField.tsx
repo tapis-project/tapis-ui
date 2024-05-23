@@ -1,4 +1,4 @@
-import { Message } from 'ui';
+import { Message } from '../../../../ui';
 
 type JobStartSummaryProps = {
   field?: string;

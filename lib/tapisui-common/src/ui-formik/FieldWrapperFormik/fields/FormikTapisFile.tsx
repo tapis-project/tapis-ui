@@ -4,10 +4,10 @@ import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
 import { FormikInputProps } from '.';
 import { Files } from '@tapis/tapis-typescript';
-import { FileSelectModal } from 'components/files';
+import { FileSelectModal } from '../../../components/files';
 import { InputProps } from 'reactstrap';
-import { useModal } from 'ui';
-import { SelectMode } from 'components/files/FileListing';
+import { useModal } from '../../../ui';
+import { SelectMode } from '../../../components/files/FileListing';
 
 const pathToFile = (path?: string): Files.FileInfo | undefined => {
   if (path) {

@@ -2,12 +2,12 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
-import { Icon, InfiniteScrollTable } from 'ui';
-import { QueryWrapper } from 'wrappers';
+import { Icon, InfiniteScrollTable } from '../../../ui';
+import { QueryWrapper } from '../../../wrappers';
 import { Row, Column, CellProps } from 'react-table';
-import sizeFormat from 'utils/sizeFormat';
+import sizeFormat from '../../../utils/sizeFormat';
 import { Button } from 'reactstrap';
-import { formatDateTimeFromValue } from 'utils/timeFormat';
+import { formatDateTimeFromValue } from '../../../utils/timeFormat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckSquare,

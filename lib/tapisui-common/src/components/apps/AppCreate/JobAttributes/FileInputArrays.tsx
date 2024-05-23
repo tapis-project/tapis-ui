@@ -1,8 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
-import { generateFileInputArrayFromAppInput } from 'utils/jobFileInputArrays';
-import { Collapse, Icon, FieldWrapper, useModal } from 'ui';
+import { generateFileInputArrayFromAppInput } from '../../../../utils/jobFileInputArrays';
+import { Collapse, Icon, FieldWrapper, useModal } from '../../../../ui';
 import { FileSelectModal } from '../../../../components';
 import {
   FieldArray,
@@ -15,7 +15,7 @@ import {
 import {
   FormikInput,
   FormikTapisFileInput,
-} from 'ui-formik/FieldWrapperFormik';
+} from '../../../../ui-formik/FieldWrapperFormik';
 import arrayStyles from './FileInputArrays.module.scss';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from './FieldArray.module.scss';

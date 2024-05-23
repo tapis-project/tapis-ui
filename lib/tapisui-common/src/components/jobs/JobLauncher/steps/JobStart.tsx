@@ -1,5 +1,5 @@
 import { StepSummaryField, useJobLauncher } from '../components';
-import { FormikInput } from 'ui-formik/FieldWrapperFormik';
+import { FormikInput } from '../../../../ui-formik/FieldWrapperFormik';
 import * as Yup from 'yup';
 import { JobStep, JobLauncherProviderParams } from '../';
 import { Jobs } from '@tapis/tapis-typescript';

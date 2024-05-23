@@ -7,8 +7,8 @@ import {
   FormikInput,
   FormikSelect,
   FormikCheck,
-} from 'ui-formik/FieldWrapperFormik';
-import { SubmitWrapper } from 'wrappers';
+} from '../../../ui-formik/FieldWrapperFormik';
+import { SubmitWrapper } from '../../../wrappers';
 import { focusManager } from 'react-query';
 import * as Yup from 'yup';
 

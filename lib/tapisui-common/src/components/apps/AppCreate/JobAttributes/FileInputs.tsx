@@ -2,14 +2,14 @@ import React from 'react';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import fieldArrayStyles from './FieldArray.module.scss';
-import { Collapse } from 'ui';
+import { Collapse } from '../../../../ui';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import {
   FormikInput,
   FormikCheck,
   FormikTapisFile,
   FormikSelect,
-} from 'ui-formik/FieldWrapperFormik';
+} from '../../../../ui-formik/FieldWrapperFormik';
 
 import { FileInputModeEnum } from '@tapis/tapis-typescript-apps';
 

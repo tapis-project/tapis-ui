@@ -7,8 +7,8 @@ import {
   getIncompleteJobInputArrays,
   getAppInputArraysIncludedByDefault,
 } from 'utils/jobFileInputArrays';
-import { Collapse, Icon, FieldWrapper } from 'ui';
-import { useModal } from 'ui';
+import { Collapse, Icon, FieldWrapper } from '../../../../ui';
+import { useModal } from '../../../../ui';
 import { FileSelectModal } from '../../../../components/files';
 import {
   FieldArray,
@@ -21,13 +21,13 @@ import {
 import {
   FormikInput,
   FormikTapisFileInput,
-} from 'ui-formik/FieldWrapperFormik';
+} from '../../../../ui-formik/FieldWrapperFormik';
 import { v4 as uuidv4 } from 'uuid';
 import * as Yup from 'yup';
 import arrayStyles from './FileInputArrays.module.scss';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from '../FieldArray.module.scss';
-import formStyles from 'ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
+import formStyles from '../../../../ui-formik/FieldWrapperFormik/FieldWrapperFormik.module.css';
 import { JobStep } from '..';
 
 export type FieldWrapperProps = {

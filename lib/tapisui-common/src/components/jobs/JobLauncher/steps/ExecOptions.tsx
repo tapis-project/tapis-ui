@@ -6,16 +6,16 @@ import {
   FormikCheck,
   FormikSelect,
   FormikTapisFile,
-} from 'ui-formik/FieldWrapperFormik';
+} from '../../../../ui-formik/FieldWrapperFormik';
 import { useFormikContext } from 'formik';
-import { Collapse } from 'ui';
+import { Collapse } from '../../../../ui';
 import {
   computeDefaultQueue,
   computeDefaultSystem,
   computeDefaultJobType,
   validateExecSystem,
   ValidateExecSystemResult,
-} from 'utils/jobExecSystem';
+} from '../../../../utils/jobExecSystem';
 import { capitalize } from './utils';
 import * as Yup from 'yup';
 import fieldArrayStyles from '../FieldArray.module.scss';
