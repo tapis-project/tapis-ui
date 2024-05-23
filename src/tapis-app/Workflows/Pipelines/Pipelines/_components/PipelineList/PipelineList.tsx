@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Icon } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Icon } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './PipelineList.module.scss';
-import { SectionMessage } from 'tapis-ui/_common';
+import { SectionMessage } from '@tapis/tapisui-common';
 import {
   Card,
   CardHeader,

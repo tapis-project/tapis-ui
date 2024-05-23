@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { SectionMessage, SectionHeader } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { SectionMessage, SectionHeader } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './PipelineRuns.module.scss';
 import { Table } from 'reactstrap';
 import { Link } from 'react-router-dom';

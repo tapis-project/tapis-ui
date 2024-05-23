@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikSelect } from '@tapis/tapisui-common';
 import styles from './Builder.module.scss';
 import { Field, useFormikContext } from 'formik';
 

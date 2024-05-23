@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Workflows } from '@tapis/tapis-typescript';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './ArchiveList.module.scss';
-import { SectionMessage, Icon } from 'tapis-ui/_common';
+import { SectionMessage, Icon } from '@tapis/tapisui-common';
 import { Toolbar } from '../../../_components';
 
 type ArchiveListParams = {

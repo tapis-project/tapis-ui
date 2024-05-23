@@ -5,7 +5,7 @@ import {
   detailsValidationSchema,
   detailsInitialValues,
 } from '../_common';
-import { FieldWrapper } from 'tapis-ui/_common';
+import { FieldWrapper } from '@tapis/tapisui-common';
 import { Form, Formik, useFormikContext, getIn } from 'formik';
 import * as Yup from 'yup';
 import CodeMirror from '@uiw/react-codemirror';

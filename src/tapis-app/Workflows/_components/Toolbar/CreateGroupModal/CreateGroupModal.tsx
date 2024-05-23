@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { Form, Formik, FieldArray, Field } from 'formik';
-import { FormikInput, GenericModal, Icon } from 'tapis-ui/_common';
+import { FormikInput, GenericModal, Icon } from '@tapis/tapisui-common';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './CreateGroupModal.module.scss';
 import { Workflows } from '@tapis/tapis-typescript';

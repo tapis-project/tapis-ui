@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { SectionMessage, Icon } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { SectionMessage, Icon } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { Toolbar } from '../_components';
 import styles from './Groups.module.scss';
 

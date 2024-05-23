@@ -1,7 +1,7 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapisui-hooks';
-import { SectionMessage } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { SectionMessage } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table } from 'reactstrap';
 
 type TaskExecutionsProps = {

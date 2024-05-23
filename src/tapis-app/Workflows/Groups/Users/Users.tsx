@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { SectionMessage, Icon } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { SectionMessage, Icon } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { Toolbar } from '../../_components';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Users.module.scss';

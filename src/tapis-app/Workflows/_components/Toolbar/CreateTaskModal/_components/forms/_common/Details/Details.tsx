@@ -5,8 +5,8 @@ import {
   Collapse,
   FieldWrapper,
   SectionHeader,
-} from 'tapis-ui/_common';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+} from '@tapis/tapisui-common';
+import { FormikSelect } from '@tapis/tapisui-common';
 import { useFormikContext, FieldArray } from 'formik';
 import styles from './Details.module.scss';
 import { Button, Input } from 'reactstrap';

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { Form, Formik, FieldArray } from 'formik';
-import { FormikInput, Collapse, FieldWrapper, Icon } from 'tapis-ui/_common';
+import { FormikInput, Collapse, FieldWrapper, Icon } from '@tapis/tapisui-common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from '../CreatePipelineModel.module.scss';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikSelect } from '@tapis/tapisui-common';
 import { Button, Input } from 'reactstrap';
 import { ReqPipelineTransform } from '../CreatePipelineModal';
 

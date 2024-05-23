@@ -1,7 +1,7 @@
 import React from 'react';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Link } from 'react-router-dom';
-import { LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
   CardHeader,

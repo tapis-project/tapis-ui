@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { Form, Formik, FieldArray } from 'formik';
 import {
   FormikInput,
   GenericModal,
   Icon,
   SectionHeader,
-} from 'tapis-ui/_common';
+} from '@tapis/tapisui-common';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './RunPipelineModal.module.scss';
 import * as Yup from 'yup';

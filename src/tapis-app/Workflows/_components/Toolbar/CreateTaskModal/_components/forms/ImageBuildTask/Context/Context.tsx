@@ -7,7 +7,7 @@ import {
   GitlabContext,
 } from '.';
 import { Button, Input } from 'reactstrap';
-import { FieldWrapper, FormikInput, Icon } from 'tapis-ui/_common';
+import { FieldWrapper, FormikInput, Icon } from '@tapis/tapisui-common';
 import styles from './Context.module.scss';
 import { WithFormUpdates } from '../../_common';
 import * as Yup from 'yup';

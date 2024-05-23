@@ -5,13 +5,13 @@ import {
   detailsValidationSchema,
   detailsInitialValues,
 } from '../_common';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikSelect } from '@tapis/tapisui-common';
 import {
   FormikInput,
   FieldWrapper,
   Icon,
   SectionHeader,
-} from 'tapis-ui/_common';
+} from '@tapis/tapisui-common';
 import { Form, Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import styles from './FunctionTask.module.scss';

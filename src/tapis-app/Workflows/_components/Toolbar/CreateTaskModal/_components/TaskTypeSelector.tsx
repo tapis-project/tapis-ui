@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { FieldWrapper } from 'tapis-ui/_common';
+import { FieldWrapper } from '@tapis/tapisui-common';
 import { Button, Input } from 'reactstrap';
 import styles from '../CreateTaskModal.module.scss';
 

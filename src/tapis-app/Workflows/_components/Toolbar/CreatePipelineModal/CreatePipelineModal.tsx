@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
-import { GenericModal } from 'tapis-ui/_common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
+import { GenericModal } from '@tapis/tapisui-common';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './CreatePipelineModel.module.scss';
 import { PipelineForm } from './_components';

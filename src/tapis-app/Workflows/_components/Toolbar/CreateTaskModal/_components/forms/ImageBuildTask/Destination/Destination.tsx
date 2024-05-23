@@ -1,7 +1,7 @@
 import { Workflows } from '@tapis/tapis-typescript';
 import React, { useState } from 'react';
 import { Button, Input } from 'reactstrap';
-import { FieldWrapper, Icon } from 'tapis-ui/_common';
+import { FieldWrapper, Icon } from '@tapis/tapisui-common';
 import { DockerhubDestination, LocalDestination } from '.';
 import { WithFormUpdates } from '../../_common';
 import styles from './Destination.module.scss';

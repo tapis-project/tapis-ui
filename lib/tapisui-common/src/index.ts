@@ -39,7 +39,9 @@ import {
 import {
     QueryWrapper,
     SubmitWrapper,
-    Wizard
+    Wizard,
+    Navbar,
+    NavItem
 } from "./wrappers"
 import { 
     FieldWrapperFormik 
@@ -74,7 +76,6 @@ import {
     FileInputs,
     SchedulerOptions
 } from "./components"
-
 
 export {
     // Generic UI

@@ -6,8 +6,8 @@ import {
   detailsInitialValues,
 } from '../_common';
 // import styles from '../../Task.module.scss';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { FormikInput } from 'tapis-ui/_common';
+import { FormikSelect } from '@tapis/tapisui-common';
+import { FormikInput } from '@tapis/tapisui-common';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { TaskFormProps } from '../Task';

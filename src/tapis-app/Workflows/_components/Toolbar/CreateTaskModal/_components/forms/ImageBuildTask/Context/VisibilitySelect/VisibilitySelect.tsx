@@ -1,7 +1,7 @@
 import { Workflows } from '@tapis/tapis-typescript';
 import { useFormikContext } from 'formik';
 import React, { useState } from 'react';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikSelect } from '@tapis/tapisui-common';
 import { CredentialsSourceSelect } from '../../Credentials';
 
 type VisibilitySelectProps = {

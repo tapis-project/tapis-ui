@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { FormikInput } from 'tapis-ui/_common';
+import { FormikInput } from '@tapis/tapisui-common';
 import styles from './Context.module.scss';
 import { VisibilitySelect } from './VisibilitySelect';
 

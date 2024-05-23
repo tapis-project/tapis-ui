@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormikInput } from 'tapis-ui/_common';
+import { FormikInput } from '@tapis/tapisui-common';
 import styles from './Credentials.module.scss';
 
 type GithubCredentialsProps = {

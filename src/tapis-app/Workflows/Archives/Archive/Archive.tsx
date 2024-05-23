@@ -1,7 +1,7 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { QueryWrapper } from '@tapis/tapisui-common';
 
 type S3ArchiveProps = {
   archive: Workflows.S3Archive;

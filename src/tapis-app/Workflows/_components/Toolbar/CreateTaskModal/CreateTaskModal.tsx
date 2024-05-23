@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { GenericModal, LoadingSpinner } from 'tapis-ui/_common';
+import { GenericModal, LoadingSpinner } from '@tapis/tapisui-common';
 import { Button } from 'reactstrap';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import styles from './CreateTaskModal.module.scss';
 import { Task } from './_components/forms';
 import { TaskTypeSelector } from './_components';
