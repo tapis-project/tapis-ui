@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
               loading={jobs?.isLoading}
             />
             <DashboardCard
-              icon="simulation"
+              icon="share"
               name="ML Hub"
               text="View available models and datasets, run inference and training on ML models"
               link="/ml-hub"
