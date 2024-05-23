@@ -5,7 +5,7 @@ import { Files as Hooks} from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { transferTask } from 'fixtures/files.fixtures';
 
-jest.mock('tapis-hooks/files/transfers');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('TransferCancel', () => {
   it('displays a task that is not cancelable', () => {

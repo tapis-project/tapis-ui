@@ -5,7 +5,7 @@ import SystemListing from './SystemListing';
 import { Systems } from '@tapis/tapisui-hooks';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 
-jest.mock('tapis-hooks/systems');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('System Listing', () => {
   it('renders System Listing component', () => {

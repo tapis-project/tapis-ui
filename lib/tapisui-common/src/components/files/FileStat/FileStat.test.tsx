@@ -4,7 +4,7 @@ import FileStat from './FileStat';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileStatInfo } from 'fixtures/files.fixtures';
 
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('Files', () => {
   it('renders File Listing component', () => {

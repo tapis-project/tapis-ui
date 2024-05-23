@@ -3,15 +3,15 @@ import '@testing-library/jest-dom/extend-expect';
 import { act, fireEvent } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import FileExplorer from './FileExplorer';
-// import { useList as useSystemsList } from 'tapis-hooks/systems';
-// import { useList as useFilesList } from 'tapis-hooks/files';
+// import { useList as useSystemsList } from '@tapis/tapisui-hooks';
+// import { useList as useFilesList } from '@tapis/tapisui-hooks';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import { Files as FilesHooks } from '@tapis/tapisui-hooks';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 import { fileInfo } from 'fixtures/files.fixtures';
 
-jest.mock('tapis-hooks/systems');
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('File Explorer', () => {
   it('renders File Explorer component', () => {

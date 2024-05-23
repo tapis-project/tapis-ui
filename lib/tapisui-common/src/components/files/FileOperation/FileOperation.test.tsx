@@ -4,7 +4,7 @@ import FileOperation from './FileOperation';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('FileOperation', () => {
   it('submits with valid inputs', async () => {

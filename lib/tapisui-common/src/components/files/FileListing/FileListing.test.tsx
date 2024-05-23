@@ -6,7 +6,7 @@ import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('Files', () => {
   it('renders File Listing component', () => {

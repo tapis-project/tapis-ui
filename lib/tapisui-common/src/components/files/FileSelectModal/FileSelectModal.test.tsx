@@ -5,7 +5,7 @@ import FileSelectModal from './FileSelectModal';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('File Select Modal', () => {
   it('renders File Select Modal component', () => {

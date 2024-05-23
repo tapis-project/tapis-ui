@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import GenericModal from './GenericModal';
 
-jest.mock('tapis-hooks/systems');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('GenericModal', () => {
   it('renders GenericModal component with correct text and toggle function', () => {

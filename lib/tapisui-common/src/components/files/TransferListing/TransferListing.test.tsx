@@ -2,11 +2,11 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import TransferListing from './TransferListing';
-// import { useList } from 'tapis-hooks/files/transfers';
+// import { useList } from '@tapis/tapisui-hooks';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { transferTask } from 'fixtures/files.fixtures';
 
-jest.mock('tapis-hooks/files/transfers');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('Transfer Listing', () => {
   it('renders Transfer Listing component', () => {
