@@ -9,7 +9,7 @@ import {
 } from 'utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper } from 'ui';
 import { useModal } from 'ui';
-import { FileSelectModal } from 'components/files';
+import { FileSelectModal } from '../../../../components/files';
 import {
   FieldArray,
   useFormikContext,
