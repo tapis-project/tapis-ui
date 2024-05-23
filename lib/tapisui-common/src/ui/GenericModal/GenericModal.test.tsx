@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import renderComponent from '../../utils/testing';
 import GenericModal from './GenericModal';
 
 jest.mock('@tapis/tapisui-hooks');

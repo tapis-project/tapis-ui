@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Jobs, Apps, Systems } from '@tapis/tapis-typescript';
-import withBuilder from 'utils/withBuilder';
+import withBuilder from '../../../../utils/withBuilder';
 
 type JobLauncherContextType = {
   app: Apps.TapisApp;

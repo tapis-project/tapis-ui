@@ -1,7 +1,7 @@
 import { Apps, Systems } from '@tapis/tapis-typescript';
 import '@testing-library/jest-dom/extend-expect';
-import { tapisApp } from 'fixtures/apps.fixtures';
-import { tapisSystem } from 'fixtures/systems.fixtures';
+import { tapisApp } from '../fixtures/apps.fixtures';
+import { tapisSystem } from '../fixtures/systems.fixtures';
 import {
   computeDefaultQueue,
   computeDefaultSystem,

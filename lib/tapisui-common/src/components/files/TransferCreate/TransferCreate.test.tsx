@@ -1,9 +1,9 @@
 import { act, screen, fireEvent, waitFor } from '@testing-library/react';
-import renderComponent from 'utils/testing';
+import renderComponent from '../../../utils/testing';
 import TransferCancel from './TransferCreate';
 // import { useCreate } from '@tapis/tapisui-hooks';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { fileInfo } from 'fixtures/files.fixtures';
+import { fileInfo } from '../../../fixtures/files.fixtures';
 
 jest.mock('@tapis/tapisui-hooks');
 

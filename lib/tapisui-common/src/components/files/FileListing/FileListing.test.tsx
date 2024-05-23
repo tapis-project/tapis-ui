@@ -1,9 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import renderComponent from '../../../utils/testing';
 import FileListing from './FileListing';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { fileInfo } from 'fixtures/files.fixtures';
+import { fileInfo } from '../../../fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('@tapis/tapisui-hooks');

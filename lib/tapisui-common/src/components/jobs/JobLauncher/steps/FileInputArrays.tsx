@@ -6,7 +6,7 @@ import {
   generateFileInputArrayFromAppInput,
   getIncompleteJobInputArrays,
   getAppInputArraysIncludedByDefault,
-} from 'utils/jobFileInputArrays';
+} from '../../../../utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper } from '../../../../ui';
 import { useModal } from '../../../../ui';
 import { FileSelectModal } from '../../../../components/files';

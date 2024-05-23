@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
-import { tapisApp } from 'fixtures/apps.fixtures';
-import { tapisSystem } from 'fixtures/systems.fixtures';
+import renderComponent from '../../../../utils/testing';
+import { tapisApp } from '../../../../fixtures/apps.fixtures';
+import { tapisSystem } from '../../../../fixtures/systems.fixtures';
 import useJobLauncher from '../../../../components/jobs/JobLauncher/components/useJobLauncher';
 import ExecOptionsStep from './ExecOptions';
 import { JobLauncherWizardRender } from '../JobLauncherWizard';

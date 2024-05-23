@@ -1,10 +1,10 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import renderComponent from '../../../utils/testing';
 import TransferListing from './TransferListing';
 // import { useList } from '@tapis/tapisui-hooks';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { transferTask } from 'fixtures/files.fixtures';
+import { transferTask } from '../../../fixtures/files.fixtures';
 
 jest.mock('@tapis/tapisui-hooks');
 

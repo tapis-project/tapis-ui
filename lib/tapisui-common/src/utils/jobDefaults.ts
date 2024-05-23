@@ -1,7 +1,7 @@
 import { Apps, Jobs, Systems } from '@tapis/tapis-typescript';
-import { generateRequiredFileInputsFromApp } from 'utils/jobFileInputs';
-import { generateRequiredFileInputArraysFromApp } from 'utils/jobFileInputArrays';
-import { generateJobArgsFromSpec } from 'utils/jobArgs';
+import { generateRequiredFileInputsFromApp } from '../utils/jobFileInputs';
+import { generateRequiredFileInputArraysFromApp } from '../utils/jobFileInputArrays';
+import { generateJobArgsFromSpec } from '../utils/jobArgs';
 
 const generateJobDefaults = ({
   app,

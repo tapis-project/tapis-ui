@@ -1,6 +1,6 @@
 import { Apps } from '@tapis/tapis-typescript';
 import '@testing-library/jest-dom/extend-expect';
-import { tapisApp } from 'fixtures/apps.fixtures';
+import { tapisApp } from '../fixtures/apps.fixtures';
 import {
   getIncompleteAppInputsOfType,
   generateRequiredFileInputsFromApp,

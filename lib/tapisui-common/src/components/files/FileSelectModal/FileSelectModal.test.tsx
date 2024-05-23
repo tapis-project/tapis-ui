@@ -1,9 +1,9 @@
 import { act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import renderComponent from '../../../utils/testing';
 import FileSelectModal from './FileSelectModal';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { fileInfo } from 'fixtures/files.fixtures';
+import { fileInfo } from '../../../fixtures/files.fixtures';
 
 jest.mock('@tapis/tapisui-hooks');
 

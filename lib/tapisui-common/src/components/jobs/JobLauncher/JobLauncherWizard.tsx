@@ -3,7 +3,7 @@ import { WizardStep } from 'wrappers/Wizard';
 import { QueryWrapper, Wizard } from 'wrappers';
 import { Apps, Jobs } from '@tapis/tapis-typescript';
 import { Apps as AppsHooks } from '@tapis/tapisui-hooks'
-import generateJobDefaults from 'utils/jobDefaults';
+import generateJobDefaults from '../../../utils/jobDefaults';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks'
 import { useJobLauncher, JobLauncherProvider } from './components';
 import { JobStep } from '.';

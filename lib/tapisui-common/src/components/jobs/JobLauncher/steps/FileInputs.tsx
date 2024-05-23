@@ -10,7 +10,7 @@ import {
   generateFileInputFromAppInput,
   getIncompleteJobInputs,
   getAppInputsIncludedByDefault,
-} from 'utils/jobFileInputs';
+} from '../../../../utils/jobFileInputs';
 import { Collapse } from '../../../../ui';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import {
