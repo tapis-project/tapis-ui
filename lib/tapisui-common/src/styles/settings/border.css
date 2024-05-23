@@ -1,0 +1,18 @@
+/* SETTINGS: Border */
+
+/* Usage: `var(--global-border-width--normal)` */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
+
+:root {
+  --global-border-width--normal: 1px;
+  --global-border--normal: var(--global-border-width--normal) solid
+    var(--global-color-primary--normal);
+
+  --global-border-width--thick: 2px;
+  --global-border--thick: var(--global-border-width--thick) solid
+    var(--global-color-primary--normal);
+
+  --global-border-width--x-thick: 3px;
+  --global-border--x-thick: var(--global-border-width--x-thick) solid
+    var(--global-color-primary--normal);
+}

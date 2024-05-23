@@ -32,11 +32,17 @@
     "baseUrl": "./src",
     "paths": {
       "ui": ["./ui"],
+      "ui/*": ["./ui/*"],
       "ui-formik": ["./ui-formik"],
+      "ui-formik/*": ["./ui-formik/*"],
       "utils": ["./utils"],
+      "utils/*": ["./utils/*"],
       "fixtures": ["./fixtures"],
+      "fixtures/*": ["./fixtures/*"],
       "components": ["./components"],
-      "wrappers": ["./wrappers"]
+      "components/*": ["./components/*"],
+      "wrappers": ["./wrappers"],
+      "wrappers/*": ["./wrappers/*"]
     }
   },
   "exclude": [

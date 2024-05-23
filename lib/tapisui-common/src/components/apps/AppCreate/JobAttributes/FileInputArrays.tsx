@@ -3,7 +3,7 @@ import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
 import { generateFileInputArrayFromAppInput } from 'utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper, useModal } from 'ui';
-import { FileSelectModal } from 'components/files';
+import { FileSelectModal } from '../../../../components';
 import {
   FieldArray,
   useFormikContext,
@@ -19,7 +19,7 @@ import {
 import arrayStyles from './FileInputArrays.module.scss';
 import styles from './FileInputs.module.scss';
 import fieldArrayStyles from './FieldArray.module.scss';
-import { useJobLauncher } from 'components/jobs/JobLauncher/components';
+import { useJobLauncher } from '../../../../components/jobs/JobLauncher/components';
 
 export type FieldWrapperProps = {
   fileInputArrayIndex: number;
