@@ -1,4 +1,3 @@
-import { renderComponent } from '@tapis/tapisui-common';;
 import PermissionsModal from './PermissionsModal';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
@@ -7,8 +6,10 @@ import { FileStat, FileOperation } from '@tapis/tapisui-common';
 import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('@tapis/tapisui-hooks');
-jest.mock('@tapis/tapisui-common');
+jest.mock('@tapis/tapisui-common')
 jest.mock('tapis-app/Files/_components/FilesContext');
+
+const { renderComponent } = jest.requireActual("@tapis/tapisui-common")
 
 describe('Permissions Modal', () => {
   it('submits with valid inputs', async () => {
