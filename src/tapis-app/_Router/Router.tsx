@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { SectionHeader, ProtectedRoute } from '@tapis/tapisui-common';
-import { Authenticator } from '@tapis/tapisui-hooks';
+import { Authenticator, useTapisConfig } from '@tapis/tapisui-hooks';
 
 import Apps from '../Apps';
 import Login from '../Login';
@@ -15,6 +15,7 @@ import MlHub from '../MlHub';
 import UIPatterns from '../UIPatterns';
 
 const Router: React.FC = () => {
+  const { accessToken } = useTapisConfig()
   const { logout } = Authenticator.useLogin();
 
   return (
@@ -32,25 +33,25 @@ const Router: React.FC = () => {
           return <Redirect to="/login" />;
         }}
       />
-      <ProtectedRoute path="/systems">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/systems">
         <Systems />
       </ProtectedRoute>
-      <ProtectedRoute path="/apps">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/apps">
         <Apps />
       </ProtectedRoute>
-      <ProtectedRoute path="/jobs">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/jobs">
         <Jobs />
       </ProtectedRoute>
-      <ProtectedRoute path="/files">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/files">
         <Files />
       </ProtectedRoute>
-      <ProtectedRoute path="/workflows">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/workflows">
         <Workflows />
       </ProtectedRoute>
-      <ProtectedRoute path="/ml-hub">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/ml-hub">
         <MlHub />
       </ProtectedRoute>
-      <ProtectedRoute path="/pods">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
         <Pods />
       </ProtectedRoute>
       <Route path="/uipatterns">
