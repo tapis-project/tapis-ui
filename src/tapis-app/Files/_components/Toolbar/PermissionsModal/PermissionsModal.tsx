@@ -1,12 +1,12 @@
-import { GenericModal } from 'tapis-ui/_common';
+import { GenericModal } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { useFilesSelect } from '../../FilesContext';
-import { usePermissions } from 'tapis-hooks/files';
-import { FileStat, FileOperation } from 'tapis-ui/components/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
+import { FileStat, FileOperation } from '@tapis/tapisui-common';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { Files } from '@tapis/tapis-typescript';
-import { Tabs } from 'tapis-ui/_common';
+import { Tabs } from '@tapis/tapisui-common';
 import styles from './PermissionsModal.module.scss';
 import React from 'react';
 
@@ -27,7 +27,7 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
     username,
   };
 
-  const { data, isLoading, error } = usePermissions(permsRequest);
+  const { data, isLoading, error } = Hooks.usePermissions(permsRequest);
 
   const write: boolean =
     data?.result?.permission === Files.FilePermissionPermissionEnum.Modify;

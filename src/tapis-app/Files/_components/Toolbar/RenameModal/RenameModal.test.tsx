@@ -1,18 +1,18 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import RenameModal from './RenameModal';
-import { useMove } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 
-jest.mock('tapis-hooks/files/useMove');
+jest.mock('@tapis/tapisui-hooks');
 jest.mock('tapis-app/Files/_components/FilesContext');
 
 describe('RenameModal', () => {
   it('submits with valid inputs', async () => {
     const moveMock = jest.fn();
     const resetMock = jest.fn();
-    (useMove as jest.Mock).mockReturnValue({
+    (Hooks.useMove as jest.Mock).mockReturnValue({
       move: moveMock,
       isLoading: false,
       error: null,
@@ -50,7 +50,7 @@ describe('RenameModal', () => {
   it('fails with invalid inputs', async () => {
     const moveMock = jest.fn();
     const resetMock = jest.fn();
-    (useMove as jest.Mock).mockReturnValue({
+    (Hooks.useMove as jest.Mock).mockReturnValue({
       move: moveMock,
       isLoading: false,
       error: null,

@@ -1,6 +1,6 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
 // import { list } from 'tapis-api/workflows/pipelines';
-import { Workflows as API } from "@tapis/tapisui-api"
+import { Workflows as API } from '@tapis/tapisui-api';
 import { Workflows } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';

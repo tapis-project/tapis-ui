@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Icon } from 'tapis-ui/_common';
+import { Icon } from '@tapis/tapisui-common';
 import {
   Card,
   CardHeader,

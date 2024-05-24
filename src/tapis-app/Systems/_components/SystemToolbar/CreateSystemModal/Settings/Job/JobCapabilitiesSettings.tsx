@@ -1,5 +1,5 @@
-import { FormikInput, Collapse } from 'tapis-ui/_common';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput, Collapse } from '@tapis/tapisui-common';
+import { FormikSelect } from '@tapis/tapisui-common';
 import styles from '../../CreateSystemModal.module.scss';
 import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
@@ -85,34 +85,35 @@ const JobCapabilitiesField: React.FC<JobCapabilitiesFieldProps> = ({
   );
 };
 
-const JobCapabilitiesInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
-  ({ arrayHelpers }) => {
-    const { values } = useFormikContext();
+const JobCapabilitiesInputs: React.FC<{
+  arrayHelpers: FieldArrayRenderProps;
+}> = ({ arrayHelpers }) => {
+  const { values } = useFormikContext();
 
-    const jobCapabilities =
-      (values as Partial<Systems.ReqPostSystem>)?.jobCapabilities ?? [];
+  const jobCapabilities =
+    (values as Partial<Systems.ReqPostSystem>)?.jobCapabilities ?? [];
 
-    return (
-      <Collapse
-        open={jobCapabilities.length > 0}
-        title="Job Capabilities"
-        note={`${jobCapabilities.length} items`}
-        className={styles['array']}
-      >
-        {jobCapabilities.map((jobCapabilitiesInput, index) => (
-          <JobCapabilitiesField
-            key={`jobCapabilities.${index}`}
-            item={jobCapabilitiesInput}
-            index={index}
-            remove={arrayHelpers.remove}
-          />
-        ))}
-        <Button onClick={() => arrayHelpers.push({})} size="sm">
-          + Add Job Capability
-        </Button>
-      </Collapse>
-    );
-  };
+  return (
+    <Collapse
+      open={jobCapabilities.length > 0}
+      title="Job Capabilities"
+      note={`${jobCapabilities.length} items`}
+      className={styles['array']}
+    >
+      {jobCapabilities.map((jobCapabilitiesInput, index) => (
+        <JobCapabilitiesField
+          key={`jobCapabilities.${index}`}
+          item={jobCapabilitiesInput}
+          index={index}
+          remove={arrayHelpers.remove}
+        />
+      ))}
+      <Button onClick={() => arrayHelpers.push({})} size="sm">
+        + Add Job Capability
+      </Button>
+    </Collapse>
+  );
+};
 
 export const JobCapabilitiesSettings: React.FC = () => {
   return (

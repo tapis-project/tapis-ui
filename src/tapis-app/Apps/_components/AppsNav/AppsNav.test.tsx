@@ -2,14 +2,14 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import AppsNav from './AppsNav';
-import { useList } from 'tapis-hooks/apps';
+import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import { tapisApp } from 'fixtures/apps.fixtures';
 
-jest.mock('tapis-hooks/apps');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('AppsNav', () => {
   it('renders AppsNav component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       data: {
         result: [tapisApp],
       },

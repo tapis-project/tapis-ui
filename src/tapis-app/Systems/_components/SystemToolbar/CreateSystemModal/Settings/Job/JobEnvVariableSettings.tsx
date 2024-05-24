@@ -1,4 +1,4 @@
-import { FormikInput, Collapse } from 'tapis-ui/_common';
+import { FormikInput, Collapse } from '@tapis/tapisui-common';
 import styles from '../../CreateSystemModal.module.scss';
 import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
@@ -52,34 +52,35 @@ const JobEnvVariablesField: React.FC<JobEnvVariablesFieldProps> = ({
   );
 };
 
-const JobEnvVariablesInputs: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
-  ({ arrayHelpers }) => {
-    const { values } = useFormikContext();
+const JobEnvVariablesInputs: React.FC<{
+  arrayHelpers: FieldArrayRenderProps;
+}> = ({ arrayHelpers }) => {
+  const { values } = useFormikContext();
 
-    const jobEnvVariables =
-      (values as Partial<Systems.ReqPostSystem>)?.jobEnvVariables ?? [];
+  const jobEnvVariables =
+    (values as Partial<Systems.ReqPostSystem>)?.jobEnvVariables ?? [];
 
-    return (
-      <Collapse
-        open={jobEnvVariables.length > 0}
-        title="Job Environment Variables"
-        note={`${jobEnvVariables.length} items`}
-        className={styles['array']}
-      >
-        {jobEnvVariables.map((jobEnvVariablesInput, index) => (
-          <JobEnvVariablesField
-            key={`jobEnvVariables.${index}`}
-            item={jobEnvVariablesInput}
-            index={index}
-            remove={arrayHelpers.remove}
-          />
-        ))}
-        <Button onClick={() => arrayHelpers.push({})} size="sm">
-          + Add Job Environment Variable
-        </Button>
-      </Collapse>
-    );
-  };
+  return (
+    <Collapse
+      open={jobEnvVariables.length > 0}
+      title="Job Environment Variables"
+      note={`${jobEnvVariables.length} items`}
+      className={styles['array']}
+    >
+      {jobEnvVariables.map((jobEnvVariablesInput, index) => (
+        <JobEnvVariablesField
+          key={`jobEnvVariables.${index}`}
+          item={jobEnvVariablesInput}
+          index={index}
+          remove={arrayHelpers.remove}
+        />
+      ))}
+      <Button onClick={() => arrayHelpers.push({})} size="sm">
+        + Add Job Environment Variable
+      </Button>
+    </Collapse>
+  );
+};
 
 export const JobEnvVariablesSettings: React.FC = () => {
   return (

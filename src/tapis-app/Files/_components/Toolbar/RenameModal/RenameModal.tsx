@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { Form, Formik } from 'formik';
-import { FormikInput } from 'tapis-ui/_common';
-import { useMove } from 'tapis-hooks/files';
+import { FormikInput } from '@tapis/tapisui-common';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 import { useFilesSelect } from '../../FilesContext';
@@ -27,7 +27,7 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, [clear]);
 
-  const { move, isLoading, error, isSuccess, reset } = useMove();
+  const { move, isLoading, error, isSuccess, reset } = Hooks.useMove();
 
   useEffect(() => {
     reset();

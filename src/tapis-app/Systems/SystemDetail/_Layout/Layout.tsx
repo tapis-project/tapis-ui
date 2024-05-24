@@ -1,5 +1,5 @@
-import { SystemDetail } from 'tapis-ui/components/systems';
-import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
+import { SystemDetail } from '@tapis/tapisui-common';
+import { PageLayout, LayoutHeader } from '@tapis/tapisui-common';
 import SystemLayoutToolbar from './SystemLayoutToolbar';
 
 const Layout: React.FC<{ systemId: string }> = ({ systemId }) => {

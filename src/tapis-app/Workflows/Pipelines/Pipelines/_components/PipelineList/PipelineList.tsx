@@ -27,7 +27,10 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ pipelineId, groupId }) => {
   const toggle = () => {
     setShowModal(!showModal);
   };
-  const { data, isLoading, error } = Hooks.Pipelines.useDetails({ groupId, pipelineId });
+  const { data, isLoading, error } = Hooks.Pipelines.useDetails({
+    groupId,
+    pipelineId,
+  });
   const pipeline: Workflows.Pipeline = data?.result!;
 
   return (

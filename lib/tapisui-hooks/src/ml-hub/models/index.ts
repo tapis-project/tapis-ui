@@ -8,5 +8,5 @@ export { default as useListByLibrary } from './useListByLibrary';
 export { default as useListByQuery } from './useListByQuery';
 export { default as useListByTask } from './useListByTask';
 export { default as useInferenceServerDetails } from './inference/useInferenceServerDetails';
-export { default as queryKeys } from "./queryKeys"
-export * as Inference from "./inference"
+export { default as queryKeys } from './queryKeys';
+export * as Inference from './inference';

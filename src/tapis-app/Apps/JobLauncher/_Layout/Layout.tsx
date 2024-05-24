@@ -1,6 +1,6 @@
 import React from 'react';
-import { JobLauncher } from 'tapis-ui/components/jobs';
-import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
+import { JobLauncher } from '@tapis/tapisui-common';
+import { PageLayout, LayoutHeader } from '@tapis/tapisui-common';
 
 const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   appId,

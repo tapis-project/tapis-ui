@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SectionHeader, LoadingSpinner, Icon } from 'tapis-ui/_common';
+import { SectionHeader, LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
   CardHeader,
@@ -13,7 +13,7 @@ import {
   useTapisConfig,
   Systems as SystemsHooks,
   Jobs as JobsHooks,
-  Apps as AppsHooks
+  Apps as AppsHooks,
 } from '@tapis/tapisui-hooks';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';

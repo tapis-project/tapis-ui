@@ -5,7 +5,10 @@ import { Form, Formik } from 'formik';
 import { FormikInput, FieldWrapper, GenericModal } from '@tapis/tapisui-common';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
-import { Workflows as WorkflowsHooks, Systems as SystemsHooks } from '@tapis/tapisui-hooks';
+import {
+  Workflows as WorkflowsHooks,
+  Systems as SystemsHooks,
+} from '@tapis/tapisui-hooks';
 import styles from './CreateArchiveModel.module.scss';
 import { FormikSelect } from '@tapis/tapisui-common';
 import { useQueryClient } from 'react-query';
@@ -183,7 +186,8 @@ const CreateArchiveModal: React.FC<CreateArchiveModalProps> = ({
   groupId,
   toggle,
 }) => {
-  const { create, isLoading, isSuccess, error } = WorkflowsHooks.Archives.useCreate();
+  const { create, isLoading, isSuccess, error } =
+    WorkflowsHooks.Archives.useCreate();
   const [selectedType, setSelectedType] = useState<string | undefined>(
     undefined
   );

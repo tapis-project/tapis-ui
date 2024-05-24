@@ -1,4 +1,4 @@
-import { FormikInput, Collapse } from 'tapis-ui/_common';
+import { FormikInput, Collapse } from '@tapis/tapisui-common';
 import styles from '../CreateSystemModal.module.scss';
 import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';

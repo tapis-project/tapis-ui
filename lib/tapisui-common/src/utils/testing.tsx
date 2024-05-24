@@ -5,8 +5,11 @@ import { render } from '@testing-library/react';
 // NOTE When mocking up hooks from @tapis/tapisui-hooks during test, TapisProvider
 // below alos gets mocked up. To avoid that, we are importing the actual
 // Tapis Provider TROUGH jest. Hack? Maybe. Works? Yes
-const {TapisProvider} = jest.requireActual('@tapis/tapisui-hooks');
-export default function renderComponent(component: any, history: any = null): any {
+const { TapisProvider } = jest.requireActual('@tapis/tapisui-hooks');
+export default function renderComponent(
+  component: any,
+  history: any = null
+): any {
   if (history) {
     return render(
       <TapisProvider basePath="tapis.test">

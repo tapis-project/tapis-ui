@@ -1,21 +1,26 @@
 import { useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
-import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
-import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
+import { GenericModal, Breadcrumbs } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
+import { breadcrumbsFromPathname } from '@tapis/tapisui-common';
+import { FileListingTable } from '@tapis/tapisui-common';
 import { FileOperationStatus } from '../_components';
-import { FileExplorer } from 'tapis-ui/components/files';
+import { FileExplorer } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { focusManager } from 'react-query';
-import { useCopy, useMove } from 'tapis-hooks/files';
-import { MoveCopyHookParams } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import styles from './MoveCopyModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { useFileOperations } from '../_hooks';
+
+type MoveCopyHookParams = {
+  systemId: string;
+  path: string;
+  newPath: string;
+};
 
 type MoveCopyModalProps = {
   operation: Files.MoveCopyRequestOperationEnum;
@@ -33,8 +38,8 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
 
   const opFormatted = operation.charAt(0) + operation.toLowerCase().slice(1);
 
-  const { copyAsync } = useCopy();
-  const { moveAsync } = useMove();
+  const { copyAsync } = Hooks.useCopy();
+  const { moveAsync } = Hooks.useMove();
   const fn =
     operation === Files.MoveCopyRequestOperationEnum.Copy
       ? copyAsync

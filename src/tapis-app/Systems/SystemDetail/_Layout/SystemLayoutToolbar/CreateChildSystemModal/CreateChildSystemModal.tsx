@@ -1,11 +1,11 @@
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../SystemLayoutToolbar';
 import { Form, Formik } from 'formik';
-import { FormikInput } from 'tapis-ui/_common';
+import { FormikInput } from '@tapis/tapisui-common';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
-import { useCreateChildSystem } from 'tapis-hooks/systems';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './CreateChildSystemModal.module.scss';
@@ -13,7 +13,7 @@ import * as Yup from 'yup';
 
 const CreateChildSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { isLoading, isSuccess, error, reset, createChildSystem } =
-    useCreateChildSystem();
+    Hooks.useCreateChildSystem();
 
   useEffect(() => {
     reset();

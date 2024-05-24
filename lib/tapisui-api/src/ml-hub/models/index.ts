@@ -8,5 +8,4 @@ export { default as listByLanguage } from './listByLanguage';
 export { default as listByLibrary } from './listByLibrary';
 export { default as listByQuery } from './listByQuery';
 export { default as listByTask } from './listByTask';
-export * as Inference from "./inference"
-
+export * as Inference from './inference';

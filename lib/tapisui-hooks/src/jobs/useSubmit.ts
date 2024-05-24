@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
-import { Jobs as API } from '@tapis/tapisui-api'
+import { Jobs as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 

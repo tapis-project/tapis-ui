@@ -1,21 +1,21 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { GenericModal, Breadcrumbs } from 'tapis-ui/_common';
-import breadcrumbsFromPathname from 'tapis-ui/_common/Breadcrumbs/breadcrumbsFromPathname';
-import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
-import FileExplorer from 'tapis-ui/components/files/FileExplorer/FileExplorer';
+import { GenericModal, Breadcrumbs } from '@tapis/tapisui-common';
+import { breadcrumbsFromPathname } from '@tapis/tapisui-common';
+import { FileListingTable } from '@tapis/tapisui-common';
+import { FileExplorer } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router';
 import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
-import { Tabs } from 'tapis-ui/_common';
+import { Tabs } from '@tapis/tapisui-common';
 import {
   TransferListing,
   TransferDetails,
   TransferCreate,
   TransferCancel,
-} from 'tapis-ui/components/files';
-import { useList } from 'tapis-hooks/files/transfers';
+} from '@tapis/tapisui-common';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 
 const TransferModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -30,7 +30,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const [transfer, setTransfer] = useState<Files.TransferTask | null>(null);
   const { selectedFiles } = useFilesSelect();
 
-  const { refetch } = useList({});
+  const { refetch } = Hooks.Transfers.useList({});
 
   useEffect(() => {
     const interval = setInterval(() => {

@@ -9,7 +9,10 @@ import {
   FieldArrayRenderProps,
   useFormikContext,
 } from 'formik';
-import { FormikCheck, FormikInput } from '../../../../ui-formik/FieldWrapperFormik';
+import {
+  FormikCheck,
+  FormikInput,
+} from '../../../../ui-formik/FieldWrapperFormik';
 import { getArgMode } from '../../../../utils/jobArgs';
 import * as Yup from 'yup';
 
@@ -186,4 +189,4 @@ export const assembleArgSpec = (argSpecs: Array<Jobs.JobArgSpec>) =>
     ''
   );
 
-export default <Args />;
+export default Args;

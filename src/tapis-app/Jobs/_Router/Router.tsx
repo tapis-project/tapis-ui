@@ -6,7 +6,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import JobDetail from '../JobDetail';
-import { SectionMessage } from 'tapis-ui/_common';
+import { SectionMessage } from '@tapis/tapisui-common';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();

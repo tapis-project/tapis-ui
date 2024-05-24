@@ -4,7 +4,7 @@ import {
   LayoutBody,
   LayoutHeader,
   LayoutNavWrapper,
-} from 'tapis-ui/_common';
+} from '@tapis/tapisui-common';
 import { PodsNav } from '../_components';
 import PodToolbar from '../_components/PodToolbar';
 import { Router } from '../_Router';

@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik';
-import { FormikInput, Collapse } from 'tapis-ui/_common';
-import { FormikSelect, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput, Collapse } from '@tapis/tapisui-common';
+import { FormikSelect, FormikCheck } from '@tapis/tapisui-common';
 import {
   SchedulerTypeEnum,
   SystemTypeEnum,

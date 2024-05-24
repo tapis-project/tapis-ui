@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router } from 'react-router-dom';
 import App from 'tapis-app';
 import { TapisProvider } from '@tapis/tapisui-hooks';
-import 'tapis-ui/index.css';
+import 'styles/index.css';
 import { resolveBasePath } from 'utils/resolveBasePath';
 import reportWebVitals from './reportWebVitals';
 

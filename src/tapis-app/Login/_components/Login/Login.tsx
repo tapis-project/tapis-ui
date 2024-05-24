@@ -2,8 +2,8 @@ import React from 'react';
 import { Button } from 'reactstrap';
 import { Authenticator as AuthenticatorHooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
-import { FormikInput } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { FormikInput } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 

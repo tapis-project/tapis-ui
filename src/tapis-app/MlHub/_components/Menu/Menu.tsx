@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, NavItem, Collapse, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { Icon } from 'tapis-ui/_common';
+import { Icon } from '@tapis/tapisui-common';
 import styles from './Menu.module.scss';
 
 const Menu: React.FC = () => {

@@ -129,7 +129,9 @@ const ArchiveFilterRender: React.FC = () => {
 };
 
 const ArchiveOptions: React.FC = () => {
-  const { data, isLoading, isError } = Systems.useList({ listType: ListTypeEnum.All });
+  const { data, isLoading, isError } = Systems.useList({
+    listType: ListTypeEnum.All,
+  });
 
   const { values } = useFormikContext<Apps.ReqPostApp>();
 

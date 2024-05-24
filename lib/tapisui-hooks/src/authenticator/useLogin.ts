@@ -1,6 +1,6 @@
 import { useMutation } from 'react-query';
 import { Authenticator } from '@tapis/tapis-typescript';
-import { Authenticator as API } from '@tapis/tapisui-api'
+import { Authenticator as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 

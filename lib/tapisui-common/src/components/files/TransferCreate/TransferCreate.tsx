@@ -23,7 +23,8 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
   destinationPath,
   className = '',
 }) => {
-  const { create, data, isLoading, error, isSuccess, reset } = Hooks.Transfers.useCreate();
+  const { create, data, isLoading, error, isSuccess, reset } =
+    Hooks.Transfers.useCreate();
 
   const onSubmit = useCallback(
     ({ tag }: { tag: string }) => {

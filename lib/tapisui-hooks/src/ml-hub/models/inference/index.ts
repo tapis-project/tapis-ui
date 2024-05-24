@@ -1,1 +1,1 @@
-export { default as useInferenceServerDetails } from "./useInferenceServerDetails"
+export { default as useInferenceServerDetails } from './useInferenceServerDetails';

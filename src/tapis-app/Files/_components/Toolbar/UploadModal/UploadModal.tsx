@@ -1,19 +1,18 @@
 import { useEffect, useState, useCallback, useReducer } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
-import { useUpload } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
 import styles from './UploadModal.module.scss';
-import { FileListingTable } from 'tapis-ui/components/files/FileListing';
+import { FileListingTable } from '@tapis/tapisui-common';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
 import sizeFormat from 'utils/sizeFormat';
 import { useFileOperations } from '../_hooks';
-import { InsertHookParams } from 'tapis-hooks/files/useUpload';
-import Progress from 'tapis-ui/_common/Progress';
+import { Progress } from '@tapis/tapisui-common';
 import { FileOpEventStatusEnum } from '../_hooks/useFileOperations';
 import { FileOperationStatus } from '../_components';
 
@@ -97,15 +96,15 @@ const UploadModal: React.FC<UploadModalProps> = ({
     [files, setFiles]
   );
 
-  const { uploadAsync, reset } = useUpload();
+  const { uploadAsync, reset } = Hooks.useUpload();
 
-  const key = (params: InsertHookParams) => params.file.name;
+  const key = (params: Hooks.InsertHookParams) => params.file.name;
   const onComplete = useCallback(() => {
     focusManager.setFocused(true);
   }, []);
 
   const { state, run, isLoading, isSuccess, error } = useFileOperations<
-    InsertHookParams,
+    Hooks.InsertHookParams,
     Files.FileStringResponse
   >({
     fn: uploadAsync,
@@ -118,7 +117,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }, [reset, path]);
 
   const onSubmit = useCallback(() => {
-    const operations: Array<InsertHookParams> = files.map((file) => ({
+    const operations: Array<Hooks.InsertHookParams> = files.map((file) => ({
       systemId: systemId!,
       path: path!,
       file,

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Models as ModelsModule } from '@tapis/tapis-typescript';
-import { useList } from 'tapis-hooks/ml-hub/models';
-import { Icon } from 'tapis-ui/_common';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { Icon } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table } from 'reactstrap';
 import styles from './Models.module.scss';
 
 const Models: React.FC = () => {
-  const { data, isLoading, error } = useList();
+  const { data, isLoading, error } = Hooks.Models.useList();
   const models: ModelsModule.ModelShortInfo = data?.result ?? {};
 
   return (

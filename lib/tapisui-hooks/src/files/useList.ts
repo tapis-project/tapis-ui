@@ -1,11 +1,8 @@
 import { useInfiniteQuery, UseInfiniteQueryOptions } from 'react-query';
-import { Files as API } from '@tapis/tapisui-api'
+import { Files as API } from '@tapis/tapisui-api';
 import { Files } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
-import {
-  concatResults,
-  tapisNextPageParam,
-} from '../utils/infiniteQuery';
+import { concatResults, tapisNextPageParam } from '../utils/infiniteQuery';
 import QueryKeys from './queryKeys';
 
 // Does not use defaultParams because systemId and path are required

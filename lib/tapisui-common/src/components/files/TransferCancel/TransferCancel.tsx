@@ -32,7 +32,8 @@ const FileOperation: React.FC<TransferCancelProps> = ({
     (status) => status === transfer?.status
   );
 
-  const { cancel, isLoading, error, isSuccess, reset } = Hooks.Transfers.useCancel();
+  const { cancel, isLoading, error, isSuccess, reset } =
+    Hooks.Transfers.useCancel();
 
   const onClick = useCallback(() => {
     cancel(transferTaskId);

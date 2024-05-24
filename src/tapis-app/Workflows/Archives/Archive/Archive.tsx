@@ -78,7 +78,10 @@ type ArchivesProps = {
 };
 
 const Archive: React.FC<ArchivesProps> = ({ groupId, archiveId }) => {
-  const { data, isLoading, error } = Hooks.Archives.useDetails({ groupId, archiveId });
+  const { data, isLoading, error } = Hooks.Archives.useDetails({
+    groupId,
+    archiveId,
+  });
   const archive: Workflows.Archive = data?.result!;
 
   return (

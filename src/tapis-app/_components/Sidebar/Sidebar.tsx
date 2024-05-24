@@ -2,7 +2,7 @@
 import React from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
-import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
+import { Navbar, NavItem } from '@tapis/tapisui-common';
 
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();

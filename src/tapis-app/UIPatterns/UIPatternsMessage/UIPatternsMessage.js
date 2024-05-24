@@ -1,5 +1,5 @@
 import React from 'react';
-import { InlineMessage, SectionMessage } from 'tapis-ui/_common';
+import { InlineMessage, SectionMessage } from '@tapis/tapisui-common';
 import styles from './UIPatternsMessage.module.scss';
 
 const EXAMPLE_LINK = {

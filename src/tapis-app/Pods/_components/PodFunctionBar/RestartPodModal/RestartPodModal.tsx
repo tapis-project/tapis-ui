@@ -1,17 +1,15 @@
 import { Button } from 'reactstrap';
 import { Pods } from '@tapis/tapis-typescript';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../PodFunctionBar';
 import { Form, Formik } from 'formik';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useRestartPod, useList } from 'tapis-hooks/pods';
+import { FormikSelect } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
 import styles from './RestartPodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
-import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useTapisConfig, Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
 
 const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
@@ -20,16 +18,17 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     0,
     claims['sub'].lastIndexOf('@')
   );
-  const { data } = useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
+  const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
   const pods: Array<Pods.PodResponseModel> = data?.result ?? [];
 
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
-  const { restartPod, isLoading, error, isSuccess, reset } = useRestartPod();
+  const { restartPod, isLoading, error, isSuccess, reset } =
+    Hooks.useRestartPod();
 
   useEffect(() => {
     reset();

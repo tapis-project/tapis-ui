@@ -8,7 +8,9 @@ type IdentityProps = {
 };
 
 const Identity: React.FC<IdentityProps> = ({ identityUuid }) => {
-  const { data, isLoading, error } = Hooks.Identities.useDetails({ identityUuid });
+  const { data, isLoading, error } = Hooks.Identities.useDetails({
+    identityUuid,
+  });
   const identity: Workflows.Identity = data?.result!;
 
   return (

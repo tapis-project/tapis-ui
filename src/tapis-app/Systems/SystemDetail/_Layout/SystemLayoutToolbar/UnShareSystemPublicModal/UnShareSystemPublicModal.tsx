@@ -1,17 +1,17 @@
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../SystemLayoutToolbar';
 import { useEffect } from 'react';
 import styles from './UnShareSystemPublicModal.module.scss';
-import { useUnShareSystemPublic } from 'tapis-hooks/systems';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 
 const UnShareSystemPublicModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const queryString = window.location.href;
   const systemId = queryString.substring(queryString.indexOf('systems/') + 8);
 
   const { unShareSystemPublic, isLoading, error, isSuccess, reset } =
-    useUnShareSystemPublic();
+    Hooks.useUnShareSystemPublic();
 
   useEffect(() => {
     reset();

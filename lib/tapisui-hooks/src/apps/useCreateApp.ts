@@ -2,7 +2,7 @@ import { useMutation, MutateOptions } from 'react-query';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 import { Apps } from '@tapis/tapis-typescript';
-import { Apps as API } from '@tapis/tapisui-api'
+import { Apps as API } from '@tapis/tapisui-api';
 
 type createAppParams = {
   createAppVersionRequest: Apps.CreateAppVersionRequest;

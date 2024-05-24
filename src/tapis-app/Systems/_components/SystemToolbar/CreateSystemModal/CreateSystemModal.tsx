@@ -1,11 +1,10 @@
 import { Button, Input, FormGroup, Label } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../SystemToolbar';
 import { Form, Formik } from 'formik';
-import { FormikInput } from 'tapis-ui/_common';
-import { FormikSelect, FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useMakeNewSystem } from 'tapis-hooks/systems';
+import { FormikInput } from '@tapis/tapisui-common';
+import { FormikSelect, FormikCheck } from '@tapis/tapisui-common';
 import { useEffect, useCallback, useState } from 'react';
 import styles from './CreateSystemModal.module.scss';
 import * as Yup from 'yup';
@@ -19,7 +18,7 @@ import {
   KeyValuePair,
 } from '@tapis/tapis-typescript-systems';
 import { useQueryClient } from 'react-query';
-import { default as queryKeys } from 'tapis-hooks/systems/queryKeys';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import AdvancedSettings from './Settings/AdvancedSettings';
 
 //Arrays that are used in the drop-down menus
@@ -30,11 +29,11 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   //Allows the system list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
   const { makeNewSystem, isLoading, error, isSuccess, reset } =
-    useMakeNewSystem();
+    Hooks.useMakeNewSystem();
 
   useEffect(() => {
     reset();

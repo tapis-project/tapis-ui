@@ -1,5 +1,5 @@
-import { FormikInput, Collapse } from 'tapis-ui/_common';
-import { FormikCheck } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput, Collapse } from '@tapis/tapisui-common';
+import { FormikCheck } from '@tapis/tapisui-common';
 import styles from '../CreateAppModal.module.scss';
 
 const AppAttributes: React.FC = () => {

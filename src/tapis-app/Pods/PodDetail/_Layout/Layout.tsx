@@ -1,6 +1,6 @@
-import { PodDetail } from 'tapis-ui/components/pods';
+import { PodDetail } from '@tapis/tapisui-common';
 import { PodFunctionBar } from 'tapis-app/Pods/_components';
-import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
+import { PageLayout, LayoutHeader } from '@tapis/tapisui-common';
 
 const Layout: React.FC<{ podId: string }> = ({ podId }) => {
   const header = (

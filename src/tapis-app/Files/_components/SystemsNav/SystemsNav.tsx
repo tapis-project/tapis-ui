@@ -1,14 +1,14 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { useList } from 'tapis-hooks/systems';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
-import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Navbar, NavItem } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 
 const SystemsNav: React.FC = () => {
   const { url } = useRouteMatch();
   // Get a systems listing with default request params
-  const { data, isLoading, error } = useList();
+  const { data, isLoading, error } = Hooks.useList();
   const definitions: Array<Systems.TapisSystem> = data?.result ?? [];
 
   return (

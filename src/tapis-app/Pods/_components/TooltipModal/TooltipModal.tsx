@@ -1,16 +1,15 @@
 import React from 'react';
-import { GenericModal } from 'tapis-ui/_common';
+import { GenericModal } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../PodFunctionBar/PodFunctionBar';
 import styles from './TooltipModal.module.scss';
-// import { SubmitWrapper } from 'tapis-ui/_wrappers';
+// import { SubmitWrapper } from '@tapis/tapisui-common';
 // import { Button } from 'reactstrap';
 // import { Pods } from '@tapis/tapis-typescript';
 // import { Form, Formik } from 'formik';
-// import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+// import { FormikSelect } from '@tapis/tapisui-common';
 // import { useEffect, useCallback } from 'react';
 // import * as Yup from 'yup';
 // import { useQueryClient } from 'react-query';
-// import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
 // import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const TooltipModal: React.FC<

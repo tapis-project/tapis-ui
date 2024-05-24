@@ -1,16 +1,15 @@
 import { Button } from 'reactstrap';
 import { Systems } from '@tapis/tapis-typescript';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../SystemToolbar';
 import { Form, Formik } from 'formik';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useDeleteSystem, useList } from 'tapis-hooks/systems';
+import { FormikSelect } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
 import styles from './DeleteSystemModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { default as queryKeys } from 'tapis-hooks/systems/queryKeys';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const DeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
@@ -19,17 +18,17 @@ const DeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     0,
     claims['sub'].lastIndexOf('@')
   );
-  const { data } = useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
+  const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
   //Allows the system list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
   const { deleteSystem, isLoading, error, isSuccess, reset } =
-    useDeleteSystem();
+    Hooks.useDeleteSystem();
 
   useEffect(() => {
     reset();

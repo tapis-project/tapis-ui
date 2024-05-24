@@ -1,12 +1,11 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { useList } from 'tapis-hooks/apps';
+import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import { Apps } from '@tapis/tapis-typescript';
-import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Navbar, NavItem, QueryWrapper } from '@tapis/tapisui-common';
 
 const AppsNav: React.FC = () => {
-  const { data, isLoading, error } = useList(
+  const { data, isLoading, error } = Hooks.useList(
     {},
     { refetchOnWindowFocus: false }
   );

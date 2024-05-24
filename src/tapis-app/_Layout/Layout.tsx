@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Sidebar } from 'tapis-app/_components';
 import { Router } from 'tapis-app/_Router';
-import { PageLayout } from 'tapis-ui/_common';
+import { PageLayout } from '@tapis/tapisui-common';
 import { NotificationsProvider } from 'tapis-app/_components/Notifications';
 import { useHistory } from 'react-router-dom';
-import { useList } from 'tapis-hooks/tenants';
+import { Tenants as Hooks } from '@tapis/tapisui-hooks';
 import './Layout.scss';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import {
@@ -13,11 +13,11 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { QueryWrapper } from '@tapis/tapisui-common';
 
 const Layout: React.FC = () => {
   const { claims } = useTapisConfig();
-  const { data, isLoading, error } = useList();
+  const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;
   // const tenants = result.sort((a, b) =>

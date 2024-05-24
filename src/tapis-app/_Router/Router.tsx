@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { SectionHeader, ProtectedRoute } from 'tapis-ui/_common';
+import { SectionHeader, ProtectedRoute } from '@tapis/tapisui-common';
 import { Authenticator } from '@tapis/tapisui-hooks';
 
 import Apps from '../Apps';

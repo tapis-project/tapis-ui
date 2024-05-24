@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { Form, Formik } from 'formik';
-import { FormikInput } from 'tapis-ui/_common';
-import { useMkdir } from 'tapis-hooks/files';
+import { FormikInput } from '@tapis/tapisui-common';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 import * as Yup from 'yup';
@@ -21,7 +21,7 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
     focusManager.setFocused(true);
   }, []);
 
-  const { mkdir, isLoading, error, isSuccess, reset } = useMkdir();
+  const { mkdir, isLoading, error, isSuccess, reset } = Hooks.useMkdir();
 
   useEffect(() => {
     reset();

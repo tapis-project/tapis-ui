@@ -1,15 +1,15 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import CreateDirModal from './CreateDirModal';
-import { useMkdir } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 
-jest.mock('tapis-hooks/files/useMkdir');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('CreateDirModal', () => {
   it('fires the onSubmit function', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
-    (useMkdir as jest.Mock).mockReturnValue({
+    (Hooks.useMkdir as jest.Mock).mockReturnValue({
       mkdir: mkdirMock,
       isLoading: false,
       error: null,

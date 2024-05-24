@@ -1,16 +1,15 @@
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../PodToolbar';
 import { Form, Formik, FieldArray } from 'formik';
-import { FormikInput, Collapse, Icon } from 'tapis-ui/_common';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useMakeNewPod } from 'tapis-hooks/pods';
+import { FormikInput, Collapse, Icon } from '@tapis/tapisui-common';
+import { FormikSelect } from '@tapis/tapisui-common';
+import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useEffect, useCallback } from 'react'; //useState
 import styles from './CreatePodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { default as queryKeys } from 'tapis-hooks/pods/queryKeys';
 //import { Pods } from '@tapis/tapis-typescript';
 
 export enum PodProtocolEnum {
@@ -171,10 +170,10 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
-  const { makeNewPod, isLoading, error, isSuccess, reset } = useMakeNewPod();
+  const { makeNewPod, isLoading, error, isSuccess, reset } = Hooks.useMakeNewPod();
 
   useEffect(() => {
     reset();

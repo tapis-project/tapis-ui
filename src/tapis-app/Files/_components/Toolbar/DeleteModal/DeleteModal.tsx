@@ -1,18 +1,22 @@
 import { useEffect, useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
-import { FileListingTable } from 'tapis-ui/components/files/FileListing/FileListing';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
+import { FileListingTable } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { focusManager } from 'react-query';
-import { useDelete } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Column } from 'react-table';
 import styles from './DeleteModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';
 import { Files } from '@tapis/tapis-typescript';
-import { DeleteHookParams } from 'tapis-hooks/files/useDelete';
 import { useFileOperations } from '../_hooks';
 import { FileOperationStatus } from '../_components';
+
+type DeleteHookParams = {
+  systemId: string;
+  path: string;
+};
 
 const DeleteModal: React.FC<ToolbarModalProps> = ({
   toggle,
@@ -20,7 +24,7 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
   path = '/',
 }) => {
   const { selectedFiles, unselect } = useFilesSelect();
-  const { deleteFileAsync, reset } = useDelete();
+  const { deleteFileAsync, reset } = Hooks.useDelete();
 
   useEffect(() => {
     reset();

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
-import { Icon } from 'tapis-ui/_common';
+import { Icon, ConfirmModal } from '@tapis/tapisui-common';
 import styles from './JobsToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
-import ConfirmModal from 'tapis-ui/_common/ConfirmModal';
-import useHideJob from 'tapis-hooks/jobs/useHideJob';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import UnhideJobModal from './UnhideJobModal';
 
 type ToolbarButtonProps = {
@@ -46,7 +45,7 @@ const JobsLayoutToolbar: React.FC = () => {
   console.log(jobUuid.includes('jobs'));
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
-  const { isLoading, isError, isSuccess, error, hideJob } = useHideJob();
+  const { isLoading, isError, isSuccess, error, hideJob } = Hooks.useHideJob();
 
   const toggle = () => {
     setModal(undefined);

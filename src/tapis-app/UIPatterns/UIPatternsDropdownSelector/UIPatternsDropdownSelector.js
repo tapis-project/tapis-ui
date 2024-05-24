@@ -1,5 +1,5 @@
 import React from 'react';
-import { DropdownSelector } from 'tapis-ui/_common';
+import { DropdownSelector } from '@tapis/tapisui-common';
 
 function UIPatternsDropdownSelector() {
   return (

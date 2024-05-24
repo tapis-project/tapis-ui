@@ -267,57 +267,58 @@ const OptionalInputArray: React.FC<OptionalInputArrayProps> = ({
   );
 };
 
-const OptionalInputArrays: React.FC<{ arrayHelpers: FieldArrayRenderProps }> =
-  ({ arrayHelpers }) => {
-    const { app } = useJobLauncher();
-    const { values } = useFormikContext();
+const OptionalInputArrays: React.FC<{
+  arrayHelpers: FieldArrayRenderProps;
+}> = ({ arrayHelpers }) => {
+  const { app } = useJobLauncher();
+  const { values } = useFormikContext();
 
-    const optionalInputArrays = useMemo(
-      () => getFileInputArraysOfMode(app, Apps.FileInputModeEnum.Optional),
-      /* eslint-disable-next-line */
-      [app.id, app.version]
-    );
+  const optionalInputArrays = useMemo(
+    () => getFileInputArraysOfMode(app, Apps.FileInputModeEnum.Optional),
+    /* eslint-disable-next-line */
+    [app.id, app.version]
+  );
 
-    const formFileInputArrays =
-      (values as Partial<Jobs.ReqSubmitJob>)?.fileInputArrays ?? [];
+  const formFileInputArrays =
+    (values as Partial<Jobs.ReqSubmitJob>)?.fileInputArrays ?? [];
 
-    return !!optionalInputArrays.length ? (
-      <Collapse
-        title="Optional File Input Arrays"
-        open={true}
-        note={`${optionalInputArrays.length} additional files`}
-        className={fieldArrayStyles.array}
-      >
-        <div className={fieldArrayStyles.description}>
-          These File Inputs are defined in the application and can be included
-          with your job.
-        </div>
-        {optionalInputArrays.map((optionalInputArray) => {
-          const alreadyIncluded = inputArrayIncluded(
-            optionalInputArray,
-            formFileInputArrays
+  return !!optionalInputArrays.length ? (
+    <Collapse
+      title="Optional File Input Arrays"
+      open={true}
+      note={`${optionalInputArrays.length} additional files`}
+      className={fieldArrayStyles.array}
+    >
+      <div className={fieldArrayStyles.description}>
+        These File Inputs are defined in the application and can be included
+        with your job.
+      </div>
+      {optionalInputArrays.map((optionalInputArray) => {
+        const alreadyIncluded = inputArrayIncluded(
+          optionalInputArray,
+          formFileInputArrays
+        );
+        const onInclude = () => {
+          arrayHelpers.push(
+            generateFileInputArrayFromAppInput(optionalInputArray)
           );
-          const onInclude = () => {
-            arrayHelpers.push(
-              generateFileInputArrayFromAppInput(optionalInputArray)
-            );
-          };
-          return (
-            <div
-              className={fieldArrayStyles.item}
-              key={`optional-input-array-${optionalInputArray.name}`}
-            >
-              <OptionalInputArray
-                inputArray={optionalInputArray}
-                onInclude={onInclude}
-                included={alreadyIncluded}
-              />
-            </div>
-          );
-        })}
-      </Collapse>
-    ) : null;
-  };
+        };
+        return (
+          <div
+            className={fieldArrayStyles.item}
+            key={`optional-input-array-${optionalInputArray.name}`}
+          >
+            <OptionalInputArray
+              inputArray={optionalInputArray}
+              onInclude={onInclude}
+              included={alreadyIncluded}
+            />
+          </div>
+        );
+      })}
+    </Collapse>
+  ) : null;
+};
 
 const FixedInputArray: React.FC<{ inputArray: Apps.AppFileInputArray }> = ({
   inputArray,

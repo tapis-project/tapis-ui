@@ -1,6 +1,10 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Systems } from '@tapis/tapis-typescript';
-import { breadcrumbsFromPathname, Breadcrumbs, BreadcrumbType } from '../../../ui';
+import {
+  breadcrumbsFromPathname,
+  Breadcrumbs,
+  BreadcrumbType,
+} from '../../../ui';
 import { FileListing } from '../../files/FileListing';
 import {
   OnNavigateCallback,

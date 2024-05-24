@@ -2,7 +2,11 @@ import { Route, Redirect, RouteProps } from 'react-router-dom';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-function ProtectedRoute({ accessToken, children, ...rest }: RouteProps & {accessToken?: string}) {
+function ProtectedRoute({
+  accessToken,
+  children,
+  ...rest
+}: RouteProps & { accessToken?: string }) {
   return (
     <Route
       {...rest}

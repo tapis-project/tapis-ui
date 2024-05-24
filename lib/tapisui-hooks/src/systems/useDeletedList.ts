@@ -1,5 +1,5 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
-import { Systems as API } from '@tapis/tapisui-api'
+import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';

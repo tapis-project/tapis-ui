@@ -5,7 +5,10 @@ import { useJobLauncher, StepSummaryField } from '../components';
 import fieldArrayStyles from '../FieldArray.module.scss';
 import { Collapse } from '../../../../ui';
 import { FieldArray, useField, FieldArrayRenderProps } from 'formik';
-import { FormikInput, FormikCheck } from '../../../../ui-formik/FieldWrapperFormik';
+import {
+  FormikInput,
+  FormikCheck,
+} from '../../../../ui-formik/FieldWrapperFormik';
 import { getArgMode } from '../../../../utils/jobArgs';
 import { JobStep } from '..';
 import * as Yup from 'yup';

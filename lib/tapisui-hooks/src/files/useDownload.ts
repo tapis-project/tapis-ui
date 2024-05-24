@@ -1,5 +1,5 @@
 import { useMutation, MutateOptions } from 'react-query';
-import { Files as API } from '@tapis/tapisui-api'
+import { Files as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 import { DownloadStreamParams } from '.';
@@ -24,7 +24,15 @@ const useDownload = () => {
   } = useMutation<Response, Error, DownloadStreamParams>(
     [QueryKeys.download, basePath, jwt],
     ({ systemId, path, destination, zip = false, onStart = null }) =>
-      API.downloadStream(systemId, path, destination, zip, onStart, basePath, jwt)
+      API.downloadStream(
+        systemId,
+        path,
+        destination,
+        zip,
+        onStart,
+        basePath,
+        jwt
+      )
   );
 
   // Return hook object with loading states and login function

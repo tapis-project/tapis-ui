@@ -1,7 +1,7 @@
 import renderComponent from 'utils/testing';
 import TransferModal from './TransferModal';
-import { TransferListing, TransferCreate } from 'tapis-ui/components/files';
-import FileExplorer from 'tapis-ui/components/files/FileExplorer/FileExplorer';
+import { TransferListing, TransferCreate } from '@tapis/tapisui-common';
+import { FileExplorer } from '@tapis/tapisui-common';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 import { fileInfo } from 'fixtures/files.fixtures';
 

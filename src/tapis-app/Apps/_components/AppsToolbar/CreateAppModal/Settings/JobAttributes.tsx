@@ -1,12 +1,12 @@
-import { Collapse } from 'tapis-ui/_common';
+import { Collapse } from '@tapis/tapisui-common';
 import styles from '../CreateAppModal.module.scss';
-import { FileInputArrays } from 'tapis-ui/components/apps/AppCreate/JobAttributes/FileInputArrays';
-import { FileInputs } from 'tapis-ui/components/apps/AppCreate/JobAttributes/FileInputs';
-import { ExecOptions } from 'tapis-ui/components/apps/AppCreate/JobAttributes/ExecOptions';
-import { Args } from 'tapis-ui/components/apps/AppCreate/JobAttributes/Args';
-import { SchedulerOptions } from 'tapis-ui/components/apps/AppCreate/JobAttributes/SchedulerOptions';
-import { EnvVariables } from 'tapis-ui/components/apps/AppCreate/JobAttributes/EnvVariables';
-import { Archive } from 'tapis-ui/components/apps/AppCreate/JobAttributes/Archive';
+import { FileInputArrays } from '@tapis/tapisui-common';
+import { FileInputs } from '@tapis/tapisui-common';
+import { ExecOptions } from '@tapis/tapisui-common';
+import { Args } from '@tapis/tapisui-common';
+import { SchedulerOptions } from '@tapis/tapisui-common';
+import { EnvVariables } from '@tapis/tapisui-common';
+import { Archive } from '@tapis/tapisui-common';
 
 const JobSettings: React.FC = () => {
   return (

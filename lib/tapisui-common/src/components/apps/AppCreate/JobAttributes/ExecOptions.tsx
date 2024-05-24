@@ -239,4 +239,4 @@ type QueueErrors = {
   execSystemLogicalQueue?: string;
 };
 
-export default <ExecOptions />;
+export default ExecOptions;

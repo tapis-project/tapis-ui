@@ -2,10 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "target": "es5",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "node",
@@ -19,15 +16,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "types": [
-      "node",
-      "jest",
-      "@testing-library/jest-dom"
-    ],
-    "typeRoots": [
-      "./types",
-      "node_modules/@types"
-    ],
+    "types": ["node", "jest", "@testing-library/jest-dom"],
+    "typeRoots": ["./types", "node_modules/@types"],
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
@@ -45,11 +35,6 @@
       "wrappers/*": ["./wrappers/*"]
     }
   },
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
-  "include": [
-    "src"
-  ]
+  "exclude": ["dist", "node_modules"],
+  "include": ["src"]
 }

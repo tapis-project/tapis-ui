@@ -3,13 +3,13 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import SystemsNav from './SystemsNav';
 import { tapisSystem } from 'fixtures/systems.fixtures';
-import { useList } from 'tapis-hooks/systems';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 
-jest.mock('tapis-hooks/systems');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('SystemsNav', () => {
   it('renders SystemNav component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       data: {
         result: [tapisSystem],
       },

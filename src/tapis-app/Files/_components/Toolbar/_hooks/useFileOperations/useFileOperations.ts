@@ -1,10 +1,9 @@
-import { useMutations } from 'tapis-hooks/utils';
+import { utils } from '@tapis/tapisui-hooks';
 import { useReducer, useState } from 'react';
-import { MutationFunction } from 'tapis-hooks/utils/useMutations';
 import { FileOpEventStatusEnum, FileOpState } from '.';
 
 type UseFileOperationsParams<T, ResponseType> = {
-  fn: MutationFunction<T, ResponseType>;
+  fn: utils.MutationFunction<T, ResponseType>;
   key?: (item: T) => string;
   onComplete?: () => void;
 };
@@ -55,7 +54,7 @@ const useFileOperations = <
       error,
     });
 
-  const { run, isLoading, isFinished } = useMutations<T, ResponseType>({
+  const { run, isLoading, isFinished } = utils.useMutations<T, ResponseType>({
     fn,
     onStart,
     onSuccess,

@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Workflows as API } from "@tapis/tapisui-api"
+import { Workflows as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
 

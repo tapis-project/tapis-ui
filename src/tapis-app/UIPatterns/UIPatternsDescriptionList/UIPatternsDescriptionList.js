@@ -1,5 +1,5 @@
 import React from 'react';
-import { DescriptionList, Icon } from 'tapis-ui/_common';
+import { DescriptionList, Icon } from '@tapis/tapisui-common';
 
 import styles from './UIPatternsDescriptionList.module.css';
 

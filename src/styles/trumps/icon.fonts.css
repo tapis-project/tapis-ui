@@ -1,0 +1,313 @@
+@font-face {
+  font-family: 'Cortal-Icons';
+  /* TACC: Use `woff` because it is `ttf` optimized for web, and browser support */
+  /* TACC: Renamed to include version and correct path */
+  src: url('../fonts/Cortal-Icons-1.2.woff?vrusnv') format('woff');
+  /*
+  src:  url('fonts/Cortal-Icons.eot?vrusnv');
+  src:  url('fonts/Cortal-Icons.eot?vrusnv#iefix') format('embedded-opentype'),
+    url('fonts/Cortal-Icons.ttf?vrusnv') format('truetype'),
+    url('fonts/Cortal-Icons.woff?vrusnv') format('woff'),
+    url('fonts/Cortal-Icons.svg?vrusnv#Cortal-Icons') format('svg');
+  */
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^='icon-'],
+[class*=' icon-'] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'Cortal-Icons' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* TACC: Remove support for extra icon that should not be used */
+/*
+.icon-jobs-history:before {
+  content: "\e95a";
+}
+*/
+.icon-jobs:before {
+  content: '\e95b';
+}
+.icon-zipped:before {
+  content: '\e957';
+}
+.icon-compress:before {
+  content: '\e958';
+}
+.icon-extract:before {
+  content: '\e959';
+}
+.icon-add-file:before {
+  content: '\e900';
+}
+.icon-add-folder:before {
+  content: '\e901';
+}
+.icon-add-project:before {
+  content: '\e902';
+}
+.icon-add:before {
+  content: '\e903';
+}
+.icon-alert:before {
+  content: '\e904';
+}
+.icon-allocations:before {
+  content: '\e905';
+}
+.icon-applications:before {
+  content: '\e906';
+}
+.icon-approved-boxed-reverse:before {
+  content: '\e907';
+}
+.icon-approved-boxed:before {
+  content: '\e908';
+}
+.icon-approved-reverse:before {
+  content: '\e909';
+}
+.icon-approved:before {
+  content: '\e90a';
+}
+.icon-bar-graph:before {
+  content: '\e90b';
+}
+.icon-boxed:before {
+  content: '\e90c';
+}
+.icon-browser:before {
+  content: '\e90d';
+}
+.icon-bulb:before {
+  content: '\e90e';
+}
+.icon-burger:before {
+  content: '\e90f';
+}
+.icon-calendar:before {
+  content: '\e910';
+}
+.icon-close-boxed:before {
+  content: '\e911';
+}
+.icon-close:before {
+  content: '\e912';
+}
+.icon-code:before {
+  content: '\e913';
+}
+.icon-compass:before {
+  content: '\e914';
+}
+.icon-contract:before {
+  content: '\e915';
+}
+.icon-conversation:before {
+  content: '\e916';
+}
+.icon-copy:before {
+  content: '\e917';
+}
+.icon-coversation-wait:before {
+  content: '\e918';
+}
+.icon-dashboard:before {
+  content: '\e919';
+}
+.icon-data-files:before {
+  content: '\e91a';
+}
+.icon-data-processing:before {
+  content: '\e91b';
+}
+.icon-denied-reverse:before {
+  content: '\e91c';
+}
+.icon-denied:before {
+  content: '\e91d';
+}
+.icon-dna:before {
+  content: '\e91e';
+}
+.icon-document:before {
+  content: '\e91f';
+}
+.icon-download:before {
+  content: '\e920';
+}
+.icon-edit-document:before {
+  content: '\e921';
+}
+.icon-exit:before {
+  content: '\e922';
+}
+.icon-expand:before {
+  content: '\e923';
+}
+.icon-file:before {
+  content: '\e924';
+}
+.icon-folder:before {
+  content: '\e925';
+}
+.icon-gear:before {
+  content: '\e926';
+}
+.icon-globe:before {
+  content: '\e927';
+}
+.icon-history-reverse:before {
+  content: '\e928';
+}
+.icon-history:before {
+  content: '\e929';
+}
+.icon-image:before {
+  content: '\e92a';
+}
+.icon-jupyter:before {
+  content: '\e92b';
+}
+.icon-link:before {
+  content: '\e92c';
+}
+.icon-lock:before {
+  content: '\e92d';
+}
+.icon-monitor:before {
+  content: '\e92e';
+}
+.icon-move:before {
+  content: '\e92f';
+}
+.icon-multiple-coversation:before {
+  content: '\e930';
+}
+/* TACC: This is meant for non-published storage. regardless of which system it lives on */
+.icon-my-data:before {
+  content: '\e931';
+}
+.icon-new-browser:before {
+  content: '\e932';
+}
+.icon-no-alert:before {
+  content: '\e933';
+}
+.icon-pending:before {
+  content: '\e934';
+}
+.icon-pie-graph-open:before {
+  content: '\e935';
+}
+.icon-pie-graph-reverse:before {
+  content: '\e936';
+}
+.icon-pie-graph:before {
+  content: '\e937';
+}
+.icon-project:before {
+  content: '\e938';
+}
+.icon-proposal-approved:before {
+  content: '\e939';
+}
+.icon-proposal-denied:before {
+  content: '\e93a';
+}
+.icon-proposal-pending:before {
+  content: '\e93b';
+}
+.icon-publications:before {
+  content: '\e93c';
+}
+.icon-push-left:before {
+  content: '\e93d';
+}
+.icon-push-right:before {
+  content: '\e93e';
+}
+.icon-refresh:before {
+  content: '\e93f';
+}
+.icon-rename:before {
+  content: '\e940';
+}
+.icon-reverse-order:before {
+  content: '\e941';
+}
+.icon-rotate-ccw:before {
+  content: '\e942';
+}
+.icon-rotate-cw:before {
+  content: '\e943';
+}
+.icon-save:before {
+  content: '\e944';
+}
+.icon-script:before {
+  content: '\e945';
+}
+.icon-search-folder:before {
+  content: '\e946';
+}
+.icon-search:before {
+  content: '\e947';
+}
+.icon-share:before {
+  content: '\e948';
+}
+.icon-sillouette:before {
+  content: '\e949';
+}
+.icon-simulation-reverse:before {
+  content: '\e94a';
+}
+.icon-simulation:before {
+  content: '\e94b';
+}
+.icon-subtract-file:before {
+  content: '\e94c';
+}
+.icon-toolbox:before {
+  content: '\e94d';
+}
+.icon-trash:before {
+  content: '\e94e';
+}
+.icon-trophy:before {
+  content: '\e94f';
+}
+.icon-unlock:before {
+  content: '\e950';
+}
+.icon-upload:before {
+  content: '\e951';
+}
+.icon-user-reverse:before {
+  content: '\e952';
+}
+.icon-user:before {
+  content: '\e953';
+}
+.icon-visualization:before {
+  content: '\e954';
+}
+.icon-zoom-in:before {
+  content: '\e955';
+}
+.icon-zoom-out:before {
+  content: '\e956';
+}

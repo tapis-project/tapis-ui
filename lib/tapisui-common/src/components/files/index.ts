@@ -1,4 +1,4 @@
-export { FileListing } from './FileListing';
+export { FileListing, FileListingTable } from './FileListing';
 export { default as FileStat } from './FileStat';
 export { default as FileOperation } from './FileOperation';
 export { default as TransferListing } from './TransferListing';

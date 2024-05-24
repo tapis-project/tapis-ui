@@ -1,29 +1,28 @@
 import { Button } from 'reactstrap';
 import { Systems } from '@tapis/tapis-typescript';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../SystemToolbar';
 import { Form, Formik } from 'formik';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
-import { useUndeleteSystem, useDeletedList } from 'tapis-hooks/systems';
+import { FormikSelect } from '@tapis/tapisui-common';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { useEffect, useCallback } from 'react';
 import styles from './UndeleteSystemModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { default as queryKeys } from 'tapis-hooks/systems/queryKeys';
 
 const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  const { data } = useDeletedList();
+  const { data } = Hooks.useDeletedList();
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
   //Allows the system list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
   const { undeleteSystem, isLoading, error, isSuccess, reset } =
-    useUndeleteSystem();
+    Hooks.useUndeleteSystem();
 
   useEffect(() => {
     reset();

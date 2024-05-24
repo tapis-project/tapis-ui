@@ -1,7 +1,7 @@
 import { Files } from '@tapis/tapis-typescript';
 import React, { useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { Icon } from 'tapis-ui/_common';
+import { Icon } from '@tapis/tapisui-common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import MoveCopyModal from './MoveCopyModal';
@@ -12,11 +12,7 @@ import DeleteModal from './DeleteModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
-import {
-  useDownload,
-  DownloadStreamParams,
-  usePermissions,
-} from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { useNotifications } from 'tapis-app/_components/Notifications';
 
 type ToolbarButtonProps = {
@@ -60,15 +56,16 @@ const Toolbar: React.FC = () => {
   const { pathname } = useLocation();
   const systemId = pathname.split('/')[2];
   const currentPath = pathname.split('/').splice(3).join('/');
-  const { download } = useDownload();
+  const { download } = Hooks.useDownload();
   const { add } = useNotifications();
 
-  const { data } = usePermissions({ systemId, path: currentPath });
+  const { data } = Hooks.usePermissions({ systemId, path: currentPath });
   const permission = data?.result?.permission;
 
   const onDownload = useCallback(() => {
     selectedFiles.forEach((file) => {
-      const params: DownloadStreamParams = {
+      // TODO Consider making the DownloadStreamParams in a type in this file
+      const params: Hooks.DownloadStreamParams = {
         systemId,
         path: file.path ?? '',
         destination: file.name ?? 'tapisfile',

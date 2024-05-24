@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
 import { Location } from 'history';
 import { Login as TapisLogin } from '../_components';
-import { SectionHeader } from 'tapis-ui/_common';
+import { SectionHeader } from '@tapis/tapisui-common';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const Layout: React.FC = () => {

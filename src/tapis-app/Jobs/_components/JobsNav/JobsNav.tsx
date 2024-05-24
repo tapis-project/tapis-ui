@@ -1,12 +1,12 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { useList } from 'tapis-hooks/jobs';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { Jobs } from '@tapis/tapis-typescript';
-import { Navbar, NavItem } from 'tapis-ui/_wrappers/Navbar';
-import { QueryWrapper } from 'tapis-ui/_wrappers';
+import { Navbar, NavItem } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 
 const JobsNav: React.FC = () => {
-  const { data, isLoading, error } = useList();
+  const { data, isLoading, error } = Hooks.useList();
   const { url } = useRouteMatch();
   const jobsList: Array<Jobs.JobListDTO> = data?.result ?? [];
 

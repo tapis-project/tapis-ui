@@ -1,18 +1,17 @@
 import '@testing-library/jest-dom/extend-expect';
 import { renderHook } from '@testing-library/react-hooks';
-import { MutationFunction } from 'tapis-hooks/utils/useMutations';
+import { utils } from '@tapis/tapisui-hooks';
 import { act } from '@testing-library/react';
 import useFileOperations from './useFileOperations';
 
-jest.mock('tapis-hooks/systems');
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('useFileOperations', () => {
   it('runs a sequence of file operations', async () => {
     type MockType = {
       path: string;
     };
-    const mockOperation: MutationFunction<MockType, any> = (item) =>
+    const mockOperation: utils.MutationFunction<MockType, any> = (item) =>
       new Promise((resolve) => resolve({}));
     const mockOnComplete = jest.fn();
 

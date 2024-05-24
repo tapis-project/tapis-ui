@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
-import { Icon } from 'tapis-ui/_common';
+import { Icon } from '@tapis/tapisui-common';
 import styles from './SystemToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreateSystemModal from './CreateSystemModal';

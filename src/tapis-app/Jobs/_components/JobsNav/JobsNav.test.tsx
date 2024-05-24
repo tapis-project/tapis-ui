@@ -2,14 +2,14 @@ import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import JobsNav from './JobsNav';
-import { useList } from 'tapis-hooks/jobs';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { jobInfo } from 'fixtures/jobs.fixtures';
 
-jest.mock('tapis-hooks/jobs');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('JobsNav', () => {
   it('renders JobsNav component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       data: {
         result: [jobInfo],
       },

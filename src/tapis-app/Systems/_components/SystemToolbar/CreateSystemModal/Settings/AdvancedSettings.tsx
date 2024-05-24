@@ -1,5 +1,5 @@
-import { FormikInput, Collapse } from 'tapis-ui/_common';
-import { FormikSelect } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput, Collapse } from '@tapis/tapisui-common';
+import { FormikSelect } from '@tapis/tapisui-common';
 import { RuntimeTypeEnum } from '@tapis/tapis-typescript-systems';
 import { Systems } from '@tapis/tapis-typescript';
 import { useMemo } from 'react';

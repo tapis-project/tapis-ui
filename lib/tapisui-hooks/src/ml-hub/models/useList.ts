@@ -1,5 +1,5 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
-import { MLHub as API } from '@tapis/tapisui-api'
+import { MLHub as API } from '@tapis/tapisui-api';
 import { Models } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';

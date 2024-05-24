@@ -3,13 +3,13 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import PodsNav from './PodsNav';
 import { tapisPod } from 'fixtures/pods.fixtures';
-import { useList } from 'tapis-hooks/pods';
+import { Pods as Hooks } from '@tapis/tapisui-hooks';
 
-jest.mock('tapis-hooks/pods');
+jest.mock('t@tapis/tapisui-hooks');
 
 describe('PodsNav', () => {
   it('renders PodsNav component', () => {
-    (useList as jest.Mock).mockReturnValue({
+    (Hooks.useList as jest.Mock).mockReturnValue({
       data: {
         result: [tapisPod],
       },

@@ -5,19 +5,9 @@
     "module": "esnext",
     "moduleResolution": "node",
     "outDir": "dist",
-    "lib": [
-      "es6",
-      "dom"
-    ],
-    "types": [
-      "node",
-      "jest",
-      "streamsaver"
-    ],
-    "typeRoots": [
-      "./types",
-      "node_modules/@types"
-    ],
+    "lib": ["es6", "dom"],
+    "types": ["node", "jest", "streamsaver"],
+    "typeRoots": ["./types", "node_modules/@types"],
     "baseUrl": "src",
     "allowJs": true,
     "skipLibCheck": true,
@@ -31,11 +21,6 @@
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

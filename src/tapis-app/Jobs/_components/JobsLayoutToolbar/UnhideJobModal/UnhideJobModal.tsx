@@ -1,16 +1,16 @@
 import { Button } from 'reactstrap';
-import { GenericModal } from 'tapis-ui/_common';
-import { SubmitWrapper } from 'tapis-ui/_wrappers';
+import { GenericModal } from '@tapis/tapisui-common';
+import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../JobsLayoutToolbar';
 import { Formik, Form } from 'formik';
-import { FormikInput } from 'tapis-ui/_common/FieldWrapperFormik';
+import { FormikInput } from '@tapis/tapisui-common';
 import { useEffect } from 'react';
 import styles from './UnhideJobModal.module.scss';
 import * as Yup from 'yup';
-import { useUnhideJob } from 'tapis-hooks/jobs';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 
 const UnhideJobModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  const { unhideJob, isLoading, error, isSuccess, reset } = useUnhideJob();
+  const { unhideJob, isLoading, error, isSuccess, reset } = Hooks.useUnhideJob();
 
   useEffect(() => {
     reset();

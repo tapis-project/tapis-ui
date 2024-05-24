@@ -1,6 +1,6 @@
 import { useMutation, MutateOptions } from 'react-query';
 import { Files } from '@tapis/tapis-typescript';
-import { Files as API } from '@tapis/tapisui-api'
+import { Files as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
 

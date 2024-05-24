@@ -1,8 +1,8 @@
 import React from 'react';
-import { JobDetail } from 'tapis-ui/components/jobs';
-import { PageLayout, LayoutHeader } from 'tapis-ui/_common';
+import { JobDetail } from '@tapis/tapisui-common';
+import { PageLayout, LayoutHeader } from '@tapis/tapisui-common';
 import { JobsToolbar } from 'tapis-app/Jobs/_components';
-import { useDetails } from 'tapis-hooks/jobs';
+import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 
 interface JobDetailProps {
   jobUuid: string;
@@ -10,7 +10,7 @@ interface JobDetailProps {
 
 const Layout: React.FC<JobDetailProps> = ({ jobUuid }) => {
   // eslint-disable-next-line
-  const { data, isLoading, error } = useDetails(jobUuid);
+  const { data, isLoading, error } = Hooks.useDetails(jobUuid);
 
   // Don't need the below because error message is already shown, as an error not as plain text like below would do
   // if (error) {

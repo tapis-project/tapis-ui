@@ -1,21 +1,21 @@
 import renderComponent from 'utils/testing';
 import PermissionsModal from './PermissionsModal';
-import { usePermissions } from 'tapis-hooks/files';
+import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
-import { FileStat, FileOperation } from 'tapis-ui/components/files';
+import { FileStat, FileOperation } from '@tapis/tapisui-common';
 import { Files } from '@tapis/tapis-typescript';
 
-jest.mock('tapis-hooks/files');
+jest.mock('@tapis/tapisui-hooks');
 jest.mock('tapis-app/Files/_components/FilesContext');
-jest.mock('tapis-ui/components/files');
+jest.mock('@tapis/tapsiui-common');
 
 describe('Permissions Modal', () => {
   it('submits with valid inputs', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo],
     });
-    (usePermissions as jest.Mock).mockReturnValue({
+    (Hooks.usePermissions as jest.Mock).mockReturnValue({
       data: {
         result: {
           permission: Files.FilePermissionPermissionEnum.Modify,

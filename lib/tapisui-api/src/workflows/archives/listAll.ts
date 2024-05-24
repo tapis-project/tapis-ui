@@ -36,14 +36,18 @@ const listAll = async (
 
   const last = resps[resps.length - 1];
 
-  if (resps.some((resp) => { resp.result === null})) {
+  if (
+    resps.some((resp) => {
+      resp.result === null;
+    })
+  ) {
     return {
-      status: "failure",
-      message: "Failed to list all Archives",
+      status: 'failure',
+      message: 'Failed to list all Archives',
       metadata: last.metadata,
       result: [],
       version: last.version,
-    }
+    };
   }
 
   let respAll: Workflows.RespArchiveList = {
@@ -51,7 +55,7 @@ const listAll = async (
     message: last.message,
     metadata: last.metadata,
     result: archives,
-    version: last.version
+    version: last.version,
   };
 
   return respAll;
