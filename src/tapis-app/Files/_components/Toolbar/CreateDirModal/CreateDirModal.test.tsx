@@ -1,5 +1,5 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import CreateDirModal from './CreateDirModal';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 
@@ -42,7 +42,7 @@ describe('CreateDirModal', () => {
   it('submits with valid inputs', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
-    (useMkdir as jest.Mock).mockReturnValue({
+    (Hooks.useMkdir as jest.Mock).mockReturnValue({
       mkdir: mkdirMock,
       isLoading: false,
       error: null,
@@ -75,7 +75,7 @@ describe('CreateDirModal', () => {
   it('fails with invalid inputs', async () => {
     const mkdirMock = jest.fn();
     const resetMock = jest.fn();
-    (useMkdir as jest.Mock).mockReturnValue({
+    (Hooks.useMkdir as jest.Mock).mockReturnValue({
       mkdir: mkdirMock,
       isLoading: false,
       error: null,

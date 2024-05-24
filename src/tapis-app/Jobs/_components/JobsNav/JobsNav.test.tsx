@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import JobsNav from './JobsNav';
 import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { jobInfo } from 'fixtures/jobs.fixtures';

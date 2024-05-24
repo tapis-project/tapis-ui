@@ -37,8 +37,9 @@ import {
   Collapse,
   JSONDisplay,
   TooltipModal,
-  Tabs,
+  Tabs
 } from './ui';
+import { renderComponent } from './utils'
 import {
   QueryWrapper,
   SubmitWrapper,
@@ -156,4 +157,6 @@ export {
   FileInputArrays,
   FileInputs,
   SchedulerOptions,
+  // Utils
+  renderComponent,
 };

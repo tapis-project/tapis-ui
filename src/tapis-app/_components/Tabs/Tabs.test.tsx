@@ -1,5 +1,5 @@
 import { act, fireEvent, screen } from '@testing-library/react';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import Tabs from './Tabs';
 
 describe('Tabs', () => {

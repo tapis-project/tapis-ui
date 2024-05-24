@@ -1,5 +1,5 @@
 import { act } from '@testing-library/react';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import Toolbar from './Toolbar';
 import { Files } from '@tapis/tapis-typescript';
 import { fileInfo } from 'fixtures/files.fixtures';

@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import Sidebar from 'tapis-app/_components/Sidebar';
 
 describe('Sidebar', () => {

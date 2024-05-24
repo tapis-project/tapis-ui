@@ -1,13 +1,12 @@
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import TransferModal from './TransferModal';
 import { TransferListing, TransferCreate } from '@tapis/tapisui-common';
 import { FileExplorer } from '@tapis/tapisui-common';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 import { fileInfo } from 'fixtures/files.fixtures';
 
-jest.mock('tapis-ui/components/files');
+jest.mock('@tapis/tapisui-common');
 jest.mock('tapis-app/Files/_components/FilesContext');
-jest.mock('tapis-ui/components/files/FileExplorer/FileExplorer');
 
 describe('TransferModal', () => {
   it('renders the transfer modal', async () => {

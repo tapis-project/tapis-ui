@@ -1,5 +1,5 @@
 import { act, fireEvent, screen } from '@testing-library/react';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import MoveCopyModal from './MoveCopyModal';
 import { Files as Hooks, utils } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';

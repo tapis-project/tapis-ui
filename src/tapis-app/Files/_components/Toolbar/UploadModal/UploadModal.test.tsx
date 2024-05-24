@@ -1,4 +1,4 @@
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import UploadModal from './UploadModal';
 
 describe('UploadModal', () => {

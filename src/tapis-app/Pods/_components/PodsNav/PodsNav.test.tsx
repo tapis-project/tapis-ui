@@ -1,11 +1,11 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';;
 import PodsNav from './PodsNav';
 import { tapisPod } from 'fixtures/pods.fixtures';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 
-jest.mock('t@tapis/tapisui-hooks');
+jest.mock('@tapis/tapisui-hooks');
 
 describe('PodsNav', () => {
   it('renders PodsNav component', () => {

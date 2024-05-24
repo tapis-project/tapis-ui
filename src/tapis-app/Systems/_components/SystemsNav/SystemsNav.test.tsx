@@ -1,11 +1,12 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from 'utils/testing';
+import { renderComponent } from '@tapis/tapisui-common';
 import SystemsNav from './SystemsNav';
 import { tapisSystem } from 'fixtures/systems.fixtures';
-import { Systems as Hooks } from '@tapis/tapisui-hooks';
+import { Systems as Hooks, utils } from '@tapis/tapisui-hooks';
 
 jest.mock('@tapis/tapisui-hooks');
+const { TapisProvider } = jest.requireActual('@tapis/tapisui-hooks');
 
 describe('SystemsNav', () => {
   it('renders SystemNav component', () => {
