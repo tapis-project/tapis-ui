@@ -119,6 +119,8 @@ export {
     QueryWrapper,
     SubmitWrapper,
     Wizard,
+    Navbar,
+    NavItem,
     // Formik UI
     FieldWrapperFormik,
     FormikInput,
