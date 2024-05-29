@@ -10,7 +10,7 @@ import * as Systems from './systems';
 import * as Tenants from './tenants';
 import * as Workflows from './workflows';
 import * as utils from './utils';
-import { MutationFunction } from './utils'
+import { MutationFunction } from './utils';
 
 export type { TapisContextType };
 export type { ResultPages } from './utils';

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
-import { MutationFunction } from '@tapis/tapisui-hooks'
+import { MutationFunction } from '@tapis/tapisui-hooks';
 import { renderHook } from '@testing-library/react-hooks';
 import { act } from '@testing-library/react';
 import useFileOperations from './useFileOperations';
@@ -11,7 +11,7 @@ describe('useFileOperations', () => {
     };
     const mockOperation: MutationFunction<MockType, any> = (item) =>
       new Promise((resolve) => resolve({}));
-      
+
     const mockOnComplete = jest.fn();
 
     const hook = renderHook(() =>

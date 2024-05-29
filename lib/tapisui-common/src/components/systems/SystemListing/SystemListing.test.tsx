@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from '../../../utils/testing';
+import renderComponent from '../../../testing/utils';
 import SystemListing from './SystemListing';
 import { Systems } from '@tapis/tapisui-hooks';
 import { tapisSystem } from '../../../fixtures/systems.fixtures';

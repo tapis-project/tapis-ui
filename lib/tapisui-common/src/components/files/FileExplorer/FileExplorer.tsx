@@ -12,7 +12,7 @@ import {
   SelectMode,
 } from '../../files/FileListing/FileListing';
 import { SystemListing } from '../../systems';
-import { normalize } from 'path';
+import normalize from 'normalize-path';
 import styles from './FileExplorer.module.scss';
 import { Files } from '@tapis/tapis-typescript';
 

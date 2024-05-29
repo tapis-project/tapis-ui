@@ -1,5 +1,5 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import { renderComponent } from '@tapis/tapisui-common';;
+import renderComponent from 'testing/utils';
 import CreateDirModal from './CreateDirModal';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 

@@ -1,5 +1,5 @@
 import { BreadcrumbType } from '../../ui/Breadcrumbs/Breadcrumbs';
-import { normalize } from 'path';
+import normalize from 'normalize-path';
 
 const breadcrumbsFromPathname = (pathname: string) => {
   const items: Array<BreadcrumbType> = [];

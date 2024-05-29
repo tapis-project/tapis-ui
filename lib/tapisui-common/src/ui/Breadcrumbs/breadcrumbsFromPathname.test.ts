@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/extend-expect';
+import { expect, describe, it } from '@jest/globals';
 import breadcrumbsFromPathname from './breadcrumbsFromPathname';
 
 describe('Breadcrumbs from pathname function', () => {

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from '../../../utils/testing';
+import renderComponent from '../../../testing/utils';
 import FileStat from './FileStat';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileStatInfo } from '../../../fixtures/files.fixtures';

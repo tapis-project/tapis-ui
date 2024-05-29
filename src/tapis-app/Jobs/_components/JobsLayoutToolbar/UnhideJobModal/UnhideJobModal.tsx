@@ -10,7 +10,8 @@ import * as Yup from 'yup';
 import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 
 const UnhideJobModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  const { unhideJob, isLoading, error, isSuccess, reset } = Hooks.useUnhideJob();
+  const { unhideJob, isLoading, error, isSuccess, reset } =
+    Hooks.useUnhideJob();
 
   useEffect(() => {
     reset();

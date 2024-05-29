@@ -173,7 +173,8 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
-  const { makeNewPod, isLoading, error, isSuccess, reset } = Hooks.useMakeNewPod();
+  const { makeNewPod, isLoading, error, isSuccess, reset } =
+    Hooks.useMakeNewPod();
 
   useEffect(() => {
     reset();

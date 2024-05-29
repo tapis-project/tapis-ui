@@ -1,5 +1,5 @@
 import { act, fireEvent, screen } from '@testing-library/react';
-import { renderComponent } from '@tapis/tapisui-common';;
+import renderComponent from 'testing/utils';
 import DeleteModal from './DeleteModal';
 import { Files as Hooks, utils } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';

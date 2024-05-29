@@ -1,11 +1,12 @@
 import { act } from '@testing-library/react';
-import { renderComponent } from '@tapis/tapisui-common';;
+import renderComponent from 'testing/utils';
 import Toolbar from './Toolbar';
 import { Files } from '@tapis/tapis-typescript';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import RenameModal from 'tapis-app/Files/_components/Toolbar/RenameModal';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@tapis/tapisui-hooks');
 jest.mock('tapis-app/Files/_components/FilesContext');

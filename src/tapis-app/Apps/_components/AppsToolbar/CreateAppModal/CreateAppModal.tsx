@@ -34,7 +34,8 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
-  const { isLoading, isSuccess, error, reset, createApp } = Hooks.useCreateApp();
+  const { isLoading, isSuccess, error, reset, createApp } =
+    Hooks.useCreateApp();
 
   useEffect(() => {
     reset();

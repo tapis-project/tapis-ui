@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/extend-expect';
+import { expect, describe, it } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import withBuilder from './withBuilder';
 

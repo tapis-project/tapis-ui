@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { act, fireEvent } from '@testing-library/react';
-import renderComponent from '../../../utils/testing';
+import renderComponent from '../../../testing/utils';
 import FileExplorer from './FileExplorer';
 // import { useList as useSystemsList } from '@tapis/tapisui-hooks';
 // import { useList as useFilesList } from '@tapis/tapisui-hooks';

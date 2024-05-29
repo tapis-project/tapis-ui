@@ -1,5 +1,5 @@
 import { Apps } from '@tapis/tapis-typescript';
-import '@testing-library/jest-dom/extend-expect';
+import { expect, describe, it } from '@jest/globals';
 import { tapisApp } from '../fixtures/apps.fixtures';
 import {
   getIncompleteAppInputsOfType,

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from '../../../../utils/testing';
+import renderComponent from '../../../../testing/utils';
 import { tapisApp } from '../../../../fixtures/apps.fixtures';
 import { tapisSystem } from '../../../../fixtures/systems.fixtures';
 import useJobLauncher from '../../../../components/jobs/JobLauncher/components/useJobLauncher';

@@ -1,6 +1,6 @@
 import { act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import renderComponent from '../../../utils/testing';
+import renderComponent from '../../../testing/utils';
 import FileSelectModal from './FileSelectModal';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { fileInfo } from '../../../fixtures/files.fixtures';

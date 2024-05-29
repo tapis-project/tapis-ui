@@ -17,24 +17,8 @@
     "isolatedModules": true,
     "noEmit": false,
     "types": ["node", "jest", "@testing-library/jest-dom"],
-    "typeRoots": ["./types", "node_modules/@types"],
-    "outDir": "./dist",
-    "baseUrl": "./src",
-    "paths": {
-      "ui": ["./ui"],
-      "ui/*": ["./ui/*"],
-      "ui-formik": ["./ui-formik"],
-      "ui-formik/*": ["./ui-formik/*"],
-      "utils": ["./utils"],
-      "utils/*": ["./utils/*"],
-      "fixtures": ["./fixtures"],
-      "fixtures/*": ["./fixtures/*"],
-      "components": ["./components"],
-      "components/*": ["./components/*"],
-      "wrappers": ["./wrappers"],
-      "wrappers/*": ["./wrappers/*"]
-    }
+    "outDir": "./dist"
   },
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["dist", "node_modules", "src/testing", "**/*.test.ts", "**/*.test.tsx", "**/*.test.js"],
   "include": ["src"]
 }

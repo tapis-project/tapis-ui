@@ -1,10 +1,11 @@
 import { act, fireEvent, screen } from '@testing-library/react';
-import { renderComponent } from '@tapis/tapisui-common';;
+import renderComponent from 'testing/utils';
 import MoveCopyModal from './MoveCopyModal';
 import { Files as Hooks, utils } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@tapis/tapisui-hooks');
 jest.mock('tapis-app/Files/_components/FilesContext');

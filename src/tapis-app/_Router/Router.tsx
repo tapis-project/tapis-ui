@@ -15,7 +15,7 @@ import MlHub from '../MlHub';
 import UIPatterns from '../UIPatterns';
 
 const Router: React.FC = () => {
-  const { accessToken } = useTapisConfig()
+  const { accessToken } = useTapisConfig();
   const { logout } = Authenticator.useLogin();
 
   return (

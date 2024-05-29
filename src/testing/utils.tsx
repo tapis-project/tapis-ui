@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Router } from 'react-router-dom';
 import { render } from '@testing-library/react';
+import { expect, jest, test } from '@jest/globals';
 // import { TapisProvider } from '@tapis/tapisui-hooks';
 // NOTE When mocking up hooks from @tapis/tapisui-hooks during test, TapisProvider
 // below alos gets mocked up. To avoid that, we are importing the actual
 // Tapis Provider TROUGH jest. Hack? Maybe. Works? Yes
-const { TapisProvider } = jest.requireActual('@tapis/tapisui-hooks');
+const { TapisProvider } = jest.requireActual('@tapis/tapisui-hooks') as any;
 export default function renderComponent(
   component: any,
   history: any = null

@@ -1,5 +1,5 @@
 import { act, screen } from '@testing-library/react';
-import renderComponent from '../../../utils/testing';
+import renderComponent from '../../../testing/utils';
 import TransferCancel from './TransferCancel';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';

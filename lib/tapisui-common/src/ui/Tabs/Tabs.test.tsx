@@ -1,5 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react';
-import renderComponent from '../../utils/testing';
+import { expect, describe, it } from '@jest/globals';
+import renderComponent from '../../testing/utils';
 import Tabs from './Tabs';
 
 describe('Tabs', () => {

@@ -1,12 +1,13 @@
-// import { renderComponent } from '@tapis/tapisui-common';
+// import renderComponent from 'testing/utils';
 import TransferModal from './TransferModal';
 import { TransferListing, TransferCreate } from '@tapis/tapisui-common';
 import { FileExplorer } from '@tapis/tapisui-common';
 import { useFilesSelect } from 'tapis-app/Files/_components/FilesContext';
 import { fileInfo } from 'fixtures/files.fixtures';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@tapis/tapisui-common');
-const { renderComponent } = jest.requireActual("@tapis/tapisui-common")
+const { renderComponent } = jest.requireActual('@tapis/tapisui-common');
 jest.mock('tapis-app/Files/_components/FilesContext');
 
 describe('TransferModal', () => {
