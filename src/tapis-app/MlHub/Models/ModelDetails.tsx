@@ -8,6 +8,12 @@ type ModelsProps = {
     modelId: string
 }
 
+// type ButtonNames = {
+//     InferenceServerDetails: String;
+//     ModelCard: String;
+//     DownloadModel: String;
+// }
+
 const ModelDetails: React.FC<ModelsProps> = ({modelId}) => {
     const { data, isLoading, error } = useDetails({modelId});
     const model: Models.ModelShortInfo = data?.result ?? {};
@@ -29,5 +35,15 @@ const ModelDetails: React.FC<ModelsProps> = ({modelId}) => {
         </QueryWrapper>
     )
 }
+
+// const Buttons: React.FC<ButtonNames> = ({InferenceServerDetails, ModelCard, DownloadModel}) => {
+//     return (
+//     <div>
+//         <button>{InferenceServerDetails}</button>
+//         <button>{ModelCard}</button>
+//         <button>{DownloadModel}</button>
+//     </div>
+//     );
+// }
 
 export default ModelDetails;

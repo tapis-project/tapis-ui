@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 import { Models as ModelsModule } from '@tapis/tapis-typescript';
 import { useList } from 'tapis-hooks/ml-hub/models';
 import { Icon } from 'tapis-ui/_common';
@@ -10,6 +10,7 @@ import styles from './Models.module.scss';
 const Models: React.FC = () => {
   const { data, isLoading, error } = useList();
   const models: ModelsModule.ModelShortInfo = data?.result ?? {};
+  const { path } = useRouteMatch();
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -28,7 +29,7 @@ const Models: React.FC = () => {
               <td className={`${styles['model-name-column']}`}>
                 <Icon name="simulation" />
                 <span>
-                  <Link to={`/ml-hub/models/${model[0]}`}> {model[0]} </Link>
+                  <Link to={`${path}/${model[0]}`}> {model[0]} </Link>
                 </span>
               </td>
               <td>
