@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router } from 'react-router-dom';
-import App from 'tapis-app';
+import App from 'app';
 import { TapisProvider } from '@tapis/tapisui-hooks';
 import 'styles/index.css';
 import { resolveBasePath } from 'utils/resolveBasePath';
