@@ -131,7 +131,7 @@ class Extension {
   }
 }
 
-export const initializeExtension: (
+export const icreateExtension: (
   configuration: Configuration
 ) => Extension = (configuration) => {
   return new Extension(configuration);

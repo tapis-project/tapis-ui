@@ -8,6 +8,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
+    "isolatedModules": false,
+    "skipLibCheck": true,
     "strictPropertyInitialization": false,
     "lib": ["es6", "dom"],
     "types": ["node"],
