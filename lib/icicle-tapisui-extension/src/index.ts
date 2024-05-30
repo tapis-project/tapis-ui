@@ -20,8 +20,8 @@ const extension = createExtension({
 
 extension.registerService({
   id: "ml-edge",
-  sidebarName: "ML Edge",
+  sidebarDisplayName: "ML Edge",
   iconName: "share"
 })
 
-export {extension};
+export { extension };

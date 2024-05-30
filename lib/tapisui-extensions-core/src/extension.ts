@@ -8,7 +8,7 @@ type ServiceMapping = {
   [key: string]: RegisteredService;
 };
 
-class Extension {
+export class Extension {
     public serviceMapping: ServiceMapping;
     public configuration: Configuration;
   
