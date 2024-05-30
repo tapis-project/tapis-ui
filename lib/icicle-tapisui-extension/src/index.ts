@@ -1,6 +1,6 @@
-import { createExtension, EnumCoreTapisService } from '@tapis/tapisui-extensions-core';
+import { createExtension, EnumTapisCoreService } from '@tapis/tapisui-extensions-core';
 
-const icicleExtension = createExtension({
+const extension = createExtension({
   multiTenantFeatures: false,
   authentication: {
     implicit: {
@@ -10,7 +10,7 @@ const icicleExtension = createExtension({
       responseType: "token"
     }
   },
-  removeServices: [EnumCoreTapisService.Apps],
+  removeServices: [EnumTapisCoreService.Apps],
   mainSidebarServices: ["workflows", "pods", "ml-edge"],
   authMethods: ["implicit", "password"],
   logo: {
@@ -18,11 +18,10 @@ const icicleExtension = createExtension({
   }
 })
 
-icicleExtension.registerService({
+extension.registerService({
   id: "ml-edge",
   sidebarName: "ML Edge",
-  icon: "share",
-  pageComponent: "Hello from the extension library"
+  iconName: "share"
 })
 
-export {icicleExtension};
+export {extension};
