@@ -6,7 +6,6 @@ import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon } from 'tapis-ui/_common';
 import { JSONDisplay } from 'tapis-ui/_common';
-import { json } from '@codemirror/lang-json';
 
 type ModelsProps = {
     modelId: string
