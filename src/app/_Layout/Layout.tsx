@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { Tenants as Hooks } from '@tapis/tapisui-hooks';
 import './Layout.scss';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useExtension } from "extensions"
 import {
   ButtonDropdown,
   DropdownToggle,
@@ -17,6 +18,7 @@ import { QueryWrapper } from '@tapis/tapisui-common';
 
 const Layout: React.FC = () => {
   const { claims } = useTapisConfig();
+  const { extension } = useExtension()
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;

@@ -1,6 +1,6 @@
 {
   "name": "@tapis/tapisui-extensions-core",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Typescript library that enables users to create extensions for TapisUI",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",

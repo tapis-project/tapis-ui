@@ -1,20 +1,24 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
     "declaration": true,
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "dist",
-    "isolatedModules": false,
     "skipLibCheck": true,
-    "strictPropertyInitialization": false,
-    "removeComments": false,
-    "lib": ["es6", "dom"],
+    "outDir": "dist",
+    "lib": [
+      "es5",
+      "dom"
+    ],
     "types": ["node"],
-    "typeRoots": ["./types", "node_modules/@types"]
+    "typeRoots": [
+      "./types",
+      "node_modules/@types"
+    ]
   },
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

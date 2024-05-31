@@ -3,15 +3,13 @@ import { Extension } from "@tapis/tapisui-extensions-core"
 import ExtensionsContext, { ExtensionsContextType } from './ExtensionsContext';
 
 interface ExtensionsProviderProps {
-  extensions: Array<Extension>
+  extensions: {[key: string]: Extension}
 }
 
-const TapisProvider: React.FC<React.PropsWithChildren<ExtensionsProviderProps>> = ({
-  extensions = [],
+const ExtensionsProvider: React.FC<React.PropsWithChildren<ExtensionsProviderProps>> = ({
+  extensions = {},
   children
 }) => {
-  // Provide a context state for the rest of the application, including
-  // a way of modifying the state
   const contextValue: ExtensionsContextType = {
     extensions
   };
@@ -23,4 +21,4 @@ const TapisProvider: React.FC<React.PropsWithChildren<ExtensionsProviderProps>> 
   );
 };
 
-export default TapisProvider;
+export default ExtensionsProvider;

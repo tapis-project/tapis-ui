@@ -10,14 +10,13 @@ import { ExtensionsProvider } from "./extensions"
 import { Extension } from "@tapis/tapisui-extensions-core"
 import { extension as icicleExtension } from "@icicle/tapisui-extension"
 
-const extensions: Array<Extension> = [
-  icicleExtension
-]
-
+const initializedExtensions: {[key: string]: Extension} = {
+  "@icicle/tapisui-extension": icicleExtension
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <ExtensionsProvider extensions={extensions}>
+    <ExtensionsProvider extensions={initializedExtensions}>
       <TapisProvider basePath={resolveBasePath()}>
         <Router>
           <App />

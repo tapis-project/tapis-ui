@@ -1,5 +1,5 @@
 {
-  "name": "tapis-ui-cra",
+  "name": "@tapis/tapisui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,6 +10,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.11.2",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.8",
+    "@icicle/tapisui-extension": "file:./lib/icicle-tapisui-extension",
     "@mui/material": "^5.15.16",
     "@mui/styles": "^5.15.16",
     "@rollup/plugin-commonjs": "^25.0.8",
@@ -18,7 +19,6 @@
     "@tapis/tapisui-common": "file:./lib/tapisui-common",
     "@tapis/tapisui-extensions-core": "file:./lib/tapisui-extensions-core",
     "@tapis/tapisui-hooks": "file:./lib/tapisui-hooks",
-    "@icicle/tapisui-extension": "file./lib/icicle-tapisui-extension",
     "@uiw/react-codemirror": "^4.19.7",
     "@uiw/react-textarea-code-editor": "^2.0.6",
     "@vitejs/plugin-react": "^4.3.0",
@@ -51,6 +51,7 @@
     "streamsaver": "^2.0.5",
     "uuid": "^7.0.2",
     "vite": "^5.2.12",
+    "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-env-compatible": "^2.0.1",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2",

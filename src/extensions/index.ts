@@ -3,4 +3,4 @@ export {
     type ExtensionsContextType 
 } from "./ExtensionsContext"
 export { default as ExtensionsProvider } from "./ExtensionsProvider"
-export { default as useExtensions } from "./useExtensions"
+export { default as useExtension } from "./useExtension"

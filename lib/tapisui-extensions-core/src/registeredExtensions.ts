@@ -1,6 +1,5 @@
-type PermittedExtensions = "@icicle/tapisui-extension"
 type ExtensionData = {baseUrls: Array<string>}
-type RegisteredExtensions = Record<PermittedExtensions, ExtensionData>
+type RegisteredExtensions = {[key: string]: ExtensionData}
 
 export const registeredExtensions: RegisteredExtensions = {
   '@icicle/tapisui-extension': {

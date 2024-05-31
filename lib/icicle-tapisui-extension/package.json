@@ -1,6 +1,6 @@
 {
   "name": "@icicle/tapisui-extension",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TapisUI extension configuration for ICICLE",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/ICICLE-ai/tapisui-extension-icicle#readme",
   "dependencies": {
-    "@tapis/tapisui-extensions-core": "file:./tapisui-extension-core"
+    "@tapis/tapisui-extensions-core": "^0.1.9"
   },
   "devDependencies": {
     "@types/node": "^16.0.0",
