@@ -5,8 +5,7 @@ import { resolveBasePath } from 'utils/resolveBasePath';
 
 const useExtension = () => {
   const { extensions } = useContext(ExtensionsContext);
-  const basePath1 = resolveBasePath()
-  let basePath = basePath1
+  let basePath = resolveBasePath()
   if (basePath == "https://dev.develop.tapis.io") {
     basePath = "https://icicle.tapis.io"
   }
@@ -14,7 +13,7 @@ const useExtension = () => {
   let extension = undefined
   let extensionName = undefined
   for (extensionName in registeredExtensions) {
-    if (basePath in registeredExtensions[extensionName].baseUrls) {
+    if (registeredExtensions[extensionName].baseUrls.includes(basePath)) {
       extension = extensions[extensionName]
       break;
     }

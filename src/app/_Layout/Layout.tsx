@@ -30,40 +30,46 @@ const Layout: React.FC = () => {
 
   const header = (
     <div className="tapis-ui__header">
-      <div>TapisUI</div>
+      <div>
+        {extension?.configuration.logo?.logoText || "TapisUI"}
+      </div>
       <div></div>
       <div>
-        {claims['sub'] && (
-          <ButtonDropdown
-            size="sm"
-            isOpen={isOpen}
-            toggle={() => setIsOpen(!isOpen)}
-            className="dropdown-button"
-          >
-            <DropdownToggle caret>{claims['sub']}</DropdownToggle>
-            <DropdownMenu style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
-              <DropdownItem header>Tenants</DropdownItem>
-              <DropdownItem divider />
-              <QueryWrapper isLoading={isLoading} error={error}>
-                {tenants.map((tenant) => {
-                  return (
-                    <DropdownItem
-                      onClick={() => {
-                        window.location.href = tenant.base_url + '/tapis-ui/';
-                      }}
-                    >
-                      {tenant.tenant_id}
-                    </DropdownItem>
-                  );
-                })}
-              </QueryWrapper>
-              <DropdownItem divider />
-              <DropdownItem onClick={() => history.push('/logout')}>
-                Logout
-              </DropdownItem>
-            </DropdownMenu>
-          </ButtonDropdown>
-        )}
+        {
+          claims['sub']
+          && (extension !== undefined && extension.configuration.multiTenantFeatures)
+          && (
+            <ButtonDropdown
+              size="sm"
+              isOpen={isOpen}
+              toggle={() => setIsOpen(!isOpen)}
+              className="dropdown-button"
+            >
+              <DropdownToggle caret>{claims['sub']}</DropdownToggle>
+              <DropdownMenu style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
+                <DropdownItem header>Tenants</DropdownItem>
+                <DropdownItem divider />
+                <QueryWrapper isLoading={isLoading} error={error}>
+                  {tenants.map((tenant) => {
+                    return (
+                      <DropdownItem
+                        onClick={() => {
+                          window.location.href = tenant.base_url + '/tapis-ui/';
+                        }}
+                      >
+                        {tenant.tenant_id}
+                      </DropdownItem>
+                    );
+                  })}
+                </QueryWrapper>
+                <DropdownItem divider />
+                <DropdownItem onClick={() => history.push('/logout')}>
+                  Logout
+                </DropdownItem>
+              </DropdownMenu>
+            </ButtonDropdown>
+          )
+        }
       </div>
     </div>
   );
