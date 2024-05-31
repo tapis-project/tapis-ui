@@ -1,48 +1,48 @@
 .buttons-container {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  gap: 20px;
 }
 
 .model-details-wrapper {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  position: relative;
 }
 
 .model-details {
-    margin-left: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
 }
 
 .model-title {
-    padding-bottom: 8px;
-    margin-left: 10px;
+  padding-bottom: 8px;
+  margin-left: 10px;
 }
 
 .model-detail {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .detail-title {
-    font-weight: bold;
-    width: 10vw;
+  font-weight: bold;
+  width: 10vw;
 }
 
 .detail-info {
-    margin-left: 8px;
-    text-align: left;
+  margin-left: 8px;
+  text-align: left;
 }
 
 .model-title-container {
-    border-bottom: 1px solid black;
-    margin-bottom: 8px;
+  border-bottom: 1px solid black;
+  margin-bottom: 8px;
 }

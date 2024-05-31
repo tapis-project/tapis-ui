@@ -1,8 +1,12 @@
 import React from 'react';
-import { Route, useRouteMatch, Switch, RouteComponentProps } from 'react-router-dom';
-import { Models } from "../../Models"
+import {
+  Route,
+  useRouteMatch,
+  Switch,
+  RouteComponentProps,
+} from 'react-router-dom';
+import { Models } from '../../Models';
 import ModelDetails from '../ModelDetails';
-
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -14,15 +18,14 @@ const Router: React.FC = () => {
 
       <Route
         path={`${path}/:modelId+`}
-        render={(
-          {
-            match: {
-              params: { modelId }
-            }
-          }: RouteComponentProps<{modelId: string}>
-        ) => {
-          return <ModelDetails modelId={modelId}/>
-        }} />
+        render={({
+          match: {
+            params: { modelId },
+          },
+        }: RouteComponentProps<{ modelId: string }>) => {
+          return <ModelDetails modelId={modelId} />;
+        }}
+      />
     </Switch>
   );
 };

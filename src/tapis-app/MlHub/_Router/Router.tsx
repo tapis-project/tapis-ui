@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, useRouteMatch, Switch } from 'react-router-dom';
 import { Dashboard } from '../Dashboard';
-import { Layout as ModelsLayout } from '../Models/_Layout'
+import { Layout as ModelsLayout } from '../Models/_Layout';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
