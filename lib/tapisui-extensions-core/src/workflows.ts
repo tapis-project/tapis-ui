@@ -1,7 +1,7 @@
 import { Workflows } from '@tapis/tapis-typescript';
 
-export type WorkflowsCustomizableComponents = {
-    dagView: unknown;
-    dagViewSidebarTemplateTasks: Array<Workflows.TemplateTask>;
+export type WorkflowsCustomizations = {
+    dagComponent: unknown;
+    dagTasks: Array<Partial<Workflows.Task>>;
     home: unknown;
   };

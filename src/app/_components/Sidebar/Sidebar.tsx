@@ -3,9 +3,11 @@ import React from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
+import { useExtension } from "extensions"
 
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();
+  const { extension } = useExtension()
   return (
     <div className={styles.root}>
       <Navbar>

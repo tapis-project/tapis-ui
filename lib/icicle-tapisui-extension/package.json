@@ -33,7 +33,8 @@
   },
   "homepage": "https://github.com/ICICLE-ai/tapisui-extension-icicle#readme",
   "dependencies": {
-    "@tapis/tapisui-extensions-core": "^0.1.9"
+    "@tapis/tapis-typescript": "^0.0.28",
+    "@tapis/tapisui-extensions-core": "^0.1.10"
   },
   "devDependencies": {
     "@types/node": "^16.0.0",

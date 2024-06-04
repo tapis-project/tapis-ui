@@ -1,4 +1,4 @@
-import { WorkflowsCustomizableComponents } from "./workflows"
+import { WorkflowsCustomizations } from "./workflows"
 import { OAuth, AuthMethod } from "./oauth2"
 
 export enum EnumTapisCoreService {
@@ -26,7 +26,7 @@ export type Service = {
 };
 
 type CustomizableComponents = {
-  workflows?: WorkflowsCustomizableComponents;
+  workflows?: WorkflowsCustomizations;
 };
 
 export type Configuration = {
