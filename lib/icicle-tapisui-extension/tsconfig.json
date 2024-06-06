@@ -5,6 +5,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
     "outDir": "dist",
     "lib": [
       "es5",

@@ -1,4 +1,4 @@
-import { Service, Configuration, EnumTapisCoreService } from "./core";
+import { Service, Configuration, EnumTapisCoreService, Logo } from "./core";
 import { WorkflowsCustomizations } from "./workflows";
 
 type RegisteredService = Service & {
@@ -16,30 +16,64 @@ type ServiceCustomizations = {
 }
 
 const defaultServiceCustomizations = {
-  [EnumTapisCoreService.Workflows]: undefined
+  [EnumTapisCoreService.Workflows]: {
+    dagComponent: undefined,
+    home: undefined,
+    dagTasks: []
+  }
 }
 
 export class Extension {
+  public allowMutiTenant: boolean = true
   public serviceMapping: ServiceMapping;
-  public configuration: Configuration;
+  private config: Configuration;
   public isInitialized: boolean = false
   public initializers: Array<Initializer> = []
-  public serviceCustomizations: ServiceCustomizations = defaultServiceCustomizations
+  public serviceCustomizations: ServiceCustomizations
+  public logo: Logo;
 
-  constructor(configuration: Configuration) {
+  constructor(config: Configuration) {
     this.serviceMapping = {};
-    this.setConfiguration(configuration);
+    this.setConfiguration(config);
   }
 
-  setConfiguration(configuration: Configuration): void {
-    let modifiedAuthPath =
-      configuration?.authentication?.implicit?.authorizationPath;
+  setConfiguration(config: Configuration): void {
+    this.config = config;
+    this.allowMutiTenant = config.allowMultiTenant
+    this.setAuthentication()
+    this.setServiceCustomizations()
+    this.logo = config.logo
+  }
+
+  private setAuthentication(): void {
+    let modifiedAuthPath = this.config?.authentication?.implicit?.authorizationPath;
     if (modifiedAuthPath !== undefined) {
       modifiedAuthPath.replace(/\/{2,}/g, '/').replace('/', '');
-      configuration!.authentication!.implicit!.authorizationPath =
-        modifiedAuthPath;
+      this.config!.authentication!.implicit!.authorizationPath =  modifiedAuthPath;
     }
-    this.configuration = configuration;
+  }
+
+  private setServiceCustomizations(): void {
+    // Set the services customizations based on the config
+    this.serviceCustomizations = defaultServiceCustomizations
+    if (this.config.serviceCustomizations !== undefined) {
+      Object.keys(this.config.serviceCustomizations).map((key) => {
+        this.setServiceCustomization(
+          (key as EnumTapisCoreService),
+          this.config.serviceCustomizations[key]
+        )
+      })
+    }
+  }
+
+  private setServiceCustomization(
+    serviceName: EnumTapisCoreService,
+    value: unknown
+  ): void {
+    this.serviceCustomizations = {
+      ...this.serviceCustomizations,
+      [serviceName]: value
+    }
   }
 
   registerService(service: Service): void {
@@ -96,6 +130,6 @@ export class Extension {
   }
 }
   
-export const createExtension: (configuration: Configuration) => Extension = (configuration) => {
-  return new Extension(configuration);
+export const createExtension: (config: Configuration) => Extension = (config) => {
+  return new Extension(config);
 };

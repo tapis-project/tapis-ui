@@ -11,7 +11,7 @@ export enum EnumTapisCoreService {
   Pods = 'pods',
 }
 
-type Logo = {
+export type Logo = {
   url?: string;
   filePath?: string;
   logoText?: string;
@@ -25,16 +25,16 @@ export type Service = {
   component?: unknown;
 };
 
-type CustomizableComponents = {
+type ServiceCustomizations = {
   workflows?: WorkflowsCustomizations;
 };
 
 export type Configuration = {
-  multiTenantFeatures?: boolean;
+  allowMultiTenant?: boolean;
   authentication?: OAuth;
   mainSidebarServices?: Array<string>;
   removeServices?: Array<EnumTapisCoreService>;
   authMethods?: Array<AuthMethod>;
   logo?: Logo;
-  customizableComponents?: CustomizableComponents
+  serviceCustomizations?: ServiceCustomizations
 };

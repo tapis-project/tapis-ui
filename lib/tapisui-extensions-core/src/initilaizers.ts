@@ -1,7 +1,7 @@
 import { Workflows } from "@tapis/tapis-typescript"
 import { simpleGit, SimpleGit } from 'simple-git';
 import { Extension } from "./extension";
-import { readFileSync } from "fs";
+import { readFileSync, mkdirSync } from "fs";
 import { join } from "path"
 
 // Pulls down the git repository for each task, finds the file containing
@@ -13,8 +13,6 @@ export const bundleTasks = (extension: Extension, tasks: Array<Workflows.Task>) 
     switch (task.type) {
       case Workflows.EnumTaskType.Function:
         functionTaskBundler(extension, task, clonedRepos)
-      default:
-        throw Error(`Cannot bundle tasks of type '${task.type}'`)
     }
   }
 }
@@ -26,7 +24,8 @@ const functionTaskBundler = (
 ) => {
   // Task already has code. Add it to the extension
   if (task.code !== undefined) {
-    extension.configuration.customizableComponents.workflows.dagTasks.push(task)
+    extension.serviceCustomizations.workflows.dagTasks.push(task)
+    return
   }
 
   // Format the entrypoint for easy parsing.
@@ -70,6 +69,9 @@ const functionTaskBundler = (
     // Initialize git util
     const git: SimpleGit = simpleGit();
 
+    // Create the directories to clone into
+    mkdirSync(clonePath, {recursive: true})
+
     // Clone the repo into the clone path
     git.clone(
       repoToClone.url,
@@ -92,5 +94,5 @@ const functionTaskBundler = (
   // Base64 encode the file contents (code) and set the code property on the task
   task.code = btoa(content)
 
-  extension.configuration.customizableComponents.workflows.dagTasks.push(task)
+  extension.serviceCustomizations.workflows.dagTasks.push(task)
 }

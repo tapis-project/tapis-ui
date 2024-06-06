@@ -8,7 +8,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "push": "npx tsc && npm publish --access public"
+    "push": "npx tsc && npm publish --access public",
+    "init": "npx ts-node src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,7 @@
   "homepage": "https://github.com/ICICLE-ai/tapisui-extension-icicle#readme",
   "dependencies": {
     "@tapis/tapis-typescript": "^0.0.28",
-    "@tapis/tapisui-extensions-core": "^0.1.10"
+    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core"
   },
   "devDependencies": {
     "@types/node": "^16.0.0",

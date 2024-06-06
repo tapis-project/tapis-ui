@@ -8,6 +8,7 @@ import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
 import { useQueryClient } from 'react-query';
+import { useExtension } from 'extensions';
 
 type TaskProps = {
   task: Workflows.Task;
@@ -110,7 +111,13 @@ const View: React.FC<ViewProps> = ({ type, tasks, groupId, pipelineId }) => {
 };
 
 const DagView: React.FC<{ tasks: Array<Workflows.Task> }> = ({ tasks }) => {
-  return <div>DAG view unavailable</div>;
+  const { extension } = useExtension()
+  return (
+    <div>
+      DAG view unavailable
+      {JSON.stringify(extension?.serviceCustomizations?.workflows?.dagTasks)}
+    </div>
+  );
 };
 
 const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
