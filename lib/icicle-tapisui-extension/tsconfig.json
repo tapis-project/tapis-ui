@@ -20,6 +20,8 @@
   "include": ["src"],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "bundle.ts",
+    "tasks.ts"
   ]
 }

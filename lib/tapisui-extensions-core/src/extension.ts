@@ -9,8 +9,6 @@ type ServiceMapping = {
   [key: string]: RegisteredService;
 };
 
-type Initializer = (extension: Extension) => void
-
 type ServiceCustomizations = {
   [EnumTapisCoreService.Workflows]?: WorkflowsCustomizations | undefined
 }
@@ -27,8 +25,6 @@ export class Extension {
   public allowMutiTenant: boolean = true
   public serviceMapping: ServiceMapping;
   private config: Configuration;
-  public isInitialized: boolean = false
-  public initializers: Array<Initializer> = []
   public serviceCustomizations: ServiceCustomizations
   public logo: Logo;
 
@@ -110,23 +106,6 @@ export class Extension {
     }
 
     return serviceIdsArray;
-  }
-
-  addInitializer (inializer: Initializer): void {
-    this.initializers.push(inializer)
-
-  }
-
-  init() {
-    if (this.isInitialized === true) {
-      return
-    }
-
-    this.initializers.map((initializer) => {
-      initializer(this)
-    })
-
-    this.isInitialized = true
   }
 }
   

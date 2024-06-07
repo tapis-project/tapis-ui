@@ -7,9 +7,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc",
-    "push": "npx tsc && npm publish --access public",
-    "init": "npx ts-node src/index.ts"
+    "push": "npm run build && npm publish --access public",
+    "build": "npx ts-node src/bundle.ts && npx tsc"
   },
   "repository": {
     "type": "git",
@@ -38,7 +37,7 @@
     "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core"
   },
   "devDependencies": {
-    "@types/node": "^16.0.0",
+    "@types/node": "^18.19.33",
     "typescript": "^4.9.5"
   }
 }

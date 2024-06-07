@@ -1,31 +1,34 @@
 import { Workflows } from "@tapis/tapis-typescript"
 import { simpleGit, SimpleGit } from 'simple-git';
-import { Extension } from "./extension";
-import { readFileSync, mkdirSync } from "fs";
+import { readFileSync, mkdirSync, writeFileSync, existsSync } from "fs";
 import { join } from "path"
 
-// Pulls down the git repository for each task, finds the file containing
-// the code to be executed in the function task, base64 encodes it, then
-// adds it to the extension
-export const bundleTasks = (extension: Extension, tasks: Array<Workflows.Task>) => {
+export const bundleTasks = async (
+  tasks: Array<Workflows.Task>,
+  bundleDir: string
+) => {
   const clonedRepos: Array<string> = []
   for (let task of tasks) {
     switch (task.type) {
       case Workflows.EnumTaskType.Function:
-        functionTaskBundler(extension, task, clonedRepos)
+        await bundleFunctionTask(task, clonedRepos, bundleDir)
     }
   }
+
+  writeTaskBundleIndex(tasks, bundleDir)
 }
 
-const functionTaskBundler = (
-  extension: Extension,
-  task: Workflows.FunctionTask, // TODO Remove the entrypoint type when tapis typescript is updated to include entrypoint,
-  clonedRepos: Array<string>
-) => {
+// Pulls down the git repository for each task, finds the file containing
+// the code to be executed in the function task, base64 encodes it, then
+// adds it to the extension
+const bundleFunctionTask = async (
+  task: Workflows.FunctionTask,
+  clonedRepos: Array<string>,
+  bundleDir: string
+): Promise<unknown> => {
   // Task already has code. Add it to the extension
   if (task.code !== undefined) {
-    extension.serviceCustomizations.workflows.dagTasks.push(task)
-    return
+    return writeTaskToFile(task, join(bundleDir, task.id + ".ts"))
   }
 
   // Format the entrypoint for easy parsing.
@@ -63,36 +66,85 @@ const functionTaskBundler = (
   const clonePath = join(baseDir, repoDir, directory)
 
   // Clone the repo if not already cloned
-  if (!clonedRepos.includes(repoToClone.url)) {
+  if (!clonedRepos.includes(repoToClone.url) && !existsSync(clonePath)) {
     clonedRepos.push(repoToClone.url)
-
+    
+    // Create the directories to clone into
+    mkdirSync(clonePath, {recursive: true})
+    
     // Initialize git util
     const git: SimpleGit = simpleGit();
 
-    // Create the directories to clone into
-    mkdirSync(clonePath, {recursive: true})
-
     // Clone the repo into the clone path
-    git.clone(
+    await git.clone(
       repoToClone.url,
       clonePath, 
-      {"--branch": repoToClone.branch}
+      ["--branch", repoToClone.branch]
     )
   }
+  
+  task = addCodeToTask(task, clonePath)
 
+  writeTaskToFile(task, join(bundleDir, task.id + ".ts"))
+}
+
+const addCodeToTask = (
+  task: Workflows.FunctionTask,
+  basePath: string
+) => {
   // Build the path to the entrypoint file.
   let sliceIndex = 1
   if (task.entrypoint.charAt(0) == "/") {
     sliceIndex += 1
   }
-  const filePath = task.entrypoint.split("/").slice(sliceIndex).join("/")
-  const localEntrypointFilePath = join(clonePath, filePath)
-
+  const fileSubPath = task.entrypoint.split("/").slice(sliceIndex).join("/")
+  const localEntrypointFilePath = join(basePath, fileSubPath)
+  
   // Fetch the contents of the cloned entrypoint file
   const content = readFileSync(localEntrypointFilePath, "utf8")
 
   // Base64 encode the file contents (code) and set the code property on the task
   task.code = btoa(content)
+  return task
+}
 
-  extension.serviceCustomizations.workflows.dagTasks.push(task)
+const writeTaskBundleIndex = (
+  tasks: Array<Partial<Workflows.Task>>,
+  bundleDir: string
+) => {
+  let indexts = ''
+  let importStatements = 'import { Workflows } from "@tapis/tapis-typescript"\n'
+  let exportStatement = 'export const tasks: Array<Partial<Workflows.Task>> = ['
+  let i = 0
+  const taskTypeToSerializer = {
+    "function": "Function",
+    "image_build": "ImageBuild",
+    "application": "Application",
+    "request": "Request",
+    "tapis_job": "TapisJob",
+    "tempalte": "Template"
+  }
+  tasks.map((task) => {
+    importStatements += `import { task as task${i} } from "./${task.id}"\n`
+    exportStatement += `Workflows.${taskTypeToSerializer[task.type]}TaskFromJSON(task${i}),`
+    i++;
+  })
+  indexts += importStatements
+  indexts += exportStatement + "]"
+  writeFileSync(
+    join(bundleDir, "index.ts"),
+    indexts
+  )
+}
+
+const writeTaskToFile = (
+  task: Workflows.FunctionTask,
+  path: string
+) => {
+  writeFileSync(
+    path,
+    `export const task = ${JSON.stringify(task, null, 2)}`
+  )
+  
+  return
 }

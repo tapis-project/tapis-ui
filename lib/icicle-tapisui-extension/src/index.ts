@@ -1,9 +1,8 @@
 import { 
   createExtension,
-  EnumTapisCoreService,
-  bundleTasks
+  EnumTapisCoreService
 } from '@tapis/tapisui-extensions-core';
-import { dagTasks } from "./tasks"
+import { tasks as generatedTasks } from "./gen"
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -30,8 +29,6 @@ extension.registerService({
   iconName: "share"
 })
 
-extension.addInitializer((ext) => { bundleTasks(ext, dagTasks) })
-
-extension.init()
+extension.serviceCustomizations.workflows.dagTasks = generatedTasks
 
 export { extension };
