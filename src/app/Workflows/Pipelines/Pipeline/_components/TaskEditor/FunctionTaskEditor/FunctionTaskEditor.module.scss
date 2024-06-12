@@ -1,0 +1,69 @@
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.stack {
+    padding-bottom: 8px;
+}
+
+.sidebar {
+    width: 25%;
+    border: 1px solid #cccccc;
+}
+
+.menu {
+    width: 100%;
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    padding-left: 16px;
+}
+
+.menu h2 {
+    margin: 0;
+}
+
+.close {
+    padding: 2px;
+    border: 2px solid #cccccc;
+    border-radius: 3px;
+}
+
+.close:hover {
+    cursor: pointer;
+    border-color: #333333;
+    transition: .2s;
+}
+
+.back {
+    padding: 2px;
+    border: 2px solid #cccccc;
+    border-radius: 3px;
+}
+
+.back:hover {
+    cursor: pointer;
+    border: 2px solid #333333;
+    transition: .2s;
+}
+
+.body-with-sidebar {
+    width: 75%;
+}
+
+.body-wo-sidebar {
+    width: 100%;
+}
+
+.code {
+    border: 1px solid #cccccc;
+}
+
+.form {
+    width: 100%;
+    padding: 16px;
+    display: grid;
+    gap: 16px;
+}

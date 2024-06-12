@@ -8,6 +8,7 @@ import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
 import { useQueryClient } from 'react-query';
+import { DagView } from "./_components/DagView"
 import { useExtension } from 'extensions';
 
 type TaskProps = {
@@ -19,12 +20,13 @@ type TaskProps = {
 const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
   const { removeAsync, isLoading, isError, error, isSuccess, reset } =
     Hooks.Tasks.useDelete();
+  
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
     reset();
   }, [queryClient, reset]);
-
+  
   return (
     <div id={`task-${task.id}`} className={`${styles['task']}`}>
       <div className={`${styles['task-header']}`}>
@@ -82,51 +84,18 @@ enum ViewEnum {
   Dag = 'Dag',
 }
 
-type ViewProps = {
-  type: ViewEnum;
-  tasks: Array<Workflows.Task>;
-  groupId: string;
-  pipelineId: string;
-};
-
-const View: React.FC<ViewProps> = ({ type, tasks, groupId, pipelineId }) => {
-  switch (type) {
-    case ViewEnum.Default:
-      return (
-        <div id={'default-task-view'}>
-          {tasks.map((task) => {
-            return (
-              <div id="tasks" key={task.id} className={`${styles['tasks']}`}>
-                <Task task={task} groupId={groupId} pipelineId={pipelineId} />
-              </div>
-            );
-          })}
-        </div>
-      );
-    case ViewEnum.Dag:
-      return <DagView tasks={tasks} />;
-    default:
-      return <></>;
-  }
-};
-
-const DagView: React.FC<{ tasks: Array<Workflows.Task> }> = ({ tasks }) => {
-  const { extension } = useExtension()
-  return (
-    <div>
-      DAG view unavailable
-      {JSON.stringify(extension?.serviceCustomizations?.workflows?.dagTasks)}
-    </div>
-  );
-};
-
 const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
-  const [view, setView] = useState<ViewEnum>(ViewEnum.Default);
+  const { extension } = useExtension()
+  const [view, setView] = useState<ViewEnum>(
+    (extension?.serviceCustomizations.workflows?.dagDefaultView && ViewEnum.Dag)
+    || ViewEnum.Default
+  );
   const {
     data: pipelineData,
     isLoading: isLoadingPipeline,
     error: pipelineError,
   } = Hooks.Pipelines.useDetails({ groupId, pipelineId });
+
   const {
     data: tasksData,
     isLoading: isLoadingTasks,
@@ -166,56 +135,70 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
             groupId={groupId}
             pipelineId={pipelineId}
           />
-          <Table dark bordered style={{ margin: 0 }}>
-            <thead>
-              <tr>
-                <th className={styles['center']}>id</th>
-                <th>uuid</th>
-                <th>last run</th>
-                <th>previous run</th>
-                <th className={styles['center']}>runs</th>
-              </tr>
-            </thead>
-            <tbody>
-              <td className={styles['center']}>{pipeline.id}</td>
-              <td>{pipeline.uuid}</td>
-              <td>
-                {pipeline.current_run && (
-                  <Link
-                    to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipeline.current_run}`}
-                  >
-                    view
-                  </Link>
+          
+          {
+            view == ViewEnum.Dag ?
+            <DagView
+              tasks={tasks}
+              pipelineId={pipelineId}
+              groupId={groupId}
+            /> :
+            <div>
+              <Table dark bordered style={{ margin: 0 }}>
+                <thead>
+                  <tr>
+                    <th className={styles['center']}>id</th>
+                    <th>uuid</th>
+                    <th>last run</th>
+                    <th>previous run</th>
+                    <th className={styles['center']}>runs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <td className={styles['center']}>{pipeline.id}</td>
+                  <td>{pipeline.uuid}</td>
+                  <td>
+                    {pipeline.current_run && (
+                      <Link
+                        to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipeline.current_run}`}
+                      >
+                        view
+                      </Link>
+                    )}
+                  </td>
+                  <td>
+                    {pipeline.last_run && (
+                      <Link
+                        to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipeline.last_run}`}
+                      >
+                        view
+                      </Link>
+                    )}
+                  </td>
+                  <td className={styles['center']}>
+                    <Link to={`/workflows/pipelines/${groupId}/${pipelineId}/runs`}>
+                      view
+                    </Link>
+                  </td>
+                </tbody>
+              </Table>
+              <QueryWrapper isLoading={isLoadingTasks} error={listTasksError}>
+                {tasks.length ? (
+                  <div id={'default-task-view'}>
+                    {tasks.map((task) => {
+                      return (
+                        <div id="tasks" key={task.id} className={`${styles['tasks']}`}>
+                          <Task task={task} groupId={groupId} pipelineId={pipelineId} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <SectionMessage type="info">No tasks</SectionMessage>
                 )}
-              </td>
-              <td>
-                {pipeline.last_run && (
-                  <Link
-                    to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipeline.last_run}`}
-                  >
-                    view
-                  </Link>
-                )}
-              </td>
-              <td className={styles['center']}>
-                <Link to={`/workflows/pipelines/${groupId}/${pipelineId}/runs`}>
-                  view
-                </Link>
-              </td>
-            </tbody>
-          </Table>
-          <QueryWrapper isLoading={isLoadingTasks} error={listTasksError}>
-            {tasks.length ? (
-              <View
-                type={view}
-                tasks={tasks}
-                groupId={groupId}
-                pipelineId={pipelineId}
-              />
-            ) : (
-              <SectionMessage type="info">No tasks</SectionMessage>
-            )}
-          </QueryWrapper>
+              </QueryWrapper>
+            </div>
+          }
         </div>
       )}
     </QueryWrapper>

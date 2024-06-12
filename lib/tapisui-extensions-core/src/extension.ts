@@ -17,7 +17,8 @@ const defaultServiceCustomizations = {
   [EnumTapisCoreService.Workflows]: {
     dagComponent: undefined,
     home: undefined,
-    dagTasks: []
+    dagTasks: [],
+    dagDefaultView: false
   }
 }
 

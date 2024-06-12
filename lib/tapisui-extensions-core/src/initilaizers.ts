@@ -109,12 +109,12 @@ const addCodeToTask = (
 }
 
 const writeTaskBundleIndex = (
-  tasks: Array<Partial<Workflows.Task>>,
+  tasks: Array<Workflows.Task>,
   bundleDir: string
 ) => {
   let indexts = ''
   let importStatements = 'import { Workflows } from "@tapis/tapis-typescript"\n'
-  let exportStatement = 'export const tasks: Array<Partial<Workflows.Task>> = ['
+  let exportStatement = 'export const tasks: Array<Workflows.Task> = ['
   let i = 0
   const taskTypeToSerializer = {
     "function": "Function",

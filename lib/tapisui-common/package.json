@@ -1,6 +1,6 @@
 {
   "name": "@tapis/tapisui-common",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Common React components for TapisUI",
   "scripts": {
     "test": "react-scripts test",
@@ -50,7 +50,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.11.2",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.8",
-    "@tapis/tapis-typescript": "0.0.27",
+    "@tapis/tapis-typescript": "0.0.29",
     "@tapis/tapisui-hooks": "^0.0.1",
     "bootstrap": "^4.6.0",
     "formik": "^2.2.9",
