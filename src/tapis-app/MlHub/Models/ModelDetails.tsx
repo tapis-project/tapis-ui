@@ -1,23 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Models } from '@tapis/tapis-typescript';
 import { useDetails } from 'tapis-hooks/ml-hub/models';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Button } from 'reactstrap';
+import { Button, Modal } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon } from 'tapis-ui/_common';
 import { JSONDisplay } from 'tapis-ui/_common';
+import  GenericModal, { GenericModalProps as GMP } from 'tapis-ui/_common/GenericModal/GenericModal';
+import { title } from 'process';
+import { ButtonProps } from '@material-ui/core';
 
-type ModelsProps = {
+type ModelDetailsProps = {
   modelId: string;
 };
 
-type ButtonNames = {
-  InferenceServerDetails: String;
-  ModelCard: String;
-  DownloadModel: String;
-};
-
-const ModelDetails: React.FC<ModelsProps> = ({ modelId }) => {
+const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
   const { data, isLoading, error } = useDetails({ modelId });
   const model: Models.ModelFullInfo = data?.result ?? {};
   return (
@@ -80,44 +77,78 @@ const ModelDetails: React.FC<ModelsProps> = ({ modelId }) => {
             </div>
           </div>
         </div>
-        <Buttons
-          InferenceServerDetails="Inference Server Info"
-          DownloadModel="Download Model"
-          ModelCard="Model Card"
-        />
+        <Buttons modelId={modelId} />
       </div>
     </QueryWrapper>
   );
 };
 
-const Buttons: React.FC<ButtonNames> = ({
-  InferenceServerDetails,
-  ModelCard,
-  DownloadModel,
-}) => {
+const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
+
+  const [currentModal, setCurrentModal] = useState<string | undefined>(undefined);
+  const {data} = useDetails({modelId});
   return (
     <div className={`${styles['buttons-container']}`}>
-      <Button>
-        {InferenceServerDetails}{' '}
+      <div className={`${styles['Inference Service Info']}`}>
+      <Button  onClick={() => {setCurrentModal("inferenceinfo")}}>
+        {'Inference Service Info'}
         <span>
-          {' '}
-          <Icon name="push-right" />{' '}
+          <Icon name="push-right" />
         </span>
       </Button>
-      <Button>
-        {DownloadModel}{' '}
+      </div>
+      <div className={`${styles['Download Model']}`}>
+      <Button onClick={() => {setCurrentModal("downloadmodel")}}>
+        {'Download Model'}
         <span>
-          {' '}
-          <Icon name="push-right" />{' '}
-        </span>{' '}
+          <Icon name="push-right" />
+        </span>
       </Button>
-      <Button>
-        {ModelCard}{' '}
-        <span>
-          {' '}
-          <Icon name="push-right" />{' '}
-        </span>{' '}
-      </Button>
+      </div>
+      <div className={`${styles['Model Card']}`}>
+        <Button onClick={() => {setCurrentModal("modelcard")}} >
+          {'Model Card'}
+          <span>
+            <Icon name="push-right" />
+          </span>
+        </Button>
+      </div>
+      {
+        currentModal === "modelcard" &&
+        <GenericModal
+          toggle={() => {setCurrentModal(undefined)}}
+          title='Model Card'
+          body = {
+            <div>
+              HELLO
+            </div>
+          }
+        />
+      }
+      {
+        currentModal === "inferenceinfo" &&
+        <GenericModal
+          toggle={() => {setCurrentModal(undefined)}}
+          title='Inference Info'
+          body = {
+            <div>
+              INFERENCE INFO
+            </div>
+          }
+        />
+      }
+      {
+        currentModal === "downloadmodel" &&
+        <GenericModal
+          toggle={() => {setCurrentModal(undefined)}}
+          title='Download Model'
+          body = {
+            <div>
+              "DOWNLOAD ME"
+            </div>
+          }
+        />
+      }
     </div>
   );
 };
