@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Models } from '@tapis/tapis-typescript';
 import { useDetails } from 'tapis-hooks/ml-hub/models';
 import { QueryWrapper } from 'tapis-ui/_wrappers';
-import { Button, Modal } from 'reactstrap';
+import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon } from 'tapis-ui/_common';
 import { JSONDisplay } from 'tapis-ui/_common';
-import  GenericModal, { GenericModalProps as GMP } from 'tapis-ui/_common/GenericModal/GenericModal';
+import  GenericModal from 'tapis-ui/_common/GenericModal/GenericModal';
 
 type ModelDetailsProps = {
   modelId: string;
@@ -84,33 +84,27 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
 const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
   const [currentModal, setCurrentModal] = useState<string | undefined>(undefined);
   const {data} = useDetails({modelId})
-  const modelCardDetails = data?.result?? {};
+  const modelCardDetails: Models.ModelFullInfo = data?.result?? {};
   return (
     <div className={`${styles['buttons-container']}`}>
-      <div className={`${styles['Inference Service Info']}`}>
       <Button  onClick={() => {setCurrentModal("inferenceinfo")}}>
         {'Inference Service Info'}
         <span>
           <Icon name="push-right" />
         </span>
       </Button>
-      </div>
-      <div className={`${styles['Download Model']}`}>
       <Button onClick={() => {setCurrentModal("downloadmodel")}}>
         {'Download Model'}
         <span>
           <Icon name="push-right" />
         </span>
       </Button>
-      </div>
-      <div className={`${styles['Model Card']}`}>
         <Button onClick={() => {setCurrentModal("modelcard")}} >
           {'Model Card'}
           <span>
             <Icon name="push-right" />
           </span>
         </Button>
-      </div>
       {
         currentModal === "modelcard" &&
         <GenericModal
@@ -119,7 +113,7 @@ const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
           body = {
             <div>
               {modelId}
-              <JSONDisplay json={modelCardDetails}></JSONDisplay>
+              <JSONDisplay json={modelCardDetails.card_data }> </JSONDisplay>
             </div>
           }
         />
