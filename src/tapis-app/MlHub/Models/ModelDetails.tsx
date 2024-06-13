@@ -7,8 +7,6 @@ import styles from './ModelDetails.module.scss';
 import { Icon } from 'tapis-ui/_common';
 import { JSONDisplay } from 'tapis-ui/_common';
 import  GenericModal, { GenericModalProps as GMP } from 'tapis-ui/_common/GenericModal/GenericModal';
-import { title } from 'process';
-import { ButtonProps } from '@material-ui/core';
 
 type ModelDetailsProps = {
   modelId: string;
@@ -76,7 +74,7 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
               <JSONDisplay json={model.config}></JSONDisplay>
             </div>
           </div>
-        </div>
+        </div>        
         <Buttons modelId={modelId} />
       </div>
     </QueryWrapper>
@@ -84,9 +82,9 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
 };
 
 const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
-
   const [currentModal, setCurrentModal] = useState<string | undefined>(undefined);
-  const {data} = useDetails({modelId});
+  const {data} = useDetails({modelId})
+  const modelCardDetails = data?.result?? {};
   return (
     <div className={`${styles['buttons-container']}`}>
       <div className={`${styles['Inference Service Info']}`}>
@@ -120,7 +118,8 @@ const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
           title='Model Card'
           body = {
             <div>
-              HELLO
+              {modelId}
+              <JSONDisplay json={modelCardDetails}></JSONDisplay>
             </div>
           }
         />
