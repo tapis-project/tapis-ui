@@ -7,25 +7,33 @@ import { Button } from 'reactstrap';
 import Tooltip from '@mui/material/Tooltip';
 import { useCallback, useEffect, useReducer } from "react";
 import { useQueryClient } from "react-query";
-import { TaskEditor } from "../"
-import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
-import { MenuList, MenuItem, ListItemText,ListItemIcon } from '@mui/material';
-import { Delete, Edit, Hub, Input, Output } from '@mui/icons-material';
+import { TaskEditor } from "../../../_components"
+import { MenuList, MenuItem, ListItemText,ListItemIcon, Divider, Paper } from '@mui/material';
+import { Delete, Edit, Hub, Input, Output, Visibility } from '@mui/icons-material';
+import { useLocation } from "react-router-dom"
 
 
 type NodeTaskActionProps = {
   onClickEdit?: () => void
   onClickDelete?: () => void
+  task: Workflows.Task
 }
 
 const NodeTaskActions: React.FC<NodeTaskActionProps> = ({
   onClickEdit,
-  onClickDelete
+  onClickDelete,
+  task
 }) => {
+  const location = useLocation()
   return (
     <Paper sx={{ width: 320, maxWidth: '100%' }} className={styles["dag-task-action-menu"]}>
       <MenuList dense>
+        <MenuItem href={"#" + location.pathname + "/tasks/" + task.id} component="a">
+          <ListItemIcon>
+            <Visibility fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>View</ListItemText>
+        </MenuItem>
         <MenuItem onClick={onClickEdit}>
           <ListItemIcon>
             <Edit fontSize="small" />
@@ -246,6 +254,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
         state.editTask ?
         <TaskEditor 
           task={state.editTask}
+          tasks={tasks}
           toggle={() => {handleEditTask(state.editTask!)}}
         /> :
         <div className={`${styles["dag-layout-container"]}`}>
@@ -294,6 +303,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
                       {
                         isActive && (
                           <NodeTaskActions
+                            task={task}
                             onClickDelete={() => {handleDeleteTask(task)}}
                             onClickEdit={() => {handleEditTask(task)}}
                           />

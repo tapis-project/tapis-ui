@@ -13,7 +13,7 @@ const simplifyObject = (obj: any) => {
       }
       return;
     }
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && value !== null) {
       const simplifiedValue = simplifyObject(value);
       if (Object.entries(simplifiedValue).length === 0) {
         delete result[key];
@@ -33,13 +33,16 @@ const convertSets = (obj: any): any => {
   if (obj === undefined) {
     return undefined;
   }
+  if (obj === null) {
+    return
+  }
   if (Array.isArray(obj)) {
     return (obj as Array<any>).map((value) => convertSets(value));
   }
   if (obj instanceof Set) {
     return Array.from(obj).map((value) => convertSets(value));
   }
-  if (typeof obj === 'object') {
+  if (typeof obj === 'object' && obj !== null) {
     const result: any = {};
     Object.entries(obj).forEach(([key, value]) => {
       result[key] = convertSets(value);

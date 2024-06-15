@@ -1,11 +1,10 @@
 .workbench-content {
   /* As a flex item */
   flex-grow: 1;
-
+  
   /* As a flex container */
   display: flex;
   flex-direction: column;
-  padding: 20px 25px 25px 25px; // for giving the working area some padding...
 }
 /* FAQ: If the workbench content has only a single child,
         then it should be the same height as the app root */
@@ -59,12 +58,12 @@
   margin-left: -30px;
 }
 
-/* Align content tables to the left by undoing some Bootstrap */
-.workbench-content .container {
-  margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
-  padding-top: 20px;
-  padding-left: 0; /* override `padding-left: 20px;` */
-}
+// /* Align content tables to the left by undoing some Bootstrap */
+// .workbench-content .container {
+//   margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
+//   padding-top: 20px;
+//   padding-left: 0; /* override `padding-left: 20px;` */
+// }
 /* Prevent width constraint for Extra Large breakpoint */
 /* TODO: Support Bootstrap mixins, or find another why to make this DRY */
 /* SEE: https://getbootstrap.com/docs/4.0/layout/grid/#example-usage */
@@ -96,12 +95,16 @@
 }
 
 .tapis-ui__header {
-  padding: 0.5em;
+  padding: 8px;
+  padding-left: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 24px;
   border-bottom: 1px solid #dddddd;
+}
+
+.logo {
+  margin-right: 16px;
 }
 
 .dropdown-button {

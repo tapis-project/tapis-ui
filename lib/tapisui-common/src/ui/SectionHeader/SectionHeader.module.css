@@ -30,6 +30,7 @@
   width: 100%;
   align-items: flex-end;
   align-content: flex-end;
+  padding-left: 16px;
 }
 /* Header actions are always after heading text */
 .heading ~ * {

@@ -5,8 +5,7 @@ export const registeredExtensions: RegisteredExtensions = {
   '@icicle/tapisui-extension': {
     baseUrls: [
       'https://icicle.tapis.io',
-      'https://icicle.develop.tapis.io',
-      'https://icicle.staging.tapis.io',
+      'https://icicleai.tapis.io',
     ],
   },
 };

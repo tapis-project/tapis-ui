@@ -71,7 +71,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <SectionHeader className="dashboard__section-header">
+      <SectionHeader>
         Dashboard for {claims['tapis/tenant_id']}
       </SectionHeader>
       <div className={styles.cards}>

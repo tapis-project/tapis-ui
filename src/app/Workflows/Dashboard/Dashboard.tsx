@@ -10,8 +10,11 @@ import {
   CardFooter,
   CardText,
 } from 'reactstrap';
-import styles from './Dashboard.module.scss';
+import styles from '../_components/PipelineCard/PipelineCard.module.scss';
 import { Toolbar } from '../_components';
+import { PipelineCard } from "../_components";
+import { Skeleton } from '@mui/material';
+import { Workflows } from '@tapis/tapis-typescript';
 
 type DashboardCardProps = {
   icon: string;
@@ -62,13 +65,28 @@ const Dashboard: React.FC = () => {
   const groups = Hooks.Groups.useList();
   const groupIds: Array<string> = [];
   groups.data?.result.map((group) => groupIds.push(group.id!));
-  const identities = Hooks.Identities.useList();
-  const archives = Hooks.Archives.useListAll({ groupIds });
-  const pipelines = Hooks.Pipelines.useListAll({ groupIds });
+  // const identities = Hooks.Identities.useList();
+  // const archives = Hooks.Archives.useListAll({ groupIds });
+  const pipelines = Hooks.Pipelines.useListAll({ groupIds })
+  const data: Workflows.Pipeline[] = pipelines.data?.result || [];
 
   return (
-    <div id="dashboard">
-      <Toolbar buttons={['creategroup', 'createidentity']} />
+    <div >
+      <div className={styles["card-container"]}>
+        {
+          pipelines.isLoading ? (
+            [...Array(13).keys()].map(() => {
+              return <Skeleton variant="rectangular" height="120px" className={`${styles["card"]} ${styles["skeleton"]}`} />
+            })
+          ) : (
+            data.map((d) => {
+              return <PipelineCard pipeline={d} groupId={"test"}/>
+            }
+          )
+          )
+        }
+      </div>
+      {/* <Toolbar buttons={['creategroup', 'createidentity']} />
       <div id="dashboard-cards" className={styles['card-container']}>
         <DashboardCard
           icon="publications"
@@ -102,7 +120,7 @@ const Dashboard: React.FC = () => {
           counter={`${identities?.data?.result?.length} identities`}
           loading={identities?.isLoading}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

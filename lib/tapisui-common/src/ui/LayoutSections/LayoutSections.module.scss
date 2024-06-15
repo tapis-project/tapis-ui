@@ -7,7 +7,6 @@
   width: 100%;
   overflow: auto;
   display: flex;
-  margin-top: 1em;
 }
 
 .constrain {
@@ -24,12 +23,10 @@
 }
 
 .detail {
-  border: 1px solid gray;
-  padding: 1em 1em 1em 1em;
   flex-basis: 100%;
   overflow: auto;
 }
 
 .sub-header {
-  padding-bottom: 1em;
+  padding: 16px;
 }

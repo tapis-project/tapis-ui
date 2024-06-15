@@ -6,19 +6,26 @@ import { FunctionTaskEditor } from "./FunctionTaskEditor"
 
 type TaskEditorProps = {
   task: Workflows.Task
+  tasks: Array<Workflows.Task>
   toggle: () => void
 }
 
-const TaskEditor: React.FC<TaskEditorProps> = ({task, toggle}) => {
+const TaskEditor: React.FC<TaskEditorProps> = ({task, tasks, toggle}) => {
   const renderTaskEditor = useCallback((task: Workflows.Task) => {
     switch (task.type) {
       case Workflows.EnumTaskType.Function:
-        return <FunctionTaskEditor task={task}/>
+        return <FunctionTaskEditor task={task} tasks={tasks}/>
       case Workflows.EnumTaskType.Template:
+        return `${task.type} task editor unsupported`
+      case Workflows.EnumTaskType.Request:
         return `${task.type} task editor unsupported`
       case Workflows.EnumTaskType.ImageBuild:
         return `${task.type} task editor unsupported`
       case Workflows.EnumTaskType.Application:
+        return `${task.type} task editor unsupported`
+      case Workflows.EnumTaskType.TapisJob:
+        return `${task.type} task editor unsupported`
+      case Workflows.EnumTaskType.TapisActor:
         return `${task.type} task editor unsupported`
     }
   }, [task])

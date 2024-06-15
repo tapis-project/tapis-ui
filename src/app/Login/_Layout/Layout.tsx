@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
 import { Location } from 'history';
 import { Login as TapisLogin } from '../_components';
-import { SectionHeader } from '@tapis/tapisui-common';
+import { SectionHeader, PageLayout } from '@tapis/tapisui-common';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const Layout: React.FC = () => {
@@ -14,13 +14,19 @@ const Layout: React.FC = () => {
     return <Redirect to={from} />;
   }
 
-  return (
+  const body = (
     <>
-      <SectionHeader>Login</SectionHeader>
       <div className="container">
+        <SectionHeader>Login</SectionHeader>
         <TapisLogin />
       </div>
     </>
+  )
+
+  return (
+    <PageLayout
+      right={body}
+    />
   );
 };
 

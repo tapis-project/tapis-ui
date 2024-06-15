@@ -8,12 +8,14 @@ export type BreadcrumbType = {
   to?: string;
   onClick?: (to: string) => void;
   text: string;
+  delimiter?: string
 };
 
 const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
   to,
   onClick,
   text,
+  delimiter = "/"
 }) => {
   if (onClick) {
     return (
@@ -29,21 +31,21 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
         >
           {text}
         </Button>
-        &nbsp;/&nbsp;
       </span>
     );
   }
+  
   if (to) {
     return (
       <span className={styles.fragment}>
-        <NavLink to={to}>{text}</NavLink>&nbsp;/&nbsp;
+        <NavLink to={to}>{text}</NavLink>&nbsp;{delimiter}&nbsp;
       </span>
     );
   }
 
   return (
     <span className={styles.fragment}>
-      {text}&nbsp;{`${text !== '...' ? '/' : ''}`}&nbsp;
+      {text}&nbsp;{`${text !== '...' ? delimiter : ''}`}&nbsp;
     </span>
   );
 };
@@ -51,9 +53,10 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
 type BreadcrumbsProps = {
   breadcrumbs: Array<BreadcrumbType>;
   truncate?: boolean;
+  delimiter?: string
 };
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs, truncate }) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs, truncate, delimiter }) => {
   let truncatedBreadcrumbs = breadcrumbs;
   if (truncate && breadcrumbs.length >= 5) {
     // First 2 breadcrumbs
@@ -81,6 +84,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs, truncate }) => {
             to={to}
             onClick={onClick}
             key={uuidv4()}
+            delimiter={delimiter || "/"}
           />
         );
       })}

@@ -1,7 +1,7 @@
 .cards {
   display: flex;
-  padding-top: 1em;
   flex-wrap: wrap;
+  padding: 16px;
 }
 
 .card {
@@ -28,4 +28,5 @@
 
 .header {
   padding-top: 1em;
+  
 }
