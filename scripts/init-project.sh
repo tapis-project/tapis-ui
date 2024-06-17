@@ -12,7 +12,7 @@ for program in "${programs[@]}"; do
 done
 
 if [[ $(node --version) != *"${NODE_VERSION}"* ]]; then
-    echo "You must install node version 22"
+    echo "You must install node version 22. run \`nvm install 22\`"
     exit 1
 fi;
 
@@ -22,30 +22,35 @@ if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
 fi;
 
 cd lib/tapisui-api
-npm run install
+echo $(pwd)
+npm install
 npm run build
-cd ../
-
-cd lib/tapisui-hooks
-npm run install
-npm run build
-cd ../
-
-cd lib/tapisui-common
-npm run install
-npm run build
-cd ../
-
-cd lib/tapisui-extensions-core
-npm run install
-npm run build
-cd ../
-
-cd lib/icicle-tapisui-extension
-npm run install
-npm run build
-
 cd ../../
 
+cd lib/tapisui-hooks
+echo $(pwd)
+npm install
+npm run build
+cd ../../
+
+cd lib/tapisui-common
+echo $(pwd)
+npm install
+npm run build
+cd ../../
+
+cd lib/tapisui-extensions-core
+echo $(pwd)
+npm install
+npm run build
+cd ../../
+
+cd lib/icicle-tapisui-extension
+echo $(pwd)
+npm install
+npm run build
+cd ../../
+
+echo $(pwd)
 npm install
 npm run start

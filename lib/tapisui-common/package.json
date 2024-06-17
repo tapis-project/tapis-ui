@@ -4,7 +4,7 @@
   "description": "Common React components for TapisUI",
   "scripts": {
     "test": "react-scripts test",
-    "clean": "rm -rf dist ",
+    "clean": "rm -rf dist",
     "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files",
     "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
     "push": "npx tsc && npm publish --access public"
