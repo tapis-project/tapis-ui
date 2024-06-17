@@ -72,7 +72,8 @@
     "test": "TZ=UTC jest",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write .",
-    "gh-pages": "tsc && vite build && gh-pages -d build"
+    "gh-pages": "tsc && vite build && gh-pages -d build",
+    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh"
   },
   "eslintConfig": {
     "extends": []
