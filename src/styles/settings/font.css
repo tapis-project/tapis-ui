@@ -11,5 +11,5 @@
     'Courier New', monospace;
   /* stylelint-enable value-keyword-case */
 
-  --global-line-height: 1.4; /* From Bootstrap */
+  /* --global-line-height: 1.4; From Bootstrap */
 }

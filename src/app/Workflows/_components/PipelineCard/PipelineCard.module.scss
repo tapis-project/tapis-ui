@@ -1,12 +1,21 @@
+.cards-container {
+    display: block;
+    width: 100%;
+    padding: 16px
+}
 
+.paginator {
+    padding: 0;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
 
-.card-container {
+.cards {
     display: grid;
     grid-template-columns: repeat(3, minmax(320px, 1fr));
     justify-content: space-between;
     gap: 16px;
     width: 100%;
-    padding: 16px;
 }
 
 .card {
@@ -23,6 +32,10 @@
 
 .card:hover {
     box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.25);
+}
+
+.skeletons {
+    margin-top: 16px;
 }
 
 .skeleton {
@@ -83,11 +96,12 @@
     position: absolute;
     bottom: 16px;
     left: 16px;
+    font-size: 11px;
 }
 
 .link {
-    font-size: 11px;
     color: #2A9AEB;
+    font-size: 11px;
 }
 
 .link:hover {
