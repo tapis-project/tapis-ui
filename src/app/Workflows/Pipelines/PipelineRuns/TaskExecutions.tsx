@@ -39,6 +39,8 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                 <th>started at</th>
                 <th>last modified</th>
                 <th>uuid</th>
+                <th>stdout</th>
+                <th>stderr</th>
               </tr>
             </thead>
             {taskExecutions.length &&
@@ -52,6 +54,8 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                       <td>{taskExecution.started_at}</td>
                       <td>{taskExecution.last_modified}</td>
                       <td>{taskExecution.uuid}</td>
+                      <td>{taskExecution.stdout}</td>
+                      <td>{taskExecution.stderr}</td>
                     </tr>
                   </tbody>
                 );

@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 
 import { default as Groups } from '../Groups';
-import { Users } from '../Users';
+import { Group } from '../Group';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -25,7 +25,7 @@ const Router: React.FC = () => {
           },
         }: RouteComponentProps<{
           groupId: string;
-        }>) => <Users groupId={groupId} />}
+        }>) => <Group groupId={groupId} />}
       />
     </Switch>
   );

@@ -28,7 +28,7 @@ const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
   }, [queryClient, reset]);
   
   return (
-    <div id={`task-${task.id}`} className={`${styles['task']}`}>
+    <div id={`task-${task.id}`} className={`${styles["container"]}`}>
       <div className={`${styles['task-header']}`}>
         {task.id}
         <Button

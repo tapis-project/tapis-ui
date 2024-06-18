@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import styles from '../_components/PipelineCard/PipelineCard.module.scss';
+import pStyles from '../_components/PipelineCard/PipelineCard.module.scss';
+import styles from './Dashboard.module.scss';
 import { PipelineCard } from "../_components";
 import { Skeleton, Pagination } from '@mui/material';
 import { Workflows } from '@tapis/tapis-typescript';
 import { SectionHeader } from "@tapis/tapisui-common"
+import { DashboardCard } from '../_components/DashboardCard';
+import { PeopleAlt, Storage, Memory } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+import { DataGrid } from '@mui/x-data-grid';
+import { useHistory } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
+  const navigate = useHistory()
   const groups = Hooks.Groups.useList();
   const groupIds: Array<string> = [];
   const groupMapping: {[key: string]: Workflows.Group} = {}
@@ -17,21 +24,47 @@ const Dashboard: React.FC = () => {
     }
   });
   // const identities = Hooks.Identities.useList();
-  // const archives = Hooks.Archives.useListAll({ groupIds });
+  const archives = Hooks.Archives.useListAll({ groupIds });
   const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll({ groupIds })
   const [page, setPage] = useState<number>(1);
   return (
-    <div >
-      <div className={styles["cards-container"]}>
+    <div>
+      <SectionHeader>Workflows</SectionHeader>
+      <div className={styles["dashboard-card-container"]}>
+        <DashboardCard
+          isLoading={groups.isLoading}
+          to="/workflows/groups"
+          title={"Groups"}
+          objects={groups?.data?.result || []}
+          icon={<PeopleAlt fontSize={"large"} />}
+        />
+        <DashboardCard
+          isLoading={isLoading}
+          to="/workflows/pipelines"
+          title={"Pipelines"}
+          objects={pipelines?.result || []}
+          icon={<Memory fontSize={"large"} />}
+        />
+        <DashboardCard
+          isLoading={archives.isLoading}
+          to="/workflows/archives"
+          title={"Archives"}
+          objects={archives?.data?.result || []}
+          icon={<Storage fontSize={"large"} />}
+        />
+      </div>
+      <div className={pStyles["cards-container"]}>
         <SectionHeader>
-          Pipelines {pipelines && `[${pipelines.result.length}]`}
+          <span><Memory fontSize={"large"} /> Pipelines {pipelines && `[${pipelines.result.length}]`}</span>
         </SectionHeader>
         {
           (pipelines && pipelines.result.length > 0) &&
           <Pagination
-            className={styles["paginator"]}
+            className={pStyles["paginator"]}
             shape="rounded"
             count={Math.ceil(pipelines.result.length / 6)}
+            showFirstButton
+            showLastButton
             page={page}
             onChange={(_, value) => {
               setPage(value);
@@ -40,17 +73,17 @@ const Dashboard: React.FC = () => {
         }
         {
           isLoading ? (
-            <div className={`${styles["cards"]} ${styles["skeletons"]}`}>
+            <div className={`${pStyles["cards"]} ${pStyles["skeletons"]} ${pStyles["col-3"]}`}>
               {
                 [...Array(6).keys()].map(() => {
                   return (
-                    <Skeleton variant="rectangular" height="120px" className={`${styles["card"]} ${styles["skeleton"]}`} />
+                    <Skeleton variant="rectangular" height="120px" className={`${pStyles["card"]} ${pStyles["skeleton"]}`} />
                   )
                 })
               }
             </div>
           ) : (
-            <div className={`${styles["cards"]}`}>
+            <div className={`${pStyles["cards"]} ${pStyles["col-3"]}`}>
             {
               pipelines?.result && (
                 pipelines.result.map((pipeline, i) => {
@@ -70,54 +103,39 @@ const Dashboard: React.FC = () => {
           )
         }
       </div>
+      <div className={styles["container"]}>
+        <SectionHeader>
+          <span><PeopleAlt fontSize={"large"} /> Groups {groups?.data?.result && `[${groups.data.result.length}]`}</span>
+        </SectionHeader>
+        <div style={{ height: 400, width: '100%' }}>
+          <DataGrid
+            onRowClick={(rowData) => {
+              navigate.push(`/workflows/groups/${rowData.id}`)
+            }}
+            rows={(groups?.data?.result || []).map((group) => {
+              return {
+                ...group,
+                id: group.id,
+              }
+            })}
+            columns={[
+              { field: 'id', headerName: 'Group ID', width: 200 },
+              { field: 'owner', headerName: 'Owner', width: 200 },
+              { field: 'tenant_id', headerName: 'Tenant', width: 200 },
+              { field: 'uuid', headerName: 'UUID', width: 220 },
+            ]}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
-
-// type DashboardCardProps = {
-//   icon: string;
-//   link: string;
-//   counter: string;
-//   name: string;
-//   text: string;
-//   loading: boolean;
-// };
-
-// const DashboardCard: React.FC<DashboardCardProps> = ({
-//   icon,
-//   link,
-//   counter,
-//   name,
-//   text,
-//   loading,
-// }) => {
-//   return (
-//     <Card className={styles.card}>
-//       <CardHeader>
-//         <div className={styles['card-header']}>
-//           <div>
-//             <Icon name={icon} className="dashboard__card-icon" />
-//           </div>
-//           <div>{name}</div>
-//         </div>
-//       </CardHeader>
-//       <CardBody>
-//         <CardTitle tag="h5">
-//           {loading ? (
-//             <LoadingSpinner placement="inline" />
-//           ) : (
-//             <div>{counter}</div>
-//           )}
-//         </CardTitle>
-//         <CardText>{text}</CardText>
-//       </CardBody>
-//       <CardFooter className={styles['card-footer']}>
-//         <Link to={link}>Go to {name}</Link>
-//         <Icon name="push-right" />
-//       </CardFooter>
-//     </Card>
-//   );
-// };
 

@@ -1,26 +1,12 @@
-.card-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card {
-  width: 25em;
-  margin-right: 1em;
-  margin-bottom: 1em;
-}
-
-.card-header {
-  display: flex;
-  justify-content: baseline;
-  div {
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-direction: column;
-  }
-}
-
-.card-footer {
-  display: flex;
+.dashboard-card-container {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
   justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.container {
+  padding: 16px;
 }

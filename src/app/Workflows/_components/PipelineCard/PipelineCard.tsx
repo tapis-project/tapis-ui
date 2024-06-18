@@ -19,7 +19,7 @@ const PipelineCardMenu: React.FC<PipelineCardMenuProps> = ({
 }) => {
   const location = useLocation()
   return (
-    <Paper sx={{ width: 320, maxWidth: '100%' }} className={styles["dag-task-action-menu"]}>
+    <Paper sx={{ width: 320, maxWidth: '100%', position: "absolute", top: 0, right: 0 }}>
       <MenuList dense>
         <MenuItem href={"#" + location.pathname + `/${groupId}/` + pipeline.id} component="a">
           <ListItemIcon>
@@ -80,7 +80,7 @@ const PipelineCard: React.FC<PipelineCardProps> = ({groupId, pipeline}) => {
       <Link to={`/workflows/pipelines/${groupId}`} className={`${styles["group"]} ${styles["link"]}`}>{groupId}</Link>
       {
         pipeline.last_run
-        ? <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.last_run}`} className={`${styles["run"]} ${styles["link"]}`}>last run: {pipeline.last_run}</Link>
+        ? <Link to={`/workflows/pipelines/${groupId}/${pipeline.id}/runs/${pipeline.last_run}`} className={`${styles["run"]} ${styles["link"]}`}>{pipeline.last_run}</Link>
         : <></>
       }
       <UnfoldMore className={styles["expand"]} />

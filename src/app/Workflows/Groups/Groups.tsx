@@ -6,18 +6,25 @@ import { SectionMessage, Icon } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Toolbar } from '../_components';
 import styles from './Groups.module.scss';
+import { CircularProgress } from '@mui/material';
+
 
 const Groups: React.FC = () => {
   const { data, isLoading, error } = Hooks.Groups.useList();
   const groups: Array<Workflows.Group> = data?.result ?? [];
 
   return (
-    <QueryWrapper isLoading={isLoading} error={error}>
+    <div className={styles["container"]}>
       <h2>
-        Groups <span className={styles['count']}>{groups.length}</span>
+        Groups {
+          isLoading
+          ? <CircularProgress />
+          : <span className={styles['count']}>{groups.length}</span>
+        }
       </h2>
-      <Toolbar buttons={['creategroup']} />
-      <div className={styles['container']}>
+      <QueryWrapper isLoading={isLoading} error={error}>
+        <Toolbar buttons={['creategroup']} />
+      <div className={styles['groups-container']}>
         {groups.length ? (
           groups.map((group, i) => {
             let evenodd: string = i % 2 > 0 ? styles['odd'] : styles['even'];
@@ -40,6 +47,7 @@ const Groups: React.FC = () => {
         )}
       </div>
     </QueryWrapper>
+    </div>
   );
 };
 

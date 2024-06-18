@@ -12,10 +12,22 @@
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(3, minmax(320px, 1fr));
+    
     justify-content: space-between;
     gap: 16px;
-    width: 100%;
+    max-width: 100%;
+}
+
+.col-1 {
+    grid-template-columns: repeat(1, minmax(320px, 1fr));
+}
+
+.col-2 {
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+}
+
+.col-3 {
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
 }
 
 .card {

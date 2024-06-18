@@ -1,6 +1,7 @@
 import React from 'react';
 import { SectionMessage } from '@tapis/tapisui-common';
 import { ArchiveList } from '../_components';
+import styles from "./Archives.module.scss"
 
 type ArchivesProps = {
   groupId?: string;
@@ -8,7 +9,7 @@ type ArchivesProps = {
 
 const Archives: React.FC<ArchivesProps> = ({ groupId }) => {
   return (
-    <div id="archives">
+    <div id="archives" className={styles["container"]}>
       {groupId ? (
         <div>
           <ArchiveList groupId={groupId} />
