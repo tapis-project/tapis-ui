@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/extend-expect';
+import {describe, it, expect} from 'vitest'
 import errorDecoder from './errorDecoder';
 
 type ResultType = {

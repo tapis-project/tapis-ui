@@ -1,5 +1,5 @@
 import { Apps, Systems } from '@tapis/tapis-typescript';
-import '@testing-library/jest-dom/extend-expect';
+import {describe, it, expect} from 'vitest'
 import { tapisApp } from 'fixtures/apps.fixtures';
 import { tapisSystem } from 'fixtures/systems.fixtures';
 import {
