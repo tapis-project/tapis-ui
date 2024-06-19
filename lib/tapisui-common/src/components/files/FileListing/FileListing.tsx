@@ -8,12 +8,7 @@ import { Row, Column, CellProps } from 'react-table';
 import sizeFormat from '../../../utils/sizeFormat';
 import { Button } from 'reactstrap';
 import { formatDateTimeFromValue } from '../../../utils/timeFormat';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheckSquare,
-  faSquare as filledSquare,
-} from '@fortawesome/free-solid-svg-icons';
-import { faSquare } from '@fortawesome/free-regular-svg-icons';
+import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material"
 import styles from './FileListing.module.scss';
 
 export type OnSelectCallback = (files: Array<Files.FileInfo>) => any;
@@ -64,13 +59,12 @@ type FileListingCheckboxCell = {
 export const FileListingCheckboxCell: React.FC<FileListingCheckboxCell> =
   React.memo(({ selected }) => {
     return (
-      <span className="fa-layers fa-fw">
-        <FontAwesomeIcon icon={filledSquare} color="white" />
-        <FontAwesomeIcon
-          icon={selected ? faCheckSquare : faSquare}
-          color="#9D85EF"
-        />
-        <FontAwesomeIcon icon={faSquare} color="#707070" />
+      <span>
+        {
+          selected ?
+          <CheckBox /> :
+          <CheckBoxOutlineBlank />
+        }
       </span>
     );
   });
