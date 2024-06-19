@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "outDir": "dist",
     "lib": ["es6", "dom"],
-    "types": ["node", "jest", "streamsaver"],
+    "types": ["node", "streamsaver"],
     "typeRoots": ["./types", "node_modules/@types"],
     "baseUrl": "src",
     "allowJs": true,
