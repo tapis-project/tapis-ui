@@ -19,9 +19,9 @@ type UseMutationsParams<T, ResponseType> = {
 const useMutations = <T extends unknown, ResponseType extends unknown>(
   params: UseMutationsParams<T, ResponseType>
 ) => {
-  const { fn, onSuccess, onError, onComplete, onStart } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const { fn, onSuccess, onError, onComplete, onStart } = params;
 
   const run = (items: Array<T>) => {
     setIsLoading(true);
