@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import useMutations from './useMutations';
 
@@ -11,7 +11,7 @@ describe('useMutations', () => {
       onComplete: vi.fn(),
       fn: (item: any) => new Promise((resolve) => resolve(item)),
     };
-    const { result, waitFor } = renderHook(() =>
+    const { result } = renderHook(() =>
       useMutations<any, any>(params)
     );
 
@@ -34,7 +34,7 @@ describe('useMutations', () => {
       onComplete: vi.fn(),
       fn: (item: any) => new Promise((_, reject) => reject(item)),
     };
-    const { result, waitFor } = renderHook(() =>
+    const { result } = renderHook(() =>
       useMutations<any, any>(params)
     );
 
