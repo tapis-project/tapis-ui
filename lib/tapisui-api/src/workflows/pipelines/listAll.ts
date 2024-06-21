@@ -36,7 +36,9 @@ const listAll = async (
 
   const last = resps[resps.length - 1];
 
-  const hasNullResults = resps.some((resp) => { return resp.result === null; })
+  const hasNullResults = resps.some((resp) => {
+    return resp.result === null;
+  });
   if (hasNullResults) {
     return {
       status: 'failure',
