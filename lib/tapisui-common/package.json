@@ -3,7 +3,7 @@
   "version": "0.0.9",
   "description": "Common React components for TapisUI",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "clean": "rm -rf dist",
     "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files",
     "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",

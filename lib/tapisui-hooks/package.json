@@ -6,7 +6,7 @@
   "typings": "./dist/index.d.ts",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "build": "npx tsc --skipLibCheck",
     "push": "npx tsc --skipLibCheck && npm publish --access public"
   },

@@ -63,7 +63,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "TZ=UTC jest",
+    "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write .",
     "gh-pages": "tsc && vite build && gh-pages -d build",
