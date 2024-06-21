@@ -1,3 +1,5 @@
+#!/bin/bash
+
 NODE_VERSION=22
 NPM_VERSION=10
 
