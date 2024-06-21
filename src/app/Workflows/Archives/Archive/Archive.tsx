@@ -2,8 +2,8 @@ import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
-import styles from "./Archive.module.scss"
-import { JSONDisplay } from "@tapis/tapisui-common"
+import styles from './Archive.module.scss';
+import { JSONDisplay } from '@tapis/tapisui-common';
 
 type S3ArchiveProps = {
   archive: Workflows.S3Archive;
@@ -11,7 +11,7 @@ type S3ArchiveProps = {
 
 const S3Archive: React.FC<S3ArchiveProps> = ({ archive }) => {
   return (
-    <div id={`archive-${archive.id}`} className={styles["container"]}>
+    <div id={`archive-${archive.id}`} className={styles['container']}>
       <JSONDisplay json={archive} />
     </div>
   );
@@ -23,7 +23,7 @@ type TapisSystemArchiveProps = {
 
 const TapisSystemArchive: React.FC<TapisSystemArchiveProps> = ({ archive }) => {
   return (
-    <div id={`archive-${archive.id}`} className={styles["container"]}>
+    <div id={`archive-${archive.id}`} className={styles['container']}>
       <JSONDisplay json={archive} />
     </div>
   );

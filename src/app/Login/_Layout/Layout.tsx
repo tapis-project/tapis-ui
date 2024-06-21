@@ -21,13 +21,9 @@ const Layout: React.FC = () => {
         <TapisLogin />
       </div>
     </>
-  )
-
-  return (
-    <PageLayout
-      right={body}
-    />
   );
+
+  return <PageLayout right={body} />;
 };
 
 export default Layout;

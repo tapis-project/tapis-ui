@@ -7,7 +7,7 @@ const CLASS = 'test-class-name';
 const TEXT = 'test-icon-text';
 
 describe('Icon', () => {
-  beforeEach(cleanup)
+  beforeEach(cleanup);
   it('has correct `className (when not passed a `className`)`', () => {
     const { getByRole } = render(<Icon name={NAME} />);
     const icon = getByRole('img');

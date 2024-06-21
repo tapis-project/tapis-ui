@@ -4,15 +4,9 @@ import { PageLayout } from '@tapis/tapisui-common';
 import { Dashboard } from '../_components';
 
 const Layout: React.FC = () => {
-  const body = (
-    <Dashboard />
-  )
+  const body = <Dashboard />;
 
-  return (
-    <PageLayout
-      right={body}
-    />
-  );
+  return <PageLayout right={body} />;
 };
 
 export default Layout;

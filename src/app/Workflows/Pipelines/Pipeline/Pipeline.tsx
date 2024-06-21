@@ -8,7 +8,7 @@ import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
 import { useQueryClient } from 'react-query';
-import { DagView } from "./_components/DagView"
+import { DagView } from './_components/DagView';
 import { useExtension } from 'extensions';
 
 type TaskProps = {
@@ -20,15 +20,15 @@ type TaskProps = {
 const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
   const { removeAsync, isLoading, isError, error, isSuccess, reset } =
     Hooks.Tasks.useDelete();
-  
+
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
     reset();
   }, [queryClient, reset]);
-  
+
   return (
-    <div id={`task-${task.id}`} className={`${styles["container"]}`}>
+    <div id={`task-${task.id}`} className={`${styles['container']}`}>
       <div className={`${styles['task-header']}`}>
         {task.id}
         <Button
@@ -85,10 +85,11 @@ enum ViewEnum {
 }
 
 const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
-  const { extension } = useExtension()
+  const { extension } = useExtension();
   const [view, setView] = useState<ViewEnum>(
-    (extension?.serviceCustomizations.workflows?.dagDefaultView && ViewEnum.Dag)
-    || ViewEnum.Default
+    (extension?.serviceCustomizations.workflows?.dagDefaultView &&
+      ViewEnum.Dag) ||
+      ViewEnum.Default
   );
   const {
     data: pipelineData,
@@ -135,14 +136,10 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
             groupId={groupId}
             pipelineId={pipelineId}
           />
-          
-          {
-            view == ViewEnum.Dag ?
-            <DagView
-              tasks={tasks}
-              pipelineId={pipelineId}
-              groupId={groupId}
-            /> :
+
+          {view == ViewEnum.Dag ? (
+            <DagView tasks={tasks} pipelineId={pipelineId} groupId={groupId} />
+          ) : (
             <div>
               <Table dark bordered style={{ margin: 0 }}>
                 <thead>
@@ -176,7 +173,9 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
                     )}
                   </td>
                   <td className={styles['center']}>
-                    <Link to={`/workflows/pipelines/${groupId}/${pipelineId}/runs`}>
+                    <Link
+                      to={`/workflows/pipelines/${groupId}/${pipelineId}/runs`}
+                    >
                       view
                     </Link>
                   </td>
@@ -187,8 +186,16 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
                   <div id={'default-task-view'}>
                     {tasks.map((task) => {
                       return (
-                        <div id="tasks" key={task.id} className={`${styles['tasks']}`}>
-                          <Task task={task} groupId={groupId} pipelineId={pipelineId} />
+                        <div
+                          id="tasks"
+                          key={task.id}
+                          className={`${styles['tasks']}`}
+                        >
+                          <Task
+                            task={task}
+                            groupId={groupId}
+                            pipelineId={pipelineId}
+                          />
                         </div>
                       );
                     })}
@@ -198,7 +205,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
                 )}
               </QueryWrapper>
             </div>
-          }
+          )}
         </div>
       )}
     </QueryWrapper>

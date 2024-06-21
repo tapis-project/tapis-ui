@@ -8,7 +8,7 @@ import { Row, Column, CellProps } from 'react-table';
 import sizeFormat from '../../../utils/sizeFormat';
 import { Button } from 'reactstrap';
 import { formatDateTimeFromValue } from '../../../utils/timeFormat';
-import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material"
+import { CheckBoxOutlineBlank, CheckBox } from '@mui/icons-material';
 import styles from './FileListing.module.scss';
 
 export type OnSelectCallback = (files: Array<Files.FileInfo>) => any;
@@ -58,15 +58,7 @@ type FileListingCheckboxCell = {
 /* eslint-disable-next-line */
 export const FileListingCheckboxCell: React.FC<FileListingCheckboxCell> =
   React.memo(({ selected }) => {
-    return (
-      <span>
-        {
-          selected ?
-          <CheckBox /> :
-          <CheckBoxOutlineBlank />
-        }
-      </span>
-    );
+    return <span>{selected ? <CheckBox /> : <CheckBoxOutlineBlank />}</span>;
   });
 
 interface FileListingItemProps {

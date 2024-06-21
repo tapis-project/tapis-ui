@@ -3,8 +3,15 @@ import { Workflows } from '@tapis/tapisui-hooks';
 import { SectionMessage } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table } from 'reactstrap';
-import { Gantt, Task, EventOption, StylingOption, ViewMode, DisplayOption } from 'gantt-task-react';
-import "gantt-task-react/dist/index.css";
+import {
+  Gantt,
+  Task,
+  EventOption,
+  StylingOption,
+  ViewMode,
+  DisplayOption,
+} from 'gantt-task-react';
+import 'gantt-task-react/dist/index.css';
 
 type TaskExecutionsProps = {
   groupId: string;
@@ -29,17 +36,17 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
   );
 
   const tasks: Array<Task> = taskExecutions.map((taskExecution) => {
-      return {
-        start: new Date(Date.parse(taskExecution.started_at!)),
-        end: new Date(Date.parse(taskExecution.last_modified!)),
-        name: taskExecution.task_id!,
-        id: taskExecution.task_id!,
-        type:'task',
-        progress: 100,
-        isDisabled: true,
-        styles: { progressColor: '#ffbb54', progressSelectedColor: '#ff9e0d' },
-      }
-  })
+    return {
+      start: new Date(Date.parse(taskExecution.started_at!)),
+      end: new Date(Date.parse(taskExecution.last_modified!)),
+      name: taskExecution.task_id!,
+      id: taskExecution.task_id!,
+      type: 'task',
+      progress: 100,
+      isDisabled: true,
+      styles: { progressColor: '#ffbb54', progressSelectedColor: '#ff9e0d' },
+    };
+  });
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -78,9 +85,14 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
           </Table>
         ) : (
           <SectionMessage type="info">No task executions</SectionMessage>
-          )}
+        )}
       </div>
-      <Gantt tasks={tasks} headerHeight={0} listCellWidth={""} viewMode={ViewMode.Hour}/>
+      <Gantt
+        tasks={tasks}
+        headerHeight={0}
+        listCellWidth={''}
+        viewMode={ViewMode.Hour}
+      />
     </QueryWrapper>
   );
 };

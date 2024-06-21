@@ -1,1 +1,1 @@
-export { default as FunctionTaskEditor } from "./FunctionTaskEditor"
+export { default as FunctionTaskEditor } from './FunctionTaskEditor';

@@ -107,9 +107,9 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   return (
     <>
       <InputGroup>
-          <Button size="sm" onClick={open} disabled={disabled}>
-            Browse
-          </Button>
+        <Button size="sm" onClick={open} disabled={disabled}>
+          Browse
+        </Button>
         <Input disabled={disabled} {...props} bsSize="sm" />
       </InputGroup>
       {modal && (

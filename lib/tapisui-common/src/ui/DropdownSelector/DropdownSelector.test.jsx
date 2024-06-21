@@ -3,7 +3,7 @@ import { render, cleanup } from '@testing-library/react';
 import DropdownSelector, { TYPES } from './DropdownSelector';
 
 describe('Select Dropdown Field', () => {
-  beforeEach(cleanup)
+  beforeEach(cleanup);
   for (let type of TYPES) {
     it('has accurate tag and attributes when type is "%s"', () => {
       const { getByTestId } = render(<DropdownSelector type={type} />);

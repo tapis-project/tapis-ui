@@ -70,10 +70,12 @@ const Group: React.FC<UsersProps> = ({ groupId }) => {
 
   return (
     <div>
-      <PipelineCardList groupId={groupId}/>
-      <div className={styles["container"]}>
+      <PipelineCardList groupId={groupId} />
+      <div className={styles['container']}>
         <SectionHeader>
-          <span>Users <span className={styles['count']}>{users.length}</span></span>
+          <span>
+            Users <span className={styles['count']}>{users.length}</span>
+          </span>
           <Toolbar groupId={groupId} buttons={['addgroupuser']} />
         </SectionHeader>
         <div className={styles['users-container']}>
@@ -83,7 +85,8 @@ const Group: React.FC<UsersProps> = ({ groupId }) => {
                 users.map((user, i) => {
                   let evenodd: string =
                     i % 2 > 0 ? styles['odd'] : styles['even'];
-                  let last: string = i === users.length - 1 ? styles['last'] : '';
+                  let last: string =
+                    i === users.length - 1 ? styles['last'] : '';
                   return (
                     <div className={`${styles['user']} ${evenodd} ${last}`}>
                       <div>

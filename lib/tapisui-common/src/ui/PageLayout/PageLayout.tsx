@@ -7,7 +7,7 @@ interface LayoutProps {
   top?: React.ReactNode;
   bottom?: React.ReactNode;
   constrain?: boolean;
-  style?: "standard" | "alt"
+  style?: 'standard' | 'alt';
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -16,27 +16,24 @@ const Layout: React.FC<LayoutProps> = ({
   top,
   bottom,
   constrain,
-  style = "standard"
+  style = 'standard',
 }) => {
   return (
-    <div className={styles["layout-container"]}>
-      <div className={styles["top"]}>
-        {top}
-      </div>
-      <div className={styles["main"]}>
+    <div className={styles['layout-container']}>
+      <div className={styles['top']}>{top}</div>
+      <div className={styles['main']}>
         <div
-          className={`${styles['layout-row']} ${constrain ? styles.constrain : ''}`}
+          className={`${styles['layout-row']} ${
+            constrain ? styles.constrain : ''
+          }`}
         >
           {left}
-          <div className={styles["right"]}>
-            {right}
-          </div>
+          <div className={styles['right']}>{right}</div>
         </div>
         {bottom}
       </div>
     </div>
-  )
-  
-}
+  );
+};
 
 export default Layout;

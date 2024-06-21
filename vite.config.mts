@@ -20,17 +20,17 @@ export default defineConfig({
     react(),
     commonjs({
       include: /node_modules/, // Ensure CommonJS transformation for node_modules
-      requireReturnsDefault: 'auto' // Handle default exports correctly
+      requireReturnsDefault: 'auto', // Handle default exports correctly
     }),
     viteCommonjs(),
     viteTsconfigPaths(),
-    envCompatible()
+    envCompatible(),
   ],
   build: {
-    outDir: "build",
+    outDir: 'build',
     manifest: true,
     rollupOptions: {
-      external: ["lib"],
+      external: ['lib'],
     },
   },
   server: {

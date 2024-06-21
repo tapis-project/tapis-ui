@@ -1,9 +1,6 @@
 import React from 'react';
 import { Router } from '../_Router';
-import {
-  PageLayout,
-  LayoutBody,
-} from '@tapis/tapisui-common';
+import { PageLayout, LayoutBody } from '@tapis/tapisui-common';
 
 const Layout: React.FC = () => {
   const body = (

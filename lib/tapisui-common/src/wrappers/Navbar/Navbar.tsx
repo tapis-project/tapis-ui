@@ -3,11 +3,9 @@ import { NavLink } from 'react-router-dom';
 import { Icon } from '../../ui';
 import styles from './Navbar.module.scss';
 
-export const NavItem: React.FC<React.PropsWithChildren<{ to: string; icon?: string }>> = ({
-  to,
-  icon,
-  children,
-}) => (
+export const NavItem: React.FC<
+  React.PropsWithChildren<{ to: string; icon?: string }>
+> = ({ to, icon, children }) => (
   <NavLink
     to={to}
     className={styles['nav-link']}

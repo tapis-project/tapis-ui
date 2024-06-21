@@ -1,5 +1,5 @@
-import { WorkflowsCustomizations } from "./workflows"
-import { OAuth, AuthMethod } from "./oauth2"
+import { WorkflowsCustomizations } from './workflows';
+import { OAuth, AuthMethod } from './oauth2';
 
 export enum EnumTapisCoreService {
   Systems = 'systems',
@@ -36,5 +36,5 @@ export type Configuration = {
   removeServices?: Array<EnumTapisCoreService>;
   authMethods?: Array<AuthMethod>;
   logo?: Logo;
-  serviceCustomizations?: ServiceCustomizations
+  serviceCustomizations?: ServiceCustomizations;
 };

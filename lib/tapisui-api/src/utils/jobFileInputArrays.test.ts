@@ -1,5 +1,5 @@
 import { Apps } from '@tapis/tapis-typescript';
-import {describe, it, expect} from 'vitest'
+import { describe, it, expect } from 'vitest';
 import { tapisApp } from 'fixtures/apps.fixtures';
 import {
   getIncompleteAppInputArraysOfType,

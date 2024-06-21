@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react-hooks';
 import { describe, it, expect, vi } from 'vitest';
 import useMutations from './useMutations';
 
-
 describe('useMutations', () => {
   it('runs a sequence of mutations', async () => {
     const params = {
@@ -12,7 +11,9 @@ describe('useMutations', () => {
       onComplete: vi.fn(),
       fn: (item: any) => new Promise((resolve) => resolve(item)),
     };
-    const { result, waitFor } = renderHook(() => useMutations<any, any>(params));
+    const { result, waitFor } = renderHook(() =>
+      useMutations<any, any>(params)
+    );
 
     waitFor(() => {
       const { run } = result.current;
@@ -22,10 +23,9 @@ describe('useMutations', () => {
       expect(params.onSuccess).toHaveBeenCalledWith('item1', 'item1');
       expect(params.onSuccess).toHaveBeenCalledWith('item2', 'item2');
       expect(params.onComplete).toHaveBeenCalled();
-    })
-
+    });
   });
-  
+
   it('runs a sequence of mutations and catches errors', async () => {
     const params = {
       onSuccess: vi.fn(),
@@ -34,7 +34,9 @@ describe('useMutations', () => {
       onComplete: vi.fn(),
       fn: (item: any) => new Promise((_, reject) => reject(item)),
     };
-    const { result, waitFor } = renderHook(() => useMutations<any, any>(params));
+    const { result, waitFor } = renderHook(() =>
+      useMutations<any, any>(params)
+    );
 
     waitFor(() => {
       const { run } = result.current;
@@ -44,6 +46,6 @@ describe('useMutations', () => {
       expect(params.onError).toHaveBeenCalledWith('item1', 'item1');
       expect(params.onError).toHaveBeenCalledWith('item2', 'item2');
       expect(params.onComplete).toHaveBeenCalled();
-    })
+    });
   });
 });

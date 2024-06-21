@@ -1,15 +1,13 @@
-import React from "react"
+import React from 'react';
 import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-type ProtectedRouteProps = RouteComponentProps & {accessToken: string}
+type ProtectedRouteProps = RouteComponentProps & { accessToken: string };
 
-const ProtectedRoute: React.FC<React.PropsWithChildren<ProtectedRouteProps>> = ({
-  accessToken,
-  children,
-  ...rest
-}) => {
+const ProtectedRoute: React.FC<
+  React.PropsWithChildren<ProtectedRouteProps>
+> = ({ accessToken, children, ...rest }) => {
   return (
     <Route
       {...rest}
@@ -27,6 +25,6 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<ProtectedRouteProps>> = (
       }
     />
   );
-}
+};
 
 export default ProtectedRoute;

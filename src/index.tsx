@@ -6,13 +6,13 @@ import { TapisProvider } from '@tapis/tapisui-hooks';
 import 'styles/index.css';
 import { resolveBasePath } from 'utils/resolveBasePath';
 import reportWebVitals from './reportWebVitals';
-import { ExtensionsProvider } from "./extensions"
-import { Extension } from "@tapis/tapisui-extensions-core"
-import { extension as icicleExtension } from "@icicle/tapisui-extension"
+import { ExtensionsProvider } from './extensions';
+import { Extension } from '@tapis/tapisui-extensions-core';
+import { extension as icicleExtension } from '@icicle/tapisui-extension';
 
-const initializedExtensions: {[key: string]: Extension} = {
-  "@icicle/tapisui-extension": icicleExtension
-}
+const initializedExtensions: { [key: string]: Extension } = {
+  '@icicle/tapisui-extension': icicleExtension,
+};
 
 ReactDOM.render(
   <React.StrictMode>

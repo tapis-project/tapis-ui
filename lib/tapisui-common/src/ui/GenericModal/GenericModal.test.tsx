@@ -1,6 +1,6 @@
-import React from "react"
+import React from 'react';
 import { expect, describe, it, vi } from 'vitest';
-import { render, screen } from "@testing-library/react"
+import { render, screen } from '@testing-library/react';
 import renderComponent from '../../testing/utils';
 import GenericModal from './GenericModal';
 

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Extension } from "@tapis/tapisui-extensions-core"
+import { Extension } from '@tapis/tapisui-extensions-core';
 
 export type ExtensionsContextType = {
-  extensions: {[key: string]: Extension};
+  extensions: { [key: string]: Extension };
 };
 
 export const extensionsContext: ExtensionsContextType = {
-  extensions: {}
+  extensions: {},
 };
 
 const ExtensionsContext: React.Context<ExtensionsContextType> =
