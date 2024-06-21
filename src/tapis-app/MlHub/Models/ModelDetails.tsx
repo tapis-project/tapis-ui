@@ -6,7 +6,7 @@ import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon } from 'tapis-ui/_common';
 import { JSONDisplay } from 'tapis-ui/_common';
-import  GenericModal from 'tapis-ui/_common/GenericModal/GenericModal';
+import GenericModal from 'tapis-ui/_common/GenericModal/GenericModal';
 
 type ModelDetailsProps = {
   modelId: string;
@@ -74,74 +74,83 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
               <JSONDisplay json={model.config}></JSONDisplay>
             </div>
           </div>
-        </div>        
+        </div>
         <Buttons modelId={modelId} />
       </div>
     </QueryWrapper>
   );
 };
 
-const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
-  const [currentModal, setCurrentModal] = useState<string | undefined>(undefined);
-  const {data} = useDetails({modelId})
-  const modelCardDetails: Models.ModelFullInfo = data?.result?? {};
+const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
+  const [currentModal, setCurrentModal] = useState<string | undefined>(
+    undefined
+  );
+  const { data } = useDetails({ modelId });
+  const modelCardDetails: Models.ModelFullInfo = data?.result ?? {};
   return (
     <div className={`${styles['buttons-container']}`}>
-      <Button  onClick={() => {setCurrentModal("inferenceinfo")}}>
+      <Button
+        onClick={() => {
+          setCurrentModal('inferenceinfo');
+        }}
+      >
         {'Inference Service Info'}
         <span>
           <Icon name="push-right" />
         </span>
       </Button>
-      <Button onClick={() => {setCurrentModal("downloadmodel")}}>
+      <Button
+        onClick={() => {
+          setCurrentModal('downloadmodel');
+        }}
+      >
         {'Download Model'}
         <span>
           <Icon name="push-right" />
         </span>
       </Button>
-        <Button onClick={() => {setCurrentModal("modelcard")}} >
-          {'Model Card'}
-          <span>
-            <Icon name="push-right" />
-          </span>
-        </Button>
-      {        
-        currentModal === "modelcard" &&
+      <Button
+        onClick={() => {
+          setCurrentModal('modelcard');
+        }}
+      >
+        {'Model Card'}
+        <span>
+          <Icon name="push-right" />
+        </span>
+      </Button>
+      {currentModal === 'modelcard' && (
         <GenericModal
-          toggle={() => {setCurrentModal(undefined)}}
-          title='Model Card'
-          body = {
+          toggle={() => {
+            setCurrentModal(undefined);
+          }}
+          title="Model Card"
+          body={
             <div>
               {modelId}
-              <JSONDisplay json={modelCardDetails.card_data }> </JSONDisplay>
+              <JSONDisplay json={modelCardDetails.card_data}> </JSONDisplay>
             </div>
           }
         />
-      }
-      {
-        currentModal === "inferenceinfo" &&
+      )}
+      {currentModal === 'inferenceinfo' && (
         <GenericModal
-          toggle={() => {setCurrentModal(undefined)}}
-          title='Inference Info'
-          body = {
-            <div>
-              INFERENCE INFO
-            </div>
-          }
+          toggle={() => {
+            setCurrentModal(undefined);
+          }}
+          title="Inference Info"
+          body={<div>INFERENCE INFO</div>}
         />
-      }
-      {
-        currentModal === "downloadmodel" &&
+      )}
+      {currentModal === 'downloadmodel' && (
         <GenericModal
-          toggle={() => {setCurrentModal(undefined)}}
-          title='Download Model'
-          body = {
-            <div>
-              "DOWNLOAD ME"
-            </div>
-          }
+          toggle={() => {
+            setCurrentModal(undefined);
+          }}
+          title="Download Model"
+          body={<div>"DOWNLOAD ME"</div>}
         />
-      }
+      )}
     </div>
   );
 };

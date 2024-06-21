@@ -35,7 +35,7 @@ const convertSets = (obj: any): any => {
     return undefined;
   }
   if (obj === null) {
-    return null
+    return null;
   }
   if (Array.isArray(obj)) {
     return (obj as Array<any>).map((value) => convertSets(value));
