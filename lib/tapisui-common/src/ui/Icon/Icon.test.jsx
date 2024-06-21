@@ -1,12 +1,13 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import Icon from '../Icon';
+import { expect, describe, it, beforeEach } from 'vitest';
+import { render, cleanup } from '@testing-library/react';
+import Icon from './Icon';
 
 const NAME = 'test-icon-name';
 const CLASS = 'test-class-name';
 const TEXT = 'test-icon-text';
 
 describe('Icon', () => {
+  beforeEach(cleanup)
   it('has correct `className (when not passed a `className`)`', () => {
     const { getByRole } = render(<Icon name={NAME} />);
     const icon = getByRole('img');

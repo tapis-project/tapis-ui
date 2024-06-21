@@ -56,7 +56,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   );
 
   const handleUrlChange = useCallback(
-    (index, event) => {
+    (index: number, event: any) => {
       const newUrls = [...sourceUrls];
       newUrls[index] = event.target.value;
       setFieldValue(

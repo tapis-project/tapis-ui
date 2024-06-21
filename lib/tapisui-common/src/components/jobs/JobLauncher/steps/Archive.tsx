@@ -12,7 +12,7 @@ import {
   ErrorMessage,
   FieldProps,
 } from 'formik';
-import { InputGroup, InputGroupAddon } from 'reactstrap';
+import { InputGroup } from 'reactstrap';
 import {
   FormikCheck,
   FormikTapisFile,
@@ -58,14 +58,12 @@ const ArrayGroup: React.FC<ArrayGroupProps> = ({
                     {({ field }: FieldProps) => (
                       <InputGroup>
                         <Input {...field} bsSize="sm" />
-                        <InputGroupAddon addonType="append">
-                          <Button
-                            size="sm"
-                            onClick={() => arrayHelpers.remove(index)}
-                          >
-                            Remove
-                          </Button>
-                        </InputGroupAddon>
+                        <Button
+                          size="sm"
+                          onClick={() => arrayHelpers.remove(index)}
+                        >
+                          Remove
+                        </Button>
                       </InputGroup>
                     )}
                   </Field>

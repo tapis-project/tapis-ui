@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "target": "es5",
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "esnext", "dom.iterable"],
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "node",
@@ -16,7 +16,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "types": ["node", "jest", "@testing-library/jest-dom"],
+    "types": ["node"],
     "outDir": "./dist"
   },
   "exclude": ["dist", "node_modules", "src/testing", "**/*.test.ts", "**/*.test.tsx", "**/*.test.js"],
