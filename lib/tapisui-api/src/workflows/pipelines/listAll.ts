@@ -36,11 +36,8 @@ const listAll = async (
 
   const last = resps[resps.length - 1];
 
-  if (
-    resps.some((resp) => {
-      resp.result === null;
-    })
-  ) {
+  const hasNullResults = resps.some((resp) => { return resp.result === null; })
+  if (hasNullResults) {
     return {
       status: 'failure',
       message: 'Failed to list all Pipelines',
