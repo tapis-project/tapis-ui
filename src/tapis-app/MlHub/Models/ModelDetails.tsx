@@ -105,7 +105,7 @@ const Buttons: React.FC<{modelId: string}> = ({modelId}) => {
             <Icon name="push-right" />
           </span>
         </Button>
-      {
+      {        
         currentModal === "modelcard" &&
         <GenericModal
           toggle={() => {setCurrentModal(undefined)}}
