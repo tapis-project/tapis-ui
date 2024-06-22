@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
 import App from 'app';
 import { TapisProvider } from '@tapis/tapisui-hooks';
 import 'styles/index.css';
@@ -14,9 +15,8 @@ const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
 };
 
-import { createRoot } from 'react-dom/client';
 const container = document.getElementById('react-root');
-const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+const root = createRoot(container!);
 
 root.render(
   <React.StrictMode>
