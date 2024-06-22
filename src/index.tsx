@@ -14,7 +14,11 @@ const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
 };
 
-ReactDOM.render(
+import { createRoot } from 'react-dom/client';
+const container = document.getElementById('react-root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+
+root.render(
   <React.StrictMode>
     <ExtensionsProvider extensions={initializedExtensions}>
       <TapisProvider basePath={resolveBasePath()}>
@@ -23,8 +27,7 @@ ReactDOM.render(
         </Router>
       </TapisProvider>
     </ExtensionsProvider>
-  </React.StrictMode>,
-  document.getElementById('react-root')
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
