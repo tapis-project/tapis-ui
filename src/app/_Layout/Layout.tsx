@@ -65,7 +65,12 @@ const Layout: React.FC = () => {
           >
             <DropdownToggle caret>{claims['sub']}</DropdownToggle>
             <DropdownMenu style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
-              {extension !== undefined && extension.allowMutiTenant && (
+              {
+              (
+                (extension !== undefined && extension.allowMutiTenant)
+                || (extension === undefined )
+                || (extension !== undefined && extension.allowMutiTenant)
+              ) && (
                 <>
                   <DropdownItem header>Tenants</DropdownItem>
                   <DropdownItem divider />
