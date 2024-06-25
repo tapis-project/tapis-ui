@@ -1,3 +1,4 @@
+import * as React from "react"
 import { WorkflowsCustomizations } from './workflows';
 import { OAuth, AuthMethod } from './oauth2';
 
@@ -17,12 +18,14 @@ export type Logo = {
   logoText?: string;
 };
 
+type Component = React.FC<React.PropsWithChildren<unknown>>
+
 export type Service = {
   id: string;
   sidebarDisplayName: string;
   icon?: string;
   iconName?: string;
-  component?: unknown;
+  component?: Component;
 };
 
 type ServiceCustomizations = {

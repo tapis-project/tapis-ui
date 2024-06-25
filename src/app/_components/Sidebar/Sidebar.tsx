@@ -42,6 +42,15 @@ const Sidebar: React.FC = () => {
             <NavItem to="/pods" icon="visualization">
               Pods
             </NavItem>
+            {
+              extension && Object.entries(extension.serviceMap).map(([_, service]) => {
+                return (
+                  <NavItem to={service.route} icon={service.iconName}>
+                    {service.sidebarDisplayName}
+                  </NavItem>
+                )
+              })
+            }
           </>
         )}
       </Navbar>

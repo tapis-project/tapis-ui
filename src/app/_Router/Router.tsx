@@ -13,10 +13,12 @@ import Files from '../Files';
 import Workflows from '../Workflows';
 import MlHub from '../MlHub';
 import UIPatterns from '../UIPatterns';
+import { useExtension } from 'extensions';
 
 const Router: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { logout } = Authenticator.useLogin();
+  const { extension } = useExtension()
 
   return (
     <Switch>
@@ -54,10 +56,23 @@ const Router: React.FC = () => {
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
         <Pods />
       </ProtectedRoute>
-      <Route path="/uipatterns">
+      {
+        extension && Object.entries(extension.serviceMap).map(([_, service]) => {
+          const Component = service.component
+          if (Component !== undefined) {
+            return (
+              <ProtectedRoute accessToken={accessToken?.access_token} path={service.route}>
+                <Component />
+              </ProtectedRoute>
+            )
+          }
+          return <></>
+        })
+      }
+      {/* <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
         <UIPatterns />
-      </Route>
+      </Route> */}
     </Switch>
   );
 };

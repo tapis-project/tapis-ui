@@ -5,7 +5,7 @@ type RegisteredService = Service & {
   route: string;
 };
 
-type ServiceMapping = {
+type ServiceMap = {
   [key: string]: RegisteredService;
 };
 
@@ -24,13 +24,12 @@ const defaultServiceCustomizations = {
 
 export class Extension {
   public allowMutiTenant: boolean = true;
-  public serviceMapping: ServiceMapping;
+  public serviceMap: ServiceMap = {};
   private config: Configuration;
   public serviceCustomizations: ServiceCustomizations;
   public logo: Logo;
 
   constructor(config: Configuration) {
-    this.serviceMapping = {};
     this.setConfiguration(config);
   }
 
@@ -78,7 +77,7 @@ export class Extension {
   registerService(service: Service): void {
     // Checking uniqueness of service id
     if (
-      service.id in this.serviceMapping ||
+      service.id in this.serviceMap ||
       service.id in Object.values(EnumTapisCoreService)
     ) {
       throw new Error(
@@ -96,16 +95,16 @@ export class Extension {
 
     const registeredService: RegisteredService = {
       ...service,
-      route: service.id,
+      route: `/${service.id}`,
     };
 
-    this.serviceMapping[service.id] = registeredService;
+    this.serviceMap[service.id] = registeredService;
   }
 
   public getServiceIds(): Array<Service> {
     const serviceIdsArray = [];
-    for (let key in this.serviceMapping) {
-      serviceIdsArray.push(this.serviceMapping[key]);
+    for (let key in this.serviceMap) {
+      serviceIdsArray.push(this.serviceMap[key]);
     }
 
     return serviceIdsArray;
