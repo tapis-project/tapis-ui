@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Models } from '@tapis/tapis-typescript';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
+<<<<<<< HEAD:src/app/MlHub/Models/ModelDetails.tsx
 import { Icon } from '@tapis/tapisui-common';
 import { JSONDisplay } from '@tapis/tapisui-common';
+=======
+import { Icon } from 'tapis-ui/_common';
+import { JSONDisplay } from 'tapis-ui/_common';
+import GenericModal from 'tapis-ui/_common/GenericModal/GenericModal';
+>>>>>>> dev:src/tapis-app/MlHub/Models/ModelDetails.tsx
 
-type ModelsProps = {
+type ModelDetailsProps = {
   modelId: string;
 };
 
+<<<<<<< HEAD:src/app/MlHub/Models/ModelDetails.tsx
 type ButtonNames = {
   InferenceServerDetails: String;
   ModelCard: String;
@@ -19,6 +26,10 @@ type ButtonNames = {
 
 const ModelDetails: React.FC<ModelsProps> = ({ modelId }) => {
   const { data, isLoading, error } = Hooks.Models.useDetails({ modelId });
+=======
+const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
+  const { data, isLoading, error } = useDetails({ modelId });
+>>>>>>> dev:src/tapis-app/MlHub/Models/ModelDetails.tsx
   const model: Models.ModelFullInfo = data?.result ?? {};
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -80,44 +91,82 @@ const ModelDetails: React.FC<ModelsProps> = ({ modelId }) => {
             </div>
           </div>
         </div>
-        <Buttons
-          InferenceServerDetails="Inference Server Info"
-          DownloadModel="Download Model"
-          ModelCard="Model Card"
-        />
+        <Buttons modelId={modelId} />
       </div>
     </QueryWrapper>
   );
 };
 
-const Buttons: React.FC<ButtonNames> = ({
-  InferenceServerDetails,
-  ModelCard,
-  DownloadModel,
-}) => {
+const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
+  const [currentModal, setCurrentModal] = useState<string | undefined>(
+    undefined
+  );
+  const { data } = useDetails({ modelId });
+  const modelCardDetails: Models.ModelFullInfo = data?.result ?? {};
   return (
     <div className={`${styles['buttons-container']}`}>
-      <Button>
-        {InferenceServerDetails}{' '}
+      <Button
+        onClick={() => {
+          setCurrentModal('inferenceinfo');
+        }}
+      >
+        {'Inference Service Info'}
         <span>
-          {' '}
-          <Icon name="push-right" />{' '}
+          <Icon name="push-right" />
         </span>
       </Button>
-      <Button>
-        {DownloadModel}{' '}
+      <Button
+        onClick={() => {
+          setCurrentModal('downloadmodel');
+        }}
+      >
+        {'Download Model'}
         <span>
-          {' '}
-          <Icon name="push-right" />{' '}
-        </span>{' '}
+          <Icon name="push-right" />
+        </span>
       </Button>
-      <Button>
-        {ModelCard}{' '}
+      <Button
+        onClick={() => {
+          setCurrentModal('modelcard');
+        }}
+      >
+        {'Model Card'}
         <span>
-          {' '}
-          <Icon name="push-right" />{' '}
-        </span>{' '}
+          <Icon name="push-right" />
+        </span>
       </Button>
+      {currentModal === 'modelcard' && (
+        <GenericModal
+          toggle={() => {
+            setCurrentModal(undefined);
+          }}
+          title="Model Card"
+          body={
+            <div>
+              {modelId}
+              <JSONDisplay json={modelCardDetails.card_data}> </JSONDisplay>
+            </div>
+          }
+        />
+      )}
+      {currentModal === 'inferenceinfo' && (
+        <GenericModal
+          toggle={() => {
+            setCurrentModal(undefined);
+          }}
+          title="Inference Info"
+          body={<div>INFERENCE INFO</div>}
+        />
+      )}
+      {currentModal === 'downloadmodel' && (
+        <GenericModal
+          toggle={() => {
+            setCurrentModal(undefined);
+          }}
+          title="Download Model"
+          body={<div>"DOWNLOAD ME"</div>}
+        />
+      )}
     </div>
   );
 };
