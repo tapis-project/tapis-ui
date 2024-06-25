@@ -11,9 +11,7 @@ describe('useMutations', () => {
       onComplete: vi.fn(),
       fn: (item: any) => new Promise((resolve) => resolve(item)),
     };
-    const { result } = renderHook(() =>
-      useMutations<any, any>(params)
-    );
+    const { result } = renderHook(() => useMutations<any, any>(params));
 
     waitFor(() => {
       const { run } = result.current;
@@ -34,9 +32,7 @@ describe('useMutations', () => {
       onComplete: vi.fn(),
       fn: (item: any) => new Promise((_, reject) => reject(item)),
     };
-    const { result } = renderHook(() =>
-      useMutations<any, any>(params)
-    );
+    const { result } = renderHook(() => useMutations<any, any>(params));
 
     waitFor(() => {
       const { run } = result.current;

@@ -18,7 +18,7 @@ import { useExtension } from 'extensions';
 const Router: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { logout } = Authenticator.useLogin();
-  const { extension } = useExtension()
+  const { extension } = useExtension();
 
   return (
     <Switch>
@@ -56,19 +56,21 @@ const Router: React.FC = () => {
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
         <Pods />
       </ProtectedRoute>
-      {
-        extension && Object.entries(extension.serviceMap).map(([_, service]) => {
-          const Component = service.component
+      {extension &&
+        Object.entries(extension.serviceMap).map(([_, service]) => {
+          const Component = service.component;
           if (Component !== undefined) {
             return (
-              <ProtectedRoute accessToken={accessToken?.access_token} path={service.route}>
+              <ProtectedRoute
+                accessToken={accessToken?.access_token}
+                path={service.route}
+              >
                 <Component />
               </ProtectedRoute>
-            )
+            );
           }
-          return <></>
-        })
-      }
+          return <></>;
+        })}
       {/* <Route path="/uipatterns">
         <SectionHeader>UI Patterns</SectionHeader>
         <UIPatterns />

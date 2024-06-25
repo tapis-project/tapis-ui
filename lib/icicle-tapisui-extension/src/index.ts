@@ -3,7 +3,7 @@ import {
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
-import { MLEdgePage, SmartSchedulerPage } from "./pages"
+import { MLEdgePage, SmartSchedulerPage } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -36,14 +36,14 @@ extension.registerService({
   id: 'ml-edge',
   sidebarDisplayName: 'ML Edge',
   iconName: 'globe',
-  component: MLEdgePage
+  component: MLEdgePage,
 });
 
 extension.registerService({
   id: 'smart-scheduler',
   sidebarDisplayName: 'Smart Scheduler',
   iconName: 'globe',
-  component: SmartSchedulerPage
+  component: SmartSchedulerPage,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;

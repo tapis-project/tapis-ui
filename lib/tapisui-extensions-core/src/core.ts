@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react';
 import { WorkflowsCustomizations } from './workflows';
 import { OAuth, AuthMethod } from './oauth2';
 
@@ -18,7 +18,7 @@ export type Logo = {
   logoText?: string;
 };
 
-type Component = React.FC<React.PropsWithChildren<unknown>>
+type Component = React.FC<React.PropsWithChildren<unknown>>;
 
 export type Service = {
   id: string;
