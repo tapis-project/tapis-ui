@@ -1,0 +1,41 @@
+/* SETTINGS: Color */
+
+/* Usage: `var(--global-color-primary--normal)` */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
+
+/* Modifers
+    --normal:   standard color
+    --alt:      alternate color
+    --weak:     transparent instance
+    --(…)light: lighter value
+    --(…)dark:  darker value
+*/
+
+:root {
+  /* Primary (Text, Layout) */
+  --global-color-primary--xx-light: #ffffff;
+  --global-color-primary--x-light: #f4f4f4;
+  --global-color-primary--light: #c6c6c6;
+  --global-color-primary--normal: #afafaf;
+  --global-color-primary--dark: #707070;
+  --global-color-primary--x-dark: #484848;
+  --global-color-primary--xx-dark: #222222; /* Unused. For header background, which is styled by CMS styles */
+
+  /* Distinct Hues */
+  --global-color-accent--normal: #9d85ef;
+  --global-color-accent--weak: #9d85ef20;
+  --global-color-accent--light: #dfdaf5;
+  --global-color-accent--x-light: #d2cce7;
+  --global-color-info--normal: var(--global-color-primary--x-dark);
+  --global-color-info--weak: var(--global-color-primary--x-light);
+  --global-color-success--normal: #43d130;
+  --global-color-success--weak: #43d13020;
+  --global-color-success--alt: var(--global-color-warning--normal);
+  --global-color-success--alt-weak: var(--global-color-warning--weak);
+  --global-color-warning--normal: #c7ce1d;
+  --global-color-warning--weak: #c7ce1d20;
+  --global-color-warning--alt: var(--global-color-accent--normal);
+  --global-color-warning--alt-weak: var(--global-color-accent--weak);
+  --global-color-danger--normal: #eb6e6e;
+  --global-color-danger--weak: #eb6e6e20;
+}

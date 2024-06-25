@@ -1,0 +1,90 @@
+.dag-view-container {
+  width: 100%;
+}
+
+.dag-layout-container {
+  display: flex;
+}
+
+.sidebar {
+  padding: 8px;
+  min-height: 100%;
+  width: 20%;
+  border: 1px solid #cccccc;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-item {
+  width: 100%;
+  display: flex;
+}
+
+.task-info {
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+  display: block;
+  height: 100%;
+  width: 250px;
+  margin-right: 8px;
+  text-align: left;
+  padding: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.task-info:hover {
+  cursor: pointer;
+  background-color: #5a6268;
+  transition: 0.25s;
+  color: #ffffff;
+}
+
+.task-info-text {
+  margin: auto;
+  vertical-align: middle;
+}
+
+.dag-task {
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+  display: block;
+  height: 45px;
+  width: 250px;
+  text-align: left;
+  padding: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.dag-task:hover {
+  cursor: pointer;
+  background-color: #5a6268;
+  transition: 0.25s;
+  color: #ffffff;
+}
+
+.dag-task-active {
+  cursor: pointer;
+  background-color: #5a6268;
+  color: #ffffff;
+}
+
+.dag-task-action-menu {
+  border: 1px solid #cccccc;
+}
+
+.dag-container {
+  width: 80%;
+  border: 1px solid #cccccc;
+}
+
+.dag {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}

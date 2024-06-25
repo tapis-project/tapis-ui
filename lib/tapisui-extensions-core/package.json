@@ -1,0 +1,39 @@
+{
+  "name": "@tapis/tapisui-extensions-core",
+  "version": "0.1.10",
+  "description": "Typescript library that enables users to create extensions for TapisUI",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "push": "npx tsc && npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapis-project/tapisui-extensions-core.git"
+  },
+  "keywords": [
+    "typescript",
+    "tapisui",
+    "UT",
+    "TACC",
+    "CIC"
+  ],
+  "author": "Nathan Freeman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tapis-project/tapisui-extensions-core/issues"
+  },
+  "homepage": "https://github.com/tapis-project/tapisui-extensions-core#readme",
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "react": "^18.3.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@tapis/tapis-typescript": "^0.0.29",
+    "simple-git": "^3.24.0"
+  }
+}

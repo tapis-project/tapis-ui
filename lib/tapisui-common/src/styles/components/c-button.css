@@ -1,0 +1,110 @@
+/* WARNING: This file is copied from Portal repo */
+/* TODO: Share source code between CMS, Portal, & User Guide */
+/* SEE: https://github.com/TACC/Core-Portal/blob/main/client/src/styles/components/c-button.css */
+
+/* FP-545: Move these styles to `_common/Button` */
+/*
+Button
+
+A button that may have icon(s) before and/or after its text.
+
+Override Bootstrap styles. See:
+- [ReactStrap Buttons](https://reactstrap.github.io/components/buttons/)
+- [Bootstrap Buttons](https://getbootstrap.com/docs/4.4/components/buttons/)
+
+.c-button--primary - A primary (expected) user action
+.c-button--secondary - For an optional user action
+.c-button--as-link - A button that visually resembles a link
+
+Markup:
+<main>
+    <button class="c-button c-button--secondary">
+      <i class="c-button__icon--before" data-icon="X">(clear input)</i>
+      <span class="c-button__text">Cancel</span>
+    </button>
+    <button class="c-button c-button--primary">
+      <i class="c-button__icon" data-icon="✓">(check input)</i>
+      <span class="c-button__text">Confirm</span>
+      <i class="c-button__icon--after" data-icon="→">(and exit)</i>
+    </button>
+    <button class="c-button c-button--secondary">
+      <span class="c-button__text">Skip</span>
+      <i class="c-button__icon--after" data-icon="→">(and move to next form)</i>
+    </button>
+    <button class="c-button c-button--as-link">
+      Return to Previous Screen
+    </button>
+</main>
+
+Styleguide Components.Button
+*/
+.c-button,
+[class*='c-button--'] {
+  /* Normalize child element box sizes */
+  display: flex;
+  /* Align elements horizontally and vertically */
+  align-items: center;
+  justify-content: center;
+
+  /* OVERWRITE BOOTSTRAP `.btn` */
+  /* FAQ: Vertical padding reduced by 1px each to near button height of design * 1.2 */
+  padding: 6px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
+  border-radius: 0;
+  font-weight: 700;
+  /* NOTE: Should set `font-size`, but `.icon`'s `em` adversely changes icon size */
+}
+
+/* Types */
+
+/* FP-546: Before FP-546 standardizes `_common/Button`, the color and border
+           styles are overridden and duplicated by `Workbench.scss` */
+.c-button--primary {
+  /* OVERWRITE BOOTSTRAP `.btn-primary` */
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border: none;
+}
+
+.c-button--secondary {
+  /* OVERWRITE BOOTSTRAP `.btn-secondary` */
+  color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--x-light);
+  border: var(--global-border--normal);
+}
+.c-button--secondary:disabled {
+  /* OVERWRITE BOOTSTRAP `.btn-secondary:disabled` */
+  /* FP-546: Implementation of this style (which matches design) is pending:
+     - Confirmation from designers (these styles have poor color contrast)
+     - Removal of overly-specific `Workbench.scss` styles (requires FP-546)
+  /*
+  color: var(--global-color-primary--dark);
+  background-color: var(--global-color-primary--light);
+  border: var(--global-color-primary--light);
+  */
+}
+/* WARNING: These styles are NOT defined by Design (origin: DataFiles) — 2020-07-21 */
+.c-button--secondary:not(:disabled):hover {
+  /* OVERWRITE BOOTSTRAP `.btn-secondary:not(:disabled):hover` */
+  color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--normal);
+  border-color: var(--global-color-primary--x-dark);
+}
+
+/* FP-546: Before FP-546 standardizes `_common/Button`, the color
+           styles are overridden and duplicated by `Workbench.scss` */
+.c-button--as-link {
+  /* OVERWRITE BOOTSTRAP `.btn-link` */
+  color: var(--global-color-accent--normal);
+}
+
+/* Children */
+
+.c-button__icon--before {
+  margin-right: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+}
+.c-button__icon--after {
+  margin-left: auto; /* this is how to "justify-self" on flex children */
+}
+.c-button__text {
+  /* … */
+}

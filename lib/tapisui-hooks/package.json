@@ -1,0 +1,55 @@
+{
+  "name": "@tapis/tapisui-hooks",
+  "version": "0.0.3",
+  "description": "Typescript library for calling api hooks",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "vitest run",
+    "build": "npx tsc --skipLibCheck",
+    "push": "npx tsc --skipLibCheck && npm publish --access public"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "keywords": [
+    "UT",
+    "TACC",
+    "CIC"
+  ],
+  "author": "Nathan Freeman",
+  "license": "ISC",
+  "eslintConfig": {
+    "extends": [
+      "prettier"
+    ]
+  },
+  "dependencies": {
+    "react-query": "^3.19.2",
+    "@tapis/tapis-typescript": "^0.0.29",
+    "@tapis/tapisui-api": "^0.0.14",
+    "cross-fetch": "^3.1.4",
+    "js-cookie": "^3.0.0",
+    "jsdom": "^24.1.0",
+    "jwt-decode": "^3.1.2",
+    "react": "^18.3.1",
+    "rxjs": "^6.6.7",
+    "streamsaver": "^2.0.5",
+    "typescript": "^4.3.5",
+    "vite": "^5.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20.14.5",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/streamsaver": "^2.0.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^4.9.5",
+    "vitest": "^1.6.0"
+  }
+}

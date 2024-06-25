@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "declaration": true,
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "dist",
+    "lib": ["es5", "dom"],
+    "types": ["node"],
+    "typeRoots": ["./types", "node_modules/@types"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "bundle.ts", "tasks.ts"]
+}

@@ -1,0 +1,31 @@
+/* Ordered via ITCSS */
+/* SEE: ./README.md */
+
+/* SETTINGS */
+@import url('./settings/color.css');
+@import url('./settings/font.css');
+@import url('./settings/border.css');
+@import url('./settings/space.css');
+
+/* TOOLS */
+/* … */
+
+/* GENERIC */
+@import url('./generics/roots.css');
+
+/* ELEMENTS */
+@import url('./elements/sectioning.css');
+@import url('./elements/text-semantics.css');
+
+/* OBJECTS */
+/* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('./objects/o-flex-item-table-wrap.css');
+
+/* COMPONENTS */
+/* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('./components/bootstrap.form.css');
+@import url('./components/bootstrap.modal.css');
+
+/* TRUMPS */
+/* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('./trumps/icon.css');

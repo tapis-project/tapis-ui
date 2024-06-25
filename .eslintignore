@@ -3,3 +3,5 @@ coverage
 build
 webpack.*.js
 *.test.js
+dist
+*.js

@@ -1,0 +1,7 @@
+{
+  "type": "tapis_actor",
+  "description": "Send message to tapis actor Rrk4OpkomrG8D",
+  "id": "actor-task-no-poll",
+  "tapis_actor_id": "Rrk4OpkomrG8D",
+  "tapis_actor_message": "word count test"
+}
