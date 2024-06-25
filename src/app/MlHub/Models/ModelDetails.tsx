@@ -4,32 +4,14 @@ import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
-<<<<<<< HEAD:src/app/MlHub/Models/ModelDetails.tsx
-import { Icon } from '@tapis/tapisui-common';
-import { JSONDisplay } from '@tapis/tapisui-common';
-=======
-import { Icon } from 'tapis-ui/_common';
-import { JSONDisplay } from 'tapis-ui/_common';
-import GenericModal from 'tapis-ui/_common/GenericModal/GenericModal';
->>>>>>> dev:src/tapis-app/MlHub/Models/ModelDetails.tsx
+import { Icon, JSONDisplay, GenericModal } from '@tapis/tapisui-common';
 
 type ModelDetailsProps = {
   modelId: string;
 };
 
-<<<<<<< HEAD:src/app/MlHub/Models/ModelDetails.tsx
-type ButtonNames = {
-  InferenceServerDetails: String;
-  ModelCard: String;
-  DownloadModel: String;
-};
-
-const ModelDetails: React.FC<ModelsProps> = ({ modelId }) => {
-  const { data, isLoading, error } = Hooks.Models.useDetails({ modelId });
-=======
 const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
-  const { data, isLoading, error } = useDetails({ modelId });
->>>>>>> dev:src/tapis-app/MlHub/Models/ModelDetails.tsx
+  const { data, isLoading, error } = Hooks.Models.useDetails({ modelId });
   const model: Models.ModelFullInfo = data?.result ?? {};
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -101,7 +83,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
   const [currentModal, setCurrentModal] = useState<string | undefined>(
     undefined
   );
-  const { data } = useDetails({ modelId });
+  const { data } = Hooks.Models.useDetails({ modelId });
   const modelCardDetails: Models.ModelFullInfo = data?.result ?? {};
   return (
     <div className={`${styles['buttons-container']}`}>
@@ -144,7 +126,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           body={
             <div>
               {modelId}
-              <JSONDisplay json={modelCardDetails.card_data}> </JSONDisplay>
+              <JSONDisplay json={modelCardDetails.card_data} />
             </div>
           }
         />
