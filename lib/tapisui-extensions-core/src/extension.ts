@@ -23,6 +23,7 @@ const defaultServiceCustomizations = {
 };
 
 export class Extension {
+  public mainSidebarServices = [];
   public allowMutiTenant: boolean = true;
   public serviceMap: ServiceMap = {};
   private config: Configuration;
@@ -36,6 +37,7 @@ export class Extension {
   setConfiguration(config: Configuration): void {
     this.config = config;
     this.allowMutiTenant = config.allowMultiTenant;
+    this.mainSidebarServices = config.mainSidebarServices || [];
     this.setAuthentication();
     this.setServiceCustomizations();
     this.logo = config.logo;

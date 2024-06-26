@@ -14,18 +14,17 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 22.x
 
-      - uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - uses: actions/cache@v1
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
       - name: npm ci
-        run: |
-          npm ci
+        run: rm -rf node_modules && rm package-lock.json && npm install
       - name: Client Side Unit Tests
         run: |
           npm run test
@@ -40,14 +39,14 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 22.x
 
-      - uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - uses: actions/cache@v1
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
       - name: npm ci
         run: |
