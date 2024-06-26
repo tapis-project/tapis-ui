@@ -24,8 +24,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: npm ci
-        run: |
-          npm ci
+        run: rm package-lock.json && npm ci
       - name: Client Side Unit Tests
         run: |
           npm run test
