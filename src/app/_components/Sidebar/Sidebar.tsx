@@ -6,77 +6,76 @@ import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
 
 type SidebarItems = {
-  [key: string]: any
-}
+  [key: string]: any;
+};
 
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { extension } = useExtension();
-  const sidebarItems: SidebarItems  = {
-    "systems": (
+  const sidebarItems: SidebarItems = {
+    systems: (
       <NavItem to="/systems" icon="data-files">
         Systems
       </NavItem>
     ),
-    "files": (
+    files: (
       <NavItem to="/files" icon="folder">
         Files
       </NavItem>
     ),
-    "apps": (
+    apps: (
       <NavItem to="/apps" icon="applications">
         Apps
       </NavItem>
     ),
-    "jobs": (
+    jobs: (
       <NavItem to="/jobs" icon="jobs">
         Jobs
       </NavItem>
     ),
-    "workflows": (
+    workflows: (
       <NavItem to="/workflows" icon="publications">
         Workflows
       </NavItem>
     ),
-    "ml-hub": (
+    'ml-hub': (
       <NavItem to="/ml-hub" icon="share">
         ML Hub
       </NavItem>
     ),
-    "pods": (
+    pods: (
       <NavItem to="/pods" icon="visualization">
         Pods
       </NavItem>
     ),
-  }
-  
+  };
+
   if (extension !== undefined) {
     for (const [id, service] of Object.entries(extension.serviceMap)) {
       sidebarItems[id] = (
         <NavItem to={service.route} icon={service.iconName}>
           {service.sidebarDisplayName}
         </NavItem>
-      )
+      );
     }
   }
-  
+
   let mainSidebarItems = Object.entries(sidebarItems).map(([_, item]) => {
-    return item
-  })
-  
-  const secondarySidebarItems = []
+    return item;
+  });
+
+  const secondarySidebarItems = [];
   if (extension && extension.mainSidebarServices.length > 0) {
-    mainSidebarItems = []
+    mainSidebarItems = [];
     for (const [id, item] of Object.entries(sidebarItems)) {
       if (extension.mainSidebarServices.includes(id)) {
-        mainSidebarItems.push(item)
-        continue
+        mainSidebarItems.push(item);
+        continue;
       }
 
-      secondarySidebarItems.push(item)
+      secondarySidebarItems.push(item);
     }
   }
-
 
   return (
     <div className={styles.root}>
@@ -91,7 +90,9 @@ const Sidebar: React.FC = () => {
         )}
         {accessToken && (
           <>
-            {mainSidebarItems.map((item: any) => { return item })}
+            {mainSidebarItems.map((item: any) => {
+              return item;
+            })}
           </>
         )}
       </Navbar>
