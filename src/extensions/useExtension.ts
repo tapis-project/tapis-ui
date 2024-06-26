@@ -10,7 +10,7 @@ const useExtension = () => {
   const { extensions } = useContext(ExtensionsContext);
   let basePath = resolveBasePath();
   if (basePath == 'https://dev.develop.tapis.io') {
-    basePath = 'https://icicle.tapis.io';
+    basePath = 'https://icicleai.tapis.io';
   }
 
   let extension = undefined;

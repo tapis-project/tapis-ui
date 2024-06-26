@@ -16,3 +16,19 @@ export const SmartSchedulerPage: React.FC = () => {
     </div>
   );
 };
+
+export const JupyterLabPage: React.FC = () => {
+  return (
+    <div>
+      <SectionHeader>Jupyter Lab</SectionHeader>
+    </div>
+  );
+};
+
+export const OpenWebUIPage: React.FC = () => {
+  return (
+    <div>
+      <SectionHeader>Open Web UI</SectionHeader>
+    </div>
+  );
+};
