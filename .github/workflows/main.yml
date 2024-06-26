@@ -24,7 +24,7 @@ jobs:
       #       ${{ runner.os }}-node-
 
       - name: npm ci
-        run: npm ci
+        run: npm install
       - name: Client Side Unit Tests
         run: |
           npm run test
