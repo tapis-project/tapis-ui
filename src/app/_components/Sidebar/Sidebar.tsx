@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
   ) => {
     return (
       <NavItem to={to} icon={icon}>
-        {expanded === true ? text : ''}
+        {expanded === true ? <span style={{paddingRight: "32px", whiteSpace: "nowrap"}}>{text}</span> : ''}
       </NavItem>
     );
   };
