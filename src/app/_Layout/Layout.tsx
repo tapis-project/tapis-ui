@@ -39,7 +39,7 @@ const Layout: React.FC = () => {
           <img
             style={{ height: '30px' }}
             className="logo"
-            src={extension?.logo?.url || "./tapislogo.png"}
+            src={extension?.logo?.url || './tapislogo.png'}
           />
         </Link>
         {extension?.logo?.logoText || 'TapisUI'}

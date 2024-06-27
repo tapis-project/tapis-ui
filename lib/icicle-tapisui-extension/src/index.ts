@@ -3,7 +3,12 @@ import {
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
-import { MLEdgePage, SmartSchedulerPage, JupyterLabPage, OpenWebUIPage } from './pages';
+import {
+  MLEdgePage,
+  SmartSchedulerPage,
+  JupyterLabPage,
+  OpenWebUIPage,
+} from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -22,8 +27,8 @@ const extension = createExtension({
     'pods',
     'ml-edge',
     'smart-scheduler',
-    "jupyter-lab",
-    "open-web-ui",
+    'jupyter-lab',
+    'open-web-ui',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
