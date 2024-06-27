@@ -10,9 +10,9 @@ const useExtension = () => {
   const { extensions } = useContext(ExtensionsContext);
   let basePath = resolveBasePath();
   // TODO Add logic to toggle between baseUrls iff in a local environment
-  // if (basePath == 'https://dev.develop.tapis.io') {
-  //   basePath = 'https://icicleai.tapis.io';
-  // }
+  if (basePath == 'https://dev.develop.tapis.io') {
+    basePath = 'https://icicleai.tapis.io';
+  }
 
   let extension = undefined;
   let extensionName = undefined;

@@ -36,19 +36,11 @@ const Layout: React.FC = () => {
     <div className="tapis-ui__header">
       <div>
         <Link to={'/'}>
-          {extension?.logo?.url ? (
-            <img
-              style={{ height: '30px' }}
-              className="logo"
-              src={extension?.logo.url}
-            />
-          ) : (
-            <img
-              style={{ height: '30px' }}
-              className="logo"
-              src="./tapislogo.png"
-            />
-          )}
+          <img
+            style={{ height: '30px' }}
+            className="logo"
+            src={extension?.logo?.url || "./tapislogo.png"}
+          />
         </Link>
         {extension?.logo?.logoText || 'TapisUI'}
       </div>
@@ -98,16 +90,10 @@ const Layout: React.FC = () => {
     </div>
   );
 
-  const workbenchContent = (
-    <div className="workbench-content">
-      <Router />
-    </div>
-  );
-
   return (
     <NotificationsProvider>
       <div style={{ display: 'flex', flexGrow: 1, height: '100vh' }}>
-        <PageLayout top={header} left={<Sidebar />} right={workbenchContent} />
+        <PageLayout top={header} left={<Sidebar />} right={<Router />} />
       </div>
     </NotificationsProvider>
   );

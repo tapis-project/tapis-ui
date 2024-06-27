@@ -56,14 +56,14 @@ extension.registerService({
 
 extension.registerService({
   id: 'jupyter-lab',
-  sidebarDisplayName: 'Jupyter',
-  iconName: 'globe',
+  sidebarDisplayName: 'JupyterLab',
+  iconName: 'jupyter',
   component: JupyterLabPage,
 });
 
 extension.registerService({
   id: 'open-web-ui',
-  sidebarDisplayName: 'Open Web UI',
+  sidebarDisplayName: 'Open WebUI',
   iconName: 'globe',
   component: OpenWebUIPage,
 });
