@@ -12,7 +12,7 @@ const listByQuery = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() =>
+  return errorDecoder<Models.RespModelsObject>(() =>
     api.listModelsByQuery(params)
   );
 };

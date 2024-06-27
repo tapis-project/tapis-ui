@@ -12,7 +12,7 @@ const listByTask = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() =>
+  return errorDecoder<Models.RespModelsObject>(() =>
     api.listModelsByTask(params)
   );
 };
