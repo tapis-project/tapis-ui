@@ -35,6 +35,7 @@
   "dependencies": {
     "@tapis/tapis-typescript": "^0.0.31",
     "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
+    "@tapis/tapisui-common": "file:../tapisui-common",
     "react": "^18.3.1"
   },
   "devDependencies": {

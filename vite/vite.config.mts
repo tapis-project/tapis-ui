@@ -7,7 +7,7 @@ import viteCommonjs from 'vite-plugin-commonjs';
 
 export default defineConfig({
   // depending on your application, base can also be "/"
-  base: '',
+  base: '/tapis-ui/#/',
   define: {
     global: 'window',
     define: {

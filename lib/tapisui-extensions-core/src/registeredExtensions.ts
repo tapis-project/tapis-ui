@@ -3,6 +3,11 @@ type RegisteredExtensions = { [key: string]: ExtensionData };
 
 export const registeredExtensions: RegisteredExtensions = {
   '@icicle/tapisui-extension': {
-    baseUrls: ['https://icicle.tapis.io', 'https://icicleai.tapis.io'],
+    baseUrls: [
+      'https://icicle.tapis.io',
+      'https://icicleai.tapis.io',
+      'https://icicle.develop.tapis.io',
+      'https://icicleai.develop.tapis.io',
+    ],
   },
 };
