@@ -1,1 +1,1 @@
-export { default as MLEdge } from "./MLEdge"
+export { default as MLEdge } from './MLEdge';

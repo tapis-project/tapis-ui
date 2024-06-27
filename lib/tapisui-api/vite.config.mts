@@ -3,7 +3,5 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   base: '',
-  plugins: [
-    viteTsconfigPaths(),
-  ]
+  plugins: [viteTsconfigPaths()],
 });

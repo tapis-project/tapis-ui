@@ -19,4 +19,4 @@ const OpenWebUI: React.FC = () => {
   );
 };
 
-export default OpenWebUI
+export default OpenWebUI;

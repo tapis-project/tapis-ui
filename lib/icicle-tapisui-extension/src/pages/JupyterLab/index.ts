@@ -1,1 +1,1 @@
-export { default as JupyterLab } from "./JupyterLab"
+export { default as JupyterLab } from './JupyterLab';

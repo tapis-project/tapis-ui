@@ -9,4 +9,4 @@ const MLEdge: React.FC = () => {
   );
 };
 
-export default MLEdge
+export default MLEdge;

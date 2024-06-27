@@ -1,1 +1,1 @@
-export { default as SmartScheduler } from "./SmartScheduler"
+export { default as SmartScheduler } from './SmartScheduler';

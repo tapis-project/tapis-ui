@@ -1,1 +1,1 @@
-export { default as OpenWebUI } from "./OpenWebUI"
+export { default as OpenWebUI } from './OpenWebUI';

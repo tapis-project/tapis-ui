@@ -3,12 +3,7 @@ import {
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
-import {
-  MLEdge,
-  SmartScheduler,
-  JupyterLab,
-  OpenWebUI,
-} from './pages';
+import { MLEdge, SmartScheduler, JupyterLab, OpenWebUI } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,

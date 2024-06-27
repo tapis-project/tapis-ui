@@ -9,4 +9,4 @@ const SmartScheduler: React.FC = () => {
   );
 };
 
-export default SmartScheduler
+export default SmartScheduler;

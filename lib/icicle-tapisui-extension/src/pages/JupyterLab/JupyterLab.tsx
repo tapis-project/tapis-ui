@@ -13,4 +13,4 @@ const JupyterLab: React.FC = () => {
   );
 };
 
-export default JupyterLab
+export default JupyterLab;

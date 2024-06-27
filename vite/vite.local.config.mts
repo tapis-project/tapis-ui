@@ -33,6 +33,7 @@ export default defineConfig({
       external: ['lib'],
     },
   },
+  logLevel: 'info',
   server: {
     open: true, // Opens browser
     port: 3000,
