@@ -12,7 +12,7 @@ const listByLibrary = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() =>
+  return errorDecoder<Models.RespModelsObject>(() =>
     api.listModelsByLibrary(params)
   );
 };

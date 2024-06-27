@@ -8,7 +8,7 @@ const list = (basePath: string, jwt: string) => {
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModelObject>(() => api.listModels());
+  return errorDecoder<Models.RespModelsObject>(() => api.listModels());
 };
 
 export default list;
