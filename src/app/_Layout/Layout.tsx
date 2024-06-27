@@ -93,7 +93,15 @@ const Layout: React.FC = () => {
   return (
     <NotificationsProvider>
       <div style={{ display: 'flex', flexGrow: 1, height: '100vh' }}>
-        <PageLayout top={header} left={<Sidebar />} right={<Router />} />
+        <PageLayout
+          top={header}
+          left={<Sidebar />}
+          right={
+            <div className="body">
+              <Router />
+            </div>
+          }
+        />
       </div>
     </NotificationsProvider>
   );

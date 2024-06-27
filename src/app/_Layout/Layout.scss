@@ -117,3 +117,16 @@
   cursor: pointer;
   color: #000000;
 }
+
+.body {
+  display: flex;
+  overflow-y: auto;
+  max-height: calc(100vh - 48px);
+  min-height: calc(100vh - 48px);
+  width: 100%;
+  height: 100%;
+}
+
+.body > * {
+  width: 100%;
+}
