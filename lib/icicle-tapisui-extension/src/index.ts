@@ -4,10 +4,10 @@ import {
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
 import {
-  MLEdgePage,
-  SmartSchedulerPage,
-  JupyterLabPage,
-  OpenWebUIPage,
+  MLEdge,
+  SmartScheduler,
+  JupyterLab,
+  OpenWebUI,
 } from './pages';
 
 const extension = createExtension({
@@ -49,28 +49,28 @@ extension.registerService({
   id: 'ml-edge',
   sidebarDisplayName: 'ML Edge',
   iconName: 'simulation',
-  component: MLEdgePage,
+  component: MLEdge,
 });
 
 extension.registerService({
   id: 'smart-scheduler',
   sidebarDisplayName: 'Smart Scheduler',
   iconName: 'bar-graph',
-  component: SmartSchedulerPage,
+  component: SmartScheduler,
 });
 
 extension.registerService({
   id: 'jupyter-lab',
   sidebarDisplayName: 'JupyterLab',
   iconName: 'jupyter',
-  component: JupyterLabPage,
+  component: JupyterLab,
 });
 
 extension.registerService({
   id: 'open-web-ui',
   sidebarDisplayName: 'Open WebUI',
   iconName: 'multiple-coversation',
-  component: OpenWebUIPage,
+  component: OpenWebUI,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
