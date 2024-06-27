@@ -23,12 +23,12 @@ const extension = createExtension({
   removeServices: [EnumTapisCoreService.Apps],
   mainSidebarServices: [
     'workflows',
-    'ml-hub',
     'pods',
+    'ml-hub',
     'ml-edge',
-    'smart-scheduler',
-    'jupyter-lab',
     'open-web-ui',
+    'jupyter-lab',
+    'smart-scheduler',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -48,14 +48,14 @@ const extension = createExtension({
 extension.registerService({
   id: 'ml-edge',
   sidebarDisplayName: 'ML Edge',
-  iconName: 'globe',
+  iconName: 'simulation',
   component: MLEdgePage,
 });
 
 extension.registerService({
   id: 'smart-scheduler',
   sidebarDisplayName: 'Smart Scheduler',
-  iconName: 'globe',
+  iconName: 'bar-graph',
   component: SmartSchedulerPage,
 });
 
@@ -69,7 +69,7 @@ extension.registerService({
 extension.registerService({
   id: 'open-web-ui',
   sidebarDisplayName: 'Open WebUI',
-  iconName: 'globe',
+  iconName: 'multiple-coversation',
   component: OpenWebUIPage,
 });
 

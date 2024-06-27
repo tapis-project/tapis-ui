@@ -13,29 +13,37 @@ type SidebarItems = {
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { extension } = useExtension();
-  const [ expanded, setExpanded ] = useState(true)
+  const [expanded, setExpanded] = useState(true);
 
-  const renderSidebarItem = (to: string, icon: string | undefined, text: string) => {
+  const renderSidebarItem = (
+    to: string,
+    icon: string | undefined,
+    text: string
+  ) => {
     return (
       <NavItem to={to} icon={icon}>
-        {expanded === true ? text : ""}
+        {expanded === true ? text : ''}
       </NavItem>
-    )
-  }
+    );
+  };
 
   const sidebarItems: SidebarItems = {
-    systems: renderSidebarItem("/systems", "data-files", "Systems"),
-    files: renderSidebarItem("/files", "folder", "Files"),
-    apps: renderSidebarItem("/apps", "applications", "Apps"),
-    jobs: renderSidebarItem("/jobs", "jobs", "Jobs"),
-    workflows: renderSidebarItem("/workflows", "publications", "Workflows"),
-    'ml-hub': renderSidebarItem("/ml-hub", "share", "ML Hub"),
-    pods: renderSidebarItem("/pods", "visualization", "Pods"),
+    systems: renderSidebarItem('/systems', 'data-files', 'Systems'),
+    files: renderSidebarItem('/files', 'folder', 'Files'),
+    apps: renderSidebarItem('/apps', 'applications', 'Apps'),
+    jobs: renderSidebarItem('/jobs', 'jobs', 'Jobs'),
+    workflows: renderSidebarItem('/workflows', 'publications', 'Workflows'),
+    pods: renderSidebarItem('/pods', 'visualization', 'Pods'),
+    'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
   };
 
   if (extension !== undefined) {
     for (const [id, service] of Object.entries(extension.serviceMap)) {
-      sidebarItems[id] = renderSidebarItem(service.route, service.iconName, service.sidebarDisplayName)
+      sidebarItems[id] = renderSidebarItem(
+        service.route,
+        service.iconName,
+        service.sidebarDisplayName
+      );
     }
   }
 
@@ -58,17 +66,17 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <div className={styles["collapse-icon"]}>
+      <div className={styles['collapse-icon']}>
         <Menu
           color="action"
-          onClick={() => { setExpanded(!expanded) }}
+          onClick={() => {
+            setExpanded(!expanded);
+          }}
         />
       </div>
       <Navbar>
-        {renderSidebarItem("/", "dashboard", "Dashboard")}
-        {!accessToken && (
-          renderSidebarItem("/login", "user", "Login")
-        )}
+        {renderSidebarItem('/', 'dashboard', 'Dashboard')}
+        {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
             {mainSidebarItems.map((item: any) => {

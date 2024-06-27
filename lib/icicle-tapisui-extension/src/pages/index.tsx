@@ -40,7 +40,6 @@ export const OpenWebUIPage: React.FC = () => {
         overflow: 'hidden',
       }}
     >
-      <SectionHeader>Open Web UI</SectionHeader>
       <iframe
         style={{ flexGrow: 1, border: 'none' }}
         src="https://openwebui.pods.tacc.develop.tapis.io/"
