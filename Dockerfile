@@ -11,7 +11,7 @@ COPY ./ ./
 # Install all files in the package json
 RUN npm run init-project-container
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "deploy"]
 
 # RUN npm run build
 

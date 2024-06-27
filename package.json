@@ -56,7 +56,8 @@
   },
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {
-    "start": "vite",
+    "start": "vite --config ./vite/vite.local.config.mts",
+    "deploy": "vite --config ./vite/vite.config.mts",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
