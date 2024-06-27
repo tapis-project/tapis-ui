@@ -1,9 +1,10 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
-import React from 'react';
+import React, { useState } from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
+import { Menu } from '@mui/icons-material';
 
 type SidebarItems = {
   [key: string]: any;
@@ -12,51 +13,29 @@ type SidebarItems = {
 const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { extension } = useExtension();
+  const [ expanded, setExpanded ] = useState(true)
+
+  const renderSidebarItem = (to: string, icon: string | undefined, text: string) => {
+    return (
+      <NavItem to={to} icon={icon}>
+        {expanded === true ? text : ""}
+      </NavItem>
+    )
+  }
+
   const sidebarItems: SidebarItems = {
-    systems: (
-      <NavItem to="/systems" icon="data-files">
-        Systems
-      </NavItem>
-    ),
-    files: (
-      <NavItem to="/files" icon="folder">
-        Files
-      </NavItem>
-    ),
-    apps: (
-      <NavItem to="/apps" icon="applications">
-        Apps
-      </NavItem>
-    ),
-    jobs: (
-      <NavItem to="/jobs" icon="jobs">
-        Jobs
-      </NavItem>
-    ),
-    workflows: (
-      <NavItem to="/workflows" icon="publications">
-        Workflows
-      </NavItem>
-    ),
-    'ml-hub': (
-      <NavItem to="/ml-hub" icon="share">
-        ML Hub
-      </NavItem>
-    ),
-    pods: (
-      <NavItem to="/pods" icon="visualization">
-        Pods
-      </NavItem>
-    ),
+    systems: renderSidebarItem("/systems", "data-files", "Systems"),
+    files: renderSidebarItem("/files", "folder", "Files"),
+    apps: renderSidebarItem("/apps", "applications", "Apps"),
+    jobs: renderSidebarItem("/jobs", "jobs", "Jobs"),
+    workflows: renderSidebarItem("/workflows", "publications", "Workflows"),
+    'ml-hub': renderSidebarItem("/ml-hub", "share", "ML Hub"),
+    pods: renderSidebarItem("/pods", "visualization", "Pods"),
   };
 
   if (extension !== undefined) {
     for (const [id, service] of Object.entries(extension.serviceMap)) {
-      sidebarItems[id] = (
-        <NavItem to={service.route} icon={service.iconName}>
-          {service.sidebarDisplayName}
-        </NavItem>
-      );
+      sidebarItems[id] = renderSidebarItem(service.route, service.iconName, service.sidebarDisplayName)
     }
   }
 
@@ -79,14 +58,16 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className={styles.root}>
+      <div className={styles["collapse-icon"]}>
+        <Menu
+          color="action"
+          onClick={() => { setExpanded(!expanded) }}
+        />
+      </div>
       <Navbar>
-        <NavItem to="/" icon="dashboard">
-          Dashboard
-        </NavItem>
+        {renderSidebarItem("/", "dashboard", "Dashboard")}
         {!accessToken && (
-          <NavItem to="/login" icon="user">
-            Login
-          </NavItem>
+          renderSidebarItem("/login", "user", "Login")
         )}
         {accessToken && (
           <>

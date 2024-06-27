@@ -2,11 +2,16 @@ $width: 240px;
 
 .root {
   overflow-y: auto;
-  flex-wrap: nowrap; /* Overwrite Bootstrap `_nav.scss` style for `.nav` */
-  min-width: $width;
-  max-width: $width;
-  width: $width;
   background: #f4f4f4;
   border-right: 1px solid rgba(112, 112, 112, 0.25);
-  padding-top: 16px;
+}
+
+.collapse-icon {
+  padding: 0px;
+  display: inline-block;
+  margin: 8px 0px 8px 22px;
+}
+
+.collapse-icon:hover {
+  cursor: pointer;
 }
