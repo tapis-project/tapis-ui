@@ -33,6 +33,7 @@ type ServiceCustomizations = {
 };
 
 export type Configuration = {
+  component?: Component
   allowMultiTenant?: boolean;
   authentication?: OAuth;
   mainSidebarServices?: Array<string>;

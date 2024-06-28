@@ -1,4 +1,4 @@
-type Implicit = {
+export type Implicit = {
   authorizationPath: string;
   clientId: string;
   redirectURI: string;

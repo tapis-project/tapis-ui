@@ -12,6 +12,7 @@ import Pods from '../Pods';
 import Files from '../Files';
 import Workflows from '../Workflows';
 import MlHub from '../MlHub';
+import OAuth2 from "../OAuth2"
 import UIPatterns from '../UIPatterns';
 import { useExtension } from 'extensions';
 
@@ -35,6 +36,9 @@ const Router: React.FC = () => {
           return <Redirect to="/login" />;
         }}
       />
+      <Route path="/oauth2">
+        <OAuth2 />
+      </Route>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/systems">
         <Systems />
       </ProtectedRoute>

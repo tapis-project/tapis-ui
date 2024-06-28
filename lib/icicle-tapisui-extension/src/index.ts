@@ -9,9 +9,9 @@ const extension = createExtension({
   allowMultiTenant: false,
   authentication: {
     implicit: {
-      authorizationPath: 'https://dev.develop.tapis.io/v3/oauth2/authorize',
-      clientId: 'myclientid',
-      redirectURI: 'https://dev.develop.tapis.io/tapis-ui/#/oauth2/callback',
+      authorizationPath: 'https://icicle.develop.tapis.io/v3/oauth2/authorize',
+      clientId: 'tapisui-implicit-client',
+      redirectURI: 'https://dev.develop.tapis.io/tapis-ui/#/oauth2',
       responseType: 'token',
     },
   },
