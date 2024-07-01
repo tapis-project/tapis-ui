@@ -51,3 +51,28 @@ export const OpenWebUI: React.FC = () => {
     </div>
   );
 };
+
+export const DigitalAg: React.FC = () => {
+  return (
+    <SectionHeader>Digital Ag</SectionHeader>
+  );
+};
+
+export const VisualAnalytics: React.FC = () => {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      <iframe
+        style={{ flexGrow: 1, border: 'none' }}
+        src="https://vaapifrontenddev.pods.icicle.tapis.io/#/"
+      />
+    </div>
+  );
+};

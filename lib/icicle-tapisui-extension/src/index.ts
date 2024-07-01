@@ -3,11 +3,12 @@ import {
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
-import { MLEdge, SmartScheduler, JupyterLab, OpenWebUI } from './pages';
+import { MLEdge, SmartScheduler, JupyterLab, OpenWebUI, DigitalAg, VisualAnalytics } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
   authentication: {
+    password: true,
     implicit: {
       authorizationPath: 'https://icicle.develop.tapis.io/v3/oauth2/authorize',
       clientId: 'tapisui-implicit-client',
@@ -24,6 +25,8 @@ const extension = createExtension({
     'open-web-ui',
     'jupyter-lab',
     'smart-scheduler',
+    'digital-ag',
+    'visual-analytics'
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -66,6 +69,20 @@ extension.registerService({
   sidebarDisplayName: 'Open WebUI',
   iconName: 'multiple-coversation',
   component: OpenWebUI,
+});
+
+extension.registerService({
+  id: 'digital-ag',
+  sidebarDisplayName: 'Digital Ag',
+  iconName: 'globe',
+  component: DigitalAg,
+});
+
+extension.registerService({
+  id: 'visual-analytics',
+  sidebarDisplayName: 'Visual Analytics',
+  iconName: 'globe',
+  component: VisualAnalytics,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
