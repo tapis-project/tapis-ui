@@ -1,5 +1,5 @@
 import { Service, Configuration, EnumTapisCoreService, Logo } from './core';
-import { Implicit } from "./oauth2"
+import { Implicit } from './oauth2';
 import { WorkflowsCustomizations } from './workflows';
 
 type RegisteredService = Service & {
@@ -25,7 +25,7 @@ const defaultServiceCustomizations = {
 
 export class Extension {
   public mainSidebarServices = [];
-  public authMethods = []
+  public authMethods = [];
   public allowMutiTenant: boolean = true;
   public serviceMap: ServiceMap = {};
   private config: Configuration;
@@ -46,7 +46,7 @@ export class Extension {
   }
 
   private setAuthentication(): void {
-    this.authMethods = this.config.authMethods || []
+    this.authMethods = this.config.authMethods || [];
     let modifiedAuthPath =
       this.config?.authentication?.implicit?.authorizationPath;
     if (modifiedAuthPath !== undefined) {
@@ -56,16 +56,18 @@ export class Extension {
     }
   }
 
-  public getAuthByType(type: "password" | "implicit"): Implicit | boolean | undefined {
-    if (type === "password" && this.authMethods.includes("password")) {
-      return this.config.authentication?.password
+  public getAuthByType(
+    type: 'password' | 'implicit'
+  ): Implicit | boolean | undefined {
+    if (type === 'password' && this.authMethods.includes('password')) {
+      return this.config.authentication?.password;
     }
 
-    if (type === "implicit" && this.authMethods.includes("implicit")) {
-      return this.config.authentication?.implicit
+    if (type === 'implicit' && this.authMethods.includes('implicit')) {
+      return this.config.authentication?.implicit;
     }
 
-    return undefined
+    return undefined;
   }
 
   private setServiceCustomizations(): void {

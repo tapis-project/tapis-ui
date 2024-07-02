@@ -18,7 +18,9 @@ export type Logo = {
   logoText?: string;
 };
 
-type Component = React.FC<React.PropsWithChildren<unknown>>;
+export type Component = React.FC<
+  React.PropsWithChildren<{ accessToken: string | undefined }>
+>;
 
 export type Service = {
   id: string;
@@ -33,7 +35,7 @@ type ServiceCustomizations = {
 };
 
 export type Configuration = {
-  component?: Component
+  component?: Component;
   allowMultiTenant?: boolean;
   authentication?: OAuth;
   mainSidebarServices?: Array<string>;

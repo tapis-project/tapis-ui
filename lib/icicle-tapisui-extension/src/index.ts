@@ -3,16 +3,23 @@ import {
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
-import { MLEdge, SmartScheduler, JupyterLab, OpenWebUI, DigitalAg, VisualAnalytics } from './pages';
+import {
+  MLEdge,
+  DataLabeler,
+  JupyterLab,
+  OpenWebUI,
+  DigitalAg,
+  VisualAnalytics,
+} from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
   authentication: {
     password: true,
     implicit: {
-      authorizationPath: 'https://icicle.develop.tapis.io/v3/oauth2/authorize',
+      authorizationPath: 'https://icicleai.tapis.io/v3/oauth2/authorize',
       clientId: 'tapisui-implicit-client',
-      redirectURI: 'https://dev.develop.tapis.io/tapis-ui/#/oauth2',
+      redirectURI: 'https://icicleai.tapis.io/tapis-ui/#/oauth2',
       responseType: 'token',
     },
   },
@@ -24,9 +31,9 @@ const extension = createExtension({
     'ml-edge',
     'open-web-ui',
     'jupyter-lab',
-    'smart-scheduler',
+    'data-labeler',
     'digital-ag',
-    'visual-analytics'
+    'visual-analytics',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -51,10 +58,10 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'smart-scheduler',
-  sidebarDisplayName: 'Smart Scheduler',
+  id: 'data-labeler',
+  sidebarDisplayName: 'Data Labeler',
   iconName: 'bar-graph',
-  component: SmartScheduler,
+  component: DataLabeler,
 });
 
 extension.registerService({

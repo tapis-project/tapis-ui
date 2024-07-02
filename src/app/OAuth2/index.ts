@@ -1,1 +1,1 @@
-export { default } from "./OAuth2"
+export { default } from './OAuth2';

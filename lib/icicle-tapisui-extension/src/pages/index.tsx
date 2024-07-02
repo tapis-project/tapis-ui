@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { SectionHeader } from '@tapis/tapisui-common';
+import { Component } from '@tapis/tapisui-extensions-core';
 // export { JupyterLab } from './JupyterLab';
 // import { OpenWebUI } from './OpenWebUI';
 // export { MLEdge } from './MLEdge';
 // export { SmartScheduler } from './SmartScheduler';
 
-export const SmartScheduler: React.FC = () => {
+export const DataLabeler: React.FC = () => {
   return (
     <div>
-      <SectionHeader>Smart Scheduler</SectionHeader>
+      <SectionHeader>Data Labeler</SectionHeader>
     </div>
   );
 };
@@ -54,11 +55,13 @@ export const OpenWebUI: React.FC = () => {
 
 export const DigitalAg: React.FC = () => {
   return (
-    <SectionHeader>Digital Ag</SectionHeader>
+    <div>
+      <SectionHeader>Digital Ag</SectionHeader>
+    </div>
   );
 };
 
-export const VisualAnalytics: React.FC = () => {
+export const VisualAnalytics: Component = ({ accessToken }) => {
   return (
     <div
       style={{
@@ -69,10 +72,14 @@ export const VisualAnalytics: React.FC = () => {
         overflow: 'hidden',
       }}
     >
-      <iframe
-        style={{ flexGrow: 1, border: 'none' }}
-        src="https://vaapifrontenddev.pods.icicle.tapis.io/#/"
-      />
+      {accessToken ? (
+        <iframe
+          style={{ flexGrow: 1, border: 'none' }}
+          src={`https://vaapibackenddev.pods.icicle.tapis.io/tapisui-entry?jwt=${accessToken}`}
+        />
+      ) : (
+        <>Invalid JWT. Log out of TapisUI then log back in</>
+      )}
     </div>
   );
 };
