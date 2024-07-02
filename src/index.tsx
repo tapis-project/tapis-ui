@@ -9,7 +9,6 @@ import reportWebVitals from './reportWebVitals';
 import { ExtensionsProvider } from './extensions';
 import { Extension } from '@tapis/tapisui-extensions-core';
 import { extension as icicleExtension } from '@icicle/tapisui-extension';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
 const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
@@ -18,17 +17,13 @@ const initializedExtensions: { [key: string]: Extension } = {
 const container = document.getElementById('react-root');
 const root = createRoot(container!);
 
-const queryClient = new QueryClient(); // TODO Reafactor. This belongs in tapisui-hooks?
-
 root.render(
   <React.StrictMode>
     <ExtensionsProvider extensions={initializedExtensions}>
       <TapisProvider basePath={resolveBasePath()}>
-        <QueryClientProvider client={queryClient}>
-          <Router>
-            <App />
-          </Router>
-        </QueryClientProvider>
+        <Router>
+          <App />
+        </Router>
       </TapisProvider>
     </ExtensionsProvider>
   </React.StrictMode>
