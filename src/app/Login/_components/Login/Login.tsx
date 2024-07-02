@@ -15,14 +15,19 @@ const Login: React.FC = () => {
   const { login, isLoading, error } = AuthenticatorHooks.useLogin();
   const { accessToken } = useTapisConfig();
   const { extension } = useExtension();
-  const [ activeAuthMethod, setActiveAuthMethod ] = useState<undefined | "implicit" | "password">(undefined)
+  const [activeAuthMethod, setActiveAuthMethod] = useState<
+    undefined | 'implicit' | 'password'
+  >(undefined);
 
   let implicitAuthURL: string | undefined = undefined;
   let passwordAuth = false;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
-    implicitAuthURL = implicitAuth.authorizationPath
-      + `?client_id=${implicitAuth.clientId}&response_type=${implicitAuth.responseType}&redirect_uri=${encodeURIComponent(implicitAuth.redirectURI)}`
+    implicitAuthURL =
+      implicitAuth.authorizationPath +
+      `?client_id=${implicitAuth.clientId}&response_type=${
+        implicitAuth.responseType
+      }&redirect_uri=${encodeURIComponent(implicitAuth.redirectURI)}`;
     // TODO Remove below. Testing only
     // implicitAuthURL =
     //   implicitAuth.authorizationPath +
@@ -54,7 +59,7 @@ const Login: React.FC = () => {
 
   return (
     <div>
-      {passwordAuth && activeAuthMethod === "password" && (
+      {passwordAuth && activeAuthMethod === 'password' && (
         <Formik
           initialValues={initialValues}
           validationSchema={loginSchema}
@@ -90,29 +95,29 @@ const Login: React.FC = () => {
           </Form>
         </Formik>
       )}
-      {
-        activeAuthMethod === undefined && (
-          <div className={styles['buttons']}>
-            {passwordAuth && (
-              <Button
-                onClick={() => {setActiveAuthMethod("password")}}
-              >
-                Log with username and password
-              </Button>
-            )}
-            {implicitAuthURL !== undefined && (
-              <Button
-                disabled={false}
-                onClick={() => {
-                  window.location.replace(implicitAuthURL as string);
-                }}
-              >
-                Log in with your institution
-              </Button>
-            )}
-          </div>
-        ) 
-      }
+      {activeAuthMethod === undefined && (
+        <div className={styles['buttons']}>
+          {passwordAuth && (
+            <Button
+              onClick={() => {
+                setActiveAuthMethod('password');
+              }}
+            >
+              Log with username and password
+            </Button>
+          )}
+          {implicitAuthURL !== undefined && (
+            <Button
+              disabled={false}
+              onClick={() => {
+                window.location.replace(implicitAuthURL as string);
+              }}
+            >
+              Log in with your institution
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 };
