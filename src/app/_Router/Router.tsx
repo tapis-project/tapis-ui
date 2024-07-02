@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { SectionHeader, ProtectedRoute } from '@tapis/tapisui-common';
+import { ProtectedRoute } from '@tapis/tapisui-common';
 import { Authenticator, useTapisConfig } from '@tapis/tapisui-hooks';
 
 import Apps from '../Apps';
@@ -12,6 +12,7 @@ import Pods from '../Pods';
 import Files from '../Files';
 import Workflows from '../Workflows';
 import MlHub from '../MlHub';
+import OAuth2 from '../OAuth2';
 import UIPatterns from '../UIPatterns';
 import { useExtension } from 'extensions';
 
@@ -35,6 +36,9 @@ const Router: React.FC = () => {
           return <Redirect to="/login" />;
         }}
       />
+      <Route path="/oauth2">
+        <OAuth2 />
+      </Route>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/systems">
         <Systems />
       </ProtectedRoute>
@@ -64,8 +68,9 @@ const Router: React.FC = () => {
               <ProtectedRoute
                 accessToken={accessToken?.access_token}
                 path={service.route}
+                key={`ext-route-${service.id}}`}
               >
-                <Component />
+                <Component accessToken={accessToken?.access_token} />
               </ProtectedRoute>
             );
           }

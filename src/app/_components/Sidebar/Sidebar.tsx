@@ -5,6 +5,7 @@ import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
 import { Menu } from '@mui/icons-material';
+import { v4 as uuidv4 } from 'uuid';
 
 type SidebarItems = {
   [key: string]: any;
@@ -21,8 +22,14 @@ const Sidebar: React.FC = () => {
     text: string
   ) => {
     return (
-      <NavItem to={to} icon={icon}>
-        {expanded === true ? <span style={{paddingRight: "32px", whiteSpace: "nowrap"}}>{text}</span> : ''}
+      <NavItem to={to} icon={icon} key={uuidv4()}>
+        {expanded === true ? (
+          <span style={{ paddingRight: '32px', whiteSpace: 'nowrap' }}>
+            {text}
+          </span>
+        ) : (
+          ''
+        )}
       </NavItem>
     );
   };
