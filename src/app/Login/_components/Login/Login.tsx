@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'reactstrap';
 import {
   Authenticator as AuthenticatorHooks,
@@ -15,19 +15,20 @@ const Login: React.FC = () => {
   const { login, isLoading, error } = AuthenticatorHooks.useLogin();
   const { accessToken } = useTapisConfig();
   const { extension } = useExtension();
+  const [ activeAuthMethod, setActiveAuthMethod ] = useState<undefined | "implicit" | "password">(undefined)
 
   let implicitAuthURL: string | undefined = undefined;
   let passwordAuth = false;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
-    // implicitAuthURL = implicitAuth.authorizationPath
-    //   + `?client_id=${implicitAuth.clientId}&response_type=${implicitAuth.responseType}&redirect_uri=${encodeURIComponent(implicitAuth.redirectURI)}`
+    implicitAuthURL = implicitAuth.authorizationPath
+      + `?client_id=${implicitAuth.clientId}&response_type=${implicitAuth.responseType}&redirect_uri=${encodeURIComponent(implicitAuth.redirectURI)}`
     // TODO Remove below. Testing only
-    implicitAuthURL =
-      implicitAuth.authorizationPath +
-      `?client_id=${implicitAuth.clientId}&response_type=${
-        implicitAuth.responseType
-      }&redirect_uri=${encodeURIComponent('http://localhost:3000/#/oauth2')}`;
+    // implicitAuthURL =
+    //   implicitAuth.authorizationPath +
+    //   `?client_id=${implicitAuth.clientId}&response_type=${
+    //     implicitAuth.responseType
+    //   }&redirect_uri=${encodeURIComponent('http://localhost:3000/#/oauth2')}`;
 
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
@@ -53,7 +54,7 @@ const Login: React.FC = () => {
 
   return (
     <div>
-      {passwordAuth && (
+      {passwordAuth && activeAuthMethod === "password" && (
         <Formik
           initialValues={initialValues}
           validationSchema={loginSchema}
@@ -89,28 +90,29 @@ const Login: React.FC = () => {
           </Form>
         </Formik>
       )}
-
-      <div className={styles['buttons']}>
-        {passwordAuth && (
-          <Button
-            type="submit"
-            style={{ width: '5.5em' }} //explicitly set width otherwise button forces text overflow on press.
-            disabled={isLoading || accessToken != null}
-          >
-            Log In
-          </Button>
-        )}
-        {implicitAuthURL !== undefined && (
-          <Button
-            disabled={false}
-            onClick={() => {
-              window.location.replace(implicitAuthURL as string);
-            }}
-          >
-            Log in with you institution
-          </Button>
-        )}
-      </div>
+      {
+        activeAuthMethod === undefined && (
+          <div className={styles['buttons']}>
+            {passwordAuth && (
+              <Button
+                onClick={() => {setActiveAuthMethod("password")}}
+              >
+                Log with username and password
+              </Button>
+            )}
+            {implicitAuthURL !== undefined && (
+              <Button
+                disabled={false}
+                onClick={() => {
+                  window.location.replace(implicitAuthURL as string);
+                }}
+              >
+                Log in with your institution
+              </Button>
+            )}
+          </div>
+        ) 
+      }
     </div>
   );
 };
