@@ -1,7 +1,7 @@
 import { Datasets } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../../utils';
 
-const card = (
+const cardDetails = (
   params: Datasets.GetDatasetCardRequest,
   basePath: string,
   jwt: string
@@ -15,4 +15,4 @@ const card = (
   return errorDecoder<Datasets.RespDatasetCard>(() => api.getDatasetCard(params));
 };
 
-export default card;
+export default cardDetails;
