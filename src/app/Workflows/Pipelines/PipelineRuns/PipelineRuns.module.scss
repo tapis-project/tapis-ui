@@ -10,7 +10,7 @@
 .pipeline-run-container {
   border: 1px solid #dddddd;
   border-radius: 3px;
-  padding: 16px;
+  padding: 20px; /* Adjusted padding */
   margin-bottom: 10px;
 }
 
@@ -28,16 +28,18 @@
 .section-header {
   margin-top: 16px;
   border-bottom: 1px solid #dddddd;
+  padding-bottom: 8px; /* Added padding */
 }
 
 .separator {
   margin-top: 1em;
+  padding-top: 8px; /* Added padding */
 }
 
 .task-executions {
-  padding-top: 8px;
+  padding-top: 16px; /* Adjusted padding */
 }
 
 .task-executions p {
-  padding: 8px;
+  padding: 16px; /* Adjusted padding */
 }

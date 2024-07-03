@@ -6,12 +6,10 @@ import { Table } from 'reactstrap';
 import {
   Gantt,
   Task,
-  EventOption,
-  StylingOption,
   ViewMode,
-  DisplayOption,
 } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
+import styles from './TaskExecutions.module.scss';
 
 type TaskExecutionsProps = {
   groupId: string;
@@ -29,7 +27,7 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
     pipelineId,
     pipelineRunUuid,
   });
-  // TODO Remove 'as' after typescript binding update
+
   const result = data?.result ?? [];
   const taskExecutions = result.sort((a, b) =>
     a.started_at! > b.started_at! ? 1 : a.started_at! < b.started_at! ? -1 : 0
@@ -50,25 +48,25 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <div>
+      <div className={styles['task-executions-container']}> 
         {taskExecutions.length > 0 ? (
-          <Table dark bordered style={{ margin: 0 }}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>task id</th>
-                <th>status</th>
-                <th>started at</th>
-                <th>last modified</th>
-                <th>uuid</th>
-                <th>stdout</th>
-                <th>stderr</th>
-              </tr>
-            </thead>
-            {taskExecutions.length &&
-              taskExecutions.map((taskExecution, i) => {
-                return (
-                  <tbody>
+          <div className={styles['table-container']}>
+            <Table dark bordered style={{ margin: 0 }}>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>task id</th>
+                  <th>status</th>
+                  <th>started at</th>
+                  <th>last modified</th>
+                  <th>uuid</th>
+                  <th>stdout</th>
+                  <th>stderr</th>
+                </tr>
+              </thead>
+              {taskExecutions.length &&
+                taskExecutions.map((taskExecution, i) => ( // Added index to map function
+                  <tbody key={taskExecution.uuid}>
                     <tr>
                       <td>{i + 1}</td>
                       <td>{taskExecution.task_id}</td>
@@ -80,19 +78,21 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                       <td>{taskExecution.stderr}</td>
                     </tr>
                   </tbody>
-                );
-              })}
-          </Table>
+                ))}
+            </Table>
+          </div>
         ) : (
           <SectionMessage type="info">No task executions</SectionMessage>
         )}
       </div>
-      <Gantt
-        tasks={tasks}
-        headerHeight={0}
-        listCellWidth={''}
-        viewMode={ViewMode.Hour}
-      />
+      <div className={styles['gantt-container']}>
+        <Gantt
+          tasks={tasks}
+          headerHeight={0}
+          listCellWidth={''}
+          viewMode={ViewMode.Hour}
+        />
+      </div>
     </QueryWrapper>
   );
 };

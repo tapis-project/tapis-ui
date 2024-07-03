@@ -24,7 +24,7 @@ const PipelineRun: React.FC<PipelineRunProps> = ({
 }) => {
   return (
     <tr>
-      <td className={styles['center']}>{order}</td>
+      <td className={styles['center']}>{order}</td> {/* Center aligned order */}
       <td>{pipelineRun.status}</td>
       <td>{pipelineRun.started_at}</td>
       <td>{pipelineRun.last_modified}</td>
@@ -60,8 +60,8 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
   };
 
   return (
-    <div className={styles['grid']}>
-      <SectionHeader>{pipelineId}</SectionHeader>
+    <div className={styles['pipeline-run-container']}> {/* Applied container styles */}
+      <SectionHeader className={styles['section-header']}>{pipelineId}</SectionHeader> {/* Applied section header styles */}
       <Toolbar
         buttons={['runpipeline']}
         pipelineId={pipelineId}
@@ -73,7 +73,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
             <Table dark bordered style={{ margin: 0 }}>
               <thead>
                 <tr>
-                  <th className={styles['center']}>#</th>
+                  <th className={styles['center']}>#</th> {/* Center aligned header */}
                   <th>status</th>
                   <th>started at</th>
                   <th>last modified</th>
