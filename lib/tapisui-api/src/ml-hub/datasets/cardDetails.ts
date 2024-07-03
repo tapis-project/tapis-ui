@@ -12,7 +12,9 @@ const cardDetails = (
     basePath,
     jwt
   );
-  return errorDecoder<Datasets.RespDatasetCard>(() => api.getDatasetCard(params));
+  return errorDecoder<Datasets.RespDatasetCard>(() =>
+    api.getDatasetCard(params)
+  );
 };
 
 export default cardDetails;

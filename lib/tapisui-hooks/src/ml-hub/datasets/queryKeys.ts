@@ -7,7 +7,7 @@ const QueryKeys = {
   listBySizeCategory: 'ml-hub/datasets/listBySizeCategory',
   listByQuery: 'ml-hub/datasets/listByQuery',
   listByTask: 'ml-hub/datasets/listByTask',
-  cardDetails: 'ml-hub/datasets/cardDetails'
+  cardDetails: 'ml-hub/datasets/cardDetails',
 };
 
 export default QueryKeys;
