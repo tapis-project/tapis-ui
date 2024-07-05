@@ -83,7 +83,7 @@
     ]
   },
   "devDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.6.1",
+    "@rollup/rollup-linux-x64-gnu": "^4.6.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",
