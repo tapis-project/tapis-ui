@@ -1,7 +1,7 @@
 export const resolveBasePath = () => {
   let baseUrl = import.meta.env.VITE_TAPIS_BASE_URL;
-  if (import.meta.env.VITE_SERVERLESS_DEPLOYMENT === "false") {
-    baseUrl = window.location.origin
+  if (import.meta.env.VITE_SERVERLESS_DEPLOYMENT === 'false') {
+    baseUrl = window.location.origin;
   }
 
   // Use the specified Tapis Base URL if a local deployment is detected
