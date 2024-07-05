@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   >(undefined);
 
   let implicitAuthURL: string | undefined = undefined;
-  let passwordAuth = false;
+  let passwordAuth = extension === undefined;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
     implicitAuthURL =
