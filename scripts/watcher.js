@@ -39,7 +39,7 @@ libsToWatch.forEach(libPath => {
       console.log(`Rebuilding: ${libPath}`);
       exec(`cd ${libPath} && npx tsc --build ./tsconfig.json`, (error, stdout, stderr) => {
         if (error) {
-          console.error(`Error rebuilding ${libPath}: ${error}`);
+          console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
           return;
         }
         console.log(`Changed:    ${filePath}`);
