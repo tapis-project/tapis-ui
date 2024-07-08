@@ -14,11 +14,11 @@ const libsToWatch = [
   'lib/tapisui-common',
   'lib/tapisui-extensions-core',
   'lib/tapisui-api',
-  'lib/icicle-tapisui-extensions'
+  'lib/icicle-tapisui-extensions',
   // Add other libraries you want watched and rebuilt here
 ];
 
-libsToWatch.forEach(libPath => {
+libsToWatch.forEach((libPath) => {
   console.log(`Watching:   ${libPath}`);
   const watcher = chokidar.watch(`${libPath}/src`, { ignoreInitial: true });
 
@@ -26,7 +26,7 @@ libsToWatch.forEach(libPath => {
     if (filePath.endsWith('.css') || filePath.endsWith('.scss')) {
       // Handle CSS and SCSS files separately
       const destPath = filePath.replace('/src/', '/dist/');
-      fs.copyFile(filePath, destPath, err => {
+      fs.copyFile(filePath, destPath, (err) => {
         if (err) {
           console.error(`Error copying file ${filePath}: ${err}`);
           return;
@@ -34,16 +34,19 @@ libsToWatch.forEach(libPath => {
         console.log(`Copying:    ${filePath}`);
       });
     } else {
-      // rebuild is incremental due to the lib/libname/tsconfig.json > compilerOptions 
+      // rebuild is incremental due to the lib/libname/tsconfig.json > compilerOptions
       // > incremental: true, meaning only changed files are recompiled
       console.log(`Rebuilding: ${libPath}`);
-      exec(`cd ${libPath} && npx tsc --build ./tsconfig.json`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
-          return;
+      exec(
+        `cd ${libPath} && npx tsc --build ./tsconfig.json`,
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
+            return;
+          }
+          console.log(`Changed:    ${filePath}`);
         }
-        console.log(`Changed:    ${filePath}`);
-      });
+      );
     }
   });
 });
