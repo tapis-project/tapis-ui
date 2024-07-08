@@ -1,3 +1,3 @@
-const basePath = 'https://hub.pods.tacc.tapis.io';
+const basePath = 'http://localhost:5000';
 
 export default basePath;

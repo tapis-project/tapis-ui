@@ -5,6 +5,7 @@ import { QueryWrapper } from '@tapis/tapisui-common';
 import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon, JSONDisplay, GenericModal } from '@tapis/tapisui-common';
+import InferenceServerInfo from './InferenceServerInfo';
 
 type ModelDetailsProps = {
   modelId: string;
@@ -49,7 +50,11 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
               repository_content:
             </div>
             <div className={`${styles['detail-info']}`}>
-              <JSONDisplay json={model.repository_content}></JSONDisplay>
+              {
+                model.repository_content && (
+                <JSONDisplay json={model.repository_content}></JSONDisplay>
+                )
+              }
             </div>
           </div>
           <div className={`${styles['model-detail']}`}>
@@ -63,13 +68,21 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
               transformers_info:
             </div>
             <div className={`${styles['detail-info']}`}>
-              <JSONDisplay json={model.transformers_info}></JSONDisplay>
+              {
+                model.transformers_info && (
+                <JSONDisplay json={model.transformers_info}></JSONDisplay>
+                )
+              }
             </div>
           </div>
           <div className={`${styles['model-detail']}`}>
             <div className={`${styles['detail-title']}`}>config:</div>
             <div className={`${styles['detail-info']}`}>
-              <JSONDisplay json={model.config}></JSONDisplay>
+              {
+                model.config && (
+                <JSONDisplay json={model.config}></JSONDisplay>
+                )
+              }
             </div>
           </div>
         </div>
@@ -126,18 +139,28 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           body={
             <div>
               {modelId}
-              <JSONDisplay json={modelCardDetails.card_data} />
+              {
+                modelCardDetails.card_data && (
+                <JSONDisplay json={modelCardDetails.card_data} />
+                )
+              }
             </div>
           }
         />
       )}
       {currentModal === 'inferenceinfo' && (
         <GenericModal
+          size="lg"
           toggle={() => {
             setCurrentModal(undefined);
           }}
           title="Inference Info"
-          body={<div>INFERENCE INFO</div>}
+          body={
+            <div>
+              {modelId}
+            <InferenceServerInfo modelId={modelId} />
+            </div>
+          }
         />
       )}
       {currentModal === 'downloadmodel' && (
