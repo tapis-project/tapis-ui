@@ -59,7 +59,7 @@
     "start": "vite --config ./vite/vite.local.config.mts",
     "deploy": "vite --config ./vite/vite.config.mts",
     "build": "tsc && vite build --config ./vite/vite.config.mts",
-    "watcher": "node watcher.js",
+    "watcher": "node ./scripts/watcher.js",
     "preview": "vite preview",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
