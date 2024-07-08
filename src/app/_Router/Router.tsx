@@ -12,6 +12,7 @@ import Pods from '../Pods';
 import Files from '../Files';
 import Workflows from '../Workflows';
 import MlHub from '../MlHub';
+import MlEdge from '../MlEdge';
 import OAuth2 from '../OAuth2';
 import UIPatterns from '../UIPatterns';
 import { useExtension } from 'extensions';
@@ -56,6 +57,9 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/ml-hub">
         <MlHub />
+      </ProtectedRoute>
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/ml-edge">
+        <MlEdge />
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
         <Pods />
