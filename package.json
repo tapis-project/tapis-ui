@@ -57,8 +57,10 @@
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {
     "start": "vite --config ./vite/vite.local.config.mts",
+    "dev": "npm run watcher & npm run start",
     "deploy": "vite --config ./vite/vite.config.mts",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --config ./vite/vite.config.mts",
+    "watcher": "node ./scripts/watcher.js",
     "preview": "vite preview",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
@@ -111,6 +113,7 @@
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "ts-jest": "^29.1.4",
+    "chokidar": "^3.6.0",
     "typescript": "^5.4.5"
   },
   "jest": {
