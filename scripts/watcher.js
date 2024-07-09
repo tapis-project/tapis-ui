@@ -14,7 +14,7 @@ const libsToWatch = [
   'lib/tapisui-common',
   'lib/tapisui-extensions-core',
   'lib/tapisui-api',
-  'lib/icicle-tapisui-extensions',
+  'lib/icicle-tapisui-extension',
   // Add other libraries you want watched and rebuilt here
 ];
 
