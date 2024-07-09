@@ -17,7 +17,8 @@
     "isolatedModules": true,
     "noEmit": false,
     "types": ["node"],
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "incremental": true
   },
   "exclude": [
     "dist",
