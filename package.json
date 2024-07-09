@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "22": "^0.0.0",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-python": "^6.1.6",
     "@emotion/react": "^11.11.4",
@@ -83,8 +84,8 @@
     ]
   },
   "devDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.6.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@rollup/rollup-darwin-x64": "^4.6.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/react-hooks": "^7.0.2",
@@ -93,7 +94,7 @@
     "@types/jest": "^26.0.24",
     "@types/js-cookie": "^2.2.7",
     "@types/lodash.clonedeep": "^4.5.6",
-    "@types/node": "^18.19.33",
+    "@types/node": "^18.19.39",
     "@types/normalize-path": "^3.0.2",
     "@types/react": "^18.3.3",
     "@types/react-css-modules": "^4.6.3",
@@ -111,7 +112,7 @@
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "ts-jest": "^29.1.4",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3"
   },
   "jest": {
     "globals": {
