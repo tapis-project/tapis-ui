@@ -89,24 +89,30 @@ const Sidebar: React.FC = () => {
         {accessToken && (
           <>
             {mainSidebarItems.map((item) => item)}
-            {
-              secondarySidebarItems.length > 0 && (
-                <>
-                  <div
-                    onClick={toggleSecondaryItems}
-                    style={{ cursor: 'pointer', paddingTop: "10px", paddingBottom: "16px", paddingLeft: '21px' }}
-                  >
-                    {openSecondary ? <ExpandLess /> : <ExpandMore />}
-                    {expanded && (
-                      <span style={{fontSize: "14px", color: "#808080"}}> More</span>
-                    )}
-                  </div>
-                  <Collapse in={openSecondary}>
-                    {secondarySidebarItems.map((item) => item)}
-                  </Collapse>
-                </>
-              )
-            }
+            {secondarySidebarItems.length > 0 && (
+              <>
+                <div
+                  onClick={toggleSecondaryItems}
+                  style={{
+                    cursor: 'pointer',
+                    paddingTop: '10px',
+                    paddingBottom: '16px',
+                    paddingLeft: '21px',
+                  }}
+                >
+                  {openSecondary ? <ExpandLess /> : <ExpandMore />}
+                  {expanded && (
+                    <span style={{ fontSize: '14px', color: '#808080' }}>
+                      {' '}
+                      More
+                    </span>
+                  )}
+                </div>
+                <Collapse in={openSecondary}>
+                  {secondarySidebarItems.map((item) => item)}
+                </Collapse>
+              </>
+            )}
           </>
         )}
       </Navbar>

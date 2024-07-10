@@ -23,7 +23,7 @@ libsToWatch.forEach((libPath) => {
   const watcher = chokidar.watch(`${libPath}/src`, { ignoreInitial: true });
 
   watcher.on('all', (_, filePath) => {
-    console.log(filePath)
+    console.log(filePath);
     if (filePath.endsWith('.css') || filePath.endsWith('.scss')) {
       // Handle CSS and SCSS files separately
       const destPath = filePath.replace('/src/', '/dist/');
