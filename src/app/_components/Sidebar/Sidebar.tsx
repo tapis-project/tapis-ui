@@ -58,23 +58,6 @@ const Sidebar: React.FC = () => {
     }
   }
 
-  /*let mainSidebarItems = Object.entries(sidebarItems).map(([_, item]) => {
-    return item;
-  });
-
-  const secondarySidebarItems = [];
-  if (extension && extension.mainSidebarServices.length > 0) {
-    mainSidebarItems = [];
-    for (const [id, item] of Object.entries(sidebarItems)) {
-      if (extension.mainSidebarServices.includes(id)) {
-        mainSidebarItems.push(item);
-        continue;
-      }
-
-      secondarySidebarItems.push(item);
-    }
-  }*/
-
   let mainSidebarItems = [];
   let secondarySidebarItems = [];
 
@@ -106,17 +89,24 @@ const Sidebar: React.FC = () => {
         {accessToken && (
           <>
             {mainSidebarItems.map((item) => item)}
-            <div
-              onClick={toggleSecondaryItems}
-              style={{ cursor: 'pointer', padding: '10px' }}
-            >
-              <span>More</span>{' '}
-              {openSecondary ? <ExpandLess /> : <ExpandMore />}
-            </div>{' '}
-            //Included icons for Expand and Collapse
-            <Collapse in={openSecondary}>
-              {secondarySidebarItems.map((item) => item)}
-            </Collapse>
+            {
+              secondarySidebarItems.length > 0 && (
+                <>
+                  <div
+                    onClick={toggleSecondaryItems}
+                    style={{ cursor: 'pointer', paddingTop: "10px", paddingBottom: "16px", paddingLeft: '21px' }}
+                  >
+                    {openSecondary ? <ExpandLess /> : <ExpandMore />}
+                    {expanded && (
+                      <span style={{fontSize: "14px", color: "#808080"}}> More</span>
+                    )}
+                  </div>
+                  <Collapse in={openSecondary}>
+                    {secondarySidebarItems.map((item) => item)}
+                  </Collapse>
+                </>
+              )
+            }
           </>
         )}
       </Navbar>
