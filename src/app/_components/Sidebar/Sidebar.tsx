@@ -25,12 +25,19 @@ const Sidebar: React.FC = () => {
   ) => {
     return (
       <NavItem to={to} icon={icon} key={uuidv4()}>
-        {expanded ? <span style={{ paddingRight: '32px', whiteSpace: 'nowrap' }}>{text}</span> : ''}
+        {expanded ? (
+          <span style={{ paddingRight: '32px', whiteSpace: 'nowrap' }}>
+            {text}
+          </span>
+        ) : (
+          ''
+        )}
       </NavItem>
     );
   };
 
-  const sidebarItems: SidebarItems = { //Existing sidebar items
+  const sidebarItems: SidebarItems = {
+    //Existing sidebar items
     systems: renderSidebarItem('/systems', 'data-files', 'Systems'),
     files: renderSidebarItem('/files', 'folder', 'Files'),
     apps: renderSidebarItem('/apps', 'applications', 'Apps'),
@@ -40,7 +47,8 @@ const Sidebar: React.FC = () => {
     'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
   };
 
-  if (extension !== undefined) { //extension handlng
+  if (extension !== undefined) {
+    //extension handlng
     for (const [id, service] of Object.entries(extension.serviceMap)) {
       sidebarItems[id] = renderSidebarItem(
         service.route,
@@ -66,10 +74,10 @@ const Sidebar: React.FC = () => {
       secondarySidebarItems.push(item);
     }
   }*/
- 
+
   let mainSidebarItems = [];
   let secondarySidebarItems = [];
-  
+
   for (const [id, item] of Object.entries(sidebarItems)) {
     if (extension && extension.mainSidebarServices.includes(id)) {
       mainSidebarItems.push(item);
@@ -77,11 +85,11 @@ const Sidebar: React.FC = () => {
       secondarySidebarItems.push(item);
     }
   }
-  
+
   const toggleSecondaryItems = () => {
     setOpenSecondary(!openSecondary);
   };
-    
+
   return (
     <div className={styles.root}>
       <div className={styles['collapse-icon']}>
@@ -97,13 +105,18 @@ const Sidebar: React.FC = () => {
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
-            {mainSidebarItems.map(item => item)}  
-            <div onClick={toggleSecondaryItems} style={{ cursor: 'pointer', padding: '10px' }}>
-              <span>More</span> {openSecondary ? <ExpandLess /> : <ExpandMore />} 
-            </div>                 //Included icons for Expand and Collapse
+            {mainSidebarItems.map((item) => item)}
+            <div
+              onClick={toggleSecondaryItems}
+              style={{ cursor: 'pointer', padding: '10px' }}
+            >
+              <span>More</span>{' '}
+              {openSecondary ? <ExpandLess /> : <ExpandMore />}
+            </div>{' '}
+            //Included icons for Expand and Collapse
             <Collapse in={openSecondary}>
-              {secondarySidebarItems.map(item => item)}
-            </Collapse>            
+              {secondarySidebarItems.map((item) => item)}
+            </Collapse>
           </>
         )}
       </Navbar>
