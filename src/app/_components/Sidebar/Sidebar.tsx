@@ -16,6 +16,7 @@ const Sidebar: React.FC = () => {
   const { extension } = useExtension();
 
   const [expanded, setExpanded] = useState(true);
+  const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
 
   const renderSidebarItem = (
     to: string,
@@ -25,7 +26,7 @@ const Sidebar: React.FC = () => {
     return (
       <NavItem to={to} icon={icon} key={uuidv4()}>
         {expanded === true ? (
-          <span style={{ paddingRight: "42px", whiteSpace: "nowrap" }}>
+          <span style={{ paddingRight: "32px", whiteSpace: "nowrap" }}>
             {text}
           </span>
         ) : (
@@ -46,6 +47,7 @@ const Sidebar: React.FC = () => {
   };
 
   if (extension !== undefined) {
+    //extension handlng
     for (const [id, service] of Object.entries(extension.serviceMap)) {
       sidebarItems[id] = renderSidebarItem(
         service.route,
@@ -55,22 +57,20 @@ const Sidebar: React.FC = () => {
     }
   }
 
-  let mainSidebarItems = Object.entries(sidebarItems).map(([_, item]) => {
-    return item;
-  });
+  let mainSidebarItems = [];
+  let secondarySidebarItems = [];
 
-  const secondarySidebarItems = [];
-  if (extension && extension.mainSidebarServices.length > 0) {
-    mainSidebarItems = [];
-    for (const [id, item] of Object.entries(sidebarItems)) {
-      if (extension.mainSidebarServices.includes(id)) {
-        mainSidebarItems.push(item);
-        continue;
-      }
-
+  for (const [id, item] of Object.entries(sidebarItems)) {
+    if (extension && extension.mainSidebarServices.includes(id)) {
+      mainSidebarItems.push(item);
+    } else {
       secondarySidebarItems.push(item);
     }
   }
+
+  const toggleSecondaryItems = () => {
+    setOpenSecondary(!openSecondary);
+  };
 
   return (
     <div className={styles.root}>
@@ -87,9 +87,31 @@ const Sidebar: React.FC = () => {
         {!accessToken && renderSidebarItem("/login", "user", "Login")}
         {accessToken && (
           <>
-            {mainSidebarItems.map((item: any) => {
-              return item;
-            })}
+            {mainSidebarItems.map((item) => item)}
+            {secondarySidebarItems.length > 0 && (
+              <>
+                <div
+                  onClick={toggleSecondaryItems}
+                  style={{
+                    cursor: "pointer",
+                    paddingTop: "10px",
+                    paddingBottom: "16px",
+                    paddingLeft: "21px",
+                  }}
+                >
+                  {openSecondary ? <ExpandLess /> : <ExpandMore />}
+                  {expanded && (
+                    <span style={{ fontSize: "14px", color: "#808080" }}>
+                      {" "}
+                      More
+                    </span>
+                  )}
+                </div>
+                <Collapse in={openSecondary}>
+                  {secondarySidebarItems.map((item) => item)}
+                </Collapse>
+              </>
+            )}
           </>
         )}
       </Navbar>

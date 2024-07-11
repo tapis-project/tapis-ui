@@ -22,7 +22,8 @@ libsToWatch.forEach((libPath) => {
   console.log(`Watching:   ${libPath}`);
   const watcher = chokidar.watch(`${libPath}/src`, { ignoreInitial: true });
 
-  watcher.on('all', (event, filePath) => {
+  watcher.on('all', (_, filePath) => {
+    console.log(filePath);
     if (filePath.endsWith('.css') || filePath.endsWith('.scss')) {
       // Handle CSS and SCSS files separately
       const destPath = filePath.replace('/src/', '/dist/');
@@ -39,7 +40,7 @@ libsToWatch.forEach((libPath) => {
       console.log(`Rebuilding: ${libPath}`);
       exec(
         `cd ${libPath} && npx tsc --build ./tsconfig.json`,
-        (error, stdout, stderr) => {
+        (error, stdout, _) => {
           if (error) {
             console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
             return;

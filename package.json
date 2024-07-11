@@ -10,7 +10,7 @@
     "@emotion/styled": "^11.11.5",
     "@icicle/tapisui-extension": "file:./lib/icicle-tapisui-extension",
     "@mui/icons-material": "^5.15.20",
-    "@mui/material": "^5.15.20",
+    "@mui/material": "^5.16.0",
     "@mui/x-data-grid": "^7.7.0",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@tapis/tapis-typescript": "^0.0.32",
