@@ -1,21 +1,21 @@
-import React from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
-import { ProtectedRoute } from "@tapis/tapisui-common";
-import { Authenticator, useTapisConfig } from "@tapis/tapisui-hooks";
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { ProtectedRoute } from '@tapis/tapisui-common';
+import { Authenticator, useTapisConfig } from '@tapis/tapisui-hooks';
 
-import Apps from "../Apps";
-import Login from "../Login";
-import Dashboard from "../Dashboard";
-import Jobs from "../Jobs";
-import Systems from "../Systems";
-import Pods from "../Pods";
-import Files from "../Files";
-import Workflows from "../Workflows";
-import MlHub from "../MlHub";
-import OAuth2 from "../OAuth2";
-import UIPatterns from "../UIPatterns";
-import { useExtension } from "extensions";
-import DataLabeler from "../DataLabeler";
+import Apps from '../Apps';
+import Login from '../Login';
+import Dashboard from '../Dashboard';
+import Jobs from '../Jobs';
+import Systems from '../Systems';
+import Pods from '../Pods';
+import Files from '../Files';
+import Workflows from '../Workflows';
+import MlHub from '../MlHub';
+import OAuth2 from '../OAuth2';
+import UIPatterns from '../UIPatterns';
+import { useExtension } from 'extensions';
+import DataLabeler from '../DataLabeler';
 
 const Router: React.FC = () => {
   const { accessToken } = useTapisConfig();
@@ -70,7 +70,7 @@ const Router: React.FC = () => {
 
       {extension &&
         Object.entries(extension.serviceMap).map(([_, service]) => {
-          console.log("1", extension);
+          console.log('1', extension);
           const Component = service.component;
           if (Component !== undefined) {
             return (

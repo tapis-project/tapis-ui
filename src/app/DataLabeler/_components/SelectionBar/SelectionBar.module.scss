@@ -1,0 +1,38 @@
+.toolbar-wrapper {
+  padding: 8px 0px 8px 0;
+  margin: 0;
+  display: flex !important;
+}
+
+.selection-elements {
+  display: flex !important;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.selection-elements > * {
+  margin-right: 10px;
+  flex: 1 1 200px;
+  width: 200px;
+}
+
+// .center {
+//   border: 5px solid;
+//   position: absolute;
+//   top: 20%;
+//   transform: translate(0, -20%);
+//   padding: 10px;
+// }
+
+.toolbar-btn {
+  height: 2rem;
+  align-items: center;
+  margin-left: 0.5em;
+  font-size: 0.7em !important;
+  border-radius: 0 !important;
+  background-color: #f4f4f4 !important;
+  color: #333333 !important;
+}
+
+.toolbar-btn:disabled {
+  color: #999999 !important;
+}

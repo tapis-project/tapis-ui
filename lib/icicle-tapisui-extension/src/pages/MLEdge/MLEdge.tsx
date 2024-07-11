@@ -1,5 +1,5 @@
-import * as React from "react";
-import { SectionHeader } from "@tapis/tapisui-common";
+import * as React from 'react';
+import { SectionHeader } from '@tapis/tapisui-common';
 
 const MLEdge: React.FC = () => {
   return (

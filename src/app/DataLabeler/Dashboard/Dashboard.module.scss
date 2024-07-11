@@ -1,0 +1,31 @@
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 16px;
+}
+
+.card {
+  width: 25em;
+  margin-right: 1em;
+  margin-bottom: 1em;
+}
+
+.card-header {
+  display: flex;
+  justify-content: baseline;
+  div {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+  }
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header {
+  padding-top: 1em;
+}

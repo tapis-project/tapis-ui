@@ -1,12 +1,12 @@
-import { useContext } from "react";
-import { default as ExtensionsContext } from "./ExtensionsContext";
+import { useContext } from 'react';
+import { default as ExtensionsContext } from './ExtensionsContext';
 import {
   registeredExtensions,
   EnumTapisCoreService,
-} from "@tapis/tapisui-extensions-core";
-import { resolveBasePath } from "utils/resolveBasePath";
-import { CropLandscapeOutlined } from "@mui/icons-material";
-import { computeOffsetLeft } from "@mui/x-data-grid/hooks/features/virtualization/useGridVirtualScroller";
+} from '@tapis/tapisui-extensions-core';
+import { resolveBasePath } from 'utils/resolveBasePath';
+import { CropLandscapeOutlined } from '@mui/icons-material';
+import { computeOffsetLeft } from '@mui/x-data-grid/hooks/features/virtualization/useGridVirtualScroller';
 
 const useExtension = () => {
   const { extensions } = useContext(ExtensionsContext);
