@@ -12,7 +12,7 @@
     "@mui/material": "^5.16.0",
     "@mui/x-data-grid": "^7.7.0",
     "@rollup/plugin-commonjs": "^25.0.8",
-    "@tapis/tapis-typescript": "^0.0.32",
+    "@tapis/tapis-typescript": "^0.0.33",
     "@tapis/tapisui-api": "file:./lib/tapisui-api",
     "@tapis/tapisui-common": "file:./lib/tapisui-common",
     "@tapis/tapisui-extensions-core": "file:./lib/tapisui-extensions-core",
@@ -85,7 +85,6 @@
     ]
   },
   "devDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.6.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",
