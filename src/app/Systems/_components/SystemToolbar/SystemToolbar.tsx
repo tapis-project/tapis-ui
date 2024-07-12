@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import CreateSystemModal from './CreateSystemModal';
 import DeleteSystemModal from './DeleteSystemModal';
 import UndeleteSystemModal from './UndeleteSystemModal';
-import CreateUserCredentialModal from './CreateUserCredentialModal'; // Import the new modal
+import CreateUserCredentialModal from './CreateUserCredentialModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -77,7 +77,7 @@ const SystemToolbar: React.FC = () => {
           {/* New button for creating user credentials */}
           <ToolbarButton
             text="Create User Credential"
-            icon="user-plus" // Assuming 'user-plus' is the icon for user credentials
+            icon="add" // Assuming 'add' is the icon for user credentials
             disabled={false}
             onClick={() => setModal('createusercredential')}
             aria-label="createUserCredential"
@@ -89,7 +89,10 @@ const SystemToolbar: React.FC = () => {
             <UndeleteSystemModal toggle={toggle} />
           )}
           {modal === 'createusercredential' && (
-            <CreateUserCredentialModal toggle={toggle} />
+            <CreateUserCredentialModal
+              toggle={toggle}
+              isOpen={modal === 'createusercredential'}
+            />
           )}
         </div>
       )}
