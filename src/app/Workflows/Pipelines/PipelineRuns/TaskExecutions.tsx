@@ -36,13 +36,13 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
   );
 
   const tasks: Array<Task | undefined> = taskExecutions.map((taskExecution) => {
-    console.log({taskExecution})
+    console.log({ taskExecution });
     if (
-      taskExecution.started_at === undefined 
-      || taskExecution.last_modified === undefined
+      taskExecution.started_at === undefined ||
+      taskExecution.last_modified === undefined
     ) {
-      console.log(taskExecution.task_id)
-      return undefined
+      console.log(taskExecution.task_id);
+      return undefined;
     }
 
     return {
@@ -82,8 +82,8 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                       <td>{i + 1}</td>
                       <td>{taskExecution.task_id}</td>
                       <td>{taskExecution.status}</td>
-                      <td>{taskExecution.started_at || "unknown"}</td>
-                      <td>{taskExecution.last_modified || "unknown"}</td>
+                      <td>{taskExecution.started_at || 'unknown'}</td>
+                      <td>{taskExecution.last_modified || 'unknown'}</td>
                       <td>{taskExecution.uuid}</td>
                       <td>{taskExecution.stdout}</td>
                       <td>{taskExecution.stderr}</td>
@@ -96,16 +96,14 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
           <SectionMessage type="info">No task executions</SectionMessage>
         )}
       </div>
-      {
-        (!tasks.includes(undefined) && !(taskExecutions.length < 1)) &&
+      {!tasks.includes(undefined) && !(taskExecutions.length < 1) && (
         <Gantt
-          tasks={(tasks as Array<Task>)}
+          tasks={tasks as Array<Task>}
           headerHeight={0}
           listCellWidth={''}
           viewMode={ViewMode.Hour}
         />
-      }
-      
+      )}
     </QueryWrapper>
   );
 };
