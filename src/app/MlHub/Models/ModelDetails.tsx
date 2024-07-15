@@ -158,7 +158,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           body={
             <div>
               {modelId}
-            <InferenceServerInfo modelId={modelId} />
+              <InferenceServerInfo modelId={modelId} />
             </div>
           }
         />
