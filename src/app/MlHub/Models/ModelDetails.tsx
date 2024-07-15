@@ -50,11 +50,9 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
               repository_content:
             </div>
             <div className={`${styles['detail-info']}`}>
-              {
-                model.repository_content && (
+              {model.repository_content && (
                 <JSONDisplay json={model.repository_content}></JSONDisplay>
-                )
-              }
+              )}
             </div>
           </div>
           <div className={`${styles['model-detail']}`}>
@@ -68,21 +66,15 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
               transformers_info:
             </div>
             <div className={`${styles['detail-info']}`}>
-              {
-                model.transformers_info && (
+              {model.transformers_info && (
                 <JSONDisplay json={model.transformers_info}></JSONDisplay>
-                )
-              }
+              )}
             </div>
           </div>
           <div className={`${styles['model-detail']}`}>
             <div className={`${styles['detail-title']}`}>config:</div>
             <div className={`${styles['detail-info']}`}>
-              {
-                model.config && (
-                <JSONDisplay json={model.config}></JSONDisplay>
-                )
-              }
+              {model.config && <JSONDisplay json={model.config}></JSONDisplay>}
             </div>
           </div>
         </div>
@@ -139,11 +131,9 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           body={
             <div>
               {modelId}
-              {
-                modelCardDetails.card_data && (
+              {modelCardDetails.card_data && (
                 <JSONDisplay json={modelCardDetails.card_data} />
-                )
-              }
+              )}
             </div>
           }
         />
@@ -158,7 +148,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           body={
             <div>
               {modelId}
-            <InferenceServerInfo modelId={modelId} />
+              <InferenceServerInfo modelId={modelId} />
             </div>
           }
         />
