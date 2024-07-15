@@ -4,7 +4,9 @@ import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
-import { Menu } from '@mui/icons-material';
+import { Menu, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Collapse } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
 
 type SidebarItems = {
   [key: string]: any;
@@ -14,6 +16,7 @@ const Sidebar: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { extension } = useExtension();
   const [expanded, setExpanded] = useState(true);
+  const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
 
   const renderSidebarItem = (
     to: string,
@@ -21,13 +24,20 @@ const Sidebar: React.FC = () => {
     text: string
   ) => {
     return (
-      <NavItem to={to} icon={icon}>
-        {expanded === true ? text : ''}
+      <NavItem to={to} icon={icon} key={uuidv4()}>
+        {expanded ? (
+          <span style={{ paddingRight: '32px', whiteSpace: 'nowrap' }}>
+            {text}
+          </span>
+        ) : (
+          ''
+        )}
       </NavItem>
     );
   };
 
   const sidebarItems: SidebarItems = {
+    //Existing sidebar items
     systems: renderSidebarItem('/systems', 'data-files', 'Systems'),
     files: renderSidebarItem('/files', 'folder', 'Files'),
     apps: renderSidebarItem('/apps', 'applications', 'Apps'),
@@ -38,6 +48,7 @@ const Sidebar: React.FC = () => {
   };
 
   if (extension !== undefined) {
+    //extension handlng
     for (const [id, service] of Object.entries(extension.serviceMap)) {
       sidebarItems[id] = renderSidebarItem(
         service.route,
@@ -47,22 +58,20 @@ const Sidebar: React.FC = () => {
     }
   }
 
-  let mainSidebarItems = Object.entries(sidebarItems).map(([_, item]) => {
-    return item;
-  });
+  let mainSidebarItems = [];
+  let secondarySidebarItems = [];
 
-  const secondarySidebarItems = [];
-  if (extension && extension.mainSidebarServices.length > 0) {
-    mainSidebarItems = [];
-    for (const [id, item] of Object.entries(sidebarItems)) {
-      if (extension.mainSidebarServices.includes(id)) {
-        mainSidebarItems.push(item);
-        continue;
-      }
-
+  for (const [id, item] of Object.entries(sidebarItems)) {
+    if (extension && extension.mainSidebarServices.includes(id)) {
+      mainSidebarItems.push(item);
+    } else {
       secondarySidebarItems.push(item);
     }
   }
+
+  const toggleSecondaryItems = () => {
+    setOpenSecondary(!openSecondary);
+  };
 
   return (
     <div className={styles.root}>
@@ -79,9 +88,31 @@ const Sidebar: React.FC = () => {
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
-            {mainSidebarItems.map((item: any) => {
-              return item;
-            })}
+            {mainSidebarItems.map((item) => item)}
+            {secondarySidebarItems.length > 0 && (
+              <>
+                <div
+                  onClick={toggleSecondaryItems}
+                  style={{
+                    cursor: 'pointer',
+                    paddingTop: '10px',
+                    paddingBottom: '16px',
+                    paddingLeft: '21px',
+                  }}
+                >
+                  {openSecondary ? <ExpandLess /> : <ExpandMore />}
+                  {expanded && (
+                    <span style={{ fontSize: '14px', color: '#808080' }}>
+                      {' '}
+                      More
+                    </span>
+                  )}
+                </div>
+                <Collapse in={openSecondary}>
+                  {secondarySidebarItems.map((item) => item)}
+                </Collapse>
+              </>
+            )}
           </>
         )}
       </Navbar>

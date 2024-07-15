@@ -24,7 +24,9 @@ const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps>> = ({
 
   return (
     <TapisContext.Provider value={contextValue}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient} contextSharing={true}>
+        {children}
+      </QueryClientProvider>
     </TapisContext.Provider>
   );
 };

@@ -7,19 +7,18 @@ import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './CreateGroupModal.module.scss';
 import { Workflows } from '@tapis/tapis-typescript';
 import * as Yup from 'yup';
-import { useQueryClient } from 'react-query';
 
 type CreateGroupModalProps = {
   toggle: () => void;
 };
 
 const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ toggle }) => {
-  const { create, isLoading, error, isSuccess } = Hooks.Groups.useCreate();
-  const queryClient = useQueryClient();
+  const { create, isLoading, error, isSuccess, invalidate } =
+    Hooks.Groups.useCreate();
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.Groups.queryKeys.list);
-  }, [queryClient]);
+    invalidate();
+  }, [invalidate]);
 
   const validationSchema = Yup.object({
     groupId: Yup.string()

@@ -113,7 +113,7 @@ const writeTaskBundleIndex = (
   let indexts = '';
   let importStatements =
     'import { Workflows } from "@tapis/tapis-typescript"\n';
-  let exportStatement = 'export const tasks: Array<Workflows.Task> = [';
+  let exportStatement = 'export const tasks: Array<Workflows.FunctionTask> = [';
   let i = 0;
   const taskTypeToSerializer = {
     function: 'Function',
