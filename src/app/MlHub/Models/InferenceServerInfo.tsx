@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
-import { Models, inference } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '@tapis/tapisui-common';
 import styles from './ModelDetails.module.scss';
-import { Icon, GenericModal, QueryWrapper } from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 
 type InferenceServerInfoProps = {
   modelId: string;
@@ -31,14 +30,13 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
   }
 
   if (serverInfo) {
-    const { message, metadata, result, transformers_info, status, version } =
+    const { message, metadata, result, status, version } =
       serverInfo;
     // console.log ("serverInfo" , serverInfo)
 
     if (
-      serverInfo.status === 200 ||
-      serverInfo.status === 422 ||
-      (serverInfo.status === 404 && serverInfo.result !== null)
+      parseInt(serverInfo.status!) === 200 ||
+      parseInt(serverInfo.status!) === 422
     ) {
       return (
         <QueryWrapper isLoading={isLoading} error={error}>
@@ -47,13 +45,13 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
           </div>
           <div className={`${styles['model-details-wrapper']}`}>
             <div className={`${styles['model-details']}`}>
-              {serverInfo.result?.availability && (
+              {parseInt(serverInfo.status!) === 200 && (
                 <div className={`${styles['model-detail']}`}>
                   <div className={`${styles['detail-title']}`}>
                     availability:
                   </div>
                   <div className={`${styles['detail-info']}`}>
-                    {serverInfo.result.availability}
+                    Available
                   </div>
                 </div>
               )}
@@ -67,20 +65,30 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
                   </div>
                 </div>
               )}
-              {serverInfo.result?.inference_server_possible && (
-                <div className={`${styles['model-detail']}`}>
-                  <div className={`${styles['detail-title']}`}>
-                    iinference_server_possible:
+              {parseInt(serverInfo.status!) === 422 && (
+                <>
+                  <div className={`${styles['model-detail']}`}>
+                    <div className={`${styles['detail-title']}`}>
+                      availability:
+                    </div>
+                    <div className={`${styles['detail-info']}`}>
+                      {serverInfo.message}
+                    </div>
                   </div>
-                  <div className={`${styles['detail-info']}`}>
-                    {serverInfo.result.inference_server_possible}
+                  <div className={`${styles['model-detail']}`}>
+                    <div className={`${styles['detail-title']}`}>
+                      inference_server_possible:
+                    </div>
+                    <div className={`${styles['detail-info']}`}>
+                      {serverInfo.result?.inference_server_possible}
+                    </div>
                   </div>
-                </div>
+                </>
               )}
               <div className={`${styles['model-detail']}`}>
                 <div className={`${styles['detail-title']}`}>model_id:</div>
                 <div className={`${styles['detail-info']}`}>
-                  {serverInfo.result.model_id}
+                  {serverInfo.result && serverInfo.result.model_id}
                 </div>
               </div>
               {serverInfo.result?.prompt_example && (
@@ -113,7 +121,7 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
           </div>
         </QueryWrapper>
       );
-    } else if (serverInfo.status === 404 && serverInfo.result === null) {
+    } else {
       return (
         <QueryWrapper isLoading={isLoading} error={error}>
           <div className={`${styles['model-title-container']}`}>
@@ -124,7 +132,7 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
               <div className={`${styles['model-detail']}`}>
                 <div className={`${styles['detail-title']}`}>message:</div>
                 <div className={`${styles['detail-info']}`}>
-                  {serverInfo.message}
+                  Model server is not running. We are unable to provision a server for {modelId}
                 </div>
               </div>
             </div>
