@@ -30,8 +30,7 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
   }
 
   if (serverInfo) {
-    const { message, metadata, result, status, version } =
-      serverInfo;
+    const { message, metadata, result, status, version } = serverInfo;
     // console.log ("serverInfo" , serverInfo)
 
     if (
@@ -50,9 +49,7 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
                   <div className={`${styles['detail-title']}`}>
                     availability:
                   </div>
-                  <div className={`${styles['detail-info']}`}>
-                    Available
-                  </div>
+                  <div className={`${styles['detail-info']}`}>Available</div>
                 </div>
               )}
               {serverInfo.result?.inference_endpoint && (
@@ -132,7 +129,8 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
               <div className={`${styles['model-detail']}`}>
                 <div className={`${styles['detail-title']}`}>message:</div>
                 <div className={`${styles['detail-info']}`}>
-                  Model server is not running. We are unable to provision a server for {modelId}
+                  Model server is not running. We are unable to provision a
+                  server for {modelId}
                 </div>
               </div>
             </div>
