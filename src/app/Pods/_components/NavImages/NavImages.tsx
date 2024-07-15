@@ -5,34 +5,34 @@ import { Pods } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 
-const PodsNav: React.FC = () => {
+const NavImages: React.FC = () => {
   const { url } = useRouteMatch();
   // Get a pods listing with default request params
-  const { data, isLoading, error } = Hooks.useList();
-  const definitions: Array<Pods.PodResponseModel> = data?.result ?? [];
+  const { data, isLoading, error } = Hooks.useListImages();
+  const definitions: Array<Pods.ImageResponseModel> = data?.result ?? [];
 
   // Display returns upper case first letter, lower case rest for the pod.status
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <Navbar>
         {definitions.length ? (
-          definitions.map((pod) => (
-            <NavItem
-              to={`${url}/${pod.pod_id}`}
-              icon="visualization"
-              key={pod.pod_id}
-            >
-              {`${pod.pod_id} - ${pod.status?.charAt(0)}${pod.status
-                ?.slice(1)
-                .toLowerCase()}`}
-            </NavItem>
-          ))
+          definitions
+            .sort((a, b) => a.image.localeCompare(b.image)) //sort by `image` property
+            .map((image) => (
+              <NavItem
+                to={`/pods/images/${image.image}`}
+                icon="image"
+                key={image.image}
+              >
+                {`${image.image}`}
+              </NavItem>
+            ))
         ) : (
-          <i>No pods found</i>
+          <i style={{ padding: '16px' }}>No images found</i>
         )}
       </Navbar>
     </QueryWrapper>
   );
 };
 
-export default PodsNav;
+export default NavImages;

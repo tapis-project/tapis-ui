@@ -22,8 +22,28 @@ libsToWatch.forEach((libPath) => {
   console.log(`Watching:   ${libPath}`);
   const watcher = chokidar.watch(`${libPath}/src`, { ignoreInitial: true });
 
-  watcher.on('all', (_, filePath) => {
-    console.log(filePath);
+  watcher.on('all', (event, filePath) => {
+    // ONLY WORKS ON SUBLIBS. Not on root of app!
+    // Prettier runs on changed files
+    // Temporarily unwatch the file
+    watcher.unwatch(filePath);
+    exec(
+      `npx prettier --single-quote --write "${filePath}"`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error - Prettier - ${filePath}: ${error}`);
+          // Rewatch the file even if prettier fails to ensure it's not missed in future changes
+          watcher.add(filePath);
+          return;
+        }
+
+        // Rewatch the file after prettification
+        watcher.add(filePath);
+
+        console.log(`Prettied:   ${stdout}`);
+      }
+    );
+
     if (filePath.endsWith('.css') || filePath.endsWith('.scss')) {
       // Handle CSS and SCSS files separately
       const destPath = filePath.replace('/src/', '/dist/');
@@ -40,12 +60,12 @@ libsToWatch.forEach((libPath) => {
       console.log(`Rebuilding: ${libPath}`);
       exec(
         `cd ${libPath} && npx tsc --build ./tsconfig.json`,
-        (error, stdout, _) => {
+        (error, stdout, stderr) => {
           if (error) {
             console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
             return;
           }
-          console.log(`Changed:    ${filePath}`);
+          console.log(`Rebuilt:    ${libPath} ${filePath}`);
         }
       );
     }

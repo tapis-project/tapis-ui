@@ -1,14 +1,14 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'testing/utils';
-import PodsNav from './PodsNav';
+import NavSnapshots from './NavSnapshots';
 import { tapisPod } from 'fixtures/pods.fixtures';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 
 jest.mock('@tapis/tapisui-hooks');
 
-describe('PodsNav', () => {
-  it('renders PodsNav component', () => {
+describe('NavSnapshots', () => {
+  it('renders NavPods component', () => {
     (Hooks.useList as jest.Mock).mockReturnValue({
       data: {
         result: [tapisPod],
@@ -17,7 +17,7 @@ describe('PodsNav', () => {
       error: null,
     });
 
-    const { getAllByText } = renderComponent(<PodsNav />);
+    const { getAllByText } = renderComponent(<NavSnapshots />);
     expect(getAllByText(/testpod2/).length).toEqual(1);
   });
 });
