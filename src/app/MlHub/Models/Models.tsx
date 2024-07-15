@@ -13,7 +13,7 @@ const Models: React.FC = () => {
   const { path } = useRouteMatch();
 
   return (
-    <QueryWrapper isLoading={isLoading} error={error}>
+    <QueryWrapper isLoading={isLoading} error={error} className={styles['models-table']}>
       <Table responsive striped>
         <thead>
           <tr>

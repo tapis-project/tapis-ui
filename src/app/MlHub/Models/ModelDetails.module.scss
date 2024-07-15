@@ -1,3 +1,8 @@
+.model-details {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
 .buttons-container {
   display: flex;
   flex-direction: column;
@@ -15,7 +20,6 @@
 }
 
 .model-details {
-  margin-left: 10px;
   display: flex;
   flex-direction: column;
   gap: 16px;

@@ -13,6 +13,7 @@
 .card-header {
   display: flex;
   justify-content: baseline;
+
   div {
     display: flex;
     justify-content: center;
@@ -24,4 +25,8 @@
 .card-footer {
   display: flex;
   justify-content: space-between;
+}
+
+.dashboard {
+  padding-left: 1em;
 }
