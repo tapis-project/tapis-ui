@@ -48,7 +48,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const Dashboard: React.FC = () => {
   return (
-    <div id="dashboard">
+    <div id="dashboard" className={styles['dashboard']}>
       <div id="dashboard-cards" className={styles['card-container']}>
         <DashboardCard
           icon="simulation"

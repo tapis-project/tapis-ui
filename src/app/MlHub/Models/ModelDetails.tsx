@@ -15,7 +15,11 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
   const { data, isLoading, error } = Hooks.Models.useDetails({ modelId });
   const model: Models.ModelFullInfo = data?.result ?? {};
   return (
-    <QueryWrapper isLoading={isLoading} error={error}>
+    <QueryWrapper
+      isLoading={isLoading}
+      error={error}
+      className={styles['model-details']}
+    >
       <div className={`${styles['model-title-container']}`}>
         <div className={`${styles['model-title']}`}>
           <b>{modelId}</b>
