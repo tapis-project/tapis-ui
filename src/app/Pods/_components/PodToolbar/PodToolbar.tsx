@@ -5,7 +5,6 @@ import styles from './PodToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreatePodModal from './CreatePodModal';
 import DeletePodModal from './DeletePodModal';
-import GetPodSecretsModal from './GetPodSecretsModal';
 import {
   StartPodModal,
   RestartPodModal,
@@ -98,7 +97,6 @@ const PodToolbar: React.FC = () => {
             onClick={() => setModal('deletepod')}
             aria-label="deletePod"
           />
-          {/* {modal === 'getpodssecrets' && <GetPodSecretsModal toggle={toggle} />} */}
           {modal === 'startpod' && <StartPodModal toggle={toggle} />}
           {modal === 'restartpod' && <RestartPodModal toggle={toggle} />}
           {modal === 'stoppod' && <StopPodModal toggle={toggle} />}

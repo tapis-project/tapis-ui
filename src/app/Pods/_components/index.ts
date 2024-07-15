@@ -6,6 +6,5 @@ export { default as NavTemplates } from './NavTemplates';
 export { default as PodToolbar } from './PodToolbar';
 export { default as PodFunctionBar } from './PodFunctionBar';
 export { default as TooltipModal } from './TooltipModal';
-export { default as PodDetail } from './PagePods';
 export { default as PodsNavigation } from './PodsNavigation';
 export * from './PodsContext';

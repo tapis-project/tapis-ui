@@ -5,7 +5,6 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-//import PodDetail from '../Pods';
 import { default as PagePods } from 'app/Pods/_components/PagePods';
 import { default as PageImages } from 'app/Pods/_components/PageImages';
 import { default as PageVolumes } from 'app/Pods/_components/PageVolumes';
