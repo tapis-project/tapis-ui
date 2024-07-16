@@ -23,7 +23,6 @@
   "license": "ISC",
   "eslintConfig": {
     "extends": [
-      "react-app",
       "prettier"
     ]
   },
