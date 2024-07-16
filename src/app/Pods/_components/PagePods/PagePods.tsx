@@ -51,13 +51,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
     error: errorSecrets,
-  } = Hooks.useGetPodSecrets({ podId: objId });
+  } = Hooks.useLogs({ podId: objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
-  const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
+  const podSecrets: Pods.LogsModel | undefined = dataSecrets?.result;
   console.log('secrets', dataSecrets);
   // State to control the visibility of the TooltipModal
   const [modal, setModal] = useState<string | undefined>(undefined);
