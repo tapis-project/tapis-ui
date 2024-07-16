@@ -12,10 +12,10 @@ export { default as useDetailsImages } from './useDetailsImages';
 export { default as useDetailsTemplates } from './useDetailsTemplates';
 
 export { default as useLogs } from './useLogs';
+export { default as useGetPodSecrets } from './useGetPodSecrets';
 export { default as useMakeNewPod } from './useMakeNewPod';
 export { default as useDeletePod } from './useDeletePod';
 export { default as useStartPod } from './useStartPod';
 export { default as useRestartPod } from './useRestartPod';
 export { default as useStopPod } from './useStopPod';
 export { default as queryKeys } from './queryKeys';
-export { default as useGetPodSecrets } from './useGetPodSecrets';
