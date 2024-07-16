@@ -41,7 +41,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   if (objId === '') {
     objId = '';
   }
-  console.log(typeof Hooks.useDetailsImages)
+  console.log(typeof Hooks.useDetailsImages);
   const { data, isLoading, error } = Hooks.useLogs({ podId: objId });
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
