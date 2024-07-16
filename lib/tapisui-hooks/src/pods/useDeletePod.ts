@@ -17,7 +17,7 @@ const useDeletePod = () => {
   //
   // In this case, mkdir helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Pods.DeletePodResponse, Error, DeletePodHookParams>(
+    useMutation<Pods.PodDeleteResponse, Error, DeletePodHookParams>(
       [QueryKeys.deletePod, basePath, jwt],
       ({ podId }) => API.deletePod(podId, basePath, jwt)
     );
@@ -34,7 +34,7 @@ const useDeletePod = () => {
       podId: string,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Pods.DeletePodResponse,
+        Pods.PodDeleteResponse,
         Error,
         DeletePodHookParams
       >

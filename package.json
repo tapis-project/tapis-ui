@@ -13,7 +13,7 @@
     "@mui/material": "^5.16.0",
     "@mui/x-data-grid": "^7.7.0",
     "@rollup/plugin-commonjs": "^25.0.8",
-    "@tapis/tapis-typescript": "^0.0.32",
+    "@tapis/tapis-typescript": "^0.0.34",
     "@tapis/tapisui-api": "file:./lib/tapisui-api",
     "@tapis/tapisui-common": "file:./lib/tapisui-common",
     "@tapis/tapisui-extensions-core": "file:./lib/tapisui-extensions-core",

@@ -8,7 +8,7 @@ const deletePod = (podId: string, basePath: string, jwt: string) => {
     basePath,
     jwt
   );
-  return errorDecoder<Pods.DeletePodResponse>(() => api.deletePod({ podId }));
+  return errorDecoder<Pods.PodDeleteResponse>(() => api.deletePod({ podId }));
 };
 
 export default deletePod;

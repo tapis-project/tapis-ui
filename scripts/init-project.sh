@@ -23,6 +23,9 @@ if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
     exit 1
 fi;
 
+# Remove below to improve speed of project initalization
+rm -rf /tmp/tapisui-extensions-core/
+
 cd lib/tapisui-api
 echo $(pwd)
 rm -rf dist node_modules

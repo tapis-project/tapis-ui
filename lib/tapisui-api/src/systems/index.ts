@@ -7,3 +7,4 @@ export { default as undeleteSystem } from './undeleteSystem';
 export { default as shareSystemPublic } from './shareSystemPublic';
 export { default as unShareSystemPublic } from './unShareSystemPublic';
 export { default as createChildSystem } from './createChildSystem';
+export { default as createUserCredential } from './createUserCredential';

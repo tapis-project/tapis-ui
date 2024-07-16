@@ -39,15 +39,15 @@
 }
 
 .nav-list {
-  table {
-    height: 350px;
-    max-height: 350px;
-  }
   height: 372px;
   width: 100%;
   border: 1px solid gray;
   margin-top: 0.25em;
   box-sizing: border-box;
+  table {
+    height: 350px;
+    max-height: 350px;
+  }
 }
 
 .remove-file {
