@@ -1,7 +1,7 @@
 import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
 import { Systems as API } from '@tapis/tapisui-api';
-import { useTapisConfig } from '../../';
+import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 
 type CreateUserCredentialHookParams = {
@@ -22,7 +22,7 @@ const useCreate = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespBasic, Error, CreateUserCredentialHookParams>(
       [QueryKeys.createUserCredential, basePath, jwt],
-      (params) => API.createUserCredentials(params, basePath, jwt)
+      (params) => API.createUserCredential(params, basePath, jwt)
     );
 
   const invalidate = () => {
