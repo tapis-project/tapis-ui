@@ -7,7 +7,7 @@ import QueryKeys from './queryKeys';
 type CreateUserCredentialHookParams = {
   systemId: string;
   userName: string;
-  reqUpdateCredential: Systems.ReqUpdateCredential
+  reqUpdateCredential: Systems.ReqUpdateCredential;
 };
 
 const useCreate = () => {
