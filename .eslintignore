@@ -4,4 +4,6 @@ build
 webpack.*.js
 *.test.js
 dist
-*.js
+lib/tapisui-common/**/*.js
+scripts
+src/app/**/*.js
