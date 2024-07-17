@@ -5,6 +5,11 @@ import styles from './PodToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreatePodModal from './CreatePodModal';
 import DeletePodModal from './DeletePodModal';
+import {
+  StartPodModal,
+  RestartPodModal,
+  StopPodModal,
+} from '../PodFunctionBar';
 
 type ToolbarButtonProps = {
   text: string;
@@ -32,7 +37,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
         className={styles['toolbar-btn']}
         {...rest}
       >
-        <Icon name={icon}></Icon>
+        {icon && <Icon name={icon}></Icon>}
         <span> {text}</span>
       </Button>
     </div>
@@ -50,6 +55,34 @@ const PodToolbar: React.FC = () => {
     <div id="file-operation-toolbar">
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
+          {/* <ToolbarButton
+            text="Secrets"
+            icon=""
+            disabled={false}
+            onClick={() => setModal('getpodssecrets')}
+            aria-label="getpodssecrets"
+          /> */}
+          <ToolbarButton
+            text="Start"
+            icon=""
+            disabled={false}
+            onClick={() => setModal('startpod')}
+            aria-label="startpod"
+          />
+          <ToolbarButton
+            text="Restart"
+            icon=""
+            disabled={false}
+            onClick={() => setModal('restartpod')}
+            aria-label="restartpod"
+          />
+          <ToolbarButton
+            text="Stop"
+            icon=""
+            disabled={false}
+            onClick={() => setModal('stoppod')}
+            aria-label="stoppod"
+          />
           <ToolbarButton
             text="Create"
             icon="add"
@@ -64,7 +97,9 @@ const PodToolbar: React.FC = () => {
             onClick={() => setModal('deletepod')}
             aria-label="deletePod"
           />
-
+          {modal === 'startpod' && <StartPodModal toggle={toggle} />}
+          {modal === 'restartpod' && <RestartPodModal toggle={toggle} />}
+          {modal === 'stoppod' && <StopPodModal toggle={toggle} />}
           {modal === 'createpod' && <CreatePodModal toggle={toggle} />}
           {modal === 'deletepod' && <DeletePodModal toggle={toggle} />}
         </div>

@@ -7,6 +7,7 @@ const QueryKeys = {
   shareSystemPublic: 'systems/shareSystemPublic',
   unShareSystemPublic: 'systems/unShareSystemPublic',
   createChildSystem: 'systems/createChildSystem',
+  createUserCredential: 'systems/createUserCredential',
 };
 
 export default QueryKeys;

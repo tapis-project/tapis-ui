@@ -1,0 +1,95 @@
+.copyButtonRight {
+  margin-left: auto;
+  height: 2rem;
+  align-items: right;
+  font-size: 0.7em !important;
+  border-radius: 0 !important;
+  background-color: #f4f4f4 !important;
+  color: #333333 !important;
+  //margin-bottom: .5em !important;
+  display: flex;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+
+.body {
+  width: 100%;
+  overflow: auto;
+  display: flex;
+}
+
+.constrain {
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.nav {
+  margin-top: 1em;
+  flex-basis: 20%;
+  flex-shrink: 0;
+  min-width: 13rem;
+  max-width: 18rem;
+  overflow: auto;
+}
+
+.detail {
+  flex-basis: 100%;
+  overflow: auto;
+}
+
+.sub-header {
+  padding: 16px;
+}
+
+// Originally from SectionHeader
+.root {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  align-content: flex-end; /* preserve alignment of items when wrapped */
+
+  min-height: 2rem; /* ~32px (26px design * 1.2 design-to-app ratio) */
+  box-sizing: content-box;
+
+  padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
+  border-bottom: var(--global-border-width--normal) solid
+    var(--global-color-primary--dark);
+}
+
+/* Elements */
+
+/* Do not allow external margin styles */
+/* FAQ: Examples: global `h1`–`h6`, user styles) */
+.heading {
+  margin: 0;
+
+  /* FAQ: It is simpler to do this in CSS than in JavaScript */
+  /* text-transform: capitalize; */
+
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: flex-end;
+  align-content: flex-end;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+/* Header actions are always after heading text */
+.heading ~ * {
+  max-height: 100%; /* (gently) force oversized elements to fit */
+}
+
+/* Modifiers */
+
+.for-form {
+  /* FAQ: No styles necessary, but this is here for consistency */
+}
+
+.for-table {
+  border-bottom: none;
+}
