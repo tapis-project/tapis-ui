@@ -10,7 +10,7 @@ type CreateUserCredentialHookParams = {
   reqUpdateCredential: Systems.ReqUpdateCredential;
 };
 
-const useCreate = () => {
+const useCreateCredential = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
@@ -53,4 +53,4 @@ const useCreate = () => {
   };
 };
 
-export default useCreate;
+export default useCreateCredential;
