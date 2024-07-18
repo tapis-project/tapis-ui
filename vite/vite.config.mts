@@ -30,7 +30,7 @@ export default defineConfig({
     outDir: 'build',
     manifest: true,
     rollupOptions: {
-      external: ['lib'],
+      external: ['lib', 'simple-git'],
     },
   },
   logLevel: 'info',
