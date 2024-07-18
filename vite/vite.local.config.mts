@@ -40,6 +40,6 @@ export default defineConfig({
   },
   preview: {
     port: 8113,
-    open: false
-  }  
+    open: false,
+  },
 });
