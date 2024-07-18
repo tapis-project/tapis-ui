@@ -14,27 +14,18 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 22.x
-
+          node-version: 22.4.x
       # - uses: actions/cache@v1
       #   with:
       #     path: ~/.npm
       #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       #     restore-keys: |
       #       ${{ runner.os }}-node-
-
-      - name: update npm
-        run: npm install -g npm
-      - name: npm cache clean
-        run: npm cache clean --force
       - name: npm ci
-        run: rm -rf node_modules && rm package-lock.json && npm install --verbose
-      - name: log cat
-        run: cat /home/runner/.npm/_logs/*
+        run: rm -rf node_modules && rm package-lock.json && npm install
       - name: Client Side Unit Tests
         run: |
           npm run test
-
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
@@ -45,12 +36,7 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 22.x
-      - name: update npm
-        run: npm install -g npm
-      - name: npm cache clean
-        run: npm cache clean --force
-
+          node-version: 22.4.x
       # - uses: actions/cache@v1
       #   with:
       #     path: ~/.npm
@@ -60,8 +46,6 @@ jobs:
       - name: npm ci
         run: |
           npm ci
-      - name: log cat
-        run: cat /home/runner/.npm/_logs/*
       - name: Client Side Linting
         run: |
           npm run lint
