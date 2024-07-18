@@ -209,7 +209,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
     }
     dispatch({ type: EnumActionType.EDIT_TASK, payload: task });
   };
-  
+
   const handleCreateTask = (task: Workflows.Task) => {
     // Unselect a task if selected
     if (state.selectedTask) {
@@ -294,7 +294,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
                     </div>
                     <Button
                       onClick={() => {
-                        handleCreateTask({...task, type: task.type!});
+                        handleCreateTask({ ...task, type: task.type! });
                       }}
                       className={`${styles['add-button']}`}
                     >
