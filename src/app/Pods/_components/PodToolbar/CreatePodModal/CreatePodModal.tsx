@@ -395,7 +395,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         pod_id: pod_id,
         description,
         command: command ? JSON.parse(command) : undefined,
-        pod_template: pod_template,
+        template: pod_template,
         time_to_stop_default: time_to_stop_default,
         time_to_stop_instance: time_to_stop_instance,
         environment_variables: envVarsArrayToInputObject(environment_variables),
