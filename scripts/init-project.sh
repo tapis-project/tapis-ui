@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#### USE WITH
+# npm run init-project none - to not delete anything
+# npm run init-project modules - to delete only node_modules and dist dirs
+# npm run init-project locks - to delete only package-lock.json
+# npm run init-project all - to delete all of the above
+####
+
 NODE_VERSION=22
 NPM_VERSION=10
 
@@ -14,58 +21,63 @@ for program in "${programs[@]}"; do
 done
 
 if [[ $(node --version) != *"${NODE_VERSION}"* ]]; then
-    echo "You must install node version 22. run \`nvm install 22\`"
-    exit 1
+  echo "You must install node version $NODE_VERSION. Run \`nvm install $NODE_VERSION\`"
+  exit 1
 fi;
 
 if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
-    echo "You must install npm version 10"
-    exit 1
+  echo "You must install npm version $NPM_VERSION"
+  exit 1
 fi;
+
+delete_files() {
+  local flag=${1:-"all"}  # Set default value to "all" if no flag is provided
+  case $flag in
+    "all")
+      rm -rf dist node_modules package-lock.json
+      ;;
+    "none")
+      ;;
+    "modules")
+      rm -rf dist node_modules
+      ;;
+    "locks")
+      rm -rf package-lock.json
+      ;;
+    *)
+      echo "Invalid flag: $flag Must specify 'all', 'none', 'modules', or 'locks'"
+      exit 1
+      ;;
+  esac
+}
+
 
 # Remove below to improve speed of project initalization
 rm -rf /tmp/tapisui-extensions-core/
 
-cd lib/tapisui-api
-echo $(pwd)
-rm -rf dist node_modules
-rm package-lock.json
-npm install
-npm run build
-cd ../../
+# Directories to build
+dirs=(
+  "lib/tapisui-api"
+  "lib/tapisui-hooks"
+  "lib/tapisui-common"
+  "lib/tapisui-extensions-core"
+  "lib/icicle-tapisui-extension"
+  ""
+)
 
-cd lib/tapisui-hooks
-echo $(pwd)
-rm -rf dist node_modules
-rm package-lock.json
-npm install
-npm run build
-cd ../../
+for dir in "${dirs[@]}"; do
+  cd "$dir" || exit 1
+  echo "$(pwd)"
+  echo "#############################################################"
+  delete_files "$1"
+  npm install
+  ## "" is the root directory, it doesn't build, and it shouldn't cd ../../.
+  if [[ -n "$dir" ]]; then
+    npm run build # just breaking currently. When working, can probably add somehow.
+    cd ../../ || exit 1
+  fi
+done
 
-cd lib/tapisui-common
-echo $(pwd)
-rm -rf dist node_modules
-rm package-lock.json
-npm install
-npm run build
-cd ../../
+echo "$(pwd)"
 
-cd lib/tapisui-extensions-core
-echo $(pwd)
-rm -rf dist node_modules
-rm package-lock.json
-npm install
-npm run build
-cd ../../
-
-cd lib/icicle-tapisui-extension
-echo $(pwd)
-rm -rf dist node_modules
-rm package-lock.json
-npm install
-npm run build
-cd ../../
-
-echo $(pwd)
-npm install
 npm run start

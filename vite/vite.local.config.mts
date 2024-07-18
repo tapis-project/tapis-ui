@@ -38,4 +38,8 @@ export default defineConfig({
     open: true, // Opens browser
     port: 3000,
   },
+  preview: {
+    port: 8113,
+    open: false
+  }  
 });
