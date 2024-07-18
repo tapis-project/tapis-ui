@@ -209,7 +209,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
     }
     dispatch({ type: EnumActionType.EDIT_TASK, payload: task });
   };
-
+  
   const handleCreateTask = (task: Workflows.Task) => {
     // Unselect a task if selected
     if (state.selectedTask) {
@@ -239,6 +239,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
             pipelineId,
             reqTask: {
               ...task,
+              id: task.id!,
               runtime: task.runtime!,
               installer: task.installer!,
               code: task.code! || undefined,
@@ -257,7 +258,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
   const handleDeleteTask = (task: Workflows.Task) => {
     dispatch({ type: EnumActionType.DELETE_TASK, payload: task });
     removeAsync(
-      { groupId, pipelineId, taskId: task.id },
+      { groupId, pipelineId, taskId: task.id! },
       {
         onSuccess: onSuccessDeleteTask,
         onError: () => {
@@ -293,7 +294,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
                     </div>
                     <Button
                       onClick={() => {
-                        handleCreateTask(task);
+                        handleCreateTask({...task, type: task.type!});
                       }}
                       className={`${styles['add-button']}`}
                     >
