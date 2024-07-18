@@ -29,11 +29,11 @@ jobs:
         run: npm cache clean --force
       - name: npm ci
         run: rm -rf node_modules && rm package-lock.json && npm install --verbose
+      - name: log cat
+        run: cat /home/runner/.npm/_logs/*
       - name: Client Side Unit Tests
         run: |
           npm run test
-      - name: log cat
-        run: cat /home/runner/.npm/_logs/*
 
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
@@ -57,16 +57,14 @@ jobs:
       #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       #     restore-keys: |
       #       ${{ runner.os }}-node-
-
-
       - name: npm ci
         run: |
           npm ci
+      - name: log cat
+        run: cat /home/runner/.npm/_logs/*
       - name: Client Side Linting
         run: |
           npm run lint
-      - name: log cat
-        run: cat /home/runner/.npm/_logs/*
 
 
   Resolve_Image_Tag:
