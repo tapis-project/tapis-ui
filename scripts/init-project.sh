@@ -57,11 +57,12 @@ rm -rf /tmp/tapisui-extensions-core/
 
 # Directories to build
 dirs=(
-  "lib/tapisui-api"
-  "lib/tapisui-hooks"
-  "lib/tapisui-common"
-  "lib/tapisui-extensions-core"
-  "lib/icicle-tapisui-extension"
+  "packages/tapisui-api"
+  "packages/tapisui-hooks"
+  "packages/tapisui-common"
+  "packages/tapisui-extensions-core"
+  "packages/tapisui-extension-devtools"
+  "packages/icicle-tapisui-extension"
   ""
 )
 
@@ -74,7 +75,11 @@ for dir in "${dirs[@]}"; do
   ## "" is the root directory, it doesn't build, and it shouldn't cd ../../.
   if [[ -n "$dir" ]]; then
     npm run build # just breaking currently. When working, can probably add somehow.
-    cd ../../ || exit 1
+    exitCode=$?
+    if [[exitCode != 0]]; then
+      exit $exitCode
+    fi
+    cd ../../ 
   fi
 done
 

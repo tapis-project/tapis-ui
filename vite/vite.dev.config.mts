@@ -30,7 +30,7 @@ export default defineConfig({
     outDir: 'dist',
     manifest: true,
     rollupOptions: {
-      external: ['lib'],
+      external: ['packages'],
     },
   },
   logLevel: 'info',
