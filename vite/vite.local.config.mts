@@ -27,6 +27,7 @@ export default defineConfig({
     envCompatible(),
   ],
   build: {
+    sourcemap: true,
     outDir: 'dist',
     manifest: true,
     rollupOptions: {
@@ -40,6 +41,6 @@ export default defineConfig({
   },
   preview: {
     port: 8113,
-    open: false,
+    open: true,
   },
 });
