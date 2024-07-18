@@ -23,6 +23,10 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-node-
 
+      - name: update npm
+        run: npm install -g npm
+      - name: npm cache clean
+        run: npm cache clean --force
       - name: npm ci
         run: rm -rf node_modules && rm package-lock.json && npm install --verbose
       - name: Client Side Unit Tests
@@ -40,6 +44,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 22.x
+      - name: update npm
+        run: npm install -g npm
+      - name: npm cache clean
+        run: npm cache clean --force
 
       # - uses: actions/cache@v1
       #   with:
@@ -47,6 +55,7 @@ jobs:
       #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       #     restore-keys: |
       #       ${{ runner.os }}-node-
+
 
       - name: npm ci
         run: |
