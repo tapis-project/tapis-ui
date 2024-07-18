@@ -68,19 +68,26 @@ dirs=(
 
 for dir in "${dirs[@]}"; do
   cd "$dir" || exit 1
+  echo ""
+  echo "#############################################################"
   echo "$(pwd)"
   echo "#############################################################"
   delete_files "$1"
   npm install
   ## "" is the root directory, it doesn't build, and it shouldn't cd ../../.
   if [[ -n "$dir" ]]; then
-    npm run build # just breaking currently. When working, can probably add somehow.
+    npm run build
     exitCode=$?
-    if [[exitCode != 0]]; then
-      exit $exitCode
-    fi
-    cd ../../ 
+    cd ../../
   fi
+
+
+  if [[ $exitCode -ne 0 ]]; then
+    echo "Build unsuccessful"
+    exit $exitCode
+  fi
+
+  echo "Build successful: $dir"
 done
 
 echo "$(pwd)"
