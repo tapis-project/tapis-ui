@@ -37,7 +37,7 @@ const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
           color="danger"
           onClick={() => {
             removeAsync(
-              { groupId, pipelineId, taskId: task.id },
+              { groupId, pipelineId, taskId: task.id ?? '' },
               { onSuccess }
             );
           }}
@@ -58,7 +58,7 @@ const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
           <b>description: </b>
           {task.description || <i>None</i>}
         </p>
-        {isError && error}
+        {isError && error && <p>{error.message}</p>}
       </div>
       {!!task?.depends_on?.length && (
         <div>

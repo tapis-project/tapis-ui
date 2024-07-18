@@ -239,7 +239,7 @@ const Details: React.FC<DetailsProps> = ({ type, pipeline }) => {
   >(undefined);
   const { values } = useFormikContext<ReqTaskTransform>();
   const isSelectedDependency = (
-    task_id: string,
+    task_id: string | undefined,
     dependencies: Array<Workflows.TaskDependency>
   ) => {
     return dependencies.filter((dep) => dep.id === task_id).length > 0;
