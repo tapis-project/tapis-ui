@@ -27,10 +27,10 @@ export default defineConfig({
     envCompatible(),
   ],
   build: {
-    outDir: 'build',
+    outDir: 'dist',
     manifest: true,
     rollupOptions: {
-      external: ['lib'],
+      external: ['lib', 'simple-git'],
     },
   },
   logLevel: 'info',
