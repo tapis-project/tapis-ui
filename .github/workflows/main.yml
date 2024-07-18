@@ -24,7 +24,7 @@ jobs:
       #       ${{ runner.os }}-node-
 
       - name: npm ci
-        run: rm -rf node_modules && rm package-lock.json && npm install
+        run: rm -rf node_modules && rm package-lock.json && npm install --verbose
       - name: Client Side Unit Tests
         run: |
           npm run test
