@@ -32,6 +32,8 @@ jobs:
       - name: Client Side Unit Tests
         run: |
           npm run test
+      - name: log cat
+        run: cat /home/runner/.npm/_logs/*
 
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
@@ -63,6 +65,9 @@ jobs:
       - name: Client Side Linting
         run: |
           npm run lint
+      - name: log cat
+        run: cat /home/runner/.npm/_logs/*
+
 
   Resolve_Image_Tag:
     runs-on: ubuntu-latest
