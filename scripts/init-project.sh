@@ -110,6 +110,8 @@ for dir in "${dirs[@]}"; do
   fi
 done
 
+# Running prettier will reformat any code that has been unformatted by the code
+# generating scripts in extension packages
 npm run prettier
 
 echo ""
