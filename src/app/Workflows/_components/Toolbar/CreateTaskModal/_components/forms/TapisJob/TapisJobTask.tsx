@@ -45,7 +45,7 @@ const TapisJobFormikForm: React.FC<{ pipeline: Workflows.Pipeline }> = ({
 }) => {
   const { setFieldValue, errors } = useFormikContext();
   const onChange = useCallback(
-    (value) => {
+    (value: string) => {
       setFieldValue('tapis_job_def', value);
     },
     [setFieldValue]

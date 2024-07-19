@@ -5,7 +5,7 @@ import { useTapisConfig } from '..';
 import QueryKeys from './queryKeys';
 
 const useListTemplateTags = (
-  params: Pods.GetTemplateTagsRequest,
+  params: Pods.ListTemplateTagsRequest,
   options: QueryObserverOptions<Pods.TemplateTagsSmallResponse, Error> = {}
 ) => {
   const { accessToken, basePath } = useTapisConfig();

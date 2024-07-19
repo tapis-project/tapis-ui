@@ -51,14 +51,14 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
     error: errorSecrets,
-  } = Hooks.useLogs({ podId: objId });
+  } = Hooks.useGetPodSecrets({ podId: objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
-  const podSecrets: Pods.LogsModel | undefined = dataSecrets?.result;
-  console.log('secrets', dataSecrets);
+  const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
+
   // State to control the visibility of the TooltipModal
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
@@ -100,101 +100,96 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               overflow: 'auto',
             }}
           >
-            <QueryWrapper
-              isLoading={isLoading || isLoadingLogs}
-              error={error || errorLogs}
+            <div
+              style={{
+                paddingBottom: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
             >
-              <div
-                style={{
-                  paddingBottom: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Stack spacing={2} direction="row" className={styles['stack']}>
-                  <Button
-                    //startIcon={<Info />}
-                    variant="outlined"
-                    color={podBarTab === 'details' ? 'secondary' : 'primary'}
-                    size="small"
-                    onClick={() => {
-                      setPodBarTab('details');
-                    }}
-                  >
-                    Details
-                  </Button>
-                  <Button
-                    //startIcon={<CompareArrows />}
-                    variant="outlined"
-                    size="small"
-                    color={podBarTab === 'logs' ? 'secondary' : 'primary'}
-                    onClick={() => {
-                      setPodBarTab('logs');
-                    }}
-                  >
-                    Logs
-                  </Button>
-                  <Button
-                    //startIcon={<Tune />}
-                    variant="outlined"
-                    size="small"
-                    color={podBarTab === 'actionlogs' ? 'secondary' : 'primary'}
-                    onClick={() => {
-                      setPodBarTab('actionlogs');
-                    }}
-                  >
-                    Action Logs
-                  </Button>
-                  <Button
-                    //startIcon={<Tune />}
-                    variant="outlined"
-                    size="small"
-                    color={podBarTab === 'secrets' ? 'secondary' : 'primary'}
-                    onClick={() => {
-                      setPodBarTab('secrets');
-                    }}
-                  >
-                    Secrets
-                  </Button>
-                </Stack>
-                <Stack spacing={2} direction="row" className={styles['stack']}>
-                  <Button
-                    //startIcon={<Info />}
-                    variant="outlined"
-                    color={podBarTab === 'help' ? 'secondary' : 'primary'}
-                    size="small"
-                    onClick={() => {
-                      setModal('tooltip');
-                    }}
-                  >
-                    Help
-                  </Button>
-                  <Button
-                    //startIcon={<Info />}
-                    variant="outlined"
-                    color={podBarTab === 'help' ? 'secondary' : 'primary'}
-                    size="small"
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        JSON.stringify(pod, null, 2)
-                      );
-                    }}
-                  >
-                    Copy
-                  </Button>
-                  <CopyButton
-                    value={JSON.stringify(pod, null, 2)}
-                    className={styles.copyButtonRight}
-                  />
-                </Stack>
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'details' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
+              <Stack spacing={2} direction="row" className={styles['stack']}>
+                <Button
+                  //startIcon={<Info />}
+                  variant="outlined"
+                  color={podBarTab === 'details' ? 'secondary' : 'primary'}
+                  size="small"
+                  onClick={() => {
+                    setPodBarTab('details');
+                  }}
+                >
+                  Details
+                </Button>
+                <Button
+                  //startIcon={<CompareArrows />}
+                  variant="outlined"
+                  size="small"
+                  color={podBarTab === 'logs' ? 'secondary' : 'primary'}
+                  onClick={() => {
+                    setPodBarTab('logs');
+                  }}
+                >
+                  Logs
+                </Button>
+                <Button
+                  //startIcon={<Tune />}
+                  variant="outlined"
+                  size="small"
+                  color={podBarTab === 'actionlogs' ? 'secondary' : 'primary'}
+                  onClick={() => {
+                    setPodBarTab('actionlogs');
+                  }}
+                >
+                  Action Logs
+                </Button>
+                <Button
+                  //startIcon={<Tune />}
+                  variant="outlined"
+                  size="small"
+                  color={podBarTab === 'secrets' ? 'secondary' : 'primary'}
+                  onClick={() => {
+                    setPodBarTab('secrets');
+                  }}
+                >
+                  Secrets
+                </Button>
+              </Stack>
+              <Stack spacing={2} direction="row" className={styles['stack']}>
+                <Button
+                  //startIcon={<Info />}
+                  variant="outlined"
+                  color={podBarTab === 'help' ? 'secondary' : 'primary'}
+                  size="small"
+                  onClick={() => {
+                    setModal('tooltip');
+                  }}
+                >
+                  Help
+                </Button>
+                <Button
+                  //startIcon={<Info />}
+                  variant="outlined"
+                  color={podBarTab === 'help' ? 'secondary' : 'primary'}
+                  size="small"
+                  onClick={() => {
+                    navigator.clipboard.writeText(JSON.stringify(pod, null, 2));
+                  }}
+                >
+                  Copy
+                </Button>
+                <CopyButton
+                  value={JSON.stringify(pod, null, 2)}
+                  className={styles.copyButtonRight}
+                />
+              </Stack>
+            </div>
+            <div
+              style={{
+                display: podBarTab === 'details' ? 'block' : 'none',
+              }}
+              className={styles['container']}
+            >
+              <QueryWrapper isLoading={isLoading} error={error}>
                 <CodeMirror
                   width="100%"
                   value={JSON.stringify(pod, null, 2)}
@@ -217,13 +212,15 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
                   }}
                 />
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'logs' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
+              </QueryWrapper>
+            </div>
+            <div
+              style={{
+                display: podBarTab === 'logs' ? 'block' : 'none',
+              }}
+              className={styles['container']}
+            >
+              <QueryWrapper isLoading={isLoadingLogs} error={errorLogs}>
                 <CodeMirror
                   value={podLogs?.logs}
                   editable={false}
@@ -245,13 +242,15 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
                   }}
                 />
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'actionlogs' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
+              </QueryWrapper>
+            </div>
+            <div
+              style={{
+                display: podBarTab === 'actionlogs' ? 'block' : 'none',
+              }}
+              className={styles['container']}
+            >
+              <QueryWrapper isLoading={isLoadingLogs} error={errorLogs}>
                 <CodeMirror
                   value={podLogs?.action_logs?.join('\n')}
                   editable={false}
@@ -273,13 +272,15 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
                   }}
                 />
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'secrets' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
+              </QueryWrapper>
+            </div>
+            <div
+              style={{
+                display: podBarTab === 'secrets' ? 'block' : 'none',
+              }}
+              className={styles['container']}
+            >
+              <QueryWrapper isLoading={isLoadingSecrets} error={errorSecrets}>
                 <CodeMirror
                   value={JSON.stringify(podSecrets, null, 2)}
                   editable={false}
@@ -301,8 +302,8 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
                   }}
                 />
-              </div>
-            </QueryWrapper>
+              </QueryWrapper>
+            </div>
           </div>
         )}
 

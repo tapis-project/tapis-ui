@@ -9,7 +9,7 @@ WORKDIR /tapisui/src
 COPY ./ ./
 
 # Install all files in the package json
-RUN npm run init-project-container
+RUN npm run init-project container
 
 CMD ["npm", "run", "deploy"]
 

@@ -27,15 +27,20 @@ export default defineConfig({
     envCompatible(),
   ],
   build: {
-    outDir: 'build',
+    sourcemap: true,
+    outDir: 'dist',
     manifest: true,
     rollupOptions: {
-      external: ['lib'],
+      external: ['packages'],
     },
   },
   logLevel: 'info',
   server: {
     open: true, // Opens browser
     port: 3000,
+  },
+  preview: {
+    port: 8113,
+    open: true,
   },
 });

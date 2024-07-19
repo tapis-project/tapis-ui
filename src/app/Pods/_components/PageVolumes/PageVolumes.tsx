@@ -18,7 +18,6 @@ import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { decode } from 'base-64';
 import Stack from '@mui/material/Stack';
 import {
-  ToolbarButton,
   CopyButton,
   TooltipModal,
   DescriptionList,
