@@ -96,7 +96,7 @@ for dir in "${dirs[@]}"; do
   delete_files $flag
 
   # Install all deps in the package.json
-  npm install || handle_failure $? "Package installation unsuccessful"
+  npm ci || handle_failure $? "Package installation unsuccessful"
   
   # Only build in the packages
   if [[ -n "$dir" ]]; then
