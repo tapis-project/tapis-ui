@@ -2,7 +2,6 @@ import React from 'react';
 import { useForm, Controller, Resolver, FieldValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
-//import { useCreateCredential } from '@tapis/tapisui-hooks';
 import * as yup from 'yup';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
@@ -72,8 +71,8 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
 
   const onSubmit = (data: FormData) => {
     create({
-      systemId: data.systemId, // This should be dynamically assigned based on our application context
-      userName, // This should be dynamically assigned based on our application context
+      systemId: data.systemId,
+      userName,
       reqUpdateCredential: {
         publicKey: data.publicKey,
         privateKey: data.privateKey,
@@ -86,10 +85,10 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
     data.privateKey = transformPrivateKey(data.privateKey);
 
     const requestParams: CreateUserCredentialRequest = {
-      systemId: 'yourSystemId', // This should be dynamically assigned based on our application context
-      userName: 'yourUserName', // This should be dynamically assigned based on our application context
+      systemId: 'yourSystemId', 
+      userName: 'yourUserName', 
       reqUpdateCredential: data,
-      skipCredentialCheck: true, // Optional, based on our need to skip credential checks
+      skipCredentialCheck: true, 
     };
 
   return (
