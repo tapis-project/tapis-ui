@@ -10,6 +10,7 @@ import {
   OpenWebUI,
   DigitalAg,
   VisualAnalytics,
+  SmartScheduler,
 } from './pages';
 
 const extension = createExtension({
@@ -34,6 +35,7 @@ const extension = createExtension({
     'data-labeler',
     'digital-ag',
     'visual-analytics',
+    'smart-scheduler',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -90,6 +92,13 @@ extension.registerService({
   sidebarDisplayName: 'Visual Analytics',
   iconName: 'globe',
   component: VisualAnalytics,
+});
+
+extension.registerService({
+  id: 'smart-scheduler',
+  sidebarDisplayName: 'Smart Scheduler',
+  iconName: 'globe',
+  component: SmartScheduler,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;

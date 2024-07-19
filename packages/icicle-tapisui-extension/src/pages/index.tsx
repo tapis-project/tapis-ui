@@ -61,6 +61,14 @@ export const DigitalAg: React.FC = () => {
   );
 };
 
+export const SmartScheduler: React.FC = () => {
+  return (
+    <div>
+      <SectionHeader>Smart Scheduler</SectionHeader>
+    </div>
+  );
+};
+
 export const VisualAnalytics: Component = ({ accessToken }) => {
   return (
     <div
