@@ -9,21 +9,38 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Function to handle the build process
+function buildLib(libPath) {
+  console.log(`Rebuilding: ${libPath}`);
+  exec(
+    `cd ${libPath} && npx tsc --build ./tsconfig.json`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
+        return;
+      }
+      console.log(`Rebuilt:    ${libPath}`);
+    }
+  );
+}
+
 const libsToWatch = [
-  'lib/tapisui-hooks',
-  'lib/tapisui-common',
-  'lib/tapisui-extensions-core',
-  'lib/tapisui-api',
-  'lib/icicle-tapisui-extension',
+  'packages/tapisui-hooks',
+  'packages/tapisui-common',
+  'packages/tapisui-extensions-core',
+  'packages/tapisui-api',
+  'packages/icicle-tapisui-extension',
   // Add other libraries you want watched and rebuilt here
 ];
 
 libsToWatch.forEach((libPath) => {
   console.log(`Watching:   ${libPath}`);
+  // initial build!
+  buildLib(libPath);
   const watcher = chokidar.watch(`${libPath}/src`, { ignoreInitial: true });
 
   watcher.on('all', (event, filePath) => {
-    // ONLY WORKS ON SUBLIBS. Not on root of app!
+    // ONLY WORKS ON SubPackages. Not on root of app!
     // Prettier runs on changed files
     // Temporarily unwatch the file
     watcher.unwatch(filePath);
@@ -55,19 +72,8 @@ libsToWatch.forEach((libPath) => {
         console.log(`Copying:    ${filePath}`);
       });
     } else {
-      // rebuild is incremental due to the lib/libname/tsconfig.json > compilerOptions
-      // > incremental: true, meaning only changed files are recompiled
-      console.log(`Rebuilding: ${libPath}`);
-      exec(
-        `cd ${libPath} && npx tsc --build ./tsconfig.json`,
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error rebuilding ${libPath}: ${error}\n${stdout}`);
-            return;
-          }
-          console.log(`Rebuilt:    ${libPath} ${filePath}`);
-        }
-      );
+      // Call buildLib for non-CSS/SCSS file changes
+      buildLib(libPath);
     }
   });
 });
