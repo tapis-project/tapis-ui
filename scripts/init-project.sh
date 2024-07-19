@@ -8,31 +8,6 @@
 # npm run init-project container - to delete all of the above AND prevent running npm run start
 ####
 
-NODE_VERSION=22
-NPM_VERSION=10
-
-declare -a programs=(git node)
-
-for program in "${programs[@]}"; do
-  which $program >> /dev/null
-  if [[ $? > 0 ]]; then
-    echo "$program must be installed"
-    exit 1
-  fi;
-done
-
-if [[ $(node --version) != *"${NODE_VERSION}"* ]]; then
-  echo "You must install node version $NODE_VERSION. Run \`nvm install $NODE_VERSION\`"
-  exit 1
-fi;
-
-if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
-  echo "You must install npm version $NPM_VERSION"
-  exit 1
-fi;
-
-flag=${1:-"all"}
-
 delete_files() {
   case $1 in
     "all")
@@ -63,6 +38,35 @@ handle_failure() {
   echo "#############################################################"
   exit $1
 }
+
+NODE_VERSION=22
+NPM_VERSION=10
+
+declare -a programs=(git node)
+
+for program in "${programs[@]}"; do
+  which $program >> /dev/null
+  if [[ $? > 0 ]]; then
+    echo "$program must be installed"
+    exit 1
+  fi;
+done
+
+if [[ $(node --version) != *"${NODE_VERSION}"* ]]; then
+  echo "You must install node version $NODE_VERSION. Run \`nvm install $NODE_VERSION\`"
+  exit 1
+fi;
+
+if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
+  echo "You must install npm version $NPM_VERSION"
+  exit 1
+fi;
+
+flag=${1:-"none"}
+install_command="npm ci"
+if [[ $flag == "all" || $flag == "locks" ]]; then
+  install_command="npm install"
+fi;
 
 echo ""
 echo "#############################################################"
@@ -96,7 +100,7 @@ for dir in "${dirs[@]}"; do
   delete_files $flag
 
   # Install all deps in the package.json
-  npm ci || handle_failure $? "Package installation unsuccessful"
+  eval "$install_command" || handle_failure $? "Package installation unsuccessful"
   
   # Only build in the packages
   if [[ -n "$dir" ]]; then
