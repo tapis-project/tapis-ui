@@ -110,6 +110,8 @@ for dir in "${dirs[@]}"; do
   fi
 done
 
+npm run prettier
+
 echo ""
 echo "#############################################################"
 echo "####        TapisUI Initialization Successful            ####"
