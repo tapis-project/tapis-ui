@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:22.4.0
 
 RUN mkdir tapisui
 RUN mkdir tapisui/src
