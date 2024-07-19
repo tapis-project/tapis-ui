@@ -70,8 +70,7 @@
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write .",
     "gh-pages": "tsc && vite build && gh-pages -d build",
-    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh",
-    "init-project-container": "chmod +x ./scripts/init-project-container.sh && ./scripts/init-project-container.sh"
+    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh"
   },
   "eslintConfig": {
     "extends": []

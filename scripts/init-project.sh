@@ -5,6 +5,7 @@
 # npm run init-project modules - to delete only node_modules and dist dirs
 # npm run init-project locks - to delete only package-lock.json
 # npm run init-project all - to delete all of the above
+# npm run init-project container - to delete all of the above AND prevent running npm run start
 ####
 
 NODE_VERSION=22
@@ -30,10 +31,14 @@ if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
   exit 1
 fi;
 
+flag=${1:-"all"}
+
 delete_files() {
-  local flag=${1:-"all"}  # Set default value to "all" if no flag is provided
-  case $flag in
+  case $1 in
     "all")
+      rm -rf dist node_modules package-lock.json
+      ;;
+    "container")
       rm -rf dist node_modules package-lock.json
       ;;
     "none")
@@ -45,12 +50,24 @@ delete_files() {
       rm -rf package-lock.json
       ;;
     *)
-      echo "Invalid flag: $flag Must specify 'all', 'none', 'modules', or 'locks'"
+      echo "Invalid flag: $flag Must specify 'all', 'none', 'modules', 'locks', or 'container'"
       exit 1
       ;;
   esac
 }
 
+handle_failure() {
+  echo "Error: $2"
+  echo "#############################################################"
+  echo "####              Initialization Failed                  ####"
+  echo "#############################################################"
+  exit $1
+}
+
+echo ""
+echo "#############################################################"
+echo "####              Initializing TapisUI                   ####"
+echo "#############################################################"
 
 # Remove below to improve speed of project initalization
 rm -rf /tmp/tapisui-extensions-core/
@@ -67,29 +84,34 @@ dirs=(
 )
 
 for dir in "${dirs[@]}"; do
-  cd "$dir" || exit 1
+  # Change to the current pacakges directory
+  cd "$dir" || handle_failure $? "Package directory '${dir}' does not exist"
+
   echo ""
   echo "#############################################################"
-  echo "$(pwd)"
+  echo "Preparing package: \"$dir\""
   echo "#############################################################"
-  delete_files "$1"
-  npm install
-  ## "" is the root directory, it doesn't build, and it shouldn't cd ../../.
+
+  # Delet files according to the flag provided
+  delete_files $flag
+
+  # Install all deps in the package.json
+  npm install || handle_failure $? "Package installation unsuccessful"
+  
+  # Only build in the packages
   if [[ -n "$dir" ]]; then
-    npm run build
-    exitCode=$?
+    npm run build || handle_failure $? "Build unsuccessful"
+    echo "Package build successful: $dir"
     cd ../../
   fi
-
-
-  if [[ $exitCode -ne 0 ]]; then
-    echo "Build unsuccessful"
-    exit $exitCode
-  fi
-
-  echo "Build successful: $dir"
 done
 
-echo "$(pwd)"
+echo ""
+echo "#############################################################"
+echo "####        TapisUI Initialization Successful            ####"
+echo "#############################################################"
+echo ""
 
-npm run start
+if [[ $flag != "container" ]]; then
+  npm run start
+fi
