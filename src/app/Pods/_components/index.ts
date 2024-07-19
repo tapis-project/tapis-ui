@@ -7,4 +7,5 @@ export { default as PodToolbar } from './PodToolbar';
 export { default as PodFunctionBar } from './PodFunctionBar';
 export { default as TooltipModal } from './TooltipModal';
 export { default as PodsNavigation } from './PodsNavigation';
+export { default as PodsCodeMirror } from './PodsCodeMirror';
 export * from './PodsContext';
