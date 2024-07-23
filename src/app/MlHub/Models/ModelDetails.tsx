@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { Key, useState } from 'react';
 import { Models } from '@tapis/tapis-typescript';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon, JSONDisplay, GenericModal } from '@tapis/tapisui-common';
+import { useDownloadLinks } from '@tapis/tapisui-hooks/dist/ml-hub/models/index';
+import { string } from 'prop-types';
 import InferenceServerInfo from './InferenceServerInfo';
 
 type ModelDetailsProps = {
@@ -92,8 +94,33 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
   const [currentModal, setCurrentModal] = useState<string | undefined>(
     undefined
   );
-  const { data } = Hooks.Models.useDetails({ modelId });
+  const { data, error, isLoading } = Hooks.Models.useDetails({ modelId });
   const modelCardDetails: Models.ModelFullInfo = data?.result ?? {};
+  const modelRepositoryInfo: Array<string> =
+    modelCardDetails.repository_content || [];
+  const {
+    data: downloadLinkData,
+    error: downloadLinkError,
+    isLoading: downloadLinkIsLoading,
+  } = Hooks.Models.useDownloadLinks({ modelId });
+  const downloadLinkInfo: Models.ModelDownloadInfo =
+    downloadLinkData?.result ?? {};
+  const downloadOnClick = (url: string) => {
+    fetch(url).then((response) => {
+      response.blob().then((blob) => {
+        const fileURL = window.URL.createObjectURL(blob);
+        let alink = document.createElement('a');
+        alink.href = fileURL;
+        alink.download = __filename;
+        document.body.appendChild(alink);
+        alink.click();
+        document.body.removeChild(alink);
+
+        window.URL.revokeObjectURL(fileURL);
+      });
+    });
+  };
+
   return (
     <div className={`${styles['buttons-container']}`}>
       <Button
@@ -159,15 +186,37 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
       )}
       {currentModal === 'downloadmodel' && (
         <GenericModal
+          size="lg"
           toggle={() => {
             setCurrentModal(undefined);
           }}
           title="Download Model"
-          body={<div>"DOWNLOAD ME"</div>}
+          body={
+            <div className={`${styles['download-body']}`}>
+              {/* <QueryWrapper isLoading={downloadLinkIsLoading} error={downloadLinkError}> */}
+              {downloadLinkInfo?.download_links &&
+                Object.entries(downloadLinkInfo.download_links).map(
+                  ([filename, url]) => {
+                    return (
+                      <div className={`${styles['download-links']}`}>
+                        <div>{filename}:</div>
+                        <div></div>
+                        <div className={`${styles['download-url-button']}`}>
+                          <Button onClick={() => downloadOnClick(url)}>
+                            {' '}
+                            Download{' '}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              {/* </QueryWrapper> */}
+            </div>
+          }
         />
       )}
     </div>
   );
 };
 
-export default ModelDetails;
