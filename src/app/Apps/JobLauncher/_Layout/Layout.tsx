@@ -9,7 +9,7 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
   const header = <LayoutHeader type={'sub-header'}>Job Launcher</LayoutHeader>;
 
   const body = (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, marginLeft: '1em' }}>
       <JobLauncher appId={appId} appVersion={appVersion} />
     </div>
   );

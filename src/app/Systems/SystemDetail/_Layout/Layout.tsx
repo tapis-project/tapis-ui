@@ -11,7 +11,7 @@ const Layout: React.FC<{ systemId: string }> = ({ systemId }) => {
   );
 
   const body = (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, marginLeft: '1em' }}>
       <SystemDetail systemId={systemId}></SystemDetail>
     </div>
   );

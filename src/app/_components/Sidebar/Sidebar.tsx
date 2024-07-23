@@ -69,6 +69,12 @@ const Sidebar: React.FC = () => {
     }
   }
 
+  // If there were no main items, we make all items main items
+  if (mainSidebarItems.length === 0) {
+    mainSidebarItems = secondarySidebarItems;
+    secondarySidebarItems = [];
+  }
+
   const toggleSecondaryItems = () => {
     setOpenSecondary(!openSecondary);
   };
@@ -94,15 +100,22 @@ const Sidebar: React.FC = () => {
                 <div
                   onClick={toggleSecondaryItems}
                   style={{
+                    whiteSpace: 'nowrap',
                     cursor: 'pointer',
-                    paddingTop: '10px',
-                    paddingBottom: '16px',
+                    // paddingTop: '10px',
+                    // paddingBottom: '10px',
                     paddingLeft: '21px',
                   }}
                 >
                   {openSecondary ? <ExpandLess /> : <ExpandMore />}
                   {expanded && (
-                    <span style={{ fontSize: '14px', color: '#808080' }}>
+                    <span
+                      style={{
+                        paddingLeft: '8px',
+                        fontSize: '14px',
+                        color: '#808080',
+                      }}
+                    >
                       {' '}
                       More
                     </span>
