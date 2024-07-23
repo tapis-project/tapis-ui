@@ -28,19 +28,25 @@ import PodToolbar from 'app/Pods/_components/PodToolbar';
 
 import { usePodsContext } from '../PodsContext';
 
+import PodsLoadingText from '../PodsLoadingText';
+
 import styles from '../Pages.module.scss';
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
-  const { data, isLoading, error } = Hooks.useDetails({ podId: objId });
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useDetails({ podId: objId });
   const {
     data: dataLogs,
     isLoading: isLoadingLogs,
+    isFetching: isFetchingLogs,
     error: errorLogs,
+    invalidate: invalidateLogs,
   } = Hooks.useLogs({ podId: objId });
   const {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
+    isFetching: isFetchingSecrets,
     error: errorSecrets,
+    invalidate: invalidateSecrets,
   } = Hooks.useGetPodSecrets({ podId: objId });
 
   const tooltipText =
@@ -54,8 +60,9 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const toggle = () => {
     setModal(undefined);
   };
-
   const [podBarTab, setPodBarTab] = useState<string>('details');
+
+  const loadingText = PodsLoadingText();
 
   const tooltipConfigs: {
     [key: string]: { tooltipTitle: string; tooltipText: string };
@@ -101,26 +108,26 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       case 'details':
         return error
           ? `error: ${error}`
-          : isLoading
-          ? 'loading...'
+          : isFetching
+          ? loadingText
           : JSON.stringify(pod, null, 2);
       case 'logs':
         return error
           ? `error: ${errorLogs}`
-          : isLoadingLogs
-          ? 'loading...'
+          : isFetchingLogs
+          ? loadingText
           : podLogs?.logs;
       case 'actionlogs':
         return error
           ? `error: ${errorLogs}`
-          : isLoadingLogs
-          ? 'loading...'
+          : isFetchingLogs
+          ? loadingText
           : podLogs?.action_logs?.join('\n');
       case 'secrets':
         return error
           ? `error: ${errorSecrets}`
-          : isLoadingSecrets
-          ? 'loading...'
+          : isFetchingSecrets
+          ? loadingText
           : JSON.stringify(podSecrets, null, 2);
       default:
         return ''; // Default or placeholder value
@@ -137,6 +144,27 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const leftButtons: ButtonConfig[] = [
+    {
+      id: 'refresh',
+      label: 'Refresh',
+      customOnClick: () => {
+        switch (podBarTab) {
+          case 'details':
+            invalidate();
+            break;
+          case 'logs':
+          case 'actionlogs':
+            invalidateLogs();
+            break;
+          case 'secrets':
+            invalidateSecrets();
+            break;
+          default:
+            // Optionally handle any other cases or do nothing
+            break;
+        }
+      },
+      },
     { id: 'details', label: 'Details', tabValue: 'details' },
     { id: 'logs', label: 'Logs', tabValue: 'logs' },
     { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },

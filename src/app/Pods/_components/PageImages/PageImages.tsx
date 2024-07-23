@@ -8,7 +8,6 @@ import {
   LayoutBody,
   LayoutNavWrapper,
 } from '@tapis/tapisui-common';
-
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
@@ -31,6 +30,7 @@ import PodToolbar from 'app/Pods/_components/PodToolbar';
 
 import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
+import PodsLoadingText from '../PodsLoadingText';
 
 const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
@@ -38,7 +38,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     objId = '';
   }
 
-  const { data, isLoading, error } = Hooks.useDetailsImages({ imageId: objId });
+  const { data, isFetching, error, invalidate } = Hooks.useDetailsImages({ imageId: objId });
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
@@ -51,6 +51,8 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const [imageBarTab, setImageBarTab] = useState<string>('details');
+
+  const loadingText = PodsLoadingText();
 
   const tooltipConfigs: {
     [key: string]: { tooltipTitle: string; tooltipText: string };
@@ -81,8 +83,8 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       case 'details':
         return error
           ? `error: ${error}`
-          : isLoading
-          ? 'loading...'
+          : isFetching
+          ? loadingText
           : JSON.stringify(pod, null, 2);
       default:
         return ''; // Default or placeholder value
@@ -99,9 +101,16 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const leftButtons: ButtonConfig[] = [
+    {
+      id: 'refresh',
+      label: 'Refresh',
+      customOnClick: () => {
+        invalidate();
+      },
+    },
     { id: 'details', label: 'Details', tabValue: 'details' },
   ];
-
+  
   const rightButtons: ButtonConfig[] = [
     {
       id: 'help',

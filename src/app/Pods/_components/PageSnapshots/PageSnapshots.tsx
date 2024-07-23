@@ -31,6 +31,7 @@ import PodToolbar from 'app/Pods/_components/PodToolbar';
 import { useHistory } from 'react-router-dom';
 import NavSnapshots from '../NavSnapshots/NavSnapshots';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
+import PodsLoadingText from '../PodsLoadingText';
 
 const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
@@ -53,6 +54,8 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const [snapshotBarTab, setSnapshotBarTab] = useState<string>('details');
+
+  const loadingText = PodsLoadingText();
 
   const tooltipConfigs: {
     [key: string]: { tooltipTitle: string; tooltipText: string };
@@ -83,7 +86,7 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       case 'details':
         return error
           ? `error: ${error}`
-          : isLoading
+          : loadingText
           ? 'loading...'
           : JSON.stringify(pod, null, 2);
       default:

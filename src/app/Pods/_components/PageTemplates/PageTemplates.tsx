@@ -31,6 +31,7 @@ import PodToolbar from 'app/Pods/_components/PodToolbar';
 
 import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
+import PodsLoadingText from '../PodsLoadingText';
 
 const PageTemplates: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
@@ -58,6 +59,8 @@ const PageTemplates: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const [templateBarTab, setTemplateBarTab] = useState<string>('details');
+
+  const loadingText = PodsLoadingText();
 
   const tooltipConfigs: {
     [key: string]: { tooltipTitle: string; tooltipText: string };
@@ -104,13 +107,13 @@ const PageTemplates: React.FC<{ objId: string | undefined }> = ({ objId }) => {
         return error
           ? `error: ${error}`
           : isLoading
-          ? 'loading...'
+          ? loadingText
           : JSON.stringify(pod, null, 2);
       case 'tags':
         return error
           ? `error: ${errorTags}`
           : isLoadingTags
-          ? 'loading...'
+          ? loadingText
           : JSON.stringify(templateTags, null, 2);
       default:
         return ''; // Default or placeholder value

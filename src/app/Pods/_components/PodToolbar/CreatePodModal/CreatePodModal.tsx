@@ -195,10 +195,12 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         'Must contain only lowercase alphanumeric characters'
       )
       .required('Pod ID is a required field'),
-    pod_template: Yup.string()
+    image: Yup.string()
       .min(1)
-      .max(128, 'Pod Template should not be longer than 128 characters')
-      .required('Pod Template is a required field'),
+      .max(128, 'Pod Image should not be longer than 128 characters'),
+    template: Yup.string()
+      .min(1)
+      .max(128, 'Pod Template should not be longer than 128 characters'),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
@@ -273,7 +275,8 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     pod_id: '',
     description: undefined,
     command: undefined,
-    pod_template: '',
+    image: '',
+    template: '',
     time_to_stop_default: 43200,
     time_to_stop_instance: undefined,
     environment_variables: [],
@@ -365,7 +368,8 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     pod_id,
     description,
     command,
-    pod_template,
+    image,
+    template,
     time_to_stop_default,
     time_to_stop_instance,
     environment_variables,
@@ -375,8 +379,9 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }: {
     pod_id: string;
     description: string | undefined;
+    image: string | undefined;
     command: string | undefined;
-    pod_template: string;
+    template: string;
     time_to_stop_default: number | undefined;
     time_to_stop_instance: number | undefined;
     environment_variables: Array<EnvVarType>;
@@ -395,7 +400,8 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         pod_id: pod_id,
         description,
         command: command ? JSON.parse(command) : undefined,
-        template: pod_template,
+        image: image,
+        template: template,
         time_to_stop_default: time_to_stop_default,
         time_to_stop_instance: time_to_stop_instance,
         environment_variables: envVarsArrayToInputObject(environment_variables),
@@ -427,11 +433,19 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   aria-label="Input"
                 />
                 <FormikInput
-                  name="pod_template"
-                  description="Template/Docker image to use, must be on allowlist. ex. mongo:6.0"
+                  name="image"
+                  description="Docker image to use, must be on allowlist. ex. mongo:6.0"
+                  label="Pod Image"
+                  required={false}
+                  data-testid="image"
+                />
+
+                <FormikInput
+                  name="template"
+                  description="Pods template to use."
                   label="Pod Template"
-                  required={true}
-                  data-testid="pod_template"
+                  required={false}
+                  data-testid="template"
                 />
                 <FormikInput
                   name="description"

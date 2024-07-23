@@ -1,4 +1,4 @@
-import { useQuery, QueryObserverOptions } from 'react-query';
+import { useQuery, QueryObserverOptions, useQueryClient } from 'react-query';
 import { Pods as API } from '@tapis/tapisui-api';
 import { Pods } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
@@ -8,6 +8,7 @@ const useGetPodSecrets = (
   params: Pods.GetPodCredentialsRequest,
   options: QueryObserverOptions<Pods.PodCredentialsResponse, Error> = {}
 ) => {
+  const queryClient = useQueryClient(); // Get the queryClient instance
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Pods.PodCredentialsResponse, Error>(
     [QueryKeys.getPodSecrets, params, accessToken],
@@ -18,7 +19,12 @@ const useGetPodSecrets = (
       enabled: !!accessToken,
     }
   );
-  return result;
+
+  const invalidate = () => {
+    queryClient.invalidateQueries([QueryKeys.getPodSecrets]);
+  };
+
+  return { ...result, invalidate };
 };
 
 export default useGetPodSecrets;
