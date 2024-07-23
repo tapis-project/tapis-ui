@@ -38,7 +38,9 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     objId = '';
   }
 
-  const { data, isFetching, error, invalidate } = Hooks.useDetailsImages({ imageId: objId });
+  const { data, isFetching, error, invalidate } = Hooks.useDetailsImages({
+    imageId: objId,
+  });
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
@@ -110,7 +112,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     },
     { id: 'details', label: 'Details', tabValue: 'details' },
   ];
-  
+
   const rightButtons: ButtonConfig[] = [
     {
       id: 'help',

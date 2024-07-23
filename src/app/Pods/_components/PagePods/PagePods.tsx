@@ -33,7 +33,9 @@ import PodsLoadingText from '../PodsLoadingText';
 import styles from '../Pages.module.scss';
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
-  const { data, isLoading, isFetching, error, invalidate } = Hooks.useDetails({ podId: objId });
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useDetails({
+    podId: objId,
+  });
   const {
     data: dataLogs,
     isLoading: isLoadingLogs,
@@ -164,7 +166,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
             break;
         }
       },
-      },
+    },
     { id: 'details', label: 'Details', tabValue: 'details' },
     { id: 'logs', label: 'Logs', tabValue: 'logs' },
     { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },
