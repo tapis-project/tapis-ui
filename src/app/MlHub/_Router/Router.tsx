@@ -18,8 +18,7 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/datasets`}
-      >
+        path={`${path}/datasets`}>
         <DatasetsLayout />
       </Route> 
 
