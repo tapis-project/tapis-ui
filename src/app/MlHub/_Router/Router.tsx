@@ -2,8 +2,7 @@ import React from 'react';
 import { Route, useRouteMatch, Switch } from 'react-router-dom';
 import { Dashboard } from '../Dashboard';
 import { Layout as ModelsLayout } from '../Models/_Layout';
-import { Layout as DatasetsLayout } from "../Datasets/_Layout"
-
+import { Layout as DatasetsLayout } from '../Datasets/_Layout';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -17,11 +16,9 @@ const Router: React.FC = () => {
         <ModelsLayout />
       </Route>
 
-      <Route
-        path={`${path}/datasets`}>
+      <Route path={`${path}/datasets`}>
         <DatasetsLayout />
-      </Route> 
-
+      </Route>
     </Switch>
   );
 };
