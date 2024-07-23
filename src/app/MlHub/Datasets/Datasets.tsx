@@ -10,7 +10,6 @@ const Datasets: React.FC = () => {
   const { data, isLoading, error } = Hooks.Datasets.useList();
   const datasets: DatasetsModule.DatasetShortInfo = data?.result ?? {};
   const { path } = useRouteMatch();
-  console.log(datasets);
 
   return (
     <QueryWrapper
