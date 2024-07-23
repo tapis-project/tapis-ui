@@ -20,7 +20,7 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
   } = Hooks.Models.useInferenceServerDetails({ modelId });
 
   const { path } = useRouteMatch();
-  
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -35,7 +35,6 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
 
   if (serverInfo) {
     const { message, metadata, result, status, version } = serverInfo;
-    // console.log ("serverInfo" , serverInfo)
 
     if (
       parseInt(serverInfo.status!) === 200 ||
@@ -62,9 +61,14 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
                     inference_endpoint:
                   </div>
                   <div className={`${styles['detail-info']}`}>
-                  <span>
-                  <Link to={`${path}/${serverInfo.result.inference_endpoint}`}> {serverInfo.result.inference_endpoint} </Link>
-                </span>
+                    <span>
+                      <Link
+                        to={`${path}/${serverInfo.result.inference_endpoint}`}
+                      >
+                        {' '}
+                        {serverInfo.result.inference_endpoint}{' '}
+                      </Link>
+                    </span>
                   </div>
                 </div>
               )}
