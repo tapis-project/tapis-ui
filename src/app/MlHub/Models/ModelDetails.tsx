@@ -1,12 +1,10 @@
-import React, { Key, useState } from 'react';
+import React, { useState } from 'react';
 import { Models } from '@tapis/tapis-typescript';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon, JSONDisplay, GenericModal } from '@tapis/tapisui-common';
-import { useDownloadLinks } from '@tapis/tapisui-hooks/dist/ml-hub/models/index';
-import { string } from 'prop-types';
 import InferenceServerInfo from './InferenceServerInfo';
 
 type ModelDetailsProps = {
