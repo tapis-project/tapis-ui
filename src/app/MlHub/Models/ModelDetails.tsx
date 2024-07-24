@@ -92,8 +92,33 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
   const [currentModal, setCurrentModal] = useState<string | undefined>(
     undefined
   );
-  const { data } = Hooks.Models.useDetails({ modelId });
+  const { data, error, isLoading } = Hooks.Models.useDetails({ modelId });
   const modelCardDetails: Models.ModelFullInfo = data?.result ?? {};
+  const modelRepositoryInfo: Array<string> =
+    modelCardDetails.repository_content || [];
+  const {
+    data: downloadLinkData,
+    error: downloadLinkError,
+    isLoading: downloadLinkIsLoading,
+  } = Hooks.Models.useDownloadLinks({ modelId });
+  const downloadLinkInfo: Models.ModelDownloadInfo =
+    downloadLinkData?.result ?? {};
+  const downloadOnClick = (url: string, filename: string) => {
+    fetch(url).then((response) => {
+      response.blob().then((blob) => {
+        const fileURL = window.URL.createObjectURL(blob);
+        let alink = document.createElement('a');
+        alink.href = fileURL;
+        alink.download = filename;
+        document.body.appendChild(alink);
+        alink.click();
+        document.body.removeChild(alink);
+
+        window.URL.revokeObjectURL(fileURL);
+      });
+    });
+  };
+
   return (
     <div className={`${styles['buttons-container']}`}>
       <Button
@@ -101,7 +126,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           setCurrentModal('inferenceinfo');
         }}
       >
-        {'Inference Service Info'}
+        {'Inference Service Info '}
         <span>
           <Icon name="push-right" />
         </span>
@@ -111,7 +136,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           setCurrentModal('downloadmodel');
         }}
       >
-        {'Download Model'}
+        {'Download Model '}
         <span>
           <Icon name="push-right" />
         </span>
@@ -121,7 +146,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           setCurrentModal('modelcard');
         }}
       >
-        {'Model Card'}
+        {'Model Card '}
         <span>
           <Icon name="push-right" />
         </span>
@@ -159,11 +184,34 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
       )}
       {currentModal === 'downloadmodel' && (
         <GenericModal
+          size="lg"
           toggle={() => {
             setCurrentModal(undefined);
           }}
           title="Download Model"
-          body={<div>"DOWNLOAD ME"</div>}
+          body={
+            <div className={`${styles['download-body']}`}>
+              {downloadLinkInfo?.download_links &&
+                Object.entries(downloadLinkInfo.download_links).map(
+                  ([filename, url]) => {
+                    return (
+                      <div className={`${styles['download-links']}`}>
+                        <div>{filename}:</div>
+                        <div></div>
+                        <div className={`${styles['download-url-button']}`}>
+                          <Button
+                            onClick={() => downloadOnClick(url, filename)}
+                          >
+                            {' '}
+                            Download{' '}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+            </div>
+          }
         />
       )}
     </div>
