@@ -193,7 +193,6 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           title="Download Model"
           body={
             <div className={`${styles['download-body']}`}>
-              {/* <QueryWrapper isLoading={downloadLinkIsLoading} error={downloadLinkError}> */}
               {downloadLinkInfo?.download_links &&
                 Object.entries(downloadLinkInfo.download_links).map(
                   ([filename, url]) => {
@@ -211,7 +210,6 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
                     );
                   }
                 )}
-              {/* </QueryWrapper> */}
             </div>
           }
         />
