@@ -135,6 +135,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
             buttons={['createtask', 'runpipeline']}
             groupId={groupId}
             pipelineId={pipelineId}
+            pipeline={pipeline}
           />
 
           {view == ViewEnum.Dag ? (

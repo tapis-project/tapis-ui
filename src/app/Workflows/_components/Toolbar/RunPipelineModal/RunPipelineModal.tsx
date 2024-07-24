@@ -9,6 +9,7 @@ import {
   SectionHeader,
 } from '@tapis/tapisui-common';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
+import { Workflows } from "@tapis/tapis-typescript"
 import styles from './RunPipelineModal.module.scss';
 import * as Yup from 'yup';
 // import { Workflows } from '@tapis/tapis-typescript';
@@ -17,12 +18,14 @@ type RunPipelineModalProps = {
   toggle: () => void;
   groupId: string;
   pipelineId: string;
+  pipeline: Workflows.Pipeline;
 };
 
 const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
   toggle,
   groupId,
   pipelineId,
+  pipeline
 }) => {
   const { run, isLoading, error, isSuccess } = Hooks.Pipelines.useRun();
 
@@ -95,6 +98,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
     <GenericModal
       toggle={toggle}
       title="Run Pipeline"
+      size="lg"
       body={
         <div>
           <Formik
@@ -135,6 +139,43 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                       render={(arrayHelpers) => (
                         <div>
                           <div className={styles['key-vals']}>
+                            {Object.entries(pipeline.params || {}).map(([key, _]) => {
+                              return (
+                                <div key={key} className={styles['key-val']}>
+                                  <div className={styles['grid-2']}>
+                                    <FormikInput
+                                      id={`params.${key}.key`}
+                                      name={`params.${key}.key`}
+                                      label="key"
+                                      required={true}
+                                      description={`Parameter key`}
+                                      aria-label="Input"
+                                      defaultValue={key}
+                                      disabled
+                                    />
+                                    <FormikInput
+                                      id={`params.${key}.value`}
+                                      name={`params.${key}.value`}
+                                      label="value"
+                                      required
+                                      description={`Parameter value`}
+                                      aria-label="Input"
+                                      value=""
+                                    />
+                                  </div>
+                                  {/* <Button
+                                    className={styles['remove-button']}
+                                    type="button"
+                                    color="danger"
+                                    disabled={false}
+                                    onClick={() => arrayHelpers.remove(key)}
+                                    size="sm"
+                                  >
+                                    <Icon name="trash" />
+                                  </Button> */}
+                                </div>
+                              )
+                            })}
                             {values.params &&
                               values.params.length > 0 &&
                               values.params.map((_, i) => (
