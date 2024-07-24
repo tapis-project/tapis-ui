@@ -105,13 +105,13 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
   } = Hooks.Models.useDownloadLinks({ modelId });
   const downloadLinkInfo: Models.ModelDownloadInfo =
     downloadLinkData?.result ?? {};
-  const downloadOnClick = (url: string) => {
+  const downloadOnClick = (url: string, filename: string) => {
     fetch(url).then((response) => {
       response.blob().then((blob) => {
         const fileURL = window.URL.createObjectURL(blob);
         let alink = document.createElement('a');
         alink.href = fileURL;
-        alink.download = __filename;
+        alink.download = filename;
         document.body.appendChild(alink);
         alink.click();
         document.body.removeChild(alink);
@@ -202,7 +202,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
                         <div>{filename}:</div>
                         <div></div>
                         <div className={`${styles['download-url-button']}`}>
-                          <Button onClick={() => downloadOnClick(url)}>
+                          <Button onClick={() => downloadOnClick(url, filename)}>
                             {' '}
                             Download{' '}
                           </Button>
@@ -220,3 +220,4 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
   );
 };
 
+export default ModelDetails;
