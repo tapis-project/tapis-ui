@@ -128,7 +128,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           setCurrentModal('inferenceinfo');
         }}
       >
-        {'Inference Service Info'}
+        {'Inference Service Info '}
         <span>
           <Icon name="push-right" />
         </span>
@@ -138,7 +138,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           setCurrentModal('downloadmodel');
         }}
       >
-        {'Download Model'}
+        {'Download Model '}
         <span>
           <Icon name="push-right" />
         </span>
@@ -148,7 +148,7 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           setCurrentModal('modelcard');
         }}
       >
-        {'Model Card'}
+        {'Model Card '}
         <span>
           <Icon name="push-right" />
         </span>
