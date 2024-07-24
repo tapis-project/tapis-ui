@@ -201,7 +201,9 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
                         <div>{filename}:</div>
                         <div></div>
                         <div className={`${styles['download-url-button']}`}>
-                          <Button onClick={() => downloadOnClick(url, filename)}>
+                          <Button
+                            onClick={() => downloadOnClick(url, filename)}
+                          >
                             {' '}
                             Download{' '}
                           </Button>
