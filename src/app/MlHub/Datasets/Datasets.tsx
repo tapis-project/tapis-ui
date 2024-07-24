@@ -31,7 +31,7 @@ const Datasets: React.FC = () => {
               <td className={`${styles['dataset-name-column']}`}>
                 <Icon name="search-folder" />
                 <span>
-                  <Link to={`${path}/${dataset[0]}`}> {dataset[0]} </Link>
+                  <Link to={`${path}/${dataset[0]}`}>{dataset[0]}</Link>
                 </span>
               </td>
               <td>{dataset[1].downloads}</td>
