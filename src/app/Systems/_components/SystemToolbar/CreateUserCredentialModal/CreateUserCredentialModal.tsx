@@ -41,22 +41,24 @@ const schema = yup.object().shape({
     .min(3, 'System ID must be at least 3 characters')
     .max(50, 'System ID must not exceed 50 characters')
     .matches(
-      /^[a-zA-Z0-9-_]+$/,
-      'System ID can only contain letters, numbers, hyphens, and underscores'
+      /^[a-zA-Z0-9-_.]+$/,
+      'System ID can only contain letters, numbers, hyphens, underscores, and periods'
     ),
   publicKey: yup
     .string()
     .required('Public key is required')
     .min(20, 'Public key must be at least 20 characters')
     .max(4096, 'Public key must not exceed 4096 characters')
-    .matches(
-      /^ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3}( .*)?$/,
-      'Invalid SSH public key format'
-    ),
+    .test('is-valid-public-key', 'Invalid SSH public key format', (value) => {
+      // This is a more lenient check for public key format
+      return /^(ssh-rsa|ssh-dss|ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519)\s+[A-Za-z0-9+/]+[=]{0,3}(\s+.*)?$/.test(
+        value
+      );
+    }),
   privateKey: yup
     .string()
     .required('Private key is required')
-    .min(1000, 'Private key must be at least 1000 characters')
+    .min(20, 'Private key must be at least 20 characters')
     .max(4096, 'Private key must not exceed 4096 characters')
     .transform(transformPrivateKey),
   loginUser: yup
