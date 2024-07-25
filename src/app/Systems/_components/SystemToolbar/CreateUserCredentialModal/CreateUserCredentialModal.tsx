@@ -50,7 +50,6 @@ const schema = yup.object().shape({
     .min(20, 'Public key must be at least 20 characters')
     .max(4096, 'Public key must not exceed 4096 characters')
     .test('is-valid-public-key', 'Invalid SSH public key format', (value) => {
-      // This is a more lenient check for public key format
       return /^(ssh-rsa|ssh-dss|ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519)\s+[A-Za-z0-9+/]+[=]{0,3}(\s+.*)?$/.test(
         value
       );
@@ -91,21 +90,39 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
   }, [error]);
 
   const validateSystemId = async (systemId: string) => {
+    if (!systemId) {
+      console.error('System ID is empty or undefined');
+      return false;
+    }
+
     const systemsApi = new SystemsApi();
     try {
-      await systemsApi.getSystem(systemId, jwt);
+      console.log(`Attempting to validate system with ID: ${systemId}`);
+      const response = await systemsApi.getSystem(systemId, jwt);
+      console.log('System validation successful:', response);
       return true;
     } catch (error) {
-      if (error.response && error.response.status === 404) {
-        formik.setFieldError(
-          'systemId',
-          'System not found. Please enter a valid System ID.'
+      console.error('Error in validateSystemId:', error);
+      if (error.response) {
+        console.error('Error response:', error.response);
+        if (error.response.status === 404) {
+          formik.setFieldError(
+            'systemId',
+            'System not found. Please enter a valid System ID.'
+          );
+        } else {
+          setSubmitError(
+            `An error occurred while validating the system: ${error.response.statusText}`
+          );
+        }
+      } else if (error.request) {
+        console.error('Error request:', error.request);
+        setSubmitError(
+          'Network error. Please check your connection and try again.'
         );
       } else {
-        console.error('Error validating system:', error);
-        setSubmitError(
-          'An error occurred while validating the system. Please try again.'
-        );
+        console.error('Error message:', error.message);
+        setSubmitError('An unexpected error occurred. Please try again.');
       }
       return false;
     }
@@ -121,6 +138,8 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
     validationSchema: schema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitError(null);
+
+      console.log('Submitting form with values:', values);
 
       const isValidSystem = await validateSystemId(values.systemId);
       if (!isValidSystem) {
@@ -138,6 +157,7 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
             loginUser: values.loginUser,
           },
         });
+        console.log('Credential created successfully');
         resetForm();
         toggle();
       } catch (error) {
