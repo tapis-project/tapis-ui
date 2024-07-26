@@ -59,12 +59,6 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
     ),
   });
 
-  const initialValues = {
-    groupId,
-    pipelineId,
-    params: [],
-  };
-
   type RunPipelineOnSubmitProps = {
     groupId: string;
     pipelineId: string;
@@ -94,11 +88,21 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
     );
   };
 
+  const pipelineParams = pipeline.params || {}
+
+  const initialValues = {
+    groupId,
+    pipelineId,
+    params: Object.entries(pipelineParams).map(([key, _]) => {
+      return { key, value: "" }
+    }),
+  };
+
   return (
     <GenericModal
       toggle={toggle}
       title="Run Pipeline"
-      size="lg"
+      size="xl"
       body={
         <div>
           <Formik
@@ -136,98 +140,71 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                   <div id="parameters">
                     <FieldArray
                       name="params"
-                      render={(arrayHelpers) => (
-                        <div>
-                          <div className={styles['key-vals']}>
-                            {Object.entries(pipeline.params || {}).map(([key, _]) => {
-                              return (
-                                <div key={key} className={styles['key-val']}>
-                                  <div className={styles['grid-2']}>
-                                    <FormikInput
-                                      id={`params.${key}.key`}
-                                      name={`params.${key}.key`}
-                                      label="key"
-                                      required={true}
-                                      description={`Parameter key`}
-                                      aria-label="Input"
-                                      defaultValue={key}
-                                      disabled
-                                    />
-                                    <FormikInput
-                                      id={`params.${key}.value`}
-                                      name={`params.${key}.value`}
-                                      label="value"
-                                      required
-                                      description={`Parameter value`}
-                                      aria-label="Input"
-                                      value=""
-                                    />
-                                  </div>
-                                  {/* <Button
-                                    className={styles['remove-button']}
-                                    type="button"
-                                    color="danger"
-                                    disabled={false}
-                                    onClick={() => arrayHelpers.remove(key)}
-                                    size="sm"
-                                  >
-                                    <Icon name="trash" />
-                                  </Button> */}
-                                </div>
-                              )
-                            })}
-                            {values.params &&
-                              values.params.length > 0 &&
-                              values.params.map((_, i) => (
-                                <div key={i} className={styles['key-val']}>
-                                  {`param #${i + 1}`}
-                                  <div className={styles['grid-2']}>
-                                    <FormikInput
-                                      id={`params.${i}.key`}
-                                      name={`params.${i}.key`}
-                                      label="key"
-                                      required={true}
-                                      description={`Parameter key`}
-                                      aria-label="Input"
-                                      value=""
-                                    />
-                                    <FormikInput
-                                      id={`params.${i}.value`}
-                                      name={`params.${i}.value`}
-                                      label="value"
-                                      required
-                                      description={`Parameter value`}
-                                      aria-label="Input"
-                                      value=""
-                                    />
-                                  </div>
-                                  <Button
-                                    className={styles['remove-button']}
-                                    type="button"
-                                    color="danger"
-                                    disabled={false}
-                                    onClick={() => arrayHelpers.remove(i)}
-                                    size="sm"
-                                  >
-                                    <Icon name="trash" />
-                                  </Button>
-                                </div>
-                              ))}
+                      render={(arrayHelpers) => {
+                        return (
+                          <div>
+                            <div className={styles['key-vals']}>
+                              {values.params &&
+                                values.params.length > 0 &&
+                                values.params.map((param, i) => {
+                                  return (
+                                    <div key={i} className={styles['key-val']}>
+                                      {`param #${i + 1}`}
+                                      <div className={styles['grid-2']}>
+                                        <FormikInput
+                                          id={`params.${i}.key`}
+                                          name={`params.${i}.key`}
+                                          label="key"
+                                          required={true}
+                                          description={pipelineParams[param.key]?.description || ""}
+                                          aria-label="Input"
+                                          disabled={pipelineParams[param.key]?.required || false}
+                                        />
+                                        <FormikInput
+                                          id={`params.${i}.value`}
+                                          name={`params.${i}.value`}
+                                          label="value"
+                                          required
+                                          description={`Parameter value`}
+                                          aria-label="Input"
+                                          value=""
+                                        />
+                                      </div>
+                                      {
+                                        !pipelineParams[param.key]?.required && (
+                                          <Button
+                                            className={styles['remove-button']}
+                                            type="button"
+                                            color="danger"
+                                            disabled={false}
+                                            onClick={() => arrayHelpers.remove(i)}
+                                            size="sm"
+                                          >
+                                            <Icon name="trash" />
+                                          </Button>
+                                        )
+                                      }
+                                    </div>
+                                  )
+                                }
+                              )}
+                            </div>
+                            <Button
+                              type="button"
+                              className={styles['add-button']}
+                              onClick={() => {
+                                arrayHelpers.push({
+                                  key: '',
+                                  value: '',
+                                });
+                              }}
+                            >
+                              + Add Parameter
+                            </Button>
                           </div>
-                          <Button
-                            type="button"
-                            className={styles['add-button']}
-                            onClick={() => {
-                              arrayHelpers.push({
-                                key: '',
-                                value: '',
-                              });
-                            }}
-                          >
-                            + Add Parameter
-                          </Button>
-                        </div>
-                      )}
+                        )
+                      }
+                    }
                     />
                   </div>
                 </div>
