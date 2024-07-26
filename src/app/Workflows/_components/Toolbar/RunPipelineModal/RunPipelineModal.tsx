@@ -199,7 +199,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                 });
                               }}
                             >
-                              + Add Parameter
+                              + Add Arg
                             </Button>
                           </div>
                         )
