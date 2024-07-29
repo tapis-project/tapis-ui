@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Button, Input, Tooltip } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './AnalysisForm.module.scss';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -158,7 +156,8 @@ const AnalysisForm: React.FC = () => {
         {analyses.map((analysis, index) => (
           <div key={analysis.id} className={styles.analysisBox}>
             <div className={styles.closeButton} onClick={() => removeAnalysis(index)}>
-              <FontAwesomeIcon icon={faTimes} />
+              {/* <FontAwesomeIcon icon={faTimes} /> */}
+              X
             </div>
             <Formik
               initialValues={analysis}
@@ -207,11 +206,7 @@ const AnalysisForm: React.FC = () => {
 
                   <div className={styles.formGroup}>
                     <label htmlFor={`model-${index}`}>Model</label>
-                    <FontAwesomeIcon
-                      icon={faQuestionCircle}
-                      id={`modelHelp-${analysis.id}`}
-                      className={styles.helpIcon}
-                    />
+                    <span id={`modelHelp-${analysis.id}`}>?</span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`modelHelp-${analysis.id}`]}
@@ -264,11 +259,7 @@ const AnalysisForm: React.FC = () => {
 
                   <div className={styles.formGroup}>
                     <label htmlFor={`dataset-${index}`}>Dataset</label>
-                    <FontAwesomeIcon
-                      icon={faQuestionCircle}
-                      id={`datasetHelp-${analysis.id}`}
-                      className={styles.helpIcon}
-                    />
+                    <span id={`datasetHelp-${analysis.id}`}>?</span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`datasetHelp-${analysis.id}`]}
@@ -320,11 +311,7 @@ const AnalysisForm: React.FC = () => {
 
                   <div className={styles.formGroup}>
                     <label htmlFor={`site-${index}`}>Site</label>
-                    <FontAwesomeIcon
-                      icon={faQuestionCircle}
-                      id={`siteHelp-${analysis.id}`}
-                      className={styles.helpIcon}
-                    />
+                    <span id={`siteHelp-${analysis.id}`}>?</span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`siteHelp-${analysis.id}`]}
@@ -404,11 +391,7 @@ const AnalysisForm: React.FC = () => {
 
                   <div className={styles.formGroup}>
                     <label htmlFor={`advancedConfig-${index}`}>Advanced Config</label>
-                    <FontAwesomeIcon
-                      icon={faQuestionCircle}
-                      id={`advancedConfigHelp-${analysis.id}`}
-                      className={styles.helpIcon}
-                    />
+                    <span id={`advancedConfigHelp-${analysis.id}`}>?</span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`advancedConfigHelp-${analysis.id}`]}
