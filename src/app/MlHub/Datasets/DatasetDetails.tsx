@@ -44,7 +44,7 @@ const DatasetDetails: React.FC<DatasetDetailsProps> = ({ datasetId }) => {
             </div>
           )}
 
-          {dataset.last_modified && (
+          {dataset.created_at && (
             <div className={`${styles['dataset-detail']}`}>
               <div className={`${styles['dataset-title']}`}>created_at:</div>
               <div className={`${styles['detail-info']}`}>
@@ -64,7 +64,7 @@ const DatasetDetails: React.FC<DatasetDetailsProps> = ({ datasetId }) => {
 
           {dataset.tags && (
             <div className={`${styles['dataset-detail']}`}>
-              <div className={`${styles['dataset-title']}`}>last_modified:</div>
+              <div className={`${styles['dataset-title']}`}>tags:</div>
               <div className={`${styles['detail-info']}`}>{dataset.tags}</div>
             </div>
           )}
