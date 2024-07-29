@@ -9,7 +9,7 @@ import {
   SectionHeader,
 } from '@tapis/tapisui-common';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { Workflows } from "@tapis/tapis-typescript"
+import { Workflows } from '@tapis/tapis-typescript';
 import styles from './RunPipelineModal.module.scss';
 import * as Yup from 'yup';
 // import { Workflows } from '@tapis/tapis-typescript';
@@ -25,7 +25,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
   toggle,
   groupId,
   pipelineId,
-  pipeline
+  pipeline,
 }) => {
   const { run, isLoading, error, isSuccess } = Hooks.Pipelines.useRun();
 
@@ -88,13 +88,13 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
     );
   };
 
-  const pipelineParams = pipeline.params || {}
+  const pipelineParams = pipeline.params || {};
 
   const initialValues = {
     groupId,
     pipelineId,
     params: Object.entries(pipelineParams).map(([key, _]) => {
-      return { key, value: "" }
+      return { key, value: '' };
     }),
   };
 
@@ -156,9 +156,15 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                           name={`params.${i}.key`}
                                           label="key"
                                           required={true}
-                                          description={pipelineParams[param.key]?.description || ""}
+                                          description={
+                                            pipelineParams[param.key]
+                                              ?.description || ''
+                                          }
                                           aria-label="Input"
-                                          disabled={pipelineParams[param.key]?.required || false}
+                                          disabled={
+                                            pipelineParams[param.key]
+                                              ?.required || false
+                                          }
                                         />
                                         <FormikInput
                                           id={`params.${i}.value`}
@@ -170,24 +176,21 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                           value=""
                                         />
                                       </div>
-                                      {
-                                        !pipelineParams[param.key]?.required && (
-                                          <Button
-                                            className={styles['remove-button']}
-                                            type="button"
-                                            color="danger"
-                                            disabled={false}
-                                            onClick={() => arrayHelpers.remove(i)}
-                                            size="sm"
-                                          >
-                                            <Icon name="trash" />
-                                          </Button>
-                                        )
-                                      }
+                                      {!pipelineParams[param.key]?.required && (
+                                        <Button
+                                          className={styles['remove-button']}
+                                          type="button"
+                                          color="danger"
+                                          disabled={false}
+                                          onClick={() => arrayHelpers.remove(i)}
+                                          size="sm"
+                                        >
+                                          <Icon name="trash" />
+                                        </Button>
+                                      )}
                                     </div>
-                                  )
-                                }
-                              )}
+                                  );
+                                })}
                             </div>
                             <Button
                               type="button"
@@ -202,9 +205,8 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                               + Add Arg
                             </Button>
                           </div>
-                        )
-                      }
-                    }
+                        );
+                      }}
                     />
                   </div>
                 </div>

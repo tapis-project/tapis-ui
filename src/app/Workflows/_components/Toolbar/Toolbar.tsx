@@ -9,7 +9,7 @@ import { CreateArchiveModal } from './CreateArchiveModal';
 import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
 import { RunPipelineModal } from './RunPipelineModal';
-import { Workflows } from "@tapis/tapis-typescript"
+import { Workflows } from '@tapis/tapis-typescript';
 
 type ToolbarButtonProps = {
   text: string;
@@ -43,7 +43,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 type WorkflowsToolbarProps = {
   groupId?: string;
   pipelineId?: string;
-  pipeline?: Workflows.Pipeline
+  pipeline?: Workflows.Pipeline;
   buttons?: Array<string>;
 };
 

@@ -1,2 +1,2 @@
 export { DagView } from './DagView';
-export { Menu } from "./Menu"
+export { Menu } from './Menu';
