@@ -8,7 +8,7 @@ import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
 import { useQueryClient } from 'react-query';
-import { DagView } from './_components/DagView';
+import { DagView, Menu } from './_components';
 import { useExtension } from 'extensions';
 
 type TaskProps = {
@@ -108,6 +108,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
 
   return (
     <QueryWrapper isLoading={isLoadingPipeline} error={pipelineError}>
+      {/* <Menu /> */}
       {pipeline && (
         <div id={`pipeline`} className={styles['grid']}>
           <SectionHeader>
