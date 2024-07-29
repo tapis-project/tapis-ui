@@ -7,6 +7,8 @@
     "@codemirror/lang-python": "^6.1.6",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@icicle/tapisui-extension": "file:./lib/icicle-tapisui-extension",
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.16.0",
@@ -103,6 +105,7 @@
     "@types/rx": "^4.1.2",
     "@types/streamsaver": "^2.0.1",
     "@types/uuid": "^8.3.1",
+    "chokidar": "^3.6.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "gh-pages": "^6.1.1",
@@ -112,7 +115,6 @@
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "ts-jest": "^29.1.4",
-    "chokidar": "^3.6.0",
     "typescript": "^5.4.5"
   },
   "jest": {
