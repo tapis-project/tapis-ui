@@ -59,7 +59,8 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
     }
   };
   // Check if the job is in a non-terminal state
-  const isCancelable = job && !['FINISHED', 'FAILED'].includes(job.status);
+  const isCancelable =
+    job && !['FINISHED', 'FAILED'].includes(job.status ?? '');
 
   return (
     <div id="file-operation-toolbar">

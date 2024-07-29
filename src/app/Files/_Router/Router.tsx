@@ -22,9 +22,11 @@ const Router: React.FC = () => {
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <SectionMessage type="info">
-          Select a system from the list.
-        </SectionMessage>
+        <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
+          <SectionMessage type="info">
+            Select a system from the list.
+          </SectionMessage>
+        </div>
       </Route>
 
       <Route
@@ -35,11 +37,13 @@ const Router: React.FC = () => {
           },
         }: RouteComponentProps<{ systemId: string; systemPath?: string }>) => {
           return (
-            <FileListing
-              systemId={systemId}
-              path={systemPath ?? '/'}
-              location={pathname}
-            />
+            <div style={{ margin: '.5rem' }}>
+              <FileListing
+                systemId={systemId}
+                path={systemPath ?? '/'}
+                location={pathname}
+              />
+            </div>
           );
         }}
       />

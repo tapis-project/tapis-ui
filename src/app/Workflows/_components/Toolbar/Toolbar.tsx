@@ -9,6 +9,7 @@ import { CreateArchiveModal } from './CreateArchiveModal';
 import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
 import { RunPipelineModal } from './RunPipelineModal';
+import { Workflows } from '@tapis/tapis-typescript';
 
 type ToolbarButtonProps = {
   text: string;
@@ -42,12 +43,14 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 type WorkflowsToolbarProps = {
   groupId?: string;
   pipelineId?: string;
+  pipeline?: Workflows.Pipeline;
   buttons?: Array<string>;
 };
 
 const Toolbar: React.FC<WorkflowsToolbarProps> = ({
   groupId,
   pipelineId,
+  pipeline = undefined,
   buttons = [],
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
@@ -132,10 +135,11 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             toggle={toggle}
           />
         )}
-        {modal === 'runpipeline' && groupId && pipelineId && (
+        {modal === 'runpipeline' && groupId && pipelineId && pipeline && (
           <RunPipelineModal
             groupId={groupId}
             pipelineId={pipelineId}
+            pipeline={pipeline}
             toggle={toggle}
           />
         )}

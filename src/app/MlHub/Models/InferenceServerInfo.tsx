@@ -3,6 +3,7 @@ import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { JSONDisplay } from '@tapis/tapisui-common';
 import styles from './ModelDetails.module.scss';
 import { QueryWrapper } from '@tapis/tapisui-common';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 type InferenceServerInfoProps = {
   modelId: string;
@@ -17,6 +18,9 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
     isError,
     isLoading,
   } = Hooks.Models.useInferenceServerDetails({ modelId });
+
+  const { path } = useRouteMatch();
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -31,7 +35,6 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
 
   if (serverInfo) {
     const { message, metadata, result, status, version } = serverInfo;
-    // console.log ("serverInfo" , serverInfo)
 
     if (
       parseInt(serverInfo.status!) === 200 ||
@@ -58,7 +61,14 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
                     inference_endpoint:
                   </div>
                   <div className={`${styles['detail-info']}`}>
-                    {serverInfo.result.inference_endpoint}
+                    <span>
+                      <Link
+                        to={`${path}/${serverInfo.result.inference_endpoint}`}
+                      >
+                        {' '}
+                        {serverInfo.result.inference_endpoint}{' '}
+                      </Link>
+                    </span>
                   </div>
                 </div>
               )}
@@ -77,7 +87,7 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
                       inference_server_possible:
                     </div>
                     <div className={`${styles['detail-info']}`}>
-                      {serverInfo.result?.inference_server_possible}
+                      {String(serverInfo.result?.inference_server_possible)}
                     </div>
                   </div>
                 </>

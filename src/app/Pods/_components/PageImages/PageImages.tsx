@@ -3,15 +3,11 @@ import { useState } from 'react';
 
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
-// import { CopyButton, TooltipModal } from '../../../ui';
-// import { DescriptionList, Tabs, JSONDisplay } from '../../../ui';
-//import { QueryWrapper } from '../../../wrappers';
 import {
   PageLayout,
   LayoutBody,
   LayoutNavWrapper,
 } from '@tapis/tapisui-common';
-
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
@@ -31,18 +27,20 @@ import { SectionMessage } from '@tapis/tapisui-common';
 
 import { NavImages } from 'app/Pods/_components';
 import PodToolbar from 'app/Pods/_components/PodToolbar';
-// import { Menu } from '../_components';
 
 import { useHistory } from 'react-router-dom';
-import { PodsNavigation } from 'app/Pods/_components';
+import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
+import PodsLoadingText from '../PodsLoadingText';
 
 const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
   if (objId === '') {
     objId = '';
   }
-  console.log(typeof Hooks.useDetailsImages);
-  const { data, isLoading, error } = Hooks.useLogs({ podId: objId });
+
+  const { data, isFetching, error, invalidate } = Hooks.useDetailsImages({
+    imageId: objId,
+  });
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
@@ -55,6 +53,79 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const [imageBarTab, setImageBarTab] = useState<string>('details');
+
+  const loadingText = PodsLoadingText();
+
+  const tooltipConfigs: {
+    [key: string]: { tooltipTitle: string; tooltipText: string };
+  } = {
+    details: {
+      tooltipTitle: 'Pod Definition',
+      tooltipText:
+        'This is the JSON definition of this Pod. Visit our live-docs for an exact schema: https://tapis-project.github.io/live-docs/?service=Pods',
+    },
+  };
+
+  const renderTooltipModal = () => {
+    const config = tooltipConfigs[imageBarTab];
+    if (config && modal === 'tooltip') {
+      return (
+        <TooltipModal
+          toggle={toggle}
+          tooltipTitle={config.tooltipTitle}
+          tooltipText={config.tooltipText}
+        />
+      );
+    }
+    return null;
+  };
+
+  const getCodeMirrorValue = () => {
+    switch (imageBarTab) {
+      case 'details':
+        return error
+          ? `error: ${error}`
+          : isFetching
+          ? loadingText
+          : JSON.stringify(pod, null, 2);
+      default:
+        return ''; // Default or placeholder value
+    }
+  };
+
+  const codeMirrorValue = getCodeMirrorValue();
+
+  type ButtonConfig = {
+    id: string;
+    label: string;
+    tabValue?: string; // Made optional to accommodate both uses
+    customOnClick?: () => void;
+  };
+
+  const leftButtons: ButtonConfig[] = [
+    {
+      id: 'refresh',
+      label: 'Refresh',
+      customOnClick: () => {
+        invalidate();
+      },
+    },
+    { id: 'details', label: 'Details', tabValue: 'details' },
+  ];
+
+  const rightButtons: ButtonConfig[] = [
+    {
+      id: 'help',
+      label: 'Help',
+      customOnClick: () => setModal('tooltip'),
+    },
+    {
+      id: 'copy',
+      label: 'Copy',
+      customOnClick: () =>
+        navigator.clipboard.writeText(getCodeMirrorValue() ?? ''),
+    },
+  ];
 
   return (
     <div>
@@ -92,101 +163,63 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               overflow: 'auto',
             }}
           >
-            <QueryWrapper isLoading={isLoading} error={error}>
-              <div
-                style={{
-                  paddingBottom: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Stack spacing={2} direction="row" className={styles['stack']}>
+            <div
+              style={{
+                paddingBottom: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Stack spacing={2} direction="row">
+                {leftButtons.map(({ id, label, tabValue, customOnClick }) => (
                   <Button
-                    //startIcon={<Info />}
+                    key={id}
                     variant="outlined"
-                    color={imageBarTab === 'details' ? 'secondary' : 'primary'}
+                    color={imageBarTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
                     onClick={() => {
-                      setImageBarTab('details');
+                      if (customOnClick) {
+                        customOnClick();
+                      } else if (tabValue && imageBarTab !== undefined) {
+                        setImageBarTab(tabValue);
+                      }
                     }}
                   >
-                    Details
+                    {label}
                   </Button>
-                </Stack>
-                <Stack spacing={2} direction="row" className={styles['stack']}>
+                ))}
+              </Stack>
+              <Stack spacing={2} direction="row">
+                {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
                   <Button
-                    //startIcon={<Info />}
+                    key={id}
                     variant="outlined"
-                    color={imageBarTab === 'help' ? 'secondary' : 'primary'}
+                    color={imageBarTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
                     onClick={() => {
-                      setModal('tooltip');
+                      if (customOnClick) {
+                        customOnClick();
+                      } else if (tabValue && imageBarTab !== undefined) {
+                        setImageBarTab(tabValue);
+                      }
                     }}
                   >
-                    Help
+                    {label}
                   </Button>
-                  <Button
-                    //startIcon={<Info />}
-                    variant="outlined"
-                    color={imageBarTab === 'help' ? 'secondary' : 'primary'}
-                    size="small"
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        JSON.stringify(pod, null, 2)
-                      );
-                    }}
-                  >
-                    Copy2
-                  </Button>
-                  <CopyButton
-                    value={JSON.stringify(pod, null, 2)}
-                    className={styles.copyButtonRight}
-                  />
-                </Stack>
-              </div>
-              <div
-                style={{
-                  display: imageBarTab === 'details' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
-                <CodeMirror
-                  width="100%"
-                  value={JSON.stringify(pod, null, 2)}
-                  editable={false}
-                  readOnly={true}
-                  extensions={[json()]}
-                  height="800px" // Use 100vh to fill 100% of viewable height
-                  minHeight="200px"
-                  theme={vscodeDarkInit({
-                    settings: {
-                      caret: '#c6c6c6',
-                      fontFamily: 'monospace',
-                    },
-                  })}
-                  //className={` ${styles['cm-editor']} ${styles['cm-scroller']}  ${styles['code']} `}
-                  style={{
-                    fontSize: 12,
-                    backgroundColor: '#f5f5f5',
-                    fontFamily:
-                      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-            </QueryWrapper>
+                ))}
+              </Stack>
+            </div>
+            <div className={styles['container']}>
+              <PodsCodeMirror
+                value={codeMirrorValue?.toString() ?? ''}
+                isVisible={true}
+              />
+            </div>
           </div>
         )}
 
-        {modal === 'tooltip' && (
-          <TooltipModal
-            toggle={toggle}
-            tooltipTitle={'Pod Definition'}
-            tooltipText={
-              'This is the JSON definition of this Pod. Visit our live-docs for an exact schema: https://tapis-project.github.io/live-docs/?service=Pods'
-            }
-          />
-        )}
+        <div>{renderTooltipModal()}</div>
       </div>
     </div>
   );

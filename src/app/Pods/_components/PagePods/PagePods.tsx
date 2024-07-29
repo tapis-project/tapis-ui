@@ -1,77 +1,191 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { decode } from 'base-64';
+import { json } from '@codemirror/lang-json';
+import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
+import Stack from '@mui/material/Stack';
+import { Button } from '@mui/material';
+import CodeMirror from '@uiw/react-codemirror';
 
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
-// import { CopyButton, TooltipModal } from '../../../ui';
-// import { DescriptionList, Tabs, JSONDisplay } from '../../../ui';
-//import { QueryWrapper } from '../../../wrappers';
 import {
   PageLayout,
   LayoutBody,
   LayoutNavWrapper,
-} from '@tapis/tapisui-common';
-
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
-import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import { decode } from 'base-64';
-import Stack from '@mui/material/Stack';
-import {
   CopyButton,
   TooltipModal,
   DescriptionList,
   Tabs,
   JSONDisplay,
   QueryWrapper,
+  SectionMessage,
 } from '@tapis/tapisui-common';
-import { Button } from '@mui/material';
-import { SectionMessage } from '@tapis/tapisui-common';
 
-import { NavPods } from 'app/Pods/_components';
+import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodToolbar from 'app/Pods/_components/PodToolbar';
 // import { Menu } from '../_components';
-import { useHistory } from 'react-router-dom';
-
-import { PodsNavigation } from 'app/Pods/_components';
 
 import { usePodsContext } from '../PodsContext';
 
-import styles from '../Pages.module.scss';
+import PodsLoadingText from '../PodsLoadingText';
 
+import styles from '../Pages.module.scss';
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
-  const { data, isLoading, error } = Hooks.useDetails({ podId: objId });
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useDetails({
+    podId: objId,
+  });
   const {
     data: dataLogs,
     isLoading: isLoadingLogs,
+    isFetching: isFetchingLogs,
     error: errorLogs,
+    invalidate: invalidateLogs,
   } = Hooks.useLogs({ podId: objId });
   const {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
+    isFetching: isFetchingSecrets,
     error: errorSecrets,
-  } = Hooks.useLogs({ podId: objId });
+    invalidate: invalidateSecrets,
+  } = Hooks.useGetPodSecrets({ podId: objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
-  const podSecrets: Pods.LogsModel | undefined = dataSecrets?.result;
-  console.log('secrets', dataSecrets);
+  const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
+
   // State to control the visibility of the TooltipModal
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
     setModal(undefined);
   };
-
   const [podBarTab, setPodBarTab] = useState<string>('details');
 
-  const { lastPodTab } = usePodsContext();
+  const loadingText = PodsLoadingText();
 
-  // if (lastPodTab !== undefined) {
-  //   setPodBarTab(lastPodTab);
-  // }
+  const tooltipConfigs: {
+    [key: string]: { tooltipTitle: string; tooltipText: string };
+  } = {
+    details: {
+      tooltipTitle: 'Pod Definition',
+      tooltipText:
+        'This is the JSON definition of this Pod. Visit our live-docs for an exact schema: https://tapis-project.github.io/live-docs/?service=Pods',
+    },
+    actionlogs: {
+      tooltipTitle: 'Action Logs',
+      tooltipText:
+        'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.',
+    },
+    logs: {
+      tooltipTitle: 'Logs',
+      tooltipText:
+        'Logs contain the stdout/stderr of the most recent Pod run. Use it to debug your pod during startup, to grab metrics, inspect logs, and output data from your Pod.',
+    },
+    secrets: {
+      tooltipTitle: 'Secrets',
+      tooltipText:
+        'Secrets are variables that you can reference via $SECRET_KEY. WIP',
+    },
+  };
+
+  const renderTooltipModal = () => {
+    const config = tooltipConfigs[podBarTab];
+    if (config && modal === 'tooltip') {
+      return (
+        <TooltipModal
+          toggle={toggle}
+          tooltipTitle={config.tooltipTitle}
+          tooltipText={config.tooltipText}
+        />
+      );
+    }
+    return null;
+  };
+
+  const getCodeMirrorValue = () => {
+    switch (podBarTab) {
+      case 'details':
+        return error
+          ? `error: ${error}`
+          : isFetching
+          ? loadingText
+          : JSON.stringify(pod, null, 2);
+      case 'logs':
+        return error
+          ? `error: ${errorLogs}`
+          : isFetchingLogs
+          ? loadingText
+          : podLogs?.logs;
+      case 'actionlogs':
+        return error
+          ? `error: ${errorLogs}`
+          : isFetchingLogs
+          ? loadingText
+          : podLogs?.action_logs?.join('\n');
+      case 'secrets':
+        return error
+          ? `error: ${errorSecrets}`
+          : isFetchingSecrets
+          ? loadingText
+          : JSON.stringify(podSecrets, null, 2);
+      default:
+        return ''; // Default or placeholder value
+    }
+  };
+
+  const codeMirrorValue = getCodeMirrorValue();
+
+  type ButtonConfig = {
+    id: string;
+    label: string;
+    tabValue?: string; // Made optional to accommodate both uses
+    customOnClick?: () => void;
+  };
+
+  const leftButtons: ButtonConfig[] = [
+    {
+      id: 'refresh',
+      label: 'Refresh',
+      customOnClick: () => {
+        switch (podBarTab) {
+          case 'details':
+            invalidate();
+            break;
+          case 'logs':
+          case 'actionlogs':
+            invalidateLogs();
+            break;
+          case 'secrets':
+            invalidateSecrets();
+            break;
+          default:
+            // Optionally handle any other cases or do nothing
+            break;
+        }
+      },
+    },
+    { id: 'details', label: 'Details', tabValue: 'details' },
+    { id: 'logs', label: 'Logs', tabValue: 'logs' },
+    { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },
+    { id: 'secrets', label: 'Secrets', tabValue: 'secrets' },
+  ];
+
+  const rightButtons: ButtonConfig[] = [
+    {
+      id: 'help',
+      label: 'Help',
+      customOnClick: () => setModal('tooltip'),
+    },
+    {
+      id: 'copy',
+      label: 'Copy',
+      customOnClick: () =>
+        navigator.clipboard.writeText(getCodeMirrorValue() ?? ''),
+    },
+  ];
 
   return (
     <div>
@@ -100,237 +214,66 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               overflow: 'auto',
             }}
           >
-            <QueryWrapper
-              isLoading={isLoading || isLoadingLogs}
-              error={error || errorLogs}
+            <div
+              style={{
+                paddingBottom: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
             >
-              <div
-                style={{
-                  paddingBottom: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Stack spacing={2} direction="row" className={styles['stack']}>
+              <Stack spacing={2} direction="row">
+                {leftButtons.map(({ id, label, tabValue, customOnClick }) => (
                   <Button
-                    //startIcon={<Info />}
+                    key={id}
                     variant="outlined"
-                    color={podBarTab === 'details' ? 'secondary' : 'primary'}
+                    color={podBarTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
                     onClick={() => {
-                      setPodBarTab('details');
+                      if (customOnClick) {
+                        customOnClick();
+                      } else if (tabValue && podBarTab !== undefined) {
+                        setPodBarTab(tabValue);
+                      }
                     }}
                   >
-                    Details
+                    {label}
                   </Button>
+                ))}
+              </Stack>
+              <Stack spacing={2} direction="row">
+                {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
                   <Button
-                    //startIcon={<CompareArrows />}
+                    key={id}
                     variant="outlined"
-                    size="small"
-                    color={podBarTab === 'logs' ? 'secondary' : 'primary'}
-                    onClick={() => {
-                      setPodBarTab('logs');
-                    }}
-                  >
-                    Logs
-                  </Button>
-                  <Button
-                    //startIcon={<Tune />}
-                    variant="outlined"
-                    size="small"
-                    color={podBarTab === 'actionlogs' ? 'secondary' : 'primary'}
-                    onClick={() => {
-                      setPodBarTab('actionlogs');
-                    }}
-                  >
-                    Action Logs
-                  </Button>
-                  <Button
-                    //startIcon={<Tune />}
-                    variant="outlined"
-                    size="small"
-                    color={podBarTab === 'secrets' ? 'secondary' : 'primary'}
-                    onClick={() => {
-                      setPodBarTab('secrets');
-                    }}
-                  >
-                    Secrets
-                  </Button>
-                </Stack>
-                <Stack spacing={2} direction="row" className={styles['stack']}>
-                  <Button
-                    //startIcon={<Info />}
-                    variant="outlined"
-                    color={podBarTab === 'help' ? 'secondary' : 'primary'}
+                    color={podBarTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
                     onClick={() => {
-                      setModal('tooltip');
+                      if (customOnClick) {
+                        customOnClick();
+                      } else if (tabValue && podBarTab !== undefined) {
+                        setPodBarTab(tabValue);
+                      }
                     }}
                   >
-                    Help
+                    {label}
                   </Button>
-                  <Button
-                    //startIcon={<Info />}
-                    variant="outlined"
-                    color={podBarTab === 'help' ? 'secondary' : 'primary'}
-                    size="small"
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        JSON.stringify(pod, null, 2)
-                      );
-                    }}
-                  >
-                    Copy
-                  </Button>
-                  <CopyButton
-                    value={JSON.stringify(pod, null, 2)}
-                    className={styles.copyButtonRight}
-                  />
-                </Stack>
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'details' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
-                <CodeMirror
-                  width="100%"
-                  value={JSON.stringify(pod, null, 2)}
-                  editable={false}
-                  readOnly={true}
-                  extensions={[json()]}
-                  height="800px" // Use 100vh to fill 100% of viewable height
-                  minHeight="200px"
-                  theme={vscodeDarkInit({
-                    settings: {
-                      caret: '#c6c6c6',
-                      fontFamily: 'monospace',
-                    },
-                  })}
-                  //className={` ${styles['cm-editor']} ${styles['cm-scroller']}  ${styles['code']} `}
-                  style={{
-                    fontSize: 12,
-                    backgroundColor: '#f5f5f5',
-                    fontFamily:
-                      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'logs' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
-                <CodeMirror
-                  value={podLogs?.logs}
-                  editable={false}
-                  readOnly={true}
-                  extensions={[json()]}
-                  height="800px" // Use 100vh to fill 100% of viewable height
-                  minHeight="200px"
-                  theme={vscodeDarkInit({
-                    settings: {
-                      caret: '#c6c6c6',
-                      fontFamily: 'monospace',
-                    },
-                  })}
-                  //className={` ${styles['cm-editor']} ${styles['cm-scroller']}  ${styles['code']} `}
-                  style={{
-                    fontSize: 12,
-                    backgroundColor: '#f5f5f5',
-                    fontFamily:
-                      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'actionlogs' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
-                <CodeMirror
-                  value={podLogs?.action_logs?.join('\n')}
-                  editable={false}
-                  readOnly={true}
-                  extensions={[json()]}
-                  height="800px" // Use 100vh to fill 100% of viewable height
-                  minHeight="200px"
-                  theme={vscodeDarkInit({
-                    settings: {
-                      caret: '#c6c6c6',
-                      fontFamily: 'monospace',
-                    },
-                  })}
-                  //className={` ${styles['cm-editor']} ${styles['cm-scroller']}  ${styles['code']} `}
-                  style={{
-                    fontSize: 12,
-                    backgroundColor: '#f5f5f5',
-                    fontFamily:
-                      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: podBarTab === 'secrets' ? 'block' : 'none',
-                }}
-                className={styles['container']}
-              >
-                <CodeMirror
-                  value={JSON.stringify(podSecrets, null, 2)}
-                  editable={false}
-                  readOnly={true}
-                  extensions={[json()]}
-                  height="800px" // Use 100vh to fill 100% of viewable height
-                  minHeight="200px"
-                  theme={vscodeDarkInit({
-                    settings: {
-                      caret: '#c6c6c6',
-                      fontFamily: 'monospace',
-                    },
-                  })}
-                  //className={` ${styles['cm-editor']} ${styles['cm-scroller']}  ${styles['code']} `}
-                  style={{
-                    fontSize: 12,
-                    backgroundColor: '#f5f5f5',
-                    fontFamily:
-                      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-            </QueryWrapper>
+                ))}
+              </Stack>
+            </div>
+            <div className={styles['container']}>
+              <PodsCodeMirror
+                value={codeMirrorValue?.toString() ?? ''}
+                isVisible={true}
+              />
+            </div>
           </div>
         )}
 
-        {modal === 'tooltip' && (
-          <TooltipModal
-            toggle={toggle}
-            tooltipTitle={'Pod Definition'}
-            tooltipText={
-              'This is the JSON definition of this Pod. Visit our live-docs for an exact schema: https://tapis-project.github.io/live-docs/?service=Pods'
-            }
-          />
-        )}
+        <div>{renderTooltipModal()}</div>
       </div>
     </div>
   );
 };
 
 export default PagePods;
-
-//       {/* tooltipTitle={'Pod Definition'}
-// tooltipText={
-// 'This is the JSON definition of this Pod. Visit our live-docs for an exact schema: https://tapis-project.github.io/live-docs/?service=Pods'
-
-// podLogs?.action_logs
-// tooltipTitle="Action Logs"
-// tooltipText="Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here."
-
-// podLogs?.logs
-// tooltipTitle="Logs"
-// tooltipText="Logs contain the stdout/stderr of the most recent Pod run. Use it to debug ywour pod during startup, to grab metrics, inspect logs, and output data from your Pod."
-//  */}

@@ -8,7 +8,7 @@ import { Toolbar } from '../../_components';
 import styles from './Pipeline.module.scss';
 import { Button, ButtonGroup, Table } from 'reactstrap';
 import { useQueryClient } from 'react-query';
-import { DagView } from './_components/DagView';
+import { DagView, Menu } from './_components';
 import { useExtension } from 'extensions';
 
 type TaskProps = {
@@ -37,7 +37,7 @@ const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
           color="danger"
           onClick={() => {
             removeAsync(
-              { groupId, pipelineId, taskId: task.id },
+              { groupId, pipelineId, taskId: task.id ?? '' },
               { onSuccess }
             );
           }}
@@ -58,7 +58,7 @@ const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
           <b>description: </b>
           {task.description || <i>None</i>}
         </p>
-        {isError && error}
+        {isError && error && <p>{error.message}</p>}
       </div>
       {!!task?.depends_on?.length && (
         <div>
@@ -108,6 +108,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
 
   return (
     <QueryWrapper isLoading={isLoadingPipeline} error={pipelineError}>
+      {/* <Menu /> */}
       {pipeline && (
         <div id={`pipeline`} className={styles['grid']}>
           <SectionHeader>
@@ -135,6 +136,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
             buttons={['createtask', 'runpipeline']}
             groupId={groupId}
             pipelineId={pipelineId}
+            pipeline={pipeline}
           />
 
           {view == ViewEnum.Dag ? (

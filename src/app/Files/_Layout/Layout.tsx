@@ -19,9 +19,11 @@ const Layout: React.FC = () => {
   const crumbs = breadcrumbsFromPathname(pathname).splice(1);
   const header = (
     <LayoutHeader>
-      <div className={styles.breadcrumbs}>
+      Files
+      {/* <div className={styles.breadcrumbs}>
+        
         <Breadcrumbs breadcrumbs={[{ text: 'Files' }, ...crumbs]} />
-      </div>
+      </div> */}
       <Toolbar />
     </LayoutHeader>
   );

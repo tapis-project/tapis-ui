@@ -30,7 +30,6 @@ const Dashboard: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   return (
     <div>
-      <SectionHeader>Workflows</SectionHeader>
       <div className={styles['dashboard-card-container']}>
         <DashboardCard
           isLoading={groups.isLoading}

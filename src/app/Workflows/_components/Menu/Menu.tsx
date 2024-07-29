@@ -1,52 +1,49 @@
 import React from 'react';
-import { Navbar, Nav, NavItem, Collapse, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { Icon } from '@tapis/tapisui-common';
-import styles from './Menu.module.scss';
+import { useHistory } from 'react-router-dom';
+import Stack from '@mui/material/Stack';
+import { Button } from '@mui/material';
 
 const Menu: React.FC = () => {
+  const history = useHistory();
   return (
-    <Navbar color="light" light expand={true}>
-      <Collapse isOpen={true} navbar>
-        <Nav className="me-auto" navbar>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/workflows">
-              <Button>
-                <Icon name="dashboard"></Icon> Dashboard
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/workflows/pipelines">
-              <Button>
-                <Icon name="publications"></Icon> Pipelines
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/workflows/groups">
-              <Button>
-                <Icon name="user"></Icon> Groups
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/workflows/archives">
-              <Button>
-                <Icon name="folder"></Icon> Archives
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/workflows/identities">
-              <Button>
-                <Icon name="user"></Icon> Identities
-              </Button>
-            </Link>
-          </NavItem>
-        </Nav>
-      </Collapse>
-    </Navbar>
+    <Stack spacing={2} direction="row">
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          history.push('/workflows');
+        }}
+      >
+        Dashboard
+      </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          history.push('/workflows/groups');
+        }}
+      >
+        Groups
+      </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          history.push('/workflows/pipelines');
+        }}
+      >
+        Pipelines
+      </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          history.push('/workflows/archives');
+        }}
+      >
+        Archives
+      </Button>
+    </Stack>
   );
 };
 

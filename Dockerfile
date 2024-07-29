@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:22.4.0
 
 RUN mkdir tapisui
 RUN mkdir tapisui/src
@@ -9,7 +9,7 @@ WORKDIR /tapisui/src
 COPY ./ ./
 
 # Install all files in the package json
-RUN npm run init-project-container
+RUN npm run init-project container
 
 CMD ["npm", "run", "deploy"]
 

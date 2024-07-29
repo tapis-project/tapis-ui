@@ -31,7 +31,7 @@ const Layout: React.FC<JobDetailProps> = ({ jobUuid }) => {
   );
 
   const body = (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, marginLeft: '1em' }}>
       <JobDetail jobUuid={jobUuid}></JobDetail>
     </div>
   );

@@ -14,7 +14,11 @@ const Router: React.FC = () => {
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <SectionMessage type="info">Select a job from the list.</SectionMessage>
+        <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
+          <SectionMessage type="info">
+            Select a job from the list.
+          </SectionMessage>
+        </div>
       </Route>
 
       <Route
