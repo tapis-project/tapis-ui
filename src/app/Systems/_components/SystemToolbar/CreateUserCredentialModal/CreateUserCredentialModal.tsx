@@ -51,7 +51,7 @@ const schema = yup.object().shape({
     .max(4096, 'Public key must not exceed 4096 characters')
     .test('is-valid-public-key', 'Invalid SSH public key format', (value) => {
       return /^(ssh-rsa|ssh-dss|ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|ssh-ed25519)\s+[A-Za-z0-9+/]+[=]{0,3}(\s+.*)?$/.test(
-        value
+        value!
       );
     }),
   privateKey: yup
@@ -76,10 +76,10 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
   effectiveUserId,
 }) => {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const { claims, jwt } = useTapisConfig();
+  const { claims } = useTapisConfig();
   const userName = claims['tapis/username'];
 
-  const { create, isLoading, error } = Hooks.useCreateCredential();
+  const { create, isLoading, isSuccess, error } = Hooks.useCreateCredential();
 
   useEffect(() => {
     if (error) {
@@ -89,51 +89,12 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
     }
   }, [error]);
 
-  const validateSystemId = async (systemId: string) => {
-    if (!systemId) {
-      console.error('System ID is empty or undefined');
-      return false;
-    }
-
-    const systemsApi = new SystemsApi();
-    try {
-      console.log(`Attempting to validate system with ID: ${systemId}`);
-      const response = await systemsApi.getSystem(systemId, jwt);
-      console.log('System validation successful:', response);
-      return true;
-    } catch (error) {
-      console.error('Error in validateSystemId:', error);
-      if (error.response) {
-        console.error('Error response:', error.response);
-        if (error.response.status === 404) {
-          formik.setFieldError(
-            'systemId',
-            'System not found. Please enter a valid System ID.'
-          );
-        } else {
-          setSubmitError(
-            `An error occurred while validating the system: ${error.response.statusText}`
-          );
-        }
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-        setSubmitError(
-          'Network error. Please check your connection and try again.'
-        );
-      } else {
-        console.error('Error message:', error.message);
-        setSubmitError('An unexpected error occurred. Please try again.');
-      }
-      return false;
-    }
-  };
-
   const formik = useFormik({
     initialValues: {
       systemId: '',
       publicKey: '',
       privateKey: '',
-      loginUser: userName,
+      loginUser: '',
     },
     validationSchema: schema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
@@ -141,14 +102,8 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
 
       console.log('Submitting form with values:', values);
 
-      const isValidSystem = await validateSystemId(values.systemId);
-      if (!isValidSystem) {
-        setSubmitting(false);
-        return;
-      }
-
       try {
-        await create({
+        create({
           systemId: values.systemId,
           userName: userName,
           reqUpdateCredential: {
@@ -159,7 +114,6 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
         });
         console.log('Credential created successfully');
         resetForm();
-        toggle();
       } catch (error) {
         console.error('Error creating user credential:', error);
         setSubmitError('Failed to create user credential. Please try again.');
@@ -242,7 +196,7 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
             <Button
               type="submit"
               color="primary"
-              disabled={formik.isSubmitting || isLoading}
+              disabled={formik.isSubmitting || isLoading || isSuccess}
             >
               {formik.isSubmitting || isLoading ? 'Submitting...' : 'Submit'}
             </Button>
