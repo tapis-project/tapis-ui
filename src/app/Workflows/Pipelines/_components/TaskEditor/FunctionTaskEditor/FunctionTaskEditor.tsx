@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Workflows as Hooks } from "@tapis/tapisui-hooks"
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
@@ -56,22 +56,24 @@ type FunctionTaskEditorProps = {
   tasks: Array<Workflows.Task>;
 };
 
-
-
 const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
   task,
   tasks,
 }) => {
-  const initialTaskData = JSON.parse(JSON.stringify(task))
+  const initialTaskData = JSON.parse(JSON.stringify(task));
   const [activeTab, setActiveTab] = useState<string | undefined>('general');
-  const [patchData, setPatchData] = useState<Partial<Workflows.FunctionTask>>(initialTaskData)
+  const [patchData, setPatchData] =
+    useState<Partial<Workflows.FunctionTask>>(initialTaskData);
 
-  const patchTask = (task: Workflows.FunctionTask, data: Partial<Workflows.FunctionTask>) => {
+  const patchTask = (
+    task: Workflows.FunctionTask,
+    data: Partial<Workflows.FunctionTask>
+  ) => {
     setPatchData({
       ...task,
-      ...data
-    })
-  }
+      ...data,
+    });
+  };
 
   const setTab = (tab: string | undefined) => {
     let tabToSet = tab;
@@ -207,7 +209,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 rows={4}
                 value={task.description}
                 onChange={(e) => {
-                  patchTask(task, {description: e.target.value})
+                  patchTask(task, { description: e.target.value });
                 }}
               />
               <Button onClick={() => {}}>Save</Button>
