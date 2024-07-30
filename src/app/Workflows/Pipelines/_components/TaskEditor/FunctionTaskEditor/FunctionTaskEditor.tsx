@@ -64,6 +64,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
   const [activeTab, setActiveTab] = useState<string | undefined>('general');
   const [patchData, setPatchData] =
     useState<Partial<Workflows.FunctionTask>>(initialTaskData);
+  const { patch, isLoading, isError, error } = Hooks.Tasks.usePatch();
 
   const patchTask = (
     task: Workflows.FunctionTask,
@@ -207,12 +208,12 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 variant="outlined"
                 multiline
                 rows={4}
-                value={task.description}
+                defaultValue={task.description}
                 onChange={(e) => {
                   patchTask(task, { description: e.target.value });
                 }}
               />
-              <Button onClick={() => {}}>Save</Button>
+              <Button onClick={() => {console.log(patchData)}}>Save</Button>
             </Box>
           </Sidebar>
         )}

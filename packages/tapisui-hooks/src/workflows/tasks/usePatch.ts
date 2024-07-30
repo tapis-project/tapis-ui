@@ -10,10 +10,6 @@ const usePatch = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
-  // The useMutation react-query hook is used to call operations that make server-side changes
-  // (Other hooks would be used for data retrieval)
-  //
-  // In this case, create helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Workflows.RespTask, Error, PatchTaskHooksParams>(
       [QueryKeys.patch, basePath, jwt],
@@ -28,7 +24,7 @@ const usePatch = () => {
     data,
     error,
     reset,
-    create: (
+    patch: (
       params: PatchTaskHooksParams,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<Workflows.RespTask, Error, PatchTaskHooksParams>
