@@ -63,7 +63,7 @@ if [[ $(npm --version) != *"${NPM_VERSION}"* ]]; then
 fi;
 
 flag=${1:-"none"}
-install_command="npm install"
+install_command="npm ci"
 if [[ $flag == "all" || $flag == "locks" ]]; then
   install_command="npm install"
 fi;
