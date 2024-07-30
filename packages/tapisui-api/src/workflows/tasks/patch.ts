@@ -2,7 +2,7 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 const patch = (
-  params: Workflows.CreateTaskRequest,
+  params: Workflows.PatchTaskRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -12,7 +12,7 @@ const patch = (
     basePath,
     jwt
   );
-  return errorDecoder<Workflows.RespResourceURL>(() => api.createTask(params));
+  return errorDecoder<Workflows.RespTask>(() => api.patchTask(params));
 };
 
 export default patch;
