@@ -9,7 +9,33 @@ const breadcrumbsFromPathname = (pathname: string) => {
     console.log(image);
     items.push({ to: normalize('/pods/'), text: 'pods' });
     items.push({ to: normalize('/pods/images/'), text: 'images' });
-    items.push({ to: normalize(`/pods/images/${image}/`), text: image });
+    if (image) {
+      items.push({ to: normalize(`/pods/images/${image}/`), text: image });
+    }
+  } else if (pathname.startsWith('/ml-hub/datasets/')) {
+    // special case for ml-hub/datasets
+    const dataset = pathname.replace('/ml-hub/datasets/', '');
+    console.log(dataset);
+    items.push({ to: normalize('/ml-hub/'), text: 'ml-hub' });
+    items.push({ to: normalize('/ml-hub/datasets/'), text: 'datasets' });
+    if (dataset) {
+      items.push({
+        to: normalize(`/ml-hub/datasets/${dataset}/`),
+        text: dataset,
+      });
+    }
+  } else if (pathname.startsWith('/ml-hub/models/')) {
+    // special case for ml-hub/models
+    const model = pathname.replace('/ml-hub/models/', '');
+    console.log(model);
+    items.push({ to: normalize('/ml-hub/'), text: 'ml-hub' });
+    items.push({ to: normalize('/ml-hub/models/'), text: 'models' });
+    if (model) {
+      items.push({
+        to: normalize(`/ml-hub/models/${model}/`),
+        text: model,
+      });
+    }
   } else {
     // Original logic
     const pathParts = pathname.split('/');

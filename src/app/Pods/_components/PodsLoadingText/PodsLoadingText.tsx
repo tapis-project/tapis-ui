@@ -5,19 +5,19 @@ const PodsLoadingText = (
   intervalDuration = 333
 ) => {
   const [loadingText, setLoadingText] = useState(initialText);
-  useEffect(() => {
-    let loadingState = 0;
-    const loadingStates = ['loading...', 'loading', 'loading.', 'loading..'];
+  // useEffect(() => {
+  //   let loadingState = 0;
+  //   const loadingStates = ['loading...', 'loading', 'loading.', 'loading..'];
 
-    const interval = setInterval(() => {
-      setLoadingText(loadingStates[loadingState]);
-      loadingState = (loadingState + 1) % loadingStates.length;
-    }, intervalDuration);
+  //   const interval = setInterval(() => {
+  //     setLoadingText(loadingStates[loadingState]);
+  //     loadingState = (loadingState + 1) % loadingStates.length;
+  //   }, intervalDuration);
 
-    return () => clearInterval(interval);
-  }, [intervalDuration]);
+  //   return () => clearInterval(interval);
+  // }, [intervalDuration]);
 
-  return loadingText;
+  return initialText; // "oadingText;
 };
 
 export default PodsLoadingText;
