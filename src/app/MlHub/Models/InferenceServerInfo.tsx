@@ -1,9 +1,9 @@
 import React from 'react';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { JSONDisplay } from '@tapis/tapisui-common';
-import styles from './ModelDetails.module.scss';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Link, useRouteMatch } from 'react-router-dom';
+import styles from './InferenceServerInfo.module.scss';
 
 type InferenceServerInfoProps = {
   modelId: string;
@@ -87,7 +87,9 @@ const InferenceServerInfo: React.FC<InferenceServerInfoProps> = ({
                       inference_server_possible:
                     </div>
                     <div className={`${styles['detail-info']}`}>
-                      {String(serverInfo.result?.inference_server_possible)}
+                      {!!serverInfo.result?.inference_server_possible === false
+                        ? 'false'
+                        : 'true'}
                     </div>
                   </div>
                 </>
