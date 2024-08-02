@@ -16,6 +16,15 @@ const useLogs = (
     // which is expected behavior for not having a token
     () => API.logs(params, basePath, accessToken?.access_token ?? ''),
     {
+      // Disable automatic refetching on window focus, mount, and reconnect
+      refetchIntervalInBackground: false,
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      staleTime: 20000,
+      cacheTime: 20000,
+      // Keep the enabled option to control query activation based on accessToken presence
       enabled: !!accessToken,
     }
   );

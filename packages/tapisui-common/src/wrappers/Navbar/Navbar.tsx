@@ -16,7 +16,9 @@ export const NavItem: React.FC<
       >
         <div className={styles['nav-content']}>
           {icon && <Icon name={icon} />}
-          <span className={styles['nav-text']}>{children}</span>
+          {children ? (
+            <span className={styles['nav-text']}>{children}</span>
+          ) : undefined}
         </div>
       </NavLink>
     );
@@ -25,7 +27,9 @@ export const NavItem: React.FC<
       <div className={styles['nav-link']}>
         <div className={styles['nav-content']}>
           {icon && <Icon name={icon} />}
-          <span className={styles['nav-text']}>{children}</span>
+          {children ? (
+            <span className={styles['nav-text']}>{children}</span>
+          ) : undefined}
         </div>
       </div>
     );

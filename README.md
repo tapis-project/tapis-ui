@@ -3,6 +3,8 @@
 1. Clone the TapisUI repository
 2. `cd` into projects root directory
 3. Run `npm run init-project`. This will build and install all of the libraries and external packages. At the end of this process, the vite library will start a local install of TapisUI at **http://localhost:3000**
+4. After the initial build you should be able to run `npm run dev` for a hot-reloading environment.
+5. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
 
 # Starting TapisUI
 

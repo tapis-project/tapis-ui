@@ -16,7 +16,18 @@ const useDetails = (
     // which is expected behavior for not having a token
     () => API.details(params, basePath, accessToken?.access_token ?? ''),
     {
+      // Disable automatic refetching on window focus, mount, and reconnect
+      refetchIntervalInBackground: false,
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      // staleTime: 100000, // 30 seconds
+      // cacheTime: 10000,
+      // Keep the enabled option to control query activation based on accessToken presence
       enabled: !!accessToken,
+      // Spread any user-provided options to allow for customization
+      ...options,
     }
   );
   const invalidate = () => {

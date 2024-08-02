@@ -34,17 +34,7 @@ const Layout: React.FC = () => {
 
   const header = (
     <div className="tapis-ui__header">
-      <div>
-        <Link to={'/'}>
-          <img
-            style={{ height: '30px' }}
-            className="logo"
-            src={extension?.logo?.url || './tapislogo.png'}
-          />
-        </Link>
-        {extension?.logo?.logoText || 'TapisUI'}
-      </div>
-      <div>
+      <div style={{marginLeft: ".7rem"}}>
         <Breadcrumbs breadcrumbs={crumbs} />
       </div>
       <div>
@@ -87,18 +77,21 @@ const Layout: React.FC = () => {
           </ButtonDropdown>
         )}
       </div>
+
     </div>
   );
 
   return (
     <NotificationsProvider>
-      <div style={{ display: 'flex', flexGrow: 1, height: '100vh' }}>
+      <div style={{ display: 'flex', height: '100vh' }}>
         <PageLayout
-          top={header}
           left={<Sidebar />}
           right={
-            <div className="body">
-              <Router />
+            <div style={{ height: '100vh' }}>
+              <div>{header}</div>
+              <div className="body">
+                <Router />
+              </div>
             </div>
           }
         />

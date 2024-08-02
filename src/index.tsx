@@ -10,6 +10,7 @@ import { ExtensionsProvider } from './extensions';
 import { Extension } from '@tapis/tapisui-extensions-core';
 import { extension as icicleExtension } from '@icicle/tapisui-extension';
 import { NotificationsProvider } from 'app/_components/Notifications';
+import Theme from './theme'; // Import the Theme component
 
 const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
@@ -22,11 +23,13 @@ root.render(
   <React.StrictMode>
     <ExtensionsProvider extensions={initializedExtensions}>
       <TapisProvider basePath={resolveBasePath()}>
-        <NotificationsProvider>
-          <Router>
-            <App />
-          </Router>
-        </NotificationsProvider>
+        <Theme>
+          <NotificationsProvider>
+            <Router>
+              <App />
+            </Router>
+          </NotificationsProvider>
+        </Theme>
       </TapisProvider>
     </ExtensionsProvider>
   </React.StrictMode>
