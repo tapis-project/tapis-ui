@@ -34,7 +34,7 @@ const Layout: React.FC = () => {
 
   const header = (
     <div className="tapis-ui__header">
-      <div style={{marginLeft: ".7rem"}}>
+      <div style={{ marginLeft: '.7rem' }}>
         <Breadcrumbs breadcrumbs={crumbs} />
       </div>
       <div>
@@ -77,7 +77,6 @@ const Layout: React.FC = () => {
           </ButtonDropdown>
         )}
       </div>
-
     </div>
   );
 

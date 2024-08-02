@@ -12,9 +12,7 @@ const theme = createTheme({
   },
 });
 
-const Theme:React.FC<React.PropsWithChildren<{}>> = ({
-  children,
-}) => {
+const Theme: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 

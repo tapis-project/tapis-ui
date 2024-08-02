@@ -5,19 +5,32 @@ import { Close, ArrowBack } from '@mui/icons-material';
 import { FunctionTaskEditor } from './FunctionTaskEditor';
 
 type TaskEditorProps = {
-  groupId: string,
-  pipelineId: string,
+  groupId: string;
+  pipelineId: string;
   task: Workflows.Task;
   tasks: Array<Workflows.Task>;
   toggle?: () => void;
 };
 
-const TaskEditor: React.FC<TaskEditorProps> = ({ task, tasks, groupId, pipelineId, toggle }) => {
+const TaskEditor: React.FC<TaskEditorProps> = ({
+  task,
+  tasks,
+  groupId,
+  pipelineId,
+  toggle,
+}) => {
   const renderTaskEditor = useCallback(
     (task: Workflows.Task) => {
       switch (task.type) {
         case Workflows.EnumTaskType.Function:
-          return <FunctionTaskEditor groupId={groupId} pipelineId={pipelineId} task={task} tasks={tasks}/>;
+          return (
+            <FunctionTaskEditor
+              groupId={groupId}
+              pipelineId={pipelineId}
+              task={task}
+              tasks={tasks}
+            />
+          );
         case Workflows.EnumTaskType.Template:
           return `${task.type} task editor unsupported`;
         case Workflows.EnumTaskType.Request:

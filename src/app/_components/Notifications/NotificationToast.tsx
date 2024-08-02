@@ -80,7 +80,7 @@ export const ToastMessage: React.FC<{ notification: Notification }> = ({
   return (
     <>
       <div className={styles['notification-toast-icon-wrapper']}>
-        { notification.icon && (
+        {notification.icon && (
           <Icon
             name={notification.icon}
             className={

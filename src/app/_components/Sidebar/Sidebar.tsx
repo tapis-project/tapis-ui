@@ -41,7 +41,6 @@ const Sidebar: React.FC = () => {
 
   const { claims } = useTapisConfig();
 
-
   const renderSidebarItem = (
     to: string,
     icon: string | undefined,
@@ -50,7 +49,7 @@ const Sidebar: React.FC = () => {
     return (
       <NavItem to={to} icon={icon} key={uuidv4()}>
         {expanded ? (
-          <span style={{ paddingRight: ".75rem", whiteSpace: 'nowrap' }}>
+          <span style={{ paddingRight: '.75rem', whiteSpace: 'nowrap' }}>
             {text}
           </span>
         ) : (
@@ -103,12 +102,13 @@ const Sidebar: React.FC = () => {
     setOpenSecondary(!openSecondary);
   };
 
-
-
   const chipLabel = expanded ? '<<' : '>>';
 
   return (
-    <div className={styles.root} style={{position: 'relative', display: 'flex', flexDirection: 'column'}}>
+    <div
+      className={styles.root}
+      style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}
+    >
       <div
         style={{
           display: 'flex',
@@ -117,15 +117,18 @@ const Sidebar: React.FC = () => {
           alignItems: 'center', // vertical
           marginTop: '.6rem',
           marginBottom: '.6rem',
-          marginRight: '0px'
+          marginRight: '0px',
         }}
       >
-        
         <Link to={'/'}>
           <img
             style={{ height: '42px' }}
             className="logo"
-            src={expanded ? (extension?.logo?.url || './tapislogo.png') : './tapisicon.png'}
+            src={
+              expanded
+                ? extension?.logo?.url || './tapislogo.png'
+                : './tapisicon.png'
+            }
           />
         </Link>
         {expanded ? extension?.logo?.logoText : undefined}
@@ -136,7 +139,16 @@ const Sidebar: React.FC = () => {
         label={chipLabel}
         variant="outlined"
         size="small"
-        style={{ borderRadius:"8px", backgroundColor: "white", height:"1.5rem", width: "2rem", position: 'absolute', right: '-1rem', top: '.75rem', paddingBottom: '.2rem'}}
+        style={{
+          borderRadius: '8px',
+          backgroundColor: 'white',
+          height: '1.5rem',
+          width: '2rem',
+          position: 'absolute',
+          right: '-1rem',
+          top: '.75rem',
+          paddingBottom: '.2rem',
+        }}
         className={styles.hideButton} // Add a custom class for styling
         onClick={() => {
           setExpanded(!expanded);
@@ -225,7 +237,6 @@ const Sidebar: React.FC = () => {
         )}
       </div>
  */}
-
     </div>
   );
 };

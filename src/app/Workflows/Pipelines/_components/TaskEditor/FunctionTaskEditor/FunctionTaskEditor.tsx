@@ -19,7 +19,7 @@ import {
   Fullscreen,
   FullscreenExit,
 } from '@mui/icons-material';
-import { LoadingButton as Button, TabContext, TabList } from "@mui/lab"
+import { LoadingButton as Button, TabContext, TabList } from '@mui/lab';
 import {
   // Button,
   Box,
@@ -42,7 +42,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from '@mui/material';
 
 type SidebarProps = {
@@ -67,11 +67,11 @@ const Sidebar: React.FC<React.PropsWithChildren<SidebarProps>> = ({
 };
 
 type FunctionTaskEditorProps = {
-  groupId: string,
-  pipelineId: string,
+  groupId: string;
+  pipelineId: string;
   task: Workflows.FunctionTask;
   tasks: Array<Workflows.Task>;
-  defaultTab?: string
+  defaultTab?: string;
 };
 
 const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
@@ -79,15 +79,16 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
   pipelineId,
   task,
   tasks,
-  defaultTab = "code"
+  defaultTab = 'code',
 }) => {
   const initialTaskData = JSON.parse(JSON.stringify(task));
-  console.log({initialTaskData})
-  const [modal, setModal] = useState<string | undefined>(undefined)
+  console.log({ initialTaskData });
+  const [modal, setModal] = useState<string | undefined>(undefined);
   const [tab, setTab] = useState<string>(defaultTab);
   const [patchData, setPatchData] =
     useState<Partial<Workflows.FunctionTask>>(initialTaskData);
-  const { patch, isLoading, isSuccess, isError, error, reset } = Hooks.Tasks.usePatch();
+  const { patch, isLoading, isSuccess, isError, error, reset } =
+    Hooks.Tasks.usePatch();
 
   const patchTask = (
     task: Workflows.FunctionTask,
@@ -99,25 +100,36 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
     });
   };
 
-  console.log({patchData})
+  console.log({ patchData });
 
-  const packageConverter = (packages: Array<string> | string, reverse=false) => {
+  const packageConverter = (
+    packages: Array<string> | string,
+    reverse = false
+  ) => {
     if (!reverse) {
       let packageString = '';
       (packages as Array<string>).map((name) => {
         packageString += name + '\n';
       });
-      
+
       return packageString;
     }
 
-    const splitPackages = (packages as string).replace(/^\s+|\s+$/g, '').replace(/\s/g, " ").split(" ")
-    return splitPackages
+    const splitPackages = (packages as string)
+      .replace(/^\s+|\s+$/g, '')
+      .replace(/\s/g, ' ')
+      .split(' ');
+    return splitPackages;
   };
 
   const handlePatch = () => {
-    patch({groupId, pipelineId, taskId: task.id!, task: (patchData as Workflows.Task)});
-  }
+    patch({
+      groupId,
+      pipelineId,
+      taskId: task.id!,
+      task: patchData as Workflows.Task,
+    });
+  };
 
   const handleChangeTab = (_: React.SyntheticEvent, tab: string) => {
     setTab(tab);
@@ -127,25 +139,34 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
     return tasks.filter((t) => {
       for (let dep of t.depends_on!) {
         if (dep.id === task.id) {
-          return true
+          return true;
         }
       }
-      return false
-    })
-  }, [task, tasks, patchData])
+      return false;
+    });
+  }, [task, tasks, patchData]);
 
-  const handleUpdateDep = (taskId: string, action: "add" | "remove") => {
-    if (action === "add") {
+  const handleUpdateDep = (taskId: string, action: 'add' | 'remove') => {
+    if (action === 'add') {
       // TODO handle for can_fail and can_skip
-      patchTask(task, { depends_on: [...patchData.depends_on!, {id: taskId, can_fail: false, can_skip: false}]})
-      return
+      patchTask(task, {
+        depends_on: [
+          ...patchData.depends_on!,
+          { id: taskId, can_fail: false, can_skip: false },
+        ],
+      });
+      return;
     }
 
-    if (action === "remove") {
-      patchTask(task, { depends_on: [...patchData.depends_on!.filter((dep) => dep.id !== taskId)]})
-      return
+    if (action === 'remove') {
+      patchTask(task, {
+        depends_on: [
+          ...patchData.depends_on!.filter((dep) => dep.id !== taskId),
+        ],
+      });
+      return;
     }
-  }
+  };
 
   return (
     <div>
@@ -165,39 +186,59 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
         </TabContext>
       </Box>
       {isError && error && (
-        <Alert severity="error" style={{marginTop: "8px"}} onClose={() => {reset()}}>
-          <AlertTitle>
-            Error
-          </AlertTitle>
+        <Alert
+          severity="error"
+          style={{ marginTop: '8px' }}
+          onClose={() => {
+            reset();
+          }}
+        >
+          <AlertTitle>Error</AlertTitle>
           {error.message}
         </Alert>
       )}
       {isSuccess && (
-        <Snackbar open={true} anchorOrigin={{vertical: "bottom", horizontal: "right"}}>
-          <Alert severity="success" style={{marginTop: "8px"}} onClose={() => {reset()}}>
+        <Snackbar
+          open={true}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert
+            severity="success"
+            style={{ marginTop: '8px' }}
+            onClose={() => {
+              reset();
+            }}
+          >
             Task {task.id} updated successfully
           </Alert>
         </Snackbar>
       )}
-      <Stack direction="row" spacing={"8px"} alignItems="flex-start" justifyContent={"flex-end"}>
+      <Stack
+        direction="row"
+        spacing={'8px'}
+        alignItems="flex-start"
+        justifyContent={'flex-end'}
+      >
         <Button
           size="small"
-          variant='outlined'
+          variant="outlined"
           onClick={handlePatch}
           loading={isLoading}
           disabled={isLoading}
-          style={{marginBottom: "8px", marginTop: "8px"}}
+          style={{ marginBottom: '8px', marginTop: '8px' }}
           startIcon={<Update />}
         >
           Update
         </Button>
         <Button
           size="small"
-          variant='outlined'
+          variant="outlined"
           color="error"
-          onClick={() => { setModal("delete") }}
+          onClick={() => {
+            setModal('delete');
+          }}
           disabled={isLoading}
-          style={{marginBottom: "8px", marginTop: "8px"}}
+          style={{ marginBottom: '8px', marginTop: '8px' }}
           startIcon={<Delete />}
         >
           Delete
@@ -208,7 +249,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           <Sidebar
             title={'General'}
             toggle={() => {
-              setTab("code");
+              setTab('code');
             }}
           >
             <Box
@@ -248,27 +289,30 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           <Sidebar
             title={'Dependencies'}
             toggle={() => {
-              setTab("code");
+              setTab('code');
             }}
           >
             <FormGroup className={styles['form']}>
               {tasks.map((dep) => {
                 if (dep.id === task.id) {
-                  return
+                  return;
                 }
                 return (
                   <FormControlLabel
-                    style={{padding: 0}}
+                    style={{ padding: 0 }}
                     control={
                       <Checkbox
-                        defaultChecked={patchData.depends_on!.filter((t) => t.id === dep.id ).length > 0}
-                        style={{padding: 0}}
+                        defaultChecked={
+                          patchData.depends_on!.filter((t) => t.id === dep.id)
+                            .length > 0
+                        }
+                        style={{ padding: 0 }}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            handleUpdateDep(e.target.value, "add")
-                            return
+                            handleUpdateDep(e.target.value, 'add');
+                            return;
                           }
-                          handleUpdateDep(e.target.value, "remove")
+                          handleUpdateDep(e.target.value, 'remove');
                         }}
                         value={dep.id}
                       />
@@ -284,7 +328,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           <Sidebar
             title={'Inputs & Outputs'}
             toggle={() => {
-              setTab("code");
+              setTab('code');
             }}
           >
             {Object.entries(task.input || {}).map((k, v) => {
@@ -296,7 +340,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           <Sidebar
             title={'Execution Profile'}
             toggle={() => {
-              setTab("code");
+              setTab('code');
             }}
           >
             <div className={styles['form']}>
@@ -317,9 +361,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                   {Object.values(Workflows.EnumInvocationMode).map((mode) => {
                     return (
                       <MenuItem
-                        selected={
-                          mode === (patchData as any).invocation_mode
-                        }
+                        selected={mode === (patchData as any).invocation_mode}
                         value={mode}
                       >
                         {mode}
@@ -406,7 +448,9 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 once
               </FormHelperText>
               <TextField
-                defaultValue={patchData.execution_profile?.max_exec_time || 86400}
+                defaultValue={
+                  patchData.execution_profile?.max_exec_time || 86400
+                }
                 size="small"
                 margin="normal"
                 style={{ marginBottom: '-16px' }}
@@ -423,7 +467,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           <Sidebar
             title={'Runtime'}
             toggle={() => {
-              setTab("code");
+              setTab('code');
             }}
           >
             <div className={styles['form']}>
@@ -441,7 +485,10 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                   labelId="environment"
                   defaultValue={patchData.runtime}
                   onChange={(e) => {
-                    patchTask(task, { runtime: (e.target.value as Workflows.EnumRuntimeEnvironment) });
+                    patchTask(task, {
+                      runtime: e.target
+                        .value as Workflows.EnumRuntimeEnvironment,
+                    });
                   }}
                 >
                   {Object.values(Workflows.EnumRuntimeEnvironment).map(
@@ -471,7 +518,12 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 margin="normal"
                 style={{ marginBottom: '-16px' }}
                 onChange={(e) => {
-                  patchTask(task, { packages: (packageConverter(e.target.value, true) as Array<string>) });
+                  patchTask(task, {
+                    packages: packageConverter(
+                      e.target.value,
+                      true
+                    ) as Array<string>,
+                  });
                 }}
               />
               <FormHelperText>
@@ -492,7 +544,9 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                   label="Installer"
                   defaultValue={patchData.installer}
                   onChange={(e) => {
-                    patchTask(task, { installer: (e.target.value as Workflows.EnumInstaller) });
+                    patchTask(task, {
+                      installer: e.target.value as Workflows.EnumInstaller,
+                    });
                   }}
                 >
                   {Object.values(Workflows.EnumInstaller).map((installer) => {
@@ -517,7 +571,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           <Sidebar
             title={'Git Repositories'}
             toggle={() => {
-              setTab("code");
+              setTab('code');
             }}
           >
             Test
@@ -525,12 +579,21 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
         )}
         <div
           className={`${styles['code-container']} ${
-            tab !== "code" ? styles['body-with-sidebar'] : styles['body-wo-sidebar']
+            tab !== 'code'
+              ? styles['body-with-sidebar']
+              : styles['body-wo-sidebar']
           }`}
         >
           <div className={`${styles['code-container-header']}`}>
-            <Stack direction="row" spacing={"8px"}>
-              <Chip color="primary" label={`runtime:${patchData.runtime}`} size="small" onClick={() => {setModal("runtime")}}/>
+            <Stack direction="row" spacing={'8px'}>
+              <Chip
+                color="primary"
+                label={`runtime:${patchData.runtime}`}
+                size="small"
+                onClick={() => {
+                  setModal('runtime');
+                }}
+              />
             </Stack>
           </div>
           <CodeMirror
@@ -545,7 +608,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
             style={{
               fontSize: 12,
               backgroundColor: '#1E1E1E',
-              height: "100%",
+              height: '100%',
               fontFamily:
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
@@ -553,43 +616,54 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
         </div>
       </div>
       <Dialog
-        open={modal === "delete"}
+        open={modal === 'delete'}
         onClose={() => {}}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          Delete task?
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">Delete task?</DialogTitle>
         <DialogContent>
-          {
-            dependentTasks.length > 0 && (
-              <Alert severity="warning" style={{marginBottom: "8px"}}>
-                This task is required by {dependentTasks.length} other task{dependentTasks.length > 1 ? "s" : ""} in this pipeline: [ {dependentTasks.map((d) => `${d.id} `)}].
-                <br/>Running this workflow after this task is deleted will result in an immediate failure.
-              </Alert>
-            )
-          }
+          {dependentTasks.length > 0 && (
+            <Alert severity="warning" style={{ marginBottom: '8px' }}>
+              This task is required by {dependentTasks.length} other task
+              {dependentTasks.length > 1 ? 's' : ''} in this pipeline: [{' '}
+              {dependentTasks.map((d) => `${d.id} `)}].
+              <br />
+              Running this workflow after this task is deleted will result in an
+              immediate failure.
+            </Alert>
+          )}
           <DialogContentText id="alert-dialog-description">
-            Deleting a task is an irrevocable action. Are you sure you want to continue?
+            Deleting a task is an irrevocable action. Are you sure you want to
+            continue?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {setModal(undefined)}}>Cancel</Button>
-          <Button color="error" onClick={() => {setModal(undefined)}} autoFocus>
+          <Button
+            onClick={() => {
+              setModal(undefined);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            onClick={() => {
+              setModal(undefined);
+            }}
+            autoFocus
+          >
             Delete
           </Button>
         </DialogActions>
       </Dialog>
       <Dialog
-        open={modal === "runtime"}
+        open={modal === 'runtime'}
         onClose={() => {}}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          Update Runtime
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">Update Runtime</DialogTitle>
         <DialogContent>
           <div className={styles['form']}>
             <FormControl
@@ -606,7 +680,9 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 labelId="environment"
                 defaultValue={patchData.runtime}
                 onChange={(e) => {
-                  patchTask(task, { runtime: (e.target.value as Workflows.EnumRuntimeEnvironment) });
+                  patchTask(task, {
+                    runtime: e.target.value as Workflows.EnumRuntimeEnvironment,
+                  });
                 }}
               >
                 {Object.values(Workflows.EnumRuntimeEnvironment).map(
@@ -630,8 +706,20 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {setModal(undefined)}}>Cancel</Button>
-          <Button onClick={() => {handlePatch(); setModal(undefined)}} autoFocus>
+          <Button
+            onClick={() => {
+              setModal(undefined);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handlePatch();
+              setModal(undefined);
+            }}
+            autoFocus
+          >
             Update
           </Button>
         </DialogActions>

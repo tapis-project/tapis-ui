@@ -17,7 +17,9 @@ const Router: React.FC = () => {
           groupId: string;
           pipelineId: string;
           taskId: string;
-        }>) => <Task groupId={groupId} pipelineId={pipelineId} taskId={taskId} />}
+        }>) => (
+          <Task groupId={groupId} pipelineId={pipelineId} taskId={taskId} />
+        )}
       />
     </Switch>
   );
