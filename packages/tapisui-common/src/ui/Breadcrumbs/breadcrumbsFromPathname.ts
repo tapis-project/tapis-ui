@@ -3,7 +3,7 @@ import normalize from 'normalize-path';
 
 const breadcrumbsFromPathname = (pathname: string) => {
   const items: Array<BreadcrumbType> = [];
-  if (pathname.startsWith('/pods/images')) {
+  if (pathname.startsWith('/pods/images/')) {
     // special case - images urls can have slashes in them
     const image = pathname.replace('/pods/images/', '');
     console.log(image);

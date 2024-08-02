@@ -14,6 +14,7 @@ export { default as useDetailsTemplates } from './useDetailsTemplates';
 export { default as useLogs } from './useLogs';
 export { default as useGetPodSecrets } from './useGetPodSecrets';
 export { default as useMakeNewPod } from './useMakeNewPod';
+export { default as useUpdatePod } from './useUpdatePod';
 export { default as useDeletePod } from './useDeletePod';
 export { default as useStartPod } from './useStartPod';
 export { default as useRestartPod } from './useRestartPod';

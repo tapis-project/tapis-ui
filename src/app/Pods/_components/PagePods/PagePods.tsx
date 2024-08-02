@@ -64,6 +64,8 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
   const [podBarTab, setPodBarTab] = useState<string>('details');
 
+  const [editValue, setEditValue] = useState<string>('');
+
   const loadingText = PodsLoadingText();
 
   const tooltipConfigs: {
@@ -105,6 +107,8 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     return null;
   };
 
+  const [sharedData, setSharedData] = useState();
+
   const getCodeMirrorValue = () => {
     switch (podBarTab) {
       case 'details':
@@ -131,6 +135,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
           : isFetchingSecrets
           ? loadingText
           : JSON.stringify(podSecrets, null, 2);
+      case 'edit':
+        return error
+          ? `error: ${error}`
+          : isFetching
+          ? loadingText
+          : JSON.stringify(sharedData, null, 2);
+
       default:
         return ''; // Default or placeholder value
     }
@@ -167,6 +178,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
         }
       },
     },
+    { id: 'edit', label: 'Edit', tabValue: 'edit' },
     { id: 'details', label: 'Details', tabValue: 'details' },
     { id: 'logs', label: 'Logs', tabValue: 'logs' },
     { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },
@@ -265,6 +277,9 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               <PodsCodeMirror
                 value={codeMirrorValue?.toString() ?? ''}
                 isVisible={true}
+                isEditorVisible={podBarTab === 'edit'}
+                sharedData={sharedData}
+                setSharedData={setSharedData}
               />
             </div>
           </div>

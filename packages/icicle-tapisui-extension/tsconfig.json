@@ -12,7 +12,7 @@
     "types": ["node"],
     "typeRoots": ["./types", "node_modules/@types"],
     "incremental": true,
-    "esModuleInterop": true, // required or pages won't import
+    "esModuleInterop": true // required or pages won't import
     // "baseUrl": "src",
     // "allowJs": true,
     // // "allowSyntheticDefaultImports": true,

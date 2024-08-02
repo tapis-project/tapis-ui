@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import { ExtensionsProvider } from './extensions';
 import { Extension } from '@tapis/tapisui-extensions-core';
 import { extension as icicleExtension } from '@icicle/tapisui-extension';
+import Theme from './theme'; // Import the Theme component
 
 const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
@@ -22,7 +23,9 @@ root.render(
     <ExtensionsProvider extensions={initializedExtensions}>
       <TapisProvider basePath={resolveBasePath()}>
         <Router>
+        <Theme>
           <App />
+        </Theme>
         </Router>
       </TapisProvider>
     </ExtensionsProvider>

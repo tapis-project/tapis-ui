@@ -11,6 +11,7 @@ const QueryKeys = {
   detailsImages: 'pods/detailsImages',
   detailsTemplates: 'pods/detailsTemplates',
   makeNewPod: 'pods/makeNewPod',
+  updatePod: 'pods/updatePod',
   deletePod: 'pods/deletePod',
   getLogs: 'pods/getPodLogs',
   startPod: 'pods/startPod',

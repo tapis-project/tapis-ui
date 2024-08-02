@@ -6,12 +6,13 @@ $core-portal-color-primary: #9d85ef;
   --min-width: 100%;
   list-style: none;
   flex-direction: column;
+  flex: 1;
 }
 
 .nav-link {
   min-width: var(--min-width);
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.5rem;
   padding-left: var(--horizontal-buffer);
   color: #707070;
   cursor: pointer;
@@ -27,7 +28,7 @@ $core-portal-color-primary: #9d85ef;
 }
 
 .nav-text {
-  padding-left: 16px;
+  padding-left: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
 }

@@ -16,7 +16,18 @@ const useGetPodSecrets = (
     // which is expected behavior for not having a token
     () => API.getPodSecrets(params, basePath, accessToken?.access_token ?? ''),
     {
+      // Disable automatic refetching on window focus, mount, and reconnect
+      refetchIntervalInBackground: false,
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      staleTime: 20000, // 20 seconds
+      cacheTime: 20000, // 20 seconds
+      // Keep the enabled option to control query activation based on accessToken presence
       enabled: !!accessToken,
+      // Spread any user-provided options to allow for customization
+      ...options,
     }
   );
 

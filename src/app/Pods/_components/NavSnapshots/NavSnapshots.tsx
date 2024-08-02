@@ -29,7 +29,7 @@ const NavSnapshots: React.FC = () => {
           .sort((a, b) => a.snapshot_id.localeCompare(b.snapshot_id)) //sort by `snapshot_id` property
           .map((snapshot) => (
             <NavItem
-              to={`/pods/snapshot/${snapshot.snapshot_id}`}
+              to={`/pods/snapshots/${snapshot.snapshot_id}`}
               icon="folder"
               key={snapshot.snapshot_id}
             >

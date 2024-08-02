@@ -5,8 +5,23 @@ import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
 import { Menu, ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Collapse } from '@mui/material';
+import { Collapse, Button, Chip } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
+import { Tenants as Hooks } from '@tapis/tapisui-hooks';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+
+import {
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
+import {
+  QueryWrapper,
+  PageLayout,
+  Breadcrumbs,
+  breadcrumbsFromPathname,
+} from '@tapis/tapisui-common';
 
 type SidebarItems = {
   [key: string]: any;
@@ -17,6 +32,15 @@ const Sidebar: React.FC = () => {
   const { extension } = useExtension();
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const { data, isLoading, error } = Hooks.useList();
+  const result = data?.result ?? [];
+  const tenants = result;
+  const history = useHistory();
+
+  const { claims } = useTapisConfig();
+
 
   const renderSidebarItem = (
     to: string,
@@ -26,7 +50,7 @@ const Sidebar: React.FC = () => {
     return (
       <NavItem to={to} icon={icon} key={uuidv4()}>
         {expanded ? (
-          <span style={{ paddingRight: '32px', whiteSpace: 'nowrap' }}>
+          <span style={{ paddingRight: ".75rem", whiteSpace: 'nowrap' }}>
             {text}
           </span>
         ) : (
@@ -79,16 +103,46 @@ const Sidebar: React.FC = () => {
     setOpenSecondary(!openSecondary);
   };
 
+
+
+  const chipLabel = expanded ? '<<' : '>>';
+
   return (
-    <div className={styles.root}>
-      <div className={styles['collapse-icon']}>
-        <Menu
-          color="action"
-          onClick={() => {
-            setExpanded(!expanded);
-          }}
-        />
+    <div className={styles.root} style={{position: 'relative', display: 'flex', flexDirection: 'column'}}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', // horizontal
+          alignItems: 'center', // vertical
+          marginTop: '.6rem',
+          marginBottom: '.6rem',
+          marginRight: '0px'
+        }}
+      >
+        
+        <Link to={'/'}>
+          <img
+            style={{ height: '42px' }}
+            className="logo"
+            src={expanded ? (extension?.logo?.url || './tapislogo.png') : './tapisicon.png'}
+          />
+        </Link>
+        {expanded ? extension?.logo?.logoText : undefined}
       </div>
+
+      <Chip
+        color="info"
+        label={chipLabel}
+        variant="outlined"
+        size="small"
+        style={{ borderRadius:"8px", backgroundColor: "white", height:"1.5rem", width: "2rem", position: 'absolute', right: '-1rem', top: '.75rem', paddingBottom: '.2rem'}}
+        className={styles.hideButton} // Add a custom class for styling
+        onClick={() => {
+          setExpanded(!expanded);
+        }}
+      />
+
       <Navbar>
         {renderSidebarItem('/', 'dashboard', 'Dashboard')}
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
@@ -129,6 +183,49 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
+
+      {/* <div style={{alignContent: "center", alignItems: "center"}}>
+      {claims['sub'] && (
+          <ButtonDropdown
+            size="sm"
+            isOpen={isOpen}
+            toggle={() => setIsOpen(!isOpen)}
+            className="dropdown-button"
+          >
+            <DropdownToggle caret>{claims['sub']}</DropdownToggle>
+            <DropdownMenu style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
+              {((extension !== undefined && extension.allowMutiTenant) ||
+                extension === undefined ||
+                (extension !== undefined && extension.allowMutiTenant)) && (
+                <>
+                  <DropdownItem header>Tenants</DropdownItem>
+                  <DropdownItem divider />
+                  <QueryWrapper isLoading={isLoading} error={error}>
+                    {tenants.map((tenant) => {
+                      return (
+                        <DropdownItem
+                          onClick={() => {
+                            window.location.href =
+                              tenant.base_url + '/tapis-ui/';
+                          }}
+                        >
+                          {tenant.tenant_id}
+                        </DropdownItem>
+                      );
+                    })}
+                  </QueryWrapper>
+                  <DropdownItem divider />
+                </>
+              )}
+              <DropdownItem onClick={() => history.push('/logout')}>
+                Logout
+              </DropdownItem>
+            </DropdownMenu>
+          </ButtonDropdown>
+        )}
+      </div>
+ */}
+
     </div>
   );
 };
