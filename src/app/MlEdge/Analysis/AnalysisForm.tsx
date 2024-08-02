@@ -3,12 +3,13 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Button, Input, Tooltip } from 'reactstrap';
 import styles from './AnalysisForm.module.scss';
+import { Help } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Jobs as JobsHooks,
   Apps as AppsHooks,
-  Systems as SystemsHooks
-} from "@tapis/tapisui-hooks"
+  Systems as SystemsHooks,
+} from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
 
 interface Analysis {
@@ -20,7 +21,7 @@ interface Analysis {
   advancedConfig: string;
   modelUrl: string;
   datasetUrl: string;
-  additionalOption: string;
+  devices: string;
 }
 
 interface ErrorDetail {
@@ -35,17 +36,18 @@ interface ValidationResult {
 
 const initialValues: Analysis = {
   id: uuidv4(),
-  analysisId: 'Analysis',
+  analysisId: '',
   model: '',
   dataset: '',
   site: '',
   advancedConfig: '',
   modelUrl: '',
   datasetUrl: '',
-  additionalOption: '',
+  devices: '',
 };
 
-const validationSchema = Yup.object({
+// Define the validation schema
+const validationSchema = Yup.object().shape({
   analysisId: Yup.string().required('Analysis ID is required'),
   model: Yup.string().required('Model is required'),
   dataset: Yup.string().required('Dataset is required'),
@@ -59,39 +61,51 @@ const validationSchema = Yup.object({
     is: 'Other',
     then: Yup.string().required('Dataset URL is required'),
   }),
-  additionalOption: Yup.string().when('site', {
-    is: 'TACC',
-    then: Yup.string().required('Device for TACC is required')
-  }).when('site', {
-    is: 'CHAMELEON',
-    then: Yup.string().required('Device for CHAMELEON is required')
-  }),
+  devices: Yup.string()
+    .when('site', {
+      is: 'TACC',
+      then: Yup.string().required('Device for TACC is required'),
+    })
+    .when('site', {
+      is: 'CHAMELEON',
+      then: Yup.string().required('Device for CHAMELEON is required'),
+    }),
 });
 
-const ML_EDGE_APP_ID = "ctctrl-icicledev"
-const ML_EDGE_APP_VERSION = "0.1"
-const ML_EDGE_SYSTEM_ID = "icicledev-cameratraps"
+const ML_EDGE_APP_ID = 'ctctrl-icicledev';
+const ML_EDGE_APP_VERSION = '0.1';
+const ML_EDGE_SYSTEM_ID = 'icicledev-cameratraps';
 const ML_EDGE_JOB_DEFINITION = {
-  "name": "",
-  "appId": ML_EDGE_APP_ID,
-  "appVersion": ML_EDGE_APP_VERSION,
-  "description": "Invoke ctcontroller",
-  "parameterSet": {
-    "envVariables": [ 
-      {"key": "CT_CONTROLLER_TARGET_SITE", "value": "TACC"},
-      {"key": "CT_CONTROLLER_NODE_TYPE", "value": "x86"},
-      {"key": "CT_CONTROLLER_CONFIG_PATH", "value": "/config.yml"}
-    ]
-  }
-}
+  name: '',
+  appId: ML_EDGE_APP_ID,
+  appVersion: ML_EDGE_APP_VERSION,
+  description: 'Invoke ctcontroller',
+};
 
 const AnalysisForm: React.FC = () => {
   const [analyses, setAnalyses] = useState<Analysis[]>([initialValues]);
   const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
-  const [tooltipOpen, setTooltipOpen] = useState<{ [key: string]: boolean }>({});
-  const { data: appData, isLoading: appIsLoading, isError: appIsError, error: appError } = AppsHooks.useDetail({appId: ML_EDGE_APP_ID, appVersion: "0.1"})
-  const { data: systemData, isLoading: systemIsLoading, isError: systemIsError, error: systemError  } = SystemsHooks.useDetails({systemId: ML_EDGE_SYSTEM_ID})
-  const { submit, isLoading: submitIsLoading, isError: submitIsError, isSuccess: submitIsSuccess } = JobsHooks.useSubmit(ML_EDGE_APP_ID, ML_EDGE_APP_VERSION)
+  const [tooltipOpen, setTooltipOpen] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const {
+    data: appData,
+    isLoading: appIsLoading,
+    isError: appIsError,
+    error: appError,
+  } = AppsHooks.useDetail({ appId: ML_EDGE_APP_ID, appVersion: '0.1' });
+  const {
+    data: systemData,
+    isLoading: systemIsLoading,
+    isError: systemIsError,
+    error: systemError,
+  } = SystemsHooks.useDetails({ systemId: ML_EDGE_SYSTEM_ID });
+  const {
+    submit,
+    isLoading: submitIsLoading,
+    isError: submitIsError,
+    isSuccess: submitIsSuccess,
+  } = JobsHooks.useSubmit(ML_EDGE_APP_ID, ML_EDGE_APP_VERSION);
 
   const toggleTooltip = (id: string) => {
     setTooltipOpen((prevState) => ({
@@ -145,29 +159,58 @@ const AnalysisForm: React.FC = () => {
       ...analysis,
       analysisId: `${analysis.analysisId}`,
       date: new Date().toLocaleString(),
-      status: 'Done',
-      report: 'Pending',
     }));
     setRecentAnalyses([...recentAnalyses, ...combinedAnalysis]);
+    const uuids = analyses.map((analysis) => analysis.id).join(', ');
+
+    // for (const analysis of analyses) {
+    //   const jobDefinition = {
+    //     ...ML_EDGE_JOB_DEFINITION,
+    //     "name": analysis.analysisId,
+    //     "notes":{"batchId": uuids},
+    //     "parameterSet": {
+    //       "envVariables": [
+    //         { key: "CT_CONTROLLER_TARGET_SITE", value: analysis.site },
+    //         { key: "CT_CONTROLLER_NODE_TYPE", value: analysis.devices },
+    //         { key: "CT_CONTROLLER_CONFIG_PATH", value: analysis.advancedConfig || "/config.yml" },
+    //         { key: "CT_CONTROLLER_MODEL", value: analysis.model },
+    //         { key: "CT_CONTROLLER_INPUT", value: analysis.dataset }
+    //       ],
+    //     },
+    //   };
   };
 
-  const highlightErrors = (errorsList: { index: number; errors: ErrorDetail[] }[]) => {
+  const highlightErrors = (
+    errorsList: { index: number; errors: ErrorDetail[] }[]
+  ) => {
     errorsList.forEach(({ index, errors }) => {
       errors.forEach((error) => {
         const element = document.getElementById(`${error.path}-${index}`);
         if (element) {
           element.classList.add('is-invalid');
           const existingFeedback = element.nextElementSibling;
-          if (!existingFeedback || !existingFeedback.classList.contains('invalid-feedback')) {
-            element.insertAdjacentHTML('afterend', `<div class="invalid-feedback">${error.message}</div>`);
+          if (
+            !existingFeedback ||
+            !existingFeedback.classList.contains('invalid-feedback')
+          ) {
+            element.insertAdjacentHTML(
+              'afterend',
+              `<div class="invalid-feedback">${error.message}</div>`
+            );
           }
         }
       });
     });
   };
 
-  const handleChangeAnalysis = (index: number, field: string, value: string, setFieldValue: any, setFieldTouched: any) => {
-    const updatedAnalyses = analyses.map((analysis, i) => 
+  const handleChangeAnalysis = (
+    index: number,
+    field: string,
+    value: string,
+    setFieldValue: any,
+    setFieldTouched: any
+  ) => {
+    const updatedAnalyses = analyses.map((analysis, i) =>
       i === index ? { ...analysis, [field]: value } : analysis
     );
     setAnalyses(updatedAnalyses);
@@ -187,14 +230,54 @@ const AnalysisForm: React.FC = () => {
         <div className={styles.analysisContainer}>
           {analyses.map((analysis, index) => (
             <div key={analysis.id} className={styles.analysisBox}>
-              <div className={styles.closeButton} onClick={() => removeAnalysis(index)}>
-                {/* <FontAwesomeIcon icon={faTimes} /> */}
-                X
+              <div
+                className={styles.closeButton}
+                onClick={() => removeAnalysis(index)}
+              >
+                {/* <FontAwesomeIcon icon={faTimes} /> */}X
               </div>
               <Formik
                 initialValues={analysis}
                 validationSchema={validationSchema}
                 onSubmit={(values, { resetForm }) => {
+                  const jobDef = {
+                    ...ML_EDGE_JOB_DEFINITION,
+                    name: 'ctctrl-tacc',
+                    appId: 'ctctrl-icicledev',
+                    appVersion: '0.1',
+                    description:
+                      'Invoke ctcontroller to run camera-traps on TACC x86 system',
+                    parameterSet: {
+                      archiveFilter: {
+                        includeLaunchFiles: false,
+                      },
+                      envVariables: [
+                        {
+                          key: 'CT_CONTROLLER_TARGET_SITE',
+                          value: values.site,
+                        },
+                        {
+                          key: 'CT_CONTROLLER_NODE_TYPE',
+                          value: values.devices,
+                        },
+                        {
+                          key: 'CT_CONTROLLER_CONFIG_PATH',
+                          value: '/config.yml',
+                        },
+                        {
+                          key: 'CT_CONTROLLER_GPU',
+                          value:
+                            values.devices === 'x86(w/o GPU)'
+                              ? 'false'
+                              : 'true',
+                        },
+                      ],
+                    },
+                  };
+                  submit(jobDef);
+                  if (submitIsError) {
+                    console.error('Submit Error:', submitIsError);
+                  }
                   const date = new Date().toLocaleString();
                   const status = 'Done';
                   const newAnalysis = {
@@ -224,21 +307,42 @@ const AnalysisForm: React.FC = () => {
                           type="text"
                           id={`analysisId-${index}`}
                           name="analysisId"
-                          onChange={(e) => handleChangeAnalysis(index, 'analysisId', e.target.value, setFieldValue, setFieldTouched)}
+                          onChange={(e) =>
+                            handleChangeAnalysis(
+                              index,
+                              'analysisId',
+                              e.target.value,
+                              setFieldValue,
+                              setFieldTouched
+                            )
+                          }
                           onBlur={handleBlur}
                           value={values.analysisId}
+                          className={
+                            errors.analysisId && touched.analysisId
+                              ? 'is-invalid'
+                              : ''
+                          }
                         />
                       </div>
-                      {(!values.analysisId && (touched.analysisId)) && (
+                      {errors.analysisId && touched.analysisId && (
                         <div className="invalid-feedback">
-                          {errors.analysisId || 'Analysis ID is required'}
+                          {errors.analysisId}
                         </div>
                       )}
                     </div>
 
                     <div className={styles.formGroup}>
                       <label htmlFor={`model-${index}`}>Model</label>
-                      <span id={`modelHelp-${analysis.id}`}>?</span>
+
+                      <Help
+                        id={`modelHelp-${analysis.id}`}
+                        style={{
+                          cursor: 'pointer',
+                          marginLeft: '5px',
+                          fontSize: '18px',
+                        }}
+                      />
                       <Tooltip
                         placement="top"
                         isOpen={tooltipOpen[`modelHelp-${analysis.id}`]}
@@ -251,16 +355,29 @@ const AnalysisForm: React.FC = () => {
                         type="select"
                         id={`model-${index}`}
                         name="model"
-                        onChange={(e) => handleChangeAnalysis(index, 'model', e.target.value, setFieldValue, setFieldTouched)}
+                        onChange={(e) =>
+                          handleChangeAnalysis(
+                            index,
+                            'model',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          )
+                        }
                         onBlur={handleBlur}
                         value={values.model}
-                        className={errors.model && touched.model ? 'is-invalid' : ''}
+                        className={
+                          errors.model && touched.model ? 'is-invalid' : ''
+                        }
                       >
                         <option value="" label="Select option" />
-                        <option value="megadetectorv5a" label="megadetectorv5a" />
-                        <option value="megadetectorv5b" label="megadetectorv5b" />
-                        <option value="megadetectorv5-ft-ena" label="megadetectorv5-ft-ena" />
-                        <option value="bioclip" label="bioclip" />
+                        <option
+                          value="https://github.com/ICICLE-ai/camera_traps/raw/main/models/md_v5a.0.0.pt"
+                          label="megadetectorv5a"
+                        />
+                        <option value="1" label="megadetectorv5b" />
+                        <option value="2" label="megadetectorv5-ft-ena" />
+                        <option value="3" label="megadetector-optimized" />
                         <option value="Other" label="Other" />
                       </Input>
                       {values.model === 'Other' && (
@@ -270,33 +387,52 @@ const AnalysisForm: React.FC = () => {
                             type="text"
                             id={`modelUrl-${index}`}
                             name="modelUrl"
-                            onChange={(e) => handleChangeAnalysis(index, 'modelUrl', e.target.value, setFieldValue, setFieldTouched)}
+                            onChange={(e) =>
+                              handleChangeAnalysis(
+                                index,
+                                'modelUrl',
+                                e.target.value,
+                                setFieldValue,
+                                setFieldTouched
+                              )
+                            }
                             onBlur={handleBlur}
                             value={values.modelUrl}
-                            className={errors.modelUrl && touched.modelUrl ? 'is-invalid' : ''}
+                            className={
+                              errors.modelUrl && touched.modelUrl
+                                ? 'is-invalid'
+                                : ''
+                            }
                           />
-                          {(errors.modelUrl && (touched.modelUrl)) && (
+                          {errors.modelUrl && touched.modelUrl && (
                             <div className="invalid-feedback">
-                              {errors.modelUrl || 'Model URL is required'}
+                              {errors.modelUrl}
                             </div>
                           )}
                         </div>
                       )}
-                      {(errors.model && (touched.model)) && (
-                        <div className="invalid-feedback">
-                          {errors.model || 'Model is required'}
-                        </div>
+                      {errors.model && touched.model && (
+                        <div className="invalid-feedback">{errors.model}</div>
                       )}
                     </div>
 
                     <div className={styles.formGroup}>
                       <label htmlFor={`dataset-${index}`}>Dataset</label>
-                      <span id={`datasetHelp-${analysis.id}`}>?</span>
+                      <Help
+                        id={`datasetHelp-${analysis.id}`}
+                        style={{
+                          cursor: 'pointer',
+                          marginLeft: '5px',
+                          fontSize: '18px',
+                        }}
+                      />
                       <Tooltip
                         placement="top"
                         isOpen={tooltipOpen[`datasetHelp-${analysis.id}`]}
                         target={`datasetHelp-${analysis.id}`}
-                        toggle={() => toggleTooltip(`datasetHelp-${analysis.id}`)}
+                        toggle={() =>
+                          toggleTooltip(`datasetHelp-${analysis.id}`)
+                        }
                       >
                         Select a dataset
                       </Tooltip>
@@ -304,46 +440,80 @@ const AnalysisForm: React.FC = () => {
                         type="select"
                         id={`dataset-${index}`}
                         name="dataset"
-                        onChange={(e) => handleChangeAnalysis(index, 'dataset', e.target.value, setFieldValue, setFieldTouched)}
+                        onChange={(e) =>
+                          handleChangeAnalysis(
+                            index,
+                            'dataset',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          )
+                        }
                         onBlur={handleBlur}
                         value={values.dataset}
-                        className={!values.dataset && touched.dataset ? 'is-invalid' : ''}
+                        className={
+                          errors.dataset && touched.dataset ? 'is-invalid' : ''
+                        }
                       >
                         <option value="" label="Select option" />
-                        <option value="15 image dataset" label="15 image dataset" />
-                        <option value="ENA dataset" label="ENA dataset" />
-                        <option value="Ohio Small Animals dataset" label="Ohio Small Animals dataset" />
+                        <option
+                          value="\example_images"
+                          label="15 image dataset"
+                        />
+                        <option
+                          value="https://storage.googleapis.com/public-datasets-lila/ena24/ena24.zip"
+                          label="ENA dataset"
+                        />
                         <option value="Other" label="Other" />
                       </Input>
                       {values.dataset === 'Other' && (
                         <div className={styles.formGroup}>
-                          <label htmlFor={`datasetUrl-${index}`}>Dataset URL</label>
+                          <label htmlFor={`datasetUrl-${index}`}>
+                            Dataset URL
+                          </label>
                           <Input
                             type="text"
                             id={`datasetUrl-${index}`}
                             name="datasetUrl"
-                            onChange={(e) => handleChangeAnalysis(index, 'datasetUrl', e.target.value, setFieldValue, setFieldTouched)}
+                            onChange={(e) =>
+                              handleChangeAnalysis(
+                                index,
+                                'datasetUrl',
+                                e.target.value,
+                                setFieldValue,
+                                setFieldTouched
+                              )
+                            }
                             onBlur={handleBlur}
                             value={values.datasetUrl}
-                            className={!values.datasetUrl && touched.datasetUrl ? 'is-invalid' : ''}
+                            className={
+                              errors.datasetUrl && touched.datasetUrl
+                                ? 'is-invalid'
+                                : ''
+                            }
                           />
-                          {(!values.datasetUrl && (touched.datasetUrl)) && (
+                          {errors.datasetUrl && touched.datasetUrl && (
                             <div className="invalid-feedback">
-                              {errors.datasetUrl || 'Dataset URL is required'}
+                              {errors.datasetUrl}
                             </div>
                           )}
                         </div>
                       )}
-                      {(!values.dataset && (touched.dataset)) && (
-                        <div className="invalid-feedback">
-                          {errors.dataset || 'Dataset is required'}
-                        </div>
+                      {errors.dataset && touched.dataset && (
+                        <div className="invalid-feedback">{errors.dataset}</div>
                       )}
                     </div>
 
                     <div className={styles.formGroup}>
                       <label htmlFor={`site-${index}`}>Site</label>
-                      <span id={`siteHelp-${analysis.id}`}>?</span>
+                      <Help
+                        id={`siteHelp-${analysis.id}`}
+                        style={{
+                          cursor: 'pointer',
+                          marginLeft: '5px',
+                          fontSize: '18px',
+                        }}
+                      />
                       <Tooltip
                         placement="top"
                         isOpen={tooltipOpen[`siteHelp-${analysis.id}`]}
@@ -356,41 +526,62 @@ const AnalysisForm: React.FC = () => {
                         type="select"
                         id={`site-${index}`}
                         name="site"
-                        onChange={(e) => handleChangeAnalysis(index, 'site', e.target.value, setFieldValue, setFieldTouched)}
+                        onChange={(e) =>
+                          handleChangeAnalysis(
+                            index,
+                            'site',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          )
+                        }
                         onBlur={handleBlur}
                         value={values.site}
-                        className={!values.site && touched.site ? 'is-invalid' : ''}
+                        className={
+                          errors.site && touched.site ? 'is-invalid' : ''
+                        }
                       >
                         <option value="" label="Select option" />
                         <option value="TACC" label="TACC" />
                         <option value="CHAMELEON" label="CHAMELEON" />
                       </Input>
-                      {(!values.site && (touched.site)) && (
-                        <div className="invalid-feedback">
-                          {errors.site || 'Site is required'}
-                        </div>
+                      {errors.site && touched.site && (
+                        <div className="invalid-feedback">{errors.site}</div>
                       )}
                     </div>
 
-                    {values.site === 'TACC' && (
+                    {(values.site === 'TACC' ||
+                      values.site === 'CHAMELEON') && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`additionalOption-${index}`}>Devices</label>
+                        <label htmlFor={`devices-${index}`}>Devices</label>
                         <Input
                           type="select"
-                          id={`additionalOption-${index}`}
-                          name="additionalOption"
-                          onChange={(e) => handleChangeAnalysis(index, 'additionalOption', e.target.value, setFieldValue, setFieldTouched)}
+                          id={`devices-${index}`}
+                          name="devices"
+                          onChange={(e) =>
+                            handleChangeAnalysis(
+                              index,
+                              'devices',
+                              e.target.value,
+                              setFieldValue,
+                              setFieldTouched
+                            )
+                          }
                           onBlur={handleBlur}
-                          value={values.additionalOption}
-                          className={!values.additionalOption && touched.additionalOption ? 'is-invalid' : ''}
+                          value={values.devices}
+                          className={
+                            errors.devices && touched.devices
+                              ? 'is-invalid'
+                              : ''
+                          }
                         >
                           <option value="" label="Select option" />
                           <option value="x86(w/o GPU)" label="x86(w/o GPU)" />
-                          <option value="Jetson Nano" label="Jetson Nano" />
+                          <option value="Jetson" label="Jetson Nano" />
                         </Input>
-                        {(!values.additionalOption && (touched.additionalOption)) && (
+                        {!values.devices && touched.devices && (
                           <div className="invalid-feedback">
-                            {errors.additionalOption || 'Device for TACC is required'}
+                            {errors.devices}
                           </div>
                         )}
                       </div>
@@ -398,37 +589,55 @@ const AnalysisForm: React.FC = () => {
 
                     {values.site === 'CHAMELEON' && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`additionalOption-${index}`}>Devices</label>
+                        <label htmlFor={`devices-${index}`}>Devices</label>
                         <Input
                           type="select"
-                          id={`additionalOption-${index}`}
-                          name="additionalOption"
-                          onChange={(e) => handleChangeAnalysis(index, 'additionalOption', e.target.value, setFieldValue, setFieldTouched)}
+                          id={`devices-${index}`}
+                          name="devices"
+                          onChange={(e) =>
+                            handleChangeAnalysis(
+                              index,
+                              'devices',
+                              e.target.value,
+                              setFieldValue,
+                              setFieldTouched
+                            )
+                          }
                           onBlur={handleBlur}
-                          value={values.additionalOption}
-                          className={!values.additionalOption && touched.additionalOption ? 'is-invalid' : ''}
+                          value={values.devices}
+                          className={
+                            !values.devices && touched.devices
+                              ? 'is-invalid'
+                              : ''
+                          }
                         >
                           <option value="" label="Select option" />
                           <option value="x86(w/o GPU)" label="x86(w/o GPU)" />
                           <option value="x86(w GPU)" label="x86(w GPU)" />
-                          <option value="Jetson Nano" label="Jetson Nano" />
+                          <option value="Jetson" label="Jetson Nano" />
                         </Input>
-                        {(!values.additionalOption && (touched.additionalOption)) && (
+                        {errors.devices && touched.devices && (
                           <div className="invalid-feedback">
-                            {errors.additionalOption || 'Device for CHAMELEON is required'}
+                            {errors.devices}
                           </div>
                         )}
                       </div>
                     )}
 
                     <div className={styles.formGroup}>
-                      <label htmlFor={`advancedConfig-${index}`}>Advanced Config</label>
+                      <label htmlFor={`advancedConfig-${index}`}>
+                        Advanced Config
+                      </label>
                       <span id={`advancedConfigHelp-${analysis.id}`}>?</span>
                       <Tooltip
                         placement="top"
-                        isOpen={tooltipOpen[`advancedConfigHelp-${analysis.id}`]}
+                        isOpen={
+                          tooltipOpen[`advancedConfigHelp-${analysis.id}`]
+                        }
                         target={`advancedConfigHelp-${analysis.id}`}
-                        toggle={() => toggleTooltip(`advancedConfigHelp-${analysis.id}`)}
+                        toggle={() =>
+                          toggleTooltip(`advancedConfigHelp-${analysis.id}`)
+                        }
                       >
                         Enter advanced configuration
                       </Tooltip>
@@ -436,7 +645,15 @@ const AnalysisForm: React.FC = () => {
                         type="textarea"
                         id={`advancedConfig-${index}`}
                         name="advancedConfig"
-                        onChange={(e) => handleChangeAnalysis(index, 'advancedConfig', e.target.value, setFieldValue, setFieldTouched)}
+                        onChange={(e) =>
+                          handleChangeAnalysis(
+                            index,
+                            'advancedConfig',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          )
+                        }
                         onBlur={handleBlur}
                         value={values.advancedConfig}
                       />
@@ -456,30 +673,17 @@ const AnalysisForm: React.FC = () => {
             </div>
           )}
         </div>
-        <Button
-          onClick={() => {
-            submit({
-              "name": "ctctrl-tacc",
-              "appId": "ctctrl-icicledev",
-              "appVersion": "0.1",
-              "description": "Invoke ctcontroller to run camera-traps on TACC x86 system",
-              "parameterSet": {
-                "envVariables": [ 
-                  {"key": "CT_CONTROLLER_TARGET_SITE", "value": "TACC"},
-                  {"key": "CT_CONTROLLER_NODE_TYPE", "value": "x86"},
-                  {"key": "CT_CONTROLLER_CONFIG_PATH", "value": "/config.yml"}
-                ]
-              }
-          })
-            //handleRunAllAnalyses
-          }
-        }
-          color="primary"
-          className={styles.recentAnalysesTable}
-        >
-          Run All Analyses
-        </Button>
-
+        {analyses.length > 1 && (
+          <Button
+            onClick={() => {
+              handleRunAllAnalyses();
+            }}
+            color="primary"
+            className={styles.recentAnalysesTable}
+          >
+            Run All Analyses
+          </Button>
+        )}
         <h2 className={styles.recentAnalysesTable}>Recent Analyses</h2>
         <div className={styles.recentAnalysesTable}>
           <table>
