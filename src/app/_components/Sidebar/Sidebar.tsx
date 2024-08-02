@@ -135,7 +135,6 @@ const Sidebar: React.FC = () => {
       </div>
 
       <Chip
-        color="info"
         label={chipLabel}
         variant="outlined"
         size="small"
