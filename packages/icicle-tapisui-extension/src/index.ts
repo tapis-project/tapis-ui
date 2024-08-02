@@ -11,6 +11,7 @@ import {
   DigitalAg,
   VisualAnalytics,
   SmartScheduler,
+  TrainingCatalog,
 } from './pages';
 
 const extension = createExtension({
@@ -36,6 +37,7 @@ const extension = createExtension({
     'digital-ag',
     'visual-analytics',
     'smart-scheduler',
+    'training-catalog',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -99,6 +101,13 @@ extension.registerService({
   sidebarDisplayName: 'Smart Scheduler',
   iconName: 'globe',
   component: SmartScheduler,
+});
+
+extension.registerService({
+  id: 'training-catalog',
+  sidebarDisplayName: 'Training Catalog',
+  iconName: 'globe',
+  component: TrainingCatalog,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
