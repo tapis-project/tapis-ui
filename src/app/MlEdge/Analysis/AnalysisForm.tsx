@@ -372,7 +372,7 @@ const AnalysisForm: React.FC = () => {
                       >
                         <option value="" label="Select option" />
                         <option
-                          value="https://github.com/ICICLE-ai/camera_traps/raw/main/models/md_v5a.0.0.pt"
+                          value="0"
                           label="megadetectorv5a"
                         />
                         <option value="1" label="megadetectorv5b" />
@@ -457,7 +457,7 @@ const AnalysisForm: React.FC = () => {
                       >
                         <option value="" label="Select option" />
                         <option
-                          value="\example_images"
+                          value=""
                           label="15 image dataset"
                         />
                         <option
@@ -550,8 +550,7 @@ const AnalysisForm: React.FC = () => {
                       )}
                     </div>
 
-                    {(values.site === 'TACC' ||
-                      values.site === 'CHAMELEON') && (
+                    {values.site === 'TACC' && (
                       <div className={styles.formGroup}>
                         <label htmlFor={`devices-${index}`}>Devices</label>
                         <Input
@@ -612,9 +611,11 @@ const AnalysisForm: React.FC = () => {
                           }
                         >
                           <option value="" label="Select option" />
-                          <option value="x86(w/o GPU)" label="x86(w/o GPU)" />
-                          <option value="x86(w GPU)" label="x86(w GPU)" />
-                          <option value="Jetson" label="Jetson Nano" />
+                          <option value="compute_cascadelake" label="x86(w/o GPU)-Cascadelake" />
+                          <option value="compute_skylake" label="x86(w/o GPU)-Skylake" />
+                          <option value="compute_arm64" label="arm(w/0 GPU)" />
+                          <option value="gpu_m40" label="x86(w GPU)-M40" />
+                          <option value="gpu_p100" label="x86(w GPU)-P100" />
                         </Input>
                         {errors.devices && touched.devices && (
                           <div className="invalid-feedback">
