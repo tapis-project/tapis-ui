@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import { ExtensionsProvider } from './extensions';
 import { Extension } from '@tapis/tapisui-extensions-core';
 import { extension as icicleExtension } from '@icicle/tapisui-extension';
+import { NotificationsProvider } from 'app/_components/Notifications';
 
 const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
@@ -21,9 +22,11 @@ root.render(
   <React.StrictMode>
     <ExtensionsProvider extensions={initializedExtensions}>
       <TapisProvider basePath={resolveBasePath()}>
-        <Router>
-          <App />
-        </Router>
+        <NotificationsProvider>
+          <Router>
+            <App />
+          </Router>
+        </NotificationsProvider>
       </TapisProvider>
     </ExtensionsProvider>
   </React.StrictMode>

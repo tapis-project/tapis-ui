@@ -69,15 +69,6 @@ const NotificationToast = () => {
       TransitionProps={{
         onExited: handleExited,
       }}
-      classes={{
-        anchorOriginBottomLeft: styles['notification-toast-container'],
-      }}
-      ContentProps={{
-        classes: {
-          root: styles['notification-toast'],
-          message: styles['notification-toast-body'],
-        },
-      }}
       message={<ToastMessage notification={notificationRecord!.notification} />}
     />
   ) : null;
@@ -89,12 +80,14 @@ export const ToastMessage: React.FC<{ notification: Notification }> = ({
   return (
     <>
       <div className={styles['notification-toast-icon-wrapper']}>
-        <Icon
-          name={notification.icon}
-          className={
-            notification.status === 'ERROR' ? styles['toast-is-error'] : ''
-          }
-        />
+        { notification.icon && (
+          <Icon
+            name={notification.icon}
+            className={
+              notification.status === 'ERROR' ? styles['toast-is-error'] : ''
+            }
+          />
+        )}
       </div>
       <div className={styles['notification-toast-content']}>
         <span>{notification.message}</span>

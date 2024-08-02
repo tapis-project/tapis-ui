@@ -5,17 +5,19 @@ import { Close, ArrowBack } from '@mui/icons-material';
 import { FunctionTaskEditor } from './FunctionTaskEditor';
 
 type TaskEditorProps = {
+  groupId: string,
+  pipelineId: string,
   task: Workflows.Task;
   tasks: Array<Workflows.Task>;
-  toggle: () => void;
+  toggle?: () => void;
 };
 
-const TaskEditor: React.FC<TaskEditorProps> = ({ task, tasks, toggle }) => {
+const TaskEditor: React.FC<TaskEditorProps> = ({ task, tasks, groupId, pipelineId, toggle }) => {
   const renderTaskEditor = useCallback(
     (task: Workflows.Task) => {
       switch (task.type) {
         case Workflows.EnumTaskType.Function:
-          return <FunctionTaskEditor task={task} tasks={tasks} />;
+          return <FunctionTaskEditor groupId={groupId} pipelineId={pipelineId} task={task} tasks={tasks}/>;
         case Workflows.EnumTaskType.Template:
           return `${task.type} task editor unsupported`;
         case Workflows.EnumTaskType.Request:
@@ -35,11 +37,13 @@ const TaskEditor: React.FC<TaskEditorProps> = ({ task, tasks, toggle }) => {
 
   return (
     <div>
-      <div className={styles['menu']}>
-        <ArrowBack onClick={toggle} className={styles['back']} />
-        <h2>Task Editor</h2>
-        <Close onClick={toggle} className={styles['close']} />
-      </div>
+      {toggle && (
+        <div className={styles['menu']}>
+          <ArrowBack onClick={toggle} className={styles['back']} />
+          <h2>Task Editor</h2>
+          <Close onClick={toggle} className={styles['close']} />
+        </div>
+      )}
       <div className={styles['container']}>{renderTaskEditor(task)}</div>
     </div>
   );

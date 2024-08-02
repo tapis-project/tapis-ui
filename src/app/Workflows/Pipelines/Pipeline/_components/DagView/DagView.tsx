@@ -278,6 +278,8 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
         <TaskEditor
           task={state.editTask}
           tasks={tasks}
+          groupId={groupId}
+          pipelineId={pipelineId}
           toggle={() => {
             handleEditTask(state.editTask!);
           }}

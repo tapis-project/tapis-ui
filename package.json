@@ -9,6 +9,7 @@
     "@emotion/styled": "^11.11.5",
     "@icicle/tapisui-extension": "file:./packages/icicle-tapisui-extension",
     "@mui/icons-material": "^5.15.20",
+    "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.0",
     "@mui/x-data-grid": "^7.7.0",
     "@rollup/plugin-commonjs": "^25.0.8",
@@ -106,6 +107,7 @@
     "@types/rx": "^4.1.2",
     "@types/streamsaver": "^2.0.1",
     "@types/uuid": "^8.3.1",
+    "chokidar": "^3.6.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "gh-pages": "^6.1.1",
@@ -115,7 +117,6 @@
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "ts-jest": "^29.1.4",
-    "chokidar": "^3.6.0",
     "typescript": "^5.4.5"
   },
   "jest": {

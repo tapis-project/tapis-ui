@@ -4,20 +4,24 @@ import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
-import { decode } from 'base-64';
-import Stack from '@mui/material/Stack';
+import { decode, encode } from 'base-64';
 import styles from './FunctionTaskEditor.module.scss';
 import {
+  Delete,
   ArrowBack,
+  Update,
   Info,
   Hub,
   CompareArrows,
   GitHub,
   Tune,
   Memory,
+  Fullscreen,
+  FullscreenExit,
 } from '@mui/icons-material';
+import { LoadingButton as Button, TabContext, TabList } from "@mui/lab"
 import {
-  Button,
+  // Button,
   Box,
   TextField,
   Checkbox,
@@ -28,6 +32,17 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Tab,
+  Chip,
+  Stack,
+  Snackbar,
+  Alert,
+  AlertTitle,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from '@mui/material';
 
 type SidebarProps = {
@@ -52,19 +67,27 @@ const Sidebar: React.FC<React.PropsWithChildren<SidebarProps>> = ({
 };
 
 type FunctionTaskEditorProps = {
+  groupId: string,
+  pipelineId: string,
   task: Workflows.FunctionTask;
   tasks: Array<Workflows.Task>;
+  defaultTab?: string
 };
 
 const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
+  groupId,
+  pipelineId,
   task,
   tasks,
+  defaultTab = "code"
 }) => {
   const initialTaskData = JSON.parse(JSON.stringify(task));
-  const [activeTab, setActiveTab] = useState<string | undefined>('general');
+  console.log({initialTaskData})
+  const [modal, setModal] = useState<string | undefined>(undefined)
+  const [tab, setTab] = useState<string>(defaultTab);
   const [patchData, setPatchData] =
     useState<Partial<Workflows.FunctionTask>>(initialTaskData);
-  const { patch, isLoading, isError, error } = Hooks.Tasks.usePatch();
+  const { patch, isLoading, isSuccess, isError, error, reset } = Hooks.Tasks.usePatch();
 
   const patchTask = (
     task: Workflows.FunctionTask,
@@ -76,115 +99,120 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
     });
   };
 
-  const setTab = (tab: string | undefined) => {
-    let tabToSet = tab;
-    if (activeTab == tab) {
-      tabToSet = undefined;
+  console.log({patchData})
+
+  const packageConverter = (packages: Array<string> | string, reverse=false) => {
+    if (!reverse) {
+      let packageString = '';
+      (packages as Array<string>).map((name) => {
+        packageString += name + '\n';
+      });
+      
+      return packageString;
     }
-    setActiveTab(tabToSet);
+
+    const splitPackages = (packages as string).replace(/^\s+|\s+$/g, '').replace(/\s/g, " ").split(" ")
+    return splitPackages
   };
 
-  const dependencyTaskIds = useMemo(() => {
-    return (task.depends_on || []).map((dep) => {
-      return dep.id;
-    });
-  }, [task]);
+  const handlePatch = () => {
+    patch({groupId, pipelineId, taskId: task.id!, task: (patchData as Workflows.Task)});
+  }
 
-  const packageConverter = (packages: Array<string>) => {
-    let packageString = '';
-    packages.map((name) => {
-      packageString += name + '\n';
-    });
-
-    return packageString;
+  const handleChangeTab = (_: React.SyntheticEvent, tab: string) => {
+    setTab(tab);
   };
+
+  const dependentTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      for (let dep of t.depends_on!) {
+        if (dep.id === task.id) {
+          return true
+        }
+      }
+      return false
+    })
+  }, [task, tasks, patchData])
+
+  const handleUpdateDep = (taskId: string, action: "add" | "remove") => {
+    if (action === "add") {
+      // TODO handle for can_fail and can_skip
+      patchTask(task, { depends_on: [...patchData.depends_on!, {id: taskId, can_fail: false, can_skip: false}]})
+      return
+    }
+
+    if (action === "remove") {
+      patchTask(task, { depends_on: [...patchData.depends_on!.filter((dep) => dep.id !== taskId)]})
+      return
+    }
+  }
 
   return (
     <div>
-      <Stack spacing={2} direction="row" className={styles['stack']}>
+      <Box sx={{ width: '100%', typography: 'body1' }}>
+        <TabContext value={tab}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList onChange={handleChangeTab}>
+              <Tab label="General" value="general" />
+              <Tab label="I/O" value="io" />
+              <Tab label="Exec. Profile" value="execprofile" />
+              <Tab label="Dependencies" value="deps" />
+              <Tab label="Runtime" value="runtime" />
+              <Tab label="Repos" value="git" />
+              <Tab label="Code" value="code" />
+            </TabList>
+          </Box>
+        </TabContext>
+      </Box>
+      {isError && error && (
+        <Alert severity="error" style={{marginTop: "8px"}} onClose={() => {reset()}}>
+          <AlertTitle>
+            Error
+          </AlertTitle>
+          {error.message}
+        </Alert>
+      )}
+      {isSuccess && (
+        <Snackbar open={true} anchorOrigin={{vertical: "bottom", horizontal: "right"}}>
+          <Alert severity="success" style={{marginTop: "8px"}} onClose={() => {reset()}}>
+            Task {task.id} updated successfully
+          </Alert>
+        </Snackbar>
+      )}
+      <Stack direction="row" spacing={"8px"} alignItems="flex-start" justifyContent={"flex-end"}>
         <Button
-          startIcon={<Info />}
-          variant="outlined"
-          color={activeTab === 'general' ? 'secondary' : 'primary'}
           size="small"
-          onClick={() => {
-            setTab('general');
-          }}
+          variant='outlined'
+          onClick={handlePatch}
+          loading={isLoading}
+          disabled={isLoading}
+          style={{marginBottom: "8px", marginTop: "8px"}}
+          startIcon={<Update />}
         >
-          General
+          Update
         </Button>
         <Button
-          startIcon={<CompareArrows />}
-          variant="outlined"
           size="small"
-          color={activeTab === 'io' ? 'secondary' : 'primary'}
-          onClick={() => {
-            setTab('io');
-          }}
+          variant='outlined'
+          color="error"
+          onClick={() => { setModal("delete") }}
+          disabled={isLoading}
+          style={{marginBottom: "8px", marginTop: "8px"}}
+          startIcon={<Delete />}
         >
-          I/O
-        </Button>
-        <Button
-          startIcon={<Tune />}
-          variant="outlined"
-          size="small"
-          color={activeTab === 'execprofile' ? 'secondary' : 'primary'}
-          onClick={() => {
-            setTab('execprofile');
-          }}
-        >
-          Exec. Profile
-        </Button>
-        <Button
-          startIcon={<Hub />}
-          variant="outlined"
-          size="small"
-          color={activeTab === 'deps' ? 'secondary' : 'primary'}
-          onClick={() => {
-            setTab('deps');
-          }}
-        >
-          Dependencies
-        </Button>
-        <Button
-          startIcon={<Memory />}
-          variant="outlined"
-          size="small"
-          color={activeTab === 'runtime' ? 'secondary' : 'primary'}
-          onClick={() => {
-            setTab('runtime');
-          }}
-        >
-          Runtime
-        </Button>
-        <Button
-          startIcon={<GitHub />}
-          variant="outlined"
-          size="small"
-          color={activeTab === 'git' ? 'secondary' : 'primary'}
-          onClick={() => {
-            setTab('git');
-          }}
-        >
-          Git
+          Delete
         </Button>
       </Stack>
       <div className={styles['container']}>
-        {activeTab === 'general' && (
+        {tab === 'general' && (
           <Sidebar
             title={'General'}
             toggle={() => {
-              setActiveTab(undefined);
+              setTab("code");
             }}
           >
             <Box
               component="form"
-              sx={{
-                '& > :not(style)': {
-                  width: '100%',
-                  backgroundColor: '#F6F7F9',
-                },
-              }}
               className={styles['form']}
               noValidate
               autoComplete="off"
@@ -208,29 +236,41 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 variant="outlined"
                 multiline
                 rows={4}
-                defaultValue={task.description}
+                defaultValue={patchData.description}
                 onChange={(e) => {
                   patchTask(task, { description: e.target.value });
                 }}
               />
-              <Button onClick={() => {console.log(patchData)}}>Save</Button>
             </Box>
           </Sidebar>
         )}
-        {activeTab === 'deps' && (
+        {tab === 'deps' && (
           <Sidebar
             title={'Dependencies'}
             toggle={() => {
-              setActiveTab(undefined);
+              setTab("code");
             }}
           >
             <FormGroup className={styles['form']}>
               {tasks.map((dep) => {
+                if (dep.id === task.id) {
+                  return
+                }
                 return (
                   <FormControlLabel
+                    style={{padding: 0}}
                     control={
                       <Checkbox
-                        defaultChecked={dependencyTaskIds.includes(task.id)}
+                        defaultChecked={patchData.depends_on!.filter((t) => t.id === dep.id ).length > 0}
+                        style={{padding: 0}}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleUpdateDep(e.target.value, "add")
+                            return
+                          }
+                          handleUpdateDep(e.target.value, "remove")
+                        }}
+                        value={dep.id}
                       />
                     }
                     label={dep.id}
@@ -240,11 +280,11 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
             </FormGroup>
           </Sidebar>
         )}
-        {activeTab === 'io' && (
+        {tab === 'io' && (
           <Sidebar
             title={'Inputs & Outputs'}
             toggle={() => {
-              setActiveTab(undefined);
+              setTab("code");
             }}
           >
             {Object.entries(task.input || {}).map((k, v) => {
@@ -252,11 +292,11 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
             })}
           </Sidebar>
         )}
-        {activeTab === 'execprofile' && (
+        {tab === 'execprofile' && (
           <Sidebar
             title={'Execution Profile'}
             toggle={() => {
-              setActiveTab(undefined);
+              setTab("code");
             }}
           >
             <div className={styles['form']}>
@@ -270,16 +310,15 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 </InputLabel>
                 <Select
                   label="Task invocation mode"
-                  onChange={() => {}}
                   labelId="mode"
                   size="small"
-                  defaultValue={task.execution_profile?.invocation_mode}
+                  defaultValue={(patchData as any).invocation_mode}
                 >
                   {Object.values(Workflows.EnumInvocationMode).map((mode) => {
                     return (
                       <MenuItem
                         selected={
-                          mode === task.execution_profile?.invocation_mode
+                          mode === (patchData as any).invocation_mode
                         }
                         value={mode}
                       >
@@ -305,7 +344,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                   onChange={() => {}}
                   labelId="retrypolicy"
                   size="small"
-                  defaultValue={task.execution_profile?.retry_policy}
+                  defaultValue={patchData.execution_profile?.retry_policy}
                 >
                   {Object.values(Workflows.EnumRetryPolicy).map((policy) => {
                     return (
@@ -336,7 +375,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                   label="Flavor"
                   labelId="flavor"
                   size="small"
-                  defaultValue={task.execution_profile?.flavor}
+                  defaultValue={patchData.execution_profile?.flavor}
                 >
                   {Object.values(Workflows.EnumTaskFlavor).map((flavor) => {
                     return (
@@ -355,7 +394,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 this task
               </FormHelperText>
               <TextField
-                defaultValue={task.execution_profile?.max_retries || 0}
+                defaultValue={patchData.execution_profile?.max_retries || 0}
                 size="small"
                 margin="normal"
                 style={{ marginBottom: '-16px' }}
@@ -367,7 +406,7 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 once
               </FormHelperText>
               <TextField
-                defaultValue={task.execution_profile?.max_exec_time || 86400}
+                defaultValue={patchData.execution_profile?.max_exec_time || 86400}
                 size="small"
                 margin="normal"
                 style={{ marginBottom: '-16px' }}
@@ -380,11 +419,11 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
             </div>
           </Sidebar>
         )}
-        {activeTab === 'runtime' && (
+        {tab === 'runtime' && (
           <Sidebar
             title={'Runtime'}
             toggle={() => {
-              setActiveTab(undefined);
+              setTab("code");
             }}
           >
             <div className={styles['form']}>
@@ -399,9 +438,11 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 <Select
                   size="small"
                   label="Runtime environment"
-                  onChange={() => {}}
                   labelId="environment"
-                  defaultValue={task.runtime}
+                  defaultValue={patchData.runtime}
+                  onChange={(e) => {
+                    patchTask(task, { runtime: (e.target.value as Workflows.EnumRuntimeEnvironment) });
+                  }}
                 >
                   {Object.values(Workflows.EnumRuntimeEnvironment).map(
                     (runtimeEnv) => {
@@ -426,9 +467,12 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 variant="outlined"
                 multiline
                 rows={4}
-                defaultValue={packageConverter(task.packages || [])}
+                defaultValue={packageConverter(patchData.packages || [])}
                 margin="normal"
                 style={{ marginBottom: '-16px' }}
+                onChange={(e) => {
+                  patchTask(task, { packages: (packageConverter(e.target.value, true) as Array<string>) });
+                }}
               />
               <FormHelperText>
                 Each package must be on a seperate line. May be just the package
@@ -446,7 +490,10 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
                 <Select
                   size="small"
                   label="Installer"
-                  defaultValue={task.installer}
+                  defaultValue={patchData.installer}
+                  onChange={(e) => {
+                    patchTask(task, { installer: (e.target.value as Workflows.EnumInstaller) });
+                  }}
                 >
                   {Object.values(Workflows.EnumInstaller).map((installer) => {
                     return (
@@ -466,11 +513,11 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
             </div>
           </Sidebar>
         )}
-        {activeTab === 'git' && (
+        {tab === 'git' && (
           <Sidebar
             title={'Git Repositories'}
             toggle={() => {
-              setActiveTab(undefined);
+              setTab("code");
             }}
           >
             Test
@@ -478,24 +525,117 @@ const FunctionTaskEditor: React.FC<FunctionTaskEditorProps> = ({
         )}
         <div
           className={`${styles['code-container']} ${
-            activeTab ? styles['body-with-sidebar'] : styles['body-wo-sidebar']
+            tab !== "code" ? styles['body-with-sidebar'] : styles['body-wo-sidebar']
           }`}
         >
+          <div className={`${styles['code-container-header']}`}>
+            <Stack direction="row" spacing={"8px"}>
+              <Chip color="primary" label={`runtime:${patchData.runtime}`} size="small" onClick={() => {setModal("runtime")}}/>
+            </Stack>
+          </div>
           <CodeMirror
             value={(task.code !== undefined && decode(task.code)) || ''}
             editable={!task.entrypoint}
             extensions={[python()]}
             theme={vscodeDark}
             className={`${styles['code']} `}
+            onChange={(value) => {
+              patchTask(task, { code: encode(value) });
+            }}
             style={{
               fontSize: 12,
-              backgroundColor: '#f5f5f5',
+              backgroundColor: '#1E1E1E',
+              height: "100%",
               fontFamily:
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
           />
         </div>
       </div>
+      <Dialog
+        open={modal === "delete"}
+        onClose={() => {}}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete task?
+        </DialogTitle>
+        <DialogContent>
+          {
+            dependentTasks.length > 0 && (
+              <Alert severity="warning" style={{marginBottom: "8px"}}>
+                This task is required by {dependentTasks.length} other task{dependentTasks.length > 1 ? "s" : ""} in this pipeline: [ {dependentTasks.map((d) => `${d.id} `)}].
+                <br/>Running this workflow after this task is deleted will result in an immediate failure.
+              </Alert>
+            )
+          }
+          <DialogContentText id="alert-dialog-description">
+            Deleting a task is an irrevocable action. Are you sure you want to continue?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {setModal(undefined)}}>Cancel</Button>
+          <Button color="error" onClick={() => {setModal(undefined)}} autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={modal === "runtime"}
+        onClose={() => {}}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Update Runtime
+        </DialogTitle>
+        <DialogContent>
+          <div className={styles['form']}>
+            <FormControl
+              fullWidth
+              margin="dense"
+              style={{ marginBottom: '-16px' }}
+            >
+              <InputLabel size="small" id="environment">
+                Runtime environment
+              </InputLabel>
+              <Select
+                size="small"
+                label="Runtime environment"
+                labelId="environment"
+                defaultValue={patchData.runtime}
+                onChange={(e) => {
+                  patchTask(task, { runtime: (e.target.value as Workflows.EnumRuntimeEnvironment) });
+                }}
+              >
+                {Object.values(Workflows.EnumRuntimeEnvironment).map(
+                  (runtimeEnv) => {
+                    return (
+                      <MenuItem
+                        value={runtimeEnv}
+                        selected={runtimeEnv === task.runtime}
+                      >
+                        {runtimeEnv}
+                      </MenuItem>
+                    );
+                  }
+                )}
+              </Select>
+            </FormControl>
+            <FormHelperText>
+              The runtime envrionment in which the function code will be
+              executed
+            </FormHelperText>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {setModal(undefined)}}>Cancel</Button>
+          <Button onClick={() => {handlePatch(); setModal(undefined)}} autoFocus>
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

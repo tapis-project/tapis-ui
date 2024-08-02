@@ -4,7 +4,7 @@ export { default as NotificationToast } from './NotificationToast';
 export { default as NotificationsProvider } from './NotificationsProvider';
 
 export type Notification = {
-  icon: string;
+  icon?: string;
   status?: string;
   message: string;
 };
