@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const OpenWebUI: React.FC = () => {
+export const OpenWebUI: React.FC = () => {
   return (
     <div
       style={{
