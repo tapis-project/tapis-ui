@@ -98,9 +98,11 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
   const tasks: Array<Workflows.Task> = tasksData?.result! || [];
 
   return (
-    <QueryWrapper isLoading={isLoadingPipeline || isLoadingTasks} error={pipelineError || listTasksError}>
+    <QueryWrapper
+      isLoading={isLoadingPipeline || isLoadingTasks}
+      error={pipelineError || listTasksError}
+    >
       {pipeline && (
-
         <div id={`pipeline`} className={styles['grid']}>
           <Toolbar
             buttons={['createtask', 'runpipeline']}
