@@ -15,7 +15,12 @@ export enum EnumTapisCoreService {
 export type Logo = {
   url?: string;
   filePath?: string;
-  logoText?: string;
+  text?: string;
+};
+export type Icon = {
+  url?: string;
+  filePath?: string;
+  text?: string;
 };
 
 export type Component = React.FC<
@@ -42,5 +47,6 @@ export type Configuration = {
   removeServices?: Array<EnumTapisCoreService>;
   authMethods?: Array<AuthMethod>;
   logo?: Logo;
+  icon?: Icon;
   serviceCustomizations?: ServiceCustomizations;
 };

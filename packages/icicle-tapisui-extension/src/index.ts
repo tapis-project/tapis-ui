@@ -41,8 +41,12 @@ const extension = createExtension({
   ],
   authMethods: ['implicit', 'password'],
   logo: {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfQCeZ-pHyZXArXjYUMjl9TuEwePvsERPcDQ&s',
-    logoText: 'ICICLE AI',
+    filePath: './logo_icicle.png',
+    text: 'ICICLE AI',
+  },
+  icon: {
+    filePath: './icon_icicle.png',
+    text: 'ICICLE AI',
   },
   serviceCustomizations: {
     workflows: {
