@@ -2,39 +2,46 @@ import { Workflows } from '@tapis/tapis-typescript';
 
 export const tasks: Array<Workflows.Task> = [
   {
-    id: 'test-function',
+    id: 'django-search',
     type: Workflows.EnumTaskType.Function,
-    code: 'test',
     execution_profile: {
-      flavor: Workflows.EnumTaskFlavor.C1tiny,
+      flavor: Workflows.EnumTaskFlavor.C1med,
     },
-    installer: Workflows.EnumInstaller.Pip,
-    packages: ['tapipy'],
-    runtime: Workflows.EnumRuntimeEnvironment.Python39,
-    entrypoint: 'tapis-owe-functions/functions/tapis-etl-push-pull-data.py',
-    git_repositories: [
-      {
-        url: 'https://github.com/tapis-project/tapis-workflows-task-templates.git',
-        branch: 'master',
-        directory: 'tapis-owe-functions',
+    input: {
+      OBJECT: {
+        type: Workflows.EnumTaskIOType.String,
+        description: 'Django search parameter - object',
+        required: false,
+        value_from: {
+          args: 'OBJECT',
+        },
       },
-    ],
-  },
-  {
-    id: 'test-function-2',
-    type: Workflows.EnumTaskType.Function,
-    execution_profile: {
-      flavor: Workflows.EnumTaskFlavor.C1tiny,
+      PREDICATE: {
+        type: Workflows.EnumTaskIOType.String,
+        description: 'Django search parameter - predicate',
+        required: false,
+        value_from: {
+          args: 'PREDICATE',
+        },
+      },
+      API_HOST: {
+        type: Workflows.EnumTaskIOType.String,
+        description: 'Django API host url',
+        required: false,
+        value_from: {
+          args: 'API_HOST',
+        },
+      },
     },
     installer: Workflows.EnumInstaller.Pip,
-    packages: ['tapipy'],
+    packages: ['pandas==2.1.4', 'requests'],
     runtime: Workflows.EnumRuntimeEnvironment.Python39,
-    entrypoint: 'tapis-owe-functions/functions/tapis-etl-push-pull-data.py',
+    entrypoint: 'icicle-task-templates/task-templates/django_search.py',
     git_repositories: [
       {
-        url: 'https://github.com/tapis-project/tapis-workflows-task-templates.git',
-        branch: 'master',
-        directory: 'tapis-owe-functions',
+        url: 'https://github.com/ICICLE-ai/tapisui-extension-icicle.git',
+        branch: 'main',
+        directory: 'icicle-task-templates',
       },
     ],
   },

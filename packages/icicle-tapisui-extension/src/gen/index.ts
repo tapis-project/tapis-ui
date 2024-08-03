@@ -1,7 +1,5 @@
 import { Workflows } from '@tapis/tapis-typescript';
-import { task as task0 } from './test-function';
-import { task as task1 } from './test-function-2';
+import { task as task0 } from './django-search';
 export const tasks: Array<Workflows.FunctionTask> = [
   Workflows.FunctionTaskFromJSON(task0),
-  Workflows.FunctionTaskFromJSON(task1),
 ];
