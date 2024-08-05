@@ -11,9 +11,6 @@
   line-height: 20px;
   border-bottom: 1px solid #cccccc;
   box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .header-img {
@@ -35,6 +32,14 @@
 .description {
   color: #666666;
   font-size: 12px;
+}
+
+.arg {
+  padding-left: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  border-bottom: 1px solid #cccccc;
 }
 
 .footer {

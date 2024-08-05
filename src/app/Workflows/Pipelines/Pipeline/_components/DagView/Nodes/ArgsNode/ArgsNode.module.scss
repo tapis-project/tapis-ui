@@ -9,9 +9,18 @@
 .header {
   width: 100%;
   line-height: 20px;
-  padding: 8px;
   border-bottom: 1px solid #cccccc;
   box-sizing: border-box;
+}
+
+.header-img {
+  height: 40px;
+  width: 40px;
+  border-right: 1px solid #cccccc;
+}
+
+.title {
+  padding-left: 8px;
 }
 
 .body {

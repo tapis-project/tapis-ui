@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useReducer,
 } from 'react';
-import { EnvironmentNode, StandardNode, ArgsNode } from './Nodes';
+import { EnvironmentNode, TaskNode, ArgsNode } from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { Icon } from '@tapis/tapisui-common';
@@ -56,7 +56,7 @@ type DagViewProps = {
 
 const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
   const nodeTypes = useMemo(
-    () => ({ standard: StandardNode, args: ArgsNode, env: EnvironmentNode }),
+    () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode }),
     []
   );
 

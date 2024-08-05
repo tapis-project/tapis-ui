@@ -1,13 +1,12 @@
 import React from 'react';
 import { Position, NodeProps } from '@xyflow/react';
-import styles from './StandardNode.module.scss';
+import styles from './TaskNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Edit, Delete } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 
 type NodeType = {
-  label: string;
   task: Workflows.Task;
   groupId: string;
   pipelineId: string;
@@ -59,9 +58,9 @@ const resolveNodeImage = (task: Workflows.Task) => {
   }
 };
 
-const StandardNode: React.FC<NodeProps> = ({ data }) => {
+const TaskNode: React.FC<NodeProps> = ({ data }) => {
   const history = useHistory();
-  let { label, task, groupId, pipelineId } = data as NodeType;
+  let { task, groupId, pipelineId } = data as NodeType;
 
   return (
     <>
@@ -69,7 +68,7 @@ const StandardNode: React.FC<NodeProps> = ({ data }) => {
       <div className={styles['node']}>
         <div className={styles['header']}>
           <img src={resolveNodeImage(task)} className={styles['header-img']} />
-          <span className={styles['title']}>{label}</span>
+          <span className={styles['title']}>{task.id}</span>
         </div>
         <div className={styles['body']}>
           <i className={styles['description']}>
@@ -99,4 +98,4 @@ const StandardNode: React.FC<NodeProps> = ({ data }) => {
   );
 };
 
-export default StandardNode;
+export default TaskNode;
