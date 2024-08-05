@@ -352,7 +352,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipelineId, tasks }) => {
     //       </div>
     //     </div>
     //   )}
-  //   </div>
+    //   </div>
   );
 };
 

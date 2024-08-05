@@ -1,1 +1,1 @@
-export { default as ArgsNode } from "./ArgsNode"
+export { default as ArgsNode } from './ArgsNode';

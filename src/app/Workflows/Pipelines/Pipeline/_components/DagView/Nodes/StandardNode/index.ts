@@ -1,1 +1,1 @@
-export { default as StandardNode } from "./StandardNode"
+export { default as StandardNode } from './StandardNode';

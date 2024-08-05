@@ -1,1 +1,1 @@
-export { default as EnvironmentNode } from "./EnvironmentNode"
+export { default as EnvironmentNode } from './EnvironmentNode';

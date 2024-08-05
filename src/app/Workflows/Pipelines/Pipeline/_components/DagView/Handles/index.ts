@@ -1,1 +1,1 @@
-export { StandardHandle } from "./StandardHandle"
+export { StandardHandle } from './StandardHandle';
