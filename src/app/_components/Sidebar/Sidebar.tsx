@@ -102,7 +102,7 @@ const Sidebar: React.FC = () => {
     setOpenSecondary(!openSecondary);
   };
 
-  const chipLabel = expanded ? '<<' : '>>';
+  const chipLabel = expanded ? '<' : '>';
 
   return (
     <div

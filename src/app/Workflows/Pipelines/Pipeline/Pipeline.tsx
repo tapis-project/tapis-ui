@@ -102,7 +102,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
       isLoading={isLoadingPipeline || isLoadingTasks}
       error={pipelineError || listTasksError}
     >
-      {pipeline && (
+      {pipeline && tasks && (
         <div id={`pipeline`} className={styles['grid']}>
           <Toolbar
             buttons={['createtask', 'runpipeline']}

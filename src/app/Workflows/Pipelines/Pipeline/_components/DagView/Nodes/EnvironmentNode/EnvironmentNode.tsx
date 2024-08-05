@@ -1,5 +1,10 @@
-import React from 'react';
-import { Position, NodeProps } from '@xyflow/react';
+import React, { useCallback, useState } from 'react';
+import {
+  Handle,
+  Position,
+  NodeProps,
+  useUpdateNodeInternals,
+} from '@xyflow/react';
 import styles from './EnvironmentNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
@@ -8,7 +13,7 @@ import { useHistory } from 'react-router-dom';
 
 type NodeType = { pipeline: Workflows.Pipeline };
 
-const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
+const EnvironmentNode: React.FC<NodeProps> = ({ id, data }) => {
   const { pipeline } = data as NodeType;
   return (
     <>
@@ -21,17 +26,22 @@ const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
             Pipeline envrionment variables
           </i>
         </div>
+        <div>
+          {Object.entries(pipeline.env!).map(([k, v], i) => {
+            return <div className={styles['var']}>{k}</div>;
+          })}
+        </div>
       </div>
-      {pipeline.env &&
-        Object.entries(pipeline.env).map(([varName, value]) => {
-          return (
-            <StandardHandle
-              id={varName}
-              type="source"
-              position={Position.Bottom}
-            />
-          );
-        })}
+      {Object.entries(pipeline.env!).map(([k, v], i) => {
+        return (
+          <StandardHandle
+            id={`env-handle-${k}`}
+            type="source"
+            position={Position.Right}
+            style={{ top: `${81 + i * 25}px` }}
+          />
+        );
+      })}
     </>
   );
 };

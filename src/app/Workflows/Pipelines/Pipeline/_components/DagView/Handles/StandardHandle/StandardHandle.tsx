@@ -1,9 +1,15 @@
 import React from 'react';
 import { Handle as RFHandle, HandleProps } from '@xyflow/react';
 
-const StandardHandle: React.FC<HandleProps> = ({ position, type }) => {
+const StandardHandle: React.FC<HandleProps> = ({
+  id,
+  position,
+  type,
+  style,
+}) => {
   return (
     <RFHandle
+      id={id}
       type={type}
       position={position}
       style={{
@@ -11,6 +17,7 @@ const StandardHandle: React.FC<HandleProps> = ({ position, type }) => {
         height: '16px',
         width: '16px',
         backgroundColor: '#FFFFFF',
+        ...style,
       }}
     />
   );
