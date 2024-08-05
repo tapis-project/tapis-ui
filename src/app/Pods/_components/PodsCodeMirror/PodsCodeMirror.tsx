@@ -18,8 +18,8 @@ interface PodsCodeMirrorProps {
   editable?: boolean;
   onChange?: (newValue: string) => void;
   isEditorVisible?: boolean;
-  sharedData: any;
-  setSharedData: any;
+  sharedData?: any;
+  setSharedData?: any;
 }
 
 const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({

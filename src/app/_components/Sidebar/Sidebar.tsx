@@ -1,14 +1,37 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
-import { Menu, ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Collapse, Button, Chip } from '@mui/material';
+import {
+  ExpandLessRounded,
+  ExpandMoreRounded,
+  Logout,
+  SettingsRounded,
+} from '@mui/icons-material';
+import { LoadingButton as Button } from '@mui/lab';
+import {
+  Menu,
+  Collapse,
+  ListItemIcon,
+  Divider,
+  // Button,
+  MenuItem,
+  Chip,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
+import { EditorView } from 'codemirror';
+import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
+import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { Tenants as Hooks } from '@tapis/tapisui-hooks';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import {
   ButtonDropdown,
@@ -33,6 +56,7 @@ const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [modal, setModal] = useState<string | undefined>(undefined);
 
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
@@ -102,8 +126,65 @@ const Sidebar: React.FC = () => {
     setOpenSecondary(!openSecondary);
   };
 
-  const chipLabel = expanded ? '<' : '>';
+  const chipLabel = expanded ? (
+    <ExpandLessRounded
+      style={{ transform: 'rotate(-90deg) translateY(-40%) translateX(-10%)' }}
+    />
+  ) : (
+    <ExpandMoreRounded
+      style={{ transform: 'rotate(-90deg) translateY(-40%) translateX(-10%)' }}
+    />
+  );
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleModal = () => {
+    setModal('delete');
+  };
+
+  const useCountdown = (targetTime: number) => {
+    const [timeLeft, setTimeLeft] = useState(
+      targetTime - Math.floor(Date.now() / 1000)
+    );
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        const currentTime = Math.floor(Date.now() / 1000);
+        const newTimeLeft = targetTime - currentTime;
+
+        if (newTimeLeft <= 0) {
+          clearInterval(interval);
+          setTimeLeft(0);
+        } else {
+          setTimeLeft(newTimeLeft);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [targetTime]);
+
+    return timeLeft;
+  };
+
+  const CountdownDisplay = ({ expirationTime }: { expirationTime: number }) => {
+    const timeLeft = useCountdown(expirationTime);
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+
+    return (
+      <div>
+        {timeLeft <= 0
+          ? 'Expired'
+          : `${minutes} minutes, ${seconds} seconds left`}
+      </div>
+    );
+  };
   return (
     <div
       className={styles.root}
@@ -112,7 +193,7 @@ const Sidebar: React.FC = () => {
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
           justifyContent: 'center', // horizontal
           alignItems: 'center', // vertical
           marginTop: '.6rem',
@@ -122,16 +203,25 @@ const Sidebar: React.FC = () => {
       >
         <Link to={'/'}>
           <img
-            style={{ height: '42px' }}
+            style={
+              expanded
+                ? { maxHeight: '50px', maxWidth: '9rem' }
+                : { height: '50px', maxWidth: '4.2rem' }
+            }
             className="logo"
             src={
               expanded
-                ? extension?.logo?.url || './tapislogo.png'
-                : './tapisicon.png'
+                ? extension?.logo?.filePath ||
+                  extension?.logo?.url ||
+                  extension?.logo?.text ||
+                  './logo_tapis.png'
+                : extension?.icon?.filePath ||
+                  extension?.icon?.url ||
+                  extension?.logo?.text ||
+                  './icon_tapis.png'
             }
           />
         </Link>
-        {expanded ? extension?.logo?.logoText : undefined}
       </div>
 
       <Chip
@@ -140,12 +230,14 @@ const Sidebar: React.FC = () => {
         size="small"
         style={{
           borderRadius: '8px',
+          borderTopLeftRadius: '0px',
+          borderBottomLeftRadius: '0px',
           backgroundColor: 'white',
           height: '1.5rem',
-          width: '2rem',
+          width: '1.5rem',
           position: 'absolute',
-          right: '-1rem',
-          top: '.75rem',
+          right: '-1.5rem',
+          top: '.6rem',
           paddingBottom: '.2rem',
         }}
         className={styles.hideButton} // Add a custom class for styling
@@ -172,7 +264,11 @@ const Sidebar: React.FC = () => {
                     paddingLeft: '21px',
                   }}
                 >
-                  {openSecondary ? <ExpandLess /> : <ExpandMore />}
+                  {openSecondary ? (
+                    <ExpandLessRounded />
+                  ) : (
+                    <ExpandMoreRounded />
+                  )}
                   {expanded && (
                     <span
                       style={{
@@ -194,48 +290,184 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
-
-      {/* <div style={{alignContent: "center", alignItems: "center"}}>
       {claims['sub'] && (
-          <ButtonDropdown
-            size="sm"
-            isOpen={isOpen}
-            toggle={() => setIsOpen(!isOpen)}
-            className="dropdown-button"
-          >
-            <DropdownToggle caret>{claims['sub']}</DropdownToggle>
-            <DropdownMenu style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
-              {((extension !== undefined && extension.allowMutiTenant) ||
-                extension === undefined ||
-                (extension !== undefined && extension.allowMutiTenant)) && (
-                <>
-                  <DropdownItem header>Tenants</DropdownItem>
-                  <DropdownItem divider />
-                  <QueryWrapper isLoading={isLoading} error={error}>
-                    {tenants.map((tenant) => {
-                      return (
-                        <DropdownItem
-                          onClick={() => {
-                            window.location.href =
-                              tenant.base_url + '/tapis-ui/';
-                          }}
-                        >
-                          {tenant.tenant_id}
-                        </DropdownItem>
-                      );
-                    })}
-                  </QueryWrapper>
-                  <DropdownItem divider />
-                </>
-              )}
-              <DropdownItem onClick={() => history.push('/logout')}>
-                Logout
-              </DropdownItem>
-            </DropdownMenu>
-          </ButtonDropdown>
-        )}
-      </div>
- */}
+        <Chip
+          variant="outlined"
+          style={{
+            borderRadius: '8px',
+          }}
+          label={
+            !expanded ? (
+              <SettingsRounded sx={{ width: 24, height: 24 }} />
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div>
+                  <SettingsRounded sx={{ width: 24, height: 24 }} />
+                </div>
+                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                  {claims['sub'].split('@')[0]}
+                  <br />@{claims['sub'].split('@')[1]}
+                </div>
+              </div>
+            )
+          }
+          onClick={handleClick} // Move the click handler here to make the entire div clickable
+          sx={{
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '.6rem',
+            color: '#707070',
+            //minWidth: '0rem',
+            //width: '2rem',
+            '& .MuiChip-label': {
+              display: 'flex',
+              whiteSpace: 'normal',
+            },
+          }}
+        />
+      )}
+
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: 48 * 4.5,
+          },
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.52))',
+            mt: 0.5,
+            ml: 1.2,
+          },
+        }}
+        transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={() => setModal('viewJWT')}>View JWT</MenuItem>
+        <MenuItem onClick={() => setModal('changeTenant')}>
+          Change Tenant
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={() => history.push('/logout')}>
+          <ListItemIcon>
+            <Logout />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
+
+      <Dialog
+        fullWidth
+        open={modal === 'viewJWT'}
+        onClose={() => setModal(undefined)}
+        aria-labelledby="jwt-dialog-title"
+        PaperProps={{
+          style: { maxHeight: '70%' },
+        }}
+      >
+        <DialogContent>
+          <Typography variant="h6">Access Token Object</Typography>
+          <CodeMirror
+            value={JSON.stringify(accessToken, null, 2)}
+            editable={false}
+            readOnly={true}
+            basicSetup={{
+              lineNumbers: false,
+              tabSize: 2,
+              foldGutter: false,
+            }}
+            extensions={[EditorView.lineWrapping, json()]}
+            theme={vscodeDarkInit({
+              settings: {
+                caret: '#c6c6c6',
+                fontFamily: 'monospace',
+              },
+            })}
+            style={{
+              fontSize: 12,
+              backgroundColor: '#f5f5f5',
+              fontFamily:
+                'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+            }}
+          />
+          <Typography variant="h6">JWT Claims</Typography>
+          <CodeMirror
+            value={JSON.stringify(claims, null, 2)}
+            editable={false}
+            readOnly={true}
+            basicSetup={{
+              lineNumbers: false,
+              tabSize: 2,
+              foldGutter: false,
+            }}
+            extensions={[EditorView.lineWrapping, json()]}
+            theme={vscodeDarkInit({
+              settings: {
+                caret: '#c6c6c6',
+                fontFamily: 'monospace',
+              },
+            })}
+            style={{
+              fontSize: 12,
+              backgroundColor: '#f5f5f5',
+              fontFamily:
+                'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+            }}
+          />
+          <Typography variant="h6">Token Life Remaining</Typography>
+          <CountdownDisplay expirationTime={claims['exp']} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModal(undefined)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={modal === 'changeTenant'}
+        onClose={() => setModal(undefined)}
+        aria-labelledby="change-tenant-dialog-title"
+        PaperProps={{
+          style: { maxHeight: '70%' },
+        }}
+      >
+        <DialogTitle id="change-tenant-dialog-title">Change Tenant</DialogTitle>
+        <DialogContent>
+          <QueryWrapper isLoading={isLoading} error={error}>
+            {tenants
+              .sort((a, b) => a.tenant_id.localeCompare(b.tenant_id))
+              .map((tenant) => (
+                <MenuItem
+                  key={tenant.tenant_id}
+                  onClick={() => {
+                    window.location.href = tenant.base_url + '/tapis-ui/';
+                    setModal(undefined);
+                  }}
+                >
+                  {tenant.tenant_id}
+                </MenuItem>
+              ))}
+          </QueryWrapper>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModal(undefined)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

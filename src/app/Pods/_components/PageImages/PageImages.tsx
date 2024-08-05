@@ -23,6 +23,8 @@ import {
 } from '@tapis/tapisui-common';
 import styles from './PageImages.module.scss';
 import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { RefreshRounded } from '@mui/icons-material';
 import { SectionMessage } from '@tapis/tapisui-common';
 
 import { NavImages } from 'app/Pods/_components';
@@ -99,6 +101,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     id: string;
     label: string;
     tabValue?: string; // Made optional to accommodate both uses
+    icon?: JSX.Element;
     customOnClick?: () => void;
   };
 
@@ -106,6 +109,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     {
       id: 'refresh',
       label: 'Refresh',
+      icon: <RefreshRounded sx={{ height: '20px', maxWidth: '20px' }} />,
       customOnClick: () => {
         invalidate();
       },
@@ -172,28 +176,33 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               }}
             >
               <Stack spacing={2} direction="row">
-                {leftButtons.map(({ id, label, tabValue, customOnClick }) => (
-                  <Button
-                    key={id}
-                    variant="outlined"
-                    color={imageBarTab === tabValue ? 'secondary' : 'primary'}
-                    size="small"
-                    onClick={() => {
-                      if (customOnClick) {
-                        customOnClick();
-                      } else if (tabValue && imageBarTab !== undefined) {
-                        setImageBarTab(tabValue);
-                      }
-                    }}
-                  >
-                    {label}
-                  </Button>
-                ))}
+                {leftButtons.map(
+                  ({ id, label, tabValue, customOnClick, icon }) => (
+                    <LoadingButton
+                      sx={{ minWidth: '10px' }}
+                      loading={id === 'refresh' && isFetching}
+                      key={id}
+                      variant="outlined"
+                      color={imageBarTab === tabValue ? 'secondary' : 'primary'}
+                      size="small"
+                      onClick={() => {
+                        if (customOnClick) {
+                          customOnClick();
+                        } else if (tabValue && imageBarTab !== undefined) {
+                          setImageBarTab(tabValue);
+                        }
+                      }}
+                    >
+                      {icon || label}
+                    </LoadingButton>
+                  )
+                )}
               </Stack>
               <Stack spacing={2} direction="row">
                 {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
                   <Button
                     key={id}
+                    sx={{ minWidth: '10px' }}
                     variant="outlined"
                     color={imageBarTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
