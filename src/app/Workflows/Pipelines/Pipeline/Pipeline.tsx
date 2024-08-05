@@ -110,7 +110,7 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
             pipelineId={pipelineId}
             pipeline={pipeline}
           />
-          <DagView tasks={tasks} pipelineId={pipelineId} groupId={groupId} />
+          <DagView tasks={tasks} pipeline={pipeline} groupId={groupId} />
           <div>
             <Table dark bordered style={{ margin: 0 }}>
               <thead>
