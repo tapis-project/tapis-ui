@@ -34,49 +34,10 @@ const Layout: React.FC = () => {
 
   const header = (
     <div className="tapis-ui__header">
-      <div style={{ marginLeft: '.7rem' }}>
+      <div style={{ marginLeft: '1.2rem' }}>
         <Breadcrumbs breadcrumbs={crumbs} />
       </div>
-      <div>
-        {claims['sub'] && (
-          <ButtonDropdown
-            size="sm"
-            isOpen={isOpen}
-            toggle={() => setIsOpen(!isOpen)}
-            className="dropdown-button"
-          >
-            <DropdownToggle caret>{claims['sub']}</DropdownToggle>
-            <DropdownMenu style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
-              {((extension !== undefined && extension.allowMutiTenant) ||
-                extension === undefined ||
-                (extension !== undefined && extension.allowMutiTenant)) && (
-                <>
-                  <DropdownItem header>Tenants</DropdownItem>
-                  <DropdownItem divider />
-                  <QueryWrapper isLoading={isLoading} error={error}>
-                    {tenants.map((tenant) => {
-                      return (
-                        <DropdownItem
-                          onClick={() => {
-                            window.location.href =
-                              tenant.base_url + '/tapis-ui/';
-                          }}
-                        >
-                          {tenant.tenant_id}
-                        </DropdownItem>
-                      );
-                    })}
-                  </QueryWrapper>
-                  <DropdownItem divider />
-                </>
-              )}
-              <DropdownItem onClick={() => history.push('/logout')}>
-                Logout
-              </DropdownItem>
-            </DropdownMenu>
-          </ButtonDropdown>
-        )}
-      </div>
+      <div>{false && <ButtonDropdown size="sm" />}</div>
     </div>
   );
 
@@ -87,7 +48,7 @@ const Layout: React.FC = () => {
           left={<Sidebar />}
           right={
             <div style={{ height: '100vh' }}>
-              <div>{header}</div>
+              <div>{crumbs && crumbs.length == 0 ? null : header}</div>
               <div className="body">
                 <Router />
               </div>

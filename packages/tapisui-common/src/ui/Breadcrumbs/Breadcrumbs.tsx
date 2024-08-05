@@ -9,6 +9,7 @@ export type BreadcrumbType = {
   onClick?: (to: string) => void;
   text: string;
   delimiter?: string;
+  isLast?: boolean;
 };
 
 const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
@@ -16,10 +17,15 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
   onClick,
   text,
   delimiter = '/',
+  isLast,
 }) => {
+  const fragmentStyle = isLast
+    ? `${styles.fragment} ${styles.lastFragment}`
+    : styles.fragment;
+
   if (onClick) {
     return (
-      <span className={styles.fragment}>
+      <span className={fragmentStyle}>
         {' '}
         <Button
           color="link"
@@ -37,14 +43,17 @@ const BreadcrumbFragment: React.FC<BreadcrumbType> = ({
 
   if (to) {
     return (
-      <span className={styles.fragment}>
-        <NavLink to={to}>{text}</NavLink>&nbsp;{delimiter}&nbsp;
+      <span className={fragmentStyle}>
+        <NavLink to={to} className={styles.link}>
+          {text}
+        </NavLink>
+        &nbsp;{delimiter}&nbsp;
       </span>
     );
   }
 
   return (
-    <span className={styles.fragment}>
+    <span className={fragmentStyle}>
       {text}&nbsp;{`${text !== '...' ? delimiter : ''}`}&nbsp;
     </span>
   );
@@ -80,7 +89,9 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
       {truncatedBreadcrumbs.map((item, index) => {
         const { text, to, onClick } = item;
         if (index === truncatedBreadcrumbs.length - 1) {
-          return <BreadcrumbFragment text={text} key={uuidv4()} />;
+          return (
+            <BreadcrumbFragment text={text} key={uuidv4()} isLast={true} />
+          );
         }
         return (
           <BreadcrumbFragment

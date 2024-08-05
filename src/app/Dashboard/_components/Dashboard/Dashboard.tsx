@@ -71,7 +71,11 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <SectionHeader>Dashboard for {claims['tapis/tenant_id']}</SectionHeader>
+      <SectionHeader>
+        <div style={{ marginLeft: '1.2rem' }}>
+          Dashboard for {claims['tapis/tenant_id']}
+        </div>
+      </SectionHeader>
       <div className={styles.cards}>
         {accessToken ? (
           <>

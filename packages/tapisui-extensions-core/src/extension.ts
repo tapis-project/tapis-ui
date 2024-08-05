@@ -1,4 +1,10 @@
-import { Service, Configuration, EnumTapisCoreService, Logo } from './core';
+import {
+  Service,
+  Configuration,
+  EnumTapisCoreService,
+  Logo,
+  Icon,
+} from './core';
 import { Implicit } from './oauth2';
 import { WorkflowsCustomizations } from './workflows';
 
@@ -31,6 +37,7 @@ export class Extension {
   private config: Configuration;
   public serviceCustomizations: ServiceCustomizations;
   public logo: Logo;
+  public icon: Icon;
 
   constructor(config: Configuration) {
     this.setConfiguration(config);
@@ -43,6 +50,7 @@ export class Extension {
     this.setAuthentication();
     this.setServiceCustomizations();
     this.logo = config.logo;
+    this.icon = config.icon;
   }
 
   private setAuthentication(): void {

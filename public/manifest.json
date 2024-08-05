@@ -1,6 +1,7 @@
 {
-  "short_name": "Tapis-UI",
-  "name": "Tapis-UI",
+  "short_name": "Tapis",
+  "name": "Tapis UI",
+  "description": "TACC's Serverless User Interface for Tapis",
   "icons": [
     {
       "src": "favicon.ico",
