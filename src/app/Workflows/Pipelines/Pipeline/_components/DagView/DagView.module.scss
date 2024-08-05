@@ -90,3 +90,13 @@
   gap: 8px;
   padding: 16px;
 }
+
+.panel-item {
+  margin-left: 8px;
+}
+
+.panel-item:hover {
+  cursor: pointer;
+  background-color: #666666;
+  color: #ffffff;
+}

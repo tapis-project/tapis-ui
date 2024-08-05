@@ -13,7 +13,8 @@ import { useHistory } from 'react-router-dom';
 
 type NodeType = { pipeline: Workflows.Pipeline };
 
-const envImgSrc = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYYthigYhTiUuc_ELgxR0ePiN5wXgL7AVHxA&s"
+const envImgSrc =
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYYthigYhTiUuc_ELgxR0ePiN5wXgL7AVHxA&s';
 
 const EnvironmentNode: React.FC<NodeProps> = ({ id, data }) => {
   const { pipeline } = data as NodeType;

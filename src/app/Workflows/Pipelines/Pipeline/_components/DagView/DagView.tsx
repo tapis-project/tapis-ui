@@ -22,6 +22,7 @@ import {
   ListItemIcon,
   Divider,
   Paper,
+  Chip,
 } from '@mui/material';
 import {
   Delete,
@@ -44,6 +45,7 @@ import {
   MarkerType,
   Edge,
   Node,
+  Panel,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -54,7 +56,20 @@ type DagViewProps = {
   groupId: string;
 };
 
+type View = 'data' | 'dependencies' | 'conditionals';
+
 const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
+  const [views, setViews] = useState<{ [K in View]: boolean }>({
+    conditionals: true,
+    data: true,
+    dependencies: false,
+  });
+  const handleToggleView = (view: View) => {
+    setViews({
+      ...views,
+      [view]: !views[view],
+    });
+  };
   const nodeTypes = useMemo(
     () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode }),
     []
@@ -63,7 +78,10 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
   let initialNodes: Array<Node> = tasks.map((task, i) => {
     return {
       id: task.id!,
-      position: { x: (i + 1) * 350, y: Object.entries(pipeline.env!).length * 25 + 30 },
+      position: {
+        x: (i + 1) * 350,
+        y: Object.entries(pipeline.env!).length * 25 + 30,
+      },
       type: 'standard',
       data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id },
     };
@@ -122,10 +140,39 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        defaultViewport={{ x: 20, y: 20, zoom: 2 }}
+        defaultViewport={{ x: 60, y: 40, zoom: 1 }}
       >
-        <Controls />
-        <MiniMap />
+        <Panel position="top-right">
+          <Chip
+            onClick={() => {
+              handleToggleView('data');
+            }}
+            color={views.data ? 'success' : undefined}
+            style={{ marginLeft: '8px' }}
+            size="small"
+            label="data"
+          />
+          <Chip
+            onClick={() => {
+              handleToggleView('dependencies');
+            }}
+            color={views.dependencies ? 'success' : undefined}
+            style={{ marginLeft: '8px' }}
+            size="small"
+            label="dependenies"
+          />
+          <Chip
+            onClick={() => {
+              handleToggleView('conditionals');
+            }}
+            color={views.conditionals ? 'success' : undefined}
+            style={{ marginLeft: '8px' }}
+            size="small"
+            label="conditionals"
+          />
+        </Panel>
+        <Controls position="top-left" />
+        <MiniMap position="bottom-left" />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
     </div>
