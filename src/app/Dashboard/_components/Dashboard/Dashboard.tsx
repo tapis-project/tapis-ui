@@ -119,6 +119,14 @@ const Dashboard: React.FC = () => {
               counter={`${4} services`}
               loading={apps?.isLoading}
             />
+            <DashboardCard
+              icon="simulation"
+              name="ML Edge"
+              text="View available reports and create new analysis"
+              link="/ml-edge"
+              counter={`${2} services`}
+              loading={apps?.isLoading}
+            />
           </>
         ) : (
           <Card>
