@@ -63,7 +63,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
   let initialNodes: Array<Node> = tasks.map((task, i) => {
     return {
       id: task.id!,
-      position: { x: (i + 1) * 350, y: 200 },
+      position: { x: (i + 1) * 350, y: Object.entries(pipeline.env!).length * 25 + 30 },
       type: 'standard',
       data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id },
     };
@@ -79,7 +79,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
     },
     {
       id: `${pipeline.id}-args`,
-      position: { x: 0, y: Object.entries(pipeline.env!).length * 40 + 0 },
+      position: { x: 0, y: Object.entries(pipeline.env!).length * 25 + 100 },
       type: 'args',
       data: { pipeline },
     },
