@@ -59,33 +59,38 @@ type DagViewProps = {
 type View = 'data' | 'dependencies' | 'conditionals';
 
 const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
+  const nodeTypes = useMemo(
+    () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode }),
+    []
+  );
   const [views, setViews] = useState<{ [K in View]: boolean }>({
     conditionals: true,
     data: true,
-    dependencies: false,
+    dependencies: true,
   });
+
   const handleToggleView = (view: View) => {
     setViews({
       ...views,
       [view]: !views[view],
     });
   };
-  const nodeTypes = useMemo(
-    () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode }),
-    []
-  );
 
-  let initialNodes: Array<Node> = tasks.map((task, i) => {
-    return {
+  let conditionalsOffset = 0;
+  let initialNodes: Array<Node> = [];
+  let i = 0;
+  for (let task of tasks) {
+    initialNodes.push({
       id: task.id!,
       position: {
-        x: (i + 1) * 350,
+        x: (i + 1) * 350 + conditionalsOffset,
         y: Object.entries(pipeline.env!).length * 25 + 30,
       },
       type: 'standard',
       data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id },
-    };
-  });
+    });
+    i++;
+  }
 
   initialNodes = [
     ...initialNodes,
