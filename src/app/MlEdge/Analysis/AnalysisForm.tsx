@@ -77,47 +77,47 @@ const ML_EDGE_SYSTEM_ID = 'icicledev-cameratraps';
 const devices = [
   {
     id: 1,
-    name: "x86(w/o GPU)",
-    type: "x86",
-    site: "TACC",
+    name: 'x86(w/o GPU)',
+    type: 'x86',
+    site: 'TACC',
     gpu: false,
   },
   {
     id: 2,
-    name: "x86(w GPU)",
-    type: "x86",
-    site: "TACC",
+    name: 'x86(w GPU)',
+    type: 'x86',
+    site: 'TACC',
     gpu: true,
   },
   {
     id: 3,
-    name: "Jetson Nano",
-    type: "Jetson Nano",
-    site: "TACC",
+    name: 'Jetson Nano',
+    type: 'Jetson Nano',
+    site: 'TACC',
     gpu: true,
   },
   {
     id: 4,
-    name: "x86(w/o GPU)",
-    type: "x86",
-    site: "CHAMELEON",
+    name: 'x86(w/o GPU)',
+    type: 'x86',
+    site: 'CHAMELEON',
     gpu: false,
   },
   {
     id: 5,
-    name: "x86(w GPU)",
-    type: "x86",
+    name: 'x86(w GPU)',
+    type: 'x86',
     gpu: true,
-    site: "CHAMELEON",
+    site: 'CHAMELEON',
   },
   {
     id: 6,
-    name: "Jetson Nano",
-    type: "Jetson Nano",
-    site: "CHAMELEON",
+    name: 'Jetson Nano',
+    type: 'Jetson Nano',
+    site: 'CHAMELEON',
     gpu: true,
   },
-]
+];
 
 const AnalysisForm: React.FC = () => {
   const [analyses, setAnalyses] = useState<Analysis[]>([initialValues]);
@@ -252,7 +252,7 @@ const AnalysisForm: React.FC = () => {
                   status,
                   report: 'Download',
                 };
-                const device = devices.filter(d => d.id == values.device)[0]
+                const device = devices.filter((d) => d.id == values.device)[0];
                 console.log({
                   name: 'ctctrl-tacc',
                   appId: 'ctctrl-icicledev',
@@ -277,7 +277,7 @@ const AnalysisForm: React.FC = () => {
                       includeLaunchFiles: false,
                     },
                   },
-                })
+                });
                 submit({
                   name: 'ctctrl-tacc',
                   appId: 'ctctrl-icicledev',
@@ -375,14 +375,8 @@ const AnalysisForm: React.FC = () => {
                       }
                     >
                       <option value="" label="Select option" />
-                      <option
-                        value="megadetectorv5a"
-                        label="megadetectorv5a"
-                      />
-                      <option
-                        value="megadetectorv5b"
-                        label="megadetectorv5b"
-                      />
+                      <option value="megadetectorv5a" label="megadetectorv5a" />
+                      <option value="megadetectorv5b" label="megadetectorv5b" />
                       <option
                         value="megadetectorv5-ft-ena"
                         label="megadetectorv5-ft-ena"
@@ -435,9 +429,7 @@ const AnalysisForm: React.FC = () => {
                       placement="top"
                       isOpen={tooltipOpen[`datasetHelp-${analysis.id}`]}
                       target={`datasetHelp-${analysis.id}`}
-                      toggle={() =>
-                        toggleTooltip(`datasetHelp-${analysis.id}`)
-                      }
+                      toggle={() => toggleTooltip(`datasetHelp-${analysis.id}`)}
                     >
                       Select a dataset
                     </Tooltip>
@@ -552,46 +544,44 @@ const AnalysisForm: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  {
-                    values.site && (
-                      <div className={styles.formGroup}>
-                        <label htmlFor={`device-${index}`}>Devices</label>
-                        <Input
-                          type="select"
-                          id={`device-${index}`}
-                          name="device"
-                          onChange={(e) =>
-                            handleChangeAnalysis(
-                              index,
-                              'device',
-                              e.target.value,
-                              setFieldValue,
-                              setFieldTouched
-                            )
+                  {values.site && (
+                    <div className={styles.formGroup}>
+                      <label htmlFor={`device-${index}`}>Devices</label>
+                      <Input
+                        type="select"
+                        id={`device-${index}`}
+                        name="device"
+                        onChange={(e) =>
+                          handleChangeAnalysis(
+                            index,
+                            'device',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          )
+                        }
+                        onBlur={handleBlur}
+                        value={values.device}
+                        className={
+                          !values.device && touched.device ? 'is-invalid' : ''
+                        }
+                      >
+                        <option value="" label="Select option" />
+                        {devices.map((device) => {
+                          if (device.site === values.site) {
+                            return (
+                              <option value={device.id} label={device.name} />
+                            );
                           }
-                          onBlur={handleBlur}
-                          value={values.device}
-                          className={
-                            !values.device && touched.device ? 'is-invalid' : ''
-                          }
-                        >
-                          <option value="" label="Select option" />
-                          {devices.map((device) => {
-                            if (device.site === values.site) {
-                              return (
-                                <option value={device.id} label={device.name} />
-                              )
-                            }
-                          })}
-                        </Input>
-                        {!values.device && touched.device && (
-                          <div className="invalid-feedback">
-                            {errors.device || 'Device is required'}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  }
+                        })}
+                      </Input>
+                      {!values.device && touched.device && (
+                        <div className="invalid-feedback">
+                          {errors.device || 'Device is required'}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className={styles.formGroup}>
                     <label htmlFor={`advancedConfig-${index}`}>
                       Advanced Config
@@ -599,9 +589,7 @@ const AnalysisForm: React.FC = () => {
                     <span id={`advancedConfigHelp-${analysis.id}`}>?</span>
                     <Tooltip
                       placement="top"
-                      isOpen={
-                        tooltipOpen[`advancedConfigHelp-${analysis.id}`]
-                      }
+                      isOpen={tooltipOpen[`advancedConfigHelp-${analysis.id}`]}
                       target={`advancedConfigHelp-${analysis.id}`}
                       toggle={() =>
                         toggleTooltip(`advancedConfigHelp-${analysis.id}`)
