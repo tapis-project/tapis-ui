@@ -3,12 +3,10 @@ import React, {
   useMemo,
   useState,
   useEffect,
-  useReducer,
 } from 'react';
-import { EnvironmentNode, TaskNode, ArgsNode } from './Nodes';
+import { EnvironmentNode, TaskNode, ArgsNode, ConditionalNode } from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { Icon } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
 import styles from './DagView.module.scss';
 import { Button } from 'reactstrap';
@@ -23,16 +21,14 @@ import {
   Divider,
   Paper,
   Chip,
+  SpeedDial,
+  SpeedDialAction
 } from '@mui/material';
 import {
   Delete,
   Edit,
-  Hub,
-  Input,
-  Output,
-  Visibility,
+  Add
 } from '@mui/icons-material';
-import { useLocation } from 'react-router-dom';
 import {
   ReactFlow,
   MiniMap,
@@ -45,22 +41,23 @@ import {
   MarkerType,
   Edge,
   Node,
-  Panel,
+  Panel
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 
 type DagViewProps = {
-  tasks: Array<Workflows.Task>;
   pipeline: Workflows.Pipeline;
   groupId: string;
 };
 
 type View = 'data' | 'dependencies' | 'conditionals';
 
-const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
+const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
+  const tasks = pipeline.tasks!
+  const [openDagActions, setOpenDagActions] = React.useState(false);
   const nodeTypes = useMemo(
-    () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode }),
+    () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode, conditional: ConditionalNode }),
     []
   );
   const [views, setViews] = useState<{ [K in View]: boolean }>({
@@ -69,6 +66,11 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
     dependencies: true,
   });
 
+  const dagActions = [
+    { icon: <Add />, name: 'New task' },
+    { icon: <Add />, name: 'Use task' },
+  ]
+
   const handleToggleView = (view: View) => {
     setViews({
       ...views,
@@ -76,60 +78,120 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
     });
   };
 
-  let conditionalsOffset = 0;
-  let initialNodes: Array<Node> = [];
-  let i = 0;
-  for (let task of tasks) {
-    initialNodes.push({
-      id: task.id!,
-      position: {
-        x: (i + 1) * 350 + conditionalsOffset,
-        y: Object.entries(pipeline.env!).length * 25 + 30,
-      },
-      type: 'standard',
-      data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id },
-    });
-    i++;
-  }
+  useEffect(() => {
+    setNodes(calculateNodes())
+    setEdges(calculateEdges())
+  }, [views, groupId, pipeline])
 
-  initialNodes = [
-    ...initialNodes,
-    {
-      id: `${pipeline.id}-env`,
-      position: { x: 0, y: 0 },
-      type: 'env',
-      data: { pipeline },
-    },
-    {
-      id: `${pipeline.id}-args`,
-      position: { x: 0, y: Object.entries(pipeline.env!).length * 25 + 100 },
-      type: 'args',
-      data: { pipeline },
-    },
-  ];
+  const calculateNodes = () => {
+    let conditionalOffset = 0;
+    let initialNodes: Array<Node> = [];
+    let i = 0;
+    for (let task of tasks) {
+      if (task.conditions!.length > 0 && views.conditionals) {
+        initialNodes.push({
+          id: `conditional-${task.id!}`,
+          position: {
+            x: (i + 1 + conditionalOffset) * 350,
+            y: Object.entries(pipeline.env!).length * 25 + 30,
+          },
+          type: 'conditional',
+          data: { task: task, groupId, pipelineId: pipeline.id },
+        });
+        conditionalOffset++
+      }
 
-  const initialEdges: Array<Edge> = [];
-  for (const task of tasks) {
-    for (const dep of task.depends_on!) {
-      initialEdges.push({
-        id: `e-${dep.id}-${task.id}`,
-        type: 'step',
-        source: dep.id!,
-        target: task.id!,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          width: 10,
-          height: 10,
-          color: '#000000',
+      initialNodes.push({
+        id: task.id!,
+        position: {
+          x: (i + 1 + conditionalOffset) * 350,
+          y: Object.entries(pipeline.env!).length * 25 + 30,
         },
-        animated: true,
-        style: { stroke: '#000000', strokeWidth: '3px' },
+        type: 'standard',
+        data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id },
       });
+      i++;
     }
+
+    initialNodes = [
+      ...initialNodes,
+      {
+        id: `${pipeline.id}-env`,
+        position: { x: 0, y: 0 },
+        type: 'env',
+        data: { pipeline },
+      },
+      {
+        id: `${pipeline.id}-args`,
+        position: { x: 0, y: Object.entries(pipeline.env!).length * 25 + 100 },
+        type: 'args',
+        data: { pipeline },
+      },
+    ];
+
+    return initialNodes
+  }
+  
+  const calculateEdges = () => {
+    if (!views.dependencies) {return []}
+    const initialEdges: Array<Edge> = [];
+    for (const task of tasks) {
+      if (task.conditions!.length > 0 && views.conditionals) {
+        initialEdges.push({
+          id: `e-conditional-${task.id}-${task.id}`,
+          type: 'step',
+          source: `conditional-${task.id}`,
+          target: task.id!,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 10,
+            height: 10,
+            color: '#000000',
+          },
+          animated: true,
+          style: { stroke: '#000000', strokeWidth: '3px' },
+        });
+      }
+      for (const dep of task.depends_on!) {
+        // Add edges from the conditional node to the dependent task
+        if (task.conditions!.length > 0 && views.conditionals) {
+          // Edge from the conditional to the parent task
+          initialEdges.push({
+            id: `e-conditional-${dep.id}-c-${task.id}`,
+            type: 'step',
+            source: dep.id!,
+            target: `conditional-${task.id}`,
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              width: 10,
+              height: 10,
+              color: '#000000',
+            },
+            animated: true,
+            style: { stroke: '#000000', strokeWidth: '3px' },
+          });
+        }
+        initialEdges.push({
+          id: `e-${dep.id}-${task.id}`,
+          type: 'step',
+          source: dep.id!,
+          target: task.id!,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 10,
+            height: 10,
+            color: '#000000',
+          },
+          animated: true,
+          style: { stroke: '#000000', strokeWidth: '3px' },
+        });
+      }
+    }
+    return initialEdges
   }
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(calculateNodes());
+  const [edges, setEdges, onEdgesChange] = useEdgesState(calculateEdges());
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
@@ -179,6 +241,24 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline, tasks }) => {
         <Controls position="top-left" />
         <MiniMap position="bottom-left" />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <SpeedDial
+          ariaLabel="DAG Actions"
+          onClose={() => {setOpenDagActions(false)}}
+          onOpen={() => {setOpenDagActions(true)}}
+          open={openDagActions}
+          style={{position: "absolute", "bottom": 40, "right": 40}}
+          icon={<Add />}
+        >
+          {dagActions.map((action) => (
+            <SpeedDialAction
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              tooltipOpen
+              onClick={() => {setOpenDagActions(false)}}
+            />
+          ))}
+        </SpeedDial>
       </ReactFlow>
     </div>
   );
