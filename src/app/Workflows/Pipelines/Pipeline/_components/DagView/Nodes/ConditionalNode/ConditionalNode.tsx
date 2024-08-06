@@ -33,8 +33,8 @@ const ConditionalNode: React.FC<NodeProps> = ({ data }) => {
             Conditional expressions that control task execution
           </i>
         </div>
-        <div className={styles["footer"]}>
-          <Edit className={styles["action"]}/>
+        <div className={styles['footer']}>
+          <Edit className={styles['action']} />
         </div>
       </div>
       <StandardHandle

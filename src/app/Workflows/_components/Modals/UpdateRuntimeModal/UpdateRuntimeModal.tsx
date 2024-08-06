@@ -13,17 +13,30 @@ import {
   DialogContent,
   DialogTitle,
   Alert,
-  AlertTitle
+  AlertTitle,
 } from '@mui/material';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
 type UpdateRuntimeModalProps = {
-  open: boolean
-  toggle: () => void
-}
+  open: boolean;
+  toggle: () => void;
+};
 
-const UpdateRuntimeModal: React.FC<UpdateRuntimeModalProps> = ({open, toggle}) => {
-  const { task, taskPatch, setTaskPatch, commit, isLoading, isError, isSuccess, error, reset } = usePatchTask<Workflows.FunctionTask>();
+const UpdateRuntimeModal: React.FC<UpdateRuntimeModalProps> = ({
+  open,
+  toggle,
+}) => {
+  const {
+    task,
+    taskPatch,
+    setTaskPatch,
+    commit,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+    reset,
+  } = usePatchTask<Workflows.FunctionTask>();
   return (
     <Dialog
       open={open}
@@ -34,10 +47,7 @@ const UpdateRuntimeModal: React.FC<UpdateRuntimeModalProps> = ({open, toggle}) =
       <DialogTitle id="alert-dialog-title">Update Runtime</DialogTitle>
       <DialogContent>
         {isSuccess && (
-          <Alert
-            severity="success"
-            style={{ marginTop: '8px' }}
-          >
+          <Alert severity="success" style={{ marginTop: '8px' }}>
             Successfully updated task runtime
           </Alert>
         )}
@@ -88,16 +98,18 @@ const UpdateRuntimeModal: React.FC<UpdateRuntimeModalProps> = ({open, toggle}) =
             </Select>
           </FormControl>
           <FormHelperText>
-            The runtime envrionment in which the function code will be
-            executed
+            The runtime envrionment in which the function code will be executed
           </FormHelperText>
         </div>
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={() => {reset(); toggle()}}
+          onClick={() => {
+            reset();
+            toggle();
+          }}
         >
-          {isSuccess ? "Continue" : "Cancel"}
+          {isSuccess ? 'Continue' : 'Cancel'}
         </Button>
         <Button
           onClick={commit}
@@ -109,7 +121,7 @@ const UpdateRuntimeModal: React.FC<UpdateRuntimeModalProps> = ({open, toggle}) =
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default UpdateRuntimeModal
+export default UpdateRuntimeModal;

@@ -1,1 +1,1 @@
-export { default as UpdateRuntimeModal } from "./UpdateRuntimeModal"
+export { default as UpdateRuntimeModal } from './UpdateRuntimeModal';

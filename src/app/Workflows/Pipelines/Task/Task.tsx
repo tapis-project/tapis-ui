@@ -30,7 +30,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
@@ -41,7 +41,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
@@ -52,7 +52,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
@@ -63,7 +63,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
@@ -74,7 +74,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
@@ -85,7 +85,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
@@ -96,12 +96,12 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={["general"]}
+            tabs={['general']}
             defaultTab="general"
           />
         );
     }
-  }
+  };
 
   return (
     <div>

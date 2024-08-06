@@ -1,1 +1,1 @@
-export { CodeTab } from "./CodeTab"
+export { CodeTab } from './CodeTab';

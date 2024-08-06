@@ -245,13 +245,22 @@ const AnalysisForm: React.FC = () => {
                     description: 'Invoke ctcontroller to run camera-traps',
                     parameterSet: {
                       envVariables: [
-                        { key: 'CT_CONTROLLER_TARGET_SITE', value: values.site },
-                        { key: 'CT_CONTROLLER_NODE_TYPE', value: values.device },
-                        { key: 'CT_CONTROLLER_CONFIG_PATH', value: '/config.yml' },
+                        {
+                          key: 'CT_CONTROLLER_TARGET_SITE',
+                          value: values.site,
+                        },
+                        {
+                          key: 'CT_CONTROLLER_NODE_TYPE',
+                          value: values.device,
+                        },
+                        {
+                          key: 'CT_CONTROLLER_CONFIG_PATH',
+                          value: '/config.yml',
+                        },
                       ],
                       archiveFilter: {
-                        includeLaunchFiles: false
-                      }
+                        includeLaunchFiles: false,
+                      },
                     },
                   });
                   setRecentAnalyses([...recentAnalyses, newAnalysis]);
@@ -506,9 +515,7 @@ const AnalysisForm: React.FC = () => {
 
                     {values.site === 'TACC' && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`device-${index}`}>
-                          Devices
-                        </label>
+                        <label htmlFor={`device-${index}`}>Devices</label>
                         <Input
                           type="select"
                           id={`device-${index}`}
@@ -525,30 +532,24 @@ const AnalysisForm: React.FC = () => {
                           onBlur={handleBlur}
                           value={values.device}
                           className={
-                            !values.device && touched.device
-                              ? 'is-invalid'
-                              : ''
+                            !values.device && touched.device ? 'is-invalid' : ''
                           }
                         >
                           <option value="" label="Select option" />
                           <option value="x86(w/o GPU)" label="x86(w/o GPU)" />
                           <option value="Jetson Nano" label="Jetson Nano" />
                         </Input>
-                        {!values.device &&
-                          touched.device && (
-                            <div className="invalid-feedback">
-                              {errors.device ||
-                                'Device for TACC is required'}
-                            </div>
-                          )}
+                        {!values.device && touched.device && (
+                          <div className="invalid-feedback">
+                            {errors.device || 'Device for TACC is required'}
+                          </div>
+                        )}
                       </div>
                     )}
 
                     {values.site === 'CHAMELEON' && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`device-${index}`}>
-                          Devices
-                        </label>
+                        <label htmlFor={`device-${index}`}>Devices</label>
                         <Input
                           type="select"
                           id={`device-${index}`}
@@ -565,9 +566,7 @@ const AnalysisForm: React.FC = () => {
                           onBlur={handleBlur}
                           value={values.device}
                           className={
-                            !values.device && touched.device
-                              ? 'is-invalid'
-                              : ''
+                            !values.device && touched.device ? 'is-invalid' : ''
                           }
                         >
                           <option value="" label="Select option" />
@@ -575,13 +574,12 @@ const AnalysisForm: React.FC = () => {
                           <option value="x86(w GPU)" label="x86(w GPU)" />
                           <option value="Jetson Nano" label="Jetson Nano" />
                         </Input>
-                        {!values.device &&
-                          touched.device && (
-                            <div className="invalid-feedback">
-                              {errors.device ||
-                                'Device for CHAMELEON is required'}
-                            </div>
-                          )}
+                        {!values.device && touched.device && (
+                          <div className="invalid-feedback">
+                            {errors.device ||
+                              'Device for CHAMELEON is required'}
+                          </div>
+                        )}
                       </div>
                     )}
 

@@ -1,15 +1,13 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export type TaskUpdateContextProps<T> = {
-    groupId: string,
-    pipelineId: string,
-    task: T;
-    tasks: Array<T>
-    taskPatch: Partial<T>
-    setTaskPatch: (
-        task: T,
-        patch: Partial<T>
-    ) => void
-}
+  groupId: string;
+  pipelineId: string;
+  task: T;
+  tasks: Array<T>;
+  taskPatch: Partial<T>;
+  setTaskPatch: (task: T, patch: Partial<T>) => void;
+};
 
-export const TaskUpdateContext = createContext<TaskUpdateContextProps<any> | null>(null)
+export const TaskUpdateContext =
+  createContext<TaskUpdateContextProps<any> | null>(null);

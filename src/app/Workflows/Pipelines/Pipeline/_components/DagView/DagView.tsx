@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-} from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { EnvironmentNode, TaskNode, ArgsNode, ConditionalNode } from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
@@ -22,13 +17,9 @@ import {
   Paper,
   Chip,
   SpeedDial,
-  SpeedDialAction
+  SpeedDialAction,
 } from '@mui/material';
-import {
-  Delete,
-  Edit,
-  Add
-} from '@mui/icons-material';
+import { Delete, Edit, Add } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -41,7 +32,7 @@ import {
   MarkerType,
   Edge,
   Node,
-  Panel
+  Panel,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -54,10 +45,15 @@ type DagViewProps = {
 type View = 'data' | 'dependencies' | 'conditionals';
 
 const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
-  const tasks = pipeline.tasks!
+  const tasks = pipeline.tasks!;
   const [openDagActions, setOpenDagActions] = React.useState(false);
   const nodeTypes = useMemo(
-    () => ({ standard: TaskNode, args: ArgsNode, env: EnvironmentNode, conditional: ConditionalNode }),
+    () => ({
+      standard: TaskNode,
+      args: ArgsNode,
+      env: EnvironmentNode,
+      conditional: ConditionalNode,
+    }),
     []
   );
   const [views, setViews] = useState<{ [K in View]: boolean }>({
@@ -69,7 +65,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const dagActions = [
     { icon: <Add />, name: 'New task' },
     { icon: <Add />, name: 'Use task' },
-  ]
+  ];
 
   const handleToggleView = (view: View) => {
     setViews({
@@ -79,9 +75,9 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   };
 
   useEffect(() => {
-    setNodes(calculateNodes())
-    setEdges(calculateEdges())
-  }, [views, groupId, pipeline])
+    setNodes(calculateNodes());
+    setEdges(calculateEdges());
+  }, [views, groupId, pipeline]);
 
   const calculateNodes = () => {
     let conditionalOffset = 0;
@@ -98,7 +94,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           type: 'conditional',
           data: { task: task, groupId, pipelineId: pipeline.id },
         });
-        conditionalOffset++
+        conditionalOffset++;
       }
 
       initialNodes.push({
@@ -129,11 +125,13 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       },
     ];
 
-    return initialNodes
-  }
-  
+    return initialNodes;
+  };
+
   const calculateEdges = () => {
-    if (!views.dependencies) {return []}
+    if (!views.dependencies) {
+      return [];
+    }
     const initialEdges: Array<Edge> = [];
     for (const task of tasks) {
       if (task.conditions!.length > 0 && views.conditionals) {
@@ -187,8 +185,8 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         });
       }
     }
-    return initialEdges
-  }
+    return initialEdges;
+  };
 
   const [nodes, setNodes, onNodesChange] = useNodesState(calculateNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(calculateEdges());
@@ -243,10 +241,14 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         <SpeedDial
           ariaLabel="DAG Actions"
-          onClose={() => {setOpenDagActions(false)}}
-          onOpen={() => {setOpenDagActions(true)}}
+          onClose={() => {
+            setOpenDagActions(false);
+          }}
+          onOpen={() => {
+            setOpenDagActions(true);
+          }}
           open={openDagActions}
-          style={{position: "absolute", "bottom": 40, "right": 40}}
+          style={{ position: 'absolute', bottom: 40, right: 40 }}
           icon={<Add />}
         >
           {dagActions.map((action) => (
@@ -255,7 +257,9 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               icon={action.icon}
               tooltipTitle={action.name}
               tooltipOpen
-              onClick={() => {setOpenDagActions(false)}}
+              onClick={() => {
+                setOpenDagActions(false);
+              }}
             />
           ))}
         </SpeedDial>

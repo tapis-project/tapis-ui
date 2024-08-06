@@ -68,16 +68,25 @@ const Sidebar: React.FC<React.PropsWithChildren<SidebarProps>> = ({
   );
 };
 
-type Tab = "general" | "deps" | "io" | "execprofile" | "runtime" | "git" | "conditions" | "code" | "jobdef"
+type Tab =
+  | 'general'
+  | 'deps'
+  | 'io'
+  | 'execprofile'
+  | 'runtime'
+  | 'git'
+  | 'conditions'
+  | 'code'
+  | 'jobdef';
 
 type TaskEditorProps = {
   groupId: string;
   pipelineId: string;
   task: Workflows.Task;
   tasks: Array<Workflows.Task>;
-  tabs: Array<Tab>
+  tabs: Array<Tab>;
   defaultTab?: Tab;
-  featuredTab?: Tab
+  featuredTab?: Tab;
 };
 
 const TaskEditor: React.FC<TaskEditorProps> = ({
@@ -87,7 +96,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
   tasks,
   tabs = [],
   defaultTab = 'general',
-  featuredTab
+  featuredTab,
 }) => {
   const initialTaskData = JSON.parse(JSON.stringify(task));
   const [modal, setModal] = useState<string | undefined>(undefined);
@@ -171,7 +180,16 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
   };
 
   return (
-    <TaskUpdateContext.Provider value={{setTaskPatch: patchTask, taskPatch, task, tasks, groupId, pipelineId}}>
+    <TaskUpdateContext.Provider
+      value={{
+        setTaskPatch: patchTask,
+        taskPatch,
+        task,
+        tasks,
+        groupId,
+        pipelineId,
+      }}
+    >
       <div>
         <Box sx={{ width: '100%', typography: 'body1' }}>
           <TabContext value={tab}>
@@ -406,7 +424,8 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
                   </Select>
                 </FormControl>
                 <FormHelperText>
-                  Controls how soon to retry a task once it enters a failed state
+                  Controls how soon to retry a task once it enters a failed
+                  state
                 </FormHelperText>
                 <FormControl
                   fullWidth
@@ -530,8 +549,8 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
                   }}
                 />
                 <FormHelperText>
-                  Each package must be on a seperate line. May be just the package
-                  name or the pacakge name followed by the version. Ex.
+                  Each package must be on a seperate line. May be just the
+                  package name or the pacakge name followed by the version. Ex.
                   tapipy==^1.6.0
                 </FormHelperText>
                 <FormControl
@@ -580,10 +599,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
               Test
             </Sidebar>
           )}
-          <CodeTab
-            featured={task.type === Workflows.EnumTaskType.Function}
-          />
-            
+          <CodeTab featured={task.type === Workflows.EnumTaskType.Function} />
         </div>
         <Dialog
           open={modal === 'delete'}
@@ -599,8 +615,8 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
                 {dependentTasks.length > 1 ? 's' : ''} in this pipeline: [{' '}
                 {dependentTasks.map((d) => `${d.id} `)}].
                 <br />
-                Running this workflow after this task is deleted will result in an
-                immediate failure.
+                Running this workflow after this task is deleted will result in
+                an immediate failure.
               </Alert>
             )}
             <DialogContentText id="alert-dialog-description">

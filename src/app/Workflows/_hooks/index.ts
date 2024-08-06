@@ -1,1 +1,1 @@
-export { default as usePatchTask } from "./usePatchTask"
+export { default as usePatchTask } from './usePatchTask';

@@ -1,1 +1,1 @@
-export { UpdateRuntimeModal } from "./UpdateRuntimeModal"
+export { UpdateRuntimeModal } from './UpdateRuntimeModal';

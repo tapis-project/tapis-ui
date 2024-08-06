@@ -1,1 +1,1 @@
-export { default as CodeTab } from "./CodeTab"
+export { default as CodeTab } from './CodeTab';
