@@ -1,5 +1,6 @@
 import React from 'react';
 import { TaskEditor } from '../_components';
+import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
@@ -18,7 +19,89 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
     pipelineId,
   });
   const tasks = data?.result || [];
-  const task = tasks.filter((task) => task.id === taskId);
+  const task = tasks.filter((task) => task.id === taskId)[0];
+
+  const renderTaskEditor = (task: Workflows.Task) => {
+    switch (task.type) {
+      case Workflows.EnumTaskType.Function:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+      case Workflows.EnumTaskType.Template:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+      case Workflows.EnumTaskType.Request:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+      case Workflows.EnumTaskType.ImageBuild:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+      case Workflows.EnumTaskType.Application:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+      case Workflows.EnumTaskType.TapisJob:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+      case Workflows.EnumTaskType.TapisActor:
+        return (
+          <TaskEditor
+            groupId={groupId}
+            pipelineId={pipelineId}
+            task={task}
+            tasks={tasks}
+            tabs={["general"]}
+            defaultTab="general"
+          />
+        );
+    }
+  }
 
   return (
     <div>
@@ -29,12 +112,7 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
       </div>
       <QueryWrapper isLoading={isLoading} error={error}>
         {task !== undefined ? (
-          <TaskEditor
-            groupId={groupId}
-            pipelineId={pipelineId}
-            tasks={tasks}
-            task={task[0]}
-          />
+          renderTaskEditor(task)
         ) : (
           <p style={{ color: 'red' }}>Task with id '{taskId}' does not exist</p>
         )}
