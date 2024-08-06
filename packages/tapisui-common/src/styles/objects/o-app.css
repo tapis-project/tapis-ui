@@ -1,0 +1,91 @@
+/*
+App
+
+A simple application layout module that is limited in flexibility.
+
+> __Warning__: The core implementation does not support sidebars _and_ header/footer's simultaneously.
+
+.o-app--layout-vert - App with vertical layout (header, main body, footer)
+.o-app--layout-horz - App with horizontal layout (side bar, main body, side bar)
+
+Markup:
+<main>
+    <div class="o-app">
+      <header class="o-app__head">I am the header.</header>
+      <nav class="o-app__side">I am a "start" sidebar.</nav>
+      <section class="o-app__body">I am the main body.</section>
+      <nav class="o-app__side">I am an "end" sidebar.</nav>
+      <footer class="o-app__foot">I am the footer.</footer>
+    </div>
+</main>
+
+Styleguide Objects.App
+*/
+.o-app,
+[class*='o-app--'] {
+  display: flex;
+  justify-content: stretch;
+}
+
+/* Z-Axis */
+.o-app__head {
+  z-index: 4;
+}
+.o-app__body {
+  z-index: 2;
+}
+.o-app__side {
+  z-index: 3;
+}
+.o-app__foot {
+  z-index: 1;
+}
+
+.o-app--layout-vert {
+  flex-direction: column;
+
+  /* Y-Axis */
+  & > .o-app__head {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+  & > .o-app__body {
+    flex-grow: 1;
+  }
+  & > table.o-app__body {
+    height: 100%;
+  }
+  & > .o-app__foot {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  /* CAVEAT: Not supported */
+  & > .o-app__side {
+    display: none;
+  }
+}
+
+.o-app--layout-horz {
+  flex-direction: row;
+
+  /* X-Axis */
+  & > .o-app__side,
+  & > .o-app__body {
+    overflow-y: auto;
+  }
+  & > .o-app__body {
+    flex-grow: 1;
+  }
+  /* A table, as a flex item, can not behave as naively desired; so nest it */
+  /* SEE: https://stackoverflow.com/a/41421700 */
+  & > .o-app__body > table {
+    width: 100%;
+  }
+
+  /* CAVEAT: Not supported */
+  & > .o-app__head,
+  & > .o-app__foot {
+    display: none;
+  }
+}

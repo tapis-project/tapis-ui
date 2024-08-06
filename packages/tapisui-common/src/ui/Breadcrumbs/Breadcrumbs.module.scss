@@ -1,0 +1,24 @@
+.box {
+  display: flex;
+  align-content: center;
+}
+
+.fragment {
+  height: 26px;
+  display: flex;
+  align-content: center;
+}
+
+.lastFragment {
+  display: flex;
+  align-content: center;
+  //font-weight: 600;
+}
+
+.link {
+  padding: 0 0 0 0 !important;
+  border: 0 !important;
+  color: #707070 !important;
+  display: flex;
+  align-content: center;
+}

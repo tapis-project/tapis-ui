@@ -1,21 +1,17 @@
-FROM node:16.19
+FROM node:22.4.0
 
 RUN mkdir tapisui
 RUN mkdir tapisui/src
 
 WORKDIR /tapisui/src
 
-# Copy the package json and package lock
-COPY package.json ./
-COPY package-lock.json ./
-
 # Copy the rest of the files
 COPY ./ ./
 
 # Install all files in the package json
-RUN npm install
+RUN npm run init-project container
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "deploy"]
 
 # RUN npm run build
 

@@ -1,0 +1,16 @@
+$width: 240px;
+
+.root {
+  overflow: none;
+  border-right: 1px solid rgba(112, 112, 112, 0.25);
+}
+
+.collapse-icon {
+  padding: 0px;
+  display: inline-block;
+  margin: 8px 0px 8px 22px;
+}
+
+.collapse-icon:hover {
+  cursor: pointer;
+}

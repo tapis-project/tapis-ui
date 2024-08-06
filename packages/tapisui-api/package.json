@@ -1,0 +1,43 @@
+{
+  "name": "@tapis/tapisui-api",
+  "version": "0.0.14",
+  "description": "Typescript library for making api calls with react query",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "vitest run --config vite.config.mts",
+    "build": "npx tsc --skipLibCheck",
+    "push": "npx tsc --skipLibCheck && npm publish --access public"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "keywords": [
+    "UT",
+    "TACC",
+    "CIC"
+  ],
+  "author": "Nathan Freeman",
+  "license": "ISC",
+  "eslintConfig": {
+    "extends": [
+      "prettier"
+    ]
+  },
+  "dependencies": {
+    "@tapis/tapis-typescript": "^0.0.37",
+    "axios": "^0.21.4",
+    "cross-fetch": "^3.1.4",
+    "streamsaver": "^2.0.5",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.5",
+    "@types/streamsaver": "^2.0.1",
+    "typescript": "^4.9.5",
+    "vitest": "^1.6.0",
+    "vite-tsconfig-paths": "^4.3.2"
+  }
+}

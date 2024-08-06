@@ -1,0 +1,82 @@
+.pageContainer {
+  padding: 10px;
+}
+
+.analysisContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.analysisBox {
+  position: relative; /* Added */
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin: 10px;
+  width: 300px;
+}
+
+.closeButton {
+  position: absolute; /* Added */
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  cursor: pointer;
+  z-index: 1;
+}
+
+.helpIcon {
+  margin-left: 8px; /* Add space between label and icon */
+}
+
+.newAnalysisBox {
+  border: 1px dashed #ccc;
+  padding: 20px;
+  width: 300px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  margin: 10px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+.editableField {
+  display: flex;
+  align-items: center;
+}
+
+.editableField span {
+  margin-right: 10px;
+}
+
+.recentAnalysesTable {
+  margin-top: 20px;
+}
+
+.recentAnalysesTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recentAnalysesTable th,
+.recentAnalysesTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.recentAnalysesTable th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.recentAnalysesTable tr:hover {
+  background-color: #f1f1f1;
+}

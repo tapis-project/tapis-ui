@@ -1,0 +1,16 @@
+/* GENERIC: Text Semantics */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics */
+
+/* TODO: Migrate `index.scss` styles for `code` */
+/* NOTE: Only do after merge of PR #6 / FP-273, which updates some styles in `index.scss` */
+
+/* Overwrite Bootstrap `_code.scss` */
+code {
+  color: unset;
+}
+kbd {
+  padding: unset;
+  color: unset;
+  background-color: unset;
+  border-radius: unset;
+}

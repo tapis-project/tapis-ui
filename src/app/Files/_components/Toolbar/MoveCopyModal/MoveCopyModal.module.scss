@@ -1,0 +1,56 @@
+.col-header {
+  font-weight: bold;
+  padding-bottom: 10px;
+}
+
+.file-list {
+  /* icon */
+  tr > *:nth-child(1) {
+    width: 7% !important;
+  }
+  /* name */
+  tr > *:nth-child(2) {
+    width: 73% !important;
+  }
+  /* size */
+  tr > *:nth-child(3) {
+    width: 20% !important;
+  }
+}
+
+.file-list-origin {
+  /* icon */
+  tr > *:nth-child(1) {
+    width: 7% !important;
+  }
+  /* name */
+  tr > *:nth-child(2) {
+    width: 63% !important;
+  }
+  /* size */
+  tr > *:nth-child(3) {
+    width: 20% !important;
+  }
+  /* status */
+  tr > *:nth-child(4) {
+    width: 10% !important;
+    justify-content: center;
+  }
+}
+
+.nav-list {
+  height: 372px;
+  width: 100%;
+  border: 1px solid gray;
+  margin-top: 0.25em;
+  box-sizing: border-box;
+  table {
+    height: 350px;
+    max-height: 350px;
+  }
+}
+
+.remove-file {
+  cursor: pointer;
+  color: red;
+}

@@ -1,13 +1,11 @@
 name: CI
 
-# Controls when the action will run. Triggers the workflow on pushes to main or on pull request events
 on:
   push:
     branches: [dev, staging, test, release-**]
   pull_request:
     branches: [dev, staging, test, release-**]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   Client_Side_Unit_Tests:
     runs-on: ubuntu-20.04
@@ -16,22 +14,18 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
+          node-version: 22.4.x
+      # - uses: actions/cache@v1
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
       - name: npm ci
-        run: |
-          npm ci
+        run: rm -rf node_modules && rm package-lock.json && npm install
       - name: Client Side Unit Tests
         run: |
           npm run test
-
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
@@ -42,15 +36,13 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
+          node-version: 22.4.x
+      # - uses: actions/cache@v1
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
       - name: npm ci
         run: |
           npm ci

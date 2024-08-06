@@ -1,0 +1,61 @@
+.node {
+  border: 2px solid #000000;
+  border-radius: 3px;
+  width: 300px;
+  color: #000000;
+  background-color: #ffffff;
+}
+
+.header {
+  width: 100%;
+  line-height: 20px;
+  border-bottom: 1px solid #cccccc;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-img {
+  height: 40px;
+  width: 40px;
+  border-right: 1px solid #cccccc;
+}
+
+.title {
+  padding-left: 8px;
+}
+
+.body {
+  padding: 8px;
+  line-height: 12px;
+  border-bottom: 1px solid #cccccc;
+}
+
+.description {
+  color: #666666;
+  font-size: 12px;
+}
+
+.footer {
+  padding: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  gap: 8px;
+}
+
+.action {
+  border: 1px solid #000000;
+  border-radius: 3px;
+  padding: 2px;
+  color: #000000;
+  cursor: pointer;
+}
+
+.action-danger {
+  border: 1px solid red;
+  border-radius: 3px;
+  padding: 2px;
+  cursor: pointer;
+}

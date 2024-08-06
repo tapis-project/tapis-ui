@@ -1,0 +1,46 @@
+/* TODO: Migrate any other should-be-global modal styles to here */
+/* FP-344: Consider a Modal component and a CSS module */
+/*
+Modal (Bootstrap)
+
+Override Bootstrap styles. See:
+
+- [ReactStrap Forms](https://reactstrap.github.io/components/modals/)
+- [Bootstrap Forms](https://getbootstrap.com/docs/4.4/components/modal/)
+
+Styleguide Components.Bootstrap.Modal
+*/
+.modal-content,
+.modal-header,
+.modal-body,
+.modal-footer {
+  border-radius: 0;
+}
+.modal-content,
+.modal-header,
+.modal-body {
+  border: none;
+}
+.modal-footer {
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.modal-header {
+  background-color: var(--global-color-primary--x-light);
+  padding: 1.35rem 1.75rem; /* (18px 23.5px design * 1.2 design-to-app ratio) */
+}
+.modal-title {
+  color: #484848;
+  font-weight: normal;
+  font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio */
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-xl {
+  width: 95%;
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@icicle/tapisui-extension",
+  "version": "0.1.1",
+  "description": "TapisUI extension configuration for ICICLE",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "npm run build && npm publish --access public",
+    "build": "npx ts-node src/bundle.ts && npx tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ICICLE-ai/tapisui-extension-icicle.git"
+  },
+  "keywords": [
+    "typescript",
+    "tapisui",
+    "UT",
+    "TACC",
+    "CIC"
+  ],
+  "author": "Nathan Freeman",
+  "collaborators": [
+    {
+      "name": "Christian Garcia"
+    }
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ICICLE-ai/tapisui-extension-icicle/issues"
+  },
+  "homepage": "https://github.com/ICICLE-ai/tapisui-extension-icicle#readme",
+  "dependencies": {
+    "@tapis/tapis-typescript": "^0.0.37",
+    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
+    "@tapis/tapisui-common": "file:../tapisui-common",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.33",
+    "typescript": "^4.9.5",
+    "@tapis/tapisui-extension-devtools": "file:../tapisui-extension-devtools"
+  }
+}
