@@ -20,7 +20,7 @@ interface Analysis {
   advancedConfig: string;
   modelUrl: string;
   datasetUrl: string;
-  additionalOption: string;
+  device: string;
 }
 
 interface ErrorDetail {
@@ -42,7 +42,7 @@ const initialValues: Analysis = {
   advancedConfig: '',
   modelUrl: '',
   datasetUrl: '',
-  additionalOption: '',
+  device: '',
 };
 
 const validationSchema = Yup.object({
@@ -59,7 +59,7 @@ const validationSchema = Yup.object({
     is: 'Other',
     then: Yup.string().required('Dataset URL is required'),
   }),
-  additionalOption: Yup.string()
+  device: Yup.string()
     .when('site', {
       is: 'TACC',
       then: Yup.string().required('Device for TACC is required'),
@@ -238,6 +238,22 @@ const AnalysisForm: React.FC = () => {
                     status,
                     report: 'Download',
                   };
+                  submit({
+                    name: 'ctctrl-tacc',
+                    appId: 'ctctrl-icicledev',
+                    appVersion: '0.1',
+                    description: 'Invoke ctcontroller to run camera-traps',
+                    parameterSet: {
+                      envVariables: [
+                        { key: 'CT_CONTROLLER_TARGET_SITE', value: values.site },
+                        { key: 'CT_CONTROLLER_NODE_TYPE', value: values.device },
+                        { key: 'CT_CONTROLLER_CONFIG_PATH', value: '/config.yml' },
+                      ],
+                      archiveFilter: {
+                        includeLaunchFiles: false
+                      }
+                    },
+                  });
                   setRecentAnalyses([...recentAnalyses, newAnalysis]);
                   resetForm();
                 }}
@@ -490,26 +506,26 @@ const AnalysisForm: React.FC = () => {
 
                     {values.site === 'TACC' && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`additionalOption-${index}`}>
+                        <label htmlFor={`device-${index}`}>
                           Devices
                         </label>
                         <Input
                           type="select"
-                          id={`additionalOption-${index}`}
-                          name="additionalOption"
+                          id={`device-${index}`}
+                          name="device"
                           onChange={(e) =>
                             handleChangeAnalysis(
                               index,
-                              'additionalOption',
+                              'device',
                               e.target.value,
                               setFieldValue,
                               setFieldTouched
                             )
                           }
                           onBlur={handleBlur}
-                          value={values.additionalOption}
+                          value={values.device}
                           className={
-                            !values.additionalOption && touched.additionalOption
+                            !values.device && touched.device
                               ? 'is-invalid'
                               : ''
                           }
@@ -518,10 +534,10 @@ const AnalysisForm: React.FC = () => {
                           <option value="x86(w/o GPU)" label="x86(w/o GPU)" />
                           <option value="Jetson Nano" label="Jetson Nano" />
                         </Input>
-                        {!values.additionalOption &&
-                          touched.additionalOption && (
+                        {!values.device &&
+                          touched.device && (
                             <div className="invalid-feedback">
-                              {errors.additionalOption ||
+                              {errors.device ||
                                 'Device for TACC is required'}
                             </div>
                           )}
@@ -530,26 +546,26 @@ const AnalysisForm: React.FC = () => {
 
                     {values.site === 'CHAMELEON' && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`additionalOption-${index}`}>
+                        <label htmlFor={`device-${index}`}>
                           Devices
                         </label>
                         <Input
                           type="select"
-                          id={`additionalOption-${index}`}
-                          name="additionalOption"
+                          id={`device-${index}`}
+                          name="device"
                           onChange={(e) =>
                             handleChangeAnalysis(
                               index,
-                              'additionalOption',
+                              'device',
                               e.target.value,
                               setFieldValue,
                               setFieldTouched
                             )
                           }
                           onBlur={handleBlur}
-                          value={values.additionalOption}
+                          value={values.device}
                           className={
-                            !values.additionalOption && touched.additionalOption
+                            !values.device && touched.device
                               ? 'is-invalid'
                               : ''
                           }
@@ -559,10 +575,10 @@ const AnalysisForm: React.FC = () => {
                           <option value="x86(w GPU)" label="x86(w GPU)" />
                           <option value="Jetson Nano" label="Jetson Nano" />
                         </Input>
-                        {!values.additionalOption &&
-                          touched.additionalOption && (
+                        {!values.device &&
+                          touched.device && (
                             <div className="invalid-feedback">
-                              {errors.additionalOption ||
+                              {errors.device ||
                                 'Device for CHAMELEON is required'}
                             </div>
                           )}
