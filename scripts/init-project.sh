@@ -14,6 +14,7 @@ delete_files() {
       rm -rf dist node_modules package-lock.json
       ;;
     "container")
+      rm -rf dist node_modules
       ;;
     "none")
       ;;

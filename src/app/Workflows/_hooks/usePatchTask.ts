@@ -42,7 +42,7 @@ const usePatchTask = <T>(): UsePatchTask<T> => {
 
   return {
     ...context,
-    ...usePatchHook,
+    ...modifiedUsePatchHook,
     commit,
   };
 };

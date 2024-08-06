@@ -44,29 +44,9 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import { CodeTab } from './Tabs';
+import { CodeTab, GitTab } from './Tabs';
 import { TaskUpdateContext } from 'app/Workflows/_context';
-
-type SidebarProps = {
-  title: string;
-  toggle: () => void;
-};
-
-const Sidebar: React.FC<React.PropsWithChildren<SidebarProps>> = ({
-  children,
-  title,
-  toggle,
-}) => {
-  return (
-    <div className={styles['sidebar']}>
-      <div className={styles['menu']}>
-        <h2>{title}</h2>
-        <ArrowBack onClick={toggle} className={styles['back']} />
-      </div>
-      {children}
-    </div>
-  );
-};
+import { Sidebar } from '../Sidebar';
 
 type Tab =
   | 'general'
@@ -590,14 +570,11 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
             </Sidebar>
           )}
           {tab === 'git' && (
-            <Sidebar
-              title={'Git Repositories'}
+            <GitTab
               toggle={() => {
-                setTab('code');
+                setTab(featuredTab || 'code');
               }}
-            >
-              Test
-            </Sidebar>
+            />
           )}
           <CodeTab featured={task.type === Workflows.EnumTaskType.Function} />
         </div>
