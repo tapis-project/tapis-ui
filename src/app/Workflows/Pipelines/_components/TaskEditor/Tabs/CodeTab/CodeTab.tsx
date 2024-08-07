@@ -44,7 +44,6 @@ const CodeTab: React.FC<CodeTabProps> = ({ featured }) => {
         editable={!task.entrypoint}
         extensions={[python()]}
         theme={vscodeDark}
-        className={`${styles['code']} `}
         onChange={(value) => {
           setTaskPatch(task, { code: encode(value) });
         }}

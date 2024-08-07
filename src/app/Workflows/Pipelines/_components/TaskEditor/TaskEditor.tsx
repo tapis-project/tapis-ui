@@ -21,8 +21,8 @@ import {
   ExecutionProfileTab,
   TapisJobDefTab,
   ConditionsTab,
+  IOTab
 } from './Tabs';
-import { Sidebar } from '../Sidebar';
 import { usePatchTask } from 'app/Workflows/_hooks';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
 import { useHistory } from 'react-router-dom';
@@ -199,16 +199,13 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
           />
         )}
         {tab === 'io' && tabs.includes('io') && (
-          <Sidebar
-            title={'Inputs & Outputs'}
+          <IOTab
             toggle={() => {
-              setTab('code');
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
             }}
-          >
-            {Object.entries(task.input || {}).map((k, v) => {
-              return `${k}:${v}`;
-            })}
-          </Sidebar>
+          />
         )}
         {tab === 'execprofile' && tabs.includes('execprofile') && (
           <ExecutionProfileTab

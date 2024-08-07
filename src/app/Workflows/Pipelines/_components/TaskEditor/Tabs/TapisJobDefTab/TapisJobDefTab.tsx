@@ -12,7 +12,7 @@ type TapisJobDefTabProps = {
 };
 
 const TapisJobDefTab: React.FC<TapisJobDefTabProps> = ({ featured }) => {
-  const { task, setTaskPatch } = usePatchTask<Workflows.TapisJobTask>();
+  const { task, setTaskPatch, taskPatch } = usePatchTask<Workflows.TapisJobTask>();
 
   return (
     <div
@@ -23,11 +23,11 @@ const TapisJobDefTab: React.FC<TapisJobDefTabProps> = ({ featured }) => {
       }`}
     >
       <CodeMirror
-        value={JSON.stringify(task.tapis_job_def, null, 2)}
+        value={JSON.stringify(taskPatch.tapis_job_def, null, 2)}
         editable={true}
         extensions={[json()]}
         theme={vscodeDark}
-        className={`${styles['code']} `}
+        className={`${styles['code']}`}
         onChange={(value) => {
           setTaskPatch(task, { tapis_job_def: JSON.parse(value) });
         }}

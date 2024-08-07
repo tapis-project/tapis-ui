@@ -7,7 +7,7 @@ import { usePatchTask } from 'app/Workflows/_hooks';
 
 const GeneralTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const { task, taskPatch, setTaskPatch } =
-    usePatchTask<Workflows.FunctionTask>();
+    usePatchTask<Workflows.Task>();
   return (
     <Sidebar title={'General'} toggle={toggle}>
       <Box

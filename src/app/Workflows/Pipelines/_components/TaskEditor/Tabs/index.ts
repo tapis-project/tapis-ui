@@ -6,3 +6,4 @@ export { RuntimeTab } from './RuntimeTab';
 export { ExecutionProfileTab } from './ExecutionProfileTab';
 export { TapisJobDefTab } from './TapisJobDefTab';
 export { ConditionsTab } from './ConditionsTab';
+export { IOTab } from "./IOTab"

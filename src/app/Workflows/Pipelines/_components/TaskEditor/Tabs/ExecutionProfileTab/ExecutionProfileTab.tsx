@@ -13,8 +13,8 @@ import { Sidebar } from '../../../Sidebar';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
 const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
-  const { task, taskPatch, setTaskPatch } =
-    usePatchTask<Workflows.FunctionTask>();
+  const { task, taskPatch } =
+    usePatchTask<Workflows.Task>();
   return (
     <Sidebar title={'Execution Profile'} toggle={toggle}>
       <div className={styles['form']}>
