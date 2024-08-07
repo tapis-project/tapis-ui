@@ -21,7 +21,7 @@ import {
   ExecutionProfileTab,
   TapisJobDefTab,
   ConditionsTab,
-  IOTab
+  IOTab,
 } from './Tabs';
 import { usePatchTask } from 'app/Workflows/_hooks';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';

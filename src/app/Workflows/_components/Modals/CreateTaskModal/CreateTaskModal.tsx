@@ -6,11 +6,18 @@ import { Task } from './_components/forms';
 import { TaskTypeSelector } from './_components';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { useQueryClient } from 'react-query';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Alert, AlertTitle} from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Alert,
+  AlertTitle,
+} from '@mui/material';
 import { LoadingButton as Button } from '@mui/lab';
 
 type CreateTaskModalProps = {
-  open: boolean
+  open: boolean;
   toggle: () => void;
   groupId: string;
   pipelineId: string;
@@ -49,7 +56,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   groupId,
   pipelineId,
 }) => {
-  const { create, isError, isLoading, isSuccess, error, reset } = Hooks.Tasks.useCreate();
+  const { create, isError, isLoading, isSuccess, error, reset } =
+    Hooks.Tasks.useCreate();
   const {
     data,
     isLoading: isLoadingPipeline,
@@ -128,15 +136,15 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={() => {toggle()}}
+      onClose={() => {
+        toggle();
+      }}
       aria-labelledby="create task modal"
       aria-describedby="a modal to create a task"
       maxWidth="md"
       fullWidth={true}
     >
-      <DialogTitle id="alert-dialog-title">
-        Create task
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">Create task</DialogTitle>
       <DialogContent>
         {isSuccess && (
           <Alert severity="success" style={{ marginTop: '8px' }}>
@@ -177,7 +185,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         <Button
           form="newtask-form"
           type="submit"
-          variant='outlined'
+          variant="outlined"
           loading={isLoading}
           disabled={isSuccess}
           autoFocus

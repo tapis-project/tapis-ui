@@ -10,7 +10,7 @@ import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
 
 type NodeType = {
   task: Workflows.Task;
-  tasks: Array<Workflows.Task>
+  tasks: Array<Workflows.Task>;
   groupId: string;
   pipelineId: string;
 };
@@ -62,17 +62,25 @@ const resolveNodeImage = (task: Workflows.Task) => {
 };
 
 const TaskNode: React.FC<NodeProps> = ({ data }) => {
-  const [modal, setModal] = useState<string | undefined>(undefined)
+  const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
   let { task, tasks, groupId, pipelineId } = data as NodeType;
 
   return (
     <>
-      <TaskUpdateProvider task={task} tasks={tasks} groupId={groupId} pipelineId={pipelineId}>
+      <TaskUpdateProvider
+        task={task}
+        tasks={tasks}
+        groupId={groupId}
+        pipelineId={pipelineId}
+      >
         <StandardHandle type="target" position={Position.Left} />
         <div className={styles['node']}>
           <div className={styles['header']}>
-            <img src={resolveNodeImage(task)} className={styles['header-img']} />
+            <img
+              src={resolveNodeImage(task)}
+              className={styles['header-img']}
+            />
             <span className={styles['title']}>{task.id}</span>
           </div>
           <div className={styles['body']}>
@@ -92,11 +100,16 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
             <Delete
               className={styles['action-danger']}
               color="error"
-              onClick={() => {setModal("delete")}}
+              onClick={() => {
+                setModal('delete');
+              }}
             />
           </div>
         </div>
-        <DeleteTaskModal open={modal === "delete"} toggle={() => setModal(undefined)}/>
+        <DeleteTaskModal
+          open={modal === 'delete'}
+          toggle={() => setModal(undefined)}
+        />
         <StandardHandle type="source" position={Position.Right} />
       </TaskUpdateProvider>
     </>

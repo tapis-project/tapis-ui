@@ -1,20 +1,23 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Alert, AlertTitle} from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Alert,
+  AlertTitle,
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Button } from 'reactstrap';
 import * as Yup from 'yup';
 import { Form, Formik, FieldArray } from 'formik';
-import {
-  FormikInput,
-  Icon,
-  SectionHeader,
-} from '@tapis/tapisui-common';
+import { FormikInput, Icon, SectionHeader } from '@tapis/tapisui-common';
 import styles from './RunPipelineModal.module.scss';
 
 type RunPipelineModalProps = {
-  open: boolean
+  open: boolean;
   toggle: () => void;
   groupId: string;
   pipelineId: string;
@@ -28,7 +31,8 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
   pipelineId,
   pipeline,
 }) => {
-  const { run, isError, isLoading, error, isSuccess, reset } = Hooks.Pipelines.useRun();
+  const { run, isError, isLoading, error, isSuccess, reset } =
+    Hooks.Pipelines.useRun();
 
   const validationSchema = Yup.object({
     groupId: Yup.string()
@@ -79,13 +83,11 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
       };
     });
 
-    run(
-      {
-        groupId,
-        pipelineId,
-        reqRunPipeline: { args: modifiedParams },
-      }
-    );
+    run({
+      groupId,
+      pipelineId,
+      reqRunPipeline: { args: modifiedParams },
+    });
   };
 
   const pipelineParams = pipeline.params || {};
@@ -177,7 +179,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                         <FormikInput
                                           id={`params.${i}.key`}
                                           name={`params.${i}.key`}
-                                          label={"key"}
+                                          label={'key'}
                                           required={true}
                                           description={
                                             pipelineParams[param.key]
@@ -249,7 +251,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
         </LoadingButton>
         <LoadingButton
           form="runpipeline-form"
-          variant='outlined'
+          variant="outlined"
           color="primary"
           loading={isLoading}
           disabled={isSuccess}
