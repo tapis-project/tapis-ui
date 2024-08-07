@@ -1,2 +1,2 @@
 export { UpdateRuntimeModal } from './UpdateRuntimeModal';
-export { DeleteTaskModal } from './DeleteTaskModal'
+export { DeleteTaskModal } from './DeleteTaskModal';

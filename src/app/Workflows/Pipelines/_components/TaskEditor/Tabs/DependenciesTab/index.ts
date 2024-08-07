@@ -1,1 +1,1 @@
-export { default as DependenciesTab } from "./DependenciesTab"
+export { default as DependenciesTab } from './DependenciesTab';

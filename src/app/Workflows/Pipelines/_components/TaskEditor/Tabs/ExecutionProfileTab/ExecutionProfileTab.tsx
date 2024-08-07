@@ -7,24 +7,18 @@ import {
   Select,
   MenuItem,
   TextField,
-  FormHelperText
+  FormHelperText,
 } from '@mui/material';
 import { Sidebar } from '../../../Sidebar';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
-const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
-  const { task, taskPatch, setTaskPatch } = usePatchTask<Workflows.FunctionTask>();
+const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
+  const { task, taskPatch, setTaskPatch } =
+    usePatchTask<Workflows.FunctionTask>();
   return (
-    <Sidebar
-      title={'Execution Profile'}
-      toggle={toggle}
-    >
+    <Sidebar title={'Execution Profile'} toggle={toggle}>
       <div className={styles['form']}>
-        <FormControl
-          fullWidth
-          margin="dense"
-          style={{ marginBottom: '-16px' }}
-        >
+        <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
           <InputLabel size="small" id="mode">
             Task invocation mode
           </InputLabel>
@@ -46,9 +40,7 @@ const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
             })}
           </Select>
         </FormControl>
-        <FormHelperText>
-          Excute tasks asynchronously or serially
-        </FormHelperText>
+        <FormHelperText>Excute tasks asynchronously or serially</FormHelperText>
         <FormControl
           fullWidth
           margin="normal"
@@ -67,9 +59,7 @@ const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
             {Object.values(Workflows.EnumRetryPolicy).map((policy) => {
               return (
                 <MenuItem
-                  selected={
-                    policy === task.execution_profile?.retry_policy
-                  }
+                  selected={policy === task.execution_profile?.retry_policy}
                   value={policy}
                 >
                   {policy}
@@ -79,8 +69,7 @@ const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
           </Select>
         </FormControl>
         <FormHelperText>
-          Controls how soon to retry a task once it enters a failed
-          state
+          Controls how soon to retry a task once it enters a failed state
         </FormHelperText>
         <FormControl
           fullWidth
@@ -109,8 +98,8 @@ const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
           </Select>
         </FormControl>
         <FormHelperText>
-          How many cpus/gpus, and how much memory and disk available to
-          this task
+          How many cpus/gpus, and how much memory and disk available to this
+          task
         </FormHelperText>
         <TextField
           defaultValue={taskPatch.execution_profile?.max_retries || 0}
@@ -121,13 +110,10 @@ const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
           variant="outlined"
         />
         <FormHelperText>
-          Maximum number of times this task will execute after failing
-          once
+          Maximum number of times this task will execute after failing once
         </FormHelperText>
         <TextField
-          defaultValue={
-            taskPatch.execution_profile?.max_exec_time || 86400
-          }
+          defaultValue={taskPatch.execution_profile?.max_exec_time || 86400}
           size="small"
           margin="normal"
           style={{ marginBottom: '-16px' }}
@@ -139,7 +125,7 @@ const ExecutionProfileTab: React.FC<{toggle: () => void}> = ({toggle}) => {
         </FormHelperText>
       </div>
     </Sidebar>
-  )
-}
+  );
+};
 
-export default ExecutionProfileTab
+export default ExecutionProfileTab;

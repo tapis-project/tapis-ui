@@ -1,1 +1,1 @@
-export { default as DeleteTaskModal } from "./DeleteTaskModal"
+export { default as DeleteTaskModal } from './DeleteTaskModal';

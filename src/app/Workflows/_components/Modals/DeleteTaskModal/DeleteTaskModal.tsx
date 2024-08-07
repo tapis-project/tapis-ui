@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Workflows as Hooks } from "@tapis/tapisui-hooks";
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { LoadingButton as Button } from '@mui/lab';
 import {
   Alert,
@@ -9,20 +9,26 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  AlertTitle
+  AlertTitle,
 } from '@mui/material';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
 type DeleteTaskModalProps = {
   open: boolean;
   toggle: () => void;
-  onDelete?: () => void
+  onDelete?: () => void;
 };
 
-const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({open, toggle, onDelete}) => {
-  const { task, groupId, pipelineId, dependentTasks } = usePatchTask<Workflows.Task>()
-  const { remove, isLoading, isError, isSuccess, error, reset } = Hooks.Tasks.useDelete()
-  
+const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
+  open,
+  toggle,
+  onDelete,
+}) => {
+  const { task, groupId, pipelineId, dependentTasks } =
+    usePatchTask<Workflows.Task>();
+  const { remove, isLoading, isError, isSuccess, error, reset } =
+    Hooks.Tasks.useDelete();
+
   return (
     <Dialog
       open={open}
@@ -30,7 +36,9 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({open, toggle, onDelete
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">Delete task "{task.id}"?</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        Delete task "{task.id}"?
+      </DialogTitle>
       <DialogContent>
         {isSuccess && (
           <Alert severity="success" style={{ marginTop: '8px' }}>
@@ -55,8 +63,8 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({open, toggle, onDelete
             {dependentTasks.length > 1 ? 's' : ''} in this pipeline: [{' '}
             {dependentTasks.map((d) => `${d.id} `)}].
             <br />
-            Running this workflow after this task is deleted will result in
-            an immediate failure.
+            Running this workflow after this task is deleted will result in an
+            immediate failure.
           </Alert>
         )}
         <DialogContentText id="alert-dialog-description">
@@ -78,7 +86,10 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({open, toggle, onDelete
           loading={isLoading}
           disabled={isSuccess}
           onClick={() => {
-            remove({groupId, pipelineId, taskId: task.id!}, {onSuccess: onDelete})
+            remove(
+              { groupId, pipelineId, taskId: task.id! },
+              { onSuccess: onDelete }
+            );
           }}
           autoFocus
         >
@@ -86,7 +97,7 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({open, toggle, onDelete
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default DeleteTaskModal
+export default DeleteTaskModal;

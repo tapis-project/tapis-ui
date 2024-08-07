@@ -1,16 +1,20 @@
-import React, { useState, useMemo } from "react"
-import { Workflows } from "@tapis/tapis-typescript";
-import { TaskUpdateContext } from "./TaskUpdateContext"
+import React, { useState, useMemo } from 'react';
+import { Workflows } from '@tapis/tapis-typescript';
+import { TaskUpdateContext } from './TaskUpdateContext';
 
 type TaskUpdateProviderProps = {
-  task: Workflows.Task,
-  tasks: Array<Workflows.Task>
-  groupId: string,
-  pipelineId: string
-}
+  task: Workflows.Task;
+  tasks: Array<Workflows.Task>;
+  groupId: string;
+  pipelineId: string;
+};
 
-const TaskUpdateProvider: React.FC<React.PropsWithChildren<TaskUpdateProviderProps>> = ({children, task, tasks, groupId, pipelineId}) => {
-  const [taskPatch, setTaskPatch] = useState<Partial<Workflows.FunctionTask>>(JSON.parse(JSON.stringify(task)));
+const TaskUpdateProvider: React.FC<
+  React.PropsWithChildren<TaskUpdateProviderProps>
+> = ({ children, task, tasks, groupId, pipelineId }) => {
+  const [taskPatch, setTaskPatch] = useState<Partial<Workflows.FunctionTask>>(
+    JSON.parse(JSON.stringify(task))
+  );
   // TODO figure out how to track the diff between patch and task
   const dependentTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -22,7 +26,7 @@ const TaskUpdateProvider: React.FC<React.PropsWithChildren<TaskUpdateProviderPro
       return false;
     });
   }, [task, tasks, taskPatch]);
-  
+
   const patchTask = (task: Workflows.Task, data: Partial<Workflows.Task>) => {
     setTaskPatch({
       ...task,
@@ -31,18 +35,20 @@ const TaskUpdateProvider: React.FC<React.PropsWithChildren<TaskUpdateProviderPro
   };
 
   return (
-    <TaskUpdateContext.Provider value={{
-      setTaskPatch: patchTask,
-      taskPatch,
-      task,
-      tasks,
-      groupId,
-      pipelineId,
-      dependentTasks
-    }}>
+    <TaskUpdateContext.Provider
+      value={{
+        setTaskPatch: patchTask,
+        taskPatch,
+        task,
+        tasks,
+        groupId,
+        pipelineId,
+        dependentTasks,
+      }}
+    >
       {children}
     </TaskUpdateContext.Provider>
-  )
-}
+  );
+};
 
-export default TaskUpdateProvider
+export default TaskUpdateProvider;

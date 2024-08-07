@@ -7,7 +7,7 @@ export type TaskUpdateContextProps<T> = {
   task: T;
   tasks: Array<T>;
   taskPatch: Partial<T>;
-  dependentTasks: Array<Workflows.Task>
+  dependentTasks: Array<Workflows.Task>;
   setTaskPatch: (task: T, patch: Partial<T>) => void;
 };
 

@@ -12,8 +12,7 @@ type TapisJobDefTabProps = {
 };
 
 const TapisJobDefTab: React.FC<TapisJobDefTabProps> = ({ featured }) => {
-  const { task, setTaskPatch } =
-    usePatchTask<Workflows.TapisJobTask>();
+  const { task, setTaskPatch } = usePatchTask<Workflows.TapisJobTask>();
 
   return (
     <div

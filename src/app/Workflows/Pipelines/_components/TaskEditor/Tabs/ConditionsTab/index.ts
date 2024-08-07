@@ -1,1 +1,1 @@
-export { default as ConditionsTab } from "./ConditionsTab"
+export { default as ConditionsTab } from './ConditionsTab';

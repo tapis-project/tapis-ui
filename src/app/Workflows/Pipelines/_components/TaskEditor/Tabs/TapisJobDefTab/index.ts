@@ -1,1 +1,1 @@
-export { default as TapisJobDefTab } from "./TapisJobDefTab"
+export { default as TapisJobDefTab } from './TapisJobDefTab';

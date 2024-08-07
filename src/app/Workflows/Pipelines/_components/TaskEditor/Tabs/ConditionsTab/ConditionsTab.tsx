@@ -7,16 +7,11 @@ import styles from './ConditionsTab.module.scss';
 import { usePatchTask } from 'app/Workflows/_hooks';
 import { Sidebar } from '../../../Sidebar';
 
-const ConditionsTab: React.FC<{toggle: () => void}> = ({toggle}) => {
+const ConditionsTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const { task, setTaskPatch } = usePatchTask<Workflows.Task>();
   return (
-    <Sidebar
-      title={'Conditions'}
-      toggle={toggle}
-    >
-      <div
-        className={`${styles['code-container']}`}
-      >
+    <Sidebar title={'Conditions'} toggle={toggle}>
+      <div className={`${styles['code-container']}`}>
         <CodeMirror
           value={JSON.stringify(task.conditions, null, 2)}
           editable={true}

@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './FunctionTaskEditor/FunctionTaskEditor.module.scss';
-import {
-  Delete,
-  Update,
-} from '@mui/icons-material';
+import { Delete, Update } from '@mui/icons-material';
 import { LoadingButton as Button, TabContext, TabList } from '@mui/lab';
 import {
   // Button,
@@ -15,7 +12,16 @@ import {
   Alert,
   AlertTitle,
 } from '@mui/material';
-import { CodeTab, GitTab, GeneralTab, DependenciesTab, RuntimeTab, ExecutionProfileTab, TapisJobDefTab, ConditionsTab } from './Tabs';
+import {
+  CodeTab,
+  GitTab,
+  GeneralTab,
+  DependenciesTab,
+  RuntimeTab,
+  ExecutionProfileTab,
+  TapisJobDefTab,
+  ConditionsTab,
+} from './Tabs';
 import { Sidebar } from '../Sidebar';
 import { usePatchTask } from 'app/Workflows/_hooks';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
@@ -35,7 +41,7 @@ type Tab =
   | 'destination'
   | 'builder'
   | 'uses'
-  | 'image'
+  | 'image';
 
 type TaskEditorProps = {
   groupId: string;
@@ -52,7 +58,6 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
   defaultTab = 'general',
   featuredTab,
 }) => {
-  
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [tab, setTab] = useState<string>(defaultTab);
   const {
@@ -66,7 +71,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
     error,
     reset,
   } = usePatchTask<Workflows.Task>();
-  const history = useHistory()
+  const history = useHistory();
 
   const handleChangeTab = (_: React.SyntheticEvent, tab: string) => {
     setTab(tab);
@@ -78,20 +83,38 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
         <TabContext value={tab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChangeTab}>
-              {tabs.includes("general") && <Tab label="General" value="general" />}
-              {tabs.includes("conditions") && <Tab label="Conditions" value="conditions" />}
-              {tabs.includes("io") && <Tab label="I/O" value="io" />}
-              {tabs.includes("execprofile") && <Tab label="Exec. Profile" value="execprofile" />}
-              {tabs.includes("deps") && <Tab label="Dependencies" value="deps" />}
-              {tabs.includes("uses") && <Tab label="Inheritence" value="uses" />}
-              {tabs.includes("runtime") && <Tab label="Runtime" value="runtime" />}
-              {tabs.includes("git") && <Tab label="Repos" value="git" />}
-              {tabs.includes("code") && <Tab label="Code" value="code" />}
-              {tabs.includes("builder") && <Tab label="Builder" value="builder" />}
-              {tabs.includes("context") && <Tab label="Source" value="context" />}
-              {tabs.includes("destination") && <Tab label="Destination" value="destination" />}
-              {tabs.includes("jobdef") && <Tab label="Job" value="jobdef" />}
-              {tabs.includes("image") && <Tab label="Image" value="image" />}
+              {tabs.includes('general') && (
+                <Tab label="General" value="general" />
+              )}
+              {tabs.includes('conditions') && (
+                <Tab label="Conditions" value="conditions" />
+              )}
+              {tabs.includes('io') && <Tab label="I/O" value="io" />}
+              {tabs.includes('execprofile') && (
+                <Tab label="Exec. Profile" value="execprofile" />
+              )}
+              {tabs.includes('deps') && (
+                <Tab label="Dependencies" value="deps" />
+              )}
+              {tabs.includes('uses') && (
+                <Tab label="Inheritence" value="uses" />
+              )}
+              {tabs.includes('runtime') && (
+                <Tab label="Runtime" value="runtime" />
+              )}
+              {tabs.includes('git') && <Tab label="Repos" value="git" />}
+              {tabs.includes('code') && <Tab label="Code" value="code" />}
+              {tabs.includes('builder') && (
+                <Tab label="Builder" value="builder" />
+              )}
+              {tabs.includes('context') && (
+                <Tab label="Source" value="context" />
+              )}
+              {tabs.includes('destination') && (
+                <Tab label="Destination" value="destination" />
+              )}
+              {tabs.includes('jobdef') && <Tab label="Job" value="jobdef" />}
+              {tabs.includes('image') && <Tab label="Image" value="image" />}
             </TabList>
           </Box>
         </TabContext>
@@ -129,7 +152,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
         spacing={'8px'}
         alignItems="flex-start"
         justifyContent={'flex-end'}
-        style={{paddingRight: "8px"}}
+        style={{ paddingRight: '8px' }}
       >
         <Button
           size="small"
@@ -157,13 +180,25 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
         </Button>
       </Stack>
       <div className={styles['container']}>
-        {tab === 'general' && tabs.includes("general") && (
-          <GeneralTab toggle={() => {if (featuredTab) {setTab(featuredTab)}}}/>
+        {tab === 'general' && tabs.includes('general') && (
+          <GeneralTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
         )}
-        {tab === 'deps' && tabs.includes("deps") && (
-          <DependenciesTab toggle={() => {if (featuredTab) {setTab(featuredTab)}}}/>
+        {tab === 'deps' && tabs.includes('deps') && (
+          <DependenciesTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
         )}
-        {tab === 'io' && tabs.includes("io") &&(
+        {tab === 'io' && tabs.includes('io') && (
           <Sidebar
             title={'Inputs & Outputs'}
             toggle={() => {
@@ -175,33 +210,59 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
             })}
           </Sidebar>
         )}
-        {tab === 'execprofile' && tabs.includes("execprofile") && (
-          <ExecutionProfileTab toggle={() => {if (featuredTab) {setTab(featuredTab)}}}/>
+        {tab === 'execprofile' && tabs.includes('execprofile') && (
+          <ExecutionProfileTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
         )}
-        {tab === 'conditions' && tabs.includes("conditions") && (
-          <ConditionsTab toggle={() => {if (featuredTab) {setTab(featuredTab)}}}/>
+        {tab === 'conditions' && tabs.includes('conditions') && (
+          <ConditionsTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
         )}
-        {tab === 'runtime' && tabs.includes("runtime") && (
-          <RuntimeTab toggle={() => {if (featuredTab) {setTab(featuredTab)}}}/>
+        {tab === 'runtime' && tabs.includes('runtime') && (
+          <RuntimeTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
         )}
-        {tab === 'git' && tabs.includes("git") && (
+        {tab === 'git' && tabs.includes('git') && (
           <GitTab
             toggle={() => {
               setTab(featuredTab || 'code');
             }}
           />
         )}
-        {(tab === 'code' || featuredTab === "code") && tabs.includes("code") && (
-          <CodeTab featured={task.type === Workflows.EnumTaskType.Function} />
-        )}
-        {(tab === 'jobdef' || featuredTab === "jobdef") && tabs.includes("jobdef") && (
-          <TapisJobDefTab featured={task.type === Workflows.EnumTaskType.Function} />
-        )}
+        {(tab === 'code' || featuredTab === 'code') &&
+          tabs.includes('code') && (
+            <CodeTab featured={task.type === Workflows.EnumTaskType.Function} />
+          )}
+        {(tab === 'jobdef' || featuredTab === 'jobdef') &&
+          tabs.includes('jobdef') && (
+            <TapisJobDefTab
+              featured={task.type === Workflows.EnumTaskType.Function}
+            />
+          )}
       </div>
       <DeleteTaskModal
-        open={modal === "delete"}
-        toggle={() => {setModal(undefined)}}
-        onDelete={() => {history.push(`/workflows/pipelines/${groupId}/${pipelineId}`)}}
+        open={modal === 'delete'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+        onDelete={() => {
+          history.push(`/workflows/pipelines/${groupId}/${pipelineId}`);
+        }}
       />
     </div>
   );

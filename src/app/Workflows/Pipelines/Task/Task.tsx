@@ -6,7 +6,7 @@ import { QueryWrapper } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
 import styles from './Task.module.scss';
-import { TaskUpdateProvider } from "app/Workflows/_context"
+import { TaskUpdateProvider } from 'app/Workflows/_context';
 
 type TaskProps = {
   groupId: string;
@@ -31,7 +31,18 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'conditions', 'runtime', 'git', 'code']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'conditions',
+              'runtime',
+              'git',
+              'code',
+            ]}
             defaultTab="general"
             featuredTab="code"
           />
@@ -43,7 +54,15 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'uses']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'uses',
+            ]}
             defaultTab="general"
           />
         );
@@ -54,7 +73,15 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'conditions']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'conditions',
+            ]}
             defaultTab="general"
           />
         );
@@ -65,7 +92,18 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'conditions', 'builder', 'context', 'destination']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'conditions',
+              'builder',
+              'context',
+              'destination',
+            ]}
             defaultTab="general"
           />
         );
@@ -76,7 +114,16 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'conditions', 'image']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'conditions',
+              'image',
+            ]}
             defaultTab="general"
           />
         );
@@ -87,9 +134,18 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'conditions', 'jobdef']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'conditions',
+              'jobdef',
+            ]}
             defaultTab="general"
-            featuredTab='jobdef'
+            featuredTab="jobdef"
           />
         );
       case Workflows.EnumTaskType.TapisActor:
@@ -99,7 +155,15 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             pipelineId={pipelineId}
             task={task}
             tasks={tasks}
-            tabs={['general', 'io', 'execprofile', 'conditions', "deps", 'io', 'conditions']}
+            tabs={[
+              'general',
+              'io',
+              'execprofile',
+              'conditions',
+              'deps',
+              'io',
+              'conditions',
+            ]}
             defaultTab="general"
           />
         );
@@ -108,7 +172,12 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      <TaskUpdateProvider task={task} tasks={tasks} pipelineId={pipelineId} groupId={groupId}>
+      <TaskUpdateProvider
+        task={task}
+        tasks={tasks}
+        pipelineId={pipelineId}
+        groupId={groupId}
+      >
         <div>
           <div className={styles['back']}>
             <Link to={`/workflows/pipelines/${groupId}/${pipelineId}`}>
@@ -119,7 +188,9 @@ const Task: React.FC<TaskProps> = ({ groupId, pipelineId, taskId }) => {
             {task !== undefined ? (
               renderTaskEditor(task)
             ) : (
-              <p style={{ color: 'red' }}>Task with id '{taskId}' does not exist</p>
+              <p style={{ color: 'red' }}>
+                Task with id '{taskId}' does not exist
+              </p>
             )}
           </QueryWrapper>
         </div>

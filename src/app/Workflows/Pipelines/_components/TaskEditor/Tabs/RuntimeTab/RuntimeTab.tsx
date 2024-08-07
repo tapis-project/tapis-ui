@@ -8,13 +8,14 @@ import {
   Select,
   InputLabel,
   MenuItem,
-  FormHelperText
+  FormHelperText,
 } from '@mui/material';
 import { Sidebar } from '../../../Sidebar';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
-const RuntimeTab: React.FC<{toggle: () => void}> = ({toggle}) => {
-  const { task, taskPatch, setTaskPatch } = usePatchTask<Workflows.FunctionTask>();
+const RuntimeTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
+  const { task, taskPatch, setTaskPatch } =
+    usePatchTask<Workflows.FunctionTask>();
 
   const packageConverter = (
     packages: Array<string> | string,
@@ -37,16 +38,9 @@ const RuntimeTab: React.FC<{toggle: () => void}> = ({toggle}) => {
   };
 
   return (
-    <Sidebar
-      title={'Runtime'}
-      toggle={toggle}
-    >
+    <Sidebar title={'Runtime'} toggle={toggle}>
       <div className={styles['form']}>
-        <FormControl
-          fullWidth
-          margin="dense"
-          style={{ marginBottom: '-16px' }}
-        >
+        <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
           <InputLabel size="small" id="environment">
             Runtime environment
           </InputLabel>
@@ -57,8 +51,7 @@ const RuntimeTab: React.FC<{toggle: () => void}> = ({toggle}) => {
             defaultValue={taskPatch.runtime}
             onChange={(e) => {
               setTaskPatch(task, {
-                runtime: e.target
-                  .value as Workflows.EnumRuntimeEnvironment,
+                runtime: e.target.value as Workflows.EnumRuntimeEnvironment,
               });
             }}
           >
@@ -77,8 +70,7 @@ const RuntimeTab: React.FC<{toggle: () => void}> = ({toggle}) => {
           </Select>
         </FormControl>
         <FormHelperText>
-          The runtime envrionment in which the function code will be
-          executed
+          The runtime envrionment in which the function code will be executed
         </FormHelperText>
         <TextField
           label="Packages"
@@ -90,17 +82,13 @@ const RuntimeTab: React.FC<{toggle: () => void}> = ({toggle}) => {
           style={{ marginBottom: '-16px' }}
           onChange={(e) => {
             setTaskPatch(task, {
-              packages: packageConverter(
-                e.target.value,
-                true
-              ) as Array<string>,
+              packages: packageConverter(e.target.value, true) as Array<string>,
             });
           }}
         />
         <FormHelperText>
-          Each package must be on a seperate line. May be just the
-          package name or the pacakge name followed by the version. Ex.
-          tapipy==^1.6.0
+          Each package must be on a seperate line. May be just the package name
+          or the pacakge name followed by the version. Ex. tapipy==^1.6.0
         </FormHelperText>
         <FormControl
           fullWidth
@@ -137,7 +125,7 @@ const RuntimeTab: React.FC<{toggle: () => void}> = ({toggle}) => {
         </FormHelperText>
       </div>
     </Sidebar>
-  )
-}
+  );
+};
 
-export default RuntimeTab
+export default RuntimeTab;

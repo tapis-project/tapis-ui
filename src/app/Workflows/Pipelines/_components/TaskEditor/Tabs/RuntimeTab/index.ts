@@ -1,1 +1,1 @@
-export { default as RuntimeTab } from "./RuntimeTab"
+export { default as RuntimeTab } from './RuntimeTab';
