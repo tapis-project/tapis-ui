@@ -60,8 +60,8 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
         {dependentTasks.length > 0 && (
           <Alert severity="warning" style={{ marginBottom: '8px' }}>
             This task is required by {dependentTasks.length} other task
-            {dependentTasks.length > 1 ? 's' : ''} in this pipeline: [{' '}
-            {dependentTasks.map((d) => `${d.id} `)}].
+            {dependentTasks.length > 1 ? 's' : ''} in this pipeline:<br />
+            {dependentTasks.map((d) => <li>{d.id}</li>)}
             <br />
             Running this workflow after this task is deleted will result in an
             immediate failure.
@@ -85,6 +85,7 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
           color="error"
           loading={isLoading}
           disabled={isSuccess}
+          variant='outlined'
           onClick={() => {
             remove(
               { groupId, pipelineId, taskId: task.id! },

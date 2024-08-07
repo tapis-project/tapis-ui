@@ -104,12 +104,6 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId }) => {
     >
       {pipeline && tasks && (
         <div id={`pipeline`} className={styles['grid']}>
-          <Toolbar
-            buttons={['createtask', 'runpipeline']}
-            groupId={groupId}
-            pipelineId={pipelineId}
-            pipeline={pipeline}
-          />
           <DagView pipeline={pipeline} groupId={groupId} />
           <div>
             <Table dark bordered style={{ margin: 0 }}>

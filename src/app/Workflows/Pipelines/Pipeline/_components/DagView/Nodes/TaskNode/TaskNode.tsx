@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Position, NodeProps } from '@xyflow/react';
 import styles from './TaskNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Edit, Delete } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
+import { TaskUpdateProvider } from 'app/Workflows/_context';
+import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
 
 type NodeType = {
   task: Workflows.Task;
+  tasks: Array<Workflows.Task>
   groupId: string;
   pipelineId: string;
 };
@@ -59,41 +62,43 @@ const resolveNodeImage = (task: Workflows.Task) => {
 };
 
 const TaskNode: React.FC<NodeProps> = ({ data }) => {
+  const [modal, setModal] = useState<string | undefined>(undefined)
   const history = useHistory();
-  let { task, groupId, pipelineId } = data as NodeType;
+  let { task, tasks, groupId, pipelineId } = data as NodeType;
 
   return (
     <>
-      <StandardHandle type="target" position={Position.Left} />
-      <div className={styles['node']}>
-        <div className={styles['header']}>
-          <img src={resolveNodeImage(task)} className={styles['header-img']} />
-          <span className={styles['title']}>{task.id}</span>
+      <TaskUpdateProvider task={task} tasks={tasks} groupId={groupId} pipelineId={pipelineId}>
+        <StandardHandle type="target" position={Position.Left} />
+        <div className={styles['node']}>
+          <div className={styles['header']}>
+            <img src={resolveNodeImage(task)} className={styles['header-img']} />
+            <span className={styles['title']}>{task.id}</span>
+          </div>
+          <div className={styles['body']}>
+            <i className={styles['description']}>
+              {task.description || 'No description'}
+            </i>
+          </div>
+          <div className={styles['footer']}>
+            <Edit
+              className={styles['action']}
+              onClick={() => {
+                history.push(
+                  `/workflows/pipelines/${groupId}/${pipelineId}/tasks/${task.id}`
+                );
+              }}
+            />
+            <Delete
+              className={styles['action-danger']}
+              color="error"
+              onClick={() => {setModal("delete")}}
+            />
+          </div>
         </div>
-        <div className={styles['body']}>
-          <i className={styles['description']}>
-            {task.description || 'No description'}
-          </i>
-        </div>
-        <div className={styles['footer']}>
-          <Edit
-            className={styles['action']}
-            onClick={() => {
-              history.push(
-                `/workflows/pipelines/${groupId}/${pipelineId}/tasks/${task.id}`
-              );
-            }}
-          />
-          <Delete
-            className={styles['action-danger']}
-            color="error"
-            onClick={() => {
-              alert('Delete function unavailable');
-            }}
-          />
-        </div>
-      </div>
-      <StandardHandle type="source" position={Position.Right} />
+        <DeleteTaskModal open={modal === "delete"} toggle={() => setModal(undefined)}/>
+        <StandardHandle type="source" position={Position.Right} />
+      </TaskUpdateProvider>
     </>
   );
 };

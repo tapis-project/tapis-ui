@@ -18,8 +18,13 @@ import {
   Chip,
   SpeedDial,
   SpeedDialAction,
+  Drawer,
+  Box,
+  List,
+  ListItem,
+  ListItemButton
 } from '@mui/material';
-import { Delete, Edit, Add } from '@mui/icons-material';
+import { DataObject, Share, Add, Bolt, Publish, AltRoute } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -34,8 +39,87 @@ import {
   Node,
   Panel,
 } from '@xyflow/react';
+import { CreateTaskModal, RunPipelineModal } from 'app/Workflows/_components/Modals';
 
 import '@xyflow/react/dist/style.css';
+
+type DagViewDrawerProps = {
+  groupId: string,
+  pipelineId: string
+  toggle: () => void,
+  open: boolean,
+  onClickCreateTask: () => void
+  onClickRunPipeline: () => void
+}
+
+const DagViewDrawer: React.FC<DagViewDrawerProps> = ({groupId, pipelineId, toggle, open, onClickCreateTask, onClickRunPipeline}) => {
+  const { extension } = useExtension();
+  const { create } = Hooks.Tasks.useCreate()
+
+  const handleCreateDagTask = (task: Workflows.FunctionTask) => {
+    create(
+      {
+        groupId,
+        pipelineId,
+        reqTask: {
+          ...task,
+          id: task.id!,
+          type: Workflows.EnumTaskType.Function,
+          runtime: task.runtime!,
+          installer: task.installer!,
+          code: task.code! || undefined,
+        }
+      },
+      {
+        onSuccess: toggle,
+      }
+    );
+  }
+
+  const sidebarTasks =
+    extension?.serviceCustomizations?.workflows?.dagTasks || [];
+  return (
+    <div>
+      <Drawer open={open} onClose={toggle}>
+      <Box sx={{ width: 250 }} role="presentation" onClick={toggle}>
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={onClickRunPipeline}>
+              <ListItemIcon>
+                <Publish />
+              </ListItemIcon>
+              <ListItemText primary={"Run Pipeline"} secondary={`Run pipeline '${pipelineId}'`}/>
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={onClickCreateTask}>
+              <ListItemIcon>
+                <Add />
+              </ListItemIcon>
+              <ListItemText primary={"New Task"} secondary="Add a new task to the graph"/>
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          {sidebarTasks.map((task, i) => (
+            <ListItem key={`dag-task-${i}`} disablePadding>
+              <ListItemButton onClick={() => {handleCreateDagTask((task as Workflows.Task))}}>
+                <ListItemIcon>
+                  <Add />
+                </ListItemIcon>
+                <ListItemText primary={task.id} secondary={task.description || ""}/>
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+      </Drawer>
+    </div>
+  )
+}
 
 type DagViewProps = {
   pipeline: Workflows.Pipeline;
@@ -46,7 +130,9 @@ type View = 'data' | 'dependencies' | 'conditionals';
 
 const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const tasks = pipeline.tasks!;
-  const [openDagActions, setOpenDagActions] = React.useState(false);
+  const [modal, setModal] = useState<string | undefined>(undefined)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
   const nodeTypes = useMemo(
     () => ({
       standard: TaskNode,
@@ -104,7 +190,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           y: Object.entries(pipeline.env!).length * 25 + 30,
         },
         type: 'standard',
-        data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id },
+        data: { label: task.id!, task: task, groupId, pipelineId: pipeline.id, tasks },
       });
       i++;
     }
@@ -195,7 +281,7 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
-
+  
   return (
     <div className={styles['dag']}>
       <ReactFlow
@@ -205,65 +291,77 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        defaultViewport={{ x: 60, y: 40, zoom: 1 }}
+        defaultViewport={{ x: 120, y: 60, zoom: 1 }}
       >
+        <DagViewDrawer
+          groupId={groupId}
+          pipelineId={pipeline.id!}
+          open={drawerOpen}
+          toggle={() => {setDrawerOpen(false)}}
+          onClickCreateTask={() => {setModal("createtask")}}
+          onClickRunPipeline={() => {setModal("runpipeline")}}
+        />
+        <Panel position="top-left">
+          <Chip
+            onClick={() => {setDrawerOpen(true)}}
+            color={"primary"}
+            size="small"
+            label="actions"
+            icon={<Bolt />}
+          />
+        </Panel>
         <Panel position="top-right">
           <Chip
             onClick={() => {
               handleToggleView('data');
             }}
-            color={views.data ? 'success' : undefined}
+            variant={views.data ? 'filled' : 'outlined'}
+            color="primary"
             style={{ marginLeft: '8px' }}
             size="small"
             label="data"
+            icon={<DataObject />}
           />
           <Chip
             onClick={() => {
               handleToggleView('dependencies');
             }}
-            color={views.dependencies ? 'success' : undefined}
+            variant={views.dependencies ? 'filled' : 'outlined'}
+            color="primary"
             style={{ marginLeft: '8px' }}
             size="small"
             label="dependenies"
+            icon={<Share />}
           />
           <Chip
             onClick={() => {
               handleToggleView('conditionals');
             }}
-            color={views.conditionals ? 'success' : undefined}
+            variant={views.conditionals ? 'filled' : 'outlined'}
+            color="primary"
             style={{ marginLeft: '8px' }}
             size="small"
             label="conditionals"
+            icon={<AltRoute />}
           />
         </Panel>
-        <Controls position="top-left" />
-        <MiniMap position="bottom-left" />
+        <Controls position="bottom-left" style={{color: "black", border: "1px solid #999999", borderRadius: "1px"}}/>
+        <MiniMap position="bottom-right" style={{border: "1px solid #999999", borderRadius: "1px"}}/>
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        <SpeedDial
-          ariaLabel="DAG Actions"
-          onClose={() => {
-            setOpenDagActions(false);
-          }}
-          onOpen={() => {
-            setOpenDagActions(true);
-          }}
-          open={openDagActions}
-          style={{ position: 'absolute', bottom: 40, right: 40 }}
-          icon={<Add />}
-        >
-          {dagActions.map((action) => (
-            <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              tooltipOpen
-              onClick={() => {
-                setOpenDagActions(false);
-              }}
-            />
-          ))}
-        </SpeedDial>
       </ReactFlow>
+      <CreateTaskModal
+        open={modal === "createtask"}
+        toggle={() => {setModal(undefined)}}
+        groupId={groupId}
+        pipelineId={pipeline.id!}
+      />
+      <RunPipelineModal
+        open={modal === "runpipeline"}
+        toggle={() => {setModal(undefined)}}
+        groupId={groupId}
+        pipelineId={pipeline.id!}
+        pipeline={pipeline}
+      />
     </div>
   );
 };
