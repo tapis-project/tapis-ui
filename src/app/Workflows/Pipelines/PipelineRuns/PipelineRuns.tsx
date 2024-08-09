@@ -99,13 +99,13 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
           )}
         </div>
       </QueryWrapper>
-      {showModal && groupId && pipelineId && (
+      {/* {showModal && groupId && pipelineId && (
         <RunPipelineModal
           groupId={groupId}
           pipelineId={pipelineId}
           toggle={toggle}
         />
-      )}
+      )} */}
     </div>
   );
 };

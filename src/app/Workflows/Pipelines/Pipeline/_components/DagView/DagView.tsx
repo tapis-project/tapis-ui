@@ -4,20 +4,11 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { useExtension } from 'extensions';
 import styles from './DagView.module.scss';
-import { Button } from 'reactstrap';
-import Tooltip from '@mui/material/Tooltip';
-import { useQueryClient } from 'react-query';
-import { TaskEditor } from '../../../_components';
 import {
-  MenuList,
-  MenuItem,
   ListItemText,
   ListItemIcon,
   Divider,
-  Paper,
   Chip,
-  SpeedDial,
-  SpeedDialAction,
   Drawer,
   Box,
   List,
@@ -131,6 +122,7 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
               <ListItem key={`dag-task-${i}`} disablePadding>
                 <ListItemButton
                   onClick={() => {
+                    console.log({task})
                     handleCreateDagTask(task as Workflows.Task);
                   }}
                 >
