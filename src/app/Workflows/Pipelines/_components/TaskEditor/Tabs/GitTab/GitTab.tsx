@@ -65,6 +65,7 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
 
   useEffect(() => {
     if (username && repo) {
+      console.log({repos})
       listBranches(
         { username, repo },
         {
