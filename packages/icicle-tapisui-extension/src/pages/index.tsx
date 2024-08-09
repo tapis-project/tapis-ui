@@ -6,3 +6,4 @@ export { DigitalAg } from './DigitalAg';
 export { SmartScheduler } from './SmartScheduler';
 export { VisualAnalytics } from './VisualAnalytics';
 export { TrainingCatalog } from './TrainingCatalog';
+export { CKNDashboard } from './CKNDashboard';

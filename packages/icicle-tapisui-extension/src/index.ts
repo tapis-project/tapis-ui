@@ -12,6 +12,7 @@ import {
   VisualAnalytics,
   SmartScheduler,
   TrainingCatalog,
+  CKNDashboard,
 } from './pages';
 
 const extension = createExtension({
@@ -38,6 +39,7 @@ const extension = createExtension({
     'visual-analytics',
     'smart-scheduler',
     'training-catalog',
+    'ckn-dashboard',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -112,6 +114,13 @@ extension.registerService({
   sidebarDisplayName: 'Training Catalog',
   iconName: 'globe',
   component: TrainingCatalog,
+});
+
+extension.registerService({
+  id: 'ckn-dashboard',
+  sidebarDisplayName: 'CKN Dashboard',
+  iconName: 'globe',
+  component: CKNDashboard,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
