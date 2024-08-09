@@ -20,6 +20,7 @@ const Menu: React.FC<{ tab: string }> = ({ tab }) => {
             <Tab label="Exec. Profile" value="execprofile" />
             <Tab label="Envrionment" value="env" />
             <Tab label="Parameters" value="params" />
+            <Tab label="Inheritence" value="uses" />
             <Tab label="Runs" value="runs" />
           </TabList>
         </Box>

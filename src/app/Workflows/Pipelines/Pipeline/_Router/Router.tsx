@@ -42,7 +42,7 @@ const Router: React.FC = () => {
         }>) => (
           <>
             <Menu tab={tab} />
-            <Pipeline groupId={groupId} pipelineId={pipelineId} />
+            <Pipeline groupId={groupId} pipelineId={pipelineId} tab={tab} />
           </>
         )}
       />

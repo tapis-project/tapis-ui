@@ -14,10 +14,7 @@ import {
   MenuItem,
   Alert,
   AlertTitle,
-  Box,
-  Stepper,
-  Step,
-  StepLabel,
+  Chip
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { listRepos, listBranches } from 'app/apis/Github';
@@ -39,10 +36,10 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const [repos, setRepos] = useState<Array<{ [key: string | number]: any }>>(
     []
   );
-  const [repo, setRepo] = useState<string | undefined>(undefined);
+  const [repo, setRepo] = useState<{ [key: string | number]: any } | undefined>(undefined);
   const [branches, setBranches] = useState<
-    Array<{ [key: string | number]: any }> | undefined
-  >(undefined);
+    Array<{ [key: string | number]: any }> | []
+  >([]);
   const [branch, setBranch] = useState<string | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -65,20 +62,19 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
 
   useEffect(() => {
     if (username && repo) {
-      console.log({repos})
       listBranches(
-        { username, repo },
+        { username, repo: repo.name },
         {
           onSuccess: (response) => {
             setBranches(response.result!);
           },
           onError: (response) => {
-            setError(response.error), setBranches(undefined);
+            setError(response.error), setBranches([]);
           },
         }
       );
     }
-  }, [repo, branches]);
+  }, [repo]);
 
   return (
     <Sidebar title={'Git Repositories'} toggle={toggle}>
@@ -94,25 +90,43 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
           {error.message}
         </Alert>
       )}
+      <div>
+        {task.git_repositories!.map((repo) => {
+          return (
+            <Chip label={`${repo.url}:${repo.branch}:repo.directory`}/>
+          );
+        })}
+      </div>
       <div className={styles['form']}>
-        <>
-          <FormControl variant="standard">
-            <InputLabel htmlFor="username">Repository owner</InputLabel>
-            <Input
-              id="username"
-              inputRef={searchRef}
-              startAdornment={
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              }
-            />
-          </FormControl>
-          <FormHelperText>
-            The owner of the git repository you want to clone
-          </FormHelperText>
-        </>
-        {repos.length > 0 && (
+        {repos.length < 1 && (
+          <>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="username">Repository owner</InputLabel>
+              <Input
+                id="username"
+                inputRef={searchRef}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            <FormHelperText>
+              The owner of the git repository you want to clone
+            </FormHelperText>
+            <Button
+              onClick={() => {
+                if (searchRef.current) {
+                  setUsername(searchRef.current.value);
+                }
+              }}
+            >
+              Search
+            </Button>
+          </>
+        )}
+        {repos.length > 0 && branches.length < 1 && (
           <>
             <FormControl variant="standard">
               <InputLabel htmlFor="repo-search">Repository</InputLabel>
@@ -125,7 +139,7 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
                     <MenuItem
                       value={repo.name}
                       onClick={() => {
-                        setRepo(repo.name);
+                        setRepo(repo);
                       }}
                     >
                       {repo.name}
@@ -139,7 +153,7 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             </FormHelperText>
           </>
         )}
-        {repo && branches && (
+        {repo && branches && !branch && (
           <>
             <FormControl variant="standard">
               <InputLabel htmlFor="branch-search">Branch</InputLabel>
@@ -178,26 +192,6 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             </FormHelperText>
           </>
         )}
-        <Button
-          onClick={() => {
-            if (searchRef.current) {
-              setUsername(searchRef.current.value);
-            }
-          }}
-        >
-          Search
-        </Button>
-      </div>
-      <div>
-        {task.git_repositories!.map((repo) => {
-          return (
-            <div>
-              <p>{repo.url}</p>
-              <p>{repo.branch}</p>
-              <p>{repo.directory}</p>
-            </div>
-          );
-        })}
       </div>
     </Sidebar>
   );
