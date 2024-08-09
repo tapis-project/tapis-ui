@@ -14,7 +14,7 @@ import {
   MenuItem,
   Alert,
   AlertTitle,
-  Chip
+  Chip,
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { listRepos, listBranches } from 'app/apis/Github';
@@ -36,7 +36,9 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const [repos, setRepos] = useState<Array<{ [key: string | number]: any }>>(
     []
   );
-  const [repo, setRepo] = useState<{ [key: string | number]: any } | undefined>(undefined);
+  const [repo, setRepo] = useState<{ [key: string | number]: any } | undefined>(
+    undefined
+  );
   const [branches, setBranches] = useState<
     Array<{ [key: string | number]: any }> | []
   >([]);
@@ -92,9 +94,7 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       )}
       <div>
         {task.git_repositories!.map((repo) => {
-          return (
-            <Chip label={`${repo.url}:${repo.branch}:repo.directory`}/>
-          );
+          return <Chip label={`${repo.url}:${repo.branch}:repo.directory`} />;
         })}
       </div>
       <div className={styles['form']}>

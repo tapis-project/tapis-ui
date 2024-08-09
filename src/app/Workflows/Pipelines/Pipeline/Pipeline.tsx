@@ -79,10 +79,14 @@ const Task: React.FC<TaskProps> = ({ task, groupId, pipelineId }) => {
 type PipelineProps = {
   groupId: string;
   pipelineId: string;
-  tab?: string
+  tab?: string;
 };
 
-const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId, tab="tasks" }) => {
+const Pipeline: React.FC<PipelineProps> = ({
+  groupId,
+  pipelineId,
+  tab = 'tasks',
+}) => {
   const {
     data: pipelineData,
     isLoading: isLoadingPipeline,
@@ -105,31 +109,11 @@ const Pipeline: React.FC<PipelineProps> = ({ groupId, pipelineId, tab="tasks" })
     >
       {pipeline && tasks && (
         <div id={`pipeline`} className={styles['grid']}>
-          {
-            tab === "tasks" && (
-              <DagView pipeline={pipeline} groupId={groupId} />
-            )
-          }
-          {
-            tab === "execprofile" && (
-              <>Exec Profile</>
-            )
-          }
-          {
-            tab === "env" && (
-              <>Env</>
-            )
-          }
-          {
-            tab === "params" && (
-              <>Parameters</>
-            )
-          }
-          {
-            tab === "uses" && (
-              <>Inheritence</>
-            )
-          }
+          {tab === 'tasks' && <DagView pipeline={pipeline} groupId={groupId} />}
+          {tab === 'execprofile' && <>Exec Profile</>}
+          {tab === 'env' && <>Env</>}
+          {tab === 'params' && <>Parameters</>}
+          {tab === 'uses' && <>Inheritence</>}
         </div>
       )}
     </QueryWrapper>
