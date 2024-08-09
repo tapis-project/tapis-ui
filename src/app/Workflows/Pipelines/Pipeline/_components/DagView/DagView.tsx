@@ -170,11 +170,6 @@ const DagView: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     dependencies: true,
   });
 
-  const dagActions = [
-    { icon: <Add />, name: 'New task' },
-    { icon: <Add />, name: 'Use task' },
-  ];
-
   const handleToggleView = (view: View) => {
     setViews({
       ...views,

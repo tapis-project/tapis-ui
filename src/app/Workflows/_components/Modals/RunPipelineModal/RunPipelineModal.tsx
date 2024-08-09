@@ -161,7 +161,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                 </div>
                 <div className={styles['section-container']}>
                   <SectionHeader>
-                    <span>Parameters</span>
+                    <span>Arguments</span>
                   </SectionHeader>
                   <div id="parameters">
                     <FieldArray
@@ -251,6 +251,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
         </LoadingButton>
         <LoadingButton
           form="runpipeline-form"
+          type="submit"
           variant="outlined"
           color="primary"
           loading={isLoading}
