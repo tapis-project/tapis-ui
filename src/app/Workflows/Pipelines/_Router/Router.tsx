@@ -14,7 +14,7 @@ const Router: React.FC = () => {
       <Route path={`${path}/:groupId`} exact>
         <PipelinesLayout />
       </Route>
-      
+
       <Route path={`${path}/:groupId/:pipelineId`}>
         <PipelineLayout />
       </Route>

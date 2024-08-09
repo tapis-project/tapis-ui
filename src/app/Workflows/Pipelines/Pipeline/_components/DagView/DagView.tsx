@@ -122,7 +122,7 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
               <ListItem key={`dag-task-${i}`} disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    console.log({task})
+                    console.log({ task });
                     handleCreateDagTask(task as Workflows.Task);
                   }}
                 >
