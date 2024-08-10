@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Button, Input, Tooltip } from 'reactstrap';
 import styles from './AnalysisForm.module.scss';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  Jobs as JobsHooks,
-  Apps as AppsHooks,
-  Systems as SystemsHooks,
-} from '@tapis/tapisui-hooks';
-import { QueryWrapper } from '@tapis/tapisui-common';
+import { Jobs as JobsHooks } from '@tapis/tapisui-hooks';
 
 interface Analysis {
   id: string;
@@ -253,51 +248,36 @@ const AnalysisForm: React.FC = () => {
                   report: 'Download',
                 };
                 const device = devices.filter((d) => d.id == values.device)[0];
-                console.log({
-                  name: 'ctctrl-tacc',
-                  appId: 'ctctrl-icicledev',
-                  appVersion: '0.1',
-                  description: 'Invoke ctcontroller to run camera-traps',
-                  parameterSet: {
-                    envVariables: [
-                      {
-                        key: 'CT_CONTROLLER_TARGET_SITE',
-                        value: values.site,
-                      },
-                      {
-                        key: 'CT_CONTROLLER_NODE_TYPE',
-                        value: device.type,
-                      },
-                      {
-                        key: 'CT_CONTROLLER_CONFIG_PATH',
-                        value: '/config.yml',
-                      },
-                    ],
-                    archiveFilter: {
-                      includeLaunchFiles: false,
-                    },
+                const envVariables = [
+                  {
+                    key: 'CT_CONTROLLER_TARGET_SITE',
+                    value: values.site,
                   },
-                });
+                  {
+                    key: 'CT_CONTROLLER_NODE_TYPE',
+                    value: device.type,
+                  },
+                  {
+                    key: 'CT_CONTROLLER_CONFIG_PATH',
+                    value: '/config.yml',
+                  },
+                ];
+
+                // Add advnacedConfig to the envVariables to if defined
+                if (values.advancedConfig) {
+                  envVariables.push({
+                    key: 'CT_CONTROLLER_ADVANCED_APP_VARS',
+                    value: JSON.stringify(values.advancedConfig),
+                  });
+                }
+
                 submit({
                   name: 'ctctrl-tacc',
                   appId: 'ctctrl-icicledev',
                   appVersion: '0.1',
                   description: 'Invoke ctcontroller to run camera-traps',
                   parameterSet: {
-                    envVariables: [
-                      {
-                        key: 'CT_CONTROLLER_TARGET_SITE',
-                        value: values.site,
-                      },
-                      {
-                        key: 'CT_CONTROLLER_NODE_TYPE',
-                        value: device.type,
-                      },
-                      {
-                        key: 'CT_CONTROLLER_CONFIG_PATH',
-                        value: '/config.yml',
-                      },
-                    ],
+                    envVariables,
                     archiveFilter: {
                       includeLaunchFiles: false,
                     },
@@ -631,20 +611,21 @@ const AnalysisForm: React.FC = () => {
       </div>
       <Button
         onClick={() => {
-          submit({
-            name: 'ctctrl-tacc',
-            appId: 'ctctrl-icicledev',
-            appVersion: '0.1',
-            description:
-              'Invoke ctcontroller to run camera-traps on TACC x86 system',
-            parameterSet: {
-              envVariables: [
-                { key: 'CT_CONTROLLER_TARGET_SITE', value: 'TACC' },
-                { key: 'CT_CONTROLLER_NODE_TYPE', value: 'x86' },
-                { key: 'CT_CONTROLLER_CONFIG_PATH', value: '/config.yml' },
-              ],
-            },
-          });
+          alert('Run All Analyses functionality coming soon');
+          // submit({
+          //   name: 'ctctrl-tacc',
+          //   appId: 'ctctrl-icicledev',
+          //   appVersion: '0.1',
+          //   description:
+          //     'Invoke ctcontroller to run camera-traps on TACC x86 system',
+          //   parameterSet: {
+          //     envVariables: [
+          //       { key: 'CT_CONTROLLER_TARGET_SITE', value: 'TACC' },
+          //       { key: 'CT_CONTROLLER_NODE_TYPE', value: 'x86' },
+          //       { key: 'CT_CONTROLLER_CONFIG_PATH', value: '/config.yml' },
+          //     ],
+          //   },
+          // });
           //handleRunAllAnalyses
         }}
         color="primary"
