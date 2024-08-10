@@ -37,6 +37,28 @@ const CodeTab: React.FC<CodeTabProps> = ({ featured }) => {
               setModal('runtime');
             }}
           />
+          {(taskPatch.git_repositories ? taskPatch.git_repositories : []).map(
+            (repo) => {
+              return (
+                <Chip
+                  size="small"
+                  label={`repo:${repo.url!.replace(
+                    'https://github.com/',
+                    ''
+                  )}:${repo.branch} ${repo.directory}`}
+                  onDelete={() => {
+                    setTaskPatch(task, {
+                      git_repositories: [
+                        ...(taskPatch.git_repositories || []).filter(
+                          (r) => repo.url !== r.url
+                        ),
+                      ],
+                    });
+                  }}
+                />
+              );
+            }
+          )}
         </Stack>
       </div>
       <CodeMirror

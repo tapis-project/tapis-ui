@@ -12,9 +12,11 @@ type TaskUpdateProviderProps = {
 const TaskUpdateProvider: React.FC<
   React.PropsWithChildren<TaskUpdateProviderProps>
 > = ({ children, task, tasks, groupId, pipelineId }) => {
+  // The state and setter of the task patch to be commited
   const [taskPatch, setTaskPatch] = useState<Partial<Workflows.FunctionTask>>(
     JSON.parse(JSON.stringify(task))
   );
+
   // TODO figure out how to track the diff between patch and task
   const dependentTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -27,7 +29,15 @@ const TaskUpdateProvider: React.FC<
     });
   }, [task, tasks, taskPatch]);
 
-  const patchTask = (task: Workflows.Task, data: Partial<Workflows.Task>) => {
+  // Sets the value of the patch to state.
+  // TODO Consider removing task from the function signature as `task` is available
+  // from props
+  type PatchTaskArgs = (
+    task: Workflows.Task,
+    data: Partial<Workflows.Task>,
+    callback?: () => void
+  ) => void;
+  const patchTask: PatchTaskArgs = (task, data) => {
     setTaskPatch({
       ...task,
       ...data,
