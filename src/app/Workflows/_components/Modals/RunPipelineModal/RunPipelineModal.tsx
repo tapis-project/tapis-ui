@@ -10,10 +10,11 @@ import {
   AlertTitle,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Button } from 'reactstrap';
+import { Button } from '@mui/material';
 import * as Yup from 'yup';
 import { Form, Formik, FieldArray } from 'formik';
-import { FormikInput, Icon, SectionHeader } from '@tapis/tapisui-common';
+import { FormikInput, SectionHeader } from '@tapis/tapisui-common';
+import { Delete } from '@mui/icons-material';
 import styles from './RunPipelineModal.module.scss';
 
 type RunPipelineModalProps = {
@@ -109,9 +110,7 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
       maxWidth="md"
       fullWidth={true}
     >
-      <DialogTitle id="alert-dialog-title">
-        Run pipeline '{pipeline.id}''
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">Run pipeline</DialogTitle>
       <DialogContent>
         {isSuccess && (
           <Alert severity="success" style={{ marginTop: '8px' }}>
@@ -203,14 +202,13 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                       </div>
                                       {!pipelineParams[param.key]?.required && (
                                         <Button
-                                          className={styles['remove-button']}
                                           type="button"
-                                          color="danger"
                                           disabled={false}
                                           onClick={() => arrayHelpers.remove(i)}
-                                          size="sm"
+                                          startIcon={<Delete />}
+                                          color="error"
                                         >
-                                          <Icon name="trash" />
+                                          Delete
                                         </Button>
                                       )}
                                     </div>

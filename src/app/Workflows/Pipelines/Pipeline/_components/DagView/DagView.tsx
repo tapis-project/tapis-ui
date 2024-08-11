@@ -14,6 +14,7 @@ import {
   List,
   ListItem,
   ListItemButton,
+  ListSubheader,
 } from '@mui/material';
 import {
   DataObject,
@@ -88,8 +89,8 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
     extension?.serviceCustomizations?.workflows?.dagTasks || [];
   return (
     <div>
-      <Drawer open={open} onClose={toggle}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggle}>
+      <Drawer open={open} onClose={toggle} anchor="top">
+        <Box role="presentation" onClick={toggle}>
           <List>
             <ListItem disablePadding>
               <ListItemButton onClick={onClickRunPipeline}>
@@ -102,8 +103,6 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
                 />
               </ListItemButton>
             </ListItem>
-          </List>
-          <List>
             <ListItem disablePadding>
               <ListItemButton onClick={onClickCreateTask}>
                 <ListItemIcon>
@@ -117,7 +116,19 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
             </ListItem>
           </List>
           <Divider />
-          <List>
+          <List
+            subheader={
+              <ListSubheader
+                component="div"
+                id="predefined-tasks"
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+              >
+                Add Predefined Tasks
+              </ListSubheader>
+            }
+          >
             {sidebarTasks.map((task, i) => (
               <ListItem key={`dag-task-${i}`} disablePadding>
                 <ListItemButton
