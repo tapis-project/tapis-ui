@@ -38,7 +38,13 @@
     "@tapis/tapis-typescript": "^0.0.37",
     "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-common": "file:../tapisui-common",
-    "react": "^18.3.1"
+    "@tapis/tapisui-hooks": "file:../tapisui-hooks",
+    "formik": "^2.2.9",
+    "react-dom": "^18.3.1",
+    "reactstrap": "^8.9.0",
+    "react": "^18.3.1",
+    "uuid": "^7.0.2",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/node": "^18.19.33",
