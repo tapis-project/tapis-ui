@@ -4,7 +4,6 @@ import { PageLayout, LayoutBody } from '@tapis/tapisui-common';
 import { Menu } from '../_components';
 
 const Layout: React.FC = () => {
-
   const header = (
     <div>
       <Menu />
