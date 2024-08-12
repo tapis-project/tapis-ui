@@ -244,8 +244,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
         {(tab === 'code' || featuredTab === 'code') &&
           tabs.includes('code') && (
             <CodeTab featured={task.type === Workflows.EnumTaskType.Function} />
-          )
-        }
+          )}
         {(tab === 'jobdef' || featuredTab === 'jobdef') &&
           tabs.includes('jobdef') && (
             <TapisJobDefTab

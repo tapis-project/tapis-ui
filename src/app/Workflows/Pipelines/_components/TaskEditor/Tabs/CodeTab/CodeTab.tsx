@@ -41,10 +41,9 @@ const CodeTab: React.FC<CodeTabProps> = ({ featured }) => {
             return (
               <Chip
                 size="small"
-                label={`repo:${repo.url!.replace(
-                  'https://github.com/',
-                  ''
-                )}:${repo.branch} ${repo.directory}`}
+                label={`repo:${repo.url!.replace('https://github.com/', '')}:${
+                  repo.branch
+                } ${repo.directory}`}
                 onDelete={() => {
                   setTaskPatch(task, {
                     git_repositories: [

@@ -1,78 +1,83 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Sidebar } from '../../../Sidebar';
-import styles from "./IOTab.module.scss"
+import styles from './IOTab.module.scss';
 import { usePatchTask } from 'app/Workflows/_hooks';
-import { Button, List, Box, ListItem, ListItemButton, ListSubheader, ListItemText } from '@mui/material';
+import {
+  Button,
+  List,
+  Box,
+  ListItem,
+  ListItemButton,
+  ListSubheader,
+  ListItemText,
+} from '@mui/material';
 import { Add } from '@mui/icons-material';
 
 const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const { taskPatch } = usePatchTask<Workflows.Task>();
   const getValueSource = (value: Workflows.SpecWithValue) => {
     if (value.value) {
-      return `from literal: ${value.value}`
+      return `from literal: ${value.value}`;
     }
 
-    const sourceKey = Object.keys(value.value_from!)[0]
-    let source: string | undefined = undefined
-    console.log({sourceKey})
+    const sourceKey = Object.keys(value.value_from!)[0];
+    let source: string | undefined = undefined;
+    console.log({ sourceKey });
     switch (sourceKey) {
-      case "args":
+      case 'args':
         source = value.value_from?.args;
         break;
-      case "env":
-        source = value.value_from?.env
-        break
+      case 'env':
+        source = value.value_from?.env;
+        break;
       default:
-        source = "unknown"
+        source = 'unknown';
     }
 
-    return `from '${source}' in '${sourceKey}'`
-  }
+    return `from '${source}' in '${sourceKey}'`;
+  };
 
-  const input = Object.entries(taskPatch.input || {})
-  const output = Object.entries(taskPatch.output || {})
+  const input = Object.entries(taskPatch.input || {});
+  const output = Object.entries(taskPatch.output || {});
 
   return (
     <Sidebar title={'Inputs & Outputs'} toggle={toggle}>
       <Box>
         <List
           subheader={
-            <ListSubheader
-              component="div"
-              id="inputs"
-            >
+            <ListSubheader component="div" id="inputs">
               Inputs
             </ListSubheader>
           }
         >
-        {input.length < 1 && (
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemText
-                primary={"No inputs"}
-                secondary={"Press the button below to add an input"}
-              />
-            </ListItemButton>
-          </ListItem>
-        )}
-        {
-          input.map(([key, value]) => {
+          {input.length < 1 && (
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemText
+                  primary={'No inputs'}
+                  secondary={'Press the button below to add an input'}
+                />
+              </ListItemButton>
+            </ListItem>
+          )}
+          {input.map(([key, value]) => {
             return (
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemText
-                    primary={`'${key}' as ${value.type} ${getValueSource(value)}`}
+                    primary={`'${key}' as ${value.type} ${getValueSource(
+                      value
+                    )}`}
                     secondary={value.description}
                   />
                 </ListItemButton>
               </ListItem>
-            )
-          })
-        }
+            );
+          })}
         </List>
       </Box>
-      <div className={styles["container"]}>
+      <div className={styles['container']}>
         <Button startIcon={<Add />} onClick={() => {}}>
           Add Input
         </Button>
@@ -80,10 +85,7 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       <Box>
         <List
           subheader={
-            <ListSubheader
-              component="div"
-              id="inputs"
-            >
+            <ListSubheader component="div" id="inputs">
               Outputs
             </ListSubheader>
           }
@@ -92,29 +94,27 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemText
-                  primary={"No outputs"}
-                  secondary={"Press the button below to add an output"}
+                  primary={'No outputs'}
+                  secondary={'Press the button below to add an output'}
                 />
               </ListItemButton>
             </ListItem>
           )}
-          {
-            output.map(([key, value]) => {
-              return (
-                <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemText
-                      primary={`'${key}' as ${value} ${getValueSource(value)}`}
-                      secondary={(value as any).type!}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              )
-            })
-          }
+          {output.map(([key, value]) => {
+            return (
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemText
+                    primary={`'${key}' as ${value} ${getValueSource(value)}`}
+                    secondary={(value as any).type!}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
-      <div className={styles["container"]}>
+      <div className={styles['container']}>
         <Button startIcon={<Add />} onClick={() => {}}>
           Add Output
         </Button>
