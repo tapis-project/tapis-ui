@@ -125,7 +125,7 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
                   event.stopPropagation();
                 }}
               >
-                Add Predefined Tasks
+                Add predefined tasks to the workflow
               </ListSubheader>
             }
           >

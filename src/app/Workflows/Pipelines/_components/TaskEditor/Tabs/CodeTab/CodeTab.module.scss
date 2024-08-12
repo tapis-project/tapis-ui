@@ -12,6 +12,10 @@
 
 .code-container-header {
   padding: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
 }
 
 .code-container-header-item {

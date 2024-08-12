@@ -5,6 +5,7 @@ import { useState } from 'react';
 import styles from './GitTab.module.scss';
 import { Button, Chip } from '@mui/material';
 import { AddGitRepoModal } from 'app/Workflows/_components/Modals';
+import { Add } from '@mui/icons-material';
 
 const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const {
@@ -51,6 +52,7 @@ const GitTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
           onClick={() => {
             setModal('git');
           }}
+          startIcon={<Add />}
         >
           Add Git Repo
         </Button>

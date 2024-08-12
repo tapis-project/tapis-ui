@@ -81,7 +81,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
     <div>
       <Box sx={{ width: '100%', typography: 'body1' }}>
         <TabContext value={tab}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Box>
             <TabList onChange={handleChangeTab}>
               {tabs.includes('general') && (
                 <Tab label="General" value="general" />
@@ -244,7 +244,8 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
         {(tab === 'code' || featuredTab === 'code') &&
           tabs.includes('code') && (
             <CodeTab featured={task.type === Workflows.EnumTaskType.Function} />
-          )}
+          )
+        }
         {(tab === 'jobdef' || featuredTab === 'jobdef') &&
           tabs.includes('jobdef') && (
             <TapisJobDefTab
