@@ -39,6 +39,7 @@
     "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-common": "file:../tapisui-common",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",
+    "copyfiles": "^2.4.1",
     "formik": "^2.2.9",
     "react-dom": "^18.3.1",
     "reactstrap": "^8.9.0",
