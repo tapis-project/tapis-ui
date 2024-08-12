@@ -1,13 +1,6 @@
 import React from 'react';
 import { Router } from '../_Router';
-import {
-  PageLayout,
-  LayoutBody,
-  LayoutHeader,
-  Breadcrumbs,
-} from '@tapis/tapisui-common';
-import { breadcrumbsFromPathname } from '@tapis/tapisui-common';
-import styles from './Layout.module.scss';
+import { PageLayout, LayoutBody } from '@tapis/tapisui-common';
 import { Menu } from '../_components';
 
 const Layout: React.FC = () => {
