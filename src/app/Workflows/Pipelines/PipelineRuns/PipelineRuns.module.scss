@@ -41,3 +41,19 @@
 .task-executions p {
   padding: 8px;
 }
+
+.runs {
+  border-bottom: 1px solid #CCCCCC;
+}
+
+.runs-table {
+  border-radius: 3px 3px 0 0
+}
+
+.logs {
+  white-space: pre-line;
+  padding: 16px;
+  background: #343A40;
+  color: #FFFFFF;
+  border-radius: 0 0 3px 3px;
+}
