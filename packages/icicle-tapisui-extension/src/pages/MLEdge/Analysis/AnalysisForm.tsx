@@ -30,7 +30,7 @@ interface ValidationResult {
 
 const initialValues: Analysis = {
   id: uuidv4(),
-  analysisId: 'Analysis',
+  analysisId: 'mledge-analysis',
   model: '',
   dataset: '',
   site: '',
@@ -72,14 +72,14 @@ const ML_EDGE_SYSTEM_ID = 'icicledev-cameratraps';
 const devices = [
   {
     id: 1,
-    name: 'x86(w/o GPU)',
+    name: 'x86',
     type: 'x86',
     site: 'TACC',
     gpu: false,
   },
   {
     id: 2,
-    name: 'x86(w GPU)',
+    name: 'x86 (GPU)',
     type: 'x86',
     site: 'TACC',
     gpu: true,
@@ -93,14 +93,14 @@ const devices = [
   },
   {
     id: 4,
-    name: 'x86(w/o GPU)',
+    name: 'x86',
     type: 'x86',
     site: 'CHAMELEON',
     gpu: false,
   },
   {
     id: 5,
-    name: 'x86(w GPU)',
+    name: 'x86 (GPU)',
     type: 'x86',
     gpu: true,
     site: 'CHAMELEON',
@@ -111,6 +111,52 @@ const devices = [
     type: 'Jetson Nano',
     site: 'CHAMELEON',
     gpu: true,
+  },
+];
+
+const models = [
+  {
+    model_id: 'megadetectorv5-ft-kudu',
+    name: 'MegaDetector v5 (FT Kudu)',
+  },
+  {
+    model_id: 'megadetectorv5a',
+    name: 'MegaDetector v5a',
+  },
+  {
+    model_id: 'megadetectorv5b',
+    name: 'MegaDetector v5b',
+  },
+  {
+    model_id: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
+    name: 'MegaDetector v4.1',
+  },
+  {
+    model_id: 'megadetectorv5-ft-ena',
+    name: 'MegaDetector v5 (FT ENA)',
+  },
+  {
+    model_id: 'bioclip',
+    name: 'BioClip',
+  },
+];
+
+const datasets = [
+  {
+    id: '15-image',
+    name: '15 Image',
+  },
+  {
+    id: 'ena',
+    name: 'ENA',
+  },
+  {
+    id: 'ohio-small-animals',
+    name: 'Ohio Small Animals',
+  },
+  {
+    id: 'okavango-delta',
+    name: 'Okavango Delta',
   },
 ];
 
@@ -261,6 +307,18 @@ const AnalysisForm: React.FC = () => {
                     key: 'CT_CONTROLLER_CONFIG_PATH',
                     value: '/config.yml',
                   },
+                  {
+                    key: 'CT_CONTROLLER_GPU',
+                    value: device.gpu ? 'true' : 'false',
+                  },
+                  {
+                    key: 'CT_CONTROLLER_MODEL',
+                    value: values.model,
+                  },
+                  {
+                    key: 'CT_CONTROLLER_INPUT',
+                    value: values.dataset,
+                  },
                 ];
 
                 // Add advnacedConfig to the envVariables to if defined
@@ -304,6 +362,7 @@ const AnalysisForm: React.FC = () => {
                         type="text"
                         id={`analysisId-${index}`}
                         name="analysisId"
+                        disabled
                         onChange={(e) =>
                           handleChangeAnalysis(
                             index,
@@ -352,20 +411,14 @@ const AnalysisForm: React.FC = () => {
                       value={values.model}
                     >
                       <option value="" label="Select option" />
-                      <option
-                        value="kudu-megadetector-ft"
-                        label="kudu-megadetector-ft"
-                      />
-                      <option value="megadetectorv5a" label="megadetectorv5a" />
-                      <option value="megadetectorv5b" label="megadetectorv5b" />
-                      <option
-                        value="megadetectorv5-ft-ena"
-                        label="megadetectorv5-ft-ena"
-                      />
-                      <option value="bioclip" label="bioclip" />
-                      <option value="Other" label="Other" />
+                      {models.map((model) => {
+                        return (
+                          <option value={model.model_id}>{model.name}</option>
+                        );
+                      })}
+                      <option value="url" label="-- provide model url --" />
                     </Input>
-                    {values.model === 'Other' && (
+                    {values.model === 'url' && (
                       <div className={styles.formGroup}>
                         <label htmlFor={`modelUrl-${index}`}>Model URL</label>
                         <Input
@@ -434,19 +487,14 @@ const AnalysisForm: React.FC = () => {
                       }
                     >
                       <option value="" label="Select option" />
-                      <option
-                        value="15 image dataset"
-                        label="15 image dataset"
-                      />
-                      <option value="ENA dataset" label="ENA dataset" />
-                      <option
-                        value="Ohio Small Animals dataset"
-                        label="Ohio Small Animals dataset"
-                      />
-                      <option value="okavango-delta" label="Okavanga Delta" />
-                      <option value="Other" label="Other" />
+                      {datasets.map((dataset) => {
+                        return (
+                          <option value={dataset.id} label={dataset.name} />
+                        );
+                      })}
+                      <option value="url" label="-- provide dataset url --" />
                     </Input>
-                    {values.dataset === 'Other' && (
+                    {values.dataset === 'url' && (
                       <div className={styles.formGroup}>
                         <label htmlFor={`datasetUrl-${index}`}>
                           Dataset URL
@@ -596,7 +644,6 @@ const AnalysisForm: React.FC = () => {
                       value={values.advancedConfig}
                     />
                   </div>
-
                   <Button type="submit" color="primary">
                     Analyze
                   </Button>
