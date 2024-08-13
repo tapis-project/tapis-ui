@@ -350,11 +350,12 @@ const AnalysisForm: React.FC = () => {
                       }
                       onBlur={handleBlur}
                       value={values.model}
-                      className={
-                        errors.model && touched.model ? 'is-invalid' : ''
-                      }
                     >
                       <option value="" label="Select option" />
+                      <option
+                        value="kudu-megadetector-ft"
+                        label="kudu-megadetector-ft"
+                      />
                       <option value="megadetectorv5a" label="megadetectorv5a" />
                       <option value="megadetectorv5b" label="megadetectorv5b" />
                       <option
@@ -442,6 +443,7 @@ const AnalysisForm: React.FC = () => {
                         value="Ohio Small Animals dataset"
                         label="Ohio Small Animals dataset"
                       />
+                      <option value="okavango-delta" label="Okavanga Delta" />
                       <option value="Other" label="Other" />
                     </Input>
                     {values.dataset === 'Other' && (

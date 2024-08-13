@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { SectionMessage, SectionHeader } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './PipelineRuns.module.scss';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import { ExpandMore } from '@mui/icons-material';
+import { ExpandMore, Check, Close, DonutLarge } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -15,16 +15,25 @@ import {
 } from '@mui/material';
 import { Table } from 'reactstrap';
 
-type PipelineRunProps = {
-  order: number;
-  groupId: string;
-  pipelineId: string;
-  pipelineRun: Workflows.PipelineRun;
-};
-
 type PipelineRunsProps = {
   groupId: string;
   pipelineId: string;
+};
+
+const PipelineRunHeader: React.FC<{
+  status: Workflows.PipelineRun['status'];
+  text: string | undefined;
+}> = ({ status, text = '' }) => {
+  return (
+    <div>
+      <div
+        className={`${styles['run-status-icon']} ${
+          styles[`run-status-icon-${status}`]
+        }`}
+      />
+      <div className={styles['run-status-text']}>{text}</div>
+    </div>
+  );
 };
 
 const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
@@ -58,7 +67,9 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                     aria-controls="pipeline-run-summary"
                     id={`pipeline-${pipelineId}-run-summary-${i}`}
                   >
-                    <b>{run.name}</b>
+                    <div>
+                      <PipelineRunHeader status={run.status} text={run.name} />
+                    </div>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Table
@@ -69,7 +80,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                     >
                       <thead>
                         <tr>
-                          <th>#</th>
+                          <th style={{ textAlign: 'center' }}>#</th>
                           <th>name</th>
                           <th>status</th>
                           <th>duration</th>
@@ -78,7 +89,9 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                         </tr>
                       </thead>
                       <tr>
-                        <th scope="row">{pipelineRuns.length - i}</th>
+                        <th style={{ textAlign: 'center' }} scope="row">
+                          {pipelineRuns.length - i}
+                        </th>
                         <td>{run.name}</td>
                         <td>{run.status}</td>
                         <td>{duration}</td>
