@@ -1,0 +1,35 @@
+.run-status-text {
+  display: inline-block;
+}
+
+.header{
+  line-height: 1px;
+}
+
+.run-status-text {
+  line-height: 1px;
+}
+
+.run-status-icon {
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 16px;
+  height: 12px;
+  width: 12px;
+}
+
+.run-status-icon-failed {
+  background-color: #d32f2f;
+}
+
+.run-status-icon-completed {
+  background-color: #15bd42;
+}
+
+.run-status-icon-pending {
+  background-color: #ffa726;
+}
+
+.run-status-icon-active {
+  background-color: #ffa726;
+}

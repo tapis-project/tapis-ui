@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState, useLayoutEffect } from 'react';
 import { EnvironmentNode, TaskNode, ArgsNode, ConditionalNode } from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './DagView.module.scss';
+import { DagViewHeader } from './DagViewHeader';
 import { Chip } from '@mui/material';
 import { DataObject, Share, Bolt, AltRoute } from '@mui/icons-material';
 import {
@@ -309,107 +310,110 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   }, [views, setViews, groupId, pipeline]);
 
   return (
-    <div className={styles['dag']}>
-      <ReactFlow
-        nodeTypes={nodeTypes}
-        nodes={nodes}
-        edges={edges}
-        onConnect={onConnect}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        defaultViewport={{ x: 120, y: 60, zoom: 1 }}
-      >
-        <DagViewDrawer
+    <div>
+      <DagViewHeader groupId={groupId} pipelineId={pipeline.id!} pipelineRunUuid={pipeline.current_run}/>
+      <div className={styles['dag']}>
+        <ReactFlow
+          nodeTypes={nodeTypes}
+          nodes={nodes}
+          edges={edges}
+          onConnect={onConnect}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          defaultViewport={{ x: 120, y: 60, zoom: 1 }}
+        >
+          <DagViewDrawer
+            groupId={groupId}
+            pipelineId={pipeline.id!}
+            open={drawerOpen}
+            toggle={() => {
+              setDrawerOpen(false);
+            }}
+            onClickCreateTask={() => {
+              setModal('createtask');
+            }}
+            onClickRunPipeline={() => {
+              setModal('runpipeline');
+            }}
+          />
+          <Panel position="top-left">
+            <Chip
+              onClick={() => {
+                setDrawerOpen(true);
+              }}
+              color={'primary'}
+              size="small"
+              label="actions"
+              icon={<Bolt />}
+            />
+          </Panel>
+          <Panel position="top-right">
+            <Chip
+              onClick={() => {
+                handleToggleView('data');
+              }}
+              variant={views.data ? 'filled' : 'outlined'}
+              color="primary"
+              style={{ marginLeft: '8px' }}
+              size="small"
+              label="data"
+              icon={<DataObject />}
+            />
+            <Chip
+              onClick={() => {
+                handleToggleView('dependencies');
+              }}
+              variant={views.dependencies ? 'filled' : 'outlined'}
+              color="primary"
+              style={{ marginLeft: '8px' }}
+              size="small"
+              label="dependenies"
+              icon={<Share />}
+            />
+            <Chip
+              onClick={() => {
+                handleToggleView('conditionals');
+              }}
+              variant={views.conditionals ? 'filled' : 'outlined'}
+              color="primary"
+              style={{ marginLeft: '8px' }}
+              size="small"
+              label="conditionals"
+              icon={<AltRoute />}
+            />
+          </Panel>
+          <Controls
+            position="bottom-left"
+            style={{
+              color: 'black',
+              border: '1px solid #999999',
+              borderRadius: '1px',
+            }}
+          />
+          <MiniMap
+            position="bottom-right"
+            style={{ border: '1px solid #999999', borderRadius: '1px' }}
+          />
+          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        </ReactFlow>
+        <CreateTaskModal
+          open={modal === 'createtask'}
+          toggle={() => {
+            setModal(undefined);
+          }}
           groupId={groupId}
           pipelineId={pipeline.id!}
-          open={drawerOpen}
+        />
+        <RunPipelineModal
+          open={modal === 'runpipeline'}
           toggle={() => {
-            setDrawerOpen(false);
+            setModal(undefined);
           }}
-          onClickCreateTask={() => {
-            setModal('createtask');
-          }}
-          onClickRunPipeline={() => {
-            setModal('runpipeline');
-          }}
+          groupId={groupId}
+          pipelineId={pipeline.id!}
+          pipeline={pipeline}
         />
-        <Panel position="top-left">
-          <Chip
-            onClick={() => {
-              setDrawerOpen(true);
-            }}
-            color={'primary'}
-            size="small"
-            label="actions"
-            icon={<Bolt />}
-          />
-        </Panel>
-        <Panel position="top-right">
-          <Chip
-            onClick={() => {
-              handleToggleView('data');
-            }}
-            variant={views.data ? 'filled' : 'outlined'}
-            color="primary"
-            style={{ marginLeft: '8px' }}
-            size="small"
-            label="data"
-            icon={<DataObject />}
-          />
-          <Chip
-            onClick={() => {
-              handleToggleView('dependencies');
-            }}
-            variant={views.dependencies ? 'filled' : 'outlined'}
-            color="primary"
-            style={{ marginLeft: '8px' }}
-            size="small"
-            label="dependenies"
-            icon={<Share />}
-          />
-          <Chip
-            onClick={() => {
-              handleToggleView('conditionals');
-            }}
-            variant={views.conditionals ? 'filled' : 'outlined'}
-            color="primary"
-            style={{ marginLeft: '8px' }}
-            size="small"
-            label="conditionals"
-            icon={<AltRoute />}
-          />
-        </Panel>
-        <Controls
-          position="bottom-left"
-          style={{
-            color: 'black',
-            border: '1px solid #999999',
-            borderRadius: '1px',
-          }}
-        />
-        <MiniMap
-          position="bottom-right"
-          style={{ border: '1px solid #999999', borderRadius: '1px' }}
-        />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-      </ReactFlow>
-      <CreateTaskModal
-        open={modal === 'createtask'}
-        toggle={() => {
-          setModal(undefined);
-        }}
-        groupId={groupId}
-        pipelineId={pipeline.id!}
-      />
-      <RunPipelineModal
-        open={modal === 'runpipeline'}
-        toggle={() => {
-          setModal(undefined);
-        }}
-        groupId={groupId}
-        pipelineId={pipeline.id!}
-        pipeline={pipeline}
-      />
+      </div>
     </div>
   );
 };

@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { SectionMessage, SectionHeader } from '@tapis/tapisui-common';
+import { SectionMessage } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './PipelineRuns.module.scss';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { ExpandMore, Check, Close, DonutLarge } from '@mui/icons-material';
+import { useHistory, useLocation } from 'react-router-dom';
+import { ExpandMore } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -14,26 +14,11 @@ import {
   AccordionActions,
 } from '@mui/material';
 import { Table } from 'reactstrap';
+import { PipelineRunHeader } from './_components';
 
 type PipelineRunsProps = {
   groupId: string;
   pipelineId: string;
-};
-
-const PipelineRunHeader: React.FC<{
-  status: Workflows.PipelineRun['status'];
-  text: string | undefined;
-}> = ({ status, text = '' }) => {
-  return (
-    <div>
-      <div
-        className={`${styles['run-status-icon']} ${
-          styles[`run-status-icon-${status}`]
-        }`}
-      />
-      <div className={styles['run-status-text']}>{text}</div>
-    </div>
-  );
 };
 
 const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
@@ -67,9 +52,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                     aria-controls="pipeline-run-summary"
                     id={`pipeline-${pipelineId}-run-summary-${i}`}
                   >
-                    <div>
-                      <PipelineRunHeader status={run.status} text={run.name} />
-                    </div>
+                    <PipelineRunHeader status={run.status} text={run.name} />
                   </AccordionSummary>
                   <AccordionDetails>
                     <Table
