@@ -4,7 +4,7 @@ import { SectionHeader } from '@tapis/tapisui-common';
 export const DigitalAg: React.FC = () => {
   return (
     <div>
-      <SectionHeader>Digital Ag</SectionHeader>
+      <SectionHeader>Digital Ag - Not Implemented</SectionHeader>
     </div>
   );
 };

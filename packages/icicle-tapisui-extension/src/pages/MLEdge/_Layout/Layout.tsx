@@ -11,9 +11,11 @@ const Layout: React.FC = () => {
   );
 
   const body = (
-    <LayoutBody>
-      <Router />
-    </LayoutBody>
+    <div style={{ marginLeft: '1rem', flex: 1, overflow: 'auto' }}>
+      <LayoutBody>
+        <Router />
+      </LayoutBody>
+    </div>
   );
 
   return <PageLayout top={header} right={body} />;
