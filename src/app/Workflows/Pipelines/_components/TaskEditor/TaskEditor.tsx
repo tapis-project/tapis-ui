@@ -97,7 +97,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
                 <Tab label="Dependencies" value="deps" />
               )}
               {tabs.includes('uses') && (
-                <Tab label="Inheritence" value="uses" />
+                <Tab label="Inheritance" value="uses" />
               )}
               {tabs.includes('runtime') && (
                 <Tab label="Runtime" value="runtime" />

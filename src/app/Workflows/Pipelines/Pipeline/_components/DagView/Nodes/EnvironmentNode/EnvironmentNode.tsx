@@ -27,7 +27,7 @@ const EnvironmentNode: React.FC<NodeProps> = ({ id, data }) => {
         </div>
         <div className={styles['body']}>
           <i className={styles['description']}>
-            Pipeline envrionment variables
+            Pipeline environment variables
           </i>
         </div>
       </div>

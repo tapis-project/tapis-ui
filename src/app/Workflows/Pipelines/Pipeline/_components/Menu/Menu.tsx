@@ -18,9 +18,9 @@ const Menu: React.FC<{ tab: string }> = ({ tab }) => {
           <TabList onChange={handleChangeTab}>
             <Tab label="Tasks" value="tasks" />
             <Tab label="Exec. Profile" value="execprofile" />
-            <Tab label="Envrionment" value="env" />
+            <Tab label="Environment" value="env" />
             <Tab label="Parameters" value="params" />
-            <Tab label="Inheritence" value="uses" />
+            <Tab label="Inheritance" value="uses" />
             <Tab label="Runs" value="runs" />
           </TabList>
         </Box>
