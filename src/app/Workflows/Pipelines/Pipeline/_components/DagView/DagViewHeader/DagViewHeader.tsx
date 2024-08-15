@@ -1,8 +1,7 @@
-import { Workflows } from "@tapis/tapis-typescript"
 import { Workflows as Hooks } from "@tapis/tapisui-hooks"
 import styles from "./DagViewHeader.module.scss"
-import React from "react"
-import { PipelineRunHeader } from "app/Workflows/Pipelines/PipelineRuns/_components"
+import React, { useState } from "react"
+import { PipelineRunSummary, PipelineRunLogs } from "app/Workflows/Pipelines/PipelineRuns/_components"
 
 type DagViewHeaderProps = {
   groupId: string
@@ -14,13 +13,21 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({groupId, pipelineId, pipel
   if (pipelineRunUuid === undefined) {
     return ""
   }
+  const [open, setOpen] = useState(false)
   const { data, isError, error, isLoading } = Hooks.PipelineRuns.useDetails({groupId, pipelineId, pipelineRunUuid})
   const run = data?.result || {}
   return (
     <div className={styles["header"]}>
       {isError && error.message}
       {
-        isLoading ? ("Loading...") : <PipelineRunHeader status={run.status} text={`${pipelineId} - ${run.name || "?"}`}/>
+        isLoading ? ("Loading...") : (
+          <div>
+            <PipelineRunSummary status={run.status} text={`${pipelineId} - ${run.name || "?"}`}/>
+            {open && (
+              <PipelineRunLogs logs={run.logs}/>
+            )}
+          </div>
+        )
       }
     </div>
   )

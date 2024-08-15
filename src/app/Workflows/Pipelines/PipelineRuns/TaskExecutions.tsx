@@ -38,7 +38,6 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                 <th>status</th>
                 <th>started at</th>
                 <th>last modified</th>
-                <th>uuid</th>
                 <th>stdout</th>
                 <th>stderr</th>
               </tr>
@@ -53,7 +52,6 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                       <td>{taskExecution.status}</td>
                       <td>{taskExecution.started_at || 'unknown'}</td>
                       <td>{taskExecution.last_modified || 'unknown'}</td>
-                      <td>{taskExecution.uuid}</td>
                       <td>{taskExecution.stdout}</td>
                       <td>{taskExecution.stderr}</td>
                     </tr>

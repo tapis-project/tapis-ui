@@ -1,1 +1,2 @@
-export { PipelineRunHeader } from "./PipelineRunHeader"
+export { PipelineRunSummary } from "./PipelineRunSummary"
+export { PipelineRunLogs } from "./PipelineRunLogs"

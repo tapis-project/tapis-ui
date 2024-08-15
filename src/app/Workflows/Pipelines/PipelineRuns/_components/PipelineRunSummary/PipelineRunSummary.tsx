@@ -1,7 +1,7 @@
 import { Workflows } from "@tapis/tapis-typescript";
-import styles from "./PipelineRunHeader.module.scss"
+import styles from "./PipelineRunSummary.module.scss"
 
-const PipelineRunHeader: React.FC<{
+const PipelineRunSummary: React.FC<{
   status: Workflows.PipelineRun['status'];
   text: string | undefined;
 }> = ({ status, text = '' }) => {
@@ -17,4 +17,4 @@ const PipelineRunHeader: React.FC<{
   );
 };
 
-export default PipelineRunHeader
+export default PipelineRunSummary

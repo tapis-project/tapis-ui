@@ -14,7 +14,8 @@ import {
   AccordionActions,
 } from '@mui/material';
 import { Table } from 'reactstrap';
-import { PipelineRunHeader } from './_components';
+import { PipelineRunSummary } from './_components';
+import { PipelineRunLogs } from './_components/PipelineRunLogs';
 
 type PipelineRunsProps = {
   groupId: string;
@@ -52,7 +53,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                     aria-controls="pipeline-run-summary"
                     id={`pipeline-${pipelineId}-run-summary-${i}`}
                   >
-                    <PipelineRunHeader status={run.status} text={run.name} />
+                    <PipelineRunSummary status={run.status} text={run.name} />
                   </AccordionSummary>
                   <AccordionDetails>
                     <Table
@@ -82,7 +83,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                         <td>{run.last_modified}</td>
                       </tr>
                     </Table>
-                    <pre className={styles['logs']}>{run.logs}</pre>
+                    <PipelineRunLogs logs={run.logs}/>
                   </AccordionDetails>
                   <AccordionActions>
                     <Button

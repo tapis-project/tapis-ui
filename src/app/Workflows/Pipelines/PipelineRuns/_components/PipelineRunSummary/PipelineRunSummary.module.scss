@@ -3,17 +3,17 @@
 }
 
 .header{
-  line-height: 1px;
+  
 }
 
 .run-status-text {
-  line-height: 1px;
 }
 
 .run-status-icon {
+  margin-bottom: -1px;
   display: inline-block;
   border-radius: 50%;
-  margin-right: 16px;
+  margin-right: 10px;
   height: 12px;
   width: 12px;
 }
@@ -32,4 +32,18 @@
 
 .run-status-icon-active {
   background-color: #ffa726;
+  animation: active 1.5s infinite;
+}
+
+.run-status-icon-submitted {
+  background-color: #42A5F5;
+}
+
+@keyframes active {
+  0%, 100% {
+    background-color: #FFB74D;
+  }
+  50% {
+    background-color: #F57C01;
+  }
 }
