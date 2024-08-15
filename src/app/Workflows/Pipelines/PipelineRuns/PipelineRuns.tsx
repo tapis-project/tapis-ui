@@ -83,7 +83,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                         <td>{run.last_modified}</td>
                       </tr>
                     </Table>
-                    <PipelineRunLogs logs={run.logs}/>
+                    <PipelineRunLogs logs={run.logs} />
                   </AccordionDetails>
                   <AccordionActions>
                     <Button

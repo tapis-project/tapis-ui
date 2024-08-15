@@ -1,5 +1,5 @@
-import { Workflows } from "@tapis/tapis-typescript";
-import styles from "./PipelineRunSummary.module.scss"
+import { Workflows } from '@tapis/tapis-typescript';
+import styles from './PipelineRunSummary.module.scss';
 
 const PipelineRunSummary: React.FC<{
   status: Workflows.PipelineRun['status'];
@@ -17,4 +17,4 @@ const PipelineRunSummary: React.FC<{
   );
 };
 
-export default PipelineRunSummary
+export default PipelineRunSummary;

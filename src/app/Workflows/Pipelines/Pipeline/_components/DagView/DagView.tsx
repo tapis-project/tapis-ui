@@ -311,7 +311,11 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
   return (
     <div>
-      <DagViewHeader groupId={groupId} pipelineId={pipeline.id!} pipelineRunUuid={pipeline.current_run}/>
+      <DagViewHeader
+        groupId={groupId}
+        pipelineId={pipeline.id!}
+        pipelineRunUuid={pipeline.current_run}
+      />
       <div className={styles['dag']}>
         <ReactFlow
           nodeTypes={nodeTypes}

@@ -1,1 +1,1 @@
-export { default as PipelineRunLogs } from "./PipelineRunLogs"
+export { default as PipelineRunLogs } from './PipelineRunLogs';
