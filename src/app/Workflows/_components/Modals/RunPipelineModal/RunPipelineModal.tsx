@@ -93,14 +93,16 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
       };
     });
 
-    run({
-      groupId,
-      pipelineId,
-      reqRunPipeline: { args: modifiedParams },
-    },
-    {
-      onSuccess
-    });
+    run(
+      {
+        groupId,
+        pipelineId,
+        reqRunPipeline: { args: modifiedParams },
+      },
+      {
+        onSuccess,
+      }
+    );
   };
 
   const pipelineParams = pipeline.params || {};

@@ -39,13 +39,25 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({
         <div>
           <PipelineRunSummary status={run.status}>
             {pipelineId}
-            <Link style={{color: "#707070"}} to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipelineRunUuid}`}>{run.name || '?'}</Link>
-            <PipelineRunDuration style={{fontSize: "12px"}} run={run}/>
-            <Button size="small" onClick={() => {setOpen(!open)}}>{!open ? "show logs" : "hide logs"}</Button>
+            <Link
+              style={{ color: '#707070' }}
+              to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipelineRunUuid}`}
+            >
+              {run.name || '?'}
+            </Link>
+            <PipelineRunDuration style={{ fontSize: '12px' }} run={run} />
+            <Button
+              size="small"
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
+              {!open ? 'show logs' : 'hide logs'}
+            </Button>
           </PipelineRunSummary>
           {open && (
-            <div style={{marginTop: "16px"}}>
-              <PipelineRunLogs logs={run.logs}/>
+            <div style={{ marginTop: '16px' }}>
+              <PipelineRunLogs logs={run.logs} />
             </div>
           )}
         </div>

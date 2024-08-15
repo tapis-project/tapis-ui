@@ -34,7 +34,7 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
 
   const onSuccess = useCallback(() => {
     if (onDelete) {
-      onDelete()
+      onDelete();
     }
     queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
     queryClient.invalidateQueries(Hooks.Pipelines.queryKeys.details);
@@ -101,10 +101,7 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
           disabled={isSuccess}
           variant="outlined"
           onClick={() => {
-            remove(
-              { groupId, pipelineId, taskId: task.id! },
-              { onSuccess }
-            );
+            remove({ groupId, pipelineId, taskId: task.id! }, { onSuccess });
           }}
           autoFocus
         >

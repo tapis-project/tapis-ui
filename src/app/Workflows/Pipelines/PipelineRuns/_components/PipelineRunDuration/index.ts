@@ -1,1 +1,1 @@
-export { default as PipelineRunDuration } from "./PipelineRunDuration"  
+export { default as PipelineRunDuration } from './PipelineRunDuration';

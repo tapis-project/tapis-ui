@@ -14,7 +14,11 @@ import {
   AccordionActions,
 } from '@mui/material';
 import { Table } from 'reactstrap';
-import { PipelineRunSummary, PipelineRunLogs, PipelineRunDuration } from './_components';
+import {
+  PipelineRunSummary,
+  PipelineRunLogs,
+  PipelineRunDuration,
+} from './_components';
 
 type PipelineRunsProps = {
   groupId: string;
@@ -74,7 +78,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                         </th>
                         <td>{run.name}</td>
                         <td>{run.status}</td>
-                        <td>{<PipelineRunDuration run={run}/>}</td>
+                        <td>{<PipelineRunDuration run={run} />}</td>
                         <td>{run.started_at}</td>
                         <td>{run.last_modified}</td>
                       </tr>
