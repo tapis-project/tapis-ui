@@ -14,8 +14,7 @@ import {
   AccordionActions,
 } from '@mui/material';
 import { Table } from 'reactstrap';
-import { PipelineRunSummary } from './_components';
-import { PipelineRunLogs } from './_components/PipelineRunLogs';
+import { PipelineRunSummary, PipelineRunLogs, PipelineRunDuration } from './_components';
 
 type PipelineRunsProps = {
   groupId: string;
@@ -41,11 +40,6 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
         <div id="pipelineruns" className={styles['runs']}>
           {pipelineRuns.length ? (
             pipelineRuns.map((run, i) => {
-              const startedAt = Date.parse(run.started_at!);
-              const lastModified = Date.parse(run.last_modified!);
-              const duration = `${Math.floor(
-                (lastModified - startedAt) / 1000 / 60
-              )}m ${Math.floor(((lastModified - startedAt) / 1000) % 60)}s`;
               return (
                 <Accordion defaultExpanded={i === 0 ? true : undefined}>
                   <AccordionSummary
@@ -53,7 +47,9 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                     aria-controls="pipeline-run-summary"
                     id={`pipeline-${pipelineId}-run-summary-${i}`}
                   >
-                    <PipelineRunSummary status={run.status} text={run.name} />
+                    <PipelineRunSummary status={run.status}>
+                      {run.name}
+                    </PipelineRunSummary>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Table
@@ -78,7 +74,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                         </th>
                         <td>{run.name}</td>
                         <td>{run.status}</td>
-                        <td>{duration}</td>
+                        <td>{<PipelineRunDuration run={run}/>}</td>
                         <td>{run.started_at}</td>
                         <td>{run.last_modified}</td>
                       </tr>
@@ -92,7 +88,7 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
                         history.push(`${pathname}/${run.uuid}`);
                       }}
                     >
-                      View Task Executions
+                      View
                     </Button>
                   </AccordionActions>
                 </Accordion>

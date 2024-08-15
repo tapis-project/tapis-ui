@@ -69,6 +69,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Pipelines.queryKeys.details);
   }, [queryClient]);
 
   const [type, setType] = useState<string>('');

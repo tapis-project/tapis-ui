@@ -1,18 +1,12 @@
-.run-status-text {
-  display: inline-block;
-}
-
 .header {
-}
-
-.run-status-text {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: center;
 }
 
 .run-status-icon {
-  margin-bottom: -1px;
-  display: inline-block;
   border-radius: 50%;
-  margin-right: 10px;
   height: 12px;
   width: 12px;
 }

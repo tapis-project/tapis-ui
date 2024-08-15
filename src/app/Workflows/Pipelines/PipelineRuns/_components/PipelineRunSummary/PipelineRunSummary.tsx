@@ -1,10 +1,9 @@
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './PipelineRunSummary.module.scss';
 
-const PipelineRunSummary: React.FC<{
+const PipelineRunSummary: React.FC<React.PropsWithChildren<{
   status: Workflows.PipelineRun['status'];
-  text: string | undefined;
-}> = ({ status, text = '' }) => {
+}>> = ({ status, children }) => {
   return (
     <div className={styles['header']}>
       <div
@@ -12,7 +11,7 @@ const PipelineRunSummary: React.FC<{
           styles[`run-status-icon-${status}`]
         }`}
       />
-      <div className={styles['run-status-text']}>{text}</div>
+      {children}
     </div>
   );
 };

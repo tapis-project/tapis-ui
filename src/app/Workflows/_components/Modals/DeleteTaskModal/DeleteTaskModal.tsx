@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { LoadingButton as Button } from '@mui/lab';
@@ -12,6 +12,7 @@ import {
   AlertTitle,
 } from '@mui/material';
 import { usePatchTask } from 'app/Workflows/_hooks';
+import { useQueryClient } from 'react-query';
 
 type DeleteTaskModalProps = {
   open: boolean;
@@ -28,6 +29,16 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
     usePatchTask<Workflows.Task>();
   const { remove, isLoading, isError, isSuccess, error, reset } =
     Hooks.Tasks.useDelete();
+
+  const queryClient = useQueryClient();
+
+  const onSuccess = useCallback(() => {
+    if (onDelete) {
+      onDelete()
+    }
+    queryClient.invalidateQueries(Hooks.Tasks.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.Pipelines.queryKeys.details);
+  }, [queryClient]);
 
   return (
     <Dialog
@@ -92,7 +103,7 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
           onClick={() => {
             remove(
               { groupId, pipelineId, taskId: task.id! },
-              { onSuccess: onDelete }
+              { onSuccess }
             );
           }}
           autoFocus

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import {
@@ -16,6 +16,7 @@ import { Form, Formik, FieldArray } from 'formik';
 import { FormikInput, SectionHeader } from '@tapis/tapisui-common';
 import { Delete } from '@mui/icons-material';
 import styles from './RunPipelineModal.module.scss';
+import { useQueryClient } from 'react-query';
 
 type RunPipelineModalProps = {
   open: boolean;
@@ -71,6 +72,14 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
     params: Array<{ key: string; value: string }>;
   };
 
+  const queryClient = useQueryClient();
+
+  const onSuccess = useCallback(() => {
+    queryClient.invalidateQueries(Hooks.Pipelines.queryKeys.details);
+    queryClient.invalidateQueries(Hooks.PipelineRuns.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.PipelineRuns.queryKeys.details);
+  }, [queryClient]);
+
   const onSubmit = ({
     groupId,
     pipelineId,
@@ -88,6 +97,9 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
       groupId,
       pipelineId,
       reqRunPipeline: { args: modifiedParams },
+    },
+    {
+      onSuccess
     });
   };
 

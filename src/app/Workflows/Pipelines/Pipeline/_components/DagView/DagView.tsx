@@ -107,7 +107,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     });
   };
 
-  const calculateNodes = () => {
+  const calculateNodes = useCallback(() => {
     let conditionalOffset = 0;
     let initialNodes: Array<Node> = [];
     let i = 0;
@@ -165,9 +165,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     ];
 
     return initialNodes;
-  };
+  }, [groupId, pipeline]);
 
-  const calculateEdges = () => {
+  const calculateEdges = useCallback(() => {
     if (!views.dependencies) {
       return [];
     }
@@ -273,7 +273,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       }
     }
     return initialEdges;
-  };
+  }, [groupId, pipeline]);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds: any) => addEdge(params, eds) as any),
@@ -301,7 +301,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         }
       );
     },
-    [views, setViews, nodes, edges]
+    [views, setViews, nodes, edges, groupId, pipeline]
   );
 
   // Calculate the initial layout on mount.

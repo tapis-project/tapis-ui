@@ -4,7 +4,10 @@ import React, { useState } from 'react';
 import {
   PipelineRunSummary,
   PipelineRunLogs,
+  PipelineRunDuration,
 } from 'app/Workflows/Pipelines/PipelineRuns/_components';
+import { Link } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 type DagViewHeaderProps = {
   groupId: string;
@@ -34,11 +37,17 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({
         'Loading...'
       ) : (
         <div>
-          <PipelineRunSummary
-            status={run.status}
-            text={`${pipelineId} - ${run.name || '?'}`}
-          />
-          {open && <PipelineRunLogs logs={run.logs} />}
+          <PipelineRunSummary status={run.status}>
+            {pipelineId}
+            <Link style={{color: "#707070"}} to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipelineRunUuid}`}>{run.name || '?'}</Link>
+            <PipelineRunDuration style={{fontSize: "12px"}} run={run}/>
+            <Button size="small" onClick={() => {setOpen(!open)}}>{!open ? "show logs" : "hide logs"}</Button>
+          </PipelineRunSummary>
+          {open && (
+            <div style={{marginTop: "16px"}}>
+              <PipelineRunLogs logs={run.logs}/>
+            </div>
+          )}
         </div>
       )}
     </div>
