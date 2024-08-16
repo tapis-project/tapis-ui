@@ -8,7 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bundle": "npx ts-node ./src/bundle.ts",
-    "build": "npm run bundle && npx tsc",
+    "build": "npx tsc",
     "push": "npx tsc && npm publish --access public"
   },
   "repository": {

@@ -65,10 +65,8 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemText
-                    primary={`'${key}' as ${value.type} ${getValueSource(
-                      value
-                    )}`}
-                    secondary={value.description}
+                    primary={`'${key}' ${getValueSource(value)}`}
+                    secondary={`type: ${value.type}`}
                   />
                 </ListItemButton>
               </ListItem>
@@ -104,8 +102,8 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemText
-                    primary={`'${key}`}
-                    secondary={(value as Workflows.Spec).type}
+                    primary={`${key}`}
+                    secondary={`type: ${(value as Workflows.Spec).type}`}
                   />
                 </ListItemButton>
               </ListItem>
