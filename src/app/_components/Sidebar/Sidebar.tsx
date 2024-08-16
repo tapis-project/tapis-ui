@@ -205,8 +205,8 @@ const Sidebar: React.FC = () => {
           <img
             style={
               expanded
-                ? { maxHeight: '50px', maxWidth: '9rem' }
-                : { height: '50px', maxWidth: '4.2rem' }
+                ? { maxHeight: '50px', maxWidth: '9rem', borderRadius: '6px' }
+                : { height: '50px', maxWidth: '4.2rem', borderRadius: '6px' }
             }
             className="logo"
             src={

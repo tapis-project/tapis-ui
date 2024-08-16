@@ -113,7 +113,7 @@ const Pipeline: React.FC<PipelineProps> = ({
           {tab === 'execprofile' && <>Exec Profile</>}
           {tab === 'env' && <>Env</>}
           {tab === 'params' && <>Parameters</>}
-          {tab === 'uses' && <>Inheritence</>}
+          {tab === 'uses' && <>Inheritance</>}
         </div>
       )}
     </QueryWrapper>
