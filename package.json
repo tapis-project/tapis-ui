@@ -91,6 +91,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@tapis/tapisui-extension-devtools": "file:./packages/tapisui-extension-devtools",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/react-hooks": "^7.0.2",
@@ -99,7 +100,7 @@
     "@types/jest": "^26.0.24",
     "@types/js-cookie": "^2.2.7",
     "@types/lodash.clonedeep": "^4.5.6",
-    "@types/node": "^18.19.33",
+    "@types/node": "^18.19.44",
     "@types/normalize-path": "^3.0.2",
     "@types/react": "^18.3.3",
     "@types/react-css-modules": "^4.6.3",

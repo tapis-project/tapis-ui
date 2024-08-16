@@ -136,6 +136,11 @@ const writeTaskBundleIndex = (
 };
 
 const writeTaskToFile = (task: Workflows.FunctionTask, path: string) => {
+  // Create the directory for any files being writted if they don't exist
+  let parts = path.split('/');
+  parts.pop();
+  const dir = parts.join('/');
+  mkdirSync(dir, { recursive: true });
   writeFileSync(path, `export const task = ${JSON.stringify(task, null, 2)}`);
 
   return;

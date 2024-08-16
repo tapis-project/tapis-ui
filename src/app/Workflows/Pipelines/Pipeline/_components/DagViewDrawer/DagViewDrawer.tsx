@@ -32,7 +32,7 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
   onClickCreateTask,
   onClickRunPipeline,
 }) => {
-  const { extension } = useExtension();
+  const { extension, extensionName, services } = useExtension();
   const { create } = Hooks.Tasks.useCreate();
 
   const handleCreateDagTask = (task: Workflows.FunctionTask) => {
@@ -85,21 +85,58 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
               </ListItemButton>
             </ListItem>
           </List>
+          {sidebarTasks && (
+            <>
+              <Divider />
+              <List
+                subheader={
+                  <ListSubheader
+                    component="div"
+                    id="predefined-tasks-extension"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                    }}
+                  >
+                    Predefined tasks from the {extensionName} extension
+                  </ListSubheader>
+                }
+              >
+                {sidebarTasks.map((task, i) => (
+                  <ListItem key={`dag-task-${i}`} disablePadding>
+                    <ListItemButton
+                      onClick={() => {
+                        console.log({ task });
+                        handleCreateDagTask(task as Workflows.Task);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <Add />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={task.id}
+                        secondary={task.description || ''}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
           <Divider />
           <List
             subheader={
               <ListSubheader
                 component="div"
-                id="predefined-tasks"
+                id="predefined-tasks-core"
                 onClick={(event) => {
                   event.stopPropagation();
                 }}
               >
-                Add predefined tasks to the workflow
+                Predefined tasks from the Tapis extension
               </ListSubheader>
             }
           >
-            {sidebarTasks.map((task, i) => (
+            {services?.workflows.tasks.map((task, i) => (
               <ListItem key={`dag-task-${i}`} disablePadding>
                 <ListItemButton
                   onClick={() => {
