@@ -8,13 +8,13 @@ export const decoder = async <T extends any>(
   fn()
     .then((res) => res.json())
     .then((res: T) => {
-      const success = res.status === undefined ? true : false;
+      const success = (res as any).status === undefined ? true : false;
       if (success && callbacks?.onSuccess) {
         callbacks.onSuccess({ result: res, error: undefined });
       }
 
       if (!success && callbacks?.onError) {
-        callbacks.onError({ result: undefined, error: new Error(res.message) });
+        callbacks.onError({ result: undefined, error: new Error((res as any).message) });
       }
     });
 };

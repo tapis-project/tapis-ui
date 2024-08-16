@@ -22,6 +22,7 @@ type DagViewDrawerProps = {
   open: boolean;
   onClickCreateTask: () => void;
   onClickRunPipeline: () => void;
+  onError?: () => void
 };
 
 const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
@@ -31,6 +32,7 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
   open,
   onClickCreateTask,
   onClickRunPipeline,
+  onError,
 }) => {
   const { extension, extensionName, services } = useExtension();
   const { create } = Hooks.Tasks.useCreate();
@@ -51,6 +53,7 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
       },
       {
         onSuccess: toggle,
+        onError: (e) => {console.log(e.message)}
       }
     );
   };
@@ -102,10 +105,9 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
                 }
               >
                 {sidebarTasks.map((task, i) => (
-                  <ListItem key={`dag-task-${i}`} disablePadding>
+                  <ListItem key={`dag-task-extension-${i}`} disablePadding>
                     <ListItemButton
                       onClick={() => {
-                        console.log({ task });
                         handleCreateDagTask(task as Workflows.Task);
                       }}
                     >
@@ -137,10 +139,9 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
             }
           >
             {services?.workflows.tasks.map((task, i) => (
-              <ListItem key={`dag-task-${i}`} disablePadding>
+              <ListItem key={`dag-task-core-${i}`} disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    console.log({ task });
                     handleCreateDagTask(task as Workflows.Task);
                   }}
                 >

@@ -23,7 +23,6 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
 
     const sourceKey = Object.keys(value.value_from!)[0];
     let source: string | undefined = undefined;
-    console.log({ sourceKey });
     switch (sourceKey) {
       case 'args':
         source = value.value_from?.args;
@@ -101,12 +100,13 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             </ListItem>
           )}
           {output.map(([key, value]) => {
+
             return (
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemText
-                    primary={`'${key}' as ${value} ${getValueSource(value)}`}
-                    secondary={(value as any).type!}
+                    primary={`'${key}`}
+                    secondary={(value as Workflows.Spec).type}
                   />
                 </ListItemButton>
               </ListItem>
