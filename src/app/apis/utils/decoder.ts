@@ -14,7 +14,10 @@ export const decoder = async <T extends any>(
       }
 
       if (!success && callbacks?.onError) {
-        callbacks.onError({ result: undefined, error: new Error((res as any).message) });
+        callbacks.onError({
+          result: undefined,
+          error: new Error((res as any).message),
+        });
       }
     });
 };

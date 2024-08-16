@@ -22,7 +22,7 @@ type DagViewDrawerProps = {
   open: boolean;
   onClickCreateTask: () => void;
   onClickRunPipeline: () => void;
-  onError?: () => void
+  onError?: () => void;
 };
 
 const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
@@ -53,7 +53,9 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
       },
       {
         onSuccess: toggle,
-        onError: (e) => {console.log(e.message)}
+        onError: (e) => {
+          console.log(e.message);
+        },
       }
     );
   };

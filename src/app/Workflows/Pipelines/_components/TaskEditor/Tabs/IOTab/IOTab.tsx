@@ -100,7 +100,6 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             </ListItem>
           )}
           {output.map(([key, value]) => {
-
             return (
               <ListItem disablePadding>
                 <ListItemButton>
