@@ -8,11 +8,11 @@ import {
   DataLabeler,
   JupyterLab,
   OpenWebUI,
-  DigitalAg,
   VisualAnalytics,
   SmartScheduler,
   TrainingCatalog,
   CKNDashboard,
+  DigitalAgOpenPASS,
 } from './pages';
 
 const extension = createExtension({
@@ -37,9 +37,9 @@ const extension = createExtension({
     'visual-analytics',
     'training-catalog',
     'ckn-dashboard',
+    'openpass',
     //'data-labeler',
     //'smart-scheduler',
-    //'digital-ag',
   ],
   authMethods: ['implicit', 'password'],
   logo: {
@@ -60,6 +60,7 @@ const extension = createExtension({
   },
 });
 
+// Order of registration determines sidebar order!!
 extension.registerService({
   id: 'ml-edge',
   sidebarDisplayName: 'ML Edge',
@@ -82,17 +83,10 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'open-web-ui',
+  id: 'open-webui',
   sidebarDisplayName: 'Open WebUI',
   iconName: 'multiple-coversation',
   component: OpenWebUI,
-});
-
-extension.registerService({
-  id: 'digital-ag',
-  sidebarDisplayName: 'Digital Ag',
-  iconName: 'globe',
-  component: DigitalAg,
 });
 
 extension.registerService({
@@ -121,6 +115,13 @@ extension.registerService({
   sidebarDisplayName: 'CKN Dashboard',
   iconName: 'globe',
   component: CKNDashboard,
+});
+
+extension.registerService({
+  id: 'openpass',
+  sidebarDisplayName: 'OpenPASS',
+  iconName: 'globe',
+  component: DigitalAgOpenPASS,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
