@@ -1,16 +1,20 @@
 import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material';
 
 const theme = createTheme({
   palette: {
-    // primary: {
-    //   main: '#2a9461',
-    // },
+    primary: {
+      main: '#2a9461',
+    },
     // secondary: {
     //   main: '#494c7d',
     // },
   },
 });
+
+// const Theme: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+//   return <>{children}</>;
+// };
 
 const Theme: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;

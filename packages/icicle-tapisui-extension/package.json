@@ -9,8 +9,9 @@
     "clean": "rm -rf dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "npm run build && npm publish --access public",
+    "bundle": "npx ts-node src/bundle.ts",
     "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
-    "build": "npm run clean && npx ts-node src/bundle.ts && npx tsc --build ./tsconfig.json && npm run copy-files"
+    "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files"
   },
   "repository": {
     "type": "git",

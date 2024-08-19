@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { decode } from 'base-64';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import Stack from '@mui/material/Stack';
+import { Stack } from '@mui/material';
 import { Button, Chip } from '@mui/material';
 import CodeMirror from '@uiw/react-codemirror';
 import { LoadingButton } from '@mui/lab';

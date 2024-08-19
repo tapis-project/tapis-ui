@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.24.7",
+    "@babel/runtime": "^7.25.0",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-python": "^6.1.6",
     "@emotion/react": "^11.11.4",
@@ -12,6 +14,7 @@
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.0",
     "@mui/x-data-grid": "^7.7.0",
+    "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@tapis/tapis-typescript": "^0.0.37",
     "@tapis/tapisui-api": "file:./packages/tapisui-api",
@@ -43,7 +46,7 @@
     "react-table": "^7.0.5",
     "react-transition-group": "^4.4.1",
     "reactflow": "^11.4.2",
-    "reactstrap": "^8.9.0",
+    "reactstrap": "^9.2.2",
     "rxjs": "^6.6.7",
     "sass": "^1.37.5",
     "streamsaver": "^2.0.5",
@@ -118,6 +121,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "path": "^0.12.7",
     "prettier": "^2.3.2",
+    "rollup-plugin-visualizer": "^5.12.0",
     "ts-jest": "^29.1.4",
     "typescript": "^5.4.5"
   },

@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es6",
-    "module": "commonjs",
+    "target": "es5",
+    "module": "esnext",
     "moduleResolution": "node",
     "skipLibCheck": true,
     "outDir": "dist",
-    "lib": ["es6", "dom"],
+    "lib": ["esnext"],
     "types": ["node"],
     "typeRoots": ["./types", "node_modules/@types"],
     "incremental": true

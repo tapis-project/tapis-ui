@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { usePodsContext } from '../PodsContext';
-import Stack from '@mui/material/Stack';
+import { Stack } from '@mui/material';
 import { Button } from '@mui/material';
 
 interface PodsNavigationProps {
