@@ -14,6 +14,9 @@ import { LoadingButton as Button } from '@mui/lab';
 import {
   Menu,
   Collapse,
+  List,
+  ListItemButton,
+  ListItemText,
   ListItemIcon,
   Divider,
   // Button,
@@ -72,13 +75,7 @@ const Sidebar: React.FC = () => {
   ) => {
     return (
       <NavItem to={to} icon={icon} key={uuidv4()}>
-        {expanded ? (
-          <span style={{ paddingRight: '.75rem', whiteSpace: 'nowrap' }}>
-            {text}
-          </span>
-        ) : (
-          ''
-        )}
+        {expanded ? text : ''}
       </NavItem>
     );
   };
@@ -259,28 +256,25 @@ const Sidebar: React.FC = () => {
                   style={{
                     whiteSpace: 'nowrap',
                     cursor: 'pointer',
-                    // paddingTop: '10px',
-                    // paddingBottom: '10px',
-                    paddingLeft: '21px',
                   }}
                 >
-                  {openSecondary ? (
-                    <ExpandLessRounded />
-                  ) : (
-                    <ExpandMoreRounded />
-                  )}
-                  {expanded && (
-                    <span
-                      style={{
-                        paddingLeft: '8px',
-                        fontSize: '14px',
-                        color: '#808080',
-                      }}
-                    >
-                      {' '}
-                      More
-                    </span>
-                  )}
+                  <ListItemButton
+                    sx={{
+                      color: '#707070',
+                      pl: '1.4rem',
+                      pt: '5px',
+                      pb: '5px',
+                    }}
+                  >
+                    {openSecondary ? (
+                      <ExpandLessRounded />
+                    ) : (
+                      <ExpandMoreRounded />
+                    )}
+                    {expanded && (
+                      <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                    )}
+                  </ListItemButton>
                 </div>
                 <Collapse in={openSecondary}>
                   {secondarySidebarItems.map((item) => item)}
@@ -378,7 +372,7 @@ const Sidebar: React.FC = () => {
         onClose={() => setModal(undefined)}
         aria-labelledby="jwt-dialog-title"
         PaperProps={{
-          style: { maxHeight: '70%' },
+          style: { maxHeight: '95%', minWidth: '60rem' },
         }}
       >
         <DialogContent>

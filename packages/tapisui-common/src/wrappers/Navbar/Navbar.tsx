@@ -2,10 +2,11 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Icon } from '../../ui';
 import styles from './Navbar.module.scss';
+import { ListItemButton, ListItemText } from '@mui/material';
 
 export const NavItem: React.FC<
-  React.PropsWithChildren<{ to?: string; icon?: string }>
-> = ({ to, icon, children }) => {
+  React.PropsWithChildren<{ to?: string; icon?: string; secondary?: string }>
+> = ({ to, icon, children, secondary }) => {
   if (to) {
     return (
       <NavLink
@@ -14,23 +15,30 @@ export const NavItem: React.FC<
         activeClassName={styles['active']}
         exact={to === '/'}
       >
-        <div className={styles['nav-content']}>
+        <ListItemButton style={{ paddingLeft: '1.5rem' }}>
           {icon && <Icon name={icon} />}
           {children ? (
-            <span className={styles['nav-text']}>{children}</span>
+            <ListItemText
+              className={styles['nav-text']}
+              primary={children}
+              secondary={secondary}
+              style={{
+                paddingRight: '.8rem',
+                whiteSpace: 'nowrap',
+                margin: '0',
+              }}
+            />
           ) : undefined}
-        </div>
+        </ListItemButton>
       </NavLink>
     );
   } else {
     return (
       <div className={styles['nav-link']}>
-        <div className={styles['nav-content']}>
-          {icon && <Icon name={icon} />}
-          {children ? (
-            <span className={styles['nav-text']}>{children}</span>
-          ) : undefined}
-        </div>
+        {icon && <Icon name={icon} />}
+        {children ? (
+          <span className={styles['nav-text']}>{children}</span>
+        ) : undefined}
       </div>
     );
   }
