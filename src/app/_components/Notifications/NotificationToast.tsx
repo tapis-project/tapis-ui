@@ -1,7 +1,7 @@
 import React, { useState, useEffect, SyntheticEvent } from 'react';
 import { useNotifications, NotificationRecord, Notification } from '.';
 import { SnackbarCloseReason, Snackbar } from '@mui/material';
-import { Slide,  SlideProps } from '@mui/material';
+import { Slide, SlideProps } from '@mui/material';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './NotificationToast.module.scss';
 

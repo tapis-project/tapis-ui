@@ -24,7 +24,7 @@ export default defineConfig({
       '@mui/material',
       '@mui/system',
       '@mui/icons-material',
-    ]
+    ],
   },
   plugins: [
     react(),
