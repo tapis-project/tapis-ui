@@ -1,7 +1,14 @@
 {
-  "name": "@tapis/tapisui",
-  "version": "0.1.0",
+  "name": "my-vite-app",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.24.7",
     "@babel/runtime": "^7.25.0",
@@ -51,7 +58,7 @@
     "sass": "^1.37.5",
     "streamsaver": "^2.0.5",
     "uuid": "^7.0.2",
-    "vite": "^5.2.12",
+    "vite": "^5.4.1",
     "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-env-compatible": "^2.0.1",
     "vite-plugin-svgr": "^4.2.0",
@@ -59,40 +66,17 @@
     "web-vitals": "^1.1.2",
     "yup": "^0.32.11"
   },
-  "homepage": "https://tapis-project.github.io/tapis-ui",
-  "scripts": {
-    "start": "vite --config ./vite/vite.local.config.mts",
-    "dev": "npm run watcher & npm run start",
-    "deploy": "vite --config ./vite/vite.config.mts",
-    "build-local": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.local.config.mts",
-    "build-dev": "tsc && vite build --config ./vite/vite.dev.config.mts",
-    "build": "tsc && vite build --config ./vite/vite.config.mts",
-    "watcher": "node ./scripts/watcher.js",
-    "preview": "vite preview --config ./vite/vite.config.mts",
-    "preview-local": "vite preview --config ./vite/vite.local.config.mts",
-    "preview-dev": "vite preview --config ./vite/vite.dev.config.mts",
-    "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
-    "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
-    "prettier": "prettier --single-quote --write .",
-    "gh-pages": "tsc && vite build && gh-pages -d build",
-    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh"
-  },
-  "eslintConfig": {
-    "extends": []
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^9.9.0",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@tapis/tapisui-extension-devtools": "file:./packages/tapisui-extension-devtools",
     "@testing-library/jest-dom": "^5.17.0",
@@ -105,7 +89,6 @@
     "@types/lodash.clonedeep": "^4.5.6",
     "@types/node": "^18.19.44",
     "@types/normalize-path": "^3.0.2",
-    "@types/react": "^18.3.3",
     "@types/react-css-modules": "^4.6.3",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-table": "^7.7.7",
@@ -113,7 +96,6 @@
     "@types/streamsaver": "^2.0.1",
     "@types/uuid": "^8.3.1",
     "chokidar": "^3.6.0",
-    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "gh-pages": "^6.1.1",
     "identity-obj-proxy": "^3.0.0",
@@ -122,24 +104,7 @@
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "rollup-plugin-visualizer": "^5.12.0",
-    "ts-jest": "^29.1.4",
-    "typescript": "^5.4.5"
-  },
-  "jest": {
-    "globals": {
-      "Uint8Array": "Uint8Array"
-    },
-    "preset": "ts-jest/presets/js-with-ts",
-    "testEnvironment": "jest-environment-jsdom",
-    "testPathIgnorePatterns": [
-      "lib"
-    ],
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy"
-    },
-    "modulePaths": [
-      "<rootDir>/src"
-    ]
+    "ts-jest": "^29.1.4"
+
   }
 }

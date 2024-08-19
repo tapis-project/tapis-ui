@@ -1,25 +1,50 @@
-# Getting Started with TapisUI
+# React + TypeScript + Vite
 
-1. Clone the TapisUI repository
-2. `cd` into projects root directory
-3. Run `npm run init-project`. This will build and install all of the libraries and external packages. At the end of this process, the vite library will start a local install of TapisUI at **http://localhost:3000**
-4. After the initial build you should be able to run `npm run dev` for a hot-reloading environment.
-5. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-# Starting TapisUI
+Currently, two official plugins are available:
 
-From the root directory of the project, run `npm run start`
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-# TapisUI supporting packages
+## Expanding the ESLint configuration
 
-Much of the functionality and components used in TapisUI exist as their own NPM packages.
-This enables developers to use TapisUI features and ui in their own projects. These packages are located in the `lib` directory in the root of TapisUI. There are 4 main packages.
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-- **tapsiui-extensions-core** - A library for building extensions and plugins to TapisUI
-- **tapisui-common** - This package contains the generic components used in TapisUI as well as components specific to core Tapis services. These Tapis-specific components fetch data from Tapis services and render useful UI such as a file navigator for Tapis Systems, the Tapis Job Launcher Wizard, and more.
-- **tapisui-api** - A package of function that make API calls directly to Tapis services
-- **tapisui-hooks** - A package of hooks that use the **tapisui-api** library to fetch and mutate data as well as handle errors generated during API calls. With these hooks, developers can tie UI into the lifecycle of an API request via properties such as `isLoading`, `isSuccess`, `isError`, and more.
+- Configure the top-level `parserOptions` property like this:
 
-## Updating supporting packages
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
 
-# Extensions
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
+
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```
