@@ -7,6 +7,8 @@ import viteCommonjs from 'vite-plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import { visualizer } from 'rollup-plugin-visualizer';
 
+
+// https://vitejs.dev/config/
 export default defineConfig({
   // depending on your application, base can also be "/"
   base: '',
@@ -17,30 +19,6 @@ export default defineConfig({
       'process.version': null,
     },
   },
-  css: { preprocessorOptions: { scss: { charset: false } } },
-  optimizeDeps: {
-    include: [
-      '@emotion/styled',
-      '@mui/material',
-      '@mui/system',
-      '@mui/icons-material',
-    ],
-  },
-  plugins: [
-    react(),
-    commonjs({
-      include: /node_modules\/@uiw\/react-codemirror/, // Ensure CommonJS transformation for node_modules
-      requireReturnsDefault: 'auto', // Handle default exports correctly
-    }),
-    // viteCommonjs(),
-    viteTsconfigPaths(),
-    envCompatible(),
-    babel({
-      babelHelpers: 'runtime',
-      plugins: ['@babel/plugin-transform-runtime'],
-      exclude: 'node_modules/**', // Exclude node_modules from being transpiled
-    }),
-  ],
   build: {
     minify: false,
     sourcemap: false,
@@ -55,14 +33,11 @@ export default defineConfig({
       //   })
       // ]
     },
-  },
-  logLevel: 'info',
-  server: {
-    open: true, // Opens browser
-    port: 3000,
-  },
-  preview: {
-    port: 8113,
-    open: true,
-  },
-});
+  },  plugins: [
+    react(),
+    commonjs({
+      include: /node_modules\/@uiw\/react-codemirror/, // Ensure CommonJS transformation for node_modules
+      // requireReturnsDefault: 'auto', // Handle default exports correctly
+    }),
+  ],
+})
