@@ -6,7 +6,11 @@ import {
   ThemeProvider,
   createTheme,
 } from '@mui/material';
+
+// using anything from tapisui-common breaks everything
 import { SectionHeader } from '@tapis/tapisui-common';
+// tapisui-hooks is dandy!
+import { TapisProvider } from '@tapis/tapisui-hooks';
 
 var theme = createTheme({})
 
@@ -17,8 +21,11 @@ var theme = createTheme({})
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider theme={theme}>
+  <TapisProvider basePath='https://dev.develop.tapis.io'>
   <StrictMode>
     <App />
+    {/* <SectionHeader></SectionHeader> */}
   </StrictMode>
+  </TapisProvider>
   </ThemeProvider>
 )
