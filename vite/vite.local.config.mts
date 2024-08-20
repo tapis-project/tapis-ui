@@ -30,7 +30,7 @@ export default defineConfig({
     react(),
     commonjs({
       include: /node_modules\/@uiw\/react-codemirror/, // Ensure CommonJS transformation for node_modules
-      requireReturnsDefault: 'auto', // Handle default exports correctly
+      // requireReturnsDefault: 'auto', // Handle default exports correctly
     }),
     // viteCommonjs(),
     viteTsconfigPaths(),
