@@ -22,10 +22,7 @@ type AddOutputModalProps = {
   toggle: () => void;
 };
 
-const AddOutputModal: React.FC<AddOutputModalProps> = ({
-  open,
-  toggle,
-}) => {
+const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
   const {
     task,
     taskPatch,
