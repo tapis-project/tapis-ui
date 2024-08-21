@@ -4,8 +4,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 import envCompatible from 'vite-plugin-env-compatible';
 import commonjs from '@rollup/plugin-commonjs';
 import viteCommonjs from 'vite-plugin-commonjs';
-import babel from '@rollup/plugin-babel';
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer';
 // import vitePluginRequire from "vite-plugin-require";
 
 export default defineConfig({
@@ -54,11 +53,6 @@ export default defineConfig({
     // viteCommonjs(),
     viteTsconfigPaths(),
     envCompatible(),
-    babel({
-      babelHelpers: 'runtime',
-      plugins: ['@babel/plugin-transform-runtime'],
-      exclude: 'node_modules/**', // Exclude node_modules from being transpiled
-    }),
   ],
   build: {
     minify: true,
