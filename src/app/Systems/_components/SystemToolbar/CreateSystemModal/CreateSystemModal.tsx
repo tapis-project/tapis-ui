@@ -91,10 +91,10 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       256,
       'Proxy Host should not be longer than 256 characters'
     ),
-    dtnSystemId: Yup.string().max(
-      80,
-      'DTN System ID should not be longer than 80 characters'
-    ),
+    // dtnSystemId: Yup.string().max(
+    //   80,
+    //   'DTN System ID should not be longer than 80 characters'
+    // ),
     mpiCmd: Yup.string().max(
       126,
       'mpiCmd should not be longer than 126 characters'
@@ -143,10 +143,10 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     proxyPort: 0,
 
     //dtn
-    isDtn: false,
-    dtnSystemId: undefined,
-    dtnMountPoint: undefined,
-    dtnMountSourcePath: undefined,
+    // isDtn: false,
+    // dtnSystemId: undefined,
+    // dtnMountPoint: undefined,
+    // dtnMountSourcePath: undefined,
 
     //cmd
     enableCmdPrefix: false,
@@ -187,11 +187,11 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     proxyHost,
     proxyPort,
 
-    //dtn
-    isDtn,
-    dtnSystemId,
-    dtnMountPoint,
-    dtnMountSourcePath,
+    // //dtn
+    // isDtn,
+    // dtnSystemId,
+    // dtnMountPoint,
+    // dtnMountSourcePath,
 
     //cmd
     enableCmdPrefix,
@@ -230,10 +230,10 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     proxyPort: number;
 
     //dtn
-    isDtn: boolean;
-    dtnSystemId: string | undefined;
-    dtnMountPoint: string | undefined;
-    dtnMountSourcePath: string | undefined;
+    // isDtn: boolean;
+    // dtnSystemId: string | undefined;
+    // dtnMountPoint: string | undefined;
+    // dtnMountSourcePath: string | undefined;
 
     //cmd
     enableCmdPrefix: boolean;
@@ -276,10 +276,10 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         proxyPort,
 
         //dtn
-        isDtn,
-        dtnSystemId,
-        dtnMountPoint,
-        dtnMountSourcePath,
+        // isDtn,
+        // dtnSystemId,
+        // dtnMountPoint,
+        // dtnMountSourcePath,
 
         //cmd
         // enableCmdPrefix,

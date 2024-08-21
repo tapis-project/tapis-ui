@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Sidebar } from '../../../Sidebar';
 import styles from './IOTab.module.scss';
@@ -13,14 +13,18 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
+import { AddInputModal, AddOutputModal } from 'app/Workflows/_components/Modals';
 
 const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
+  const [modal, setModal] = useState<string | undefined>(undefined)
   const { taskPatch } = usePatchTask<Workflows.Task>();
   const getValueSource = (value: Workflows.SpecWithValue) => {
     if (value.value) {
       return `from literal: ${value.value}`;
     }
-
+    if (!value.value_from) {
+      return "from unknown"
+    }
     const sourceKey = Object.keys(value.value_from!)[0];
     let source: string | undefined = undefined;
     switch (sourceKey) {
@@ -75,7 +79,7 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
         </List>
       </Box>
       <div className={styles['container']}>
-        <Button startIcon={<Add />} onClick={() => {}}>
+        <Button startIcon={<Add />} onClick={() => {setModal("input")}}>
           Add Input
         </Button>
       </div>
@@ -112,10 +116,12 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
         </List>
       </Box>
       <div className={styles['container']}>
-        <Button startIcon={<Add />} onClick={() => {}}>
+        <Button startIcon={<Add />} onClick={() => {setModal("output")}}>
           Add Output
         </Button>
       </div>
+      <AddInputModal open={modal === "input"} toggle={() => {setModal(undefined)}}/>
+      <AddOutputModal open={modal === "output"} toggle={() => {setModal(undefined)}}/>
     </Sidebar>
   );
 };
