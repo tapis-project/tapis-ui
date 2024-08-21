@@ -4,7 +4,7 @@ import { breadcrumbsFromPathname } from '@tapis/tapisui-common';
 import { FileListingTable } from '@tapis/tapisui-common';
 import { FileExplorer } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import { Files } from '@tapis/tapis-typescript';
 import styles from './TransferModal.module.scss';
 import { useFilesSelect } from '../../FilesContext';

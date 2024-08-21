@@ -7,7 +7,7 @@ import { FileListingTable } from '@tapis/tapisui-common';
 import { FileOperationStatus } from '../_components';
 import { FileExplorer } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import { focusManager } from 'react-query';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
