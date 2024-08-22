@@ -7,12 +7,13 @@ import {
   Button,
   List,
   Box,
+  IconButton,
+  ListItemIcon,
   ListItem,
-  ListItemButton,
   ListSubheader,
   ListItemText,
 } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import { Add, Delete, Input, Output } from '@mui/icons-material';
 import {
   AddInputModal,
   AddOutputModal,
@@ -20,7 +21,7 @@ import {
 
 const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const { taskPatch } = usePatchTask<Workflows.Task>();
+  const { taskPatch, setTaskPatch, task } = usePatchTask<Workflows.Task>();
   const getValueSource = (value: Workflows.SpecWithValue) => {
     if (value.value) {
       return `from literal: ${value.value}`;
@@ -29,7 +30,7 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       return 'from unknown';
     }
     const sourceKey = Object.keys(value.value_from!)[0];
-    let source: string | undefined = undefined;
+    let source: string | Workflows.TaskOutputRef | undefined = undefined;
     switch (sourceKey) {
       case 'args':
         source = value.value_from?.args;
@@ -37,11 +38,23 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       case 'env':
         source = value.value_from?.env;
         break;
+      case 'task_output':
+          source = value.value_from?.task_output;
+          break;
       default:
         source = 'unknown';
     }
 
-    return `from '${source}' in '${sourceKey}'`;
+    if (sourceKey === "task_output") {
+      return (
+        <>
+          from output <b>{(source! as Workflows.TaskOutputRef).output_id} </b>
+          of task <b>{(source! as Workflows.TaskOutputRef).task_id}</b>
+        </>
+      );
+    }
+
+    return <>from <b>{source as string}</b> in <b>{sourceKey}</b></>;
   };
 
   const input = Object.entries(taskPatch.input || {});
@@ -52,30 +65,46 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       <Box>
         <List
           subheader={
-            <ListSubheader component="div" id="inputs">
+            <ListSubheader component="div" id="inputs" style={{borderBottom: "1px solid #CCCCCC"}}>
               Inputs
             </ListSubheader>
           }
         >
           {input.length < 1 && (
-            <ListItem disablePadding>
-              <ListItemButton>
+            <ListItem>
                 <ListItemText
                   primary={'No inputs'}
                   secondary={'Press the button below to add an input'}
                 />
-              </ListItemButton>
             </ListItem>
           )}
           {input.map(([key, value]) => {
             return (
-              <ListItem disablePadding>
-                <ListItemButton>
+              <ListItem
+                secondaryAction={
+                  <IconButton
+                    aria-label="delete-input"
+                    onClick={() => {
+                      const modifiedInput = JSON.parse(JSON.stringify(taskPatch.input!))
+                      delete modifiedInput[key]
+                      setTaskPatch(task, {
+                        ...taskPatch,
+                        input: modifiedInput
+                      })
+                    }}
+                  >
+                    <Delete color="error" />
+                  </IconButton>
+                }
+                style={{borderBottom: "1px solid #CCCCCC"}}
+              >
+                <ListItemIcon>
+                  <Input />
+                </ListItemIcon>
                   <ListItemText
-                    primary={`'${key}' ${getValueSource(value)}`}
-                    secondary={`type: ${value.type}`}
+                    primary={<><b>{key}</b> ({value.type})</>}
+                    secondary={getValueSource(value)}
                   />
-                </ListItemButton>
               </ListItem>
             );
           })}
@@ -100,24 +129,37 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
           }
         >
           {output.length < 1 && (
-            <ListItem disablePadding>
-              <ListItemButton>
+            <ListItem>
                 <ListItemText
                   primary={'No outputs'}
                   secondary={'Press the button below to add an output'}
                 />
-              </ListItemButton>
+              
             </ListItem>
           )}
           {output.map(([key, value]) => {
             return (
-              <ListItem disablePadding>
-                <ListItemButton>
+              <ListItem
+                secondaryAction={
+                  <IconButton
+                    aria-label="delete-output"
+                    onClick={() => {
+                      delete taskPatch.output![key]
+                      setTaskPatch(task, taskPatch)
+                    }}
+                  >
+                    <Delete color="error" />
+                  </IconButton>
+                }
+                style={{borderBottom: "1px solid #CCCCCC"}}
+              >
+                  <ListItemIcon>
+                    <Output />
+                  </ListItemIcon>
                   <ListItemText
-                    primary={`${key}`}
+                    primary={<b>{key}</b>}
                     secondary={`type: ${(value as Workflows.Spec).type}`}
                   />
-                </ListItemButton>
               </ListItem>
             );
           })}

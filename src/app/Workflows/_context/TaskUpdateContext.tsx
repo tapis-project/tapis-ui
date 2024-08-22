@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 
 export type TaskUpdateContextProps<T> = {
+  dirty: boolean
   groupId: string;
   pipelineId: string;
   task: T;

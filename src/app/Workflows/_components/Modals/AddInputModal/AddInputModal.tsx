@@ -29,7 +29,7 @@ type InputState = {
   name?: string;
   type?: Workflows.EnumTaskIOType;
   source?: InputSource;
-  taskId?: string
+  taskId?: string;
 };
 
 const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
@@ -316,8 +316,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                         onChange={(e) => {
                           setInput({
                             ...input,
-                            taskId: e.target.value as string
-                          })
+                            taskId: e.target.value as string,
+                          });
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
@@ -326,7 +326,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                                 value_from: {
                                   [input.source!]: {
                                     task_id: e.target.value as string,
-                                    output_id: undefined
+                                    output_id: undefined,
                                   },
                                 },
                               },
@@ -355,15 +355,15 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                       // Value from if source is not from a task output
                       let valueFrom: Workflows.ValueFrom = {
                         [input.source as string]: e.target.value,
-                      }
+                      };
                       // Value from if source is from a task output
-                      if (input.source === "task_output") {
+                      if (input.source === 'task_output') {
                         valueFrom = {
                           [input.source]: {
                             task_id: input.taskId!,
                             output_id: e.target.value,
-                          }
-                        }
+                          },
+                        };
                       }
 
                       setTaskPatch(task, {
@@ -389,7 +389,12 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
       <DialogActions>
         <Button
           onClick={() => {
-            if (input.name && taskPatch.input && taskPatch.input[input.name] && !isSuccess) {
+            if (
+              input.name &&
+              taskPatch.input &&
+              taskPatch.input[input.name] &&
+              !isSuccess
+            ) {
               delete taskPatch.input[input.name];
               setTaskPatch(task, taskPatch);
             }

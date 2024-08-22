@@ -17,6 +17,10 @@ const TaskUpdateProvider: React.FC<
     JSON.parse(JSON.stringify(task))
   );
 
+  // This flag indicates whether a task has been patched but has yet to be
+  // committed
+  const [dirty, setDirty] = useState(false)
+
   // TODO figure out how to track the diff between patch and task
   const dependentTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -37,7 +41,9 @@ const TaskUpdateProvider: React.FC<
     data: Partial<Workflows.Task>,
     callback?: () => void
   ) => void;
+  
   const patchTask: PatchTaskArgs = (task, data) => {
+    setDirty(true)
     setTaskPatch({
       ...task,
       ...data,
@@ -54,6 +60,7 @@ const TaskUpdateProvider: React.FC<
         groupId,
         pipelineId,
         dependentTasks,
+        dirty,
       }}
     >
       {children}
