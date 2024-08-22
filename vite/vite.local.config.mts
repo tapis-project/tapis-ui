@@ -5,7 +5,7 @@ import envCompatible from 'vite-plugin-env-compatible';
 import commonjs from '@rollup/plugin-commonjs';
 import viteCommonjs from 'vite-plugin-commonjs';
 import babel from '@rollup/plugin-babel';
-// import { visualizer } from 'rollup-plugin-visualizer';
+import { visualizer } from 'rollup-plugin-visualizer';
 // import vitePluginRequire from "vite-plugin-require";
 
 export default defineConfig({
@@ -26,6 +26,7 @@ export default defineConfig({
       '@mui/material',
       '@mui/system',
       '@mui/icons-material',
+      '@mui/lab',
     ],
   },
   plugins: [
@@ -49,7 +50,7 @@ export default defineConfig({
       ],
       requireReturnsDefault: false, // "preferred" | "auto" | true | false
       strictRequires: 'debug',
-      //esmExternals: ["react-table"], // Convert CommonJS modules to ESModule
+      //esmExtevisualizerrnals: ["react-table"], // Convert CommonJS modules to ESModule
     }),
     // viteCommonjs(),
     viteTsconfigPaths(),
@@ -62,17 +63,19 @@ export default defineConfig({
   ],
   build: {
     minify: true,
-    sourcemap: true,
+    sourcemap: false,
     outDir: 'dist',
     manifest: true,
+    target: 'esnext',
+    cssCodeSplit: true,
     rollupOptions: {
       external: ['packages'],
-      // plugins: [
-      //   visualizer({
-      //     filename: 'bundle-stats.html',
-      //     open: true, // Open the visualizer after build
-      //   })
-      // ]
+      plugins: [
+        visualizer({
+          filename: 'bundle-stats.html',
+          open: true, // Open the visualizer after build
+        }),
+      ],
     },
   },
   logLevel: 'info',
@@ -81,7 +84,7 @@ export default defineConfig({
     port: 3000,
   },
   preview: {
-    port: 8113,
+    port: 3000,
     open: true,
   },
 });
