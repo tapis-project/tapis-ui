@@ -18,6 +18,8 @@ delete_files() {
       ;;
     "none")
       ;;
+    "twice")
+      ;;
     "modules")
       rm -rf dist node_modules
       ;;
@@ -64,7 +66,7 @@ fi;
 
 flag=${1:-"none"}
 install_command="npm ci"
-if [[ $flag == "all" || $flag == "locks" ]]; then
+if [[ $flag == "all" || $flag == "locks" || $flag == "twice" ]]; then
   install_command="npm install"
 fi;
 
@@ -120,6 +122,6 @@ echo "####        TapisUI Initialization Successful            ####"
 echo "#############################################################"
 echo ""
 
-if [[ $flag != "container" ]]; then
+if [[ $flag != "container" || $flag != "twice" ]]; then
   npm run start
 fi

@@ -75,7 +75,9 @@
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write .",
     "gh-pages": "tsc && vite build && gh-pages -d build",
-    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh"
+    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh",
+    "docker": "docker build -t uidev -f Dockerfile.dev .; docker run -p 3000:3000 uidev",
+    "dockerprod": "docker build -t uiprod .; docker run -p 4000:80 uiprod"
   },
   "eslintConfig": {
     "extends": []
