@@ -66,7 +66,7 @@ fi;
 
 flag=${1:-"none"}
 install_command="npm ci"
-if [[ $flag == "all" || $flag == "locks" || $flag == "twice"]]; then
+if [[ $flag == "all" || $flag == "locks" || $flag == "twice" ]]; then
   install_command="npm install"
 fi;
 
