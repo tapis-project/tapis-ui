@@ -11,7 +11,7 @@ RUN npm run init-project container
 
 RUN npm run init-project twice
 
-RUN npm run build-local
+RUN npm run build
 
 # CMD ["sleep", "1000000"]
 

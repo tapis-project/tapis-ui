@@ -6,9 +6,17 @@
 4. After the initial build you should be able to run `npm run dev` for a hot-reloading environment.
 5. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
 
-# Starting TapisUI
 
-From the root directory of the project, run `npm run start`
+# Development with TapisUI
+- `npm run start` starts dev vite instance with `vite.dev.config.mts` config.
+- `npm run dev` starts dev vite and watcher.js script which hot reloads sub packages when changes are found.
+- `npm run docker` will start instance like `npm run start`, but in containerized. 
+### Production Builds
+- `npm run docker-prod` will build and start nginx serving built vite project.
+  - This will run `npm run build` and copy files to nginx to server
+- `npm run build-dev; npm run preview-dev` to build and run vite preview locally.
+  - Packages must be pristine for build to work. Docker might be more reproducible.
+    - `ctrl+shift+c` in browser to inspect console and find errors. If you get an invariant error then there's more than likely a package issue.
 
 # TapisUI supporting packages
 

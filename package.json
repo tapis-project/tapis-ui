@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/plugin-transform-runtime": "^7.24.7",
     "@babel/runtime": "^7.25.0",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-python": "^6.1.6",
@@ -14,8 +13,6 @@
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.0",
     "@mui/x-data-grid": "^7.7.0",
-    "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-commonjs": "^25.0.8",
     "@tapis/tapis-typescript": "^0.0.37",
     "@tapis/tapisui-api": "file:./packages/tapisui-api",
     "@tapis/tapisui-common": "file:./packages/tapisui-common",
@@ -52,32 +49,25 @@
     "streamsaver": "^2.0.5",
     "uuid": "^7.0.2",
     "vite": "^5.2.12",
-    "vite-plugin-commonjs": "^0.10.1",
-    "vite-plugin-env-compatible": "^2.0.1",
-    "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^4.3.2",
     "web-vitals": "^1.1.2",
     "yup": "^0.32.11"
   },
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {
-    "start": "vite --config ./vite/vite.local.config.mts",
-    "dev": "npm run watcher & npm run start",
-    "deploy": "vite --config ./vite/vite.config.mts",
-    "build-local": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.local.config.mts",
-    "build-dev": "tsc && vite build --config ./vite/vite.dev.config.mts",
-    "build": "tsc && vite build --config ./vite/vite.config.mts",
+    "start": "vite --config ./vite/vite.dev.config.mts",
+    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh",
     "watcher": "node ./scripts/watcher.js",
+    "dev": "npm run watcher & npm run start",
+    "build": "tsc && vite build --config ./vite/vite.config.mts",
+    "build-dev": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.dev.config.mts",
     "preview": "vite preview --config ./vite/vite.config.mts",
-    "preview-local": "vite preview --config ./vite/vite.local.config.mts",
     "preview-dev": "vite preview --config ./vite/vite.dev.config.mts",
+    "docker": "docker build -t uidev -f Dockerfile.dev .; docker run -p 3000:3000 uidev",
+    "docker-prod": "docker build -t uiprod .; docker run -p 4000:80 uiprod",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write .",
-    "gh-pages": "tsc && vite build && gh-pages -d build",
-    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh",
-    "docker": "docker build -t uidev -f Dockerfile.dev .; docker run -p 3000:3000 uidev",
-    "dockerprod": "docker build -t uiprod .; docker run -p 4000:80 uiprod"
+    "gh-pages": "tsc && vite build && gh-pages -d build"
   },
   "eslintConfig": {
     "extends": []
@@ -124,7 +114,15 @@
     "path": "^0.12.7",
     "prettier": "^2.3.2",
     "ts-jest": "^29.1.4",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@babel/plugin-transform-runtime": "^7.24.7",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.8",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "vite-plugin-commonjs": "^0.10.1",
+    "vite-plugin-env-compatible": "^2.0.1",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "jest": {
     "globals": {
