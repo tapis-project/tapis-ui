@@ -9,7 +9,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   // depending on your application, base can also be "/"
-  base: '/tapis-ui/',
+  base: '',
   define: {
     global: 'window',
     define: {
