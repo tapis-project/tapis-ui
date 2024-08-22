@@ -122,6 +122,6 @@ echo "####        TapisUI Initialization Successful            ####"
 echo "#############################################################"
 echo ""
 
-if [[ $flag != "container" || $flag == "twice" ]]; then
+if [[ $flag != "container" || $flag != "twice" ]]; then
   npm run start
 fi
