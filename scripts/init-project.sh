@@ -18,6 +18,8 @@ delete_files() {
       ;;
     "none")
       ;;
+    "twice")
+      ;;
     "modules")
       rm -rf dist node_modules
       ;;
@@ -64,7 +66,7 @@ fi;
 
 flag=${1:-"none"}
 install_command="npm ci"
-if [[ $flag == "all" || $flag == "locks" ]]; then
+if [[ $flag == "all" || $flag == "locks" || $flag == "twice"]]; then
   install_command="npm install"
 fi;
 
