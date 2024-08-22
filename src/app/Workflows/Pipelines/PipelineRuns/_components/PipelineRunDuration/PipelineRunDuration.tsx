@@ -1,5 +1,6 @@
 import { Workflows } from '@tapis/tapis-typescript';
 import React, { useEffect, useState } from 'react';
+import { AccessTime } from '@mui/icons-material';
 
 const PipelineRunDuration: React.FC<{
   run: Workflows.PipelineRun;
@@ -46,7 +47,7 @@ const PipelineRunDuration: React.FC<{
 
   return (
     <div style={style}>
-      {time[0]}m {time[1]}s
+      <AccessTime /> {time[0]}m {time[1]}s
     </div>
   );
 };

@@ -29,6 +29,7 @@ type InputState = {
   name?: string;
   type?: Workflows.EnumTaskIOType;
   source?: InputSource;
+  taskId?: string
 };
 
 const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
@@ -313,14 +314,19 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                         label="Task id"
                         labelId="task-id"
                         onChange={(e) => {
+                          setInput({
+                            ...input,
+                            taskId: e.target.value as string
+                          })
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
                               [input.name!]: {
                                 ...taskPatch.input![input.name!],
                                 value_from: {
-                                  [input.source as string]: {
-                                    test: e.target.value,
+                                  [input.source!]: {
+                                    task_id: e.target.value as string,
+                                    output_id: undefined
                                   },
                                 },
                               },
@@ -332,10 +338,10 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                           return <MenuItem value={dep.id}>{dep.id}</MenuItem>;
                         })}
                       </Select>
-                      <FormHelperText>
-                        The boolean value of the input
-                      </FormHelperText>
                     </FormControl>
+                    <FormHelperText>
+                      The task from which to grab the output
+                    </FormHelperText>
                   </>
                 )}
             </div>
@@ -346,14 +352,26 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                   <Input
                     id="value"
                     onChange={(e) => {
+                      // Value from if source is not from a task output
+                      let valueFrom: Workflows.ValueFrom = {
+                        [input.source as string]: e.target.value,
+                      }
+                      // Value from if source is from a task output
+                      if (input.source === "task_output") {
+                        valueFrom = {
+                          [input.source]: {
+                            task_id: input.taskId!,
+                            output_id: e.target.value,
+                          }
+                        }
+                      }
+
                       setTaskPatch(task, {
                         input: {
                           ...taskPatch.input,
                           [input.name!]: {
                             ...taskPatch.input![input.name!],
-                            value_from: {
-                              [input.source as string]: e.target.value,
-                            },
+                            value_from: valueFrom,
                           },
                         },
                       });
@@ -371,7 +389,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
       <DialogActions>
         <Button
           onClick={() => {
-            if (input.name && taskPatch.input && taskPatch.input[input.name]) {
+            if (input.name && taskPatch.input && taskPatch.input[input.name] && !isSuccess) {
               delete taskPatch.input[input.name];
               setTaskPatch(task, taskPatch);
             }
