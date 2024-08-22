@@ -72,7 +72,7 @@ export default defineConfig({
       external: ['packages'],
       plugins: [
         visualizer({
-          template: "treemap", // sunburst, treemap(default), network, raw-data, list
+          template: 'treemap', // sunburst, treemap(default), network, raw-data, list
           filename: 'bundle-stats.html',
           open: true, // Open the visualizer after build
         }),
