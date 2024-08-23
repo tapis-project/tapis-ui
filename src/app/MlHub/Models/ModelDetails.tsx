@@ -6,9 +6,14 @@ import { Button } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
 import { Icon, JSONDisplay, GenericModal } from '@tapis/tapisui-common';
 import InferenceServerInfo from './InferenceServerInfo';
+import Markdown from 'markdown-to-jsx';
 
 type ModelDetailsProps = {
   modelId: string;
+};
+
+type MarkdownProps = {
+  children: string;
 };
 
 const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
@@ -82,25 +87,21 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId }) => {
             </div>
           </div>
         </div>
-        <Buttons modelId={modelId} />
+        <Buttons model={model} />
       </div>
     </QueryWrapper>
   );
 };
 
-const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
+const Buttons: React.FC<{ model: Models.ModelFullInfo }> = ({ model }) => {
   const [currentModal, setCurrentModal] = useState<string | undefined>(
     undefined
   );
-  const { data, error, isLoading } = Hooks.Models.useDetails({ modelId });
-  const modelCardDetails: Models.ModelFullInfo = data?.result ?? {};
-  const modelRepositoryInfo: Array<string> =
-    modelCardDetails.repository_content || [];
   const {
     data: downloadLinkData,
     error: downloadLinkError,
     isLoading: downloadLinkIsLoading,
-  } = Hooks.Models.useDownloadLinks({ modelId });
+  } = Hooks.Models.useDownloadLinks({ modelId: model.model_id! });
   const downloadLinkInfo: Models.ModelDownloadInfo =
     downloadLinkData?.result ?? {};
   const downloadOnClick = (url: string, filename: string) => {
@@ -118,6 +119,16 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
       });
     });
   };
+
+  const {
+    data: data2,
+    isError,
+    error,
+  } = Hooks.Models.useModelCard({
+    modelId: model.model_id!,
+  });
+
+  console.log({ data2 }, console.timeLog());
 
   return (
     <div className={`${styles['buttons-container']}`}>
@@ -159,9 +170,11 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           title="Model Card"
           body={
             <div>
-              {modelId}
-              {modelCardDetails.card_data && (
-                <JSONDisplay json={modelCardDetails.card_data} />
+              {isError && error.message}
+              {data2?.result?.model_card === undefined ? (
+                'no content available'
+              ) : (
+                <>{data2?.result?.model_card}</>
               )}
             </div>
           }
@@ -176,8 +189,8 @@ const Buttons: React.FC<{ modelId: string }> = ({ modelId }) => {
           title="Inference Info"
           body={
             <div>
-              {modelId}
-              <InferenceServerInfo modelId={modelId} />
+              {model.model_id}
+              <InferenceServerInfo modelId={model.model_id!} />
             </div>
           }
         />
