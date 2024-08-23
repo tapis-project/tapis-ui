@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './AddOutputModal.module.scss';
 import { LoadingButton as Button } from '@mui/lab';
@@ -14,6 +14,7 @@ import {
   DialogTitle,
   Alert,
   AlertTitle,
+  Input
 } from '@mui/material';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
@@ -22,7 +23,18 @@ type AddOutputModalProps = {
   toggle: () => void;
 };
 
+type OutputState = {
+  id?: string;
+  type?: Workflows.EnumTaskIOType;
+};
+
 const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
+  const initialOutput: OutputState = {
+    id: undefined,
+    type: undefined,
+  };
+  const [output, setOutput] = useState(initialOutput);
+
   const {
     task,
     taskPatch,
@@ -61,43 +73,83 @@ const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
           </Alert>
         )}
         <div className={styles['form']}>
-          <FormControl
-            fullWidth
-            margin="dense"
-            style={{ marginBottom: '-16px' }}
-          >
-            <InputLabel size="small" id="environment">
-              Runtime environment
-            </InputLabel>
-            <Select
-              size="small"
-              label="Runtime environment"
-              labelId="environment"
-              defaultValue={taskPatch.runtime}
-              onChange={(e) => {
-                setTaskPatch(task, {
-                  runtime: e.target.value as Workflows.EnumRuntimeEnvironment,
-                });
-              }}
-            >
-              {Object.values(Workflows.EnumRuntimeEnvironment).map(
-                (runtimeEnv) => {
-                  return (
-                    <MenuItem
-                      value={runtimeEnv}
-                      selected={runtimeEnv === task.runtime}
-                    >
-                      {runtimeEnv}
-                    </MenuItem>
-                  );
+          <>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="output-name">Ouput id</InputLabel>
+              <Input
+                id="output-name"
+                disabled={
+                  !!output.id &&
+                  Object.keys(taskPatch.output || {}).includes(output.id)
                 }
-              )}
-            </Select>
-          </FormControl>
-          <FormHelperText>
-            The runtime envrionment in which the function code will be executed
-          </FormHelperText>
+                onChange={(e) => {
+                  setOutput({ ...output, id: e.target.value });
+                }}
+              />
+              <FormHelperText>
+                The unique identifier for this output. Must be alphanumeric,
+                uppercase, and may contain underscores
+              </FormHelperText>
+            </FormControl>
+            {!((output.id || '') in (taskPatch.output || {})) && (
+              <Button
+                disabled={output.id === undefined}
+                onClick={() => {
+                  setTaskPatch(task, {
+                    output: {
+                      ...taskPatch.output,
+                      [output.id!]: {
+                        type: undefined
+                      },
+                    },
+                  });
+                }}
+              >
+                Continue
+              </Button>
+            )}
+          </>
         </div>
+        {output.id && taskPatch?.output![output.id] !== undefined && (
+          <div className={styles['form']}>
+            <FormControl
+              fullWidth
+              margin="dense"
+              style={{ marginBottom: '-16px' }}
+            >
+              <InputLabel size="small" id="type">
+                Type
+              </InputLabel>
+              <Select
+                size="small"
+                label="type"
+                labelId="type"
+                onChange={(e) => {
+                  setOutput({
+                    ...output,
+                    type: e.target.value as Workflows.EnumTaskIOType,
+                  });
+                  setTaskPatch(task, {
+                    output: {
+                      ...taskPatch.output,
+                      [output.id!]: {
+                        ...taskPatch.output![output.id!],
+                        type: e.target.value as Workflows.EnumTaskIOType,
+                      },
+                    },
+                  });
+                }}
+              >
+                {Object.values(Workflows.EnumTaskIOType).map((type) => {
+                  return <MenuItem value={type}>{type}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
+            <FormHelperText>
+              The data type of this output's value
+            </FormHelperText>
+          </div>
+        )}
       </DialogContent>
       <DialogActions>
         <Button

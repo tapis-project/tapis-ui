@@ -70,6 +70,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
     isSuccess,
     error,
     reset,
+    dirty
   } = usePatchTask<Workflows.Task>();
   const history = useHistory();
 
@@ -159,7 +160,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
           variant="outlined"
           onClick={commit}
           loading={isLoading}
-          disabled={isLoading}
+          disabled={isLoading || !dirty}
           style={{ marginBottom: '8px', marginTop: '8px' }}
           startIcon={<Update />}
         >

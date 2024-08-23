@@ -29,7 +29,18 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
     if (!value.value_from) {
       return 'from unknown';
     }
-    const sourceKey = Object.keys(value.value_from!)[0];
+
+    let sourceKey = undefined;
+    for (let key of Object.keys(value.value_from!)) {
+      if (
+        ["args", "env", "task_output"].includes(key)
+        && value.value_from[(key as "args" | "env" | "task_output")] !== undefined
+      ) {
+        sourceKey = key;
+        break;
+      }
+    }
+    console.log({vf: value.value_from})
     let source: string | Workflows.TaskOutputRef | undefined = undefined;
     switch (sourceKey) {
       case 'args':
@@ -39,22 +50,25 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
         source = value.value_from?.env;
         break;
       case 'task_output':
-          source = value.value_from?.task_output;
-          break;
+        source = value.value_from?.task_output;
+        break;
       default:
         source = 'unknown';
     }
 
-    if (sourceKey === "task_output") {
+    if (sourceKey === 'task_output') {
       return (
         <>
-          from output <b>{(source! as Workflows.TaskOutputRef).output_id} </b>
-          of task <b>{(source! as Workflows.TaskOutputRef).task_id}</b>
+          from task <b>{(source! as Workflows.TaskOutputRef).task_id}</b> {`(`}<b>output id: {(source! as Workflows.TaskOutputRef).output_id}</b>{`)`}
         </>
       );
     }
 
-    return <>from <b>{source as string}</b> in <b>{sourceKey}</b></>;
+    return (
+      <>
+        from key <b>{source as string}</b> in <b>{sourceKey}</b>
+      </>
+    );
   };
 
   const input = Object.entries(taskPatch.input || {});
@@ -65,17 +79,21 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       <Box>
         <List
           subheader={
-            <ListSubheader component="div" id="inputs" style={{borderBottom: "1px solid #CCCCCC"}}>
+            <ListSubheader
+              component="div"
+              id="inputs"
+              style={{ borderBottom: '1px solid #CCCCCC' }}
+            >
               Inputs
             </ListSubheader>
           }
         >
           {input.length < 1 && (
             <ListItem>
-                <ListItemText
-                  primary={'No inputs'}
-                  secondary={'Press the button below to add an input'}
-                />
+              <ListItemText
+                primary={'No inputs'}
+                secondary={'Press the button below to add an input'}
+              />
             </ListItem>
           )}
           {input.map(([key, value]) => {
@@ -85,26 +103,32 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
                   <IconButton
                     aria-label="delete-input"
                     onClick={() => {
-                      const modifiedInput = JSON.parse(JSON.stringify(taskPatch.input!))
-                      delete modifiedInput[key]
+                      const modifiedInput = JSON.parse(
+                        JSON.stringify(taskPatch.input!)
+                      );
+                      delete modifiedInput[key];
                       setTaskPatch(task, {
                         ...taskPatch,
-                        input: modifiedInput
-                      })
+                        input: modifiedInput,
+                      });
                     }}
                   >
                     <Delete color="error" />
                   </IconButton>
                 }
-                style={{borderBottom: "1px solid #CCCCCC"}}
+                style={{ borderBottom: '1px solid #CCCCCC' }}
               >
                 <ListItemIcon>
                   <Input />
                 </ListItemIcon>
-                  <ListItemText
-                    primary={<><b>{key}</b> ({value.type})</>}
-                    secondary={getValueSource(value)}
-                  />
+                <ListItemText
+                  primary={
+                    <>
+                      <b>{key}</b> ({value.type})
+                    </>
+                  }
+                  secondary={getValueSource(value)}
+                />
               </ListItem>
             );
           })}
@@ -130,11 +154,10 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
         >
           {output.length < 1 && (
             <ListItem>
-                <ListItemText
-                  primary={'No outputs'}
-                  secondary={'Press the button below to add an output'}
-                />
-              
+              <ListItemText
+                primary={'No outputs'}
+                secondary={'Press the button below to add an output'}
+              />
             </ListItem>
           )}
           {output.map(([key, value]) => {
@@ -144,22 +167,21 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
                   <IconButton
                     aria-label="delete-output"
                     onClick={() => {
-                      delete taskPatch.output![key]
-                      setTaskPatch(task, taskPatch)
+                      delete taskPatch.output![key];
+                      setTaskPatch(task, taskPatch);
                     }}
                   >
                     <Delete color="error" />
                   </IconButton>
                 }
-                style={{borderBottom: "1px solid #CCCCCC"}}
+                style={{ borderBottom: '1px solid #CCCCCC' }}
               >
-                  <ListItemIcon>
-                    <Output />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={<b>{key}</b>}
-                    secondary={`type: ${(value as Workflows.Spec).type}`}
-                  />
+                <ListItemIcon>
+                  <Output />
+                </ListItemIcon>
+                <ListItemText
+                  primary={<><b>{key}</b>{` (${(value as Workflows.Spec).type})`}</>}
+                />
               </ListItem>
             );
           })}

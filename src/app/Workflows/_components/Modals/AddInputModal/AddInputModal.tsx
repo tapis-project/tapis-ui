@@ -26,7 +26,7 @@ type AddInputModalProps = {
 type InputSource = 'args' | 'env' | 'task_output' | 'literal';
 
 type InputState = {
-  name?: string;
+  id?: string;
   type?: Workflows.EnumTaskIOType;
   source?: InputSource;
   taskId?: string;
@@ -34,7 +34,7 @@ type InputState = {
 
 const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
   const initialInput: InputState = {
-    name: undefined,
+    id: undefined,
     type: undefined,
     source: undefined,
   };
@@ -80,15 +80,15 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
         <div className={styles['form']}>
           <>
             <FormControl variant="standard">
-              <InputLabel htmlFor="input-name">Input name</InputLabel>
+              <InputLabel htmlFor="input-name">Input id</InputLabel>
               <Input
                 id="input-name"
                 disabled={
-                  !!input.name &&
-                  Object.keys(taskPatch.input || {}).includes(input.name)
+                  !!input.id &&
+                  Object.keys(taskPatch.input || {}).includes(input.id)
                 }
                 onChange={(e) => {
-                  setInput({ ...input, name: e.target.value });
+                  setInput({ ...input, id: e.target.value });
                 }}
               />
               <FormHelperText>
@@ -96,14 +96,14 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                 uppercase, and may contain underscores
               </FormHelperText>
             </FormControl>
-            {!((input.name || '') in (taskPatch.input || {})) && (
+            {!((input.id || '') in (taskPatch.input || {})) && (
               <Button
-                disabled={input.name === undefined}
+                disabled={input.id === undefined}
                 onClick={() => {
                   setTaskPatch(task, {
                     input: {
                       ...taskPatch.input,
-                      [input.name!]: {
+                      [input.id!]: {
                         value: undefined,
                         value_from: undefined,
                       },
@@ -116,7 +116,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
             )}
           </>
         </div>
-        {input.name && taskPatch?.input![input.name] !== undefined && (
+        {input.id && taskPatch?.input![input.id] !== undefined && (
           <>
             <div className={styles['form']}>
               <FormControl
@@ -139,8 +139,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                     setTaskPatch(task, {
                       input: {
                         ...taskPatch.input,
-                        [input.name!]: {
-                          ...taskPatch.input![input.name!],
+                        [input.id!]: {
+                          ...taskPatch.input![input.id!],
                           type: e.target.value as Workflows.EnumTaskIOType,
                         },
                       },
@@ -178,8 +178,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                     setTaskPatch(task, {
                       input: {
                         ...taskPatch.input,
-                        [input.name!]: {
-                          ...taskPatch.input![input.name!],
+                        [input.id!]: {
+                          ...taskPatch.input![input.id!],
                           value: e.target.value === 'literal' ? '' : undefined,
                           value_from:
                             e.target.value !== 'literal'
@@ -222,8 +222,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
-                              [input.name!]: {
-                                ...taskPatch.input![input.name!],
+                              [input.id!]: {
+                                ...taskPatch.input![input.id!],
                                 value: e.target.value,
                               },
                             },
@@ -247,8 +247,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
-                              [input.name!]: {
-                                ...taskPatch.input![input.name!],
+                              [input.id!]: {
+                                ...taskPatch.input![input.id!],
                                 value: e.target.value as unknown as number,
                               },
                             },
@@ -279,7 +279,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
-                              [input.name!]: {
+                              [input.id!]: {
                                 value: e.target.value as boolean,
                               },
                             },
@@ -321,8 +321,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
-                              [input.name!]: {
-                                ...taskPatch.input![input.name!],
+                              [input.id!]: {
+                                ...taskPatch.input![input.id!],
                                 value_from: {
                                   [input.source!]: {
                                     task_id: e.target.value as string,
@@ -369,8 +369,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                       setTaskPatch(task, {
                         input: {
                           ...taskPatch.input,
-                          [input.name!]: {
-                            ...taskPatch.input![input.name!],
+                          [input.id!]: {
+                            ...taskPatch.input![input.id!],
                             value_from: valueFrom,
                           },
                         },
@@ -390,12 +390,12 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
         <Button
           onClick={() => {
             if (
-              input.name &&
+              input.id &&
               taskPatch.input &&
-              taskPatch.input[input.name] &&
+              taskPatch.input[input.id] &&
               !isSuccess
             ) {
-              delete taskPatch.input[input.name];
+              delete taskPatch.input[input.id];
               setTaskPatch(task, taskPatch);
             }
             reset();

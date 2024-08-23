@@ -5,7 +5,7 @@ import envCompatible from 'vite-plugin-env-compatible';
 import commonjs from '@rollup/plugin-commonjs';
 import viteCommonjs from 'vite-plugin-commonjs';
 import babel from '@rollup/plugin-babel';
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer';
 // import vitePluginRequire from "vite-plugin-require";
 
 export default defineConfig({
@@ -71,11 +71,11 @@ export default defineConfig({
     rollupOptions: {
       external: ['packages'],
       plugins: [
-        visualizer({
-          template: "treemap", // sunburst, treemap(default), network, raw-data, list
-          filename: 'bundle-stats.html',
-          open: true, // Open the visualizer after build
-        }),
+        // visualizer({
+        //   template: "treemap", // sunburst, treemap(default), network, raw-data, list
+        //   filename: 'bundle-stats.html',
+        //   open: true, // Open the visualizer after build
+        // }),
       ],
     },
   },

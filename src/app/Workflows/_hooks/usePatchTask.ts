@@ -31,6 +31,8 @@ const usePatchTask = <T>(): UsePatchTask<T> => {
       pipelineId,
       taskId: (task as Workflows.Task).id!,
       task: taskPatch as unknown as Workflows.Task,
+    }, {
+      onSuccess: () => {context.setDirty(false)}
     });
   };
 

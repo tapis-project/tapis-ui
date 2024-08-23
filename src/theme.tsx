@@ -29,8 +29,8 @@ var theme = createTheme({
           props: { variant: 'body1' }, // Target the base case explicitly if it's 'body1' or adjust as needed
           style: {
             lineHeight: '1',
-            fontSize: '.8rem',
-            color: '#707070',
+            fontSize: '.9rem',
+            color: '#333333',
           },
         },
         // You can add more variants here if needed
