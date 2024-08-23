@@ -198,7 +198,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     {
       id: 'networking',
       label: 'Link',
-      disabled: (!networkingUrl || podStatus != 'AVAILABLE') ,
+      disabled: !networkingUrl || podStatus != 'AVAILABLE',
       customOnClick: () => {
         if (networkingUrl) {
           window.open('https://' + networkingUrl);
