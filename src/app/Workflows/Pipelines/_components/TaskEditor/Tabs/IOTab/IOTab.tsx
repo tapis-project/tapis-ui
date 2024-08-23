@@ -33,14 +33,14 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
     let sourceKey = undefined;
     for (let key of Object.keys(value.value_from!)) {
       if (
-        ["args", "env", "task_output"].includes(key)
-        && value.value_from[(key as "args" | "env" | "task_output")] !== undefined
+        ['args', 'env', 'task_output'].includes(key) &&
+        value.value_from[key as 'args' | 'env' | 'task_output'] !== undefined
       ) {
         sourceKey = key;
         break;
       }
     }
-    console.log({vf: value.value_from})
+    console.log({ vf: value.value_from });
     let source: string | Workflows.TaskOutputRef | undefined = undefined;
     switch (sourceKey) {
       case 'args':
@@ -59,7 +59,9 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
     if (sourceKey === 'task_output') {
       return (
         <>
-          from task <b>{(source! as Workflows.TaskOutputRef).task_id}</b> {`(`}<b>output id: {(source! as Workflows.TaskOutputRef).output_id}</b>{`)`}
+          from task <b>{(source! as Workflows.TaskOutputRef).task_id}</b> {`(`}
+          <b>output id: {(source! as Workflows.TaskOutputRef).output_id}</b>
+          {`)`}
         </>
       );
     }
@@ -180,7 +182,12 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
                   <Output />
                 </ListItemIcon>
                 <ListItemText
-                  primary={<><b>{key}</b>{` (${(value as Workflows.Spec).type})`}</>}
+                  primary={
+                    <>
+                      <b>{key}</b>
+                      {` (${(value as Workflows.Spec).type})`}
+                    </>
+                  }
                 />
               </ListItem>
             );

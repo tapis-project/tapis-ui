@@ -30,7 +30,6 @@ const TaskUpdateProvider: React.FC<
     JSON.parse(JSON.stringify(task))
   );
 
-
   // TODO figure out how to track the diff between patch and task
   const dependentTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -48,7 +47,7 @@ const TaskUpdateProvider: React.FC<
       ...task,
       ...data,
     });
-    setDirty(true)
+    setDirty(true);
   };
 
   return (
@@ -62,7 +61,9 @@ const TaskUpdateProvider: React.FC<
         pipelineId,
         dependentTasks,
         dirty,
-        setDirty: (isDirty: boolean) => { setDirty(isDirty) },
+        setDirty: (isDirty: boolean) => {
+          setDirty(isDirty);
+        },
       }}
     >
       {children}

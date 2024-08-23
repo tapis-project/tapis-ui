@@ -8,8 +8,8 @@ export type TaskUpdateContextProps<T> = {
   tasks: Array<T>;
   taskPatch: Partial<T>;
   dependentTasks: Array<Workflows.Task>;
-  dirty: boolean
-  setDirty: (isDirty: boolean) => void 
+  dirty: boolean;
+  setDirty: (isDirty: boolean) => void;
   setTaskPatch: (task: T, patch: Partial<T>) => void;
 };
 

@@ -14,7 +14,7 @@ import {
   DialogTitle,
   Alert,
   AlertTitle,
-  Input
+  Input,
 } from '@mui/material';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
@@ -99,7 +99,7 @@ const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
                     output: {
                       ...taskPatch.output,
                       [output.id!]: {
-                        type: undefined
+                        type: undefined,
                       },
                     },
                   });

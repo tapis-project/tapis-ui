@@ -26,14 +26,19 @@ const usePatchTask = <T>(): UsePatchTask<T> => {
   const { patch } = usePatchHook;
 
   const commit = () => {
-    patch({
-      groupId,
-      pipelineId,
-      taskId: (task as Workflows.Task).id!,
-      task: taskPatch as unknown as Workflows.Task,
-    }, {
-      onSuccess: () => {context.setDirty(false)}
-    });
+    patch(
+      {
+        groupId,
+        pipelineId,
+        taskId: (task as Workflows.Task).id!,
+        task: taskPatch as unknown as Workflows.Task,
+      },
+      {
+        onSuccess: () => {
+          context.setDirty(false);
+        },
+      }
+    );
   };
 
   const modifiedUsePatchHook: Omit<

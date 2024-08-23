@@ -70,7 +70,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
     isSuccess,
     error,
     reset,
-    dirty
+    dirty,
   } = usePatchTask<Workflows.Task>();
   const history = useHistory();
 
