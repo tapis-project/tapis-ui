@@ -10,7 +10,7 @@ const useModelCardDetails = (
 ) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Models.RespModelCard, Error>(
-    [QueryKeys.details, params, accessToken],
+    [QueryKeys.modelCardDetails, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
     () =>

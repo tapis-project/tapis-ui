@@ -124,11 +124,9 @@ const Buttons: React.FC<{ model: Models.ModelFullInfo }> = ({ model }) => {
     data: data2,
     isError,
     error,
-  } = Hooks.Models.useModelCard({
+  } = Hooks.Models.useModelCardDetails({
     modelId: model.model_id!,
   });
-
-  console.log({ data2 }, console.timeLog());
 
   return (
     <div className={`${styles['buttons-container']}`}>
