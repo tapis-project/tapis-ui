@@ -62,7 +62,7 @@
     "react-scripts": "^4.0.3",
     "react-step-wizard": "^5.3.9",
     "react-table": "^7.0.5",
-    "reactstrap": "^9.2.2",
+    "reactstrap": "^8.9.0",
     "uuid": "^7.0.2",
     "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-env-compatible": "^2.0.1",
