@@ -326,7 +326,7 @@ const Sidebar: React.FC = () => {
                 </div>
               ) : (
                 <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {'Not Logged In'}
+                  {'Logged Out'}
                 </div>
               )}
             </div>
@@ -380,7 +380,10 @@ const Sidebar: React.FC = () => {
         {((extension !== undefined && extension.allowMutiTenant) ||
           extension === undefined ||
           (extension !== undefined && extension.allowMutiTenant)) && (
-          <MenuItem onClick={() => setModal('changeTenant')}>
+          <MenuItem
+            onClick={() => setModal('changeTenant')}
+            disabled={!(claims && claims['sub'])}
+          >
             Change Tenant
           </MenuItem>
         )}
@@ -485,7 +488,7 @@ const Sidebar: React.FC = () => {
                 <MenuItem
                   key={tenant.tenant_id}
                   onClick={() => {
-                    window.location.href = tenant.base_url + '/tapis-ui/';
+                    window.location.href = tenant.base_url + '/';
                     setModal(undefined);
                   }}
                 >
