@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es5",
+    "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
     "skipLibCheck": true,

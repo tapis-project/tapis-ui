@@ -25,7 +25,7 @@ const SystemsNav: React.FC = () => {
             </NavItem>
           ))
         ) : (
-          <i>No systems found</i>
+          <i style={{ padding: '16px' }}>No systems found</i>
         )}
       </Navbar>
     </QueryWrapper>

@@ -68,7 +68,7 @@ const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                       return <option>{system.id}</option>;
                     })
                   ) : (
-                    <i>No systems found</i>
+                    <i style={{ padding: '16px' }}>No systems found</i>
                   )}
                 </FormikSelect>
               </Form>

@@ -192,11 +192,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
 
   const networkingUrl = Object.values(data?.result?.networking ?? {})[0]?.url;
 
+  const podStatus = data?.result?.status;
+
   const rightButtons: ButtonConfig[] = [
     {
       id: 'networking',
       label: 'Link',
-      disabled: !networkingUrl,
+      disabled: (!networkingUrl || podStatus != 'AVAILABLE') ,
       customOnClick: () => {
         if (networkingUrl) {
           window.open('https://' + networkingUrl);

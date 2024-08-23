@@ -2,7 +2,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "declaration": true,
-    "target": "es5",
+    "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
     "skipLibCheck": true,

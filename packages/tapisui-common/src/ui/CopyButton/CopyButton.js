@@ -53,8 +53,4 @@ CopyButton.propTypes = {
   className: PropTypes.string,
 };
 
-const CopyButton = ({ value = '', className = '' }) => {
-  // Component implementation remains the same
-};
-
 export default CopyButton;
