@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './TaskEditor.module.scss';
-import { Delete, Update } from '@mui/icons-material';
+import { Delete, Save } from '@mui/icons-material';
 import { LoadingButton as Button, TabContext, TabList } from '@mui/lab';
 import {
   // Button,
@@ -162,9 +162,9 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
           loading={isLoading}
           disabled={isLoading || !dirty}
           style={{ marginBottom: '8px', marginTop: '8px' }}
-          startIcon={<Update />}
+          startIcon={<Save />}
         >
-          Update
+          Save
         </Button>
         <Button
           size="small"

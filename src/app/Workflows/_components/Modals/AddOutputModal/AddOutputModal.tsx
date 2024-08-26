@@ -154,6 +154,7 @@ const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
       <DialogActions>
         <Button
           onClick={() => {
+            setOutput(initialOutput);
             reset();
             toggle();
           }}
@@ -161,13 +162,16 @@ const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
           {isSuccess ? 'Continue' : 'Cancel'}
         </Button>
         <Button
-          onClick={commit}
+          onClick={() => {
+            setOutput(initialOutput);
+            commit();
+          }}
           disabled={isSuccess}
           loading={isLoading}
           variant="outlined"
           autoFocus
         >
-          Update
+          Add
         </Button>
       </DialogActions>
     </Dialog>

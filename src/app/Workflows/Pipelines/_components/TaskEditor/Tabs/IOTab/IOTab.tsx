@@ -40,7 +40,6 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
         break;
       }
     }
-    console.log({ vf: value.value_from });
     let source: string | Workflows.TaskOutputRef | undefined = undefined;
     switch (sourceKey) {
       case 'args':

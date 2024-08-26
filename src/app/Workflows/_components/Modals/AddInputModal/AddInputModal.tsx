@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './AddInputModal.module.scss';
 import { LoadingButton as Button } from '@mui/lab';
@@ -30,6 +30,8 @@ type InputState = {
   type?: Workflows.EnumTaskIOType;
   source?: InputSource;
   taskId?: string;
+  sourceKey?: string;
+  literal?: any;
 };
 
 const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
@@ -37,6 +39,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
     id: undefined,
     type: undefined,
     source: undefined,
+    sourceKey: undefined,
+    literal: undefined,
   };
   const [input, setInput] = useState(initialInput);
   const {
@@ -50,6 +54,46 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
     error,
     reset,
   } = usePatchTask<Workflows.FunctionTask>();
+
+  const canSubmit = useCallback(() => {
+    const preReqsSatisfied =
+      input.id !== undefined && input.source && input.type;
+
+    // Check if task output requirements satisfied
+    let taskOutputReqsSatisfied = true;
+    if (input.source === 'task_output' && !input.taskId) {
+      taskOutputReqsSatisfied = false;
+    }
+
+    // Check if literal requirements satisfied
+    let literalReqsSatisfied = true;
+    if (input.source === 'literal' && !input.literal) {
+      literalReqsSatisfied = false;
+    }
+
+    // Check if a source key is provided for all non-literal sources
+    let sourceKeyRequestSatisfied = true;
+    if (input.source !== 'literal' && !input.sourceKey) {
+      sourceKeyRequestSatisfied = false;
+    }
+
+    return (
+      preReqsSatisfied &&
+      taskOutputReqsSatisfied &&
+      literalReqsSatisfied &&
+      sourceKeyRequestSatisfied
+    );
+  }, [input, setInput, task, taskPatch, setTaskPatch]);
+
+  const isValidInput = useCallback(
+    (value: string | undefined) => {
+      if (!value) {
+        return false;
+      }
+      return !Object.keys(taskPatch.input!).includes(value);
+    },
+    [input, setInput, taskPatch, setTaskPatch]
+  );
 
   return (
     <Dialog
@@ -85,7 +129,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                 id="input-name"
                 disabled={
                   !!input.id &&
-                  Object.keys(taskPatch.input || {}).includes(input.id)
+                  isValidInput(input.id) &&
+                  Object.keys(taskPatch.input!).includes(input.id)
                 }
                 onChange={(e) => {
                   setInput({ ...input, id: e.target.value });
@@ -96,24 +141,26 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                 uppercase, and may contain underscores
               </FormHelperText>
             </FormControl>
-            {!((input.id || '') in (taskPatch.input || {})) && (
-              <Button
-                disabled={input.id === undefined}
-                onClick={() => {
-                  setTaskPatch(task, {
-                    input: {
-                      ...taskPatch.input,
-                      [input.id!]: {
-                        value: undefined,
-                        value_from: undefined,
+            {input.id !== undefined &&
+              input.id !== '' &&
+              !(input.id in taskPatch.input!) && (
+                <Button
+                  disabled={input.id === undefined}
+                  onClick={() => {
+                    setTaskPatch(task, {
+                      input: {
+                        ...taskPatch.input,
+                        [input.id!]: {
+                          value: undefined,
+                          value_from: undefined,
+                        },
                       },
-                    },
-                  });
-                }}
-              >
-                Continue
-              </Button>
-            )}
+                    });
+                  }}
+                >
+                  Continue
+                </Button>
+              )}
           </>
         </div>
         {input.id && taskPatch?.input![input.id] !== undefined && (
@@ -219,6 +266,11 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                       <Input
                         id="value"
                         onChange={(e) => {
+                          // Set the sourceKey
+                          setInput({
+                            ...input,
+                            literal: e.target.value,
+                          });
                           setTaskPatch(task, {
                             input: {
                               ...taskPatch.input,
@@ -352,10 +404,16 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                   <Input
                     id="value"
                     onChange={(e) => {
+                      // Set the sourceKey
+                      setInput({
+                        ...input,
+                        sourceKey: e.target.value,
+                      });
                       // Value from if source is not from a task output
                       let valueFrom: Workflows.ValueFrom = {
                         [input.source as string]: e.target.value,
                       };
+
                       // Value from if source is from a task output
                       if (input.source === 'task_output') {
                         valueFrom = {
@@ -398,6 +456,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
               delete taskPatch.input[input.id];
               setTaskPatch(task, taskPatch);
             }
+            setInput(initialInput);
             reset();
             toggle();
           }}
@@ -405,8 +464,11 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
           {isSuccess ? 'Continue' : 'Cancel'}
         </Button>
         <Button
-          onClick={commit}
-          disabled={isSuccess}
+          onClick={() => {
+            setInput(initialInput);
+            commit();
+          }}
+          disabled={isSuccess || !canSubmit()}
           loading={isLoading}
           variant="outlined"
           autoFocus

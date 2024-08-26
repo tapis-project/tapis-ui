@@ -36,6 +36,7 @@ const usePatchTask = <T>(): UsePatchTask<T> => {
       {
         onSuccess: () => {
           context.setDirty(false);
+          usePatchHook.invalidate();
         },
       }
     );
