@@ -12,7 +12,11 @@ export const DEFAULT_TYPE = 'single';
 //      - https://www.npmjs.com/package/react-either-property
 //      - "customProp" at https://reactjs.org/docs/typechecking-with-proptypes.html#proptypes
 
-const DropdownSelector = ({ type, onChange, ...props }) => {
+const DropdownSelector = ({
+  type = DEFAULT_TYPE,
+  onChange = () => {},
+  ...props
+}) => {
   const canSelectMany = type === 'multiple';
 
   return (
@@ -38,10 +42,6 @@ DropdownSelector.propTypes = {
   /** Options (as children, like Reactstrap) */
   // FAQ: Limiting and documenting this has become a rabbit hole; help welcome — Wes B
   // children: PropTypes.any.isRequired
-};
-DropdownSelector.defaultProps = {
-  type: DEFAULT_TYPE,
-  onChange: () => {},
 };
 
 export default DropdownSelector;

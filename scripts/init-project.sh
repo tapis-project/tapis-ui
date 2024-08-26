@@ -13,15 +13,15 @@ delete_files() {
     "all")
       rm -rf dist node_modules package-lock.json
       ;;
+    "modules")
+      rm -rf dist node_modules
+      ;;
     "container")
       rm -rf dist node_modules
       ;;
     "none")
       ;;
     "twice")
-      ;;
-    "modules")
-      rm -rf dist node_modules
       ;;
     "locks")
       rm -rf package-lock.json
@@ -67,7 +67,7 @@ fi;
 flag=${1:-"none"}
 install_command="npm ci"
 if [[ $flag == "all" || $flag == "locks" || $flag == "twice" ]]; then
-  install_command="npm install"
+  install_command="npm install --verbose"
 fi;
 
 echo ""

@@ -1,3 +1,5 @@
+import { modelCardDetails } from '@tapis/tapisui-api/dist/ml-hub/models';
+
 const QueryKeys = {
   list: 'ml-hub/models/list',
   details: 'ml-hub/models/details',
@@ -9,6 +11,7 @@ const QueryKeys = {
   listByQuery: 'ml-hub/models/listByQuery',
   listByTask: 'ml-hub/models/listByTask',
   inferenceServerDetails: 'ml-hub/models/inference/inferenceServerDetails',
+  modelCardDetails: 'ml-hub/models/modelCardDetails',
 };
 
 export default QueryKeys;
