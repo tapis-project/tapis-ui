@@ -93,24 +93,24 @@ const devices = [
   },
   {
     id: 4,
-    name: 'x86',
-    type: 'x86',
+    name: 'x86 (gpu_p100)',
+    type: 'gpu_p100',
+    gpu: true,
     site: 'CHAMELEON',
-    gpu: false,
   },
   {
     id: 5,
-    name: 'x86 (GPU)',
-    type: 'x86',
+    name: 'x86 (gpu_m40)',
+    type: 'gpu_m40',
     gpu: true,
     site: 'CHAMELEON',
   },
   {
     id: 6,
-    name: 'Jetson Nano',
-    type: 'Jetson Nano',
-    site: 'CHAMELEON',
+    name: 'x86 (gpu_k80)',
+    type: 'gpu_k80',
     gpu: true,
+    site: 'CHAMELEON',
   },
 ];
 
