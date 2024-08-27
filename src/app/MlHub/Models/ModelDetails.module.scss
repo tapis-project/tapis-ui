@@ -61,3 +61,8 @@
 .download-url-button {
   height: 40px;
 }
+
+.modal {
+  overflow-y: auto;
+  max-height: 90vh;
+}
