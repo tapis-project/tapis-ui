@@ -162,6 +162,9 @@ const Buttons: React.FC<{ model: Models.ModelFullInfo }> = ({ model }) => {
       </Button>
       {currentModal === 'modelcard' && (
         <GenericModal
+          size="lg"
+          scrollable
+          className={`${styles['modal']}`}
           toggle={() => {
             setCurrentModal(undefined);
           }}
@@ -172,7 +175,7 @@ const Buttons: React.FC<{ model: Models.ModelFullInfo }> = ({ model }) => {
               {data2?.result?.model_card === undefined ? (
                 'no content available'
               ) : (
-                <>{data2?.result?.model_card}</>
+                <Markdown>{data2?.result?.model_card}</Markdown>
               )}
             </div>
           }
