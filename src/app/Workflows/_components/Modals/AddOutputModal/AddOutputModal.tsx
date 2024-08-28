@@ -154,6 +154,15 @@ const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
       <DialogActions>
         <Button
           onClick={() => {
+            if (
+              output.id &&
+              taskPatch.output &&
+              taskPatch.output[output.id] &&
+              !isSuccess
+            ) {
+              delete taskPatch.output[output.id];
+              setTaskPatch(task, taskPatch);
+            }
             setOutput(initialOutput);
             reset();
             toggle();

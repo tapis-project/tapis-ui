@@ -27,7 +27,10 @@ const Router: React.FC = () => {
         <TaskLayout />
       </Route>
       <Route path={`/workflows/pipelines/:groupId/:pipelineId/runs`}>
-        <PipelineRunsLayout />
+        <>
+          <Menu tab={'runs'} />
+          <PipelineRunsLayout />
+        </>
       </Route>
       <Route
         path={`/workflows/pipelines/:groupId/:pipelineId/:tab`}
