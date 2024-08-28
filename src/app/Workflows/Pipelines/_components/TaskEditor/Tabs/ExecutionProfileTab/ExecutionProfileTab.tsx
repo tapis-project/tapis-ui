@@ -13,7 +13,7 @@ import { Sidebar } from '../../../Sidebar';
 import { usePatchTask } from 'app/Workflows/_hooks';
 
 const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
-  const { task, taskPatch } = usePatchTask<Workflows.Task>();
+  const { task, taskPatch, setTaskPatch } = usePatchTask<Workflows.Task>();
   return (
     <Sidebar title={'Execution Profile'} toggle={toggle}>
       <div className={styles['form']}>
@@ -25,15 +25,31 @@ const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             label="Task invocation mode"
             labelId="mode"
             size="small"
-            defaultValue={(taskPatch as any).invocation_mode}
+            defaultValue={(taskPatch as any).execution_profile.invocation_mode}
+            onChange={(e) => {
+              setTaskPatch(task, {
+                execution_profile: {
+                  ...taskPatch.execution_profile,
+                  invocation_mode: e.target
+                    .value as Workflows.EnumInvocationMode,
+                },
+              });
+            }}
           >
             {Object.values(Workflows.EnumInvocationMode).map((mode) => {
               return (
                 <MenuItem
-                  selected={mode === (taskPatch as any).invocation_mode}
+                  selected={
+                    mode ===
+                    (taskPatch as any).execution_profile.invocation_mode
+                  }
                   value={mode}
+                  disabled={mode === Workflows.EnumInvocationMode.Sync}
                 >
                   {mode}
+                  {mode === Workflows.EnumInvocationMode.Sync
+                    ? ' - unavailable'
+                    : ''}
                 </MenuItem>
               );
             })}
@@ -50,7 +66,14 @@ const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
           </InputLabel>
           <Select
             label="Retry Policy"
-            onChange={() => {}}
+            onChange={(e) => {
+              setTaskPatch(task, {
+                execution_profile: {
+                  ...taskPatch.execution_profile,
+                  retry_policy: e.target.value as Workflows.EnumRetryPolicy,
+                },
+              });
+            }}
             labelId="retrypolicy"
             size="small"
             defaultValue={taskPatch.execution_profile?.retry_policy}
@@ -83,6 +106,14 @@ const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
             labelId="flavor"
             size="small"
             defaultValue={taskPatch.execution_profile?.flavor}
+            onChange={(e) => {
+              setTaskPatch(task, {
+                execution_profile: {
+                  ...taskPatch.execution_profile,
+                  flavor: e.target.value as Workflows.EnumTaskFlavor,
+                },
+              });
+            }}
           >
             {Object.values(Workflows.EnumTaskFlavor).map((flavor) => {
               return (
@@ -107,6 +138,15 @@ const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
           style={{ marginBottom: '-16px' }}
           label="Max retries"
           variant="outlined"
+          type="number"
+          onChange={(e) => {
+            setTaskPatch(task, {
+              execution_profile: {
+                ...taskPatch.execution_profile,
+                max_retries: parseInt(e.target.value),
+              },
+            });
+          }}
         />
         <FormHelperText>
           Maximum number of times this task will execute after failing once
@@ -118,6 +158,15 @@ const ExecutionProfileTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
           style={{ marginBottom: '-16px' }}
           label="Max exec time (sec)"
           variant="outlined"
+          type="number"
+          onChange={(e) => {
+            setTaskPatch(task, {
+              execution_profile: {
+                ...taskPatch.execution_profile,
+                max_exec_time: parseInt(e.target.value),
+              },
+            });
+          }}
         />
         <FormHelperText>
           Max time in seconds this task is permitted to run
