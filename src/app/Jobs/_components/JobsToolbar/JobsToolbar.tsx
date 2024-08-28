@@ -60,7 +60,7 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   };
   // Check if the job is in a non-terminal state
   const isCancelable =
-    job && !['FINISHED', 'FAILED'].includes(job.status ?? '');
+    job && !['FINISHED', 'FAILED', 'CANCELLED'].includes(job.status ?? '');
 
   return (
     <div id="file-operation-toolbar">
@@ -76,7 +76,7 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
           <ToolbarButton
             text="Cancel Job"
             icon="trash"
-            disabled={false}
+            disabled= {isCancelable ? false : true}
             onClick={() => setModal('ConfirmModal')}
             aria-label="cancelJob" // Updated aria-label to be more descriptive
           />
@@ -94,6 +94,8 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
             />
           )}
         </div>
+      
+      
       )}
     </div>
   );
