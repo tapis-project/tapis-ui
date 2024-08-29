@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import styles from './ExecutionProfileTab.module.scss';
+import styles from './ParametersTab.module.scss';
 import {
   FormControl,
   InputLabel,
@@ -16,10 +16,10 @@ type TabProps = {
   pipeline: Workflows.Pipeline;
 };
 
-const ExecutionProfileTab: React.FC<TabProps> = ({ groupId, pipeline }) => {
+const ParametersTab: React.FC<TabProps> = ({ groupId, pipeline }) => {
   return (
     <div className={styles['form']}>
-      {JSON.stringify(pipeline.execution_profile)}
+      {JSON.stringify(pipeline.params)}
       {/* <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
         <InputLabel size="small" id="mode">
           Task invocation mode
@@ -186,4 +186,4 @@ const ExecutionProfileTab: React.FC<TabProps> = ({ groupId, pipeline }) => {
   );
 };
 
-export default ExecutionProfileTab;
+export default ParametersTab;

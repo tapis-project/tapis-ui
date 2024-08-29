@@ -5,6 +5,8 @@ import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './Pipeline.module.scss';
 import { DagView } from './_components';
 import { EnvTab, ExecutionProfileTab } from './_components/Tabs';
+import { ParametersTab } from './_components/Tabs/ParametersTab';
+import { InheritenceTab } from './_components/Tabs/InheritenceTab';
 
 type PipelineProps = {
   groupId: string;
@@ -37,12 +39,12 @@ const Pipeline: React.FC<PipelineProps> = ({
       {pipeline && (
         <div id={`pipeline`} className={styles['grid']}>
           {tab === 'tasks' && <DagView pipeline={pipeline} groupId={groupId} />}
+          {tab === 'env' && <EnvTab pipeline={pipeline} groupId={groupId} />}
+          {tab === 'params' && <ParametersTab pipeline={pipeline} groupId={groupId} />}
           {tab === 'execprofile' && (
             <ExecutionProfileTab pipeline={pipeline} groupId={groupId} />
           )}
-          {tab === 'env' && <EnvTab pipeline={pipeline} groupId={groupId} />}
-          {tab === 'params' && <>Parameters</>}
-          {tab === 'uses' && <>Inheritance</>}
+          {tab === 'uses' && <InheritenceTab pipeline={pipeline} groupId={groupId} />}
         </div>
       )}
     </QueryWrapper>
