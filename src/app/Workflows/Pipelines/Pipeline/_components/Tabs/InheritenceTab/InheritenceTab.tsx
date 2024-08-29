@@ -19,7 +19,7 @@ type TabProps = {
 const InheritenceTab: React.FC<TabProps> = ({ groupId, pipeline }) => {
   return (
     <div className={styles['form']}>
-      {JSON.stringify(pipeline.params)}
+      {JSON.stringify(pipeline.uses)}
       {/* <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
         <InputLabel size="small" id="mode">
           Task invocation mode

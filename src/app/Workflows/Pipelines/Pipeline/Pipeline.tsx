@@ -40,11 +40,15 @@ const Pipeline: React.FC<PipelineProps> = ({
         <div id={`pipeline`} className={styles['grid']}>
           {tab === 'tasks' && <DagView pipeline={pipeline} groupId={groupId} />}
           {tab === 'env' && <EnvTab pipeline={pipeline} groupId={groupId} />}
-          {tab === 'params' && <ParametersTab pipeline={pipeline} groupId={groupId} />}
+          {tab === 'params' && (
+            <ParametersTab pipeline={pipeline} groupId={groupId} />
+          )}
           {tab === 'execprofile' && (
             <ExecutionProfileTab pipeline={pipeline} groupId={groupId} />
           )}
-          {tab === 'uses' && <InheritenceTab pipeline={pipeline} groupId={groupId} />}
+          {tab === 'uses' && (
+            <InheritenceTab pipeline={pipeline} groupId={groupId} />
+          )}
         </div>
       )}
     </QueryWrapper>
