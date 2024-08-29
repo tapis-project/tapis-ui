@@ -40,7 +40,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     objId = '';
   }
 
-  const { data, isFetching, error, invalidate } = Hooks.useDetailsImages({
+  const { data, isFetching, error, invalidate } = Hooks.useGetImage({
     imageId: objId,
   });
   const tooltipText =

@@ -38,7 +38,7 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   if (objId === '') {
     objId = '';
   }
-  const { data, isLoading, error } = Hooks.useDetailsSnapshots({
+  const { data, isLoading, error } = Hooks.useGetSnapshot({
     snapshotId: objId,
   });
 

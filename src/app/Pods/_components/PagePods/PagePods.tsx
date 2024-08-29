@@ -35,7 +35,7 @@ import PodsLoadingText from '../PodsLoadingText';
 import styles from '../Pages.module.scss';
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
-  const { data, isLoading, isFetching, error, invalidate } = Hooks.useDetails({
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod({
     podId: objId,
   });
   const {
@@ -44,7 +44,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     isFetching: isFetchingLogs,
     error: errorLogs,
     invalidate: invalidateLogs,
-  } = Hooks.useLogs({ podId: objId });
+  } = Hooks.useGetPodLogs({ podId: objId });
   const {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
@@ -52,12 +52,20 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     error: errorSecrets,
     invalidate: invalidateSecrets,
   } = Hooks.useGetPodSecrets({ podId: objId });
+  const {
+    data: dataPerms,
+    isLoading: isLoadingPerms,
+    isFetching: isFetchingPerms,
+    error: errorPerms,
+    invalidate: invalidatePerms,
+  } = Hooks.useGetPodPermissions({ podId: objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
+  const podPerms: Pods.PodPermissionsResponse | undefined = dataPerms?.result as Pods.PodPermissionsResponse | undefined;
 
   // State to control the visibility of the TooltipModal
   const [modal, setModal] = useState<string | undefined>(undefined);
@@ -92,6 +100,11 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       tooltipTitle: 'Secrets',
       tooltipText:
         'Secrets are variables that you can reference via $SECRET_KEY. WIP',
+    },
+    perms: {
+      tooltipTitle: 'Permissions',
+      tooltipText:
+        'Permissions are the access control list for this Pod. WIP',
     },
   };
 
@@ -143,7 +156,12 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
           : isFetching
           ? loadingText
           : JSON.stringify(sharedData, null, 2);
-
+      case 'perms':
+        return error
+          ? `error: ${error}`
+          : isFetching
+          ? loadingText
+          : JSON.stringify(podPerms, null, 2);
       default:
         return ''; // Default or placeholder value
     }
@@ -188,6 +206,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     { id: 'logs', label: 'Logs', tabValue: 'logs' },
     { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },
     { id: 'secrets', label: 'Secrets', tabValue: 'secrets' },
+    { id: 'perms', label: 'Perms', tabValue: 'perms' },
   ];
 
   const networkingUrl = Object.values(data?.result?.networking ?? {})[0]?.url;

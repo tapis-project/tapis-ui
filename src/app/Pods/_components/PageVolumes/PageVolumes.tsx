@@ -39,7 +39,7 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   if (objId === '') {
     objId = '';
   }
-  const { data, isLoading, error } = Hooks.useDetailsVolumes({
+  const { data, isLoading, error } = Hooks.useGetVolume({
     volumeId: objId,
   });
 

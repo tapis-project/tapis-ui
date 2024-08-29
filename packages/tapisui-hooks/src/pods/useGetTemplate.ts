@@ -4,17 +4,16 @@ import { Pods } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '..';
 import QueryKeys from './queryKeys';
 
-const useDetailsTemplates = (
+const useGetTemplate = (
   params: Pods.GetTemplateRequest,
   options: QueryObserverOptions<Pods.TemplateResponse, Error> = {}
 ) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Pods.TemplateResponse, Error>(
-    [QueryKeys.detailsTemplates, params, accessToken],
+    [QueryKeys.getTemplate, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    () =>
-      API.detailsTemplates(params, basePath, accessToken?.access_token ?? ''),
+    () => API.getTemplate(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
     }
@@ -22,4 +21,4 @@ const useDetailsTemplates = (
   return result;
 };
 
-export default useDetailsTemplates;
+export default useGetTemplate;

@@ -35,7 +35,7 @@ import PodsLoadingText from '../PodsLoadingText';
 
 const PageTemplates: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const navigate = useHistory();
-  const { data, isLoading, error } = Hooks.useDetailsTemplates({
+  const { data, isLoading, error } = Hooks.useGetTemplate({
     templateId: objId,
   });
   const {

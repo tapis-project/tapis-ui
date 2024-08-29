@@ -178,11 +178,11 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.getPod);
   }, [queryClient]);
 
-  const { makeNewPod, isLoading, error, isSuccess, reset } =
-    Hooks.useMakeNewPod();
+  const { createPod, isLoading, error, isSuccess, reset } =
+    Hooks.useCreatePod();
 
   useEffect(() => {
     reset();
@@ -403,22 +403,21 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
       gpus: number;
     };
   }) => {
-    makeNewPod(
-      {
-        pod_id: pod_id,
-        description,
-        command: command ? JSON.parse(command) : undefined,
-        image: image,
-        template: template,
-        time_to_stop_default: time_to_stop_default,
-        time_to_stop_instance: time_to_stop_instance,
-        environment_variables: envVarsArrayToInputObject(environment_variables),
-        networking: networkingArrayToInputObject(networking),
-        volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
-        resources: resources,
-      },
-      { onSuccess }
-    );
+    const newPod = {
+      pod_id,
+      description,
+      command: command ? JSON.parse(command) : undefined,
+      image,
+      template,
+      time_to_stop_default,
+      time_to_stop_instance,
+      environment_variables: envVarsArrayToInputObject(environment_variables),
+      networking: networkingArrayToInputObject(networking),
+      volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
+      resources,
+    };
+
+    createPod({ newPod} , { onSuccess });
   };
 
   return (

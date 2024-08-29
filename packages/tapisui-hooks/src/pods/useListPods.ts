@@ -1,21 +1,18 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
 import { Pods as API } from '@tapis/tapisui-api';
 import { Pods } from '@tapis/tapis-typescript';
-import { useTapisConfig } from '../';
+import { useTapisConfig } from '..';
 import QueryKeys from './queryKeys';
 
-export const defaultParams = {};
-
-const useList = (
-  params = defaultParams,
+const useListPods = (
   options: QueryObserverOptions<Pods.PodsResponse, Error> = {}
 ) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Pods.PodsResponse, Error>(
-    [QueryKeys.list, params, accessToken],
+    [QueryKeys.listPods, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
-    () => API.list(params, basePath, accessToken?.access_token || ''),
+    () => API.listPods(basePath, accessToken?.access_token || ''),
     {
       ...options,
       enabled: !!accessToken,
@@ -24,4 +21,4 @@ const useList = (
   return result;
 };
 
-export default useList;
+export default useListPods;

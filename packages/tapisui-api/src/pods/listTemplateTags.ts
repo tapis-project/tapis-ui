@@ -5,7 +5,7 @@ const listTemplateTags = (
   params: Pods.ListTemplateTagsRequest,
   basePath: string,
   jwt: string
-) => {
+): Promise<Pods.TemplateTagsSmallResponse> => {
   const api: Pods.TemplatesApi = apiGenerator<Pods.TemplatesApi>(
     Pods,
     Pods.TemplatesApi,

@@ -191,7 +191,7 @@ const UpdatePodBase: React.FC<CodeEditProps> = ({
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
   const podId = useLocation().pathname.split('/')[2];
@@ -408,19 +408,19 @@ const UpdatePodBase: React.FC<CodeEditProps> = ({
     volume_mounts,
     resources,
   }: UpdatePodBaseProps) => {
-    updatePod(
-      filterUndefinedValues({
-        description,
-        command: command ? JSON.parse(command) : undefined,
-        time_to_stop_default,
-        time_to_stop_instance,
-        environment_variables: envVarsArrayToInputObject(environment_variables),
-        networking: networkingArrayToInputObject(networking),
-        volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
-        resources,
-      }),
-      { onSuccess }
-    );
+    const updatedPod = {
+      description,
+      command: command ? JSON.parse(command) : undefined,
+      time_to_stop_default,
+      time_to_stop_instance,
+      environment_variables: envVarsArrayToInputObject(environment_variables),
+      networking: networkingArrayToInputObject(networking),
+      volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
+      resources,
+    };
+
+    const updatedPodFiltered = filterUndefinedValues(updatedPod);
+    updatePod({podId: podId, updatePod: updatedPodFiltered}, { onSuccess });
   };
 
   // Have to filter info to updatePod to remove undefined values

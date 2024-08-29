@@ -1,11 +1,11 @@
 import { Pods } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
-const detailsImages = (
+const getImage = (
   params: Pods.GetImageRequest,
   basePath: string,
   jwt: string
-) => {
+): Promise<Pods.ImageResponse> => {
   const api: Pods.ImagesApi = apiGenerator<Pods.ImagesApi>(
     Pods,
     Pods.ImagesApi,
@@ -15,4 +15,4 @@ const detailsImages = (
   return errorDecoder<Pods.ImageResponse>(() => api.getImage(params));
 };
 
-export default detailsImages;
+export default getImage;

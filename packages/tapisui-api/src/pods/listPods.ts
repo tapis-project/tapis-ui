@@ -1,7 +1,10 @@
 import { Pods } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
-const list = (params: {}, basePath: string, jwt: string) => {
+const listPods = (
+  basePath: string,
+  jwt: string
+): Promise<Pods.PodsResponse> => {
   const api: Pods.PodsApi = apiGenerator<Pods.PodsApi>(
     Pods,
     Pods.PodsApi,
@@ -11,4 +14,4 @@ const list = (params: {}, basePath: string, jwt: string) => {
   return errorDecoder<Pods.PodsResponse>(() => api.getPods());
 };
 
-export default list;
+export default listPods;

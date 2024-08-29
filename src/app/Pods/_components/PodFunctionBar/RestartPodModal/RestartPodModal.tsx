@@ -18,13 +18,13 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     0,
     claims['sub'].lastIndexOf('@')
   );
-  const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
+  const { data } = Hooks.useListPods(); //{search: `owner.like.${''}`,}
   const pods: Array<Pods.PodResponseModel> = data?.result ?? [];
 
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
   const { restartPod, isLoading, error, isSuccess, reset } =
@@ -45,7 +45,7 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    restartPod(podId, { onSuccess });
+    restartPod({podId}, { onSuccess });
   };
 
   return (
