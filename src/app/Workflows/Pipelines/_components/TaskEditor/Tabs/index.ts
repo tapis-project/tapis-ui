@@ -7,3 +7,6 @@ export { ExecutionProfileTab } from './ExecutionProfileTab';
 export { TapisJobDefTab } from './TapisJobDefTab';
 export { ConditionsTab } from './ConditionsTab';
 export { IOTab } from './IOTab';
+export { BuilderTab } from './BuilderTab';
+export { DestinationTab } from './DestinationTab';
+export { ContextTab } from './ContextTab';
