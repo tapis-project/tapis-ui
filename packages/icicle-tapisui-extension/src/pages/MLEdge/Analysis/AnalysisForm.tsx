@@ -79,9 +79,9 @@ const devices = [
   },
   {
     id: 2,
-    name: 'x86 (GPU)',
-    type: 'x86',
-    site: 'TACC',
+    name: 'x86 (no GPU)',
+    type: 'compute_cascadelake',
+    site: 'CHAMELEON',
     gpu: true,
   },
   {
