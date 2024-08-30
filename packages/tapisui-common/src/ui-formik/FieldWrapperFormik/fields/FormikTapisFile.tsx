@@ -71,7 +71,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       if (allowSystemChange) {
-        setValue(`tapis://${systemId ?? ''}${files[0].path}`);
+        setValue(`tapis://${systemId ?? ''}/${files[0].path}`);
       } else {
         setValue(`${files[0].path}`);
       }
