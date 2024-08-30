@@ -101,6 +101,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   });
 
   const handleToggleView = (view: View) => {
+    alert(!views[view]);
     setViews({
       ...views,
       [view]: !views[view],
@@ -165,7 +166,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     ];
 
     return initialNodes;
-  }, [groupId, pipeline]);
+  }, [views, setViews, groupId, pipeline]);
 
   const calculateEdges = useCallback(() => {
     if (!views.dependencies) {

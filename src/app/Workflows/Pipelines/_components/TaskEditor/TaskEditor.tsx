@@ -22,6 +22,9 @@ import {
   TapisJobDefTab,
   ConditionsTab,
   IOTab,
+  BuilderTab,
+  ContextTab,
+  DestinationTab,
 } from './Tabs';
 import { usePatchTask } from 'app/Workflows/_hooks';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
@@ -239,6 +242,33 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
           <GitTab
             toggle={() => {
               setTab(featuredTab || 'code');
+            }}
+          />
+        )}
+        {tab === 'builder' && tabs.includes('builder') && (
+          <BuilderTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
+        )}
+        {tab === 'context' && tabs.includes('context') && (
+          <ContextTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
+            }}
+          />
+        )}
+        {tab === 'destination' && tabs.includes('destination') && (
+          <DestinationTab
+            toggle={() => {
+              if (featuredTab) {
+                setTab(featuredTab);
+              }
             }}
           />
         )}
