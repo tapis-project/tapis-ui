@@ -12,7 +12,9 @@ const PipelineRunSummary: React.FC<
         className={`${styles['run-status-icon']} ${
           styles[`run-status-icon-${status}`]
         }`}
-      />
+      >
+        <div className={styles["fancy"]}/>
+      </div>
       {children}
     </div>
   );

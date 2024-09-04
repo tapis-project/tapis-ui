@@ -143,19 +143,19 @@ const models = [
 
 const datasets = [
   {
-    id: '15-image',
+    url: '',
     name: '15 Image',
   },
   {
-    id: 'ena',
+    url: 'https://storage.googleapis.com/public-datasets-lila/ena24/ena24.zip',
     name: 'ENA',
   },
   {
-    id: 'ohio-small-animals',
+    url: 'ohio-small-animals',
     name: 'Ohio Small Animals',
   },
   {
-    id: 'okavango-delta',
+    url: 'okavango-delta',
     name: 'Okavango Delta',
   },
 ];
@@ -489,7 +489,7 @@ const AnalysisForm: React.FC = () => {
                       <option value="" label="Select option" />
                       {datasets.map((dataset) => {
                         return (
-                          <option value={dataset.id} label={dataset.name} />
+                          <option value={dataset.url} label={dataset.name} />
                         );
                       })}
                       <option value="url" label="-- provide dataset url --" />
