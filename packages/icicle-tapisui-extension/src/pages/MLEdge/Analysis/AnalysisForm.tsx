@@ -87,7 +87,7 @@ const devices = [
   {
     id: 3,
     name: 'Jetson Nano',
-    type: 'Jetson Nano',
+    type: 'Jetson',
     site: 'TACC',
     gpu: true,
   },
@@ -143,18 +143,22 @@ const models = [
 
 const datasets = [
   {
+    id: '15-image',
     url: '',
     name: '15 Image',
   },
   {
+    id: 'ena',
     url: 'https://storage.googleapis.com/public-datasets-lila/ena24/ena24.zip',
     name: 'ENA',
   },
   {
+    id: 'ohio-small-animals',
     url: 'ohio-small-animals',
     name: 'Ohio Small Animals',
   },
   {
+    id: 'okavango-delta',
     url: 'okavango-delta',
     name: 'Okavango Delta',
   },
@@ -293,6 +297,9 @@ const AnalysisForm: React.FC = () => {
                   status,
                   report: 'Download',
                 };
+                const dataset = datasets.filter(
+                  (d) => d.id == values.dataset
+                )[0];
                 const device = devices.filter((d) => d.id == values.device)[0];
                 const envVariables = [
                   {
@@ -317,7 +324,7 @@ const AnalysisForm: React.FC = () => {
                   },
                   {
                     key: 'CT_CONTROLLER_INPUT',
-                    value: values.dataset,
+                    value: dataset.url,
                   },
                 ];
 
@@ -489,7 +496,7 @@ const AnalysisForm: React.FC = () => {
                       <option value="" label="Select option" />
                       {datasets.map((dataset) => {
                         return (
-                          <option value={dataset.url} label={dataset.name} />
+                          <option value={dataset.id} label={dataset.name} />
                         );
                       })}
                       <option value="url" label="-- provide dataset url --" />
