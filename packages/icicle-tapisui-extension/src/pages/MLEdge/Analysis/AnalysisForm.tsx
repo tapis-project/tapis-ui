@@ -76,6 +76,7 @@ const devices = [
     type: 'x86',
     site: 'TACC',
     gpu: false,
+    disabled: false,
   },
   {
     id: 2,
@@ -83,6 +84,7 @@ const devices = [
     type: 'compute_cascadelake',
     site: 'CHAMELEON',
     gpu: true,
+    disabled: false,
   },
   {
     id: 3,
@@ -90,6 +92,7 @@ const devices = [
     type: 'Jetson',
     site: 'TACC',
     gpu: true,
+    disabled: false,
   },
   {
     id: 4,
@@ -97,6 +100,7 @@ const devices = [
     type: 'gpu_p100',
     gpu: true,
     site: 'CHAMELEON',
+    disabled: false,
   },
   {
     id: 5,
@@ -104,6 +108,7 @@ const devices = [
     type: 'gpu_m40',
     gpu: true,
     site: 'CHAMELEON',
+    disabled: false,
   },
   {
     id: 6,
@@ -111,6 +116,7 @@ const devices = [
     type: 'gpu_k80',
     gpu: true,
     site: 'CHAMELEON',
+    disabled: false,
   },
 ];
 
@@ -118,26 +124,37 @@ const models = [
   {
     model_id: 'megadetectorv5-ft-kudu',
     name: 'MegaDetector v5 (FT Kudu)',
+    disabled: true,
   },
   {
     model_id: 'megadetectorv5a',
     name: 'MegaDetector v5a',
+    disabled: false,
   },
   {
     model_id: 'megadetectorv5b',
     name: 'MegaDetector v5b',
+    disabled: false,
+  },
+  {
+    model_id: 'megadetectorv5c',
+    name: 'MegaDetector v5c',
+    disabled: false,
   },
   {
     model_id: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
     name: 'MegaDetector v4.1',
+    disabled: true,
   },
   {
     model_id: 'megadetectorv5-ft-ena',
     name: 'MegaDetector v5 (FT ENA)',
+    disabled: true,
   },
   {
     model_id: 'bioclip',
     name: 'BioClip',
+    disabled: true,
   },
 ];
 
@@ -146,21 +163,25 @@ const datasets = [
     id: '15-image',
     url: '',
     name: '15 Image',
+    disabled: false,
   },
   {
     id: 'ena',
     url: 'https://storage.googleapis.com/public-datasets-lila/ena24/ena24.zip',
     name: 'ENA',
+    disabled: true,
   },
   {
     id: 'ohio-small-animals',
     url: 'ohio-small-animals',
     name: 'Ohio Small Animals',
+    disabled: true,
   },
   {
     id: 'okavango-delta',
     url: 'okavango-delta',
     name: 'Okavango Delta',
+    disabled: true,
   },
 ];
 
@@ -298,7 +319,7 @@ const AnalysisForm: React.FC = () => {
                   report: 'Download',
                 };
                 const dataset = datasets.filter(
-                  (d) => d.id == values.dataset
+                  (dataset) => dataset.id == values.dataset
                 )[0];
                 const device = devices.filter((d) => d.id == values.device)[0];
                 const envVariables = [
@@ -327,6 +348,8 @@ const AnalysisForm: React.FC = () => {
                     value: dataset.url,
                   },
                 ];
+
+                console.log({ envVariables });
 
                 // Add advnacedConfig to the envVariables to if defined
                 if (values.advancedConfig) {
@@ -420,7 +443,12 @@ const AnalysisForm: React.FC = () => {
                       <option value="" label="Select option" />
                       {models.map((model) => {
                         return (
-                          <option value={model.model_id}>{model.name}</option>
+                          <option
+                            disabled={model.disabled}
+                            value={model.model_id}
+                          >
+                            {model.name}
+                          </option>
                         );
                       })}
                       <option value="url" label="-- provide model url --" />
@@ -496,7 +524,11 @@ const AnalysisForm: React.FC = () => {
                       <option value="" label="Select option" />
                       {datasets.map((dataset) => {
                         return (
-                          <option value={dataset.id} label={dataset.name} />
+                          <option
+                            disabled={dataset.disabled}
+                            value={dataset.id}
+                            label={dataset.name}
+                          />
                         );
                       })}
                       <option value="url" label="-- provide dataset url --" />
@@ -607,7 +639,11 @@ const AnalysisForm: React.FC = () => {
                         {devices.map((device) => {
                           if (device.site === values.site) {
                             return (
-                              <option value={device.id} label={device.name} />
+                              <option
+                                disabled={device.disabled}
+                                value={device.id}
+                                label={device.name}
+                              />
                             );
                           }
                         })}
