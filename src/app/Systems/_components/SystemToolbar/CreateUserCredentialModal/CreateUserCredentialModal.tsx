@@ -21,7 +21,7 @@ import {
 type CreateUserCredentialModalProps = {
   toggle: () => void;
   isOpen: boolean;
-  effectiveUserId: string;
+  effectiveUserId?: string;
 };
 
 interface FormData {

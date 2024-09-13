@@ -22,29 +22,47 @@ const CodeTab: React.FC<CodeTabProps> = ({ featured }) => {
   return (
     <div
       className={`${styles['code-container']} ${
-        featured
+        !featured
           ? baseStyles['body-with-sidebar']
           : baseStyles['body-wo-sidebar']
       }`}
     >
       <div className={`${styles['code-container-header']}`}>
-        <Stack direction="row" spacing={'8px'}>
-          <Chip
-            color="primary"
-            label={`runtime:${taskPatch.runtime}`}
-            size="small"
-            onClick={() => {
-              setModal('runtime');
-            }}
-          />
-        </Stack>
+        <Chip
+          color="primary"
+          label={`runtime:${taskPatch.runtime}`}
+          size="small"
+          onClick={() => {
+            setModal('runtime');
+          }}
+        />
+        {(taskPatch.git_repositories ? taskPatch.git_repositories : []).map(
+          (repo) => {
+            return (
+              <Chip
+                size="small"
+                label={`repo:${repo.url!.replace('https://github.com/', '')}:${
+                  repo.branch
+                } ${repo.directory}`}
+                onDelete={() => {
+                  setTaskPatch(task, {
+                    git_repositories: [
+                      ...(taskPatch.git_repositories || []).filter(
+                        (r) => repo.url !== r.url
+                      ),
+                    ],
+                  });
+                }}
+              />
+            );
+          }
+        )}
       </div>
       <CodeMirror
         value={(task.code !== undefined && decode(task.code)) || ''}
         editable={!task.entrypoint}
         extensions={[python()]}
         theme={vscodeDark}
-        className={`${styles['code']} `}
         onChange={(value) => {
           setTaskPatch(task, { code: encode(value) });
         }}

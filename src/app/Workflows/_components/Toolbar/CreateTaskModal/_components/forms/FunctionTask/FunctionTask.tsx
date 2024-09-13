@@ -87,7 +87,7 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
                     label={'runtime'}
                     required={true}
                     description={
-                      'The runtime envrionment and language of the function'
+                      'The runtime environment and language of the function'
                     }
                   >
                     <option disabled value={''} selected={true}>

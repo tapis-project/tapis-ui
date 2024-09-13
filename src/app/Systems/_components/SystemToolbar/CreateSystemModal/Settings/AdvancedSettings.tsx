@@ -8,7 +8,7 @@ import { useFormikContext } from 'formik';
 import styles from '../CreateSystemModal.module.scss';
 import BatchSettings from './Batch/BatchSettings';
 import ProxySettings from './ProxySettings';
-import DtnSettings from './DtnSettings';
+// import DtnSettings from './DtnSettings';
 import CmdSettings from './CmdSettings';
 import TagsSettings from './TagsSettings';
 import JobSettings from './Job/JobSettings';
@@ -90,7 +90,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified }) => {
         <JobSettings />
         <BatchSettings />
         <ProxySettings />
-        <DtnSettings />
+        {/* <DtnSettings /> */}
         <CmdSettings />
         <TagsSettings />
       </Collapse>

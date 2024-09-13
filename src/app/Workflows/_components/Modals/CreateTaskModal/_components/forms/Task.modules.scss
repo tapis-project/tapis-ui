@@ -1,0 +1,24 @@
+.container {
+  display: grid;
+  gap: 1em;
+}
+
+.section {
+  padding: 1em;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  align-items: center;
+}
+
+.grid-2-auto-auto {
+  display: grid;
+  grid-template-columns: 2fr auto auto;
+  gap: 1em;
+  align-items: center;
+}

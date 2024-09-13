@@ -25,22 +25,12 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
             Runtime arguments that can be used as task input
           </i>
         </div>
-        <div>
-          {Object.entries(pipeline.params!).map(([k, v], i) => {
-            return <div className={styles['arg']}>{k}</div>;
-          })}
-        </div>
       </div>
-      {Object.entries(pipeline.params!).map(([k, v], i) => {
-        return (
-          <StandardHandle
-            id={`arg-handle-${k}`}
-            type="source"
-            position={Position.Right}
-            style={{ top: `${81 + i * 25}px` }}
-          />
-        );
-      })}
+      <StandardHandle
+        id={`env-handle-${pipeline.id}`}
+        type="source"
+        position={Position.Right}
+      />
     </>
   );
 };

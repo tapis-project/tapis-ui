@@ -1,33 +1,22 @@
 import React from 'react';
 import { Route, useRouteMatch, Switch } from 'react-router-dom';
-
-import { default as Pipelines } from '../Pipelines';
-import { default as Pipeline } from '../Pipeline';
-import { default as PipelineRuns } from '../PipelineRuns';
-import { default as Task } from '../Task';
+import { default as PipelinesLayout } from '../Pipelines';
+import { default as PipelineLayout } from '../Pipeline';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <Pipelines />
+        <PipelinesLayout />
       </Route>
 
       <Route path={`${path}/:groupId`} exact>
-        <Pipelines />
+        <PipelinesLayout />
       </Route>
 
-      <Route path={`${path}/:groupId/:pipelineId`} exact>
-        <Pipeline />
-      </Route>
-
-      <Route path={`${path}/:groupId/:pipelineId/tasks/:taskId`} exact>
-        <Task />
-      </Route>
-
-      <Route path={`${path}/:groupId/:pipelineId/runs`}>
-        <PipelineRuns />
+      <Route path={`${path}/:groupId/:pipelineId`}>
+        <PipelineLayout />
       </Route>
     </Switch>
   );

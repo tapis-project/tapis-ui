@@ -1,44 +1,24 @@
 import React, { useState } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { SectionMessage, SectionHeader } from '@tapis/tapisui-common';
+import { SectionMessage } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import styles from './PipelineRuns.module.scss';
+import { useHistory, useLocation } from 'react-router-dom';
+import { ExpandMore } from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  AccordionActions,
+} from '@mui/material';
 import { Table } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { Toolbar } from '../../_components';
-import { RunPipelineModal } from '../../_components/Toolbar/RunPipelineModal';
-
-type PipelineRunProps = {
-  order: number;
-  groupId: string;
-  pipelineId: string;
-  pipelineRun: Workflows.PipelineRun;
-};
-
-const PipelineRun: React.FC<PipelineRunProps> = ({
-  order,
-  groupId,
-  pipelineId,
-  pipelineRun,
-}) => {
-  return (
-    <tr>
-      <td className={styles['center']}>{order}</td>
-      <td>{pipelineRun.status}</td>
-      <td>{pipelineRun.started_at}</td>
-      <td>{pipelineRun.last_modified}</td>
-      <td>{pipelineRun.uuid}</td>
-      <td className={styles['center']}>
-        <Link
-          to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipelineRun.uuid}`}
-        >
-          View
-        </Link>
-      </td>
-    </tr>
-  );
-};
+import {
+  PipelineRunSummary,
+  PipelineRunLogs,
+  PipelineRunDuration,
+} from './_components';
 
 type PipelineRunsProps = {
   groupId: string;
@@ -55,43 +35,69 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
     a.started_at! < b.started_at! ? 1 : a.started_at! > b.started_at! ? -1 : 0
   );
   const [showModal, setShowModal] = useState<boolean>(false);
-  const toggle = () => {
-    setShowModal(!showModal);
-  };
+  const history = useHistory();
+  const { pathname } = useLocation();
 
   return (
     <div className={styles['grid']}>
-      <SectionHeader>{pipelineId}</SectionHeader>
-      <Toolbar
-        buttons={['runpipeline']}
-        pipelineId={pipelineId}
-        groupId={groupId}
-      />
       <QueryWrapper isLoading={isLoading} error={error}>
-        <div id="pipelineruns">
+        <div id="pipelineruns" className={styles['runs']}>
           {pipelineRuns.length ? (
-            <Table dark bordered style={{ margin: 0 }}>
-              <thead>
-                <tr>
-                  <th className={styles['center']}>#</th>
-                  <th>status</th>
-                  <th>started at</th>
-                  <th>last modified</th>
-                  <th>uuid</th>
-                  <th>executions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pipelineRuns.map((pipelineRun, i) => (
-                  <PipelineRun
-                    order={pipelineRuns.length - i}
-                    groupId={groupId}
-                    pipelineId={pipelineId}
-                    pipelineRun={pipelineRun}
-                  />
-                ))}
-              </tbody>
-            </Table>
+            pipelineRuns.map((run, i) => {
+              return (
+                <Accordion defaultExpanded={i === 0 ? true : undefined}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="pipeline-run-summary"
+                    id={`pipeline-${pipelineId}-run-summary-${i}`}
+                  >
+                    <PipelineRunSummary status={run.status}>
+                      {run.name}
+                    </PipelineRunSummary>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Table
+                      dark
+                      bordered
+                      style={{ margin: 0 }}
+                      className={styles['runs-table']}
+                    >
+                      <thead>
+                        <tr>
+                          <th style={{ textAlign: 'center' }}>#</th>
+                          <th>name</th>
+                          <th>status</th>
+                          <th>duration</th>
+                          <th>started</th>
+                          <th>last modified</th>
+                        </tr>
+                      </thead>
+                      <tr>
+                        <th style={{ textAlign: 'center' }} scope="row">
+                          {pipelineRuns.length - i}
+                        </th>
+                        <td>{run.name}</td>
+                        <td>{run.status}</td>
+                        <td>{<PipelineRunDuration run={run} />}</td>
+                        <td>{run.started_at}</td>
+                        <td>{run.last_modified}</td>
+                      </tr>
+                    </Table>
+                    <PipelineRunLogs logs={run.logs} />
+                  </AccordionDetails>
+                  <AccordionActions>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        history.push(`${pathname}/${run.uuid}`);
+                      }}
+                    >
+                      View
+                    </Button>
+                  </AccordionActions>
+                </Accordion>
+              );
+            })
           ) : (
             <SectionMessage type="info">
               No runs to show for pipeline '{pipelineId}'
@@ -99,13 +105,6 @@ const PipelineRuns: React.FC<PipelineRunsProps> = ({ groupId, pipelineId }) => {
           )}
         </div>
       </QueryWrapper>
-      {showModal && groupId && pipelineId && (
-        <RunPipelineModal
-          groupId={groupId}
-          pipelineId={pipelineId}
-          toggle={toggle}
-        />
-      )}
     </div>
   );
 };

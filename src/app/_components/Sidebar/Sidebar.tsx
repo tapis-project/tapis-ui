@@ -7,6 +7,7 @@ import { useExtension } from 'extensions';
 import {
   ExpandLessRounded,
   ExpandMoreRounded,
+  Login,
   Logout,
   SettingsRounded,
 } from '@mui/icons-material';
@@ -14,6 +15,9 @@ import { LoadingButton as Button } from '@mui/lab';
 import {
   Menu,
   Collapse,
+  List,
+  ListItemButton,
+  ListItemText,
   ListItemIcon,
   Divider,
   // Button,
@@ -72,13 +76,7 @@ const Sidebar: React.FC = () => {
   ) => {
     return (
       <NavItem to={to} icon={icon} key={uuidv4()}>
-        {expanded ? (
-          <span style={{ paddingRight: '.75rem', whiteSpace: 'nowrap' }}>
-            {text}
-          </span>
-        ) : (
-          ''
-        )}
+        {expanded ? text : ''}
       </NavItem>
     );
   };
@@ -198,15 +196,27 @@ const Sidebar: React.FC = () => {
           alignItems: 'center', // vertical
           marginTop: '.6rem',
           marginBottom: '.6rem',
-          marginRight: '0px',
+          // marginRight: '0.2rem',
         }}
       >
         <Link to={'/'}>
           <img
             style={
               expanded
-                ? { maxHeight: '50px', maxWidth: '9rem' }
-                : { height: '50px', maxWidth: '4.2rem' }
+                ? {
+                    maxHeight: '50px',
+                    maxWidth: '9rem',
+                    borderRadius: '6px',
+                    marginLeft: '.5rem',
+                    marginRight: '.5rem',
+                  }
+                : {
+                    height: '50px',
+                    maxWidth: '4.2rem',
+                    borderRadius: '6px',
+                    marginLeft: '.2rem',
+                    marginRight: '.2rem',
+                  }
             }
             className="logo"
             src={
@@ -259,28 +269,25 @@ const Sidebar: React.FC = () => {
                   style={{
                     whiteSpace: 'nowrap',
                     cursor: 'pointer',
-                    // paddingTop: '10px',
-                    // paddingBottom: '10px',
-                    paddingLeft: '21px',
                   }}
                 >
-                  {openSecondary ? (
-                    <ExpandLessRounded />
-                  ) : (
-                    <ExpandMoreRounded />
-                  )}
-                  {expanded && (
-                    <span
-                      style={{
-                        paddingLeft: '8px',
-                        fontSize: '14px',
-                        color: '#808080',
-                      }}
-                    >
-                      {' '}
-                      More
-                    </span>
-                  )}
+                  <ListItemButton
+                    sx={{
+                      color: '#707070',
+                      pl: '1.4rem',
+                      pt: '5px',
+                      pb: '5px',
+                    }}
+                  >
+                    {openSecondary ? (
+                      <ExpandLessRounded />
+                    ) : (
+                      <ExpandMoreRounded />
+                    )}
+                    {expanded && (
+                      <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                    )}
+                  </ListItemButton>
                 </div>
                 <Collapse in={openSecondary}>
                   {secondarySidebarItems.map((item) => item)}
@@ -290,53 +297,57 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
-      {claims['sub'] && (
-        <Chip
-          variant="outlined"
-          style={{
-            borderRadius: '8px',
-          }}
-          label={
-            !expanded ? (
-              <SettingsRounded sx={{ width: 24, height: 24 }} />
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  fontSize: 12,
-                  lineHeight: 1.2,
-                  overflow: 'hidden',
-                }}
-              >
-                <div>
-                  <SettingsRounded sx={{ width: 24, height: 24 }} />
-                </div>
+      <Chip
+        variant="outlined"
+        style={{
+          borderRadius: '8px',
+        }}
+        label={
+          !expanded ? (
+            <SettingsRounded sx={{ width: 24, height: 24 }} />
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                fontSize: 12,
+                lineHeight: 1.2,
+                overflow: 'hidden',
+              }}
+            >
+              <div>
+                <SettingsRounded sx={{ width: 24, height: 24 }} />
+              </div>
+              {claims['sub'] ? (
                 <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
                   {claims['sub'].split('@')[0]}
                   <br />@{claims['sub'].split('@')[1]}
                 </div>
-              </div>
-            )
-          }
-          onClick={handleClick} // Move the click handler here to make the entire div clickable
-          sx={{
-            height: '2rem',
+              ) : (
+                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                  {'Logged Out'}
+                </div>
+              )}
+            </div>
+          )
+        }
+        onClick={handleClick} // Move the click handler here to make the entire div clickable
+        sx={{
+          height: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '.6rem',
+          color: '#707070',
+          //minWidth: '0rem',
+          //width: '2rem',
+          '& .MuiChip-label': {
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '.6rem',
-            color: '#707070',
-            //minWidth: '0rem',
-            //width: '2rem',
-            '& .MuiChip-label': {
-              display: 'flex',
-              whiteSpace: 'normal',
-            },
-          }}
-        />
-      )}
+            whiteSpace: 'normal',
+          },
+        }}
+      />
 
       <Menu
         anchorEl={anchorEl}
@@ -359,17 +370,39 @@ const Sidebar: React.FC = () => {
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={() => setModal('viewJWT')}>View JWT</MenuItem>
-        <MenuItem onClick={() => setModal('changeTenant')}>
-          Change Tenant
-        </MenuItem>
+        {claims && claims['sub'] ? (
+          <MenuItem onClick={() => setModal('viewJWT')}>View JWT</MenuItem>
+        ) : (
+          <MenuItem disabled onClick={() => setModal('viewJWT')}>
+            View JWT
+          </MenuItem>
+        )}
+        {((extension !== undefined && extension.allowMutiTenant) ||
+          extension === undefined ||
+          (extension !== undefined && extension.allowMutiTenant)) && (
+          <MenuItem
+            onClick={() => setModal('changeTenant')}
+            disabled={!(claims && claims['sub'])}
+          >
+            Change Tenant
+          </MenuItem>
+        )}
         <Divider />
-        <MenuItem onClick={() => history.push('/logout')}>
-          <ListItemIcon>
-            <Logout />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
+        {claims && claims['sub'] ? (
+          <MenuItem onClick={() => history.push('/logout')}>
+            <ListItemIcon>
+              <Logout />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={() => history.push('/login')}>
+            <ListItemIcon>
+              <Login />
+            </ListItemIcon>
+            Login
+          </MenuItem>
+        )}
       </Menu>
 
       <Dialog
@@ -378,7 +411,7 @@ const Sidebar: React.FC = () => {
         onClose={() => setModal(undefined)}
         aria-labelledby="jwt-dialog-title"
         PaperProps={{
-          style: { maxHeight: '70%' },
+          style: { maxHeight: '95%', width: '60rem', maxWidth: '80%' },
         }}
       >
         <DialogContent>
@@ -455,7 +488,7 @@ const Sidebar: React.FC = () => {
                 <MenuItem
                   key={tenant.tenant_id}
                   onClick={() => {
-                    window.location.href = tenant.base_url + '/tapis-ui/';
+                    window.location.href = tenant.base_url + '/';
                     setModal(undefined);
                   }}
                 >

@@ -252,7 +252,7 @@ const PipelineForm: React.FC<FormProps> = ({ groupId, onSubmit }) => {
               type="hidden"
             />
             <div className={styles['section-container']}>
-              <Collapse title="Envrionment">
+              <Collapse title="Environment">
                 <div id="pipeline-env-vars">
                   <FieldArray
                     name="env"

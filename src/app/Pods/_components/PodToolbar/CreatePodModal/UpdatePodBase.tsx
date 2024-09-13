@@ -11,8 +11,7 @@ import styles from './CreatePodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 //import { Pods } from '@tapis/tapis-typescript';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import { Button } from '@mui/material';
 
 import { useLocation } from 'react-router-dom';
 
@@ -38,7 +37,10 @@ export type CodeEditProps = {
 const podProtocols = Object.values(PodProtocolEnum);
 const podVolumeTypes = Object.values(PodVolumeEnum);
 
-const EnvVarValueSource: React.FC<{ index: number }> = ({ index }) => {
+const EnvVarValueSource: React.FC<{ formik: any; index: number }> = ({
+  formik,
+  index,
+}) => {
   return (
     <div id={`env-value-source-${index}`} className={styles['grid-2']}>
       <div>
@@ -182,8 +184,6 @@ const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
   );
 };
 
-const initialValues = {};
-
 const UpdatePodBase: React.FC<CodeEditProps> = ({
   sharedData,
   setSharedData,
@@ -195,6 +195,8 @@ const UpdatePodBase: React.FC<CodeEditProps> = ({
   }, [queryClient]);
 
   const podId = useLocation().pathname.split('/')[2];
+
+  const initialValues: any = {};
 
   const { updatePod, isLoading, error, isSuccess, reset } =
     Hooks.useUpdatePod(podId);
@@ -422,25 +424,27 @@ const UpdatePodBase: React.FC<CodeEditProps> = ({
   };
 
   // Have to filter info to updatePod to remove undefined values
-  const filterUndefinedValues = (obj) => {
+  const filterUndefinedValues = (obj: { [key: string]: any }) => {
     return Object.keys(obj).reduce((acc, key) => {
       const value = obj[key];
       const isEmptyArray = Array.isArray(value) && value.length === 0;
       const isEmptyObject =
         value && typeof value === 'object' && Object.keys(value).length === 0;
-
       if (value !== undefined && !isEmptyArray && !isEmptyObject) {
         acc[key] = value;
       }
       return acc;
-    }, {});
+    }, {} as { [key: string]: any });
   };
 
   const AutoPruneEmptyFields: React.FC = () => {
     const { values, setFieldValue } = useFormikContext<UpdatePodBaseProps>();
 
     useEffect(() => {
-      const pruneEmptyFields = (obj, parentKey = '') => {
+      const pruneEmptyFields = (
+        obj: { [key: string]: any },
+        parentKey = ''
+      ) => {
         Object.keys(obj).forEach((key) => {
           const value = obj[key];
           const path = parentKey ? `${parentKey}.${key}` : key;
@@ -645,7 +649,7 @@ const UpdatePodBase: React.FC<CodeEditProps> = ({
                         values.environment_variables.length > 0 &&
                         values.environment_variables.map((_, i) => (
                           <div key={i} className={styles['key-val-env-var']}>
-                            <EnvVarValueSource index={i} />
+                            <EnvVarValueSource formik={formik} index={i} />
                             <Button
                               variant="outlined"
                               className={styles['remove-button']}

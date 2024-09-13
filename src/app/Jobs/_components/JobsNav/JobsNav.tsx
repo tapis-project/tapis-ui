@@ -20,7 +20,7 @@ const JobsNav: React.FC = () => {
             </NavItem>
           ))
         ) : (
-          <i>No jobs found</i>
+          <i style={{ padding: '16px' }}>No jobs found</i>
         )}
       </Navbar>
     </QueryWrapper>

@@ -14,7 +14,9 @@ const NavSnapshots: React.FC = () => {
   if (isLoading) {
     return (
       <Navbar>
-        <NavItem icon="visualization">{loadingText}</NavItem>
+        <div style={{ paddingLeft: '16px' }}>
+          <NavItem icon="visualization">{loadingText}</NavItem>
+        </div>
       </Navbar>
     );
   }

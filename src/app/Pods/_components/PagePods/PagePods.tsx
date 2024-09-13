@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { decode } from 'base-64';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import Stack from '@mui/material/Stack';
+import { Stack } from '@mui/material';
 import { Button, Chip } from '@mui/material';
 import CodeMirror from '@uiw/react-codemirror';
 import { LoadingButton } from '@mui/lab';
@@ -192,11 +192,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
 
   const networkingUrl = Object.values(data?.result?.networking ?? {})[0]?.url;
 
+  const podStatus = data?.result?.status;
+
   const rightButtons: ButtonConfig[] = [
     {
       id: 'networking',
       label: 'Link',
-      disabled: !networkingUrl,
+      disabled: !networkingUrl || podStatus != 'AVAILABLE',
       customOnClick: () => {
         if (networkingUrl) {
           window.open('https://' + networkingUrl);

@@ -1,0 +1,22 @@
+.button {
+  display: inline-block;
+  height: 40px;
+  margin-top: 38px;
+}
+
+.grid-2-auto-auto {
+  display: grid;
+  grid-template-columns: 2fr auto auto;
+  gap: 1em;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.radio-button-container {
+  display: inline-block;
+  margin-right: 1em;
+}
