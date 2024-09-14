@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+View TapisUI at https://tacc.tapis.io.
+- Feel free to make use of your preferred tenant.
+
 Please find documentation here:
 https://tapis.readthedocs.io/en/latest/index.html
 
