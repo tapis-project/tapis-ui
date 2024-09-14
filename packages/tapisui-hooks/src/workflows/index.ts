@@ -6,3 +6,5 @@ export * as PipelineRuns from './pipelineruns';
 export * as Pipelines from './pipelines';
 export * as TaskExecutions from './taskexecutions';
 export * as Tasks from './tasks';
+export * as Secrets from './secrets';
+export * as GroupSecrets from './groupsecrets';

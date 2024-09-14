@@ -10,6 +10,8 @@ import {
   Login,
   Logout,
   SettingsRounded,
+  Key,
+  Visibility,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -370,13 +372,25 @@ const Sidebar: React.FC = () => {
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {claims && claims['sub'] ? (
-          <MenuItem onClick={() => setModal('viewJWT')}>View JWT</MenuItem>
-        ) : (
-          <MenuItem disabled onClick={() => setModal('viewJWT')}>
-            View JWT
-          </MenuItem>
-        )}
+        <MenuItem
+          disabled={!(claims && claims['sub'])}
+          onClick={() => setModal('viewJWT')}
+        >
+          <ListItemIcon>
+            <Visibility fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>View JWT</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            history.push('/workflows/secrets');
+          }}
+        >
+          <ListItemIcon>
+            <Key fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Manage Secrets</ListItemText>
+        </MenuItem>
         {((extension !== undefined && extension.allowMutiTenant) ||
           extension === undefined ||
           (extension !== undefined && extension.allowMutiTenant)) && (
@@ -391,9 +405,9 @@ const Sidebar: React.FC = () => {
         {claims && claims['sub'] ? (
           <MenuItem onClick={() => history.push('/logout')}>
             <ListItemIcon>
-              <Logout />
+              <Logout fontSize="small" />
             </ListItemIcon>
-            Logout
+            <ListItemText>Sign out</ListItemText>
           </MenuItem>
         ) : (
           <MenuItem onClick={() => history.push('/login')}>

@@ -5,3 +5,4 @@ export { RunPipelineModal } from './RunPipelineModal';
 export { AddGitRepoModal } from './AddGitRepoModal';
 export { AddInputModal } from './AddInputModal';
 export { AddOutputModal } from './AddOutputModal';
+export { CreateSecretModal } from './CreateSecretModal';

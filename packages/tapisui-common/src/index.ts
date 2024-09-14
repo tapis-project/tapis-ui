@@ -5,6 +5,8 @@ import {
   useModal,
   GenericModal,
   ConfirmModal,
+  Help,
+  HelpSection,
   LoadingSpinner,
   Section,
   SectionHeader,
@@ -156,4 +158,6 @@ export {
   FileInputArrays,
   FileInputs,
   SchedulerOptions,
+  Help,
+  HelpSection,
 };

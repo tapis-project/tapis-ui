@@ -5,9 +5,9 @@ import styles from './Dashboard.module.scss';
 import { PipelineCard } from '../_components';
 import { Skeleton, Pagination } from '@mui/material';
 import { Workflows } from '@tapis/tapis-typescript';
-import { SectionHeader } from '@tapis/tapisui-common';
+import { SectionHeader, Help } from '@tapis/tapisui-common';
 import { DashboardCard } from '../_components/DashboardCard';
-import { PeopleAlt, Storage, Memory } from '@mui/icons-material';
+import { PeopleAlt, Storage, AccountTree, Key } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useHistory } from 'react-router-dom';
 
@@ -27,6 +27,7 @@ const Dashboard: React.FC = () => {
   const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll({
     groupIds,
   });
+  const secrets = Hooks.Secrets.useList();
   const [page, setPage] = useState<number>(1);
   return (
     <div>
@@ -43,7 +44,7 @@ const Dashboard: React.FC = () => {
           to="/workflows/pipelines"
           title={'Pipelines'}
           objects={pipelines?.result || []}
-          icon={<Memory fontSize={'large'} />}
+          icon={<AccountTree fontSize={'large'} />}
         />
         <DashboardCard
           isLoading={archives.isLoading}
@@ -52,11 +53,18 @@ const Dashboard: React.FC = () => {
           objects={archives?.data?.result || []}
           icon={<Storage fontSize={'large'} />}
         />
+        <DashboardCard
+          isLoading={secrets.isLoading}
+          to="/workflows/secrets"
+          title={'Secrets'}
+          objects={secrets?.data?.result || []}
+          icon={<Key fontSize={'large'} />}
+        />
       </div>
       <div className={pStyles['cards-container']}>
         <SectionHeader>
           <span>
-            <Memory fontSize={'large'} /> Pipelines{' '}
+            <AccountTree fontSize={'large'} /> Pipelines{' '}
             {pipelines && `[${pipelines.result.length}]`}
           </span>
         </SectionHeader>

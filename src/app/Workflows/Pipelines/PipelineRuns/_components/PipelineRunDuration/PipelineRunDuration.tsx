@@ -47,7 +47,8 @@ const PipelineRunDuration: React.FC<{
 
   return (
     <div style={style}>
-      <AccessTime /> {time[0]}m {time[1]}s
+      <AccessTime fontSize="small" style={{ marginTop: '-2px' }} /> {time[0]}m{' '}
+      {time[1]}s
     </div>
   );
 };
