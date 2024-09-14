@@ -8,7 +8,7 @@ https://tapis.readthedocs.io/en/latest/index.html
 You may also reference live-docs based on the OpenAPI v3 specification here:
 https://tapis-project.github.io/live-docs
 
-## 1.7.0 - 2024-02-xx:
+## 1.7.0 - 2024-09-13:
 
 Release of TapisUI with great work from Nathan Freeman, Alex Fields, SGX3 interns, Dhanny, and more.
 
