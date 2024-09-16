@@ -13,7 +13,7 @@ import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from '../CreatePipelineModel.module.scss';
 import { FormikSelect } from '@tapis/tapisui-common';
 import { Button, Input } from 'reactstrap';
-import { ReqPipelineTransform } from '../CreatePipelineModal';
+import { ReqPipelineTransform, EnvVarType } from '../CreatePipelineModal';
 
 type FormProps = {
   onSubmit: (reqPipeline: ReqPipelineTransform) => void;
@@ -268,7 +268,7 @@ const PipelineForm: React.FC<FormProps> = ({ groupId, onSubmit }) => {
                               >
                                 <EnvVarValue
                                   index={i}
-                                  valueType={values.env[i].valueType}
+                                  valueType={(values.env[i] as EnvVarType).valueType}
                                 />
                                 <Button
                                   className={styles['remove-button']}
