@@ -10,7 +10,11 @@ import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
 import { RunPipelineModal } from './RunPipelineModal';
 import { Workflows } from '@tapis/tapis-typescript';
-import { CreateTaskModal, CreateSecretModal } from '../Modals';
+import {
+  CreateTaskModal,
+  CreateSecretModal,
+  AddGroupSecretModal,
+} from '../Modals';
 
 type ToolbarButtonProps = {
   text: string;
@@ -81,6 +85,15 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create secret"
           />
         )}
+        {buttons.includes('addgroupsecret') && (
+          <ToolbarButton
+            text="Add group secret"
+            icon="add"
+            disabled={false}
+            onClick={() => setModal('addgroupsecret')}
+            aria-label="Add group secret"
+          />
+        )}
         {buttons.includes('createpipeline') && (
           <ToolbarButton
             text="New Pipeline"
@@ -137,6 +150,13 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         )}
         {modal === 'createpipeline' && groupId && (
           <CreatePipelineModal toggle={toggle} groupId={groupId} />
+        )}
+        {groupId && (
+          <AddGroupSecretModal
+            open={modal === 'addgroupsecret'}
+            groupId={groupId}
+            toggle={toggle}
+          />
         )}
         {groupId && pipelineId && (
           <CreateTaskModal

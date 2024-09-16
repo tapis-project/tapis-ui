@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 View TapisUI at https://tacc.tapis.io.
+
 - Feel free to make use of your preferred tenant.
 
 Please find documentation here:
@@ -16,6 +17,7 @@ https://tapis-project.github.io/live-docs
 Release of TapisUI with great work from Nathan Freeman, Alex Fields, SGX3 interns, Dhanny, and more.
 
 ### New features:
+
 - Moving to Vite multi-package monorepo setup. Leaving create-react-app framework as that's deprecated.
 - Updating to latest React 18 alongside updates to several major libraries.
 - Reworked development flows with new `npm run` methods. `npm run dev`, `npm run init-project`, and more.
@@ -33,4 +35,5 @@ Release of TapisUI with great work from Nathan Freeman, Alex Fields, SGX3 intern
 - Initial versioned release.
 
 ### Bug fixes:
+
 - No change.

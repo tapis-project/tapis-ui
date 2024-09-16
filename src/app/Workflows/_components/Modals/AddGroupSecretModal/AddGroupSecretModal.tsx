@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import styles from './CreateSecretModal.module.scss';
+import styles from './AddGroupSecretModal.module.scss';
 import { LoadingButton as Button } from '@mui/lab';
 import {
   FormControl,
@@ -13,48 +13,50 @@ import {
   Alert,
   AlertTitle,
   Input,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
 
 type CreateSecretModalProps = {
+  groupId: string;
   open: boolean;
   toggle: () => void;
 };
 
 type InputState = {
-  id: string | undefined;
-  description: string | undefined;
-  data: object | undefined;
+  groupSecretId: string | undefined;
+  secretId: string | undefined;
 };
 
-const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
+const AddGroupSecretModal: React.FC<CreateSecretModalProps> = ({
   open,
   toggle,
+  groupId,
 }) => {
   const initialInput: InputState = {
-    id: undefined,
-    data: undefined,
-    description: undefined,
+    groupSecretId: undefined,
+    secretId: undefined,
   };
   const [input, setInput] = useState(initialInput);
   const { create, isLoading, isError, error, isSuccess, invalidate, reset } =
-    Hooks.Secrets.useCreate();
+    Hooks.GroupSecrets.useCreate();
+  const { data, isLoading: isLoadingSecrets } = Hooks.Secrets.useList();
+  const secrets = data?.result || [];
 
   return (
     <Dialog
       open={open}
       onClose={() => {}}
-      aria-labelledby="Create secret modal"
-      aria-describedby="A modal for creating a secret"
+      aria-labelledby="Create group secret modal"
+      aria-describedby="A modal for creating a group secret"
       maxWidth="sm"
       fullWidth={true}
     >
-      <DialogTitle id="alert-dialog-title">Create Secret</DialogTitle>
+      <DialogTitle id="alert-dialog-title">Create Group Secret</DialogTitle>
       <DialogContent>
         {isSuccess && (
           <Alert severity="success" style={{ marginTop: '8px' }}>
-            Successfully created secret
+            Successfully created group secret
           </Alert>
         )}
         {isError && error && (
@@ -71,47 +73,46 @@ const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
         )}
         <div className={styles['form']}>
           <FormControl variant="standard">
-            <InputLabel htmlFor="secret-id">Secret id</InputLabel>
+            <InputLabel htmlFor="group-secret-id">Group secret id</InputLabel>
             <Input
-              id="secret-id"
+              id="group-secret-id"
               onChange={(e) => {
-                setInput({ ...input, id: e.target.value });
+                setInput({ ...input, groupSecretId: e.target.value });
               }}
             />
             <FormHelperText>
-              The unique identifier for this secret. May contain only
+              The unique identifier for this group secret. May contain only
               alphanumeric characters, underlines, and hyphens
             </FormHelperText>
           </FormControl>
         </div>
         <div className={styles['form']}>
           <FormControl variant="standard">
-            <InputLabel htmlFor="description">Description</InputLabel>
-            <Input
-              id="description"
-              onChange={(e) => {
-                setInput({ ...input, description: e.target.value });
-              }}
-            />
-            <FormHelperText>A description of the secret</FormHelperText>
+            <InputLabel htmlFor="secret-id">Secret id</InputLabel>
+            <Select type="select" size="small" defaultValue="">
+              <MenuItem disabled value="">
+                -- Choose a repository --
+              </MenuItem>
+              {secrets.map((secret) => {
+                return (
+                  <MenuItem
+                    value={secret.id}
+                    onClick={() => {
+                      setInput({
+                        ...input,
+                        secretId: secret.id,
+                      });
+                    }}
+                  >
+                    {secret.id}
+                  </MenuItem>
+                );
+              })}
+            </Select>
           </FormControl>
-        </div>
-        <div className={styles['form']}>
-          <FormControl variant="standard">
-            <InputLabel htmlFor="data">Data</InputLabel>
-            <CodeMirror
-              theme="light"
-              height="200px"
-              extensions={[json()]}
-              onChange={(value: any) => {
-                setInput({ ...input, data: value as object });
-              }}
-            />
-            <FormHelperText>
-              The secret data. Must be a string, number, boolean, or valid JSON
-              object
-            </FormHelperText>
-          </FormControl>
+          <FormHelperText>
+            The secret to use for this group secret
+          </FormHelperText>
         </div>
       </DialogContent>
       <DialogActions>
@@ -128,9 +129,11 @@ const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
           onClick={() => {
             create(
               {
-                id: input.id!,
-                description: input.description,
-                data: input.data,
+                groupId,
+                reqGroupSecret: {
+                  id: input.groupSecretId!,
+                  secret_id: input.secretId!,
+                },
               },
               {
                 onSuccess: () => {
@@ -141,7 +144,9 @@ const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
             );
           }}
           disabled={
-            isSuccess || input.id === undefined || input.data === undefined
+            isSuccess ||
+            input.secretId === undefined ||
+            input.groupSecretId === undefined
           }
           loading={isLoading}
           variant="outlined"
@@ -154,4 +159,4 @@ const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
   );
 };
 
-export default CreateSecretModal;
+export default AddGroupSecretModal;
