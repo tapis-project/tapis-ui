@@ -6,6 +6,7 @@ import { Icon } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table } from 'reactstrap';
 import styles from './Models.module.scss';
+import SearchBar from '../_components/Search/Search';
 
 const Models: React.FC = () => {
   const { data, isLoading, error } = Hooks.Models.useList();
@@ -18,8 +19,7 @@ const Models: React.FC = () => {
       error={error}
       className={styles['models-table']}
     >
-      <>
-      </>
+      <SearchBar/>
       <Table responsive striped>
         <thead>
           <tr>
