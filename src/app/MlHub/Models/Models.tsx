@@ -18,6 +18,8 @@ const Models: React.FC = () => {
       error={error}
       className={styles['models-table']}
     >
+      <>
+      </>
       <Table responsive striped>
         <thead>
           <tr>

@@ -2,6 +2,8 @@ import React from 'react';
 import { Router } from '../_Router';
 import { PageLayout, LayoutBody } from '@tapis/tapisui-common';
 import { Menu } from '../_components';
+import { Search } from '../_components/Search';
+import SearchBar from '../_components/Search/Search';
 
 const Layout: React.FC = () => {
   const header = (
@@ -12,6 +14,7 @@ const Layout: React.FC = () => {
 
   const body = (
     <LayoutBody>
+      <SearchBar/>
       <Router />
     </LayoutBody>
   );
