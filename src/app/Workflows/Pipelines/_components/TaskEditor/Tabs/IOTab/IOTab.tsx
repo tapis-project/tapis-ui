@@ -19,7 +19,10 @@ import {
   AddOutputModal,
 } from 'app/Workflows/_components/Modals';
 
-const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
+const IOTab: React.FC<{ toggle: () => void; groupId: string }> = ({
+  toggle,
+  groupId,
+}) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { taskPatch, setTaskPatch, task } = usePatchTask<Workflows.Task>();
   const getValueSource = (value: Workflows.SpecWithValue) => {
@@ -33,14 +36,19 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
     let sourceKey = undefined;
     for (let key of Object.keys(value.value_from!)) {
       if (
-        ['args', 'env', 'task_output'].includes(key) &&
-        value.value_from[key as 'args' | 'env' | 'task_output'] !== undefined
+        ['args', 'env', 'task_output', 'secret'].includes(key) &&
+        value.value_from[key as 'args' | 'env' | 'task_output' | 'secret'] !==
+          undefined
       ) {
         sourceKey = key;
         break;
       }
     }
-    let source: string | Workflows.TaskOutputRef | undefined = undefined;
+    let source:
+      | string
+      | Workflows.SecretRef
+      | Workflows.TaskOutputRef
+      | undefined = undefined;
     switch (sourceKey) {
       case 'args':
         source = value.value_from?.args;
@@ -51,6 +59,9 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       case 'task_output':
         source = value.value_from?.task_output;
         break;
+      case 'secret':
+        source = value.value_from?.secret;
+        break;
       default:
         source = 'unknown';
     }
@@ -60,6 +71,16 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
         <>
           from task <b>{(source! as Workflows.TaskOutputRef).task_id}</b> {`(`}
           <b>output id: {(source! as Workflows.TaskOutputRef).output_id}</b>
+          {`)`}
+        </>
+      );
+    }
+
+    if (sourceKey === 'secret') {
+      return (
+        <>
+          from secret <b>{(source! as Workflows.SecretRef).pk}</b> {`(`}
+          <b>engine: {(source! as Workflows.SecretRef).engine}</b>
           {`)`}
         </>
       );
@@ -205,6 +226,7 @@ const IOTab: React.FC<{ toggle: () => void }> = ({ toggle }) => {
       </div>
       <AddInputModal
         open={modal === 'input'}
+        groupId={groupId}
         toggle={() => {
           setModal(undefined);
         }}

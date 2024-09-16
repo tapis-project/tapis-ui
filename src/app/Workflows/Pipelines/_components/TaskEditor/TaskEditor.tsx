@@ -204,6 +204,7 @@ const TaskEditor: React.FC<TaskEditorProps> = ({
         )}
         {tab === 'io' && tabs.includes('io') && (
           <IOTab
+            groupId={groupId}
             toggle={() => {
               if (featuredTab) {
                 setTab(featuredTab);

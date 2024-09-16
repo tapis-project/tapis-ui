@@ -17,13 +17,15 @@ import {
   Input,
 } from '@mui/material';
 import { usePatchTask } from 'app/Workflows/_hooks';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 
 type AddInputModalProps = {
+  groupId: string;
   open: boolean;
   toggle: () => void;
 };
 
-type InputSource = 'args' | 'env' | 'task_output' | 'literal';
+type InputSource = 'args' | 'env' | 'task_output' | 'secret' | 'literal';
 
 type InputState = {
   id?: string;
@@ -34,7 +36,11 @@ type InputState = {
   literal?: any;
 };
 
-const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
+const AddInputModal: React.FC<AddInputModalProps> = ({
+  open,
+  toggle,
+  groupId,
+}) => {
   const initialInput: InputState = {
     id: undefined,
     type: undefined,
@@ -54,6 +60,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
     error,
     reset,
   } = usePatchTask<Workflows.FunctionTask>();
+  const { data } = Hooks.GroupSecrets.useList({ groupId });
+  const groupSecrets = data?.result || [];
 
   const canSubmit = useCallback(() => {
     const preReqsSatisfied =
@@ -247,6 +255,12 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                   </MenuItem>
                   <MenuItem value={'env'}>envrionment variable</MenuItem>
                   <MenuItem value={'args'}>pipeline argument</MenuItem>
+                  <MenuItem
+                    disabled={groupSecrets.length === 0}
+                    value={'secret'}
+                  >
+                    secret
+                  </MenuItem>
                   <MenuItem value={'literal'}>
                     -- provide a literal value --
                   </MenuItem>
@@ -397,33 +411,72 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                   </>
                 )}
             </div>
-            <div className={styles['form']}>
-              {input.source !== undefined && input.source !== 'literal' && (
+            {input.source !== undefined &&
+              !['literal', 'secret'].includes(input.source) && (
+                <div className={styles['form']}>
+                  <FormControl variant="standard">
+                    <InputLabel htmlFor="value">Source key</InputLabel>
+                    <Input
+                      id="value"
+                      onChange={(e) => {
+                        // Set the sourceKey
+                        setInput({
+                          ...input,
+                          sourceKey: e.target.value,
+                        });
+                        // Value from if source is not from a task output
+                        let valueFrom: Workflows.ValueFrom = {
+                          [input.source as string]: e.target.value,
+                        };
+
+                        // Value from if source is from a task output
+                        if (input.source === 'task_output') {
+                          valueFrom = {
+                            [input.source]: {
+                              task_id: input.taskId!,
+                              output_id: e.target.value,
+                            },
+                          };
+                        }
+
+                        setTaskPatch(task, {
+                          input: {
+                            ...taskPatch.input,
+                            [input.id!]: {
+                              ...taskPatch.input![input.id!],
+                              value_from: valueFrom,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                    <FormHelperText>
+                      {`Key in the '${input.source}'`}
+                    </FormHelperText>
+                  </FormControl>
+                </div>
+              )}
+            {groupSecrets.length > 0 && input.source === 'secret' && (
+              <div className={styles['form']}>
                 <FormControl variant="standard">
-                  <InputLabel htmlFor="value">Source key</InputLabel>
-                  <Input
-                    id="value"
+                  <InputLabel htmlFor="value">Secret</InputLabel>
+                  <Select
+                    size="small"
+                    label="type"
+                    labelId="type"
                     onChange={(e) => {
                       // Set the sourceKey
                       setInput({
                         ...input,
-                        sourceKey: e.target.value,
+                        sourceKey: e.target.value as string,
                       });
                       // Value from if source is not from a task output
                       let valueFrom: Workflows.ValueFrom = {
-                        [input.source as string]: e.target.value,
+                        secret: {
+                          engine: 'tapis-workflows-group-secrets',
+                          pk: e.target.value as string,
+                        },
                       };
-
-                      // Value from if source is from a task output
-                      if (input.source === 'task_output') {
-                        valueFrom = {
-                          [input.source]: {
-                            task_id: input.taskId!,
-                            output_id: e.target.value,
-                          },
-                        };
-                      }
-
                       setTaskPatch(task, {
                         input: {
                           ...taskPatch.input,
@@ -434,13 +487,17 @@ const AddInputModal: React.FC<AddInputModalProps> = ({ open, toggle }) => {
                         },
                       });
                     }}
-                  />
+                  >
+                    {groupSecrets.map((secret) => {
+                      return <MenuItem value={secret.id}>{secret.id}</MenuItem>;
+                    })}
+                  </Select>
                   <FormHelperText>
-                    {`Key in the '${input.source}'`}
+                    {`Source of the secret data'`}
                   </FormHelperText>
                 </FormControl>
-              )}
-            </div>
+              </div>
+            )}
           </>
         )}
       </DialogContent>
