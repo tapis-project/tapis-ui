@@ -268,7 +268,9 @@ const PipelineForm: React.FC<FormProps> = ({ groupId, onSubmit }) => {
                               >
                                 <EnvVarValue
                                   index={i}
-                                  valueType={(values.env[i] as EnvVarType).valueType}
+                                  valueType={
+                                    (values.env[i] as EnvVarType).valueType
+                                  }
                                 />
                                 <Button
                                   className={styles['remove-button']}
