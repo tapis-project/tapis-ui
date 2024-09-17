@@ -141,7 +141,7 @@ const models = [
   },
   {
     model_id: '665e7c60-7244-470d-8e33-a232d5f2a390-model',
-    name: 'MegaDetector v5c',
+    name: 'MegaDetector v5c', // TODO change to 5-optimized?
     description:
       'Version of the MS Megadetector base model optimized for throughput',
     disabled: false,
