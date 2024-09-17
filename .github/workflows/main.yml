@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 22.2.x
+          node-version: 22.4.x
       # - uses: actions/cache@v1
       #   with:
       #     path: ~/.npm
@@ -37,7 +37,7 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 22.2.x
+          node-version: 22.4.x
       # - uses: actions/cache@v1
       #   with:
       #     path: ~/.npm
