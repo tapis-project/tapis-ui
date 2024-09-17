@@ -115,6 +115,7 @@ const UpdateRuntimeModal: React.FC<UpdateRuntimeModalProps> = ({
           onClick={commit}
           disabled={isSuccess}
           loading={isLoading}
+          variant="outlined"
           autoFocus
         >
           Update

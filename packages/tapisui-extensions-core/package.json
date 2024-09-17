@@ -7,6 +7,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "npx ts-node ./src/bundle.ts",
     "build": "npx tsc",
     "push": "npx tsc && npm publish --access public"
   },
@@ -28,12 +29,13 @@
   },
   "homepage": "https://github.com/tapis-project/tapisui-extensions-core#readme",
   "devDependencies": {
+    "@tapis/tapisui-extension-devtools": "file:./tapisui-extension-devtools",
     "@types/node": "^16.0.0",
     "react": "^18.3.1",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.37",
+    "@tapis/tapis-typescript": "^0.0.45",
     "simple-git": "^3.24.0"
   }
 }

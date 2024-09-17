@@ -3,13 +3,18 @@ import { Button } from 'reactstrap';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './Toolbar.module.scss';
 import { CreatePipelineModal } from './CreatePipelineModal';
-import { CreateTaskModal } from './CreateTaskModal';
+// import { CreateTaskModal } from './CreateTaskModal';
 import { CreateGroupModal } from './CreateGroupModal';
 import { CreateArchiveModal } from './CreateArchiveModal';
 import { CreateIdentityModal } from './CreateIdentityModal';
 import { AddGroupUsersModal } from './AddGroupUsersModal';
 import { RunPipelineModal } from './RunPipelineModal';
 import { Workflows } from '@tapis/tapis-typescript';
+import {
+  CreateTaskModal,
+  CreateSecretModal,
+  AddGroupSecretModal,
+} from '../Modals';
 
 type ToolbarButtonProps = {
   text: string;
@@ -71,6 +76,24 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
             aria-label="Create group"
           />
         )}
+        {buttons.includes('createsecret') && (
+          <ToolbarButton
+            text="Create secret"
+            icon="add"
+            disabled={false}
+            onClick={() => setModal('createsecret')}
+            aria-label="Create secret"
+          />
+        )}
+        {buttons.includes('addgroupsecret') && (
+          <ToolbarButton
+            text="Add group secret"
+            icon="add"
+            disabled={false}
+            onClick={() => setModal('addgroupsecret')}
+            aria-label="Add group secret"
+          />
+        )}
         {buttons.includes('createpipeline') && (
           <ToolbarButton
             text="New Pipeline"
@@ -128,13 +151,22 @@ const Toolbar: React.FC<WorkflowsToolbarProps> = ({
         {modal === 'createpipeline' && groupId && (
           <CreatePipelineModal toggle={toggle} groupId={groupId} />
         )}
-        {modal === 'createtask' && groupId && pipelineId && (
+        {groupId && (
+          <AddGroupSecretModal
+            open={modal === 'addgroupsecret'}
+            groupId={groupId}
+            toggle={toggle}
+          />
+        )}
+        {groupId && pipelineId && (
           <CreateTaskModal
+            open={modal === 'createtask'}
             groupId={groupId}
             pipelineId={pipelineId}
             toggle={toggle}
           />
         )}
+        <CreateSecretModal open={modal === 'createsecret'} toggle={toggle} />
         {modal === 'runpipeline' && groupId && pipelineId && pipeline && (
           <RunPipelineModal
             groupId={groupId}

@@ -33,11 +33,11 @@ import styles from './SectionHeader.module.css';
  * </SectionHeader>
  */
 function SectionHeader({
-  actions,
+  actions = '',
   children,
-  className,
-  isForForm,
-  isForTable,
+  className = '',
+  isForForm = false,
+  isForTable = false,
 }) {
   let styleName = '';
   const styleNameList = [styles['root']];
@@ -81,13 +81,6 @@ SectionHeader.propTypes = {
   isForForm: PropTypes.bool,
   /** Whether this header is for a table */
   isForTable: PropTypes.bool,
-};
-SectionHeader.defaultProps = {
-  actions: '',
-  className: '',
-  children: '',
-  isForForm: false,
-  isForTable: false,
 };
 
 export default SectionHeader;

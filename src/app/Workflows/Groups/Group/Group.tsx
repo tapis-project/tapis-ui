@@ -1,8 +1,12 @@
 import React, { useCallback } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
-import { SectionMessage, Icon, SectionHeader } from '@tapis/tapisui-common';
-import { QueryWrapper } from '@tapis/tapisui-common';
-import { PipelineCardList, Toolbar } from '../../_components';
+import {
+  SectionMessage,
+  Icon,
+  SectionHeader,
+  QueryWrapper,
+} from '@tapis/tapisui-common';
+import { PipelineCardList, GroupSecretList, Toolbar } from '../../_components';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Group.module.scss';
 import { Button, Spinner } from 'reactstrap';
@@ -72,13 +76,16 @@ const Group: React.FC<UsersProps> = ({ groupId }) => {
     <div>
       <PipelineCardList groupId={groupId} />
       <div className={styles['container']}>
+        <GroupSecretList groupId={groupId} />
+      </div>
+      <div className={styles['container']}>
         <SectionHeader>
           <span>
             Users <span className={styles['count']}>{users.length}</span>
           </span>
           <Toolbar groupId={groupId} buttons={['addgroupuser']} />
         </SectionHeader>
-        <div className={styles['users-container']}>
+        <div className={styles['objects-container']}>
           <QueryWrapper isLoading={isLoading} error={error}>
             <div id="users">
               {users.length ? (

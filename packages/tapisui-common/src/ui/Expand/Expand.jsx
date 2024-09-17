@@ -5,7 +5,7 @@ import Icon from '../Icon';
 import './Expand.global.scss';
 import styles from './Expand.module.scss';
 
-const Expand = ({ className, detail, message }) => {
+const Expand = ({ className = '', detail, message }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleCallback = useCallback(() => {
     setIsOpen(!isOpen);
@@ -33,9 +33,6 @@ Expand.propTypes = {
 
   detail: PropTypes.string.isRequired,
   message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
-};
-Expand.defaultProps = {
-  className: '',
 };
 
 export default Expand;

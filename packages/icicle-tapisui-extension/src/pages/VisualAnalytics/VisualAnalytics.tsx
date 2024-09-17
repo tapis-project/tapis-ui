@@ -16,7 +16,8 @@ export const VisualAnalytics: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          src={`https://vaapibackenddev.pods.icicle.tapis.io/tapisui-entry?jwt=${accessToken}`}
+          src={'https://vadash.pods.icicleai.tapis.io/'}
+          //src={`https://vaapibackenddev.pods.icicle.tapis.io/tapisui-entry?jwt=${accessToken}`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>

@@ -5,7 +5,7 @@ import { PipelineCard } from '../';
 import { Skeleton, Pagination } from '@mui/material';
 import { Workflows } from '@tapis/tapis-typescript';
 import { SectionHeader } from '@tapis/tapisui-common';
-import { Memory } from '@mui/icons-material';
+import { AccountTree } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { Toolbar } from 'app/Workflows/_components';
 
@@ -28,7 +28,7 @@ const PipelineCardList: React.FC<PipelineCardListProps> = ({
       <div className={styles['cards-container']}>
         <SectionHeader>
           <span>
-            <Memory fontSize={'large'} /> Pipelines{' '}
+            <AccountTree fontSize={'large'} /> Pipelines{' '}
             {pipelines && `[${pipelines.result.length}]`}
           </span>
           <Toolbar groupId={groupId} buttons={['createpipeline']} />

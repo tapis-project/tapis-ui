@@ -27,25 +27,15 @@ const EnvironmentNode: React.FC<NodeProps> = ({ id, data }) => {
         </div>
         <div className={styles['body']}>
           <i className={styles['description']}>
-            Pipeline envrionment variables
+            Pipeline environment variables
           </i>
         </div>
-        <div>
-          {Object.entries(pipeline.env!).map(([k, v], i) => {
-            return <div className={styles['var']}>{k}</div>;
-          })}
-        </div>
       </div>
-      {Object.entries(pipeline.env!).map(([k, v], i) => {
-        return (
-          <StandardHandle
-            id={`env-handle-${k}`}
-            type="source"
-            position={Position.Right}
-            style={{ top: `${81 + i * 25}px` }}
-          />
-        );
-      })}
+      <StandardHandle
+        id={`env-handle-${pipeline.id}`}
+        type="source"
+        position={Position.Right}
+      />
     </>
   );
 };

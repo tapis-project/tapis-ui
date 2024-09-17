@@ -1,0 +1,43 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: center;
+}
+
+.run-status-icon {
+  border-radius: 50%;
+  height: 12px;
+  width: 12px;
+}
+
+.run-status-icon-failed {
+  background-color: #d32f2f;
+}
+
+.run-status-icon-completed {
+  background-color: #15bd42;
+}
+
+.run-status-icon-pending {
+  background-color: #ffa726;
+}
+
+.run-status-icon-active {
+  background-color: #ffa726;
+  animation: active 1.5s infinite;
+}
+
+.run-status-icon-submitted {
+  background-color: #42a5f5;
+}
+
+@keyframes active {
+  0%,
+  100% {
+    background-color: #ffb74d;
+  }
+  50% {
+    background-color: #f57c01;
+  }
+}

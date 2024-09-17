@@ -22,7 +22,7 @@ type SourceEnvVarType = {
   sourceKey: string;
 };
 
-type EnvVarType = LiteralEnvVarType & SourceEnvVarType;
+export type EnvVarType = LiteralEnvVarType & SourceEnvVarType;
 
 export type ReqPipelineTransform = Omit<Workflows.ReqPipeline, 'env'> & {
   env: Array<EnvVarType>;

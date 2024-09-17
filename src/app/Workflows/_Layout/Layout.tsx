@@ -7,9 +7,7 @@ import { PageLayout, LayoutBody } from '@tapis/tapisui-common';
 const Layout: React.FC = () => {
   const body = (
     <LayoutBody>
-      <div className={styles['menu']}>
-        <Menu />
-      </div>
+      <Menu />
       <Router />
     </LayoutBody>
   );

@@ -26,7 +26,7 @@ const AppsNav: React.FC = () => {
             </NavItem>
           ))
         ) : (
-          <i>No apps found</i>
+          <i style={{ padding: '16px' }}>No apps found</i>
         )}
       </Navbar>
     </QueryWrapper>
