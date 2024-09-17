@@ -122,44 +122,50 @@ const devices = [
 
 const models = [
   {
-    model_id: 'megadetectorv5-ft-kudu',
+    modelId: 'megadetectorv5-ft-kudu',
     name: 'MegaDetector v5 (FT Kudu)',
     description: undefined,
     disabled: true,
   },
   {
-    model_id: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
+    modelId: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
     name: 'MegaDetector v5a',
     description: 'Microsoft Megadetector trained on dataset A',
     disabled: false,
   },
   {
-    model_id: '4108ed9d-968e-4cfe-9f18-0324e5399a97-model',
+    modelId: '4108ed9d-968e-4cfe-9f18-0324e5399a97-model',
     name: 'MegaDetector v5b',
     description: 'Microsoft Megadetector trained on dataset B',
     disabled: false,
   },
   {
-    model_id: '665e7c60-7244-470d-8e33-a232d5f2a390-model',
-    name: 'MegaDetector v5c', // TODO change to 5-optimized?
+    modelId: '665e7c60-7244-470d-8e33-a232d5f2a390-model',
+    name: 'MegaDetector 5-optimized',
     description:
       'Version of the MS Megadetector base model optimized for throughput',
     disabled: false,
   },
   {
-    model_id: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
+    modelId: '04867339-530b-44b7-b66e-5f7a52ce4d90-model',
+    name: 'MegaDetector v5c',
+    description: undefined,
+    disabled: true,
+  },
+  {
+    modelId: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
     name: 'MegaDetector v4.1',
     description: undefined,
     disabled: true,
   },
   {
-    model_id: 'megadetectorv5-ft-ena',
+    modelId: 'megadetectorv5-ft-ena',
     name: 'MegaDetector v5 (FT ENA)',
     description: undefined,
     disabled: true,
   },
   {
-    model_id: 'bioclip',
+    modelId: 'bioclip',
     name: 'BioClip',
     description: undefined,
     disabled: true,
@@ -453,7 +459,7 @@ const AnalysisForm: React.FC = () => {
                         return (
                           <option
                             disabled={model.disabled}
-                            value={model.model_id}
+                            value={model.modelId}
                           >
                             {model.name}
                             {model.description ? ` - ${model.description}` : ''}
