@@ -45,7 +45,7 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    restartPod({podId}, { onSuccess });
+    restartPod({ podId }, { onSuccess });
   };
 
   return (

@@ -45,7 +45,7 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    stopPod({podId}, { onSuccess });
+    stopPod({ podId }, { onSuccess });
   };
 
   return (

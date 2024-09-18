@@ -420,7 +420,7 @@ const UpdatePodBase: React.FC<CodeEditProps> = ({
     };
 
     const updatedPodFiltered = filterUndefinedValues(updatedPod);
-    updatePod({podId: podId, updatePod: updatedPodFiltered}, { onSuccess });
+    updatePod({ podId: podId, updatePod: updatedPodFiltered }, { onSuccess });
   };
 
   // Have to filter info to updatePod to remove undefined values

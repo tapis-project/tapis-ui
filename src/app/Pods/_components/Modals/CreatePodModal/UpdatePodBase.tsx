@@ -1,16 +1,19 @@
-import { Button } from 'reactstrap';
+////import { Button } from 'reactstrap';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodToolbar';
-import { Form, Formik, FieldArray, useFormikContext } from 'formik';
+import { ToolbarModalProps } from '../ToolbarModalProps';
+import { Form, Formik, FieldArray, useFormikContext, useFormik } from 'formik';
 import { FormikInput, Collapse, Icon } from '@tapis/tapisui-common';
-import { FormikSelect } from '@tapis/tapisui-common';
+import { FormikSelect, FMTextField } from '@tapis/tapisui-common';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useEffect, useCallback } from 'react'; //useState
 import styles from './CreatePodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 //import { Pods } from '@tapis/tapis-typescript';
+import { Button } from '@mui/material';
+
+import { useLocation } from 'react-router-dom';
 
 export enum PodProtocolEnum {
   http = 'http',
@@ -34,10 +37,20 @@ export type CodeEditProps = {
 const podProtocols = Object.values(PodProtocolEnum);
 const podVolumeTypes = Object.values(PodVolumeEnum);
 
-const EnvVarValueSource: React.FC<{ index: number }> = ({ index }) => {
+const EnvVarValueSource: React.FC<{ formik: any; index: number }> = ({
+  formik,
+  index,
+}) => {
   return (
     <div id={`env-value-source-${index}`} className={styles['grid-2']}>
       <div>
+        <FMTextField
+          formik={formik}
+          name="description"
+          label="Description"
+          description="Pod Description"
+        />
+
         <FormikInput
           id={`environment_variables.${index}.id`}
           name={`environment_variables.${index}.id`}
@@ -171,18 +184,22 @@ const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
   );
 };
 
-const CreatePodBase: React.FC<CodeEditProps> = ({
+const UpdatePodBase: React.FC<CodeEditProps> = ({
   sharedData,
   setSharedData,
 }) => {
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.getPod);
+    queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
-  const { createPod, isLoading, error, isSuccess, reset } =
-    Hooks.useCreatePod();
+  const podId = useLocation().pathname.split('/')[2];
+
+  const initialValues: any = {};
+
+  const { updatePod, isLoading, error, isSuccess, reset } =
+    Hooks.useUpdatePod(podId);
 
   useEffect(() => {
     reset();
@@ -195,14 +212,6 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
   // }, [setSimplified, simplified]);
 
   const validationSchema = Yup.object({
-    pod_id: Yup.string()
-      .min(1)
-      .max(80, 'Pod id should not be longer than 80 characters')
-      .matches(
-        /^[a-z0-9]+$/,
-        'Must contain only lowercase alphanumeric characters'
-      )
-      .required('Pod ID is a required field'),
     image: Yup.string()
       .min(1)
       .max(128, 'Pod Image should not be longer than 128 characters'),
@@ -210,11 +219,11 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
       .min(1)
       .max(128, 'Pod Template should not be longer than 128 characters'),
     description: Yup.string()
-      .min(1)
+      .min(22)
       .max(2048, 'Description should not be longer than 2048 characters'),
     command: Yup.array()
       .of(Yup.string())
-      .min(1)
+      .min(0)
       .max(128, 'Pod Template should not be longer than 128 characters'),
     environment_variables: Yup.array().of(
       Yup.object({
@@ -279,26 +288,6 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
     }),
   });
 
-  const initialValues = {
-    pod_id: '',
-    description: undefined,
-    command: undefined,
-    image: '',
-    template: '',
-    time_to_stop_default: 43200,
-    time_to_stop_instance: undefined,
-    environment_variables: [],
-    networking: [],
-    volume_mounts: [],
-    resources: {
-      cpu_request: 250,
-      cpu_limit: 2000,
-      mem_request: 256,
-      mem_limit: 3072,
-      gpus: 0,
-    },
-  };
-
   /// Environment Variables area
   //////////////////////////////
   type EnvVarType = {
@@ -311,6 +300,11 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
   };
 
   const envVarsArrayToInputObject: EnvVarsTransformFn = (envVars) => {
+    if (!envVars) {
+      console.warn('envVars is undefined');
+      return {};
+    }
+
     const env: { [key: string]: string } = {};
     envVars.forEach((envVar) => {
       env[envVar.id] = envVar.value;
@@ -318,7 +312,6 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
     console.log(env);
     return env;
   };
-
   /// Networking area
   ///////////////////
   type NetworkingType = {
@@ -331,12 +324,19 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
     [key: string]: object;
   };
 
-  const networkingArrayToInputObject: NetworkingTransformFn = (envVars) => {
+  const networkingArrayToInputObject: NetworkingTransformFn = (
+    networkingArray
+  ) => {
+    if (!networkingArray) {
+      console.warn('networkingArray is undefined');
+      return {};
+    }
+
     const env: { [key: string]: object } = {};
-    envVars.forEach((envVar) => {
-      env[envVar.id] = {
-        protocol: envVar.protocol,
-        port: envVar.port,
+    networkingArray.forEach((networkingArray) => {
+      env[networkingArray.id] = {
+        protocol: networkingArray.protocol,
+        port: networkingArray.port,
       };
     });
     console.log(env);
@@ -359,6 +359,11 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
   const volume_mountsArrayToInputObject: volumeMountsTransformFn = (
     volumes
   ) => {
+    if (!volumes) {
+      console.warn('volumes is undefined');
+      return {};
+    }
+
     const formatted_volumes: { [key: string]: object } = {};
     volumes.forEach((volume) => {
       formatted_volumes[volume.id] = {
@@ -371,44 +376,41 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
     return formatted_volumes;
   };
 
+  type UpdatePodBaseProps = {
+    description: string | undefined;
+    image: string | undefined;
+    command: string | undefined;
+    template: string | undefined;
+    time_to_stop_default: number | undefined;
+    time_to_stop_instance: number | undefined;
+    environment_variables: Array<EnvVarType>;
+    networking: Array<NetworkingType>;
+    volume_mounts: Array<VolumeMountsType>;
+    resources:
+      | {
+          cpu_request: number;
+          cpu_limit: number;
+          mem_request: number;
+          mem_limit: number;
+          gpus: number;
+        }
+      | undefined;
+  };
+
   /// onSubmit is made up of an object X properties. I destructure the object, allowing me to select properties from the object in my function, after =>.
   const onSubmit = ({
-    pod_id,
     description,
     command,
-    image,
-    template,
     time_to_stop_default,
     time_to_stop_instance,
     environment_variables,
     networking,
     volume_mounts,
     resources,
-  }: {
-    pod_id: string;
-    description: string | undefined;
-    image: string | undefined;
-    command: string | undefined;
-    template: string;
-    time_to_stop_default: number | undefined;
-    time_to_stop_instance: number | undefined;
-    environment_variables: Array<EnvVarType>;
-    networking: Array<NetworkingType>;
-    volume_mounts: Array<VolumeMountsType>;
-    resources: {
-      cpu_request: number;
-      cpu_limit: number;
-      mem_request: number;
-      mem_limit: number;
-      gpus: number;
-    };
-  }) => {
-    const newPod = {
-      pod_id,
+  }: UpdatePodBaseProps) => {
+    const updatedPod = {
       description,
       command: command ? JSON.parse(command) : undefined,
-      image,
-      template,
       time_to_stop_default,
       time_to_stop_instance,
       environment_variables: envVarsArrayToInputObject(environment_variables),
@@ -417,69 +419,226 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
       resources,
     };
 
-    createPod({ newPod }, { onSuccess });
+    const updatedPodFiltered = filterUndefinedValues(updatedPod);
+    updatePod({ podId: podId, updatePod: updatedPodFiltered }, { onSuccess });
   };
+
+  // Have to filter info to updatePod to remove undefined values
+  const filterUndefinedValues = (obj: { [key: string]: any }) => {
+    return Object.keys(obj).reduce((acc, key) => {
+      const value = obj[key];
+      const isEmptyArray = Array.isArray(value) && value.length === 0;
+      const isEmptyObject =
+        value && typeof value === 'object' && Object.keys(value).length === 0;
+      if (value !== undefined && !isEmptyArray && !isEmptyObject) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as { [key: string]: any });
+  };
+
+  const AutoPruneEmptyFields: React.FC = () => {
+    const { values, setFieldValue } = useFormikContext<UpdatePodBaseProps>();
+
+    useEffect(() => {
+      const pruneEmptyFields = (
+        obj: { [key: string]: any },
+        parentKey = ''
+      ) => {
+        Object.keys(obj).forEach((key) => {
+          const value = obj[key];
+          const path = parentKey ? `${parentKey}.${key}` : key;
+          const isEmptyString = value === '';
+          const isEmptyArray = Array.isArray(value) && value.length === 0;
+          const isEmptyObject =
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value) &&
+            Object.keys(value).length === 0;
+
+          if (isEmptyString || isEmptyArray || isEmptyObject) {
+            setFieldValue(path, undefined);
+          } else if (
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+          ) {
+            pruneEmptyFields(value, path);
+          }
+        });
+      };
+
+      pruneEmptyFields(values);
+    }, [values, setFieldValue]);
+
+    return null; // This component does not render anything
+  };
+
+  function handleFormChange(values: any) {
+    let transformedValues = { ...values };
+
+    if (values.environment_variables) {
+      transformedValues.environment_variables = envVarsArrayToInputObject(
+        values.environment_variables
+      );
+    }
+
+    if (values.networking) {
+      transformedValues.networking = networkingArrayToInputObject(
+        values.networking
+      );
+    }
+
+    if (values.volume_mounts) {
+      transformedValues.volume_mounts = volume_mountsArrayToInputObject(
+        values.volume_mounts
+      );
+    }
+    console.warn(transformedValues);
+  }
+
+  const formik = useFormik({
+    initialValues: {
+      description: '',
+      command: '',
+      time_to_stop_default: 0,
+      time_to_stop_instance: 0,
+      environment_variables: [],
+      networking: [],
+      volume_mounts: [],
+      resources: {
+        cpu_request: 0,
+        cpu_limit: 0,
+        mem_request: 0,
+        mem_limit: 0,
+        gpus: 0,
+      },
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2));
+    },
+  });
 
   return (
     <div>
+      <SubmitWrapper
+        className={styles['modal-footer']}
+        isLoading={isLoading} // Ensure isLoading is defined and reflects the loading state
+        error={error} // Ensure error is defined and reflects any error messages
+        success={isSuccess ? `Successfully updated the pod` : ''} // isSuccess should reflect the success state
+        reverse={true}
+      >
+        <Button
+          form="update-pod-form" // Ensure this matches the id of the Form component
+          color="primary"
+          disabled={isLoading || isSuccess} // Disable the button when loading or on success
+          aria-label="Submit"
+          type="submit"
+        >
+          Update Pod
+        </Button>
+      </SubmitWrapper>
+
+      {/* <form onSubmit={formik.handleSubmit}>
+          <FMTextField formik={formik} name="description" label="Description" />
+            <Button color="primary" variant="contained" fullWidth type="submit">
+              Submit
+            </Button>
+          </form> */}
+      <form onChange={setSharedData(formik.values)}>
+        {/* <TextField
+              fullWidth
+              id="description"
+              name="description"
+              label="Description"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.description && Boolean(formik.errors.description)}
+              helperText={formik.touched.description && formik.errors.description}
+              size="small"
+            /> */}
+        {/* <TextField
+              fullWidth
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            /> */}
+        {/* <AutoPruneEmptyFields /> */}
+
+        <FMTextField
+          formik={formik}
+          name="description"
+          label="Description"
+          description="Pod Description"
+        />
+        <FMTextField
+          formik={formik}
+          name="command"
+          label="Command"
+          description='Pod Command - Overwrites docker image. ex. ["sleep", "5000"]'
+        />
+
+        <FMTextField
+          formik={formik}
+          name="time_to_stop_default"
+          label="Time To Stop - Default"
+          description="Default TTS - Seconds until pod is stopped, default for all instances"
+        />
+        <FMTextField
+          formik={formik}
+          name="time_to_stop_instance"
+          label="Time To Stop - Instance"
+          description="Instance TTS - Seconds until pod is stopped, for current instance"
+        />
+        {/* 
+        <Button color="primary" variant="contained" fullWidth type="submit">
+          Submit
+        </Button> */}
+      </form>
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
         render={({ values }) => (
-          <Form id="newpod-form" onChange={setSharedData(values)}>
-            <FormikInput
-              name="pod_id"
-              label="Pod ID"
-              required={true}
-              description={`Pod ID, unique per-tenant, lowercase alpha-numeric`}
-              aria-label="Input"
-            />
-            <FormikInput
-              name="image"
-              description="Docker image to use, must be on allowlist. ex. mongo:6.0"
-              label="Pod Image"
-              required={false}
-              data-testid="image"
-            />
-
-            <FormikInput
-              name="template"
-              description="Pods template to use."
-              label="Pod Template"
-              required={false}
-              data-testid="template"
-            />
-            <FormikInput
+          <Form id="update-pod-form">
+            <AutoPruneEmptyFields />
+            {/* <FormikInput
               name="description"
               label="Description"
               required={false}
               description={`Pod Description`}
               aria-label="Input"
             />
-            <Collapse title="Advanced">
-              <FormikInput
-                name="command"
-                label="Command"
-                required={false}
-                description={`Pod Command - Overwrites docker image. ex. ["sleep", "5000"]`}
-                aria-label="Input"
-              />
-              <FormikInput
-                name="time_to_stop_default"
-                label="Time To Stop - Default"
-                required={false}
-                description={`Default TTS - Seconds until pod is stopped, set each time pod is started`}
-                aria-label="Input"
-              />
-              <FormikInput
-                name="time_to_stop_instance"
-                label="Time To Stop - Instance"
-                required={false}
-                description={`Instance TTS - Seconds until pod is stopped, for only current "run"`}
-                aria-label="Input"
-              />
-            </Collapse>
+            <FormikInput
+              name="command"
+              label="Command"
+              required={false}
+              description={`Pod Command - Overwrites docker image. ex. ["sleep", "5000"]`}
+              aria-label="Input"
+            />
+            <FormikInput
+              name="time_to_stop_default"
+              label="Time To Stop - Default"
+              required={false}
+              description={`Default TTS - Seconds until pod is stopped, set each time pod is started`}
+              aria-label="Input"
+            />
+            <FormikInput
+              name="time_to_stop_instance"
+              label="Time To Stop - Instance"
+              required={false}
+              description={`Instance TTS - Seconds until pod is stopped, for only current "run"`}
+              aria-label="Input"
+            /> */}
             <Collapse title="Environment Variables">
               <FieldArray
                 name="environment_variables"
@@ -490,14 +649,15 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
                         values.environment_variables.length > 0 &&
                         values.environment_variables.map((_, i) => (
                           <div key={i} className={styles['key-val-env-var']}>
-                            <EnvVarValueSource index={i} />
+                            <EnvVarValueSource formik={formik} index={i} />
                             <Button
+                              variant="outlined"
                               className={styles['remove-button']}
                               type="button"
-                              color="danger"
+                              color="error"
                               disabled={false}
                               onClick={() => arrayHelpers.remove(i)}
-                              size="sm"
+                              size="medium"
                             >
                               <Icon name="trash" />
                             </Button>
@@ -532,10 +692,10 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
                             <Button
                               className={styles['remove-button']}
                               type="button"
-                              color="danger"
+                              color="error"
                               disabled={false}
                               onClick={() => arrayHelpers.remove(i)}
-                              size="sm"
+                              size="small"
                             >
                               <Icon name="trash" />
                             </Button>
@@ -574,10 +734,10 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
                             <Button
                               className={styles['remove-button']}
                               type="button"
-                              color="danger"
+                              color="error"
                               disabled={false}
                               onClick={() => arrayHelpers.remove(i)}
-                              size="sm"
+                              size="small"
                             >
                               <Icon name="trash" />
                             </Button>
@@ -649,4 +809,4 @@ const CreatePodBase: React.FC<CodeEditProps> = ({
   );
 };
 
-export default CreatePodBase;
+export default UpdatePodBase;

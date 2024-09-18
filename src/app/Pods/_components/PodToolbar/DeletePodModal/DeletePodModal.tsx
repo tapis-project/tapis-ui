@@ -46,7 +46,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    deletePod({podId}, { onSuccess });
+    deletePod({ podId }, { onSuccess });
   };
 
   return (

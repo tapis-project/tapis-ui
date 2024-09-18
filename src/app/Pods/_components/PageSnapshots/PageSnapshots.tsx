@@ -136,7 +136,7 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
           overflow: 'auto',
         }}
       >
-        <PodsNavigation from="images" id="" podTab="details" />
+        <PodsNavigation from="images" id="" />
       </div>
       <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
         <div style={{}} className={` ${styles['nav']} `}>
@@ -145,7 +145,7 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
         {objId === undefined ? (
           <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
             <SectionMessage type="info">
-              Select an snapshot from the list.
+              Select a snapshot from the list.
             </SectionMessage>
           </div>
         ) : (

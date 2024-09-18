@@ -1,7 +1,7 @@
 import { Button } from 'reactstrap';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodToolbar';
+import { ToolbarModalProps } from '../ToolbarModalProps';
 import { Form, Formik, FieldArray } from 'formik';
 import { FormikInput, Collapse, Icon } from '@tapis/tapisui-common';
 import { FormikSelect } from '@tapis/tapisui-common';

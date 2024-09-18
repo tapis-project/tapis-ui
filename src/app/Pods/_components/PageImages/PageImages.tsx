@@ -146,7 +146,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
           overflow: 'auto',
         }}
       >
-        <PodsNavigation from="images" id="" podTab="details" />
+        <PodsNavigation from="images" id="" />
       </div>
       <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
         <div style={{}} className={` ${styles['nav']} `}>

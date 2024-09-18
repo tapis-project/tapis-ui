@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { decode } from 'base-64';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
@@ -8,7 +7,10 @@ import { Button, Chip } from '@mui/material';
 import CodeMirror from '@uiw/react-codemirror';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded } from '@mui/icons-material';
-
+import { UpdatePodBase } from '../PodToolbar/CreatePodModal';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { setPodTab } from '../../redux/podsSlice';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import {
@@ -26,15 +28,12 @@ import {
 
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodToolbar from 'app/Pods/_components/PodToolbar';
-// import { Menu } from '../_components';
-
-import { usePodsContext } from '../PodsContext';
-
 import PodsLoadingText from '../PodsLoadingText';
 
 import styles from '../Pages.module.scss';
+
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
-  const navigate = useHistory();
+  const dispatch = useDispatch();
   const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod({
     podId: objId,
   });
@@ -65,16 +64,16 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const pod: Pods.PodResponseModel | undefined = data?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
-  const podPerms: Pods.PodPermissionsResponse | undefined = dataPerms?.result as Pods.PodPermissionsResponse | undefined;
+  const podPerms: Pods.PodPermissionsResponse | undefined =
+    dataPerms?.result as Pods.PodPermissionsResponse | undefined;
 
   // State to control the visibility of the TooltipModal
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
     setModal(undefined);
   };
-  const [podBarTab, setPodBarTab] = useState<string>('details');
 
-  const [editValue, setEditValue] = useState<string>('');
+  const { podTab } = useSelector((state: RootState) => state.pods);
 
   const loadingText = PodsLoadingText();
 
@@ -103,13 +102,12 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     },
     perms: {
       tooltipTitle: 'Permissions',
-      tooltipText:
-        'Permissions are the access control list for this Pod. WIP',
+      tooltipText: 'Permissions are the access control list for this Pod. WIP',
     },
   };
 
   const renderTooltipModal = () => {
-    const config = tooltipConfigs[podBarTab];
+    const config = tooltipConfigs[podTab];
     if (config && modal === 'tooltip') {
       return (
         <TooltipModal
@@ -125,7 +123,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const [sharedData, setSharedData] = useState();
 
   const getCodeMirrorValue = () => {
-    switch (podBarTab) {
+    switch (podTab) {
       case 'details':
         return error
           ? `error: ${error}`
@@ -184,7 +182,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       label: 'Refresh',
       icon: <RefreshRounded sx={{ height: '20px', maxWidth: '20px' }} />,
       customOnClick: () => {
-        switch (podBarTab) {
+        switch (podTab) {
           case 'details':
             invalidate();
             break;
@@ -241,7 +239,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     <div>
       <div className={styles['tabs']}>
         <div>
-          <PodsNavigation from="pods" id={objId} podTab={podBarTab} />
+          <PodsNavigation from="pods" id={objId} />
         </div>
         <PodToolbar />
       </div>
@@ -284,13 +282,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       key={id}
                       variant="outlined"
                       disabled={disabled}
-                      color={podBarTab === tabValue ? 'secondary' : 'primary'}
+                      color={podTab === tabValue ? 'secondary' : 'primary'}
                       size="small"
                       onClick={() => {
                         if (customOnClick) {
                           customOnClick();
-                        } else if (tabValue && podBarTab !== undefined) {
-                          setPodBarTab(tabValue);
+                        } else if (tabValue) {
+                          dispatch(setPodTab(tabValue));
                         }
                       }}
                     >
@@ -307,13 +305,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       sx={{ minWidth: '10px' }}
                       variant="outlined"
                       disabled={disabled}
-                      color={podBarTab === tabValue ? 'secondary' : 'primary'}
+                      color={podTab === tabValue ? 'secondary' : 'primary'}
                       size="small"
                       onClick={() => {
                         if (customOnClick) {
                           customOnClick();
-                        } else if (tabValue && podBarTab !== undefined) {
-                          setPodBarTab(tabValue);
+                        } else if (tabValue) {
+                          dispatch(setPodTab(tabValue));
                         }
                       }}
                     >
@@ -327,9 +325,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               <PodsCodeMirror
                 value={codeMirrorValue?.toString() ?? ''}
                 isVisible={true}
-                isEditorVisible={podBarTab === 'edit'}
-                sharedData={sharedData}
-                setSharedData={setSharedData}
+                isEditorVisible={podTab === 'edit'}
+                editPanel={
+                  <UpdatePodBase
+                    sharedData={sharedData}
+                    setSharedData={setSharedData}
+                  />
+                }
               />
             </div>
           </div>

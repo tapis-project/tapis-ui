@@ -1,11 +1,10 @@
 import { Button } from 'reactstrap';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodToolbar';
-import { Form, Formik, FieldArray } from 'formik';
+import { ToolbarModalProps } from '../ToolbarModalProps';
+import { Form, Formik, FieldArray, useFormikContext } from 'formik';
 import { FormikInput, Collapse, Icon } from '@tapis/tapisui-common';
 import { FormikSelect } from '@tapis/tapisui-common';
-import { Pods as Pods } from '@tapis/tapisui-api';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useEffect, useCallback } from 'react'; //useState
 import styles from './CreatePodModal.module.scss';
@@ -25,6 +24,11 @@ export enum PodVolumeEnum {
   tapissnapshot = 'tapissnapshot',
   pvc = 'pvc',
 }
+
+export type CodeEditProps = {
+  sharedData: any;
+  setSharedData: any;
+};
 
 //Arrays that are used in the drop-down menus
 const podProtocols = Object.values(PodProtocolEnum);
@@ -167,7 +171,10 @@ const VolumeMountsValueSource: React.FC<{ index: number }> = ({ index }) => {
   );
 };
 
-const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+const CreatePodBase: React.FC<CodeEditProps> = ({
+  sharedData,
+  setSharedData,
+}) => {
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
@@ -414,266 +421,232 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   return (
-    <GenericModal
-      toggle={toggle}
-      title="Create New Pod"
-      body={
-        <div className={styles['modal-settings']}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
-            render={({ values }) => (
-              <Form id="newpod-form">
-                <FormikInput
-                  name="pod_id"
-                  label="Pod ID"
-                  required={true}
-                  description={`Pod ID, unique per-tenant, lowercase alpha-numeric`}
-                  aria-label="Input"
-                />
-                <FormikInput
-                  name="image"
-                  description="Docker image to use, must be on allowlist. ex. mongo:6.0"
-                  label="Pod Image"
-                  required={false}
-                  data-testid="image"
-                />
+    <div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+        render={({ values }) => (
+          <Form id="newpod-form" onChange={setSharedData(values)}>
+            <FormikInput
+              name="pod_id"
+              label="Pod ID"
+              required={true}
+              description={`Pod ID, unique per-tenant, lowercase alpha-numeric`}
+              aria-label="Input"
+            />
+            <FormikInput
+              name="image"
+              description="Docker image to use, must be on allowlist. ex. mongo:6.0"
+              label="Pod Image"
+              required={false}
+              data-testid="image"
+            />
 
-                <FormikInput
-                  name="template"
-                  description="Pods template to use."
-                  label="Pod Template"
-                  required={false}
-                  data-testid="template"
-                />
-                <FormikInput
-                  name="description"
-                  label="Description"
-                  required={false}
-                  description={`Pod Description`}
-                  aria-label="Input"
-                />
-                <Collapse title="Advanced">
-                  <FormikInput
-                    name="command"
-                    label="Command"
-                    required={false}
-                    description={`Pod Command - Overwrites docker image. ex. ["sleep", "5000"]`}
-                    aria-label="Input"
-                  />
-                  <FormikInput
-                    name="time_to_stop_default"
-                    label="Time To Stop - Default"
-                    required={false}
-                    description={`Default TTS - Seconds until pod is stopped, set each time pod is started`}
-                    aria-label="Input"
-                  />
-                  <FormikInput
-                    name="time_to_stop_instance"
-                    label="Time To Stop - Instance"
-                    required={false}
-                    description={`Instance TTS - Seconds until pod is stopped, for only current "run"`}
-                    aria-label="Input"
-                  />
-                </Collapse>
-                <Collapse title="Environment Variables">
-                  <FieldArray
-                    name="environment_variables"
-                    render={(arrayHelpers) => (
-                      <div>
-                        <div className={styles['key-val-env-vars']}>
-                          {values.environment_variables &&
-                            values.environment_variables.length > 0 &&
-                            values.environment_variables.map((_, i) => (
-                              <div
-                                key={i}
-                                className={styles['key-val-env-var']}
-                              >
-                                <EnvVarValueSource index={i} />
-                                <Button
-                                  className={styles['remove-button']}
-                                  type="button"
-                                  color="danger"
-                                  disabled={false}
-                                  onClick={() => arrayHelpers.remove(i)}
-                                  size="sm"
-                                >
-                                  <Icon name="trash" />
-                                </Button>
-                              </div>
-                            ))}
-                        </div>
-                        <Button
-                          type="button"
-                          className={styles['add-button']}
-                          onClick={() => {
-                            arrayHelpers.push({});
-                          }}
-                        >
-                          + Add "environment_variable" object
-                        </Button>
-                      </div>
-                    )}
-                  />
-                </Collapse>
-
-                <Collapse title="Networking">
-                  <FieldArray
-                    name="networking"
-                    render={(arrayHelpers) => (
-                      <div>
-                        <div className={styles['key-val-env-vars']}>
-                          {values.networking &&
-                            values.networking.length > 0 &&
-                            values.networking.map((_, i) => (
-                              <div
-                                key={i}
-                                className={styles['key-val-env-var']}
-                              >
-                                <NetworkingValueSource index={i} />
-                                <Button
-                                  className={styles['remove-button']}
-                                  type="button"
-                                  color="danger"
-                                  disabled={false}
-                                  onClick={() => arrayHelpers.remove(i)}
-                                  size="sm"
-                                >
-                                  <Icon name="trash" />
-                                </Button>
-                              </div>
-                            ))}
-                        </div>
-                        <Button
-                          type="button"
-                          className={styles['add-button']}
-                          onClick={() => {
-                            arrayHelpers.push({
-                              id: 'default',
-                              protocol: 'http',
-                              port: '5000',
-                            });
-                          }}
-                        >
-                          + Add "networking" object
-                        </Button>
-                      </div>
-                    )}
-                  />
-                </Collapse>
-
-                <Collapse title="Volume Mounts">
-                  <FieldArray
-                    name="volume_mounts"
-                    render={(arrayHelpers) => (
-                      <div>
-                        <div className={styles['key-val-env-vars']}>
-                          {values.volume_mounts &&
-                            values.volume_mounts.length > 0 &&
-                            values.volume_mounts.map((_, i) => (
-                              <div
-                                key={i}
-                                className={styles['key-val-env-var']}
-                              >
-                                <VolumeMountsValueSource index={i} />
-                                <Button
-                                  className={styles['remove-button']}
-                                  type="button"
-                                  color="danger"
-                                  disabled={false}
-                                  onClick={() => arrayHelpers.remove(i)}
-                                  size="sm"
-                                >
-                                  <Icon name="trash" />
-                                </Button>
-                              </div>
-                            ))}
-                        </div>
-                        <Button
-                          type="button"
-                          className={styles['add-button']}
-                          onClick={() => {
-                            arrayHelpers.push({
-                              id: '',
-                              type: 'tapisvolume',
-                              mount_path: '/tapis_volume_mount',
-                              sub_path: '',
-                            });
-                          }}
-                        >
-                          + Add "volume" object
-                        </Button>
-                      </div>
-                    )}
-                  />
-                </Collapse>
-
-                <Collapse title="Compute Resources">
-                  <div id={`compute_resources`} className={styles['grid-5']}>
-                    <FormikInput
-                      name="resources.cpu_limit"
-                      label="cpu_limit"
-                      required={false}
-                      description={'millicpus'}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="resources.cpu_request"
-                      label="cpu_request"
-                      required={false}
-                      description={'millicpus'}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="resources.mem_limit"
-                      label="mem_limit"
-                      required={false}
-                      description={'megabytes'}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="resources.mem_request"
-                      label="mem_request"
-                      required={false}
-                      description={'megabytes'}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="resources.gpus"
-                      label="gpus"
-                      required={false}
-                      description={'integers'}
-                      aria-label="Input"
-                    />
+            <FormikInput
+              name="template"
+              description="Pods template to use."
+              label="Pod Template"
+              required={false}
+              data-testid="template"
+            />
+            <FormikInput
+              name="description"
+              label="Description"
+              required={false}
+              description={`Pod Description`}
+              aria-label="Input"
+            />
+            <Collapse title="Advanced">
+              <FormikInput
+                name="command"
+                label="Command"
+                required={false}
+                description={`Pod Command - Overwrites docker image. ex. ["sleep", "5000"]`}
+                aria-label="Input"
+              />
+              <FormikInput
+                name="time_to_stop_default"
+                label="Time To Stop - Default"
+                required={false}
+                description={`Default TTS - Seconds until pod is stopped, set each time pod is started`}
+                aria-label="Input"
+              />
+              <FormikInput
+                name="time_to_stop_instance"
+                label="Time To Stop - Instance"
+                required={false}
+                description={`Instance TTS - Seconds until pod is stopped, for only current "run"`}
+                aria-label="Input"
+              />
+            </Collapse>
+            <Collapse title="Environment Variables">
+              <FieldArray
+                name="environment_variables"
+                render={(arrayHelpers) => (
+                  <div>
+                    <div className={styles['key-val-env-vars']}>
+                      {values.environment_variables &&
+                        values.environment_variables.length > 0 &&
+                        values.environment_variables.map((_, i) => (
+                          <div key={i} className={styles['key-val-env-var']}>
+                            <EnvVarValueSource index={i} />
+                            <Button
+                              className={styles['remove-button']}
+                              type="button"
+                              color="danger"
+                              disabled={false}
+                              onClick={() => arrayHelpers.remove(i)}
+                              size="sm"
+                            >
+                              <Icon name="trash" />
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
+                    <Button
+                      type="button"
+                      className={styles['add-button']}
+                      onClick={() => {
+                        arrayHelpers.push({});
+                      }}
+                    >
+                      + Add "environment_variable" object
+                    </Button>
                   </div>
-                </Collapse>
-              </Form>
-            )}
-          ></Formik>
-        </div>
-      }
-      footer={
-        <SubmitWrapper
-          className={styles['modal-footer']}
-          isLoading={isLoading}
-          error={error}
-          success={isSuccess ? `Successfully created a new pod` : ''}
-          reverse={true}
-        >
-          <Button
-            form="newpod-form"
-            color="primary"
-            disabled={isLoading || isSuccess}
-            aria-label="Submit"
-            type="submit"
-          >
-            Create
-          </Button>
-        </SubmitWrapper>
-      }
-    />
+                )}
+              />
+            </Collapse>
+
+            <Collapse title="Networking">
+              <FieldArray
+                name="networking"
+                render={(arrayHelpers) => (
+                  <div>
+                    <div className={styles['key-val-env-vars']}>
+                      {values.networking &&
+                        values.networking.length > 0 &&
+                        values.networking.map((_, i) => (
+                          <div key={i} className={styles['key-val-env-var']}>
+                            <NetworkingValueSource index={i} />
+                            <Button
+                              className={styles['remove-button']}
+                              type="button"
+                              color="danger"
+                              disabled={false}
+                              onClick={() => arrayHelpers.remove(i)}
+                              size="sm"
+                            >
+                              <Icon name="trash" />
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
+                    <Button
+                      type="button"
+                      className={styles['add-button']}
+                      onClick={() => {
+                        arrayHelpers.push({
+                          id: 'default',
+                          protocol: 'http',
+                          port: '5000',
+                        });
+                      }}
+                    >
+                      + Add "networking" object
+                    </Button>
+                  </div>
+                )}
+              />
+            </Collapse>
+
+            <Collapse title="Volume Mounts">
+              <FieldArray
+                name="volume_mounts"
+                render={(arrayHelpers) => (
+                  <div>
+                    <div className={styles['key-val-env-vars']}>
+                      {values.volume_mounts &&
+                        values.volume_mounts.length > 0 &&
+                        values.volume_mounts.map((_, i) => (
+                          <div key={i} className={styles['key-val-env-var']}>
+                            <VolumeMountsValueSource index={i} />
+                            <Button
+                              className={styles['remove-button']}
+                              type="button"
+                              color="danger"
+                              disabled={false}
+                              onClick={() => arrayHelpers.remove(i)}
+                              size="sm"
+                            >
+                              <Icon name="trash" />
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
+                    <Button
+                      type="button"
+                      className={styles['add-button']}
+                      onClick={() => {
+                        arrayHelpers.push({
+                          id: '',
+                          type: 'tapisvolume',
+                          mount_path: '/tapis_volume_mount',
+                          sub_path: '',
+                        });
+                      }}
+                    >
+                      + Add "volume" object
+                    </Button>
+                  </div>
+                )}
+              />
+            </Collapse>
+
+            <Collapse title="Compute Resources">
+              <div id={`compute_resources`} className={styles['grid-5']}>
+                <FormikInput
+                  name="resources.cpu_limit"
+                  label="cpu_limit"
+                  required={false}
+                  description={'millicpus'}
+                  aria-label="Input"
+                />
+                <FormikInput
+                  name="resources.cpu_request"
+                  label="cpu_request"
+                  required={false}
+                  description={'millicpus'}
+                  aria-label="Input"
+                />
+                <FormikInput
+                  name="resources.mem_limit"
+                  label="mem_limit"
+                  required={false}
+                  description={'megabytes'}
+                  aria-label="Input"
+                />
+                <FormikInput
+                  name="resources.mem_request"
+                  label="mem_request"
+                  required={false}
+                  description={'megabytes'}
+                  aria-label="Input"
+                />
+                <FormikInput
+                  name="resources.gpus"
+                  label="gpus"
+                  required={false}
+                  description={'integers'}
+                  aria-label="Input"
+                />
+              </div>
+            </Collapse>
+          </Form>
+        )}
+      ></Formik>
+    </div>
   );
 };
 
-export default CreatePodModal;
+export default CreatePodBase;

@@ -29,11 +29,16 @@
 
 .nav {
   margin-top: 1em;
-  flex-basis: 16%;
+  //flex-basis: 20%;
   flex-shrink: 0;
   min-width: 13rem;
   max-width: 18rem;
   overflow: auto;
+}
+.secondaryText {
+  font-size: 0.8rem;
+  color: #777;
+  align-content: end;
 }
 
 .tabs {
@@ -105,3 +110,52 @@
 .for-table {
   border-bottom: none;
 }
+
+.full-height-navbar {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// .cm-editor {
+//   /* our container wrapper for Codemirror instance */
+//   flex: 1 1; /* expand to the maximum */
+//   flex-grow: 1;
+//   // height: 100%;
+//   width: 200% !important;
+//   max-width: 200%;
+
+//   position: relative; /* needed for child component .cm-scroller */
+// }
+
+// .cm-scroller {
+//   position: absolute !important;
+//   top: 0;
+//   right: 0;
+//   bottom: 0;
+//   left: 0;
+//   overflow-y: auto;
+// }
+
+// .react-codemirror {
+//   flex: 1 1 auto !important;
+//   margin-top: 0;
+//   // height: 100%;
+//   position: relative;
+// }
+
+// .codeArea {
+//   flex:1 1 auto;
+//   margin-top:0;
+//   // height:100%;
+//   position:relative;
+//   }
+
+//   // .CodeMirror {
+//   // position:absolute;
+//   // top:0;
+//   // bottom:0;
+//   // left:0;
+//   // right:0;
+// height:100%;
+// }

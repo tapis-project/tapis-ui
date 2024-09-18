@@ -45,7 +45,7 @@ const StartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    startPod({podId}, { onSuccess });
+    startPod({ podId }, { onSuccess });
   };
 
   return (
