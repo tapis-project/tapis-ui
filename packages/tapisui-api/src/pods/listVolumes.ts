@@ -11,7 +11,7 @@ const listVolumes = (
     basePath,
     jwt
   );
-  return errorDecoder<Pods.VolumesResponse>(() => api.getVolumes());
+  return errorDecoder<Pods.VolumesResponse>(() => api.listVolumes());
 };
 
 export default listVolumes;

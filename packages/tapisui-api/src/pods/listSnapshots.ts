@@ -11,7 +11,7 @@ const listSnapshots = (
     basePath,
     jwt
   );
-  return errorDecoder<Pods.SnapshotsResponse>(() => api.getSnapshots());
+  return errorDecoder<Pods.SnapshotsResponse>(() => api.listSnapshots());
 };
 
 export default listSnapshots;

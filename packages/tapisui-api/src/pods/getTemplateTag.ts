@@ -2,18 +2,18 @@ import { Pods } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
 const getTemplateTag = (
-  params: Pods.GetTemplateTagsRequest,
+  params: Pods.ListTemplateTagsRequest,
   basePath: string,
   jwt: string
-): Promise<Pods.TemplateTagsSmallResponse> => {
+): Promise<Pods.TemplateTagsResponse> => {
   const api: Pods.TemplatesApi = apiGenerator<Pods.TemplatesApi>(
     Pods,
     Pods.TemplatesApi,
     basePath,
     jwt
   );
-  return errorDecoder<Pods.TemplateTagsSmallResponse>(() =>
-    api.getTemplateTags(params)
+  return errorDecoder<Pods.TemplateTagsResponse>(() =>
+    api.listTemplateTags(params)
   );
 };
 

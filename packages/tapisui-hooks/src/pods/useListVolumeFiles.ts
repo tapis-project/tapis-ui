@@ -4,7 +4,7 @@ import { Pods } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '..';
 import QueryKeys from './queryKeys';
 
-const listVolumeFiles = (
+const useListVolumeFiles = (
   params: Pods.ListVolumeFilesRequest,
   options: QueryObserverOptions<Pods.FilesListResponse, Error> = {}
 ) => {
@@ -22,4 +22,4 @@ const listVolumeFiles = (
   return result;
 };
 
-export default listVolumeFiles;
+export default useListVolumeFiles;

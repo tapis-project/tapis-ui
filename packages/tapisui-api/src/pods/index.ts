@@ -26,6 +26,7 @@ export { default as listPods } from './listPods';
 export { default as listSnapshotFiles } from './listSnapshotFiles';
 export { default as listSnapshots } from './listSnapshots';
 export { default as listTemplates } from './listTemplates';
+export { default as listTemplatesAndTags } from './listTemplatesAndTags';
 export { default as listTemplateTags } from './listTemplateTags';
 export { default as listVolumeFiles } from './listVolumeFiles';
 export { default as listVolumes } from './listVolumes';

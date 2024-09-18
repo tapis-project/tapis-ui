@@ -19,6 +19,7 @@ const QueryKeys = {
   createTemplate: 'pods/createTemplate',
   updateTemplate: 'pods/updateTemplate',
   listTemplates: 'pods/listTemplates',
+  listTemplatesAndTags: 'pods/listTemplatesAndTags',
 
   // Images
   getImage: 'pods/getImage',

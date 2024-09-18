@@ -2,7 +2,7 @@
 export { default as useCreateVolume } from './useCreateVolume';
 export { default as useGetImage } from './useGetImage';
 export { default as useGetVolume } from './useGetVolume';
-export { default as useListVolumesFiles } from './useListVolumesFiles';
+export { default as useListVolumeFiles } from './useListVolumeFiles';
 export { default as useUpdateTemplate } from './useUpdateTemplate';
 export { default as useDeletePodPermission } from './useDeletePodPermission';
 export { default as useGetPodLogs } from './useGetPodLogs';
@@ -34,5 +34,6 @@ export { default as useCreateTemplate } from './useCreateTemplate';
 export { default as useDeleteVolume } from './useDeleteVolume';
 export { default as useGetTemplate } from './useGetTemplate';
 export { default as useListTemplateTags } from './useListTemplateTags';
+export { default as useListTemplatesAndTags } from './useListTemplatesAndTags';
 export { default as useUpdateSnapshot } from './useUpdateSnapshot';
 export { default as queryKeys } from './queryKeys';

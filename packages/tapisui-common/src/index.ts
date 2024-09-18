@@ -49,7 +49,7 @@ import {
   NavItem,
 } from './wrappers';
 import { FieldWrapperFormik } from './ui-formik';
-import { FMTextField } from './ui-formik-mui';
+import { FMTextField, FMSelect } from './ui-formik-mui';
 import {
   FormikInput,
   FormikSelect,
@@ -131,6 +131,7 @@ export {
   // Formik UI
   FieldWrapperFormik,
   FMTextField,
+  FMSelect,
   FormikInput,
   FormikSelect,
   FormikCheck,
