@@ -25,6 +25,7 @@ import {
   QueryWrapper,
   SectionMessage,
 } from '@tapis/tapisui-common';
+import { PodPermissionModal } from '../Modals';
 
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodToolbar from 'app/Pods/_components/PodToolbar';
@@ -298,6 +299,20 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                 )}
               </Stack>
               <Stack spacing={2} direction="row">
+              {podTab === 'perms' && (
+                  <Button
+                    key="permissions"
+                    sx={{ minWidth: '10px' }}
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      setModal('podPermissions');
+                    }}
+                  >
+                    +
+                  </Button>
+                )}
                 {rightButtons.map(
                   ({ id, label, tabValue, customOnClick, icon, disabled }) => (
                     <Button
@@ -338,6 +353,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
         )}
 
         <div>{renderTooltipModal()}</div>
+        {modal === 'podPermissions' && <PodPermissionModal toggle={toggle} />}
       </div>
     </div>
   );

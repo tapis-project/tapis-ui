@@ -6,7 +6,7 @@ import { ToolbarModalProps } from '../ToolbarModalProps';
 import { Form, Formik } from 'formik';
 import { FormikSelect, FormikInput } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
-import styles from './DeletePodModal.module.scss';
+import styles from './PodPermissionModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
@@ -15,45 +15,42 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setVolumeRootTab } from '../../../redux/podsSlice';
 
-const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  const { data } = Hooks.useListVolumes(); //{search: `owner.like.${''}`,}
-  const volumes: Array<Pods.VolumeResponseModel> = data?.result ?? [];
+const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+  const { data } = Hooks.useListPods(); // Assuming there's a hook to list pods
+  const pods: Array<Pods.PodResponseModel> = data?.result ?? [];
 
-  // Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const history = useHistory();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const podIdFromLocation = location.pathname.split('/')[3] || '';
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.listVolumes);
-    history.push('/pods/volumes');
-    dispatch(setVolumeRootTab('dashboard')); // Ensure setVolumeRootTab is available in the scope
+    queryClient.invalidateQueries(Hooks.queryKeys.getPodPermissions);
   }, [queryClient, history]);
 
-  const { deleteVolume, isLoading, error, isSuccess, reset } =
-    Hooks.useDeleteVolume();
+  const { setPodPermission, isLoading, error, isSuccess, reset } =
+    Hooks.useSetPodPermission(podIdFromLocation);
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const validationSchema = Yup.object({
-    volumeId: Yup.string().required('Volume ID is required'),
-    confirmVolumeName: Yup.string()
-      .oneOf([Yup.ref('volumeId'), null], 'Volume name must match')
-      .required('Please confirm the volume name'),
+    podId: Yup.string().required('Pod ID is required'),
+    username: Yup.string().required('Username is required'),
+    permissionLevel: Yup.string().required('Permission level is required'),
   });
 
-  const location = useLocation();
-  const volumeIdFromLocation = location.pathname.split('/')[3] || '';
 
   const initialValues = {
-    volumeId: volumeIdFromLocation,
-    confirmVolumeName: '',
+    podId: podIdFromLocation,
+    username: '',
+    permissionLevel: '',
   };
 
   const onSubmit = (
-    { volumeId }: { volumeId: string },
+    { podId, username, permissionLevel }: { podId: string; username: string; permissionLevel: string },
     {
       setFieldValue,
       resetForm,
@@ -64,19 +61,20 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       setTouched: (touched: { [field: string]: boolean }) => void;
     }
   ) => {
-    deleteVolume({ volumeId }, { onSuccess });
+    setPodPermission({ podId, setPermission: { user: username, level: permissionLevel } }, { onSuccess });
     resetForm();
-    setFieldValue('volumeId', '');
+    setFieldValue('podId', '');
     setTouched({
-      volumeId: false,
-      confirmVolumeName: false,
+      podId: false,
+      username: false,
+      permissionLevel: false,
     });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Delete Volume"
+      title="Set Pod Permission"
       backdrop={true}
       body={
         <div className={styles['modal-settings']}>
@@ -86,35 +84,42 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             onSubmit={onSubmit}
           >
             {() => (
-              <Form id="deleteVolume-form">
+              <Form id="setPodPermission-form">
                 <FormikSelect
-                  name="volumeId"
-                  description="The volume id"
-                  label="Volume ID"
+                  name="podId"
+                  description="The pod id"
+                  label="Pod ID"
                   required={true}
-                  data-testid="volumeId"
+                  data-testid="podId"
                 >
                   <option disabled value={''}>
-                    Select a volume to delete
+                    Select a pod
                   </option>
-                  {volumes.length ? (
-                    volumes.map((volume) => {
+                  {pods.length ? (
+                    pods.map((pod) => {
                       return (
-                        <option key={volume.volume_id}>
-                          {volume.volume_id}
+                        <option key={pod.pod_id}>
+                          {pod.pod_id}
                         </option>
                       );
                     })
                   ) : (
-                    <i>No volumes found</i>
+                    <i>No pods found</i>
                   )}
                 </FormikSelect>
                 <FormikInput
-                  name="confirmVolumeName"
-                  label="Confirm Volume Name"
-                  description="Please type the volume name to confirm"
+                  name="username"
+                  label="Username"
+                  description="Enter the username"
                   required={true}
-                  data-testid="confirmVolumeName"
+                  data-testid="username"
+                />
+                <FormikInput
+                  name="permissionLevel"
+                  label="Permission Level"
+                  description="Enter the permission level"
+                  required={true}
+                  data-testid="permissionLevel"
                 />
               </Form>
             )}
@@ -126,17 +131,17 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully deleted a volume` : ''}
+          success={isSuccess ? `Successfully set pod permission` : ''}
           reverse={true}
         >
           <Button
-            form="deleteVolume-form"
+            form="setPodPermission-form"
             color="primary"
             disabled={isLoading}
             aria-label="Submit"
             type="submit"
           >
-            Delete volume
+            Set Permission
           </Button>
         </SubmitWrapper>
       }
@@ -144,4 +149,4 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   );
 };
 
-export default DeleteVolumeModal;
+export default PodPermissionModal;
