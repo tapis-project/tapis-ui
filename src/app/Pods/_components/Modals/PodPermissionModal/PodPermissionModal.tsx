@@ -42,7 +42,6 @@ const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     permissionLevel: Yup.string().required('Permission level is required'),
   });
 
-
   const initialValues = {
     podId: podIdFromLocation,
     username: '',
@@ -50,7 +49,11 @@ const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   const onSubmit = (
-    { podId, username, permissionLevel }: { podId: string; username: string; permissionLevel: string },
+    {
+      podId,
+      username,
+      permissionLevel,
+    }: { podId: string; username: string; permissionLevel: string },
     {
       setFieldValue,
       resetForm,
@@ -61,7 +64,10 @@ const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       setTouched: (touched: { [field: string]: boolean }) => void;
     }
   ) => {
-    setPodPermission({ podId, setPermission: { user: username, level: permissionLevel } }, { onSuccess });
+    setPodPermission(
+      { podId, setPermission: { user: username, level: permissionLevel } },
+      { onSuccess }
+    );
     resetForm();
     setFieldValue('podId', '');
     setTouched({
@@ -97,11 +103,7 @@ const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   </option>
                   {pods.length ? (
                     pods.map((pod) => {
-                      return (
-                        <option key={pod.pod_id}>
-                          {pod.pod_id}
-                        </option>
-                      );
+                      return <option key={pod.pod_id}>{pod.pod_id}</option>;
                     })
                   ) : (
                     <i>No pods found</i>

@@ -299,7 +299,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                 )}
               </Stack>
               <Stack spacing={2} direction="row">
-              {podTab === 'perms' && (
+                {podTab === 'perms' && (
                   <Button
                     key="permissions"
                     sx={{ minWidth: '10px' }}
