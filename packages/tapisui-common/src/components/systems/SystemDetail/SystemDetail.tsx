@@ -16,8 +16,8 @@ const SystemDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
       {system && (
         <Tabs
           tabs={{
-            Details: <DescriptionList data={system} />,
             JSON: <JSONDisplay json={system} />,
+            Details: <DescriptionList data={system} />,
           }}
         />
       )}
