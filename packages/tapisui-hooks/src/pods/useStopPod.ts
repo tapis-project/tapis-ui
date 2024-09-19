@@ -4,9 +4,7 @@ import { Pods as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-type StopPodHookParams = {
-  podId: string;
-};
+type StopPodHookParams = Pods.StopPodRequest;
 
 const useStopPod = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -19,7 +17,7 @@ const useStopPod = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Pods.PodResponse, Error, StopPodHookParams>(
       [QueryKeys.stopPod, basePath, jwt],
-      ({ podId }) => API.stopPod(podId, basePath, jwt)
+      (params) => API.stopPod(params, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -31,13 +29,10 @@ const useStopPod = () => {
     error,
     reset,
     stopPod: (
-      podId: string,
-      // react-query options to allow callbacks such as onSuccess
+      params: StopPodHookParams,
+      // MutateOptions is a type that allows us to specify things like onSuccess
       options?: MutateOptions<Pods.PodResponse, Error, StopPodHookParams>
-    ) => {
-      // Call mutate to trigger a single post-like API operation
-      return mutate({ podId }, options);
-    },
+    ) => mutate(params, options),
   };
 };
 

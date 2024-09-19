@@ -5,16 +5,14 @@ const listTemplateTags = (
   params: Pods.ListTemplateTagsRequest,
   basePath: string,
   jwt: string
-) => {
+): Promise<any> => {
   const api: Pods.TemplatesApi = apiGenerator<Pods.TemplatesApi>(
     Pods,
     Pods.TemplatesApi,
     basePath,
     jwt
   );
-  return errorDecoder<Pods.TemplateTagsSmallResponse>(() =>
-    api.listTemplateTags(params)
-  );
+  return errorDecoder<any>(() => api.listTemplateTags(params));
 };
 
 export default listTemplateTags;

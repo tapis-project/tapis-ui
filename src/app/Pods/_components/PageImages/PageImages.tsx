@@ -40,7 +40,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     objId = '';
   }
 
-  const { data, isFetching, error, invalidate } = Hooks.useDetailsImages({
+  const { data, isFetching, error, invalidate } = Hooks.useGetImage({
     imageId: objId,
   });
   const tooltipText =
@@ -146,7 +146,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
           overflow: 'auto',
         }}
       >
-        <PodsNavigation from="images" id="" podTab="details" />
+        <PodsNavigation from="images" id="" />
       </div>
       <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
         <div style={{}} className={` ${styles['nav']} `}>

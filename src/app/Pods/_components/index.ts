@@ -8,4 +8,5 @@ export { default as PodFunctionBar } from './PodFunctionBar';
 export { default as TooltipModal } from './TooltipModal';
 export { default as PodsNavigation } from './PodsNavigation';
 export { default as PodsCodeMirror } from './PodsCodeMirror';
-export * from './PodsContext';
+export { default as VolumeWizard } from './Wizards/VolumeWizard';
+export { default as VolumeWizardEdit } from './Wizards/VolumeWizardEdit';

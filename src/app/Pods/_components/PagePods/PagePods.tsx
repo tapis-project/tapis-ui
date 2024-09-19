@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { decode } from 'base-64';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
@@ -8,7 +7,10 @@ import { Button, Chip } from '@mui/material';
 import CodeMirror from '@uiw/react-codemirror';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded } from '@mui/icons-material';
-
+import { UpdatePodBase } from '../PodToolbar/CreatePodModal';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { updateState } from '../../redux/podsSlice';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import {
@@ -23,19 +25,17 @@ import {
   QueryWrapper,
   SectionMessage,
 } from '@tapis/tapisui-common';
+import { PodPermissionModal } from '../Modals';
 
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodToolbar from 'app/Pods/_components/PodToolbar';
-// import { Menu } from '../_components';
-
-import { usePodsContext } from '../PodsContext';
-
 import PodsLoadingText from '../PodsLoadingText';
 
 import styles from '../Pages.module.scss';
+
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
-  const navigate = useHistory();
-  const { data, isLoading, isFetching, error, invalidate } = Hooks.useDetails({
+  const dispatch = useDispatch();
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod({
     podId: objId,
   });
   const {
@@ -44,7 +44,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     isFetching: isFetchingLogs,
     error: errorLogs,
     invalidate: invalidateLogs,
-  } = Hooks.useLogs({ podId: objId });
+  } = Hooks.useGetPodLogs({ podId: objId });
   const {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
@@ -52,21 +52,29 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     error: errorSecrets,
     invalidate: invalidateSecrets,
   } = Hooks.useGetPodSecrets({ podId: objId });
+  const {
+    data: dataPerms,
+    isLoading: isLoadingPerms,
+    isFetching: isFetchingPerms,
+    error: errorPerms,
+    invalidate: invalidatePerms,
+  } = Hooks.useGetPodPermissions({ podId: objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
+  const podPerms: Pods.PodPermissionsResponse | undefined =
+    dataPerms?.result as Pods.PodPermissionsResponse | undefined;
 
   // State to control the visibility of the TooltipModal
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
     setModal(undefined);
   };
-  const [podBarTab, setPodBarTab] = useState<string>('details');
 
-  const [editValue, setEditValue] = useState<string>('');
+  const { podTab } = useSelector((state: RootState) => state.pods);
 
   const loadingText = PodsLoadingText();
 
@@ -93,10 +101,14 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       tooltipText:
         'Secrets are variables that you can reference via $SECRET_KEY. WIP',
     },
+    perms: {
+      tooltipTitle: 'Permissions',
+      tooltipText: 'Permissions are the access control list for this Pod. WIP',
+    },
   };
 
   const renderTooltipModal = () => {
-    const config = tooltipConfigs[podBarTab];
+    const config = tooltipConfigs[podTab];
     if (config && modal === 'tooltip') {
       return (
         <TooltipModal
@@ -112,7 +124,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const [sharedData, setSharedData] = useState();
 
   const getCodeMirrorValue = () => {
-    switch (podBarTab) {
+    switch (podTab) {
       case 'details':
         return error
           ? `error: ${error}`
@@ -143,7 +155,12 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
           : isFetching
           ? loadingText
           : JSON.stringify(sharedData, null, 2);
-
+      case 'perms':
+        return error
+          ? `error: ${error}`
+          : isFetching
+          ? loadingText
+          : JSON.stringify(podPerms, null, 2);
       default:
         return ''; // Default or placeholder value
     }
@@ -166,7 +183,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
       label: 'Refresh',
       icon: <RefreshRounded sx={{ height: '20px', maxWidth: '20px' }} />,
       customOnClick: () => {
-        switch (podBarTab) {
+        switch (podTab) {
           case 'details':
             invalidate();
             break;
@@ -188,6 +205,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     { id: 'logs', label: 'Logs', tabValue: 'logs' },
     { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },
     { id: 'secrets', label: 'Secrets', tabValue: 'secrets' },
+    { id: 'perms', label: 'Perms', tabValue: 'perms' },
   ];
 
   const networkingUrl = Object.values(data?.result?.networking ?? {})[0]?.url;
@@ -222,7 +240,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     <div>
       <div className={styles['tabs']}>
         <div>
-          <PodsNavigation from="pods" id={objId} podTab={podBarTab} />
+          <PodsNavigation from="pods" id={objId} />
         </div>
         <PodToolbar />
       </div>
@@ -265,13 +283,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       key={id}
                       variant="outlined"
                       disabled={disabled}
-                      color={podBarTab === tabValue ? 'secondary' : 'primary'}
+                      color={podTab === tabValue ? 'secondary' : 'primary'}
                       size="small"
                       onClick={() => {
                         if (customOnClick) {
                           customOnClick();
-                        } else if (tabValue && podBarTab !== undefined) {
-                          setPodBarTab(tabValue);
+                        } else if (tabValue) {
+                          dispatch(updateState({ podTab: tabValue }));
                         }
                       }}
                     >
@@ -281,6 +299,20 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                 )}
               </Stack>
               <Stack spacing={2} direction="row">
+                {podTab === 'perms' && (
+                  <Button
+                    key="permissions"
+                    sx={{ minWidth: '10px' }}
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      setModal('podPermissions');
+                    }}
+                  >
+                    +
+                  </Button>
+                )}
                 {rightButtons.map(
                   ({ id, label, tabValue, customOnClick, icon, disabled }) => (
                     <Button
@@ -288,13 +320,13 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                       sx={{ minWidth: '10px' }}
                       variant="outlined"
                       disabled={disabled}
-                      color={podBarTab === tabValue ? 'secondary' : 'primary'}
+                      color={podTab === tabValue ? 'secondary' : 'primary'}
                       size="small"
                       onClick={() => {
                         if (customOnClick) {
                           customOnClick();
-                        } else if (tabValue && podBarTab !== undefined) {
-                          setPodBarTab(tabValue);
+                        } else if (tabValue) {
+                          dispatch(updateState({ podTab: tabValue }));
                         }
                       }}
                     >
@@ -308,15 +340,20 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
               <PodsCodeMirror
                 value={codeMirrorValue?.toString() ?? ''}
                 isVisible={true}
-                isEditorVisible={podBarTab === 'edit'}
-                sharedData={sharedData}
-                setSharedData={setSharedData}
+                isEditorVisible={podTab === 'edit'}
+                editPanel={
+                  <UpdatePodBase
+                    sharedData={sharedData}
+                    setSharedData={setSharedData}
+                  />
+                }
               />
             </div>
           </div>
         )}
 
         <div>{renderTooltipModal()}</div>
+        {modal === 'podPermissions' && <PodPermissionModal toggle={toggle} />}
       </div>
     </div>
   );

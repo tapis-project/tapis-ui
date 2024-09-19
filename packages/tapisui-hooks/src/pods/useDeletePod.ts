@@ -4,9 +4,7 @@ import { Pods as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-type DeletePodHookParams = {
-  podId: string;
-};
+type DeletePodHookParams = Pods.DeletePodRequest;
 
 const useDeletePod = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -16,11 +14,19 @@ const useDeletePod = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, mkdir helper is called to perform the operation
-  const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Pods.PodDeleteResponse, Error, DeletePodHookParams>(
-      [QueryKeys.deletePod, basePath, jwt],
-      ({ podId }) => API.deletePod(podId, basePath, jwt)
-    );
+  const {
+    mutate,
+    mutateAsync,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+    reset,
+  } = useMutation<Pods.PodDeleteResponse, Error, DeletePodHookParams>(
+    [QueryKeys.deletePod, basePath, jwt],
+    (params) => API.deletePod(params, basePath, jwt)
+  );
 
   // Return hook object with loading states and login function
   return {
@@ -31,17 +37,22 @@ const useDeletePod = () => {
     error,
     reset,
     deletePod: (
-      podId: string,
-      // react-query options to allow callbacks such as onSuccess
+      params: DeletePodHookParams,
+      // MutateOptions is a type that allows us to specify things like onSuccess
       options?: MutateOptions<
         Pods.PodDeleteResponse,
         Error,
         DeletePodHookParams
       >
-    ) => {
-      // Call mutate to trigger a single post-like API operation
-      return mutate({ podId }, options);
-    },
+    ) => mutate(params, options),
+    removeAsync: (
+      params: DeletePodHookParams,
+      options?: MutateOptions<
+        Pods.PodDeleteResponse,
+        Error,
+        DeletePodHookParams
+      >
+    ) => mutateAsync(params, options),
   };
 };
 

@@ -7,7 +7,7 @@ import PodsLoadingText from '../PodsLoadingText';
 
 const NavPods: React.FC = () => {
   const { url } = useRouteMatch();
-  const { data, isLoading, error } = Hooks.useList();
+  const { data, isLoading, error } = Hooks.useListPods();
   const definitions: Array<Pods.PodResponseModel> = data?.result ?? [];
   const loadingText = PodsLoadingText();
 

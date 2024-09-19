@@ -55,13 +55,6 @@ const PodToolbar: React.FC = () => {
     <div id="file-operation-toolbar">
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
-          {/* <ToolbarButton
-            text="Secrets"
-            icon=""
-            disabled={false}
-            onClick={() => setModal('getpodssecrets')}
-            aria-label="getpodssecrets"
-          /> */}
           <ToolbarButton
             text="Start"
             icon=""

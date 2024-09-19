@@ -4,9 +4,7 @@ import { Pods as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-type RestartPodHookParams = {
-  podId: string;
-};
+type RestartPodHookParams = Pods.RestartPodRequest;
 
 const useRestartPod = () => {
   const { basePath, accessToken } = useTapisConfig();
@@ -19,7 +17,7 @@ const useRestartPod = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Pods.PodResponse, Error, RestartPodHookParams>(
       [QueryKeys.restartPod, basePath, jwt],
-      ({ podId }) => API.restartPod(podId, basePath, jwt)
+      (params) => API.restartPod(params, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -31,13 +29,10 @@ const useRestartPod = () => {
     error,
     reset,
     restartPod: (
-      podId: string,
-      // react-query options to allow callbacks such as onSuccess
+      params: RestartPodHookParams,
+      // MutateOptions is a type that allows us to specify things like onSuccess
       options?: MutateOptions<Pods.PodResponse, Error, RestartPodHookParams>
-    ) => {
-      // Call mutate to trigger a single post-like API operation
-      return mutate({ podId }, options);
-    },
+    ) => mutate(params, options),
   };
 };
 
