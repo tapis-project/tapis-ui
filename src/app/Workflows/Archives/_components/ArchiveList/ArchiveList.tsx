@@ -29,14 +29,15 @@ const ArchiveList: React.FC<ArchiveListParams> = ({ groupId }) => {
             <ArchivesHelp />
           </span>
         </span>
-        <Toolbar buttons={['createarchive']} groupId={groupId}/>
+        <Toolbar buttons={['createarchive']} groupId={groupId} />
       </SectionHeader>
       <QueryWrapper isLoading={isLoading} error={error}>
         <div id="-archives-list">
           <div className={styles['container']}>
             {archives.length ? (
               archives.map((archive, i) => {
-                let evenodd: string = i % 2 > 0 ? styles['odd'] : styles['even'];
+                let evenodd: string =
+                  i % 2 > 0 ? styles['odd'] : styles['even'];
                 let last: string =
                   i === archives.length - 1 ? styles['last'] : '';
                 return (
