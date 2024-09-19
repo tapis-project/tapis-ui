@@ -34,11 +34,15 @@ import {
   PodsCodeMirror,
 } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { updateState } from '../../redux/podsSlice';
 
 const PageTemplates: React.FC<{
   objId: string | undefined;
   tagId: string | undefined;
 }> = ({ objId, tagId }) => {
+  const dispatch = useDispatch();
   const navigate = useHistory();
   const { data, isLoading, error } = Hooks.useGetTemplate({
     templateId: objId,
@@ -70,9 +74,6 @@ const PageTemplates: React.FC<{
     setModal(undefined);
   };
 
-  // Set the default tab to 'tags'
-  const [templateBarTab, setTemplateBarTab] = useState<string>('tags');
-
   const loadingText = PodsLoadingText();
 
   const tooltipConfigs: {
@@ -101,7 +102,7 @@ const PageTemplates: React.FC<{
   };
 
   const renderTooltipModal = () => {
-    const config = tooltipConfigs[templateBarTab];
+    const config = tooltipConfigs[templateTab];
     if (config && modal === 'tooltip') {
       return (
         <TooltipModal
@@ -114,8 +115,21 @@ const PageTemplates: React.FC<{
     return null;
   };
 
+  const {
+    templateNavExpandedItems,
+    templateNavSelectedItems,
+    activeTemplate,
+    activeTemplateTag,
+    templateTab,
+    templateTagTab,
+  } = useSelector((state: RootState) => state.pods);
+
+  const handleTagTabChange = (tab: string) => {
+    dispatch(updateState({ templateTagTab: tab }));
+  };
+
   const getCodeMirrorValue = () => {
-    switch (templateBarTab) {
+    switch (templateTab) {
       case 'details':
         return error
           ? `error: ${error}`
@@ -144,6 +158,7 @@ const PageTemplates: React.FC<{
 
   const leftButtons: ButtonConfig[] = [
     { id: 'details', label: 'Details', tabValue: 'details' },
+    { id: 'detailsTag', label: 'Details Tag', tabValue: 'detailsTag' },
     { id: 'tags', label: 'Tags', tabValue: 'tags' },
   ];
 
@@ -200,7 +215,7 @@ const PageTemplates: React.FC<{
           overflow: 'auto',
         }}
       >
-        <PodsNavigation from="templates" id="" />
+        <PodsNavigation from="templates" id={objId} id2={tagId} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
         <div style={{}} className={` ${styles['nav']} `}>
@@ -234,15 +249,13 @@ const PageTemplates: React.FC<{
                   <Button
                     key={id}
                     variant="outlined"
-                    color={
-                      templateBarTab === tabValue ? 'secondary' : 'primary'
-                    }
+                    color={templateTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
                     onClick={() => {
                       if (customOnClick) {
                         customOnClick();
-                      } else if (tabValue && templateBarTab !== undefined) {
-                        setTemplateBarTab(tabValue);
+                      } else if (tabValue && templateTab !== undefined) {
+                        dispatch(updateState({ templateTab: tabValue }));
                       }
                     }}
                   >
@@ -255,15 +268,13 @@ const PageTemplates: React.FC<{
                   <Button
                     key={id}
                     variant="outlined"
-                    color={
-                      templateBarTab === tabValue ? 'secondary' : 'primary'
-                    }
+                    color={templateTab === tabValue ? 'secondary' : 'primary'}
                     size="small"
                     onClick={() => {
                       if (customOnClick) {
                         customOnClick();
-                      } else if (tabValue && templateBarTab !== undefined) {
-                        setTemplateBarTab(tabValue);
+                      } else if (tabValue && templateTab !== undefined) {
+                        dispatch(updateState({ templateTab: tabValue }));
                       }
                     }}
                   >
@@ -273,9 +284,26 @@ const PageTemplates: React.FC<{
               </Stack>
             </div>
             <div className={styles['container']}>
-              {templateBarTab === 'tags' ? (
+              {templateTab === 'tags' ? (
                 <div>
-                  {templateTags && templateTags.length > 0 ? (
+                  {!activeTemplate && !activeTemplateTag ? (
+                    <PodsCodeMirror
+                      value={
+                        templateTags && templateTags.length > 0
+                          ? JSON.stringify(
+                              templateTags.find(
+                                (tag: any) =>
+                                  tag.tag_timestamp ===
+                                  `${activeTemplate}@${activeTemplateTag}`
+                              ),
+                              null,
+                              2
+                            )
+                          : 'No tag data available.'
+                      }
+                      isVisible={true}
+                    />
+                  ) : templateTags && templateTags.length > 0 ? (
                     templateTags.map((tag: any, index: number) => {
                       const [tagName, tagTime] = tag.tag_timestamp.split('@');
                       const timeSinceCreation = calculateTimeSinceCreation(
@@ -316,7 +344,11 @@ const PageTemplates: React.FC<{
                 </div>
               ) : (
                 <PodsCodeMirror
-                  value={codeMirrorValue?.toString() ?? ''}
+                  value={
+                    templateTab === 'details'
+                      ? JSON.stringify(pod, null, 2)
+                      : JSON.stringify(templateTags, null, 2)
+                  }
                   isVisible={true}
                 />
               )}

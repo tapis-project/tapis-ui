@@ -38,7 +38,7 @@ import { NavLink } from 'react-router-dom';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { setVolumeTab, setVolumeRootTab } from '../../redux/podsSlice';
+import { updateState } from '../../redux/podsSlice';
 
 const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useDispatch();
@@ -206,9 +206,9 @@ Select or create a volume to get started.`;
                 customOnClick();
               } else if (tabValue) {
                 if (objId === undefined) {
-                  dispatch(setVolumeRootTab(tabValue));
+                  dispatch(updateState({ volumeRootTab: tabValue }));
                 } else {
-                  dispatch(setVolumeTab(tabValue));
+                  dispatch(updateState({ volumeTab: tabValue }));
                 }
               }
             }}
@@ -233,9 +233,9 @@ Select or create a volume to get started.`;
                 customOnClick();
               } else if (tabValue) {
                 if (objId === undefined) {
-                  dispatch(setVolumeRootTab(tabValue));
+                  dispatch(updateState({ volumeRootTab: tabValue }));
                 } else {
-                  dispatch(setVolumeTab(tabValue));
+                  dispatch(updateState({ volumeTab: tabValue }));
                 }
               }
             }}
@@ -269,7 +269,9 @@ Select or create a volume to get started.`;
             to="/pods/volumes"
             className={styles['nav-link']}
             activeClassName={styles['active']}
-            onClick={() => dispatch(setVolumeRootTab('createVolume'))}
+            onClick={() =>
+              dispatch(updateState({ volumeRootTab: 'createVolume' }))
+            }
           >
             <Button
               disabled={false}

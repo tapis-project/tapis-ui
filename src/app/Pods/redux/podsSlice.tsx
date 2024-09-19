@@ -1,14 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { set } from 'date-fns';
 
 interface PodsState {
+  // Tab bars, used to store state when moving in and out of specific tabs.
   podTab: string;
   volumeTab?: string;
   volumeRootTab?: string;
+  templateTab: string;
+  templateTagTab: string;
+
+  // Current IDs for the selected obj. Used for lots.
+  activeTemplate?: string;
+  activeTemplateTag?: string;
+  templateNavSelectedItems: string; //multiselect must be on for string[]
+  templateNavExpandedItems: string[];
 
   lastPodId?: string;
   lastVolumeId?: string;
   lastSnapshotId?: string;
-  lastTemplateId?: string;
   lastImageId?: string;
   currentPage?: string;
 }
@@ -18,30 +27,23 @@ const initialState: PodsState = {
   podTab: 'details',
   volumeTab: 'details',
   volumeRootTab: 'dashboard',
+  templateNavExpandedItems: [],
+  templateNavSelectedItems: '',
+  templateTab: 'details',
+  templateTagTab: 'details',
 };
 
 const podsSlice = createSlice({
   name: 'pods',
   initialState,
   reducers: {
-    setIds(state, action: PayloadAction<Partial<PodsState>>) {
+    // Use with:
+    // dispatch(updateState({"podTab": tabValue}));
+    updateState(state, action: PayloadAction<Partial<PodsState>>) {
       return { ...state, ...action.payload };
-    },
-    setPodTab(state, action: PayloadAction<string>) {
-      const tabValue = action.payload;
-      state.podTab = tabValue;
-    },
-    setVolumeTab(state, action: PayloadAction<string>) {
-      const tabValue = action.payload;
-      state.volumeTab = tabValue;
-    },
-    setVolumeRootTab(state, action: PayloadAction<string>) {
-      const tabValue = action.payload;
-      state.volumeRootTab = tabValue;
     },
   },
 });
 
-export const { setIds, setPodTab, setVolumeTab, setVolumeRootTab } =
-  podsSlice.actions;
+export const { updateState } = podsSlice.actions;
 export default podsSlice.reducer;

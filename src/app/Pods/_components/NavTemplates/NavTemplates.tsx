@@ -1,105 +1,65 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-
 import { useRouteMatch } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import PodsLoadingText from '../PodsLoadingText';
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { TreeViewBaseItem } from '@mui/x-tree-view/models';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import {
-  unstable_useTreeItem2 as useTreeItem2,
-  UseTreeItem2Parameters,
-} from '@mui/x-tree-view/useTreeItem2';
-import {
-  TreeItem2Content,
-  TreeItem2IconContainer,
-  TreeItem2GroupTransition,
-  TreeItem2Label,
-  TreeItem2Root,
-  TreeItem2Checkbox,
-} from '@mui/x-tree-view/TreeItem2';
-import { TreeItem2Icon } from '@mui/x-tree-view/TreeItem2Icon';
-import { TreeItem2Provider } from '@mui/x-tree-view/TreeItem2Provider';
-import { TreeItem2DragAndDropOverlay } from '@mui/x-tree-view/TreeItem2DragAndDropOverlay';
-import FolderRounded from '@mui/icons-material/FolderRounded';
-import ImageIcon from '@mui/icons-material/Image';
-import ArticleIcon from '@mui/icons-material/Article';
+  TreeItem,
+  treeItemClasses,
+  TreeItemProps,
+} from '@mui/x-tree-view/TreeItem';
+import { styled, alpha } from '@mui/material/styles';
+import IndeterminateCheckBoxRoundedIcon from '@mui/icons-material/IndeterminateCheckBoxRounded';
+import DisabledByDefaultRoundedIcon from '@mui/icons-material/DisabledByDefaultRounded';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import { format } from 'date-fns';
 import styles from '../Pages.module.scss';
-import { format, formatDistanceToNow } from 'date-fns';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateState } from '../../redux/podsSlice';
+import { RootState } from '../../redux/store';
 
-const CustomTreeItemContent = styled(TreeItem2Content)(({ theme }) => ({
-  padding: theme.spacing(0.5, 1),
+interface CustomTreeItemProps extends TreeItemProps {
+  isLeaf?: boolean;
+}
+
+const CustomTreeItem = styled(({ isLeaf, ...other }: CustomTreeItemProps) => (
+  <TreeItem {...other} />
+))(({ theme, isLeaf }) => ({
+  [`& .${treeItemClasses.content}`]: {
+    padding: theme.spacing(0.5, 1),
+    margin: theme.spacing(0.2, 0),
+  },
+  [`& .${treeItemClasses.iconContainer}`]: {
+    '& .close': {
+      opacity: 0.3,
+    },
+    display: isLeaf ? 'none' : 'block', // Hide icon if it's a leaf node
+  },
+  [`& .${treeItemClasses.groupTransition}`]: {
+    marginLeft: 16,
+    paddingLeft: 3,
+    borderLeft: `.5px solid ${alpha(theme.palette.text.primary, 0.12)}`,
+  },
 }));
 
-interface CustomTreeItemProps
-  extends Omit<UseTreeItem2Parameters, 'rootRef'>,
-    Omit<React.HTMLAttributes<HTMLLIElement>, 'onFocus'> {}
+function ExpandIcon(props: React.PropsWithoutRef<typeof AddBoxRoundedIcon>) {
+  return <AddBoxRoundedIcon {...props} sx={{ opacity: 0.3 }} />;
+}
 
-const getIconByLevel = (level: number) => {
-  switch (level) {
-    case 1:
-      return FolderRounded;
-    case 2:
-      return ImageIcon;
-    case 3:
-      return ArticleIcon;
-    default:
-      return ArticleIcon;
-  }
-};
-
-const CustomTreeItem = React.forwardRef(function CustomTreeItem(
-  props: CustomTreeItemProps,
-  ref: React.Ref<HTMLLIElement>
+function CollapseIcon(
+  props: React.PropsWithoutRef<typeof IndeterminateCheckBoxRoundedIcon>
 ) {
-  const { id, itemId, label, disabled, children, ...other } = props;
+  return <IndeterminateCheckBoxRoundedIcon {...props} sx={{ opacity: 0.55 }} />;
+}
 
-  const {
-    getRootProps,
-    getContentProps,
-    getIconContainerProps,
-    getCheckboxProps,
-    getLabelProps,
-    getGroupTransitionProps,
-    getDragAndDropOverlayProps,
-    status,
-  } = useTreeItem2({ id, itemId, children, label, disabled, rootRef: ref });
-
-  const level = itemId.split('-').length;
-  const Icon = getIconByLevel(level);
-
-  return (
-    <TreeItem2Provider itemId={itemId}>
-      <TreeItem2Root {...getRootProps(other)}>
-        <CustomTreeItemContent {...getContentProps()}>
-          <TreeItem2IconContainer
-            {...getIconContainerProps()}
-            className={styles.secondaryText}
-          >
-            <Icon />
-          </TreeItem2IconContainer>
-          <Box sx={{ flexGrow: 1, display: 'flex', gap: 1 }}>
-            <TreeItem2Checkbox
-              {...getCheckboxProps()}
-              className={styles.secondaryText}
-            />
-            <TreeItem2Label
-              {...getLabelProps()}
-              className={styles.secondaryText}
-            />
-          </Box>
-          <TreeItem2DragAndDropOverlay {...getDragAndDropOverlayProps()} />
-        </CustomTreeItemContent>
-        {children && (
-          <TreeItem2GroupTransition {...getGroupTransitionProps()} />
-        )}
-      </TreeItem2Root>
-    </TreeItem2Provider>
-  );
-});
+function EndIcon(
+  props: React.PropsWithoutRef<typeof DisabledByDefaultRoundedIcon>
+) {
+  return <DisabledByDefaultRoundedIcon {...props} sx={{ opacity: 0.3 }} />;
+}
 
 const NavTemplates: React.FC = () => {
   const { url } = useRouteMatch();
@@ -109,6 +69,11 @@ const NavTemplates: React.FC = () => {
   const definitions = data?.result || {};
   const loadingText = PodsLoadingText();
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  const { templateNavExpandedItems, templateNavSelectedItems } = useSelector(
+    (state: RootState) => state.pods
+  );
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
     const parts = itemId.split('-');
@@ -124,6 +89,22 @@ const NavTemplates: React.FC = () => {
     }
 
     history.push(redirectUrl);
+  };
+
+  const handleItemsChange = (
+    event: React.SyntheticEvent,
+    itemIds: string[]
+  ) => {
+    dispatch(updateState({ templateNavExpandedItems: itemIds }));
+  };
+
+  const handleSelectedItemsChange = (
+    event: React.SyntheticEvent,
+    itemIds: string | null
+  ) => {
+    if (itemIds !== null) {
+      dispatch(updateState({ templateNavSelectedItems: itemIds }));
+    }
   };
 
   if (isLoading) {
@@ -155,49 +136,61 @@ const NavTemplates: React.FC = () => {
     }
   };
 
-  const items: TreeViewBaseItem[] = Object.keys(definitions).map(
-    (templateId) => {
-      const tags = definitions[templateId].tags || [];
-      const groupedTags: { [key: string]: TreeViewBaseItem[] } = {};
+  const items = Object.keys(definitions).map((templateId) => {
+    const tags = definitions[templateId].tags || [];
+    const groupedTags: { [key: string]: React.ReactNode[] } = {};
 
-      tags.forEach((tag: any) => {
-        const [prefix, timestamp] = tag.tag_timestamp.split('@');
-        const formattedTimestamp = format(new Date(timestamp), 'yyyy/MM/dd'); // H:mm:ss
-        const timeAgo = formatTimeAgo(timestamp);
+    tags.forEach((tag: any) => {
+      const [prefix, timestamp] = tag.tag_timestamp.split('@');
+      const formattedTimestamp = format(new Date(timestamp), 'yyyy/MM/dd');
+      const timeAgo = formatTimeAgo(timestamp);
 
-        if (!groupedTags[prefix]) {
-          groupedTags[prefix] = [];
-        }
-        groupedTags[prefix].push({
-          id: `${templateId}-${prefix}-${timestamp}`,
-          label: `${formattedTimestamp} | ${timeAgo}`,
-        });
-      });
+      if (!groupedTags[prefix]) {
+        groupedTags[prefix] = [];
+      }
+      groupedTags[prefix].push(
+        <CustomTreeItem
+          key={`${templateId}-${prefix}-${timestamp}`}
+          itemId={`${templateId}-${prefix}-${timestamp}`}
+          label={`${formattedTimestamp} | ${timeAgo}`}
+          isLeaf={true}
+        />
+      );
+    });
+    const children = Object.keys(groupedTags).map((prefix) => (
+      <CustomTreeItem
+        key={`${templateId}-${prefix}`}
+        itemId={`${templateId}-${prefix}`}
+        label={prefix}
+      >
+        {groupedTags[prefix]}
+      </CustomTreeItem>
+    ));
 
-      const children = Object.keys(groupedTags).map((prefix) => ({
-        id: `${templateId}-${prefix}`,
-        label: prefix,
-        children: groupedTags[prefix],
-      }));
-
-      return {
-        id: templateId,
-        label: templateId,
-        children,
-      };
-    }
-  );
+    return (
+      <CustomTreeItem key={templateId} itemId={templateId} label={templateId}>
+        {children}
+      </CustomTreeItem>
+    );
+  });
 
   return (
     <Navbar>
       <Box sx={{ minHeight: 200, minWidth: 250 }}>
-        <RichTreeView
-          defaultExpandedItems={[]}
-          itemChildrenIndentation={'.75rem'}
-          items={items}
-          slots={{ item: CustomTreeItem }}
+        <SimpleTreeView
+          expandedItems={templateNavExpandedItems}
+          onExpandedItemsChange={handleItemsChange}
+          selectedItems={templateNavSelectedItems}
+          onSelectedItemsChange={handleSelectedItemsChange}
           onItemClick={handleItemClick}
-        />
+          slots={{
+            expandIcon: ExpandIcon,
+            collapseIcon: CollapseIcon,
+            endIcon: EndIcon,
+          }}
+        >
+          {items}
+        </SimpleTreeView>
       </Box>
     </Navbar>
   );

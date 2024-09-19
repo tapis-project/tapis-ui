@@ -13,7 +13,7 @@ import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
-import { setVolumeRootTab } from '../../../redux/podsSlice';
+import { updateState } from '../../../redux/podsSlice';
 
 const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { data } = Hooks.useListVolumes(); //{search: `owner.like.${''}`,}
@@ -27,7 +27,7 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.listVolumes);
     history.push('/pods/volumes');
-    dispatch(setVolumeRootTab('dashboard')); // Ensure setVolumeRootTab is available in the scope
+    dispatch(updateState({ volumeRootTab: 'dashboard' }));
   }, [queryClient, history]);
 
   const { deleteVolume, isLoading, error, isSuccess, reset } =

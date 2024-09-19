@@ -10,7 +10,7 @@ import { RefreshRounded } from '@mui/icons-material';
 import { UpdatePodBase } from '../PodToolbar/CreatePodModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { setPodTab } from '../../redux/podsSlice';
+import { updateState } from '../../redux/podsSlice';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import {
@@ -289,7 +289,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                         if (customOnClick) {
                           customOnClick();
                         } else if (tabValue) {
-                          dispatch(setPodTab(tabValue));
+                          dispatch(updateState({ podTab: tabValue }));
                         }
                       }}
                     >
@@ -326,7 +326,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
                         if (customOnClick) {
                           customOnClick();
                         } else if (tabValue) {
-                          dispatch(setPodTab(tabValue));
+                          dispatch(updateState({ podTab: tabValue }));
                         }
                       }}
                     >

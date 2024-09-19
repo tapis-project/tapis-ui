@@ -2,21 +2,17 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  setIds,
-  setPodTab,
-  setVolumeRootTab,
-  setVolumeTab,
-} from '../../redux/podsSlice';
+import { updateState } from '../../redux/podsSlice';
 import { RootState } from '../../redux/store';
 import { Stack, Button } from '@mui/material';
 
 interface PodsNavigationProps {
   from?: 'pods' | 'templates' | 'images' | 'volumes' | 'snapshots';
   id?: string;
+  id2?: string;
 }
 
-const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
+const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const {
@@ -24,10 +20,12 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
     volumeTab,
     volumeRootTab,
 
+    activeTemplate,
+    activeTemplateTag,
+
     lastPodId,
     lastVolumeId,
     lastSnapshotId,
-    lastTemplateId,
     lastImageId,
     currentPage,
   } = useSelector((state: RootState) => state.pods);
@@ -36,7 +34,7 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
     // If history.location = '/pods' change currentPage to podspage
     if (history.location.pathname === '/pods') {
       console.log('testing: ', history.location.pathname);
-      dispatch(setIds({ currentPage: 'podspage' }));
+      dispatch(updateState({ currentPage: 'podspage' }));
     }
   }, [history.location.pathname, dispatch]);
 
@@ -56,7 +54,8 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
           stateUpdates.lastPodId = id;
           break;
         case 'templates':
-          stateUpdates.lastTemplateId = id;
+          stateUpdates.activeTemplate = id;
+          stateUpdates.activeTemplateTag = id2;
           break;
         case 'images':
           stateUpdates.lastImageId = id;
@@ -70,11 +69,11 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
     }
 
     if (volumeTab === 'edit') {
-      dispatch(setVolumeTab('details'));
+      dispatch(updateState({ volumeTab: 'details' }));
     }
 
     if (podTab === 'secrets' || podTab === 'edit') {
-      dispatch(setPodTab('details'));
+      dispatch(updateState({ podTab: 'details' }));
     }
 
     switch (destination) {
@@ -83,11 +82,22 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
         stateUpdates.currentPage = 'podspage';
         break;
       case 'templates':
-        history.push(
-          lastTemplateId
-            ? `/pods/templates/${lastTemplateId}`
-            : '/pods/templates'
-        );
+        if (from === 'templates') {
+          stateUpdates.activeTemplate = '';
+          stateUpdates.activeTemplateTag = '';
+          stateUpdates.templateNavSelectedItems = '';
+          history.push('/pods/templates');
+        } else {
+          stateUpdates.activeTemplate = id;
+          stateUpdates.activeTemplateTag = id2;
+          history.push(
+            activeTemplate
+              ? activeTemplateTag
+                ? `/pods/templates/${activeTemplate}/tags/${activeTemplateTag}`
+                : `/pods/templates/${activeTemplate}`
+              : '/pods/templates'
+          );
+        }
         stateUpdates.currentPage = 'templatespage';
         break;
       case 'images':
@@ -121,7 +131,7 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id }) => {
         console.warn('Unexpected destination:', destination);
     }
 
-    dispatch(setIds(stateUpdates));
+    dispatch(updateState(stateUpdates));
   };
 
   return (

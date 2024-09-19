@@ -13,7 +13,6 @@ import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
-import { setVolumeRootTab } from '../../../redux/podsSlice';
 
 const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { data } = Hooks.useListPods(); // Assuming there's a hook to list pods
