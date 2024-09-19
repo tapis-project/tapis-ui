@@ -33,8 +33,6 @@ export const tapisSystem: Systems.TapisSystem = {
   proxyHost: undefined,
   proxyPort: -1,
   dtnSystemId: undefined,
-  dtnMountPoint: undefined,
-  dtnMountSourcePath: undefined,
   isDtn: false,
   canExec: true,
   canRunBatch: true,
