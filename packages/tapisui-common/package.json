@@ -44,6 +44,7 @@
   "dependencies": {
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.16.0",
+    "@mui/lab": "^5.0.0-alpha.173",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@tapis/tapis-typescript": "^0.0.49",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",

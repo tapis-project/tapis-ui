@@ -85,8 +85,8 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
               <AlertTitle>Get Globus Authorization Code</AlertTitle>
               Click the <b>GET AUTHORIZATION CODE</b> button below to
               authenticate with Globus and retrieve your authorization code.
-              This will authorize Tapis to access files in your Globus collection
-              on your behalf.
+              This will authorize Tapis to access files in your Globus
+              collection on your behalf.
               <div style={{ marginTop: '24px' }}>
                 <a target="_blank" href={result.url}>
                   <Button startIcon={<Login />} size="small" variant="outlined">
