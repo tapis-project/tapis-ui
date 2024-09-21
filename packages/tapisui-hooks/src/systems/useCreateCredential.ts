@@ -6,12 +6,12 @@ import QueryKeys from './queryKeys';
 
 type CreateUserCredentialHookParams = {
   systemId: string;
-  userName: string;
+  userName?: string;
   reqUpdateCredential: Systems.ReqUpdateCredential;
 };
 
 const useCreateCredential = () => {
-  const { basePath, accessToken } = useTapisConfig();
+  const { basePath, accessToken, claims } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
 
@@ -22,7 +22,17 @@ const useCreateCredential = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespBasic, Error, CreateUserCredentialHookParams>(
       [QueryKeys.createUserCredential, basePath, jwt],
-      (params) => API.createUserCredential(params, basePath, jwt)
+      (params) =>
+        API.createUserCredential(
+          {
+            ...params,
+            userName: params.userName
+              ? params.userName
+              : claims['sub'].split('@')[0],
+          },
+          basePath,
+          jwt
+        )
     );
 
   const invalidate = () => {

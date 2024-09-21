@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { Button, Chip, Divider } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import { GlobusAuthModal } from '../Modals';
+import { GlobusAuthModal, AuthModal } from '../Modals';
 
 const AuthButton: React.FC<{
   toggle: () => void;
@@ -107,7 +107,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
                 setModal(
                   system.systemType === Systems.SystemTypeEnum.Globus
                     ? 'globusauth'
-                    : 'createcred'
+                    : 'auth'
                 );
               }}
             />
@@ -312,6 +312,14 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <Divider />
         <JSONDisplay json={system.notes || {}} />
       </div>
+      <AuthModal
+        systemId={system.id!}
+        defaultAuthnMethod={system.defaultAuthnMethod!}
+        open={modal === 'auth'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
       <GlobusAuthModal
         systemId={system.id!}
         open={modal === 'globusauth'}
