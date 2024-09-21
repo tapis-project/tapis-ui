@@ -9,3 +9,6 @@ export { default as unShareSystemPublic } from './unShareSystemPublic';
 export { default as createChildSystem } from './createChildSystem';
 export { default as createUserCredential } from './createUserCredential';
 export { default as checkUserCredential } from './checkUserCredential';
+export { default as getUserPerms } from './getUserPerms';
+export { default as getGlobusAuthUrl } from './getGlobusAuthUrl';
+export { default as generateGlobusTokens } from './generateGlobusTokens';

@@ -1,8 +1,8 @@
 import { Systems } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
-const getGlobusAuthUrl = (
-  params: Systems.GetGlobusAuthUrlRequest,
+const generateGlobusTokens = (
+  params: Systems.GenerateGlobusTokensRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -12,9 +12,9 @@ const getGlobusAuthUrl = (
     basePath,
     jwt
   );
-  return errorDecoder<Systems.RespGlobusAuthUrl>(() =>
-    api.getGlobusAuthUrl(params)
+  return errorDecoder<Systems.RespBasic>(() =>
+    api.generateGlobusTokens(params)
   );
 };
 
-export default getGlobusAuthUrl;
+export default generateGlobusTokens;

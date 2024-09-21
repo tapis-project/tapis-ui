@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Systems as Hooks } from '@tapis/tapisui-hooks';
+import {
+  Systems as SystemsHooks,
+  Files as FilesHooks,
+} from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
 import { QueryWrapper } from '../../../wrappers';
@@ -22,9 +25,29 @@ import {
   CalendarMonth,
   HourglassEmpty,
   TextSnippet,
+  Login,
+  Delete,
 } from '@mui/icons-material';
-import { Button, Chip, Divider, Alert, AlertTitle } from '@mui/material';
+import { Button, Chip, Divider } from '@mui/material';
 import { useHistory } from 'react-router-dom';
+import { GlobusAuthModal } from '../Modals';
+
+const AuthButton: React.FC<{
+  toggle: () => void;
+}> = ({ toggle }) => {
+  return (
+    <div>
+      <Button
+        size="small"
+        variant="text"
+        onClick={toggle}
+        startIcon={<Login />}
+      >
+        Authenticate
+      </Button>
+    </div>
+  );
+};
 
 type SystemCardProps = {
   system: Systems.TapisSystem;
@@ -32,8 +55,18 @@ type SystemCardProps = {
 
 const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
   const [showJSON, setShowJSON] = useState(false);
-
   const history = useHistory();
+  const [modal, setModal] = useState<string | undefined>(undefined);
+  const { data, isLoading } = FilesHooks.useList(
+    {
+      systemId: system.id!,
+      path: '/',
+    },
+    {
+      retry: 0,
+    }
+  );
+
   return (
     <div className={styles['cards-container']}>
       <div className={styles['card']}>
@@ -43,6 +76,16 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             <span className={styles['card-title']}>{system.id}</span>
             <span className={styles['muted']}>({system.systemType})</span>
             <span className={styles['muted']}>{system.uuid}</span>
+            <Button
+              size="small"
+              startIcon={<DataObject />}
+              onClick={() => {
+                setShowJSON(!showJSON);
+              }}
+              variant="text"
+            >
+              {!showJSON ? 'View JSON' : 'Hide JSON'}
+            </Button>
           </div>
           <div></div>
           <div className={styles['card-line']}>
@@ -55,32 +98,60 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           </div>
         </div>
         <div className={styles['card-line']}>
+          <p className={styles['muted']}>Authenticated</p>
+          {isLoading && <i>Checking credentials...</i>}
+          {!isLoading && !data && <Close color="error" />}
+          {!isLoading && !data && (
+            <AuthButton
+              toggle={() => {
+                setModal(
+                  system.systemType === Systems.SystemTypeEnum.Globus
+                    ? 'globusauth'
+                    : 'createcred'
+                );
+              }}
+            />
+          )}
+          {!isLoading && data && <Check color="success" />}
+        </div>
+        <div className={styles['card-line']}>
           <p className={styles['muted']}>{system.description}</p>
         </div>
         <Divider />
         <div className={styles['flex-space-between']}>
-          <Button
-            onClick={() => {
-              history.push(`/files/${system.id}`);
-            }}
-            variant="outlined"
-            startIcon={<Folder />}
-          >
-            Files
-          </Button>
+          <div className={styles['flex']}>
+            <Button
+              size="small"
+              disabled={!data}
+              onClick={() => {
+                history.push(`/files/${system.id}`);
+              }}
+              variant="outlined"
+              startIcon={<Folder />}
+            >
+              Files
+            </Button>
+          </div>
           <div></div>
-          <Button
-            onClick={() => {
-              setShowJSON(!showJSON);
-            }}
-          >
-            {showJSON ? 'Hide' : 'View'} JSON
-          </Button>
+          <div>
+            <Button
+              size="small"
+              startIcon={<Delete />}
+              color="error"
+              onClick={() => {
+                setShowJSON(!showJSON);
+              }}
+            >
+              Delete
+            </Button>
+          </div>
         </div>
         {showJSON && (
           <div>
             <Divider />
-            <JSONDisplay json={system} />
+            <div style={{ marginTop: '8px' }}>
+              <JSONDisplay json={system} />
+            </div>
           </div>
         )}
       </div>
@@ -115,7 +186,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         </div>
         <div className={styles['card-line']}>
           <Folder />
-          <span>{system.rootDir}</span>
+          <span>{system.rootDir ? system.rootDir : '/'}</span>
           <span className={styles['muted']}>rootDir</span>
         </div>
         <div className={styles['card-line']}>
@@ -227,7 +298,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         {system.tags!.length > 0 ? (
           <div className={styles['chips']}>
             {system.tags!.map((tag) => (
-              <Chip label={tag} />
+              <Chip size="small" label={tag} />
             ))}
           </div>
         ) : (
@@ -241,19 +312,26 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <Divider />
         <JSONDisplay json={system.notes || {}} />
       </div>
+      <GlobusAuthModal
+        systemId={system.id!}
+        open={modal === 'globusauth'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
     </div>
   );
 };
 
 const SystemDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
-  const { data, isLoading, error } = Hooks.useDetails({
+  const { data, isLoading, error, isSuccess } = SystemsHooks.useDetails({
     systemId,
     select: 'allAttributes',
   });
   const system: Systems.TapisSystem | undefined = data?.result;
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
-      {system && <SystemCard system={system} />}
+      {isSuccess && system && <SystemCard system={system} />}
     </QueryWrapper>
   );
 };
