@@ -119,7 +119,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const onSubmit = useCallback(() => {
     const operations: Array<Hooks.InsertHookParams> = files.map((file) => ({
       systemId: systemId!,
-      path: path!,
+      path: (path! + '/').replace('//', '/'),
       file,
       progressCallback: onProgress,
     }));

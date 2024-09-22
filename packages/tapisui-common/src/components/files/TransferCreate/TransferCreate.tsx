@@ -28,11 +28,14 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
 
   const onSubmit = useCallback(
     ({ tag }: { tag: string }) => {
-      const destinationURI = `tapis://${destinationSystemId}${destinationPath}`;
+      const destinationURI =
+        `tapis://${destinationSystemId}` +
+        `/${destinationPath}`.replace('//', '/');
       const elements: Array<Files.TransferTaskRequestElement> = files.map(
         (file) => ({
-          destinationURI,
-          sourceURI: `tapis://${sourceSystemId}${file.path}`,
+          destinationURI: `${destinationURI}/${file.name}`,
+          sourceURI:
+            `tapis://${sourceSystemId}` + `/${file.path}`.replace('//', '/'),
         })
       );
       const tagName = tag.length > 0 ? tag : undefined;

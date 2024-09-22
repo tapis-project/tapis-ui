@@ -27,7 +27,7 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
 }) => {
   if (location) {
     return (
-      <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
+      <NavLink to={`${location}/${file.name ?? ''}`} className={styles.dir}>
         {file.name}/
       </NavLink>
     );

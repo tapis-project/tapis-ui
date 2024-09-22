@@ -1,40 +1,40 @@
 import { Button } from 'reactstrap';
 import { Systems } from '@tapis/tapis-typescript';
-import { GenericModal } from '@tapis/tapisui-common';
-import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../SystemToolbar';
+import { GenericModal } from '../../../../ui';
+import { SubmitWrapper } from '../../../../wrappers';
 import { Form, Formik } from 'formik';
-import { FormikSelect } from '@tapis/tapisui-common';
-import { useEffect, useCallback } from 'react';
+import { FormikSelect } from '../../../../';
+import { useEffect } from 'react';
 import styles from './DeleteSystemModal.module.scss';
 import * as Yup from 'yup';
-import { useQueryClient } from 'react-query';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useHistory } from 'react-router-dom';
 
-type DeleteModalProps = ToolbarModalProps & {
+type DeleteModalProps = {
   systemId?: string;
+  toggle: () => void;
+  open: boolean;
 };
 
 const DeleteSystemModal: React.FC<DeleteModalProps> = ({
+  open,
   toggle,
   systemId,
 }) => {
+  if (!open) {
+    return <></>;
+  }
   const { claims } = useTapisConfig();
+  const history = useHistory();
   const effectiveUserId = claims['sub'].substring(
     0,
     claims['sub'].lastIndexOf('@')
   );
-  const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` }); //{search: `owner.like.${''}`,}
+  const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` });
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
-  //Allows the system list to update without the user having to refresh the page
-  const queryClient = useQueryClient();
-  const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
-  }, [queryClient]);
-
-  const { deleteSystem, isLoading, error, isSuccess, reset } =
+  const { deleteSystem, isLoading, error, isSuccess, reset, invalidate } =
     Hooks.useDeleteSystem();
 
   useEffect(() => {
@@ -49,8 +49,17 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
     systemId: '',
   };
 
-  const onSubmit = ({ systemId }: { systemId: string }) => {
-    deleteSystem(systemId, { onSuccess });
+  const onSubmit = ({ systemId: formSystemId }: { systemId: string }) => {
+    let systemIdToDelete: string | undefined = formSystemId;
+    if (systemId) {
+      systemIdToDelete = systemId;
+    }
+    deleteSystem(systemIdToDelete, {
+      onSuccess: () => {
+        invalidate();
+        history.push('/systems');
+      },
+    });
   };
 
   return (
@@ -74,6 +83,7 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
                       label="System ID"
                       required={true}
                       data-testid="systemId"
+                      defaultValue={systemId}
                     >
                       <option disabled selected value={systemId}>
                         {systemId}

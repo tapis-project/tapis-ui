@@ -1,4 +1,4 @@
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
 import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
@@ -13,6 +13,7 @@ type GenerateGlobusTokensHookParams = {
 const useGenerateGlobusTokens = () => {
   const { basePath, accessToken, claims } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
+  const queryClient = useQueryClient();
 
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
@@ -32,6 +33,10 @@ const useGenerateGlobusTokens = () => {
         )
     );
 
+  const invalidate = () => {
+    queryClient.invalidateQueries(QueryKeys.list);
+  };
+
   // Return hook object with loading states and login function
   return {
     isLoading,
@@ -40,6 +45,7 @@ const useGenerateGlobusTokens = () => {
     data,
     error,
     reset,
+    invalidate,
     generate: (
       params: Omit<Systems.GenerateGlobusTokensRequest, 'userName'>,
       // react-query options to allow callbacks such as onSuccess

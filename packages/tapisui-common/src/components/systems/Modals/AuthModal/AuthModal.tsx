@@ -63,7 +63,7 @@ const AuthModal: React.FC<ModalProps> = ({
     cert: undefined,
   };
   const [input, setInput] = useState(initialInput);
-  const { create, isLoading, isError, isSuccess, error, reset } =
+  const { create, isLoading, isError, isSuccess, error, reset, invalidate } =
     Hooks.useCreateCredential();
 
   const buildReqUpdateCredential = (
@@ -316,6 +316,7 @@ const AuthModal: React.FC<ModalProps> = ({
                 },
                 {
                   onSuccess: () => {
+                    invalidate();
                     setInput(initialInput);
                   },
                 }

@@ -42,6 +42,7 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
     isSuccess: isSuccessGenTokens,
     error: errorGenTokens,
     reset,
+    invalidate,
   } = Hooks.useGenerateGlobusTokens();
 
   const result = data?.result || undefined;
@@ -133,6 +134,7 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
               {
                 onSuccess: () => {
                   setInput(initialInput);
+                  invalidate();
                 },
               }
             );

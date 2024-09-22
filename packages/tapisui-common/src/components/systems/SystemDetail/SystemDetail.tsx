@@ -28,9 +28,9 @@ import {
   Login,
   Delete,
 } from '@mui/icons-material';
-import { Button, Chip, Divider } from '@mui/material';
+import { Button, Chip, Divider, Alert, AlertTitle } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import { GlobusAuthModal, AuthModal } from '../Modals';
+import { GlobusAuthModal, AuthModal, DeleteSystemModal } from '../Modals';
 
 const AuthButton: React.FC<{
   toggle: () => void;
@@ -72,10 +72,18 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
       <div className={styles['card']}>
         <div className={styles['flex-space-between']}>
           <div className={styles['card-line']}>
-            <Dns />
+            {system.isPublic ? <Public /> : <PublicOff />}
             <span className={styles['card-title']}>{system.id}</span>
             <span className={styles['muted']}>({system.systemType})</span>
+            {system.enabled ? (
+              <LockOpen color="success" />
+            ) : (
+              <Lock color="error" />
+            )}
             <span className={styles['muted']}>{system.uuid}</span>
+          </div>
+          <div></div>
+          <div>
             <Button
               size="small"
               startIcon={<DataObject />}
@@ -87,16 +95,13 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
               {!showJSON ? 'View JSON' : 'Hide JSON'}
             </Button>
           </div>
-          <div></div>
-          <div className={styles['card-line']}>
-            {system.enabled ? (
-              <LockOpen color="success" />
-            ) : (
-              <Lock color="error" />
-            )}
-            {system.isPublic ? <Public /> : <PublicOff />}
-          </div>
         </div>
+        {!system.enabled && (
+          <Alert severity="warning">
+            <AlertTitle>System disabled</AlertTitle>
+            Press the lock icon above to enable the system
+          </Alert>
+        )}
         <div className={styles['card-line']}>
           <p className={styles['muted']}>Authenticated</p>
           {isLoading && <i>Checking credentials...</i>}
@@ -119,19 +124,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         </div>
         <Divider />
         <div className={styles['flex-space-between']}>
-          <div className={styles['flex']}>
-            <Button
-              size="small"
-              disabled={!data}
-              onClick={() => {
-                history.push(`/files/${system.id}`);
-              }}
-              variant="outlined"
-              startIcon={<Folder />}
-            >
-              Files
-            </Button>
-          </div>
+          <div className={styles['flex']}></div>
           <div></div>
           <div>
             <Button
@@ -139,7 +132,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
               startIcon={<Delete />}
               color="error"
               onClick={() => {
-                setShowJSON(!showJSON);
+                setModal('deletesystem');
               }}
             >
               Delete
@@ -157,7 +150,8 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
       </div>
       <div className={styles['card']}>
         <div className={styles['card-line']}>
-          <Lan /> Host & File System
+          <Lan />
+          <span>Host & File System</span>
         </div>
         <Divider />
         <div className={styles['card-line']}>
@@ -201,6 +195,23 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             <span>{system.bucketName}</span>
           </div>
         )}
+        <Divider />
+        <div className={styles['flex-space-between']}>
+          <div className={styles['flex']}>
+            <Button
+              size="small"
+              disabled={!data}
+              onClick={() => {
+                history.push(`/files/${system.id}`);
+              }}
+              startIcon={<Folder />}
+            >
+              View Files
+            </Button>
+          </div>
+          <div></div>
+          <div></div>
+        </div>
       </div>
       <div className={styles['card']}>
         <div className={styles['card-line']}>
@@ -316,6 +327,13 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         systemId={system.id!}
         defaultAuthnMethod={system.defaultAuthnMethod!}
         open={modal === 'auth'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <DeleteSystemModal
+        systemId={system.id}
+        open={modal === 'deletesystem'}
         toggle={() => {
           setModal(undefined);
         }}

@@ -1,4 +1,4 @@
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
 import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
@@ -11,6 +11,7 @@ type DeleteSystemHookParams = {
 const useDeleteSystem = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
+  const queryClient = useQueryClient();
 
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
@@ -22,6 +23,10 @@ const useDeleteSystem = () => {
       ({ systemId }) => API.deleteSystem(systemId, basePath, jwt)
     );
 
+  const invalidate = () => {
+    queryClient.invalidateQueries([QueryKeys.list, QueryKeys.details]);
+  };
+
   // Return hook object with loading states and login function
   return {
     isLoading,
@@ -30,6 +35,7 @@ const useDeleteSystem = () => {
     data,
     error,
     reset,
+    invalidate,
     deleteSystem: (
       systemId: string,
       // react-query options to allow callbacks such as onSuccess
