@@ -21,7 +21,7 @@ describe('Toolbar', () => {
     (Hooks.usePermissions as jest.Mock).mockReturnValue({
       data: {
         result: {
-          permission: Files.FilePermissionPermissionEnum.Modify,
+          permission: Files.PermEnum.Modify,
         },
       },
       isLoading: false,

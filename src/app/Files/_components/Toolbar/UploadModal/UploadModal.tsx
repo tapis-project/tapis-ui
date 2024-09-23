@@ -128,7 +128,11 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const filesToFileInfo = (filesArr: Array<File>): Array<Files.FileInfo> => {
     return filesArr.map((file) => {
-      return { name: file.name, size: file.size, type: 'file' };
+      return {
+        name: file.name,
+        size: file.size,
+        type: Files.FileTypeEnum.File,
+      };
     });
   };
 
