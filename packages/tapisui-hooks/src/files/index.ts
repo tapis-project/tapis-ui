@@ -11,6 +11,7 @@ export { default as useDelete } from './useDelete';
 export { default as useDownload } from './useDownload';
 export { default as queryKeys } from './queryKeys';
 export * as Transfers from './transfers';
+export * as PostIts from './postits';
 
 export type MoveCopyHookParams = {
   systemId: string;

@@ -9,6 +9,7 @@ import RenameModal from './RenameModal';
 import UploadModal from './UploadModal';
 import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
+import CreatePostitModal from './CreatePostitModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
@@ -101,11 +102,17 @@ const Toolbar: React.FC = () => {
       {pathname !== '/files' && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
+            text="View"
+            icon="file"
+            disabled={selectedFiles.length !== 1}
+            onClick={() => setModal('postit')}
+            aria-label="View file"
+          />
+          <ToolbarButton
             text="Rename"
             icon="rename"
             disabled={
-              selectedFiles.length !== 1 ||
-              permission !== Files.FilePermissionPermissionEnum.Modify
+              selectedFiles.length !== 1 || permission !== Files.PermEnum.Modify
             }
             onClick={() => setModal('rename')}
             aria-label="Rename"
@@ -114,8 +121,7 @@ const Toolbar: React.FC = () => {
             text="Move"
             icon="move"
             disabled={
-              selectedFiles.length === 0 ||
-              permission !== Files.FilePermissionPermissionEnum.Modify
+              selectedFiles.length === 0 || permission !== Files.PermEnum.Modify
             }
             onClick={() => setModal('move')}
             aria-label="Move"
@@ -151,7 +157,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Upload"
             icon="upload"
-            disabled={permission !== Files.FilePermissionPermissionEnum.Modify}
+            disabled={permission !== Files.PermEnum.Modify}
             onClick={() => {
               setModal('upload');
             }}
@@ -160,7 +166,7 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="Folder"
             icon="add"
-            disabled={permission !== Files.FilePermissionPermissionEnum.Modify}
+            disabled={permission !== Files.PermEnum.Modify}
             onClick={() => setModal('createdir')}
             aria-label="Add"
           />
@@ -168,8 +174,7 @@ const Toolbar: React.FC = () => {
             text="Delete"
             icon="trash"
             disabled={
-              selectedFiles.length === 0 ||
-              permission !== Files.FilePermissionPermissionEnum.Modify
+              selectedFiles.length === 0 || permission !== Files.PermEnum.Modify
             }
             onClick={() => setModal('delete')}
             aria-label="Delete"
@@ -227,6 +232,13 @@ const Toolbar: React.FC = () => {
           )}
           {modal === 'delete' && (
             <DeleteModal
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
+          )}
+          {modal === 'postit' && (
+            <CreatePostitModal
               toggle={toggle}
               systemId={systemId}
               path={currentPath}

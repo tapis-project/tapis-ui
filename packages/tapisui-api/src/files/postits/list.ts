@@ -1,8 +1,8 @@
 import { Files } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../../utils';
 
-export const create = (
-  transferTaskRequest: Files.CreateTransferTaskRequest,
+export const list = (
+  params: Files.GetRecentTransferTasksRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -12,9 +12,9 @@ export const create = (
     basePath,
     jwt
   );
-  return errorDecoder<Files.TransferTaskResponse>(() =>
-    api.createTransferTask(transferTaskRequest)
+  return errorDecoder<Files.TransferTaskListResponse>(() =>
+    api.getRecentTransferTasks(params)
   );
 };
 
-export default create;
+export default list;

@@ -9,3 +9,4 @@ export { default as nativeOp } from './nativeOp';
 export { default as deleteFile } from './delete';
 export { default as downloadStream } from './downloadStream';
 export * as Transfers from './transfers';
+export * as PostIts from './postits';

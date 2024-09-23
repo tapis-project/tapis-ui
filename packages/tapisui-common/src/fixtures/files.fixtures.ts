@@ -4,7 +4,7 @@ export const fileInfo: Files.FileInfo = {
   name: 'file1.txt',
   path: '/file1.txt',
   size: 30000,
-  type: 'file',
+  type: Files.FileTypeEnum.File,
   lastModified: new Date('2020-01-01T12:00:00'),
 };
 
@@ -30,7 +30,7 @@ export const transferTask: Files.TransferTask = {
   tenantId: 'tacc',
   tag: 'transfer-1',
   uuid: '52404c37-5bc1-45d8-8a6c-43f175d952e2',
-  status: Files.TransferTaskStatusEnum.Completed,
+  status: Files.TransferStatusEnum.Completed,
   estimatedTotalBytes: 0,
   totalBytesTransferred: 0,
   totalTransfers: 0,

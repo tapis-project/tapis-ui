@@ -12,22 +12,14 @@ const useCreate = () => {
   // (Other hooks would be used for data retrieval)
   //
   // In this case, move helper is called to perform the operation
-  const {
-    mutate,
-    mutateAsync,
-    isLoading,
-    isError,
-    isSuccess,
-    data,
-    error,
-    reset,
-  } = useMutation<
-    Files.TransferTaskResponse,
-    Error,
-    Files.CreateTransferTaskRequest
-  >([QueryKeys.create, basePath, jwt], (request) =>
-    API.Transfers.create(request, basePath, jwt)
-  );
+  const { mutate, isLoading, isError, isSuccess, data, error, reset } =
+    useMutation<
+      Files.PostItResponse,
+      Error,
+      Files.CreatePostItOperationRequest
+    >([QueryKeys.create, basePath, jwt], (request) =>
+      API.PostIts.create(request, basePath, jwt)
+    );
 
   // Return hook object with loading states and login function
   return {
@@ -38,25 +30,17 @@ const useCreate = () => {
     error,
     reset,
     create: (
-      request: Files.CreateTransferTaskRequest,
+      request: Files.CreatePostItOperationRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Files.TransferTaskResponse,
+        Files.PostItResponse,
         Error,
-        Files.CreateTransferTaskRequest
+        Files.CreatePostItOperationRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(request, options);
     },
-    moveAsync: (
-      request: Files.CreateTransferTaskRequest,
-      options?: MutateOptions<
-        Files.TransferTaskResponse,
-        Error,
-        Files.CreateTransferTaskRequest
-      >
-    ) => mutateAsync(request, options),
   };
 };
 

@@ -31,16 +31,14 @@ const TransferCreate: React.FC<TransferCreateProps> = ({
       const destinationURI =
         `tapis://${destinationSystemId}` +
         `/${destinationPath}`.replace('//', '/');
-      const elements: Array<Files.TransferTaskRequestElement> = files.map(
-        (file) => ({
-          destinationURI: `${destinationURI}/${file.name}`,
-          sourceURI:
-            `tapis://${sourceSystemId}` + `/${file.path}`.replace('//', '/'),
-        })
-      );
+      const elements: Array<Files.ReqTransferElement> = files.map((file) => ({
+        destinationURI: `${destinationURI}/${file.name}`,
+        sourceURI:
+          `tapis://${sourceSystemId}` + `/${file.path}`.replace('//', '/'),
+      }));
       const tagName = tag.length > 0 ? tag : undefined;
       create(
-        { elements, tag: tagName },
+        { reqTransfer: { elements, tag: tagName } },
         { onSuccess: () => focusManager.setFocused(true) }
       );
     },
