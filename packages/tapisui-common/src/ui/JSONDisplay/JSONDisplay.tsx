@@ -3,7 +3,7 @@ import { Input, FormGroup, Label, Button } from 'reactstrap';
 import { CopyButton, TooltipModal } from '../../ui';
 import styles from './JSONDisplay.module.scss';
 import { Icon } from '../../ui';
-// import PodsCodeMirror from '../PodsCodeMirror';
+import PodsCodeMirror from '../PodsCodeMirror';
 
 const simplifyObject = (obj: any) => {
   const result = JSON.parse(JSON.stringify(obj));
@@ -163,19 +163,19 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({
           />
         )}
       </div>
-      {/* <PodsCodeMirror
+      <PodsCodeMirror
         value={outputJSON}
         // height={'20rem'}
         // width={'30rem'}
         isVisible={true}
-      /> */}
-      <Input
+      />
+      {/* <Input
         type="textarea"
         value={outputJSON}
         className={styles.json}
         rows={lineLengths}
         disabled={true}
-      />
+      /> */}
     </div>
   );
 };
