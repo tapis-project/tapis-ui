@@ -79,7 +79,7 @@ const PodToolbar: React.FC = () => {
           <ToolbarButton
             text="Create"
             icon="add"
-            disabled={false}
+            disabled={true}
             onClick={() => setModal('createpod')}
             aria-label="createPod"
           />

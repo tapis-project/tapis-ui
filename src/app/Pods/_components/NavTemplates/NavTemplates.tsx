@@ -71,23 +71,28 @@ const NavTemplates: React.FC = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const { templateNavExpandedItems, templateNavSelectedItems } = useSelector(
-    (state: RootState) => state.pods
-  );
+  const { templateNavExpandedItems, templateNavSelectedItems, templateTab } =
+    useSelector((state: RootState) => state.pods);
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
+    var tabState = 'details';
     const parts = itemId.split('-');
     const templateId = parts[0];
     let redirectUrl = `/pods/templates/${templateId}`;
 
     if (parts.length === 2) {
       redirectUrl += `/tags/${parts[1]}`;
+      tabState = 'details';
     } else if (parts.length >= 3) {
       const prefix = parts[1];
       const timestamp = parts.slice(2).join('-');
       redirectUrl += `/tags/${prefix}@${timestamp}`;
+      tabState = 'detailsTag';
     }
 
+    if (tabState !== '') {
+      dispatch(updateState({ templateTab: tabState }));
+    }
     history.push(redirectUrl);
   };
 
@@ -177,20 +182,25 @@ const NavTemplates: React.FC = () => {
   return (
     <Navbar>
       <Box sx={{ minHeight: 200, minWidth: 250 }}>
-        <SimpleTreeView
-          expandedItems={templateNavExpandedItems}
-          onExpandedItemsChange={handleItemsChange}
-          selectedItems={templateNavSelectedItems}
-          onSelectedItemsChange={handleSelectedItemsChange}
-          onItemClick={handleItemClick}
-          slots={{
-            expandIcon: ExpandIcon,
-            collapseIcon: CollapseIcon,
-            endIcon: EndIcon,
-          }}
-        >
-          {items}
-        </SimpleTreeView>
+        {items && items.length > 0 ? (
+          <SimpleTreeView
+            expandedItems={templateNavExpandedItems}
+            onExpandedItemsChange={handleItemsChange}
+            selectedItems={templateNavSelectedItems}
+            onSelectedItemsChange={handleSelectedItemsChange}
+            onItemClick={handleItemClick}
+            expansionTrigger="content"
+            slots={{
+              expandIcon: ExpandIcon,
+              collapseIcon: CollapseIcon,
+              endIcon: EndIcon,
+            }}
+          >
+            {items}
+          </SimpleTreeView>
+        ) : (
+          <i style={{ padding: '16px' }}>No templates found</i>
+        )}
       </Box>
     </Navbar>
   );

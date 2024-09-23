@@ -2,35 +2,50 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { set } from 'date-fns';
 
 interface PodsState {
+  // arctiveXxxId: string; // Active item ID, used to store state when moving in and out of specific items.
   // Tab bars, used to store state when moving in and out of specific tabs.
   podTab: string;
+  podRootTab: string;
+  activePodId?: string;
+
+  imageTab?: string;
+  imageRootTab?: string;
+  activeImageId?: string;
+
   volumeTab?: string;
   volumeRootTab?: string;
+  activeVolumeId?: string;
+
+  snapshotTab?: string;
+  snapshotRootTab?: string;
+  activeSnapshotId?: string;
+
   templateTab: string;
   templateTagTab: string;
-
-  // Current IDs for the selected obj. Used for lots.
+  templateRootTab: string;
   activeTemplate?: string;
   activeTemplateTag?: string;
-  templateNavSelectedItems: string; //multiselect must be on for string[]
+  templateNavSelectedItems: string; //multiselect in treeview must be on for string[]
   templateNavExpandedItems: string[];
 
-  lastPodId?: string;
-  lastVolumeId?: string;
-  lastSnapshotId?: string;
-  lastImageId?: string;
-  currentPage?: string;
+  activePage?: string;
 }
 
 const initialState: PodsState = {
-  currentPage: 'pods',
+  activePage: 'pods',
   podTab: 'details',
+  podRootTab: 'dashboard',
+  imageTab: 'details',
+  imageRootTab: 'dashboard',
   volumeTab: 'details',
   volumeRootTab: 'dashboard',
-  templateNavExpandedItems: [],
-  templateNavSelectedItems: '',
+  snapshotTab: 'details',
+  snapshotRootTab: 'dashboard',
   templateTab: 'details',
   templateTagTab: 'details',
+  templateRootTab: 'dashboard',
+  templateNavExpandedItems: [],
+  templateNavSelectedItems: '',
 };
 
 const podsSlice = createSlice({

@@ -13,56 +13,74 @@ import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
 import { useFormik, FormikProvider } from 'formik';
 import styles from './Common/Wizard.module.scss';
 
-export type VolumeWizardProps = {
+export type SnapshotWizardProps = {
   sharedData: any;
   setSharedData: any;
 };
 
-const VolumeWizard: React.FC<VolumeWizardProps> = ({
+const SnapshotWizard: React.FC<SnapshotWizardProps> = ({
   sharedData,
   setSharedData,
 }) => {
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.getVolume);
-    queryClient.invalidateQueries(Hooks.queryKeys.listVolumes);
+    queryClient.invalidateQueries(Hooks.queryKeys.getSnapshot);
+    queryClient.invalidateQueries(Hooks.queryKeys.listSnapshots);
   }, [queryClient]);
 
   const initialValues: any = {
-    volume_id: '',
+    snapshot_id: '',
     description: '',
     size_limit: '',
+    source_volume_id: '',
+    source_volume_path: '',
   };
 
-  const { createVolume, isLoading, error, isSuccess, reset } =
-    Hooks.useCreateVolume();
+  const { createSnapshot, isLoading, error, isSuccess, reset } =
+    Hooks.useCreateSnapshot();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const validationSchema = Yup.object({
-    volume_id: Yup.string()
+    snapshot_id: Yup.string()
       .min(1)
-      .max(128, 'Volume ID should not be longer than 128 characters')
-      .required('Volume ID is required'),
+      .max(128, 'Snapshot ID should not be longer than 128 characters')
+      .required('Snapshot ID is required'),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
     size_limit: Yup.number().min(1).max(20000).required(),
+    source_volume_id: Yup.string()
+      .min(1)
+      .max(128, 'Source Volume ID should not be longer than 128 characters')
+      .required('Source Volume ID is required'),
+    source_volume_path: Yup.string()
+      .min(1)
+      .max(2048, 'Source Volume Path should not be longer than 2048 characters')
+      .required('Source Volume Path is required'),
   });
 
   const onSubmit = (
-    { volume_id = '', description, size_limit }: any,
-    { setSubmitting }: any
-  ) => {
-    const newVolume = {
-      volume_id,
+    {
+      snapshot_id = '',
       description,
       size_limit,
+      source_volume_id,
+      source_volume_path,
+    }: any,
+    { setSubmitting }: any
+  ) => {
+    const newSnapshot = {
+      snapshot_id,
+      description,
+      size_limit,
+      source_volume_id,
+      source_volume_path,
     };
 
-    createVolume({ newVolume }, { onSuccess });
+    createSnapshot({ newSnapshot }, { onSuccess });
     setSubmitting(false);
   };
 
@@ -82,44 +100,55 @@ const VolumeWizard: React.FC<VolumeWizardProps> = ({
         className={styles['modal-footer']}
         isLoading={isLoading}
         error={error}
-        success={isSuccess ? `Volume created.` : ''}
+        success={isSuccess ? `Snapshot created.` : ''}
         reverse={true}
       >
         <Button
           sx={{ mb: '.75rem' }}
-          form="create-volume-form"
+          form="create-snapshot-form"
           color="primary"
           disabled={isLoading || Object.keys(formik.values).length === 0}
           aria-label="Submit"
           type="submit"
           variant="outlined"
         >
-          Submit Volume
+          Submit Snapshot
         </Button>
       </SubmitWrapper>
 
       <FormikProvider value={formik}>
-        <form id="create-volume-form" onSubmit={formik.handleSubmit}>
+        <form id="create-snapshot-form" onSubmit={formik.handleSubmit}>
           <AutoPruneEmptyFields validationSchema={validationSchema} />
           <FMTextField
             formik={formik}
-            name="volume_id"
-            label="Volume ID"
-            // description = {JSON.stringify(requiredKeys, null, 2)}
-            description="ID for this volume, unique per-tenant"
+            name="snapshot_id"
+            label="Snapshot ID"
+            description="ID for this snapshot, unique per-tenant"
           />
           <FMTextField
             formik={formik}
             name="description"
             label="Description"
             multiline={true}
-            description="Description of this volume for future reference"
+            description="Description of this snapshot for future reference"
           />
           <FMTextField
             formik={formik}
             name="size_limit"
             label="Size Limit"
-            description="Limit on the size of the volume in megabytes (MB)"
+            description="Limit on the size of the snapshot in megabytes (MB)"
+          />
+          <FMTextField
+            formik={formik}
+            name="source_volume_id"
+            label="Source Volume ID"
+            description="The volume_id to use as source of snapshot."
+          />
+          <FMTextField
+            formik={formik}
+            name="source_volume_path"
+            label="Source Volume Path"
+            description="The path to the volume to use as source of snapshot."
           />
         </form>
       </FormikProvider>
@@ -127,4 +156,4 @@ const VolumeWizard: React.FC<VolumeWizardProps> = ({
   );
 };
 
-export default VolumeWizard;
+export default SnapshotWizard;

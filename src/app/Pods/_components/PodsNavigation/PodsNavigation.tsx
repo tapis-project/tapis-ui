@@ -1,4 +1,3 @@
-// src/app/Pods/_components/PodsNavigation/PodsNavigation.tsx
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,26 +16,50 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
   const dispatch = useDispatch();
   const {
     podTab,
+    podRootTab,
+    activePodId,
+
+    imageTab,
+    imageRootTab,
+    activeImageId,
+
+    snapshotTab,
+    snapshotRootTab,
+    activeSnapshotId,
+
     volumeTab,
     volumeRootTab,
+    activeVolumeId,
 
     activeTemplate,
     activeTemplateTag,
 
-    lastPodId,
-    lastVolumeId,
-    lastSnapshotId,
-    lastImageId,
-    currentPage,
+    activePage,
   } = useSelector((state: RootState) => state.pods);
 
   useEffect(() => {
-    // If history.location = '/pods' change currentPage to podspage
+    // If history.location = '/pods' change activePage to podspage, for managing pressing on pods tab sidebar
+    // More state like this maybe needed for other tabs to auto highlight correct tab
     if (history.location.pathname === '/pods') {
-      console.log('testing: ', history.location.pathname);
-      dispatch(updateState({ currentPage: 'podspage' }));
+      dispatch(updateState({ activePage: 'podspage' }));
     }
   }, [history.location.pathname, dispatch]);
+
+  const handleMiddleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    destination: string,
+    id?: string
+  ) => {
+    if (event.button === 1) {
+      // Middle click
+      event.preventDefault();
+      let url = `http://localhost:3000/#/pods/${destination}`;
+      if (id) {
+        url += `/${id}`;
+      }
+      window.open(url, '_blank');
+    }
+  };
 
   const updateStateAndNavigate = (
     destination: 'pods' | 'templates' | 'images' | 'volumes' | 'snapshots',
@@ -45,31 +68,43 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
   ) => {
     const stateUpdates: Partial<RootState['pods']> = {};
 
-    console.log(`from: ${from}, id: ${id}, currentPage: ${currentPage}`);
+    console.log(`from: ${from}, id: ${id}, activePage: ${activePage}`);
 
-    // This should ensure objId stays the same for each page. Can be set last podId or '' for root.
+    // This should ensure objId stays the same for each page. Can be set activePodId or '' for root.
     if (id !== undefined) {
       switch (from) {
         case 'pods':
-          stateUpdates.lastPodId = id;
+          stateUpdates.activePodId = id;
           break;
         case 'templates':
           stateUpdates.activeTemplate = id;
           stateUpdates.activeTemplateTag = id2;
           break;
         case 'images':
-          stateUpdates.lastImageId = id;
+          stateUpdates.activeImageId = id;
           break;
         case 'volumes':
-          stateUpdates.lastVolumeId = id;
+          stateUpdates.activeVolumeId = id;
+          break;
+        case 'snapshots':
+          stateUpdates.activeSnapshotId = id;
           break;
         default:
           console.warn('Unexpected from:', from);
       }
     }
 
+    // Close edit tabs when navigating to another page as most people won't want that?
     if (volumeTab === 'edit') {
       dispatch(updateState({ volumeTab: 'details' }));
+    }
+
+    if (snapshotTab === 'edit') {
+      dispatch(updateState({ snapshotTab: 'details' }));
+    }
+
+    if (imageTab === 'edit') {
+      dispatch(updateState({ imageTab: 'details' }));
     }
 
     if (podTab === 'secrets' || podTab === 'edit') {
@@ -78,8 +113,14 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
 
     switch (destination) {
       case 'pods':
-        history.push(lastPodId ? `/pods/${lastPodId}` : '/pods');
-        stateUpdates.currentPage = 'podspage';
+        if (from === 'pods') {
+          stateUpdates.activePodId = '';
+          stateUpdates.podRootTab = 'dashboard';
+          history.push('/pods');
+        } else {
+          history.push(activePodId ? `/pods/${activePodId}` : '/pods');
+        }
+        stateUpdates.activePage = 'podspage';
         break;
       case 'templates':
         if (from === 'templates') {
@@ -88,8 +129,6 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
           stateUpdates.templateNavSelectedItems = '';
           history.push('/pods/templates');
         } else {
-          stateUpdates.activeTemplate = id;
-          stateUpdates.activeTemplateTag = id2;
           history.push(
             activeTemplate
               ? activeTemplateTag
@@ -98,34 +137,45 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
               : '/pods/templates'
           );
         }
-        stateUpdates.currentPage = 'templatespage';
+        stateUpdates.activePage = 'templatespage';
         break;
       case 'images':
-        history.push(
-          lastImageId ? `/pods/images/${lastImageId}` : '/pods/images'
-        );
-        stateUpdates.currentPage = 'imagespage';
+        if (from === 'images') {
+          stateUpdates.activeImageId = '';
+          stateUpdates.imageRootTab = 'dashboard';
+          history.push('/pods/images');
+        } else {
+          history.push(
+            activeImageId ? `/pods/images/${activeImageId}` : '/pods/images'
+          );
+        }
+        stateUpdates.activePage = 'imagespage';
         break;
       case 'volumes':
         if (from === 'volumes') {
-          stateUpdates.lastVolumeId = '';
+          stateUpdates.activeVolumeId = '';
           stateUpdates.volumeRootTab = 'dashboard';
           history.push('/pods/volumes');
         } else {
-          stateUpdates.lastVolumeId = id;
           history.push(
-            lastVolumeId ? `/pods/volumes/${lastVolumeId}` : '/pods/volumes'
+            activeVolumeId ? `/pods/volumes/${activeVolumeId}` : '/pods/volumes'
           );
         }
-        stateUpdates.currentPage = 'volumespage';
+        stateUpdates.activePage = 'volumespage';
         break;
       case 'snapshots':
-        history.push(
-          lastSnapshotId
-            ? `/pods/snapshots/${lastSnapshotId}`
-            : '/pods/snapshots'
-        );
-        stateUpdates.currentPage = 'snapshotspage';
+        if (from === 'snapshots') {
+          stateUpdates.activeSnapshotId = '';
+          stateUpdates.snapshotRootTab = 'dashboard';
+          history.push('/pods/snapshots');
+        } else {
+          history.push(
+            activeSnapshotId
+              ? `/pods/snapshots/${activeSnapshotId}`
+              : '/pods/snapshots'
+          );
+        }
+        stateUpdates.activePage = 'snapshotspage';
         break;
       default:
         console.warn('Unexpected destination:', destination);
@@ -138,41 +188,46 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     <Stack spacing={2} direction="row">
       <Button
         variant="outlined"
-        color={currentPage === 'podspage' ? 'secondary' : 'primary'}
+        color={activePage === 'podspage' ? 'secondary' : 'primary'}
         size="small"
         onClick={() => updateStateAndNavigate('pods', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'pods', id)}
       >
         Pods
       </Button>
       <Button
         variant="outlined"
-        color={currentPage === 'templatespage' ? 'secondary' : 'primary'}
+        color={activePage === 'templatespage' ? 'secondary' : 'primary'}
         size="small"
         onClick={() => updateStateAndNavigate('templates', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'templates', id)}
       >
         Templates
       </Button>
       <Button
         variant="outlined"
-        color={currentPage === 'imagespage' ? 'secondary' : 'primary'}
+        color={activePage === 'imagespage' ? 'secondary' : 'primary'}
         size="small"
         onClick={() => updateStateAndNavigate('images', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'images', id)}
       >
         Images
       </Button>
       <Button
         variant="outlined"
-        color={currentPage === 'volumespage' ? 'secondary' : 'primary'}
+        color={activePage === 'volumespage' ? 'secondary' : 'primary'}
         size="small"
         onClick={() => updateStateAndNavigate('volumes', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'volumes', id)}
       >
         Volumes
       </Button>
       <Button
         variant="outlined"
-        color={currentPage === 'snapshotspage' ? 'secondary' : 'primary'}
+        color={activePage === 'snapshotspage' ? 'secondary' : 'primary'}
         size="small"
         onClick={() => updateStateAndNavigate('snapshots', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'snapshots', id)}
       >
         Snapshots
       </Button>

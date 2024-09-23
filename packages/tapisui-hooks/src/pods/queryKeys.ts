@@ -1,6 +1,7 @@
 const QueryKeys = {
   // Pods
   getPod: 'pods/getPod',
+  getPodDerived: 'pods/getPodDerived',
   createPod: 'pods/createPod',
   updatePod: 'pods/updatePod',
   deletePod: 'pods/deletePod',

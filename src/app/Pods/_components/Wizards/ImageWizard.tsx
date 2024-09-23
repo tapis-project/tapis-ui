@@ -13,56 +13,56 @@ import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
 import { useFormik, FormikProvider } from 'formik';
 import styles from './Common/Wizard.module.scss';
 
-export type VolumeWizardProps = {
+export type ImageWizardProps = {
   sharedData: any;
   setSharedData: any;
 };
 
-const VolumeWizard: React.FC<VolumeWizardProps> = ({
+const ImageWizard: React.FC<ImageWizardProps> = ({
   sharedData,
   setSharedData,
 }) => {
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.getVolume);
-    queryClient.invalidateQueries(Hooks.queryKeys.listVolumes);
+    queryClient.invalidateQueries(Hooks.queryKeys.getImage);
+    queryClient.invalidateQueries(Hooks.queryKeys.listImages);
   }, [queryClient]);
 
   const initialValues: any = {
-    volume_id: '',
+    image_id: '',
     description: '',
-    size_limit: '',
+    tenants: '',
   };
 
-  const { createVolume, isLoading, error, isSuccess, reset } =
-    Hooks.useCreateVolume();
+  const { createImage, isLoading, error, isSuccess, reset } =
+    Hooks.useCreateImage();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const validationSchema = Yup.object({
-    volume_id: Yup.string()
+    image_id: Yup.string()
       .min(1)
-      .max(128, 'Volume ID should not be longer than 128 characters')
-      .required('Volume ID is required'),
+      .max(128, 'Image ID should not be longer than 128 characters')
+      .required('Image ID is required'),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
-    size_limit: Yup.number().min(1).max(20000).required(),
+    tenants: Yup.number().min(1).max(20000).required(),
   });
 
   const onSubmit = (
-    { volume_id = '', description, size_limit }: any,
+    { image_id = '', description, tenants }: any,
     { setSubmitting }: any
   ) => {
-    const newVolume = {
-      volume_id,
+    const newImage = {
+      image: image_id,
       description,
-      size_limit,
+      tenants,
     };
 
-    createVolume({ newVolume }, { onSuccess });
+    createImage({ newImage }, { onSuccess });
     setSubmitting(false);
   };
 
@@ -82,44 +82,44 @@ const VolumeWizard: React.FC<VolumeWizardProps> = ({
         className={styles['modal-footer']}
         isLoading={isLoading}
         error={error}
-        success={isSuccess ? `Volume created.` : ''}
+        success={isSuccess ? `Image created.` : ''}
         reverse={true}
       >
         <Button
           sx={{ mb: '.75rem' }}
-          form="create-volume-form"
+          form="create-image-form"
           color="primary"
-          disabled={isLoading || Object.keys(formik.values).length === 0}
+          disabled={true} //{isLoading || Object.keys(formik.values).length === 0}
           aria-label="Submit"
           type="submit"
           variant="outlined"
         >
-          Submit Volume
+          Submit Image
         </Button>
       </SubmitWrapper>
 
       <FormikProvider value={formik}>
-        <form id="create-volume-form" onSubmit={formik.handleSubmit}>
+        <form id="create-image-form" onSubmit={formik.handleSubmit}>
           <AutoPruneEmptyFields validationSchema={validationSchema} />
           <FMTextField
             formik={formik}
-            name="volume_id"
-            label="Volume ID"
+            name="image_id"
+            label="Image ID"
             // description = {JSON.stringify(requiredKeys, null, 2)}
-            description="ID for this volume, unique per-tenant"
+            description="ID for this image, unique per-tenant"
           />
           <FMTextField
             formik={formik}
             name="description"
             label="Description"
             multiline={true}
-            description="Description of this volume for future reference"
+            description="Description of this image for future reference"
           />
           <FMTextField
             formik={formik}
-            name="size_limit"
-            label="Size Limit"
-            description="Limit on the size of the volume in megabytes (MB)"
+            name="tenants"
+            label="Tenants"
+            description="The tenants that can use this image"
           />
         </form>
       </FormikProvider>
@@ -127,4 +127,4 @@ const VolumeWizard: React.FC<VolumeWizardProps> = ({
   );
 };
 
-export default VolumeWizard;
+export default ImageWizard;

@@ -2,36 +2,34 @@ import { Button } from 'reactstrap';
 import { Pods } from '@tapis/tapis-typescript';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../ToolbarModalProps';
+import { ToolbarModalProps } from './ToolbarModalProps';
 import { Form, Formik } from 'formik';
 import { FormikSelect, FormikInput } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
-import styles from './DeletePodModal.module.scss';
+import styles from './PodModals.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
-import { updateState } from '../../../redux/podsSlice';
 
-const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  const { data } = Hooks.useListVolumes(); //{search: `owner.like.${''}`,}
+const VolumePermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+  const { data } = Hooks.useListVolumes(); // Assuming there's a hook to list volumes
   const volumes: Array<Pods.VolumeResponseModel> = data?.result ?? [];
 
-  // Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const history = useHistory();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const volumeIdFromLocation = location.pathname.split('/')[3] || '';
 
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.listVolumes);
-    history.push('/pods/volumes');
-    dispatch(updateState({ volumeRootTab: 'dashboard' }));
+    queryClient.invalidateQueries(Hooks.queryKeys.getVolumePermissions);
   }, [queryClient, history]);
 
-  const { deleteVolume, isLoading, error, isSuccess, reset } =
-    Hooks.useDeleteVolume();
+  const { setVolumePermission, isLoading, error, isSuccess, reset } =
+    Hooks.useSetVolumePermission(volumeIdFromLocation);
 
   useEffect(() => {
     reset();
@@ -39,21 +37,22 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
 
   const validationSchema = Yup.object({
     volumeId: Yup.string().required('Volume ID is required'),
-    confirmVolumeName: Yup.string()
-      .oneOf([Yup.ref('volumeId'), null], 'Volume name must match')
-      .required('Please confirm the volume name'),
+    username: Yup.string().required('Username is required'),
+    permissionLevel: Yup.string().required('Permission level is required'),
   });
-
-  const location = useLocation();
-  const volumeIdFromLocation = location.pathname.split('/')[3] || '';
 
   const initialValues = {
     volumeId: volumeIdFromLocation,
-    confirmVolumeName: '',
+    username: '',
+    permissionLevel: '',
   };
 
   const onSubmit = (
-    { volumeId }: { volumeId: string },
+    {
+      volumeId,
+      username,
+      permissionLevel,
+    }: { volumeId: string; username: string; permissionLevel: string },
     {
       setFieldValue,
       resetForm,
@@ -64,19 +63,23 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       setTouched: (touched: { [field: string]: boolean }) => void;
     }
   ) => {
-    deleteVolume({ volumeId }, { onSuccess });
+    setVolumePermission(
+      { volumeId, setPermission: { user: username, level: permissionLevel } },
+      { onSuccess }
+    );
     resetForm();
     setFieldValue('volumeId', '');
     setTouched({
       volumeId: false,
-      confirmVolumeName: false,
+      username: false,
+      permissionLevel: false,
     });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Delete Volume"
+      title="Set Volume Permission"
       backdrop={true}
       body={
         <div className={styles['modal-settings']}>
@@ -86,7 +89,7 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             onSubmit={onSubmit}
           >
             {() => (
-              <Form id="deleteVolume-form">
+              <Form id="setVolumePermission-form">
                 <FormikSelect
                   name="volumeId"
                   description="The volume id"
@@ -95,7 +98,7 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   data-testid="volumeId"
                 >
                   <option disabled value={''}>
-                    Select a volume to delete
+                    Select a volume
                   </option>
                   {volumes.length ? (
                     volumes.map((volume) => {
@@ -110,11 +113,18 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   )}
                 </FormikSelect>
                 <FormikInput
-                  name="confirmVolumeName"
-                  label="Confirm Volume Name"
-                  description="Please type the volume name to confirm"
+                  name="username"
+                  label="Username"
+                  description="Enter the username"
                   required={true}
-                  data-testid="confirmVolumeName"
+                  data-testid="username"
+                />
+                <FormikInput
+                  name="permissionLevel"
+                  label="Permission Level"
+                  description="Enter the permission level"
+                  required={true}
+                  data-testid="permissionLevel"
                 />
               </Form>
             )}
@@ -126,17 +136,17 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully deleted a volume` : ''}
+          success={isSuccess ? `Successfully set volume permission` : ''}
           reverse={true}
         >
           <Button
-            form="deleteVolume-form"
+            form="setVolumePermission-form"
             color="primary"
             disabled={isLoading}
             aria-label="Submit"
             type="submit"
           >
-            Delete volume
+            Set Permission
           </Button>
         </SubmitWrapper>
       }
@@ -144,4 +154,4 @@ const DeleteVolumeModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   );
 };
 
-export default DeleteVolumeModal;
+export default VolumePermissionModal;

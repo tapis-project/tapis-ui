@@ -1,4 +1,4 @@
-import { useQuery, QueryObserverOptions } from 'react-query';
+import { useQuery, QueryObserverOptions, useQueryClient } from 'react-query';
 import { Pods as API } from '@tapis/tapisui-api';
 import { Pods } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '..';
@@ -8,6 +8,7 @@ const useListVolumeFiles = (
   params: Pods.ListVolumeFilesRequest,
   options: QueryObserverOptions<Pods.FilesListResponse, Error> = {}
 ) => {
+  const queryClient = useQueryClient();
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Pods.FilesListResponse, Error>(
     [QueryKeys.listVolumeFiles, params, accessToken],
@@ -17,9 +18,15 @@ const useListVolumeFiles = (
       API.listVolumeFiles(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
+      ...options,
     }
   );
-  return result;
+
+  const invalidate = () => {
+    queryClient.invalidateQueries([QueryKeys.listVolumeFiles]);
+  };
+
+  return { ...result, invalidate };
 };
 
 export default useListVolumeFiles;

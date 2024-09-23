@@ -15,6 +15,7 @@ export { default as getPodLogs } from './getPodLogs';
 export { default as getPodPermissions } from './getPodPermissions';
 export { default as getPodSecrets } from './getPodSecrets';
 export { default as getPod } from './getPod';
+export { default as getPodDerived } from './getPodDerived';
 export { default as getSnapshotPermissions } from './getSnapshotPermissions';
 export { default as getSnapshot } from './getSnapshot';
 export { default as getTemplateTag } from './getTemplateTag';
