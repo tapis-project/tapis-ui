@@ -411,7 +411,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                 //   )
                 // }
               />
-              {!activeTemplate && !activeTemplateTag ? (
+              {/* {!activeTemplate && !activeTemplateTag ? (
                 <div>
                   {templateTab}; {templateRootTab}
                 </div>
@@ -450,7 +450,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                 })
               ) : (
                 <div>No tags available.</div>
-              )}
+              )} */}
             </div>
           </div>
         </div>
