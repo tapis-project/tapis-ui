@@ -125,10 +125,11 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
         </Button>
         <Button
           onClick={() => {
+            console.log({ result });
             generate(
               {
                 systemId: systemId,
-                sessionId: result?.sesssionId!,
+                sessionId: result?.sessionId!,
                 authCode: input.authCode!,
               },
               {

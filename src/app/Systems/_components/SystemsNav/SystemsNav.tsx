@@ -36,6 +36,7 @@ const SystemsNav: React.FC = () => {
   const { url } = useRouteMatch();
   // Get a systems listing with default request params
   const { data, isLoading, error } = Hooks.useList({
+    listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
     computeTotal: true,
   });
