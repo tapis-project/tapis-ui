@@ -36,7 +36,7 @@ const useCreateCredential = () => {
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries(QueryKeys.list);
+    queryClient.invalidateQueries([QueryKeys.list, QueryKeys.details]);
   };
 
   // Return hook object with loading states and login function
