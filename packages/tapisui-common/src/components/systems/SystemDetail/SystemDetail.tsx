@@ -73,13 +73,13 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <div className={styles['flex-space-between']}>
           <div className={styles['card-line']}>
             {system.isPublic ? <Public /> : <PublicOff />}
-            <span className={styles['card-title']}>{system.id}</span>
-            <span className={styles['muted']}>({system.systemType})</span>
             {system.enabled ? (
               <LockOpen color="success" />
             ) : (
               <Lock color="error" />
             )}
+            <span className={styles['card-title']}>{system.id}</span>
+            <span className={styles['muted']}>({system.systemType})</span>
             <span className={styles['muted']}>{system.uuid}</span>
           </div>
           <div></div>
@@ -99,7 +99,8 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         {!system.enabled && (
           <Alert severity="warning">
             <AlertTitle>System disabled</AlertTitle>
-            Press the lock icon above to enable the system
+            Jobs cannot be run on disabled systems. Press the lock icon above to
+            enable the system
           </Alert>
         )}
         <div className={styles['card-line']}>

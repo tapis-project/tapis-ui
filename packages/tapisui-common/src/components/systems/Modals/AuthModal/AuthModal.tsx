@@ -75,7 +75,7 @@ const AuthModal: React.FC<ModalProps> = ({
         return {
           publicKey: input.pkiKeys.publicKey!,
           // Escape newlines in private key
-          privateKey: input.pkiKeys.privateKey!.replace(/\n/gm, '\\n'),
+          privateKey: input.pkiKeys.privateKey!.replace(/\n/gm, '\n'),
           loginUser: input.pkiKeys.loginUser,
         };
       case Systems.AuthnEnum.AccessKey:
@@ -142,8 +142,8 @@ const AuthModal: React.FC<ModalProps> = ({
           {defaultAuthnMethod === Systems.AuthnEnum.PkiKeys && (
             <Alert severity="warning" style={{ marginTop: '8px' }}>
               Ensure that the public key you paste below has already been placed
-              on host of this system or Tapis will not be able to access its
-              files on your behalf.
+              on the host for this system or Tapis will not be able to
+              authenticate with the host on your behalf.
             </Alert>
           )}
           {defaultAuthnMethod === Systems.AuthnEnum.PkiKeys && (
@@ -308,6 +308,7 @@ const AuthModal: React.FC<ModalProps> = ({
               defaultAuthnMethod,
               input
             );
+            console.log({ reqUpdateCredential });
             if (reqUpdateCredential) {
               create(
                 {
