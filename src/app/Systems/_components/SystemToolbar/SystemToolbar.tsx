@@ -65,7 +65,7 @@ const SystemToolbar: React.FC = () => {
             onClick={() => setModal('createsystem')}
             aria-label="createSystem"
           />
-          <ToolbarButton
+          {/* <ToolbarButton
             text="Undelete"
             icon={<Add />}
             disabled={false}
@@ -79,7 +79,7 @@ const SystemToolbar: React.FC = () => {
             disabled={false}
             onClick={() => setModal('deletesystem')}
             aria-label="deleteSystem"
-          />
+          /> */}
           {/* New button for creating user credentials */}
           {/* <ToolbarButton
             text="Create User Credential"
@@ -90,10 +90,10 @@ const SystemToolbar: React.FC = () => {
           /> */}
           {/* Conditionally rendered modals */}
           {modal === 'createsystem' && <CreateSystemModal toggle={toggle} />}
-          {modal === 'deletesystem' && <DeleteSystemModal toggle={toggle} />}
+          {/* {modal === 'deletesystem' && <DeleteSystemModal toggle={toggle} />}
           {modal === 'undeletesystem' && (
             <UndeleteSystemModal toggle={toggle} />
-          )}
+          )} */}
           {/* {modal === 'createusercredential' && (
             <CreateUserCredentialModal
               toggle={toggle}

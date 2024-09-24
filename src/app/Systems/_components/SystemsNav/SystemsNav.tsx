@@ -20,7 +20,9 @@ import {
   ExpandLess,
   Person,
   Delete,
+  Restore,
 } from '@mui/icons-material';
+import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
 
 const SystemsNav: React.FC = () => {
   const [collapseState, setCollapsState] = useState({
@@ -28,6 +30,9 @@ const SystemsNav: React.FC = () => {
     nonPublic: false,
     deleted: true,
   });
+  const [undeleteSystem, setUndeleteSystem] = useState<string | undefined>(
+    undefined
+  );
   const { url } = useRouteMatch();
   // Get a systems listing with default request params
   const { data, isLoading, error } = Hooks.useList({
@@ -50,24 +55,20 @@ const SystemsNav: React.FC = () => {
       <Box role="presentation" style={{ overflowX: 'auto' }}>
         <List
           subheader={
-            <ListSubheader>
+            <ListSubheader
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => {
+                setCollapsState({
+                  ...collapseState,
+                  public: !collapseState.public,
+                });
+              }}
+            >
               <Public />
               <span style={{ marginLeft: '32px' }}>Public Systems</span> (
               {publicSystems.length})
               <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
-                {!collapseState.public ? (
-                  <ExpandMore
-                    onClick={() => {
-                      setCollapsState({ ...collapseState, public: true });
-                    }}
-                  />
-                ) : (
-                  <ExpandLess
-                    onClick={() => {
-                      setCollapsState({ ...collapseState, public: false });
-                    }}
-                  />
-                )}
+                {!collapseState.public ? <ExpandMore /> : <ExpandLess />}
               </span>
             </ListSubheader>
           }
@@ -96,25 +97,21 @@ const SystemsNav: React.FC = () => {
         </List>
         <List
           subheader={
-            <ListSubheader>
+            <ListSubheader
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => {
+                setCollapsState({
+                  ...collapseState,
+                  nonPublic: !collapseState.nonPublic,
+                });
+              }}
+            >
               <div></div>
               <Person />
               <span style={{ marginLeft: '32px' }}>My Systems</span> (
               {nonPublicSystems.length})
               <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
-                {!collapseState.nonPublic ? (
-                  <ExpandMore
-                    onClick={() => {
-                      setCollapsState({ ...collapseState, nonPublic: true });
-                    }}
-                  />
-                ) : (
-                  <ExpandLess
-                    onClick={() => {
-                      setCollapsState({ ...collapseState, nonPublic: false });
-                    }}
-                  />
-                )}
+                {!collapseState.nonPublic ? <ExpandMore /> : <ExpandLess />}
               </span>
             </ListSubheader>
           }
@@ -143,25 +140,21 @@ const SystemsNav: React.FC = () => {
         </List>
         <List
           subheader={
-            <ListSubheader>
+            <ListSubheader
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => {
+                setCollapsState({
+                  ...collapseState,
+                  deleted: !collapseState.deleted,
+                });
+              }}
+            >
               <div></div>
               <Delete />
               <span style={{ marginLeft: '32px' }}>Deleted Systems</span> (
               {deletedSystems.length})
               <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
-                {!collapseState.deleted ? (
-                  <ExpandMore
-                    onClick={() => {
-                      setCollapsState({ ...collapseState, deleted: true });
-                    }}
-                  />
-                ) : (
-                  <ExpandLess
-                    onClick={() => {
-                      setCollapsState({ ...collapseState, deleted: false });
-                    }}
-                  />
-                )}
+                {!collapseState.deleted ? <ExpandMore /> : <ExpandLess />}
               </span>
             </ListSubheader>
           }
@@ -173,18 +166,29 @@ const SystemsNav: React.FC = () => {
                 <ListItem disablePadding>
                   <ListItemButton
                     style={{ padding: '4px', paddingLeft: '16px' }}
+                    onClick={() => {
+                      setUndeleteSystem(system.id);
+                    }}
                   >
                     <ListItemIcon>
-                      <Dns color="error" />
+                      <Restore />
                     </ListItemIcon>
                     <ListItemText primary={system.id} secondary={system.host} />
                   </ListItemButton>
                 </ListItem>
               ))
             ) : (
-              <i style={{ padding: '16px' }}>No non-public systems found</i>
+              <i style={{ padding: '16px' }}>No deleted systems found</i>
             ))}
         </List>
+        {undeleteSystem && (
+          <UndeleteSystemModal
+            systemId={undeleteSystem}
+            toggle={() => {
+              setUndeleteSystem(undefined);
+            }}
+          />
+        )}
       </Box>
     </QueryWrapper>
   );
