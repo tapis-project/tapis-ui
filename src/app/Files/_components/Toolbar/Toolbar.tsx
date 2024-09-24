@@ -104,7 +104,10 @@ const Toolbar: React.FC = () => {
           <ToolbarButton
             text="View"
             icon="file"
-            disabled={selectedFiles.length !== 1}
+            disabled={
+              selectedFiles.length !== 1 ||
+              selectedFiles[0].type !== Files.FileTypeEnum.File
+            }
             onClick={() => setModal('postit')}
             aria-label="View file"
           />
