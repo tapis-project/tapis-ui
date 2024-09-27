@@ -60,7 +60,7 @@ const validationSchema = Yup.object({
       then: Yup.string().required('Device for TACC is required'),
     })
     .when('site', {
-      is: 'CHAMELEON',
+      is: 'CHI@TACC',
       then: Yup.string().required('Device for CHAMELEON is required'),
     }),
 });
@@ -82,7 +82,7 @@ const devices = [
     id: 2,
     name: 'x86 (no GPU)',
     type: 'compute_cascadelake',
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     gpu: true,
     disabled: false,
   },
@@ -99,7 +99,7 @@ const devices = [
     name: 'x86 (gpu_p100)',
     type: 'gpu_p100',
     gpu: true,
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     disabled: false,
   },
   {
@@ -107,7 +107,7 @@ const devices = [
     name: 'x86 (gpu_m40)',
     type: 'gpu_m40',
     gpu: true,
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     disabled: false,
   },
   {
@@ -115,7 +115,7 @@ const devices = [
     name: 'x86 (gpu_k80)',
     type: 'gpu_k80',
     gpu: true,
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     disabled: false,
   },
 ];
@@ -618,7 +618,7 @@ const AnalysisForm: React.FC = () => {
                     >
                       <option value="" label="Select option" />
                       <option value="TACC" label="TACC" />
-                      <option value="CHAMELEON" label="CHAMELEON" />
+                      <option value="CHI@TACC" label="CHAMELEON" />
                     </Input>
                     {!values.site && touched.site && (
                       <div className="invalid-feedback">
