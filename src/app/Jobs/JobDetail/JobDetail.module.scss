@@ -1,0 +1,68 @@
+.container {
+  padding: 16px;
+}
+
+.card p {
+  margin: 0;
+  line-height: initial;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.flex {
+  display: flex;
+  gap: 16px;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 3px;
+  border: 1px solid #808080;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  transition: 0.2s;
+}
+
+.chips {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-line {
+  text-decoration: none;
+  color: #333333;
+  font-size: 18px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.muted {
+  color: #666666;
+  font-size: 12px;
+}

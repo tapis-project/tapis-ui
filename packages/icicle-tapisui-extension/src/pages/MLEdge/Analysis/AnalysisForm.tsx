@@ -363,8 +363,6 @@ const AnalysisForm: React.FC = () => {
                   },
                 ];
 
-                console.log({ envVariables });
-
                 // Add advnacedConfig to the envVariables to if defined
                 if (values.advancedConfig) {
                   envVariables.push({

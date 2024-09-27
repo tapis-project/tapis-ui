@@ -68,8 +68,14 @@ import {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
-  JobDetail,
+  JobTypeChip,
   JobLauncher,
+  JobStatusIcon,
+  type JobTerminalStatus,
+  type JobRecoverableStatus,
+  jobRecoverableStatuses,
+  jobTerminalStatuses,
+  jobRunningStatuses,
   SystemDetail,
   SystemListing,
   Archive,
@@ -80,6 +86,12 @@ import {
   FileInputs,
   SchedulerOptions,
 } from './components';
+import {
+  SystemProvider,
+  SystemContext,
+  useSystem,
+  type SystemContextType,
+} from './context';
 
 export {
   // Generic UI
@@ -137,7 +149,7 @@ export {
   FormikCheck,
   FormikTapisFile,
   FormikTapisFileInput,
-  // Tapis Components
+  // Tapis File Components
   FileListing,
   FileListingTable,
   FileStat,
@@ -148,8 +160,15 @@ export {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
-  JobDetail,
+  // Tapis Job Components & types
+  JobTypeChip,
   JobLauncher,
+  JobStatusIcon,
+  type JobTerminalStatus,
+  type JobRecoverableStatus,
+  jobRecoverableStatuses,
+  jobTerminalStatuses,
+  jobRunningStatuses,
   SystemDetail,
   SystemListing,
   Archive,
@@ -161,4 +180,9 @@ export {
   SchedulerOptions,
   Help,
   HelpSection,
+  // Tapis context
+  SystemProvider,
+  SystemContext,
+  useSystem,
+  type SystemContextType,
 };

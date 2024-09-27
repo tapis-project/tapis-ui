@@ -42,7 +42,6 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 const JobsLayoutToolbar: React.FC = () => {
   const url = window.location.href;
   const jobUuid = url.substring(url.indexOf('jobs/') + 5);
-  console.log(jobUuid.includes('jobs'));
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
   const { isLoading, isError, isSuccess, error, hideJob } = Hooks.useHideJob();
