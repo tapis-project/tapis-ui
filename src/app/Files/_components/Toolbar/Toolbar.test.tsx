@@ -35,7 +35,9 @@ describe('Toolbar', () => {
 
     (RenameModal as jest.Mock).mockReturnValue(<div></div>);
 
-    const { getByLabelText } = renderComponent(<Toolbar />);
+    const { getByLabelText } = renderComponent(
+      <Toolbar systemId="test" currentPath="test" />
+    );
 
     const renameBtn = getByLabelText('Rename');
     expect(renameBtn).toBeDefined();
@@ -53,7 +55,9 @@ describe('Toolbar', () => {
       selectedFiles: [fileInfo, { ...fileInfo, type: 'dir' }],
     });
 
-    const { getByLabelText } = renderComponent(<Toolbar />);
+    const { getByLabelText } = renderComponent(
+      <Toolbar systemId="test" currentPath="test" />
+    );
 
     const moveBtn = getByLabelText('Move');
     expect(moveBtn).toBeDefined();

@@ -51,12 +51,16 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
-const Toolbar: React.FC = () => {
+type ToolbarProps = {
+  systemId: string;
+  currentPath: string;
+};
+
+const Toolbar: React.FC<ToolbarProps> = ({ systemId, currentPath }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { selectedFiles } = useFilesSelect();
   const { pathname } = useLocation();
-  const systemId = pathname.split('/')[2];
-  const currentPath = pathname.split('/').splice(3).join('/');
+
   const { download } = Hooks.useDownload();
   const { add } = useNotifications();
 

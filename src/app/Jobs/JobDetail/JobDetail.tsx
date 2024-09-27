@@ -25,6 +25,10 @@ import {
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { LoadingButton as Button } from '@mui/lab';
 import Toolbar from 'app/Files/_components/Toolbar';
+import {
+  FilesProvider,
+  useFilesSelect,
+} from 'app/Files/_components/FilesContext';
 
 const createJobDisplay = (job: any) => {
   const keysToPrettyPrint = ['parameterSet', 'fileInputs'];
@@ -47,22 +51,23 @@ const createJobDisplay = (job: any) => {
 
 const JobOutputList: React.FC<{ job: Jobs.Job }> = ({ job }) => {
   const system = useSystem();
+  const { select, selectedFiles, unselect } = useFilesSelect();
   return (
     <div>
       <div style={{ paddingBottom: '16px' }}>
-        <Toolbar />
+        <Toolbar
+          systemId={job.execSystemId!}
+          currentPath={job.execSystemOutputDir!}
+        />
       </div>
       <FileListing
-        selectMode={{
-          types: ['file'],
-          mode: 'multi',
-        }}
         systemId={job.execSystemId!}
         path={job.execSystemOutputDir!}
-        location={`${job.execSystemId!}/${job.execSystemOutputDir}`.replace(
-          '//',
-          '/'
-        )}
+        location={`/files/${job.execSystemId!}${job.execSystemOutputDir}`}
+        selectMode={{ mode: 'multi', types: ['dir', 'file'] }}
+        selectedFiles={selectedFiles}
+        onSelect={(files) => select(files, 'multi')}
+        onUnselect={unselect}
       />
     </div>
   );
@@ -110,9 +115,11 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   const renderJobOutput = useCallback(() => {
     return (
       <div className={styles['container']}>
-        <SystemProvider systemId={job?.execSystemId!}>
-          <JobOutputList job={job!} />
-        </SystemProvider>
+        <FilesProvider>
+          <SystemProvider systemId={job?.execSystemId!}>
+            <JobOutputList job={job!} />
+          </SystemProvider>
+        </FilesProvider>
       </div>
     );
   }, [job]);

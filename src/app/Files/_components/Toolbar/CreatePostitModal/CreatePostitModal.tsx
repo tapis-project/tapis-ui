@@ -31,7 +31,6 @@ const CreatePostitModal: React.FC<ToolbarModalProps> = ({
         },
         {
           onSuccess: (value) => {
-            console.log({ value });
             setPostit(value.result?.redeemUrl);
           },
         }
