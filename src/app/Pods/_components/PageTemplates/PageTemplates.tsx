@@ -40,7 +40,7 @@ import { RootState } from '../../redux/store';
 import { updateState } from '../../redux/podsSlice';
 
 const PageTemplates: React.FC<{
-  objId: string;
+  objId: string | undefined;
   tagId: string;
 }> = ({ objId, tagId }) => {
   const dispatch = useDispatch();
@@ -193,9 +193,9 @@ Select or create a template to get started.`;
       }
     }
     return `Error: Unrecognized template value. Tell admin.
-Template Tab: ${templateTab};
-Template Root Tab: ${templateRootTab};
-Object ID: ${objId};
+Template Tab: ${templateTab}
+Template Root Tab: ${templateRootTab}
+Object ID: ${objId}
 Tag ID: ${tagId}
 Active Template: ${activeTemplate}
 Active Template Tag: ${activeTemplateTag}
