@@ -2,7 +2,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
-import { QueryWrapper } from '@tapis/tapisui-common';
+import {
+  QueryWrapper,
+  filterObjects,
+  PropsOfObjectWithValuesOfType,
+} from '@tapis/tapisui-common';
 import {
   ListItemText,
   ListItemIcon,
@@ -65,38 +69,17 @@ const SystemsNav: React.FC = () => {
     [systems]
   );
 
-  // Type that matches property values of type T if and only if the value of
-  // that property is a string or undefined
-  type StringKeysOf<T> = {
-    [K in keyof T]: T[K] extends string | undefined ? K : never;
-  }[keyof T];
-
-  // Creates an object in which the keys are the system host and the value
-  // is an array of systems for that host
-
-  const filterSystemByProp = useCallback(
-    (
-      prop: StringKeysOf<Systems.TapisSystem>,
-      systems: Array<Systems.TapisSystem>,
-      order: 'ASC' | 'DESC' = 'ASC'
-    ) => {
-      if (state.filters.includes(prop!)) {
-        let systemsByProp: { [key: string]: Array<Systems.TapisSystem> } = {};
-        for (let system of systems) {
-          systemsByProp[system[prop!]!] =
-            systemsByProp[system[prop!]!] === undefined
-              ? [system]
-              : [...systemsByProp[system[prop!]!], system];
-        }
-        const filteredSystems = Object.entries(systemsByProp).sort((a, b) =>
-          a[0].localeCompare(b[0])
-        );
-        return order === 'ASC' ? filteredSystems : filteredSystems.reverse();
-      }
-
-      return [];
-    },
-    [state.filters, systems]
+  const systemsByHost = useMemo(
+    () => filterObjects(systems, 'host', 'ASC'),
+    [systems]
+  );
+  const systemsByType = useMemo(
+    () => filterObjects(systems, 'systemType', 'ASC'),
+    [systems]
+  );
+  const systemsByAuth = useMemo(
+    () => filterObjects(systems, 'defaultAuthnMethod', 'ASC'),
+    [systems]
   );
 
   const renderFilteredSystemsList = useCallback(
@@ -108,7 +91,10 @@ const SystemsNav: React.FC = () => {
       title: string,
       icon: any,
       itemIcon: any,
-      secondary: StringKeysOf<Systems.TapisSystem> = 'host'
+      secondary: PropsOfObjectWithValuesOfType<
+        Systems.TapisSystem,
+        string | undefined
+      > = 'host'
     ) => {
       return (
         <List
@@ -292,83 +278,77 @@ const SystemsNav: React.FC = () => {
           </>
         )}
         {state.filters.includes('host') &&
-          filterSystemByProp('host', systems, 'ASC').map(
-            ([host, systemsByHost]) => {
-              return renderFilteredSystemsList(
-                systemsByHost,
-                () => {
-                  setState({
-                    ...state,
-                    open: state.open.includes(host)
-                      ? state.open.filter((tab) => {
-                          tab !== host;
-                        })
-                      : [...state.open, host],
-                  });
-                },
-                (system) => {
-                  history.push(`${url}/${system.id}`);
-                },
-                host,
-                host,
-                <Dns />,
-                <Dns />,
-                'host'
-              );
-            }
-          )}
+          systemsByHost.map(([host, systemsByHost]) => {
+            return renderFilteredSystemsList(
+              systemsByHost,
+              () => {
+                setState({
+                  ...state,
+                  open: state.open.includes(host)
+                    ? state.open.filter((tab) => {
+                        tab !== host;
+                      })
+                    : [...state.open, host],
+                });
+              },
+              (system) => {
+                history.push(`${url}/${system.id}`);
+              },
+              host,
+              host,
+              <Dns />,
+              <Dns />,
+              'host'
+            );
+          })}
         {state.filters.includes('systemType') &&
-          filterSystemByProp('systemType', systems, 'ASC').map(
-            ([type, systemsByType]) => {
-              return renderFilteredSystemsList(
-                systemsByType,
-                () => {
-                  setState({
-                    ...state,
-                    open: state.open.includes(type)
-                      ? state.open.filter((tab) => {
-                          tab !== type;
-                        })
-                      : [...state.open, type],
-                  });
-                },
-                (system) => {
-                  history.push(`${url}/${system.id}`);
-                },
-                type,
-                type,
-                <Dns />,
-                <Dns />,
-                'host'
-              );
-            }
-          )}
+          systemsByType.map(([type, systemsByType]) => {
+            return renderFilteredSystemsList(
+              systemsByType,
+              () => {
+                setState({
+                  ...state,
+                  open: state.open.includes(type)
+                    ? state.open.filter((tab) => {
+                        tab !== type;
+                      })
+                    : [...state.open, type],
+                });
+              },
+              (system) => {
+                history.push(`${url}/${system.id}`);
+              },
+              type,
+              type,
+              <Dns />,
+              <Dns />,
+              'host'
+            );
+          })}
         {state.filters.includes('defaultAuthnMethod') &&
-          filterSystemByProp('defaultAuthnMethod', systems, 'ASC').map(
-            ([authn, systemsByType]) => {
-              return renderFilteredSystemsList(
-                systemsByType,
-                () => {
-                  setState({
-                    ...state,
-                    open: state.open.includes(authn)
-                      ? state.open.filter((tab) => {
-                          tab !== authn;
-                        })
-                      : [...state.open, authn],
-                  });
-                },
-                (system) => {
-                  history.push(`${url}/${system.id}`);
-                },
-                authn,
-                authn,
-                <Dns />,
-                <Dns />,
-                'host'
-              );
-            }
-          )}
+          systemsByAuth.map(([authn, systemsByType]) => {
+            return renderFilteredSystemsList(
+              systemsByType,
+              () => {
+                setState({
+                  ...state,
+                  open: state.open.includes(authn)
+                    ? state.open.filter((tab) => {
+                        tab !== authn;
+                      })
+                    : [...state.open, authn],
+                });
+              },
+              (system) => {
+                history.push(`${url}/${system.id}`);
+              },
+              authn,
+              authn,
+              <Dns />,
+              <Dns />,
+              'host'
+            );
+          })}
         {renderFilteredSystemsList(
           deletedSystems,
           () => {

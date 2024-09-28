@@ -92,6 +92,11 @@ import {
   useSystem,
   type SystemContextType,
 } from './context';
+import {
+  type PropsOfObjectWithValuesOfType,
+  type OrderBy,
+  filterObjects,
+} from './utils/filterObject';
 
 export {
   // Generic UI
@@ -185,4 +190,8 @@ export {
   SystemContext,
   useSystem,
   type SystemContextType,
+  // Utils
+  type PropsOfObjectWithValuesOfType,
+  type OrderBy,
+  filterObjects,
 };
