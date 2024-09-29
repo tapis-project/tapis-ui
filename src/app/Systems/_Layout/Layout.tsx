@@ -29,11 +29,7 @@ const Layout: React.FC = () => {
     </LayoutNavWrapper>
   );
 
-  const body = (
-    <LayoutBody>
-      <Router />
-    </LayoutBody>
-  );
+  const body = <Router />;
 
   return <PageLayout top={header} left={sidebar} right={body} />;
 };

@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
@@ -30,6 +36,162 @@ import {
   FilterAlt,
 } from '@mui/icons-material';
 import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
+
+type GroupByFields<T, V> = {
+  field: PropsOfObjectWithValuesOfType<T, V>;
+  label?: string;
+  asDropdowns?: boolean;
+  defaultOpen?: boolean;
+};
+
+type FilterableObjectsListProps<T, V = string | undefined> = {
+  objects: Array<T>;
+  groupByFields: Array<GroupByFields<T, V>>;
+  childrenPlacement?: 'top' | 'bottom';
+};
+
+type FilterableObjectsListComponentProps<T, V = string | undefined> = React.FC<
+  PropsWithChildren<FilterableObjectsListProps<T, V>>
+>;
+
+type FilterableObjectsListState = {
+  open: string[];
+  groupedObjects: { [key: string]: ReturnType<typeof filterObjects> };
+};
+
+const FilterableObjectsList: FilterableObjectsListComponentProps<
+  Systems.TapisSystem
+> = ({ objects, groupByFields, children, childrenPlacement = 'bottom' }) => {
+  const [state, setState] = useState<FilterableObjectsListState>({
+    open: [],
+    groupedObjects: {},
+  });
+
+  useEffect(() => {
+    const modifiedState: FilterableObjectsListState = {
+      open: state.open,
+      groupedObjects: {},
+    };
+    for (let filter of groupByFields) {
+      modifiedState.groupedObjects = {
+        ...modifiedState.groupedObjects,
+        [filter.field as unknown as string]: filterObjects(
+          objects,
+          filter.field,
+          'ASC'
+        ),
+      };
+    }
+    console.log({ modifiedState });
+    setState(modifiedState);
+  }, [objects, groupByFields]);
+
+  const renderFilteredObjectsList = useCallback(
+    (
+      systems: Array<Systems.TapisSystem>,
+      toggle: () => void,
+      onObjectClick: (object: (typeof objects)[number]) => void,
+      listName: string,
+      title: string,
+      icon: any,
+      itemIcon: any,
+      secondary: PropsOfObjectWithValuesOfType<
+        (typeof objects)[number],
+        string | undefined
+      > = 'host'
+    ) => {
+      return (
+        <List
+          subheader={
+            <ListSubheader
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => {
+                toggle();
+              }}
+            >
+              {icon}
+              <Tooltip title={title} placement="left">
+                <span style={{ marginLeft: '32px' }}>
+                  <>{title.length <= 17 ? title : title.slice(0, 15) + '...'}</>
+                </span>
+              </Tooltip>
+              <span style={{ marginLeft: '8px' }}>({systems.length})</span>
+              <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
+                {state.open.includes(listName) ? (
+                  <ExpandMore />
+                ) : (
+                  <ExpandLess />
+                )}
+              </span>
+            </ListSubheader>
+          }
+        >
+          <Divider />
+          {systems.length ? (
+            state.open.includes(listName) &&
+            systems.map((system) => {
+              return (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    style={{ padding: '4px', paddingLeft: '16px' }}
+                    onClick={() => {
+                      onObjectClick(system);
+                    }}
+                  >
+                    <ListItemIcon>{itemIcon}</ListItemIcon>
+                    <ListItemText
+                      primary={system.id}
+                      secondary={system[secondary]}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })
+          ) : (
+            <i style={{ padding: '16px' }}>No {listName} systems found</i>
+          )}
+        </List>
+      );
+    },
+    [state.groupedObjects, groupByFields, objects]
+  );
+
+  return (
+    <>
+      <List
+        subheader={
+          <ListSubheader style={{ cursor: 'pointer', userSelect: 'none' }}>
+            <span style={{ display: 'flex', gap: '8px', paddingTop: '8px' }}>
+              <FilterAlt />
+              {groupByFields.map((groupByField) => {
+                return (
+                  <Chip
+                    size="small"
+                    label={
+                      groupByField.label
+                        ? groupByField.label
+                        : groupByField.field
+                    }
+                    color="primary"
+                    variant={
+                      state.open.includes('visibility') ? 'filled' : 'outlined'
+                    }
+                    onClick={() => {
+                      setState({
+                        ...state,
+                        open: ['visibility'],
+                      });
+                    }}
+                  />
+                );
+              })}
+            </span>
+          </ListSubheader>
+        }
+      ></List>
+    </>
+  );
+};
 
 const SystemsNav: React.FC = () => {
   const [state, setState] = useState({
@@ -157,6 +319,16 @@ const SystemsNav: React.FC = () => {
       isLoading={isLoading || deletedIsLoading}
       error={[error, deletedError]}
     >
+      <FilterableObjectsList
+        objects={systems}
+        groupByFields={[
+          { field: 'id', asDropdowns: false },
+          { field: 'host', asDropdowns: true },
+          { field: 'defaultAuthnMethod', asDropdowns: true },
+        ]}
+      >
+        TESTING FILTERABLE OBJECTS LIST
+      </FilterableObjectsList>
       <Box
         role="presentation"
         style={{
