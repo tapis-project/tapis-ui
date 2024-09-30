@@ -12,7 +12,14 @@ import { useQueryClient } from 'react-query';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
-const DeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+type DeleteModalProps = ToolbarModalProps & {
+  systemId?: string;
+};
+
+const DeleteSystemModal: React.FC<DeleteModalProps> = ({
+  toggle,
+  systemId,
+}) => {
   const { claims } = useTapisConfig();
   const effectiveUserId = claims['sub'].substring(
     0,
@@ -57,28 +64,47 @@ const DeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            {() => (
-              <Form id="newsystem-form">
-                <FormikSelect
-                  name="systemId"
-                  description="The system id"
-                  label="System ID"
-                  required={true}
-                  data-testid="systemId"
-                >
-                  <option disabled value={''}>
-                    Select a system to delete
-                  </option>
-                  {systems.length ? (
-                    systems.map((system) => {
-                      return <option>{system.id}</option>;
-                    })
-                  ) : (
-                    <i style={{ padding: '16px' }}>No systems found</i>
-                  )}
-                </FormikSelect>
-              </Form>
-            )}
+            {() => {
+              if (systemId) {
+                return (
+                  <Form id="newsystem-form">
+                    <FormikSelect
+                      name="systemId"
+                      description="The system id"
+                      label="System ID"
+                      required={true}
+                      data-testid="systemId"
+                    >
+                      <option disabled selected value={systemId}>
+                        {systemId}
+                      </option>
+                    </FormikSelect>
+                  </Form>
+                );
+              }
+              return (
+                <Form id="newsystem-form">
+                  <FormikSelect
+                    name="systemId"
+                    description="The system id"
+                    label="System ID"
+                    required={true}
+                    data-testid="systemId"
+                  >
+                    <option disabled value={''}>
+                      Select a system to delete
+                    </option>
+                    {systems.length ? (
+                      systems.map((system) => {
+                        return <option>{system.id}</option>;
+                      })
+                    ) : (
+                      <i style={{ padding: '16px' }}>No systems found</i>
+                    )}
+                  </FormikSelect>
+                </Form>
+              );
+            }}
           </Formik>
         </div>
       }

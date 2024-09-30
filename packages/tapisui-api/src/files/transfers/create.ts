@@ -2,7 +2,7 @@ import { Files } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 export const create = (
-  transferTaskRequest: Files.TransferTaskRequest,
+  transferTaskRequest: Files.CreateTransferTaskRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -13,7 +13,7 @@ export const create = (
     jwt
   );
   return errorDecoder<Files.TransferTaskResponse>(() =>
-    api.createTransferTask({ transferTaskRequest })
+    api.createTransferTask(transferTaskRequest)
   );
 };
 

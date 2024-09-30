@@ -100,8 +100,6 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitError(null);
 
-      console.log('Submitting form with values:', values);
-
       try {
         create({
           systemId: values.systemId,
@@ -112,10 +110,8 @@ const CreateUserCredentialModal: React.FC<CreateUserCredentialModalProps> = ({
             loginUser: values.loginUser,
           },
         });
-        console.log('Credential created successfully');
         resetForm();
       } catch (error) {
-        console.error('Error creating user credential:', error);
         setSubmitError('Failed to create user credential. Please try again.');
       } finally {
         setSubmitting(false);

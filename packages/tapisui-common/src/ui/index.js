@@ -31,6 +31,7 @@ export { default as Paginator } from './Paginator';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as Progress } from './Progress';
 export { default as CopyButton } from './CopyButton';
+export { default as PodsCodeMirror } from './PodsCodeMirror';
 /* eslint-disable */
 export { default as FieldWrapper } from './FieldWrapper';
 export { default as PageLayout } from './PageLayout';
@@ -39,3 +40,4 @@ export { Collapse } from './Collapse';
 export { default as JSONDisplay } from './JSONDisplay';
 export { default as TooltipModal } from './TooltipModal';
 export { default as Tabs } from './Tabs';
+export { Help, HelpSection } from './Help';

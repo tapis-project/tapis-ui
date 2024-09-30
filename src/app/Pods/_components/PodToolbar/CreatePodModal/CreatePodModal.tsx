@@ -5,6 +5,7 @@ import { ToolbarModalProps } from '../PodToolbar';
 import { Form, Formik, FieldArray } from 'formik';
 import { FormikInput, Collapse, Icon } from '@tapis/tapisui-common';
 import { FormikSelect } from '@tapis/tapisui-common';
+import { Pods as Pods } from '@tapis/tapisui-api';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useEffect, useCallback } from 'react'; //useState
 import styles from './CreatePodModal.module.scss';
@@ -170,11 +171,11 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
+    queryClient.invalidateQueries(Hooks.queryKeys.getPod);
   }, [queryClient]);
 
-  const { makeNewPod, isLoading, error, isSuccess, reset } =
-    Hooks.useMakeNewPod();
+  const { createPod, isLoading, error, isSuccess, reset } =
+    Hooks.useCreatePod();
 
   useEffect(() => {
     reset();
@@ -395,22 +396,21 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       gpus: number;
     };
   }) => {
-    makeNewPod(
-      {
-        pod_id: pod_id,
-        description,
-        command: command ? JSON.parse(command) : undefined,
-        image: image,
-        template: template,
-        time_to_stop_default: time_to_stop_default,
-        time_to_stop_instance: time_to_stop_instance,
-        environment_variables: envVarsArrayToInputObject(environment_variables),
-        networking: networkingArrayToInputObject(networking),
-        volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
-        resources: resources,
-      },
-      { onSuccess }
-    );
+    const newPod = {
+      pod_id,
+      description,
+      command: command ? JSON.parse(command) : undefined,
+      image,
+      template,
+      time_to_stop_default,
+      time_to_stop_instance,
+      environment_variables: envVarsArrayToInputObject(environment_variables),
+      networking: networkingArrayToInputObject(networking),
+      volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
+      resources,
+    };
+
+    createPod({ newPod }, { onSuccess });
   };
 
   return (

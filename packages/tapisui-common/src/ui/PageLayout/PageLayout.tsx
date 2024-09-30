@@ -24,7 +24,7 @@ const Layout: React.FC<LayoutProps> = ({
       <div className={styles['main']}>
         <div
           className={`${styles['layout-row']} ${
-            constrain ? styles.constrain : ''
+            constrain ? styles['constrain'] : ''
           }`}
         >
           {left}

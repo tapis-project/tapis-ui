@@ -3,6 +3,7 @@ import { Workflows } from '@tapis/tapisui-hooks';
 import { SectionMessage } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table } from 'reactstrap';
+import styles from './TaskExecutions.module.scss';
 
 type TaskExecutionsProps = {
   groupId: string;
@@ -52,8 +53,16 @@ const TaskExecutions: React.FC<TaskExecutionsProps> = ({
                       <td>{taskExecution.status}</td>
                       <td>{taskExecution.started_at || 'unknown'}</td>
                       <td>{taskExecution.last_modified || 'unknown'}</td>
-                      <td>{taskExecution.stdout}</td>
-                      <td>{taskExecution.stderr}</td>
+                      <td>
+                        <div className={styles['logs']}>
+                          {taskExecution.stdout}
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles['logs']}>
+                          {taskExecution.stderr}
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
                 );

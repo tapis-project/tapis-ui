@@ -1,159 +1,233 @@
 import React, { useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { usePodsContext } from '../PodsContext';
-import { Stack } from '@mui/material';
-import { Button } from '@mui/material';
+import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateState } from '../../redux/podsSlice';
+import { RootState } from '../../redux/store';
+import { Stack, Button } from '@mui/material';
 
 interface PodsNavigationProps {
-  from?: 'pods' | 'templates' | 'images';
+  from?: 'pods' | 'templates' | 'images' | 'volumes' | 'snapshots';
   id?: string;
-  podTab?: string;
+  id2?: string;
 }
 
-const PodsNavigation: React.FC<PodsNavigationProps> = ({
-  from,
-  id,
-  podTab,
-}) => {
+const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const {
-    lastPodId,
-    lastPodTab,
-    lastVolumeId,
-    lastSnapshotId,
-    lastTemplateId,
-    lastImageId,
-    currentPage,
-    setIds,
-  } = usePodsContext();
+    podTab,
+    podRootTab,
+    activePodId,
 
-  const setPageTab = (
+    imageTab,
+    imageRootTab,
+    activeImageId,
+
+    snapshotTab,
+    snapshotRootTab,
+    activeSnapshotId,
+
+    volumeTab,
+    volumeRootTab,
+    activeVolumeId,
+
+    activeTemplate,
+    activeTemplateTag,
+
+    activePage,
+  } = useSelector((state: RootState) => state.pods);
+
+  useEffect(() => {
+    // If history.location = '/pods' change activePage to podspage, for managing pressing on pods tab sidebar
+    // More state like this maybe needed for other tabs to auto highlight correct tab
+    if (history.location.pathname === '/pods') {
+      dispatch(updateState({ activePage: 'podspage' }));
+    }
+  }, [history.location.pathname, dispatch]);
+
+  const handleMiddleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    destination: string,
+    id?: string
+  ) => {
+    if (event.button === 1) {
+      // Middle click
+      event.preventDefault();
+      let url = `http://localhost:3000/#/pods/${destination}`;
+      if (id) {
+        url += `/${id}`;
+      }
+      window.open(url, '_blank');
+    }
+  };
+
+  const updateStateAndNavigate = (
     destination: 'pods' | 'templates' | 'images' | 'volumes' | 'snapshots',
     from?: string,
-    id?: string,
-    podTab?: string
+    id?: string
   ) => {
-    console.log('lastPodId:', lastPodId);
-    console.log('from:', from);
-    console.log('currentPage', currentPage);
-    console.log('id:', id);
-    console.log('lastPodTab:', lastPodTab);
+    const stateUpdates: Partial<RootState['pods']> = {};
 
-    if (id) {
+    console.log(`from: ${from}, id: ${id}, activePage: ${activePage}`);
+
+    // This should ensure objId stays the same for each page. Can be set activePodId or '' for root.
+    if (id !== undefined) {
       switch (from) {
         case 'pods':
-          console.log('podTab --------:', podTab);
-          if (podTab) {
-            console.log('Setting lastPodId:', id, 'lastPodTab:', lastPodTab);
-            setIds({ lastPodId: id });
-            setIds({ lastPodTab: podTab });
-            console.log('set lastPodId:', id, 'lastPodTab:', lastPodTab);
-            break;
-          } else
-            console.log('Setting lastPodId:', id, 'lastPodTab:', lastPodTab);
-          setIds({ lastPodId: id });
-          console.log('set lastPodId:', id, 'lastPodTab:', lastPodTab);
+          stateUpdates.activePodId = id;
           break;
         case 'templates':
-          setIds({ lastTemplateId: id });
+          stateUpdates.activeTemplate = id;
+          stateUpdates.activeTemplateTag = id2;
           break;
         case 'images':
-          setIds({ lastImageId: id });
+          stateUpdates.activeImageId = id;
+          break;
+        case 'volumes':
+          stateUpdates.activeVolumeId = id;
+          break;
+        case 'snapshots':
+          stateUpdates.activeSnapshotId = id;
           break;
         default:
           console.warn('Unexpected from:', from);
       }
     }
 
+    // Close edit tabs when navigating to another page as most people won't want that?
+    if (volumeTab === 'edit') {
+      dispatch(updateState({ volumeTab: 'details' }));
+    }
+
+    if (snapshotTab === 'edit') {
+      dispatch(updateState({ snapshotTab: 'details' }));
+    }
+
+    if (imageTab === 'edit') {
+      dispatch(updateState({ imageTab: 'details' }));
+    }
+
+    if (podTab === 'secrets' || podTab === 'edit') {
+      dispatch(updateState({ podTab: 'details' }));
+    }
+
     switch (destination) {
       case 'pods':
-        // If podId is available, navigate to /pods/:podId, else navigate to /pods
-        lastPodId ? history.push(`/pods/${lastPodId}`) : history.push('/pods');
-        setIds({ currentPage: 'podspage' });
+        if (from === 'pods') {
+          stateUpdates.activePodId = '';
+          stateUpdates.podRootTab = 'dashboard';
+          history.push('/pods');
+        } else {
+          history.push(activePodId ? `/pods/${activePodId}` : '/pods');
+        }
+        stateUpdates.activePage = 'podspage';
         break;
       case 'templates':
-        lastImageId
-          ? history.push(`/pods/templates/${lastTemplateId}`)
-          : history.push('/pods/templates');
-        setIds({ currentPage: 'templatespage' });
+        if (from === 'templates') {
+          stateUpdates.activeTemplate = '';
+          stateUpdates.activeTemplateTag = '';
+          stateUpdates.templateNavSelectedItems = '';
+          history.push('/pods/templates');
+        } else {
+          history.push(
+            activeTemplate
+              ? activeTemplateTag
+                ? `/pods/templates/${activeTemplate}/tags/${activeTemplateTag}`
+                : `/pods/templates/${activeTemplate}`
+              : '/pods/templates'
+          );
+        }
+        stateUpdates.activePage = 'templatespage';
         break;
       case 'images':
-        lastImageId
-          ? history.push(`/pods/images/${lastImageId}`)
-          : history.push('/pods/images');
-        setIds({ currentPage: 'imagespage' });
+        if (from === 'images') {
+          stateUpdates.activeImageId = '';
+          stateUpdates.imageRootTab = 'dashboard';
+          history.push('/pods/images');
+        } else {
+          history.push(
+            activeImageId ? `/pods/images/${activeImageId}` : '/pods/images'
+          );
+        }
+        stateUpdates.activePage = 'imagespage';
         break;
       case 'volumes':
-        lastVolumeId
-          ? history.push(`/pods/volumes/${lastVolumeId}`)
-          : history.push('/pods/volumes');
-        setIds({ currentPage: 'volumespage' });
+        if (from === 'volumes') {
+          stateUpdates.activeVolumeId = '';
+          stateUpdates.volumeRootTab = 'dashboard';
+          history.push('/pods/volumes');
+        } else {
+          history.push(
+            activeVolumeId ? `/pods/volumes/${activeVolumeId}` : '/pods/volumes'
+          );
+        }
+        stateUpdates.activePage = 'volumespage';
         break;
       case 'snapshots':
-        lastSnapshotId
-          ? history.push(`/pods/snapshots/${lastSnapshotId}`)
-          : history.push('/pods/snapshots');
-        setIds({ currentPage: 'snapshotspage' });
+        if (from === 'snapshots') {
+          stateUpdates.activeSnapshotId = '';
+          stateUpdates.snapshotRootTab = 'dashboard';
+          history.push('/pods/snapshots');
+        } else {
+          history.push(
+            activeSnapshotId
+              ? `/pods/snapshots/${activeSnapshotId}`
+              : '/pods/snapshots'
+          );
+        }
+        stateUpdates.activePage = 'snapshotspage';
         break;
       default:
         console.warn('Unexpected destination:', destination);
     }
+
+    dispatch(updateState(stateUpdates));
   };
 
   return (
     <Stack spacing={2} direction="row">
       <Button
-        //startIcon={<Info />}
         variant="outlined"
-        color={currentPage === 'podspage' ? 'secondary' : 'primary'}
+        color={activePage === 'podspage' ? 'secondary' : 'primary'}
         size="small"
-        onClick={() => {
-          setPageTab('pods', from, id);
-        }}
+        onClick={() => updateStateAndNavigate('pods', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'pods', id)}
       >
         Pods
       </Button>
       <Button
-        //startIcon={<CompareArrows />}
         variant="outlined"
+        color={activePage === 'templatespage' ? 'secondary' : 'primary'}
         size="small"
-        color={currentPage === 'templatespage' ? 'secondary' : 'primary'}
-        onClick={() => {
-          setPageTab('templates', from, id);
-        }}
+        onClick={() => updateStateAndNavigate('templates', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'templates', id)}
       >
         Templates
       </Button>
       <Button
-        //startIcon={<Tune />}
         variant="outlined"
+        color={activePage === 'imagespage' ? 'secondary' : 'primary'}
         size="small"
-        color={currentPage === 'imagespage' ? 'secondary' : 'primary'}
-        onClick={() => {
-          setPageTab('images', from, id);
-        }}
+        onClick={() => updateStateAndNavigate('images', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'images', id)}
       >
         Images
       </Button>
       <Button
-        //startIcon={<CompareArrows />}
         variant="outlined"
+        color={activePage === 'volumespage' ? 'secondary' : 'primary'}
         size="small"
-        color={currentPage === 'volumespage' ? 'secondary' : 'primary'}
-        onClick={() => {
-          setPageTab('volumes', from, id);
-        }}
+        onClick={() => updateStateAndNavigate('volumes', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'volumes', id)}
       >
         Volumes
       </Button>
       <Button
-        //startIcon={<CompareArrows />}
         variant="outlined"
+        color={activePage === 'snapshotspage' ? 'secondary' : 'primary'}
         size="small"
-        color={currentPage === 'snapshotspage' ? 'secondary' : 'primary'}
-        onClick={() => {
-          setPageTab('snapshots', from, id);
-        }}
+        onClick={() => updateStateAndNavigate('snapshots', from, id)}
+        onAuxClick={(event) => handleMiddleClick(event, 'snapshots', id)}
       >
         Snapshots
       </Button>

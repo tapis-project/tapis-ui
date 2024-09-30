@@ -29,8 +29,7 @@ const PermissionsModal: React.FC<ToolbarModalProps> = ({
 
   const { data, isLoading, error } = Hooks.usePermissions(permsRequest);
 
-  const write: boolean =
-    data?.result?.permission === Files.FilePermissionPermissionEnum.Modify;
+  const write: boolean = data?.result?.permission === Files.PermEnum.Modify;
 
   const tabs: { [name: string]: React.ReactNode } = {
     Info: (

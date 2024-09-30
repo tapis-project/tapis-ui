@@ -5,6 +5,8 @@ import {
   useModal,
   GenericModal,
   ConfirmModal,
+  Help,
+  HelpSection,
   LoadingSpinner,
   Section,
   SectionHeader,
@@ -47,7 +49,7 @@ import {
   NavItem,
 } from './wrappers';
 import { FieldWrapperFormik } from './ui-formik';
-import { FMTextField } from './ui-formik-mui';
+import { FMTextField, FMSelect } from './ui-formik-mui';
 import {
   FormikInput,
   FormikSelect,
@@ -66,8 +68,14 @@ import {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
-  JobDetail,
+  JobTypeChip,
   JobLauncher,
+  JobStatusIcon,
+  type JobTerminalStatus,
+  type JobRecoverableStatus,
+  jobRecoverableStatuses,
+  jobTerminalStatuses,
+  jobRunningStatuses,
   SystemDetail,
   SystemListing,
   Archive,
@@ -78,6 +86,17 @@ import {
   FileInputs,
   SchedulerOptions,
 } from './components';
+import {
+  SystemProvider,
+  SystemContext,
+  useSystem,
+  type SystemContextType,
+} from './context';
+import {
+  type PropsOfObjectWithValuesOfType,
+  type OrderBy,
+  filterObjects,
+} from './utils/filterObject';
 
 export {
   // Generic UI
@@ -129,12 +148,13 @@ export {
   // Formik UI
   FieldWrapperFormik,
   FMTextField,
+  FMSelect,
   FormikInput,
   FormikSelect,
   FormikCheck,
   FormikTapisFile,
   FormikTapisFileInput,
-  // Tapis Components
+  // Tapis File Components
   FileListing,
   FileListingTable,
   FileStat,
@@ -145,8 +165,15 @@ export {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
-  JobDetail,
+  // Tapis Job Components & types
+  JobTypeChip,
   JobLauncher,
+  JobStatusIcon,
+  type JobTerminalStatus,
+  type JobRecoverableStatus,
+  jobRecoverableStatuses,
+  jobTerminalStatuses,
+  jobRunningStatuses,
   SystemDetail,
   SystemListing,
   Archive,
@@ -156,4 +183,15 @@ export {
   FileInputArrays,
   FileInputs,
   SchedulerOptions,
+  Help,
+  HelpSection,
+  // Tapis context
+  SystemProvider,
+  SystemContext,
+  useSystem,
+  type SystemContextType,
+  // Utils
+  type PropsOfObjectWithValuesOfType,
+  type OrderBy,
+  filterObjects,
 };

@@ -57,8 +57,8 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
       move(
         {
           systemId: systemId!,
-          path: `${path}${file!.name}`,
-          newPath: `${path}${newname}`,
+          path: `${path}/${file!.name}`.replace('//', '/'),
+          newPath: `${path}/${newname}`.replace('//', '/'),
         },
         { onSuccess }
       );

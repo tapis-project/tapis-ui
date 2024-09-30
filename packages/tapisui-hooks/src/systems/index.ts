@@ -9,4 +9,8 @@ export { default as useShareSystemPublic } from './useShareSystemPublic';
 export { default as useUnShareSystemPublic } from './useUnShareSystemPublic';
 export { default as useCreateChildSystem } from './useCreateChildSystem';
 export { default as useCreateCredential } from './useCreateCredential';
+export { default as useCheckCredential } from './useCheckCredential';
+export { default as useGetUserPerms } from './useGetUserPerms';
+export { default as useGetGlobusAuthUrl } from './useGetGlobusAuthUrl';
+export { default as useGenerateGlobusTokens } from './useGenerateGlobusTokens';
 export { default as queryKeys } from './queryKeys';

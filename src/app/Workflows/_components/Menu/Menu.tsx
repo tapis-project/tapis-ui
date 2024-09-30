@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Stack } from '@mui/material';
+import { Link, useHistory } from 'react-router-dom';
+import { SectionHeader } from '@tapis/tapisui-common';
 import {
   ListItemText,
   Drawer,
@@ -15,8 +15,10 @@ import {
   Groups,
   SpaceDashboard,
   AccountTree,
-  Backup,
+  Storage,
+  Key,
 } from '@mui/icons-material';
+import { TapisWorkflowsHelp } from 'app/_components/Help';
 
 const Menu: React.FC = () => {
   const history = useHistory();
@@ -27,12 +29,24 @@ const Menu: React.FC = () => {
 
   return (
     <div>
-      <MenuIcon
-        onClick={() => {
-          setOpen(!open);
-        }}
-        style={{ cursor: 'pointer' }}
-      />
+      <SectionHeader>
+        <span style={{ marginTop: '10px' }}>
+          <MenuIcon
+            onClick={() => {
+              setOpen(!open);
+            }}
+            style={{ cursor: 'pointer', marginTop: '-2px' }}
+          />
+          <span style={{ marginLeft: '16px' }}>
+            <Link to="/workflows" style={{ color: '#444444' }}>
+              Tapis Workflows
+            </Link>
+          </span>
+          <span style={{ marginLeft: '16px', marginTop: '-1px' }}>
+            <TapisWorkflowsHelp />
+          </span>
+        </span>
+      </SectionHeader>
       <Drawer open={open} onClose={toggle}>
         <Box sx={{ width: 250 }} role="presentation" onClick={toggle}>
           <List>
@@ -45,7 +59,7 @@ const Menu: React.FC = () => {
                 <ListItemIcon>
                   <SpaceDashboard />
                 </ListItemIcon>
-                <ListItemText primary={'Dashboard'} />
+                <ListItemText primary={'Workflows Dashboard'} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -79,9 +93,21 @@ const Menu: React.FC = () => {
                 }}
               >
                 <ListItemIcon>
-                  <Backup />
+                  <Storage />
                 </ListItemIcon>
                 <ListItemText primary={'Archives'} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  history.push('/workflows/secrets');
+                }}
+              >
+                <ListItemIcon>
+                  <Key />
+                </ListItemIcon>
+                <ListItemText primary={'Secrets'} />
               </ListItemButton>
             </ListItem>
           </List>

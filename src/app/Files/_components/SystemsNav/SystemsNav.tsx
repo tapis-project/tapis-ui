@@ -16,7 +16,7 @@ const SystemsNav: React.FC = () => {
       <Navbar>
         {definitions.length ? (
           definitions.map((system) => (
-            <NavItem to={`${url}/${system.id}/`} icon="folder" key={system.id}>
+            <NavItem to={`${url}/${system.id}`} icon="folder" key={system.id}>
               {`${system.id}`}
             </NavItem>
           ))

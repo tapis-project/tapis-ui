@@ -8,6 +8,9 @@ interface FMTextFieldProps {
   name: string;
   label: string;
   description: string;
+  multiline?: boolean;
+  disabled?: boolean;
+  rows?: number;
   type?: string;
   size?: 'small' | 'medium';
 }
@@ -17,16 +20,23 @@ const FMTextField: React.FC<FMTextFieldProps> = ({
   name,
   label,
   description,
+  rows,
+  disabled = false,
+  multiline = false,
   type = 'text',
   size = 'small',
 }) => {
   return (
     <TextField
+      style={{ marginBottom: '.75rem' }}
       fullWidth
       id={name}
       name={name}
       label={label}
       type={type}
+      disabled={disabled}
+      multiline={multiline}
+      rows={multiline && !rows ? 3 : rows}
       value={formik.values[name]}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}

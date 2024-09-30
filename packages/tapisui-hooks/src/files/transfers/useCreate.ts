@@ -21,9 +21,12 @@ const useCreate = () => {
     data,
     error,
     reset,
-  } = useMutation<Files.TransferTaskResponse, Error, Files.TransferTaskRequest>(
-    [QueryKeys.create, basePath, jwt],
-    (request) => API.Transfers.create(request, basePath, jwt)
+  } = useMutation<
+    Files.TransferTaskResponse,
+    Error,
+    Files.CreateTransferTaskRequest
+  >([QueryKeys.create, basePath, jwt], (request) =>
+    API.Transfers.create(request, basePath, jwt)
   );
 
   // Return hook object with loading states and login function
@@ -35,23 +38,23 @@ const useCreate = () => {
     error,
     reset,
     create: (
-      request: Files.TransferTaskRequest,
+      request: Files.CreateTransferTaskRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
         Files.TransferTaskResponse,
         Error,
-        Files.TransferTaskRequest
+        Files.CreateTransferTaskRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate(request, options);
     },
     moveAsync: (
-      request: Files.TransferTaskRequest,
+      request: Files.CreateTransferTaskRequest,
       options?: MutateOptions<
         Files.TransferTaskResponse,
         Error,
-        Files.TransferTaskRequest
+        Files.CreateTransferTaskRequest
       >
     ) => mutateAsync(request, options),
   };
