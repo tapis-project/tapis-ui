@@ -64,7 +64,7 @@ type Group<T, V> = {
   groupIcon?: ResolvableGroupValue<T, unknown>;
   groupItemIcon?: ResolvableGroupItemValue<T, unknown>;
   onClickItem?: (object: T) => void;
-  showDropdown?: boolean
+  showDropdown?: boolean;
 };
 
 type FilterScope = 'filter' | 'group' | 'order';
@@ -83,7 +83,7 @@ type FilterableObjectsListProps<T, V = string | undefined> = {
   includeAllSelectorLabel?: string;
   includeAllGroupLabel?: string;
   includeAllToolTip?: string;
-  includeAllShowDropdown?: boolean
+  includeAllShowDropdown?: boolean;
   defaultField?: PropsOfObjectWithValuesOfType<T, V> | '*';
   defaultOnClickItem?: (object: T) => void;
   defaultGroupIcon?: any;
@@ -149,14 +149,14 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     filterScope: defaultFilterScope,
   });
 
-  console.log({state})
+  console.log({ state });
 
   useEffect(() => {
     const modifiedState: FilterableObjectsListState = {
       open: state.open,
       groupedObjects: {},
       groupBy: state.groupBy,
-      filterScope: state.filterScope
+      filterScope: state.filterScope,
     };
     for (let group of groups) {
       modifiedState.groupedObjects = {
@@ -243,14 +243,14 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
         groupIcon: defaultGroupIcon,
         groupItemIcon: defaultGroupItemIcon,
         tooltip: includeAllToolTip,
-        showDropdown: includeAllShowDropdown
+        showDropdown: includeAllShowDropdown,
       },
       ...groups,
     ];
   }
 
   return (
-    <div style={{maxHeight: "100%", minHeight: "100%", overflowY: "auto"}}>
+    <div style={{ maxHeight: '100%', minHeight: '100%', overflowY: 'auto' }}>
       {title && (
         <>
           <List
@@ -271,23 +271,25 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
       <List
         style={{ padding: '0px' }}
         subheader={
-          (filterable || orderable || groupable) ? (
+          filterable || orderable || groupable ? (
             <ListSubheader
               style={{
                 paddingTop: '8px',
                 paddingBottom: '8px',
                 display: 'flex',
                 justifyContent: 'space-evenly',
-                gap: "16px"
+                gap: '16px',
               }}
             >
               {filterable && (
                 <Button
                   size="small"
-                  variant={state.filterScope === "filter" ? "contained" : "outlined"}
+                  variant={
+                    state.filterScope === 'filter' ? 'contained' : 'outlined'
+                  }
                   startIcon={<FilterAlt />}
                   onClick={() => {
-                    setState({...state, filterScope: "filter"})
+                    setState({ ...state, filterScope: 'filter' });
                   }}
                 >
                   Filter
@@ -296,22 +298,26 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
               {groupable && (
                 <Button
                   size="small"
-                  variant={state.filterScope === "group" ? "contained" : "outlined"}
+                  variant={
+                    state.filterScope === 'group' ? 'contained' : 'outlined'
+                  }
                   startIcon={<Category />}
                   onClick={() => {
-                    setState({...state, filterScope: "group"})
+                    setState({ ...state, filterScope: 'group' });
                   }}
                 >
                   Group
                 </Button>
               )}
               {orderable && (
-                <Button 
-                  size="small" 
-                  variant={state.filterScope === "order" ? "contained" : "outlined"} 
+                <Button
+                  size="small"
+                  variant={
+                    state.filterScope === 'order' ? 'contained' : 'outlined'
+                  }
                   startIcon={<SortByAlpha />}
                   onClick={() => {
-                    setState({...state, filterScope: "order"})
+                    setState({ ...state, filterScope: 'order' });
                   }}
                 >
                   Order
@@ -321,7 +327,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
           ) : undefined
         }
       >
-        {groupable && state.filterScope === "group" && (
+        {groupable && state.filterScope === 'group' && (
           <>
             <Divider />
             <span
@@ -401,8 +407,8 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                     <List
                       style={{ padding: '0px' }}
                       subheader={
-                        (group.showDropdown || group.showDropdown === undefined) && (
-
+                        (group.showDropdown ||
+                          group.showDropdown === undefined) && (
                           <ListSubheader
                             style={{ cursor: 'pointer', userSelect: 'none' }}
                             onClick={() => {

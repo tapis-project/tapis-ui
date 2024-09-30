@@ -9,7 +9,7 @@ import { SystemsNav } from '../_components';
 import SystemToolbar from '../_components/SystemToolbar';
 import { Router } from '../_Router';
 import { SystemsHelp } from 'app/_components/Help';
-import styles from './Layout.module.scss'
+import styles from './Layout.module.scss';
 
 const Layout: React.FC = () => {
   const header = (
@@ -25,7 +25,7 @@ const Layout: React.FC = () => {
   );
 
   const sidebar = (
-    <div className={styles["container"]}>
+    <div className={styles['container']}>
       <SystemsNav />
     </div>
   );
