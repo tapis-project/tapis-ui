@@ -6,7 +6,7 @@ export type PropsOfObjectWithValuesOfType<T, V> = {
 
 export type OrderBy = 'ASC' | 'DESC';
 
-export const filterObjects = <T extends {}, U = string | undefined>(
+export const filterObjects = <T extends {}, U = unknown>(
   objects: Array<T>,
   groupBy: PropsOfObjectWithValuesOfType<T, U>,
   orderGroupBy: OrderBy = 'ASC'
