@@ -40,6 +40,7 @@ import {
   JSONDisplay,
   TooltipModal,
   Tabs,
+  FilterableObjectsList,
 } from './ui';
 import {
   QueryWrapper,
@@ -139,6 +140,7 @@ export {
   JSONDisplay,
   TooltipModal,
   Tabs,
+  FilterableObjectsList,
   // Wrappers
   QueryWrapper,
   SubmitWrapper,
