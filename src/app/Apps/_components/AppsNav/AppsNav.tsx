@@ -70,6 +70,40 @@ const AppsNav: React.FC = () => {
               groupItemIcon: <AppsIcon />,
             },
             {
+              field: 'jobType',
+              primaryItemText: ({ object }) => object.id,
+              secondaryItemText: ({ object }) => `version: ${object.version}`,
+              groupSelectorLabel: 'job type',
+              groupLabel: (
+                { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
+              ) => fieldValue,
+              groupIcon: <AppsIcon />,
+              groupItemIcon: <AppsIcon />,
+              tooltip: (
+                { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
+              ) => fieldValue,
+              onClickItem: (object) => {
+                history.push(`${url}/${object.id}/${object.version}`);
+              },
+            },
+            {
+              field: 'owner',
+              primaryItemText: ({ object }) => object.id,
+              secondaryItemText: ({ object }) => `version: ${object.version}`,
+              groupSelectorLabel: 'owner',
+              groupLabel: (
+                { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
+              ) => fieldValue,
+              groupIcon: <Person />,
+              groupItemIcon: <AppsIcon />,
+              tooltip: (
+                { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
+              ) => fieldValue,
+              onClickItem: (object) => {
+                history.push(`${url}/${object.id}/${object.version}`);
+              },
+            },
+            {
               field: 'enabled',
               primaryItemText: ({ object }) => object.id,
               secondaryItemText: ({ object }) => `version: ${object.version}`,
@@ -92,7 +126,7 @@ const AppsNav: React.FC = () => {
                   ? 'enabled'
                   : 'Disabled - disabled applications cannot be run',
               onClickItem: (object) => {
-                // TODO Trigger re-enable modal
+                history.push(`${url}/${object.id}/${object.version}`);
               },
             },
           ]}

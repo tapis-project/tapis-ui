@@ -7,11 +7,13 @@ import {
   FilterableObjectsList,
   JobStatusIcon,
 } from '@tapis/tapisui-common';
-import { Work, Dns } from '@mui/icons-material';
+import { Work, Dns, Apps } from '@mui/icons-material';
 
 const JobsNav: React.FC = () => {
   const history = useHistory();
-  const { data, isLoading, error } = Hooks.useList();
+  const { data, isLoading, error } = Hooks.useList({
+    computeTotal: true,
+  });
   const { url } = useRouteMatch();
   const jobs: Array<Jobs.JobListDTO> = data?.result ?? [];
 
@@ -121,6 +123,32 @@ const JobsNav: React.FC = () => {
             },
             groupLabel: ({ fieldValue }: any) => fieldValue,
             groupIcon: <Dns />,
+            groupItemIcon: (
+              { object }: any // TODO FIXME This 'any' makes me sad. Fix
+            ) => (
+              <JobStatusIcon
+                status={object.status}
+                animation={
+                  object.status === Jobs.JobListDTOStatusEnum.Running
+                    ? 'rotate'
+                    : undefined
+                }
+              />
+            ),
+          },
+          {
+            field: 'appId',
+            groupSelectorLabel: 'app',
+            primaryItemText: ({ object }: any) => object.name, // TODO FIXME This 'any' makes me sad. Fix
+            secondaryItemText: ({ object }: any) =>
+              `${object.appId}:${object.appVersion}`, // TODO FIXME This 'any' makes me sad. Fix
+            open: [],
+            tooltip: ({ fieldValue }: any) => fieldValue, // TODO FIXME This 'any' makes me sad. Fix
+            onClickItem: (object: any) => {
+              history.push(`${url}/${object.uuid}`);
+            },
+            groupLabel: ({ fieldValue }: any) => fieldValue,
+            groupIcon: <Apps />,
             groupItemIcon: (
               { object }: any // TODO FIXME This 'any' makes me sad. Fix
             ) => (
