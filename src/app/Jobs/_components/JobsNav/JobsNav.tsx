@@ -7,7 +7,7 @@ import {
   FilterableObjectsList,
   JobStatusIcon,
 } from '@tapis/tapisui-common';
-import { Work } from '@mui/icons-material';
+import { Work, Dns } from '@mui/icons-material';
 
 const JobsNav: React.FC = () => {
   const history = useHistory();
@@ -30,7 +30,18 @@ const JobsNav: React.FC = () => {
         includeAllSecondaryItemText={({ object }: any) =>
           `${object.appId}${object.appVersion} `
         }
+        includeAllGroupItemIcon={({ object }: any) => (
+          <JobStatusIcon
+            status={object.status}
+            animation={
+              object.status === Jobs.JobListDTOStatusEnum.Running
+                ? 'rotate'
+                : undefined
+            }
+          />
+        )}
         defaultGroupIcon={<Work />}
+        orderGroupsBy="DESC"
         filterable={false}
         groupable={true}
         groups={[
@@ -72,6 +83,58 @@ const JobsNav: React.FC = () => {
             ),
           },
           {
+            field: 'execSystemId',
+            groupSelectorLabel: 'execution system',
+            primaryItemText: ({ object }: any) => object.name, // TODO FIXME This 'any' makes me sad. Fix
+            secondaryItemText: ({ object }: any) =>
+              `${object.appId}:${object.appVersion}`, // TODO FIXME This 'any' makes me sad. Fix
+            open: [],
+            tooltip: ({ fieldValue }: any) => fieldValue, // TODO FIXME This 'any' makes me sad. Fix
+            onClickItem: (object: any) => {
+              history.push(`${url}/${object.uuid}`);
+            },
+            groupLabel: ({ fieldValue }: any) => fieldValue,
+            groupIcon: <Dns />,
+            groupItemIcon: (
+              { object }: any // TODO FIXME This 'any' makes me sad. Fix
+            ) => (
+              <JobStatusIcon
+                status={object.status}
+                animation={
+                  object.status === Jobs.JobListDTOStatusEnum.Running
+                    ? 'rotate'
+                    : undefined
+                }
+              />
+            ),
+          },
+          {
+            field: 'archiveSystemId',
+            groupSelectorLabel: 'archive system',
+            primaryItemText: ({ object }: any) => object.name, // TODO FIXME This 'any' makes me sad. Fix
+            secondaryItemText: ({ object }: any) =>
+              `${object.appId}:${object.appVersion}`, // TODO FIXME This 'any' makes me sad. Fix
+            open: [],
+            tooltip: ({ fieldValue }: any) => fieldValue, // TODO FIXME This 'any' makes me sad. Fix
+            onClickItem: (object: any) => {
+              history.push(`${url}/${object.uuid}`);
+            },
+            groupLabel: ({ fieldValue }: any) => fieldValue,
+            groupIcon: <Dns />,
+            groupItemIcon: (
+              { object }: any // TODO FIXME This 'any' makes me sad. Fix
+            ) => (
+              <JobStatusIcon
+                status={object.status}
+                animation={
+                  object.status === Jobs.JobListDTOStatusEnum.Running
+                    ? 'rotate'
+                    : undefined
+                }
+              />
+            ),
+          },
+          {
             field: 'lastUpdated',
             groupSelectorLabel: 'last updated',
             primaryItemText: ({ object }: any) => object.name, // TODO FIXME This 'any' makes me sad. Fix
@@ -83,7 +146,7 @@ const JobsNav: React.FC = () => {
               history.push(`${url}/${object.uuid}`);
             },
             showDropdown: false,
-            groupLabel: () => 'test',
+            groupLabel: () => '',
             groupIcon: () => '',
             groupItemIcon: (
               { object }: any // TODO FIXME This 'any' makes me sad. Fix

@@ -76,6 +76,8 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   includeAllShowDropdown?: boolean;
   includeAllPrimaryItemText?: ResolvableGroupItemValue<T, string>;
   includeAllSecondaryItemText?: ResolvableGroupItemValue<T, string>;
+  includeAllGroupIcon?: ResolvableGroupItemValue<T, any>;
+  includeAllGroupItemIcon?: ResolvableGroupItemValue<T, any>;
   defaultField?: PropsOfObjectWithValuesOfType<T, V> | '*';
   defaultOnClickItem?: (object: T) => void;
   defaultGroupIcon?: any;
@@ -115,6 +117,8 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   includeAllShowDropdown = false,
   includeAllPrimaryItemText = ({ object }) => object.id ?? '',
   includeAllSecondaryItemText = ({}) => '',
+  includeAllGroupIcon = undefined,
+  includeAllGroupItemIcon = undefined,
   defaultOnClickItem = () => {},
   children,
   childrenPlacement = 'bottom',
@@ -192,8 +196,10 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
         secondaryItemText: includeAllSecondaryItemText,
         groupLabel: includeAllGroupLabel,
         groupSelectorLabel: includeAllSelectorLabel,
-        groupIcon: defaultGroupIcon,
-        groupItemIcon: defaultGroupItemIcon,
+        groupIcon: includeAllGroupIcon ? includeAllGroupIcon : defaultGroupIcon,
+        groupItemIcon: includeAllGroupItemIcon
+          ? includeAllGroupItemIcon
+          : defaultGroupIcon,
         tooltip: includeAllToolTip,
         showDropdown: includeAllShowDropdown,
       },
