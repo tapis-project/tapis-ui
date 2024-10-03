@@ -126,7 +126,8 @@ const SystemsNav: React.FC = () => {
               includeAllOpen={false}
               includeAllGroupLabel="Deleted Systems"
               includeAllToolTip="Systems that have been soft deleted"
-              includeAllShowDropdown={true}
+              includeAllGroupIcon={() => <Delete color="error" />}
+              includeAllGroupItemIcon={() => <Restore color="success" />}
               defaultOnClickItem={(object: any) => {
                 // TODO FIXME This 'any' makes me sad. Fix
                 setUndeleteSystem(object.id);
