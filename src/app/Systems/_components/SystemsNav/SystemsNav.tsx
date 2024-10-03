@@ -124,12 +124,14 @@ const SystemsNav: React.FC = () => {
               defaultField={undefined}
               includeAll={true}
               includeAllOpen={false}
+              includeAllShowDropdown={true}
               includeAllGroupLabel="Deleted Systems"
               includeAllToolTip="Systems that have been soft deleted"
               includeAllGroupIcon={() => <Delete color="error" />}
               includeAllGroupItemIcon={() => <Restore color="success" />}
+              includeAllPrimaryItemText={({ object }: any) => object.id}
+              includeAllSecondaryItemText={({ object }: any) => object.host}
               defaultOnClickItem={(object: any) => {
-                // TODO FIXME This 'any' makes me sad. Fix
                 setUndeleteSystem(object.id);
               }}
               filterable={false}
