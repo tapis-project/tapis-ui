@@ -51,6 +51,13 @@
     "web-vitals": "^1.1.2",
     "yup": "^0.32.11"
   },
+  "peerDependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-python": "^6.1.6",
+    "@uiw/codemirror-theme-vscode": "^4.22.2",
+    "@uiw/react-codemirror": "^4.19.7",
+    "@uiw/react-textarea-code-editor": "^2.0.6"
+  },
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {
     "start": "vite --config ./vite/vite.config.mts",
