@@ -55,6 +55,8 @@ const SystemsNav: React.FC = () => {
           includeAll={true}
           includeAllGroupLabel="All Systems"
           includeAllSelectorLabel="all systems"
+          includeAllPrimaryItemText={({ object }: any) => object.id}
+          includeAllSecondaryItemText={({ object }: any) => object.host}
           defaultGroupIcon={<Dns />}
           filterable={false}
           groupable={true}

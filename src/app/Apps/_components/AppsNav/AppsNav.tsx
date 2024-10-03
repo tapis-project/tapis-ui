@@ -71,8 +71,9 @@ const AppsNav: React.FC = () => {
             },
             {
               field: 'jobType',
-              primaryItemText: ({ object }) => object.id,
-              secondaryItemText: ({ object }) => `version: ${object.version}`,
+              primaryItemText: ({ object }: any) => object.id,
+              secondaryItemText: ({ object }: any) =>
+                `version: ${object.version}`,
               groupSelectorLabel: 'job type',
               groupLabel: (
                 { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
@@ -82,14 +83,15 @@ const AppsNav: React.FC = () => {
               tooltip: (
                 { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
               ) => fieldValue,
-              onClickItem: (object) => {
+              onClickItem: (object: any) => {
                 history.push(`${url}/${object.id}/${object.version}`);
               },
             },
             {
               field: 'owner',
-              primaryItemText: ({ object }) => object.id,
-              secondaryItemText: ({ object }) => `version: ${object.version}`,
+              primaryItemText: ({ object }: any) => object.id,
+              secondaryItemText: ({ object }: any) =>
+                `version: ${object.version}`,
               groupSelectorLabel: 'owner',
               groupLabel: (
                 { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
@@ -99,14 +101,15 @@ const AppsNav: React.FC = () => {
               tooltip: (
                 { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
               ) => fieldValue,
-              onClickItem: (object) => {
+              onClickItem: (object: any) => {
                 history.push(`${url}/${object.id}/${object.version}`);
               },
             },
             {
               field: 'enabled',
-              primaryItemText: ({ object }) => object.id,
-              secondaryItemText: ({ object }) => `version: ${object.version}`,
+              primaryItemText: ({ object }: any) => object.id,
+              secondaryItemText: ({ object }: any) =>
+                `version: ${object.version}`,
               groupSelectorLabel: 'enabled',
               groupLabel: (
                 { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
@@ -125,7 +128,7 @@ const AppsNav: React.FC = () => {
                 fieldValue === 'true'
                   ? 'enabled'
                   : 'Disabled - disabled applications cannot be run',
-              onClickItem: (object) => {
+              onClickItem: (object: any) => {
                 history.push(`${url}/${object.id}/${object.version}`);
               },
             },
