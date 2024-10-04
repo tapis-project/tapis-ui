@@ -66,9 +66,8 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
         // flexDirection="column"
         // height="40rem"
         flexWrap={'nowrap'}
-        height="46rem"
+        height="18rem"
         rowSpacing={0.4}
-        // height="44rem" (this causes side by side)
         overflow="scroll"
         sx={{
           display: 'flex',
