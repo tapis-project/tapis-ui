@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { HelpOutline } from '@mui/icons-material';
-import { Drawer, Box, Typography } from '@mui/material';
+import { Drawer, Box, Stack, Grid, Typography } from '@mui/material';
 
 type HelpProps = {
   title: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
   width?: string | number;
+  minWidth?: string | number;
+  height?: string | number;
+  showHeader?: boolean;
+  childrenSectionHeight?: string | number;
   iframeUrl?: string;
   iframePosition?: 'top' | 'bottom';
 };
@@ -14,11 +18,16 @@ const Help: React.FC<React.PropsWithChildren<HelpProps>> = ({
   title,
   children,
   position = 'right',
-  width = '600px',
+  width = '42vw',
+  minWidth = '92vw',
+  height = '100vh', // There's a header which autohides, but on scroll up gets shown.
+  childrenSectionHeight = '700px',
+  showHeader = true,
   iframeUrl,
   iframePosition = 'top',
 }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <span>
       <HelpOutline
@@ -35,37 +44,48 @@ const Help: React.FC<React.PropsWithChildren<HelpProps>> = ({
           setOpen(false);
         }}
       >
-        <Box sx={{ width }} role="presentation">
-          <Typography
-            variant="h5"
-            component="h5"
-            style={{
-              fontWeight: 600,
-              padding: '16px',
-              backgroundColor: '#f0f0f0',
-              color: '#444444',
-              borderBottom: '1px solid #444444',
-            }}
-          >
-            {title}
-          </Typography>
-          {iframeUrl && iframePosition === 'top' && (
-            <iframe
-              width="100%"
-              height="700px"
-              style={{ border: 'none' }}
-              src={iframeUrl}
-            />
-          )}
-          <div>{children}</div>
-          {iframeUrl && iframePosition === 'bottom' && (
-            <iframe
-              width="100%"
-              height="700px"
-              style={{ border: 'none' }}
-              src={iframeUrl}
-            />
-          )}
+        <Box
+          sx={{ width, minWidth, height: height, overflow: 'clip' }}
+          role="presentation"
+        >
+          <Stack direction="column" sx={{ height: '100%' }}>
+            {showHeader && (
+              <Grid item>
+                <Typography
+                  variant="h5"
+                  component="h5"
+                  sx={{
+                    fontWeight: 600,
+                    padding: '16px',
+                    backgroundColor: '#f0f0f0',
+                    color: '#444444',
+                    borderBottom: '1px solid #444444',
+                  }}
+                >
+                  {title}
+                </Typography>
+              </Grid>
+            )}
+            <Grid item xs>
+              {iframeUrl && iframePosition === 'top' && (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 'none' }}
+                  src={iframeUrl}
+                />
+              )}
+              <Box sx={{ height: childrenSectionHeight }}>{children}</Box>
+              {iframeUrl && iframePosition === 'bottom' && (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 'none' }}
+                  src={iframeUrl}
+                />
+              )}
+            </Grid>
+          </Stack>
         </Box>
       </Drawer>
     </span>
