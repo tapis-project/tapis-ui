@@ -75,7 +75,7 @@ const AuthModal: React.FC<ModalProps> = ({
         return {
           publicKey: input.pkiKeys.publicKey!,
           // Escape newlines in private key
-          privateKey: input.pkiKeys.privateKey!.replace(/\n/gm, '\n'),
+          privateKey: input.pkiKeys.privateKey!.trim().replace(/\n/gm, '\n'),
           loginUser: input.pkiKeys.loginUser,
         };
       case Systems.AuthnEnum.AccessKey:

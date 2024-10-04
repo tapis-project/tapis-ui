@@ -88,6 +88,14 @@ const SystemsNav: React.FC = () => {
               groupItemIcon: <Dns />,
             },
             {
+              field: 'systemType',
+              groupSelectorLabel: 'type',
+              primaryItemText: ({ object }: any) => object.id, // TODO FIXME This 'any' makes me sad. Fix
+              secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
+              groupIcon: <Dns />,
+              groupItemIcon: <Dns />,
+            },
+            {
               field: 'defaultAuthnMethod',
               primaryItemText: ({ object }: any) => object.id, // TODO FIXME This 'any' makes me sad. Fix
               secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
