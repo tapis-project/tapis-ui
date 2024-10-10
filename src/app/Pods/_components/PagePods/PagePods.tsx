@@ -449,6 +449,8 @@ Select or create a pod to get started.`;
                   />
                 )
               }
+              //scrollToBottom should be true if podTab == 'log' or 'actionlogs'
+              scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
             />
           </div>
           <div>{renderTooltipModal()}</div>

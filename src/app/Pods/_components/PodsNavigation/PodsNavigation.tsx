@@ -127,6 +127,7 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
           stateUpdates.activeTemplate = '';
           stateUpdates.activeTemplateTag = '';
           stateUpdates.templateNavSelectedItems = '';
+          stateUpdates.templateRootTab = 'dashboard';
           history.push('/pods/templates');
         } else {
           history.push(
