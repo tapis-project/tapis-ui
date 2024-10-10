@@ -64,6 +64,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
     },
     {
       retry: 0,
+      refetchOnWindowFocus: false,
     }
   );
 
