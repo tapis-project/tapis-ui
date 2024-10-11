@@ -18,7 +18,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
 }) => {
   return (
     <Modal
-      backdrop="static"
+      backdrop={true} // Set to "static" to prevent closing on click outside
       keyboard={true}
       isOpen={true}
       toggle={toggle}

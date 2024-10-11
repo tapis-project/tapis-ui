@@ -4,3 +4,5 @@ export { default as submit } from './submit';
 export { default as cancel } from './cancel';
 export { default as hideJob } from './hideJob';
 export { default as unhideJob } from './unhideJob';
+export { default as resubmit } from './resubmit';
+export { default as getJobOutputList } from './getJobOutputList';

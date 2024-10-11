@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/ICICLE-ai/tapisui-extension-icicle#readme",
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.45",
+    "@tapis/tapis-typescript": "^0.0.51",
     "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-common": "file:../tapisui-common",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",
@@ -48,6 +48,13 @@
     "react": "^18.3.1",
     "uuid": "^7.0.2",
     "yup": "^0.32.11"
+  },
+  "peerDependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-python": "^6.1.6",
+    "@uiw/codemirror-theme-vscode": "^4.22.2",
+    "@uiw/react-codemirror": "^4.19.7",
+    "@uiw/react-textarea-code-editor": "^2.0.6"
   },
   "devDependencies": {
     "@types/node": "^18.19.33",

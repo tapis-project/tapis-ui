@@ -60,7 +60,7 @@ const validationSchema = Yup.object({
       then: Yup.string().required('Device for TACC is required'),
     })
     .when('site', {
-      is: 'CHAMELEON',
+      is: 'CHI@TACC',
       then: Yup.string().required('Device for CHAMELEON is required'),
     }),
 });
@@ -82,7 +82,7 @@ const devices = [
     id: 2,
     name: 'x86 (no GPU)',
     type: 'compute_cascadelake',
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     gpu: true,
     disabled: false,
   },
@@ -99,7 +99,7 @@ const devices = [
     name: 'x86 (gpu_p100)',
     type: 'gpu_p100',
     gpu: true,
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     disabled: false,
   },
   {
@@ -107,7 +107,7 @@ const devices = [
     name: 'x86 (gpu_m40)',
     type: 'gpu_m40',
     gpu: true,
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     disabled: false,
   },
   {
@@ -115,45 +115,59 @@ const devices = [
     name: 'x86 (gpu_k80)',
     type: 'gpu_k80',
     gpu: true,
-    site: 'CHAMELEON',
+    site: 'CHI@TACC',
     disabled: false,
   },
 ];
 
 const models = [
   {
-    model_id: 'megadetectorv5-ft-kudu',
+    modelId: 'megadetectorv5-ft-kudu',
     name: 'MegaDetector v5 (FT Kudu)',
+    description: undefined,
     disabled: true,
   },
   {
-    model_id: 'megadetectorv5a',
+    modelId: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
     name: 'MegaDetector v5a',
+    description: 'Microsoft Megadetector trained on dataset A',
     disabled: false,
   },
   {
-    model_id: 'megadetectorv5b',
+    modelId: '4108ed9d-968e-4cfe-9f18-0324e5399a97-model',
     name: 'MegaDetector v5b',
+    description: 'Microsoft Megadetector trained on dataset B',
     disabled: false,
   },
   {
-    model_id: 'megadetectorv5c',
+    modelId: '665e7c60-7244-470d-8e33-a232d5f2a390-model',
+    name: 'MegaDetector 5-optimized',
+    description:
+      'Version of the MS Megadetector base model optimized for throughput',
+    disabled: false,
+  },
+  {
+    modelId: '04867339-530b-44b7-b66e-5f7a52ce4d90-model',
     name: 'MegaDetector v5c',
-    disabled: false,
+    description: undefined,
+    disabled: true,
   },
   {
-    model_id: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
+    modelId: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
     name: 'MegaDetector v4.1',
+    description: undefined,
     disabled: true,
   },
   {
-    model_id: 'megadetectorv5-ft-ena',
+    modelId: 'megadetectorv5-ft-ena',
     name: 'MegaDetector v5 (FT ENA)',
+    description: undefined,
     disabled: true,
   },
   {
-    model_id: 'bioclip',
+    modelId: 'bioclip',
     name: 'BioClip',
+    description: undefined,
     disabled: true,
   },
 ];
@@ -349,8 +363,6 @@ const AnalysisForm: React.FC = () => {
                   },
                 ];
 
-                console.log({ envVariables });
-
                 // Add advnacedConfig to the envVariables to if defined
                 if (values.advancedConfig) {
                   envVariables.push({
@@ -445,9 +457,10 @@ const AnalysisForm: React.FC = () => {
                         return (
                           <option
                             disabled={model.disabled}
-                            value={model.model_id}
+                            value={model.modelId}
                           >
                             {model.name}
+                            {model.description ? ` - ${model.description}` : ''}
                           </option>
                         );
                       })}
@@ -605,7 +618,7 @@ const AnalysisForm: React.FC = () => {
                     >
                       <option value="" label="Select option" />
                       <option value="TACC" label="TACC" />
-                      <option value="CHAMELEON" label="CHAMELEON" />
+                      <option value="CHI@TACC" label="CHAMELEON" />
                     </Input>
                     {!values.site && touched.site && (
                       <div className="invalid-feedback">

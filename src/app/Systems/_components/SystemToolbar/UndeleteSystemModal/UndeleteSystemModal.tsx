@@ -10,10 +10,14 @@ import { useEffect, useCallback } from 'react';
 import styles from './UndeleteSystemModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
+import { useHistory } from 'react-router-dom';
 
-const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+const UndeleteSystemModal: React.FC<
+  ToolbarModalProps & { systemId?: string }
+> = ({ systemId, toggle }) => {
   const { data } = Hooks.useDeletedList();
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
+  const history = useHistory();
 
   //Allows the system list to update without the user having to refresh the page
   const queryClient = useQueryClient();
@@ -21,8 +25,13 @@ const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(Hooks.queryKeys.list);
   }, [queryClient]);
 
-  const { undeleteSystem, isLoading, error, isSuccess, reset } =
-    Hooks.useUndeleteSystem();
+  const {
+    undeleteSystem: undelete,
+    isLoading,
+    error,
+    isSuccess,
+    reset,
+  } = Hooks.useUndeleteSystem();
 
   useEffect(() => {
     reset();
@@ -36,14 +45,19 @@ const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     systemId: '',
   };
 
-  const onSubmit = ({ systemId }: { systemId: string }) => {
-    undeleteSystem(systemId, { onSuccess });
+  const onSubmit = ({ systemId: systemToSubmit }: { systemId: string }) => {
+    undelete(systemToSubmit ? systemToSubmit : systemId!, {
+      onSuccess: () => {
+        onSuccess();
+        history.push(`/systems/${systemId}`);
+      },
+    });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Re-add a System"
+      title="Restore System"
       body={
         <div className={styles['modal-settings']}>
           <Formik
@@ -51,28 +65,48 @@ const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            {() => (
-              <Form id="newsystem-form">
-                <FormikSelect
-                  name="systemId"
-                  description="The system id"
-                  label="System ID"
-                  required={true}
-                  data-testid="systemId"
-                >
-                  <option disabled value={''}>
-                    Select a system to re-add
-                  </option>
-                  {systems.length ? (
-                    systems.map((system) => {
-                      return <option>{system.id}</option>;
-                    })
-                  ) : (
-                    <i style={{ padding: '16px' }}>No systems found</i>
-                  )}
-                </FormikSelect>
-              </Form>
-            )}
+            {() => {
+              if (systemId) {
+                return (
+                  <Form id="undelete-form">
+                    <FormikSelect
+                      name="systemId"
+                      description=""
+                      label="System Id"
+                      required={true}
+                      data-testid="systemId"
+                      value={systemId}
+                    >
+                      <option disabled selected value={systemId}>
+                        {systemId}
+                      </option>
+                    </FormikSelect>
+                  </Form>
+                );
+              }
+              return (
+                <Form id="undelete-form">
+                  <FormikSelect
+                    name="systemId"
+                    description="The system id"
+                    label="System ID"
+                    required={true}
+                    data-testid="systemId"
+                  >
+                    <option disabled value={''}>
+                      Select a system to restore
+                    </option>
+                    {systems.length ? (
+                      systems.map((system) => {
+                        return <option>{system.id}</option>;
+                      })
+                    ) : (
+                      <i style={{ padding: '16px' }}>No systems found</i>
+                    )}
+                  </FormikSelect>
+                </Form>
+              );
+            }}
           </Formik>
         </div>
       }
@@ -81,17 +115,17 @@ const UndeleteSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully re-added a system` : ''}
+          success={isSuccess ? `Successfully restored system` : ''}
           reverse={true}
         >
           <Button
-            form="newsystem-form"
+            form="undelete-form"
             color="primary"
             disabled={isLoading || isSuccess}
             aria-label="Submit"
             type="submit"
           >
-            Re-add system
+            Restore
           </Button>
         </SubmitWrapper>
       }

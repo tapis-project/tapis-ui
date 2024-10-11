@@ -27,7 +27,7 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
 }) => {
   if (location) {
     return (
-      <NavLink to={`${location}${file.name ?? ''}/`} className={styles.dir}>
+      <NavLink to={`${location}/${file.name ?? ''}`} className={styles.dir}>
         {file.name}/
       </NavLink>
     );
@@ -125,7 +125,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
         Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
       },
       {
-        Header: 'Name',
+        Header: 'filename',
         Cell: (el) => (
           <FileListingName
             file={el.row.original}
@@ -138,7 +138,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
 
     if (fields?.some((field) => field === 'size')) {
       tableColumns.push({
-        Header: 'Size',
+        Header: 'size',
         accessor: 'size',
         Cell: (el) => <span>{sizeFormat(el.value)}</span>,
       });
@@ -146,7 +146,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
 
     if (fields?.some((field) => field === 'lastModified')) {
       tableColumns.push({
-        Header: 'Last Modified',
+        Header: 'last modified',
         accessor: 'lastModified',
         Cell: (el) => (
           <span>{formatDateTimeFromValue(new Date(el.value))}</span>

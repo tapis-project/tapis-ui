@@ -8,26 +8,29 @@ import {
 import { SystemsNav } from '../_components';
 import SystemToolbar from '../_components/SystemToolbar';
 import { Router } from '../_Router';
+import { SystemsHelp } from 'app/_components/Help';
+import styles from './Layout.module.scss';
 
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <div>System List</div>
+      <span>
+        Systems
+        <span style={{ marginLeft: '16px' }}>
+          <SystemsHelp />
+        </span>
+      </span>
       <SystemToolbar />
     </LayoutHeader>
   );
 
   const sidebar = (
-    <LayoutNavWrapper>
+    <div className={styles['container']}>
       <SystemsNav />
-    </LayoutNavWrapper>
+    </div>
   );
 
-  const body = (
-    <LayoutBody>
-      <Router />
-    </LayoutBody>
-  );
+  const body = <Router />;
 
   return <PageLayout top={header} left={sidebar} right={body} />;
 };

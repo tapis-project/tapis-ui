@@ -3,6 +3,7 @@ import { Input, FormGroup, Label, Button } from 'reactstrap';
 import { CopyButton, TooltipModal } from '../../ui';
 import styles from './JSONDisplay.module.scss';
 import { Icon } from '../../ui';
+import PodsCodeMirror from '../PodsCodeMirror';
 
 const simplifyObject = (obj: any) => {
   const result = JSON.parse(JSON.stringify(obj));
@@ -117,10 +118,10 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({
   );
 
   // Sometimes we want this transform, sometimes we don't.
-  const output_json = jsonstringify ? jsonString : json;
+  const outputJSON = jsonstringify ? jsonString : json;
 
   // Determine line length of JSON to set textarea rows. As that's prettier than a second scrollbar.
-  const lines = output_json.split('\n');
+  const lines = outputJSON.split('\n');
   const minRows = 5;
   // Use this to control how large the textarea is. There's probably a better way to do this.
   const availableSpace = Math.floor(window.innerHeight / 37); // Assuming each row is 20px tall
@@ -143,7 +144,7 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({
             </Label>
           </FormGroup>
         )}
-        <CopyButton value={output_json} className={styles.copyButtonRight} />
+        <CopyButton value={outputJSON} className={styles.copyButtonRight} />
         {tooltipText && (
           <ToolbarButton
             text=""
@@ -162,13 +163,19 @@ const JSONDisplay: React.FC<JSONDisplayProps> = ({
           />
         )}
       </div>
-      <Input
+      <PodsCodeMirror
+        value={outputJSON}
+        // height={'20rem'}
+        // width={'30rem'}
+        isVisible={true}
+      />
+      {/* <Input
         type="textarea"
-        value={output_json}
+        value={outputJSON}
         className={styles.json}
         rows={lineLengths}
         disabled={true}
-      />
+      /> */}
     </div>
   );
 };

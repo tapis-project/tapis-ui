@@ -32,6 +32,19 @@ const Router: React.FC = () => {
       />
 
       <Route
+        path={`${path}/templates/:templateId/tags/:tagId`}
+        render={({
+          match: {
+            params: { templateId, tagId },
+          },
+        }: RouteComponentProps<{ templateId?: string; tagId?: string }>) => (
+          <div>
+            <PageTemplates objId={templateId} tagId={tagId || ''} />
+          </div>
+        )}
+      />
+
+      <Route
         path={`${path}/templates/:templateId?`}
         render={({
           match: {
@@ -39,7 +52,7 @@ const Router: React.FC = () => {
           },
         }: RouteComponentProps<{ templateId?: string }>) => (
           <div>
-            <PageTemplates objId={templateId} />
+            <PageTemplates objId={templateId} tagId={''} />
           </div>
         )}
       />

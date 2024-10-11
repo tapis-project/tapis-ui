@@ -8,22 +8,26 @@ import {
 } from 'app/Workflows/Pipelines/PipelineRuns/_components';
 import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
+import { Workflows } from '@tapis/tapis-typescript';
+import { JSONDisplay } from '@tapis/tapisui-common';
 
 type DagViewHeaderProps = {
   groupId: string;
   pipelineId: string;
   pipelineRunUuid: string | undefined;
+  pipeline?: Workflows.Pipeline;
 };
 
 const DagViewHeader: React.FC<DagViewHeaderProps> = ({
   groupId,
   pipelineId,
   pipelineRunUuid,
+  pipeline,
 }) => {
   if (pipelineRunUuid === undefined) {
     return '';
   }
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<string | undefined>(undefined);
   const { data, isError, error, isLoading } = Hooks.PipelineRuns.useDetails({
     groupId,
     pipelineId,
@@ -49,15 +53,30 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({
             <Button
               size="small"
               onClick={() => {
-                setOpen(!open);
+                setOpen(open !== 'logs' ? 'logs' : undefined);
               }}
             >
-              {!open ? 'show logs' : 'hide logs'}
+              {open !== 'logs' ? 'show logs' : 'hide logs'}
             </Button>
+            {pipeline && (
+              <Button
+                size="small"
+                onClick={() => {
+                  setOpen(open !== 'json' ? 'json' : undefined);
+                }}
+              >
+                {open !== 'json' ? 'view json' : 'hide json'}
+              </Button>
+            )}
           </PipelineRunSummary>
-          {open && (
+          {open === 'logs' && (
             <div style={{ marginTop: '16px' }}>
               <PipelineRunLogs logs={run.logs} />
+            </div>
+          )}
+          {open === 'json' && pipeline && (
+            <div style={{ marginTop: '16px' }}>
+              <JSONDisplay json={pipeline} />
             </div>
           )}
         </div>

@@ -318,6 +318,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         groupId={groupId}
         pipelineId={pipeline.id!}
         pipelineRunUuid={pipeline.current_run}
+        pipeline={pipeline}
       />
       <div className={styles['dag']}>
         <ReactFlow
@@ -328,6 +329,8 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           defaultViewport={{ x: 120, y: 60, zoom: 1 }}
+          panOnScroll={true}
+          panOnScrollSpeed={1}
         >
           <DagViewDrawer
             groupId={groupId}

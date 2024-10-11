@@ -1,3 +1,3 @@
-import NavVolumes from './NavSnapshots';
+import NavSnapshots from './NavSnapshots';
 
-export default NavVolumes;
+export default NavSnapshots;
