@@ -4,7 +4,7 @@ import { NavPods } from '../_components';
 import PodToolbar from '../_components/PodToolbar';
 import { Router } from '../_Router';
 import { Provider } from 'react-redux';
-import store from '../redux/store';
+import store from '@redux/store';
 
 const Layout: React.FC = () => {
   const body = (

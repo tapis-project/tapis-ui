@@ -11,9 +11,8 @@ import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
-import { useDispatch } from 'react-redux';
-import { updateState } from '../../redux/podsSlice';
 
 const DeleteSnapshotModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { data } = Hooks.useListSnapshots(); //{search: `owner.like.${''}`,}
@@ -22,7 +21,7 @@ const DeleteSnapshotModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   // Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.listSnapshots);

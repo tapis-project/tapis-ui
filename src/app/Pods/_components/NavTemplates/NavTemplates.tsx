@@ -17,9 +17,7 @@ import DisabledByDefaultRoundedIcon from '@mui/icons-material/DisabledByDefaultR
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import { format } from 'date-fns';
 import styles from '../Pages.module.scss';
-import { useSelector, useDispatch } from 'react-redux';
-import { updateState } from '../../redux/podsSlice';
-import { RootState } from '../../redux/store';
+import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
 interface CustomTreeItemProps extends TreeItemProps {
   isLeaf?: boolean;
@@ -69,10 +67,9 @@ const NavTemplates: React.FC = () => {
   const definitions = data?.result || {};
   const loadingText = PodsLoadingText();
   const history = useHistory();
-  const dispatch = useDispatch();
-
+  const dispatch = useAppDispatch();
   const { templateNavExpandedItems, templateNavSelectedItems, templateTab } =
-    useSelector((state: RootState) => state.pods);
+    useAppSelector((state) => state.pods);
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
     var tabState = 'details';
