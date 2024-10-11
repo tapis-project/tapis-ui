@@ -40,7 +40,9 @@ import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
 const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useAppDispatch();
-  const { snapshotTab, snapshotRootTab } = useAppSelector((state) => state.pods);
+  const { snapshotTab, snapshotRootTab } = useAppSelector(
+    (state) => state.pods
+  );
 
   const { data, isLoading, isFetching, error, invalidate } =
     Hooks.useGetSnapshot({

@@ -13,7 +13,6 @@ import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
-
 const DeleteSnapshotModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { data } = Hooks.useListSnapshots(); //{search: `owner.like.${''}`,}
   const snapshots: Array<Pods.SnapshotResponseModel> = data?.result ?? [];
