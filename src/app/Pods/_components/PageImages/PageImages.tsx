@@ -38,16 +38,11 @@ import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
 import { NavLink } from 'react-router-dom';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { updateState } from '../../redux/podsSlice';
+import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
 const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
-  const dispatch = useDispatch();
-  const navigate = useHistory();
-  const { imageTab, imageRootTab } = useSelector(
-    (state: RootState) => state.pods
-  );
+  const dispatch = useAppDispatch();
+  const { imageTab, imageRootTab } = useAppSelector((state) => state.pods);
 
   const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetImage({
     imageId: objId,

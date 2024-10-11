@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "paths": {
+      "@redux": ["./redux/index.tsx"],
+      "@redux/*": ["./redux/*"]
+    },
     "lib": ["dom", "dom.iterable", "esnext"],
     // "lib": ["es6", "dom"],
     "noImplicitAny": true,

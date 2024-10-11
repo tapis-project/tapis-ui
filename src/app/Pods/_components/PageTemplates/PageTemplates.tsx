@@ -35,16 +35,13 @@ import {
   PodsCodeMirror,
 } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { updateState } from '../../redux/podsSlice';
+import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
 const PageTemplates: React.FC<{
   objId: string | undefined;
   tagId: string;
 }> = ({ objId, tagId }) => {
-  const dispatch = useDispatch();
-  const navigate = useHistory();
+  const dispatch = useAppDispatch();
   const { data, isLoading, isFetching, error, invalidate } =
     Hooks.useGetTemplate({
       templateId: objId,
@@ -84,7 +81,7 @@ const PageTemplates: React.FC<{
     templateRootTab,
     templateNavSelectedItems,
     templateNavExpandedItems,
-  } = useSelector((state: RootState) => state.pods);
+  } = useAppSelector((state) => state.pods);
 
   const loadingText = PodsLoadingText();
 

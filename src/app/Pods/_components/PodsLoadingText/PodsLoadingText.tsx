@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 
-const PodsLoadingText = (
-  initialText = 'loading...',
-  intervalDuration = 333
-) => {
+const PodsLoadingText = (initialText = 'loading.', intervalDuration = 333) => {
   const [loadingText, setLoadingText] = useState(initialText);
+
   // useEffect(() => {
   //   let loadingState = 0;
   //   const loadingStates = ['loading...', 'loading', 'loading.', 'loading..'];
@@ -17,7 +15,7 @@ const PodsLoadingText = (
   //   return () => clearInterval(interval);
   // }, [intervalDuration]);
 
-  return initialText; // "oadingText;
+  return loadingText;
 };
 
 export default PodsLoadingText;
