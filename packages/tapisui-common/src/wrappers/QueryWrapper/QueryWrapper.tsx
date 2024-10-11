@@ -1,9 +1,10 @@
 import React from 'react';
-import { LoadingSpinner, Message } from '../../ui';
+import { LoadingSpinner } from '../../ui';
+import { Alert, AlertTitle } from '@mui/material';
 
 type QueryWrapperProps = React.PropsWithChildren<{
   isLoading: boolean;
-  error: Error | null;
+  error: Error | Array<Error | null> | null;
   className?: string;
 }>;
 
@@ -21,12 +22,30 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({
     );
   }
 
-  if (error) {
+  if (error && error instanceof Error) {
     return (
       <div className={className}>
-        <Message canDismiss={false} type="error" scope="inline">
-          {(error as any).message ?? error}
-        </Message>
+        <Alert severity="error">
+          <AlertTitle>An error occured</AlertTitle>
+          {(error as Error).message}
+        </Alert>
+      </div>
+    );
+  }
+
+  if (error && error instanceof Array && !error.includes(null)) {
+    return (
+      <div className={className}>
+        {(error as Array<Error>).map((e) => {
+          if (e) {
+            return (
+              <Alert severity="error">
+                <AlertTitle>An error occured</AlertTitle>
+                {(e as Error).message}
+              </Alert>
+            );
+          }
+        })}
       </div>
     );
   }

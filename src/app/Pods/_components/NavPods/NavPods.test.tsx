@@ -9,7 +9,7 @@ jest.mock('@tapis/tapisui-hooks');
 
 describe('NavPods', () => {
   it('renders NavPods component', () => {
-    (Hooks.useList as jest.Mock).mockReturnValue({
+    (Hooks.useListPods as jest.Mock).mockReturnValue({
       data: {
         result: [tapisPod],
       },

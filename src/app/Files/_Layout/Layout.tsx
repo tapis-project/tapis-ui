@@ -16,6 +16,8 @@ import { FilesProvider } from '../_components/FilesContext';
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
+  const systemId = pathname.split('/')[2];
+  const currentPath = pathname.split('/').splice(3).join('/');
   const crumbs = breadcrumbsFromPathname(pathname).splice(1);
   const header = (
     <LayoutHeader>
@@ -24,7 +26,7 @@ const Layout: React.FC = () => {
         
         <Breadcrumbs breadcrumbs={[{ text: 'Files' }, ...crumbs]} />
       </div> */}
-      <Toolbar />
+      <Toolbar systemId={systemId} currentPath={currentPath} />
     </LayoutHeader>
   );
 

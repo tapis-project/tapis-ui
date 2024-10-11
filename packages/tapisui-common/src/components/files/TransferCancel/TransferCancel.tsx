@@ -22,11 +22,10 @@ const FileOperation: React.FC<TransferCancelProps> = ({
 
   const transfer: Files.TransferTask | undefined = data?.result;
   const cancelableStatuses = [
-    Files.TransferTaskStatusEnum.Accepted,
-    Files.TransferTaskStatusEnum.InProgress,
-    Files.TransferTaskStatusEnum.Paused,
-    Files.TransferTaskStatusEnum.Staged,
-    Files.TransferTaskStatusEnum.Staging,
+    Files.TransferStatusEnum.Accepted,
+    Files.TransferStatusEnum.InProgress,
+    Files.TransferStatusEnum.Paused,
+    Files.TransferStatusEnum.Staged,
   ];
   const cancelable = cancelableStatuses.some(
     (status) => status === transfer?.status

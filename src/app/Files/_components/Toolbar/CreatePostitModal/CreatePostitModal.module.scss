@@ -1,0 +1,24 @@
+.file-list-table {
+  /* icon */
+  tr > *:nth-child(1) {
+    width: 7% !important;
+  }
+  /* name */
+  tr > *:nth-child(2) {
+    width: 63% !important;
+  }
+  /* size */
+  tr > *:nth-child(3) {
+    width: 20% !important;
+  }
+  /* status */
+  tr > *:nth-child(4) {
+    width: 10% !important;
+    justify-content: center;
+  }
+}
+
+.remove-file {
+  cursor: pointer;
+  color: red;
+}

@@ -4,11 +4,8 @@ import { Pods } from '@tapis/tapis-typescript';
 import { Pods as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
-import { updatePod } from '@tapis/tapisui-api/dist/pods';
 
-type UpdatePodHookParams = {
-  updatePod: Pods.UpdatePod;
-};
+type UpdatePodHookParams = Pods.UpdatePodRequest;
 
 const useUpdatePod = (podId: string) => {
   const { basePath, accessToken } = useTapisConfig();
@@ -21,7 +18,7 @@ const useUpdatePod = (podId: string) => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Pods.PodResponse, Error, Pods.UpdatePodRequest>(
       [QueryKeys.updatePod, podId, basePath, jwt],
-      (updatePod) => API.updatePod(updatePod, basePath, jwt)
+      (params) => API.updatePod(params, basePath, jwt)
     );
 
   useEffect(() => reset(), [reset, podId]);
@@ -35,12 +32,12 @@ const useUpdatePod = (podId: string) => {
     error,
     reset,
     updatePod: (
-      updatePod: Pods.UpdatePod,
+      params: UpdatePodHookParams,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<Pods.PodResponse, Error, UpdatePodHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate({ updatePod, podId }, options);
+      return mutate(params, options);
     },
   };
 };

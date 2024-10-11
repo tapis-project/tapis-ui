@@ -9,7 +9,7 @@ jest.mock('@tapis/tapisui-hooks');
 
 describe('NavImages', () => {
   it('renders NavImages component', () => {
-    (Hooks.useList as jest.Mock).mockReturnValue({
+    (Hooks.useGetPod as jest.Mock).mockReturnValue({
       data: {
         result: [tapisPod],
       },

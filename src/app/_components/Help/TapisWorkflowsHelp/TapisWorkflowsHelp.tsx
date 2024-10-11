@@ -6,6 +6,7 @@ const TapisWorkflowsHelp: React.FC = () => {
     <Help
       title="Tapis Workflows API"
       iframeUrl="https://tapis.readthedocs.io/en/latest/technical/workflows.html"
+      showHeader={false}
     />
   );
 };

@@ -2,7 +2,7 @@ import { Pods } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
 const updatePod = (
-  reqUpdatePod: Pods.UpdatePodRequest,
+  params: Pods.UpdatePodRequest,
   basePath: string,
   jwt: string
 ): Promise<Pods.PodResponse> => {
@@ -12,7 +12,7 @@ const updatePod = (
     basePath,
     jwt
   );
-  return errorDecoder<Pods.PodResponse>(() => api.updatePod(reqUpdatePod));
+  return errorDecoder<Pods.PodResponse>(() => api.updatePod(params));
 };
 
 export default updatePod;

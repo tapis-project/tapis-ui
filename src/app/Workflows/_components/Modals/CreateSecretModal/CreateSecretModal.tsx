@@ -14,8 +14,6 @@ import {
   AlertTitle,
   Input,
 } from '@mui/material';
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
 
 type CreateSecretModalProps = {
   open: boolean;
@@ -25,7 +23,7 @@ type CreateSecretModalProps = {
 type InputState = {
   id: string | undefined;
   description: string | undefined;
-  data: object | undefined;
+  data: any | undefined;
 };
 
 const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
@@ -99,18 +97,13 @@ const CreateSecretModal: React.FC<CreateSecretModalProps> = ({
         <div className={styles['form']}>
           <FormControl variant="standard">
             <InputLabel htmlFor="data">Data</InputLabel>
-            <CodeMirror
-              theme="light"
-              height="200px"
-              extensions={[json()]}
-              onChange={(value: any) => {
-                setInput({ ...input, data: value as object });
+            <Input
+              id="data"
+              onChange={(e) => {
+                setInput({ ...input, data: e.target.value });
               }}
             />
-            <FormHelperText>
-              The secret data. Must be a string, number, boolean, or valid JSON
-              object
-            </FormHelperText>
+            <FormHelperText>Secret data must be a string</FormHelperText>
           </FormControl>
         </div>
       </DialogContent>

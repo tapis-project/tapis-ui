@@ -10,7 +10,6 @@ export const registeredExtensions: RegisteredExtensions = {
       'https://icicleai.develop.tapis.io',
       'https://icicle.staging.tapis.io',
       'https://icicleai.staging.tapis.io',
-      'https://dev.develop.tapis.io', // TODO Remove before prod
     ],
   },
 };

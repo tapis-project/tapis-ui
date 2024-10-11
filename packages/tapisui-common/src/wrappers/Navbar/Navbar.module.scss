@@ -6,6 +6,7 @@ $core-portal-color-primary: #9d85ef;
   list-style: none;
   flex-direction: column;
   flex: 1;
+  height: calc(100vh - 130px);
 }
 
 .nav-link {

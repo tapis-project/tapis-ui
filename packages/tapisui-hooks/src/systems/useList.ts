@@ -4,7 +4,9 @@ import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 
-export const defaultParams: Systems.GetSystemsRequest = {};
+export const defaultParams: Systems.GetSystemsRequest = {
+  listType: Systems.ListTypeEnum.All,
+};
 
 const useList = (
   params: Systems.GetSystemsRequest = defaultParams,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Help, HelpSection } from '@tapis/tapisui-common';
 
-const SecretsHelp: React.FC = () => {
+const GroupsHelp: React.FC = () => {
   return (
     <Help title="Groups">
       <HelpSection>
@@ -12,4 +12,4 @@ const SecretsHelp: React.FC = () => {
   );
 };
 
-export default SecretsHelp;
+export default GroupsHelp;
