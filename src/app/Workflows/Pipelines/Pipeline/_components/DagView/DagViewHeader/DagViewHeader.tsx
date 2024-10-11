@@ -15,14 +15,14 @@ type DagViewHeaderProps = {
   groupId: string;
   pipelineId: string;
   pipelineRunUuid: string | undefined;
-  pipeline?: Workflows.Pipeline
+  pipeline?: Workflows.Pipeline;
 };
 
 const DagViewHeader: React.FC<DagViewHeaderProps> = ({
   groupId,
   pipelineId,
   pipelineRunUuid,
-  pipeline
+  pipeline,
 }) => {
   if (pipelineRunUuid === undefined) {
     return '';
@@ -53,32 +53,30 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({
             <Button
               size="small"
               onClick={() => {
-                setOpen(open !== "logs" ? "logs" : undefined);
+                setOpen(open !== 'logs' ? 'logs' : undefined);
               }}
             >
-              {open !== "logs" ? 'show logs' : 'hide logs'}
+              {open !== 'logs' ? 'show logs' : 'hide logs'}
             </Button>
-            {
-              pipeline && (
-                <Button
-                  size="small"
-                  onClick={() => {
-                    setOpen(open !== "json" ? "json" : undefined);
-                  }}
-                >
-                  {open !== "json" ? 'view json' : 'hide json'}
-                </Button>
-              )
-            }
+            {pipeline && (
+              <Button
+                size="small"
+                onClick={() => {
+                  setOpen(open !== 'json' ? 'json' : undefined);
+                }}
+              >
+                {open !== 'json' ? 'view json' : 'hide json'}
+              </Button>
+            )}
           </PipelineRunSummary>
-          {open === "logs" && (
+          {open === 'logs' && (
             <div style={{ marginTop: '16px' }}>
               <PipelineRunLogs logs={run.logs} />
             </div>
           )}
-          {open === "json" && pipeline && (
-            <div style={{ marginTop: '16px'}}>
-              <JSONDisplay json={pipeline}/>
+          {open === 'json' && pipeline && (
+            <div style={{ marginTop: '16px' }}>
+              <JSONDisplay json={pipeline} />
             </div>
           )}
         </div>
