@@ -27,10 +27,34 @@ import {
   TextSnippet,
   Login,
   Delete,
+  Settings,
+  ContentCopy,
+  Security,
+  Add,
 } from '@mui/icons-material';
-import { Button, Chip, Divider, Alert, AlertTitle } from '@mui/material';
+import {
+  Button,
+  Chip,
+  Divider,
+  Alert,
+  AlertTitle,
+  IconButton,
+  Menu,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+} from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import { GlobusAuthModal, AuthModal, DeleteSystemModal } from '../Modals';
+import {
+  GlobusAuthModal,
+  AuthModal,
+  DeleteSystemModal,
+  CreateChildSystemModal,
+  ShareSystemPublicModal,
+  UnShareSystemPublicModal,
+} from '../Modals';
 
 const AuthButton: React.FC<{
   toggle: () => void;
@@ -46,6 +70,143 @@ const AuthButton: React.FC<{
         Authenticate
       </Button>
     </div>
+  );
+};
+
+const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
+  system,
+}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [modal, setModal] = useState<string | undefined>(undefined);
+  const open = Boolean(anchorEl);
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return (
+    <span>
+      <IconButton size="small" onClick={handleClick} aria-haspopup="true">
+        <Settings />
+      </IconButton>
+      <Menu
+        sx={{ width: 320, maxWidth: '100%', marginLeft: '-40px' }}
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuList disablePadding>
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('createchildsystem');
+            }}
+          >
+            <ListItemIcon>
+              <Add fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Create child system</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <Security fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Manage permissions</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <ContentCopy fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Duplicate</ListItemText>
+          </MenuItem>
+
+          <Divider />
+          {system.isPublic ? (
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('makeprivate');
+              }}
+            >
+              <ListItemIcon>
+                <PublicOff fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Make private</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('makepublic');
+              }}
+            >
+              <ListItemIcon>
+                <Public fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Make public</ListItemText>
+            </MenuItem>
+          )}
+          {system.enabled ? (
+            <MenuItem>
+              <ListItemIcon>
+                <Lock fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Disable</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem>
+              <ListItemIcon>
+                <LockOpen fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Enable</ListItemText>
+            </MenuItem>
+          )}
+          {!system.deleted && (
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('deletesystem');
+              }}
+            >
+              <ListItemIcon>
+                <Delete fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          )}
+        </MenuList>
+      </Menu>
+      <DeleteSystemModal
+        systemId={system.id}
+        open={modal === 'deletesystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <CreateChildSystemModal
+        system={system}
+        open={modal === 'createchildsystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <ShareSystemPublicModal
+        system={system}
+        open={modal === 'makepublic'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <UnShareSystemPublicModal
+        system={system}
+        open={modal === 'makeprivate'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+    </span>
   );
 };
 
@@ -73,11 +234,23 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
       <div className={styles['card']}>
         <div className={styles['flex-space-between']}>
           <div className={styles['card-line']}>
-            {system.isPublic ? <Public /> : <PublicOff />}
-            {system.enabled ? (
-              <LockOpen color="success" />
+            {system.isPublic ? (
+              <Tooltip title="System is public">
+                <Public />
+              </Tooltip>
             ) : (
-              <Lock color="error" />
+              <Tooltip title="System is private">
+                <PublicOff />
+              </Tooltip>
+            )}
+            {system.enabled ? (
+              <Tooltip title="System is enabled">
+                <LockOpen color="success" />
+              </Tooltip>
+            ) : (
+              <Tooltip title="System is disabled">
+                <Lock color="error" />
+              </Tooltip>
             )}
             <span className={styles['card-title']}>{system.id}</span>
             <span className={styles['muted']}>({system.systemType})</span>
@@ -85,16 +258,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           </div>
           <div></div>
           <div>
-            <Button
-              size="small"
-              startIcon={<DataObject />}
-              onClick={() => {
-                setShowJSON(!showJSON);
-              }}
-              variant="text"
-            >
-              {!showJSON ? 'View JSON' : 'Hide JSON'}
-            </Button>
+            <SystemSettingsMenu system={system} />
           </div>
         </div>
         {!system.enabled && (
@@ -126,20 +290,20 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         </div>
         <Divider />
         <div className={styles['flex-space-between']}>
-          <div className={styles['flex']}></div>
-          <div></div>
-          <div>
+          <div className={styles['flex']}>
             <Button
               size="small"
-              startIcon={<Delete />}
-              color="error"
+              startIcon={<DataObject />}
               onClick={() => {
-                setModal('deletesystem');
+                setShowJSON(!showJSON);
               }}
+              variant="text"
             >
-              Delete
+              {!showJSON ? 'View JSON' : 'Hide JSON'}
             </Button>
           </div>
+          <div></div>
+          <div></div>
         </div>
         {showJSON && (
           <div>
@@ -175,8 +339,11 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <div className={styles['card-line']}>
           <Person />
           <span>
-            {system.effectiveUserId}
-            {system.isDynamicEffectiveUser && ' (dynamic)'}
+            {system.isDynamicEffectiveUser ? (
+              <code>{'${apiUserId}'}</code>
+            ) : (
+              system.effectiveUserId
+            )}
           </span>
           <span className={styles['muted']}>effectiveUserId</span>
         </div>
