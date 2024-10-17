@@ -31,6 +31,8 @@ import {
   ContentCopy,
   Security,
   Add,
+  Link,
+  LinkOff,
 } from '@mui/icons-material';
 import {
   Button,
@@ -99,6 +101,7 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
       >
         <MenuList disablePadding>
           <MenuItem
+            disabled={!system.allowChildren}
             onClick={() => {
               setAnchorEl(null);
               setModal('createchildsystem');
@@ -146,6 +149,21 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
                 <Public fontSize="small" color="error" />
               </ListItemIcon>
               <ListItemText>Make public</ListItemText>
+            </MenuItem>
+          )}
+          {system.allowChildren ? (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkOff fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Disallow child systems</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem>
+              <ListItemIcon>
+                <Link fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Allow child systems</ListItemText>
             </MenuItem>
           )}
           {system.enabled ? (

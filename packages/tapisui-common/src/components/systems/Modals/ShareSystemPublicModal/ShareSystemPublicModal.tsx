@@ -39,10 +39,11 @@ const ShareSystemPublicModal: React.FC<{
             <Alert severity="error">
               <AlertTitle>Security Concern</AlertTitle>
               This system is using a <b>static effective user</b>. Making this
-              system public will enable <b>every user</b> in this tenant to this
-              system as if they were user <b>{system.effectiveUserId}</b>. This
-              operation <b>IS</b> permitted, but consider the aforementioned
-              security concers before proceeding.
+              system public will enable <b>every user</b> in this tenant to
+              perform operations on this system's host as if they were user{' '}
+              <b>{system.effectiveUserId}</b>. This operation <b>IS</b>{' '}
+              permitted, but consider the aforementioned security concers before
+              proceeding.
               <br />
               <br />
               To improve security, consider changing this systems{' '}

@@ -13,7 +13,7 @@
     "@mui/x-data-grid": "^7.7.0",
     "@mui/x-tree-view": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.7",
-    "@tapis/tapis-typescript": "^0.0.51",
+    "@tapis/tapis-typescript": "^0.0.52",
     "@tapis/tapisui-api": "file:./packages/tapisui-api",
     "@tapis/tapisui-common": "file:./packages/tapisui-common",
     "@tapis/tapisui-extensions-core": "file:./packages/tapisui-extensions-core",
