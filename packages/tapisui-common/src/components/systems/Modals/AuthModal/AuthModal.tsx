@@ -256,6 +256,7 @@ const AuthModal: React.FC<ModalProps> = ({
                 <Input
                   id="password"
                   required
+                  type="password"
                   onChange={(e) => {
                     setInput({
                       ...input,
