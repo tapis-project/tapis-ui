@@ -44,6 +44,7 @@ const useTapisConfig = () => {
     accessToken: data,
     setAccessToken,
     claims,
+    username: claims['tapis/username'],
   };
 };
 

@@ -12,6 +12,8 @@ const QueryKeys = {
   getUserPerms: 'systems/getUserPerms',
   getGlobusAuthUrl: 'systems/getGlobusAuthUrl',
   generateGlobusTokens: 'systems/generateGlobusTokens',
+  shareSystem: 'systems/shareSystem',
+  grantUserPerms: 'systems/grantUserPerms',
 };
 
 export default QueryKeys;

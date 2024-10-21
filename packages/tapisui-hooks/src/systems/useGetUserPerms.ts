@@ -8,7 +8,7 @@ const useGetUserPerms = (
   params: Omit<Systems.GetUserPermsRequest, 'userName'>,
   options: QueryObserverOptions<Systems.RespNameArray, Error> = {}
 ) => {
-  const { accessToken, basePath, claims } = useTapisConfig();
+  const { accessToken, basePath, username } = useTapisConfig();
   const result = useQuery<Systems.RespNameArray, Error>(
     [QueryKeys.getUserPerms, params, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
@@ -17,7 +17,7 @@ const useGetUserPerms = (
       API.getUserPerms(
         {
           ...params,
-          userName: claims['sub'].split('@')[0],
+          userName: username,
         },
         basePath,
         accessToken?.access_token || ''

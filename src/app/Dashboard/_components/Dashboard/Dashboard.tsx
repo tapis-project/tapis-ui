@@ -14,6 +14,7 @@ import {
   Systems as SystemsHooks,
   Jobs as JobsHooks,
   Apps as AppsHooks,
+  Authenticator as AuthenticatorHooks,
 } from '@tapis/tapisui-hooks';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';

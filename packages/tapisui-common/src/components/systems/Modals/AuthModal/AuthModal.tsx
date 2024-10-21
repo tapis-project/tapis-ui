@@ -23,8 +23,6 @@ type ModalProps = {
   defaultAuthnMethod: Systems.AuthnEnum;
 };
 
-let test: Systems.ReqPostPutCredential;
-
 type PKIKeys = {
   publicKey?: string;
   privateKey?: string;
@@ -309,7 +307,6 @@ const AuthModal: React.FC<ModalProps> = ({
               defaultAuthnMethod,
               input
             );
-            console.log({ reqUpdateCredential });
             if (reqUpdateCredential) {
               create(
                 {

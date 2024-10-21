@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Systems as SystemsHooks,
   Files as FilesHooks,
+  useTapisConfig,
 } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
@@ -31,8 +32,10 @@ import {
   ContentCopy,
   Security,
   Add,
-  Link,
+  Link as LinkIcon,
   LinkOff,
+  AccountTree,
+  Share,
 } from '@mui/icons-material';
 import {
   Button,
@@ -48,7 +51,7 @@ import {
   ListItemText,
   Tooltip,
 } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import {
   GlobusAuthModal,
   AuthModal,
@@ -56,6 +59,8 @@ import {
   CreateChildSystemModal,
   ShareSystemPublicModal,
   UnShareSystemPublicModal,
+  SharingModal,
+  PermissionsModal,
 } from '../Modals';
 
 const AuthButton: React.FC<{
@@ -80,6 +85,8 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const history = useHistory();
+  const { username } = useTapisConfig();
   const open = Boolean(anchorEl);
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -112,11 +119,29 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
             </ListItemIcon>
             <ListItemText>Create child system</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem
+            disabled={system.owner !== username}
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('manageperms');
+            }}
+          >
             <ListItemIcon>
               <Security fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Manage permissions</ListItemText>
+            <ListItemText>Manage Permissions</ListItemText>
+          </MenuItem>
+          <MenuItem
+            disabled={system.owner !== username}
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('sharesystem');
+            }}
+          >
+            <ListItemIcon>
+              <Share fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Share</ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
@@ -124,7 +149,42 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
             </ListItemIcon>
             <ListItemText>Duplicate</ListItemText>
           </MenuItem>
-
+          <Divider />
+          {system.parentId && (
+            <MenuItem
+              onClick={() => {
+                history.push(`/systems/${system.parentId}`);
+              }}
+            >
+              <ListItemIcon>
+                <AccountTree fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>View parent system</ListItemText>
+            </MenuItem>
+          )}
+          {system.parentId && (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkOff fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Unlink from parent</ListItemText>
+            </MenuItem>
+          )}
+          {system.allowChildren ? (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkOff fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Disallow child systems</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkIcon fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Allow child systems</ListItemText>
+            </MenuItem>
+          )}
           <Divider />
           {system.isPublic ? (
             <MenuItem
@@ -151,21 +211,12 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
               <ListItemText>Make public</ListItemText>
             </MenuItem>
           )}
-          {system.allowChildren ? (
-            <MenuItem>
-              <ListItemIcon>
-                <LinkOff fontSize="small" color="error" />
-              </ListItemIcon>
-              <ListItemText>Disallow child systems</ListItemText>
-            </MenuItem>
-          ) : (
-            <MenuItem>
-              <ListItemIcon>
-                <Link fontSize="small" color="error" />
-              </ListItemIcon>
-              <ListItemText>Allow child systems</ListItemText>
-            </MenuItem>
-          )}
+          <MenuItem disabled={system.owner !== username}>
+            <ListItemIcon>
+              <Dns fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>Change owner</ListItemText>
+          </MenuItem>
           {system.enabled ? (
             <MenuItem>
               <ListItemIcon>
@@ -224,6 +275,20 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
           setModal(undefined);
         }}
       />
+      <SharingModal
+        systemId={system.id!}
+        open={modal === 'sharesystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <PermissionsModal
+        system={system}
+        open={modal === 'manageperms'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
     </span>
   );
 };
@@ -252,6 +317,8 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
       <div className={styles['card']}>
         <div className={styles['flex-space-between']}>
           <div className={styles['card-line']}>
+            <span className={styles['card-title']}>{system.id}</span>
+            <span className={styles['muted']}>({system.systemType})</span>
             {system.isPublic ? (
               <Tooltip title="System is public">
                 <Public />
@@ -270,8 +337,6 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
                 <Lock color="error" />
               </Tooltip>
             )}
-            <span className={styles['card-title']}>{system.id}</span>
-            <span className={styles['muted']}>({system.systemType})</span>
             <span className={styles['muted']}>{system.uuid}</span>
           </div>
           <div></div>
@@ -286,11 +351,37 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             enable the system
           </Alert>
         )}
+        {system.parentId && (
+          <div className={styles['card-line']}>
+            <Tooltip title={`Parent system ${system.parentId}`}>
+              <AccountTree />
+            </Tooltip>
+            <Link to={`/systems/${system.parentId}`}>
+              my.system.id{system.parentId}
+            </Link>
+            <p className={styles['muted']}>Parent system</p>
+          </div>
+        )}
+        {system.description ? (
+          <div className={styles['card-line']}>
+            <p className={styles['muted']}>{system.description}</p>
+          </div>
+        ) : (
+          <div className={styles['card-line']}>
+            <p className={styles['muted']}>add description</p>
+          </div>
+        )}
         <div className={styles['card-line']}>
           <p className={styles['muted']}>Authenticated</p>
           {isLoading && <i>Checking credentials...</i>}
           {!isLoading && !data && <Close color="error" />}
-          {!isLoading && !data && (
+          {!isLoading && data && <Check color="success" />}
+        </div>
+        {!isLoading && !data && (
+          <Alert severity="warning">
+            <AlertTitle>Unauthenticated</AlertTitle>
+            You must provide credentials for this host before you can perform
+            file operations and run jobs with this system.
             <AuthButton
               toggle={() => {
                 setModal(
@@ -300,12 +391,8 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
                 );
               }}
             />
-          )}
-          {!isLoading && data && <Check color="success" />}
-        </div>
-        <div className={styles['card-line']}>
-          <p className={styles['muted']}>{system.description}</p>
-        </div>
+          </Alert>
+        )}
         <Divider />
         <div className={styles['flex-space-between']}>
           <div className={styles['flex']}>
