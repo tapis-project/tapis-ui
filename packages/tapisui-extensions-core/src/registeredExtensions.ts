@@ -3,9 +3,7 @@ type RegisteredExtensions = { [key: string]: ExtensionData };
 
 export const registeredExtensions: RegisteredExtensions = {
   '@scoped/tapisui-extension': {
-    baseUrls: [
-      'https://scoped.tapis.io',
-    ],
+    baseUrls: ['https://scoped.tapis.io'],
   },
   '@icicle/tapisui-extension': {
     baseUrls: [
