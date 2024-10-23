@@ -1,6 +1,6 @@
 {
-  "name": "<YOUR_PACKAGE_NAME>",
-  "version": "<YOUR_PACKAGE_VERIONS>",
+  "name": "@scoped/tapisui-extension",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -16,7 +16,7 @@
     "typescript",
     "tapisui"
   ],
-  "author": "<YOUR_NAME>",
+  "author": "Yizhou Wang",
   "license": "MIT",
   "dependencies": {
     "@tapis/tapis-typescript": "^0.0.52",

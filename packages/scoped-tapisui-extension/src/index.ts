@@ -9,9 +9,9 @@ const extension = createExtension({
   authentication: {
     password: true,
     implicit: {
-      authorizationPath: 'https://icicleai.tapis.io/v3/oauth2/authorize',
-      clientId: 'tapisui-implicit-client',
-      redirectURI: 'https://icicleai.tapis.io/tapis-ui/#/oauth2',
+      authorizationPath: 'https://scoped.tapis.io/v3/oauth2/authorize',
+      clientId: 'seisscoped',
+      redirectURI: 'https://scoped.tapis.io/v3/oauth2/idp',
       responseType: 'token',
     },
   },
@@ -28,12 +28,12 @@ const extension = createExtension({
   ],
   authMethods: ['implicit', 'password'],
   logo: {
-    filePath: './logo_icicle.png',
-    text: 'MY EXTENSION',
+    filePath: 'https://pbs.twimg.com/profile_banners/1431832137997582336/1631311944/1500x500',
+    text: 'SCOPED',
   },
   icon: {
-    filePath: './icon_icicle.png',
-    text: 'MY EXTENSION',
+    filePath: 'https://yt3.googleusercontent.com/ZW2nLowlwtI10OWxxGp0cwV-20_djQdrNBzF7rU_7_a4EfBzDKMHx_GPlhEqw_mPMrCQWPVCSg=s160-c-k-c0x00ffffff-no-rj',
+    text: 'SCOPED',
   },
 });
 
