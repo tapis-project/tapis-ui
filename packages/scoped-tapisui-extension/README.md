@@ -1,1 +1,1 @@
-# tapisui-extension-icicle
+# tapisui-extension-scoped
