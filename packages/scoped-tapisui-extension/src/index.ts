@@ -2,7 +2,6 @@ import {
   createExtension,
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
-import { MyNewPage } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -10,22 +9,13 @@ const extension = createExtension({
     password: true,
     implicit: {
       authorizationPath: 'https://scoped.tapis.io/v3/oauth2/authorize',
-      clientId: 'seisscoped',
+      clientId: 'seisscoped', // TODO
       redirectURI: 'https://scoped.tapis.io/v3/oauth2/idp',
       responseType: 'token',
     },
   },
   removeServices: [EnumTapisCoreService.Apps],
-  mainSidebarServices: [
-    'systems',
-    'apps',
-    'jobs',
-    'files',
-    'workflows',
-    'pods',
-    'ml-hub',
-    'my-new-page',
-  ],
+  mainSidebarServices: ['systems', 'apps', 'jobs', 'files'],
   authMethods: ['implicit', 'password'],
   logo: {
     // filePath from https://x.com/SEIS_SCOPED
@@ -39,14 +29,6 @@ const extension = createExtension({
       'https://yt3.googleusercontent.com/ZW2nLowlwtI10OWxxGp0cwV-20_djQdrNBzF7rU_7_a4EfBzDKMHx_GPlhEqw_mPMrCQWPVCSg=s160-c-k-c0x00ffffff-no-rj',
     text: 'SCOPED',
   },
-});
-
-// Registering a new service will add
-extension.registerService({
-  id: 'my-new-page',
-  sidebarDisplayName: 'My New Page',
-  iconName: 'simulation',
-  component: MyNewPage,
 });
 
 export { extension };

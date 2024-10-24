@@ -18,6 +18,7 @@ import {
 } from '@tapis/tapisui-hooks';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
+import { Apps, Systems } from '@tapis/tapis-typescript';
 
 type DashboardCardProps = {
   icon: string;
@@ -66,9 +67,17 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const { accessToken, claims } = useTapisConfig();
-  const systems = SystemsHooks.useList({});
+  const systems = SystemsHooks.useList({
+    listType: Systems.ListTypeEnum.All,
+    select: 'allAttributes',
+    computeTotal: true,
+  });
   const jobs = JobsHooks.useList({});
-  const apps = AppsHooks.useList({ select: 'jobAttributes,version' });
+  const apps = AppsHooks.useList({
+    listType: Apps.ListTypeEnum.All,
+    select: 'jobAttributes,version',
+    computeTotal: true,
+  });
 
   return (
     <div>
