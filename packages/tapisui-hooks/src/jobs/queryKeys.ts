@@ -7,6 +7,7 @@ const QueryKeys = {
   unhideJob: 'jobs/unhideJob',
   outputList: 'jobs/outputList',
   resubmit: 'jobs/resubmit',
+  searchSQL: 'jobs/searchSQL',
 };
 
 export default QueryKeys;
