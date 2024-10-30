@@ -10,9 +10,11 @@ import SearchBar from '../_components/SearchBar/SearchBar';
 
 const Models: React.FC = () => {
   const { data, isLoading, error } = Hooks.Models.useList();
-  const models: ModelsModule.RespModelsObject["result"] = data?.result ?? {};
+  const models: ModelsModule.RespModelsObject['result'] = data?.result ?? {};
   const { path } = useRouteMatch();
-  const [filteredModels, setFilteredModels] = useState<Array<ModelsModule.RespModelsObject["result"][number]>>(Object.entries(models).map(([_, model]) => model));
+  const [filteredModels, setFilteredModels] = useState<
+    Array<ModelsModule.RespModelsObject['result'][number]>
+  >(Object.entries(models).map(([_, model]) => model));
 
   return (
     <QueryWrapper
@@ -20,9 +22,9 @@ const Models: React.FC = () => {
       error={error}
       className={styles['models-table']}
     >
-      <SearchBar 
-        models={Object.entries(models).map(([_, model]) => model)} 
-        onFilter={setFilteredModels} 
+      <SearchBar
+        models={Object.entries(models).map(([_, model]) => model)}
+        onFilter={setFilteredModels}
       />
       <Table responsive striped>
         <thead>
@@ -40,19 +42,22 @@ const Models: React.FC = () => {
                 <td className={`${styles['model-name-column']}`}>
                   <Icon name="simulation" />
                   <span>
-                    <Link to={`${path}/${model.model_id}`}> {model.model_id} </Link>
+                    <Link to={`${path}/${model.model_id}`}>
+                      {' '}
+                      {model.model_id}{' '}
+                    </Link>
                   </span>
                 </td>
-                <td>
-                  {model.pipeline_tag ? model.pipeline_tag : <i>None</i>}
-                </td>
+                <td>{model.pipeline_tag ? model.pipeline_tag : <i>None</i>}</td>
                 <td>{model.downloads}</td>
                 <td>{model.last_modified}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="text-center">No models found</td>
+              <td colSpan={4} className="text-center">
+                No models found
+              </td>
             </tr>
           )}
         </tbody>
