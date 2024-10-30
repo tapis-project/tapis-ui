@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { updateState } from '../../redux/podsSlice';
-import { RootState } from '../../redux/store';
+import { useAppSelector, updateState, useAppDispatch, PodsState } from '@redux';
 import { Stack, Button } from '@mui/material';
 
 interface PodsNavigationProps {
@@ -13,7 +11,7 @@ interface PodsNavigationProps {
 
 const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const {
     podTab,
     podRootTab,
@@ -35,7 +33,7 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     activeTemplateTag,
 
     activePage,
-  } = useSelector((state: RootState) => state.pods);
+  } = useAppSelector((state) => state.pods);
 
   useEffect(() => {
     // If history.location = '/pods' change activePage to podspage, for managing pressing on pods tab sidebar
@@ -66,7 +64,7 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     from?: string,
     id?: string
   ) => {
-    const stateUpdates: Partial<RootState['pods']> = {};
+    const stateUpdates: Partial<PodsState> = {};
 
     console.log(`from: ${from}, id: ${id}, activePage: ${activePage}`);
 
@@ -127,6 +125,7 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
           stateUpdates.activeTemplate = '';
           stateUpdates.activeTemplateTag = '';
           stateUpdates.templateNavSelectedItems = '';
+          stateUpdates.templateRootTab = 'dashboard';
           history.push('/pods/templates');
         } else {
           history.push(

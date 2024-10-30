@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Systems as SystemsHooks,
   Files as FilesHooks,
+  useTapisConfig,
 } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
@@ -27,10 +28,40 @@ import {
   TextSnippet,
   Login,
   Delete,
+  Settings,
+  ContentCopy,
+  Security,
+  Add,
+  Link as LinkIcon,
+  LinkOff,
+  AccountTree,
+  Share,
 } from '@mui/icons-material';
-import { Button, Chip, Divider, Alert, AlertTitle } from '@mui/material';
-import { useHistory } from 'react-router-dom';
-import { GlobusAuthModal, AuthModal, DeleteSystemModal } from '../Modals';
+import {
+  Button,
+  Chip,
+  Divider,
+  Alert,
+  AlertTitle,
+  IconButton,
+  Menu,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+} from '@mui/material';
+import { useHistory, Link } from 'react-router-dom';
+import {
+  GlobusAuthModal,
+  AuthModal,
+  DeleteSystemModal,
+  CreateChildSystemModal,
+  ShareSystemPublicModal,
+  UnShareSystemPublicModal,
+  SharingModal,
+  PermissionsModal,
+} from '../Modals';
 
 const AuthButton: React.FC<{
   toggle: () => void;
@@ -49,6 +80,219 @@ const AuthButton: React.FC<{
   );
 };
 
+const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
+  system,
+}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [modal, setModal] = useState<string | undefined>(undefined);
+  const history = useHistory();
+  const { username } = useTapisConfig();
+  const open = Boolean(anchorEl);
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return (
+    <span>
+      <IconButton size="small" onClick={handleClick} aria-haspopup="true">
+        <Settings />
+      </IconButton>
+      <Menu
+        sx={{ width: 320, maxWidth: '100%', marginLeft: '-40px' }}
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuList disablePadding>
+          <MenuItem
+            disabled={!system.allowChildren}
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('createchildsystem');
+            }}
+          >
+            <ListItemIcon>
+              <Add fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Create child system</ListItemText>
+          </MenuItem>
+          <MenuItem
+            disabled={system.owner !== username}
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('manageperms');
+            }}
+          >
+            <ListItemIcon>
+              <Security fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Manage Permissions</ListItemText>
+          </MenuItem>
+          <MenuItem
+            disabled={system.owner !== username}
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('sharesystem');
+            }}
+          >
+            <ListItemIcon>
+              <Share fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Share</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <ContentCopy fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Duplicate</ListItemText>
+          </MenuItem>
+          <Divider />
+          {system.parentId && (
+            <MenuItem
+              onClick={() => {
+                history.push(`/systems/${system.parentId}`);
+              }}
+            >
+              <ListItemIcon>
+                <AccountTree fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>View parent system</ListItemText>
+            </MenuItem>
+          )}
+          {system.parentId && (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkOff fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Unlink from parent</ListItemText>
+            </MenuItem>
+          )}
+          {system.allowChildren ? (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkOff fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Disallow child systems</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem>
+              <ListItemIcon>
+                <LinkIcon fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Allow child systems</ListItemText>
+            </MenuItem>
+          )}
+          <Divider />
+          {system.isPublic ? (
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('makeprivate');
+              }}
+            >
+              <ListItemIcon>
+                <PublicOff fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Make private</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('makepublic');
+              }}
+            >
+              <ListItemIcon>
+                <Public fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Make public</ListItemText>
+            </MenuItem>
+          )}
+          <MenuItem disabled={system.owner !== username}>
+            <ListItemIcon>
+              <Dns fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>Change owner</ListItemText>
+          </MenuItem>
+          {system.enabled ? (
+            <MenuItem>
+              <ListItemIcon>
+                <Lock fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Disable</ListItemText>
+            </MenuItem>
+          ) : (
+            <MenuItem>
+              <ListItemIcon>
+                <LockOpen fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Enable</ListItemText>
+            </MenuItem>
+          )}
+          {!system.deleted && (
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('deletesystem');
+              }}
+            >
+              <ListItemIcon>
+                <Delete fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          )}
+        </MenuList>
+      </Menu>
+      <DeleteSystemModal
+        systemId={system.id}
+        open={modal === 'deletesystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <CreateChildSystemModal
+        system={system}
+        open={modal === 'createchildsystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <ShareSystemPublicModal
+        system={system}
+        open={modal === 'makepublic'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <UnShareSystemPublicModal
+        system={system}
+        open={modal === 'makeprivate'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <SharingModal
+        systemId={system.id!}
+        open={modal === 'sharesystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <PermissionsModal
+        system={system}
+        open={modal === 'manageperms'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+    </span>
+  );
+};
+
 type SystemCardProps = {
   system: Systems.TapisSystem;
 };
@@ -64,6 +308,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
     },
     {
       retry: 0,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -72,18 +317,85 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
       <div className={styles['card']}>
         <div className={styles['flex-space-between']}>
           <div className={styles['card-line']}>
-            {system.isPublic ? <Public /> : <PublicOff />}
-            {system.enabled ? (
-              <LockOpen color="success" />
-            ) : (
-              <Lock color="error" />
-            )}
             <span className={styles['card-title']}>{system.id}</span>
             <span className={styles['muted']}>({system.systemType})</span>
+            {system.isPublic ? (
+              <Tooltip title="System is public">
+                <Public />
+              </Tooltip>
+            ) : (
+              <Tooltip title="System is private">
+                <PublicOff />
+              </Tooltip>
+            )}
+            {system.enabled ? (
+              <Tooltip title="System is enabled">
+                <LockOpen color="success" />
+              </Tooltip>
+            ) : (
+              <Tooltip title="System is disabled">
+                <Lock color="error" />
+              </Tooltip>
+            )}
             <span className={styles['muted']}>{system.uuid}</span>
           </div>
           <div></div>
           <div>
+            <SystemSettingsMenu system={system} />
+          </div>
+        </div>
+        {!system.enabled && (
+          <Alert severity="warning">
+            <AlertTitle>System disabled</AlertTitle>
+            Jobs cannot be run on disabled systems. Press the lock icon above to
+            enable the system
+          </Alert>
+        )}
+        {system.parentId && (
+          <div className={styles['card-line']}>
+            <Tooltip title={`Parent system ${system.parentId}`}>
+              <AccountTree />
+            </Tooltip>
+            <Link to={`/systems/${system.parentId}`}>
+              my.system.id{system.parentId}
+            </Link>
+            <p className={styles['muted']}>Parent system</p>
+          </div>
+        )}
+        {system.description ? (
+          <div className={styles['card-line']}>
+            <p className={styles['muted']}>{system.description}</p>
+          </div>
+        ) : (
+          <div className={styles['card-line']}>
+            <p className={styles['muted']}>add description</p>
+          </div>
+        )}
+        <div className={styles['card-line']}>
+          <p className={styles['muted']}>Authenticated</p>
+          {isLoading && <i>Checking credentials...</i>}
+          {!isLoading && !data && <Close color="error" />}
+          {!isLoading && data && <Check color="success" />}
+        </div>
+        {!isLoading && !data && (
+          <Alert severity="warning">
+            <AlertTitle>Unauthenticated</AlertTitle>
+            You must provide credentials for this host before you can perform
+            file operations and run jobs with this system.
+            <AuthButton
+              toggle={() => {
+                setModal(
+                  system.systemType === Systems.SystemTypeEnum.Globus
+                    ? 'globusauth'
+                    : 'auth'
+                );
+              }}
+            />
+          </Alert>
+        )}
+        <Divider />
+        <div className={styles['flex-space-between']}>
+          <div className={styles['flex']}>
             <Button
               size="small"
               startIcon={<DataObject />}
@@ -95,50 +407,8 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
               {!showJSON ? 'View JSON' : 'Hide JSON'}
             </Button>
           </div>
-        </div>
-        {!system.enabled && (
-          <Alert severity="warning">
-            <AlertTitle>System disabled</AlertTitle>
-            Jobs cannot be run on disabled systems. Press the lock icon above to
-            enable the system
-          </Alert>
-        )}
-        <div className={styles['card-line']}>
-          <p className={styles['muted']}>Authenticated</p>
-          {isLoading && <i>Checking credentials...</i>}
-          {!isLoading && !data && <Close color="error" />}
-          {!isLoading && !data && (
-            <AuthButton
-              toggle={() => {
-                setModal(
-                  system.systemType === Systems.SystemTypeEnum.Globus
-                    ? 'globusauth'
-                    : 'auth'
-                );
-              }}
-            />
-          )}
-          {!isLoading && data && <Check color="success" />}
-        </div>
-        <div className={styles['card-line']}>
-          <p className={styles['muted']}>{system.description}</p>
-        </div>
-        <Divider />
-        <div className={styles['flex-space-between']}>
-          <div className={styles['flex']}></div>
           <div></div>
-          <div>
-            <Button
-              size="small"
-              startIcon={<Delete />}
-              color="error"
-              onClick={() => {
-                setModal('deletesystem');
-              }}
-            >
-              Delete
-            </Button>
-          </div>
+          <div></div>
         </div>
         {showJSON && (
           <div>
@@ -174,8 +444,11 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <div className={styles['card-line']}>
           <Person />
           <span>
-            {system.effectiveUserId}
-            {system.isDynamicEffectiveUser && ' (dynamic)'}
+            {system.isDynamicEffectiveUser ? (
+              <code>{'${apiUserId}'}</code>
+            ) : (
+              system.effectiveUserId
+            )}
           </span>
           <span className={styles['muted']}>effectiveUserId</span>
         </div>

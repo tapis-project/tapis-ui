@@ -31,7 +31,7 @@ export { default as Paginator } from './Paginator';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as Progress } from './Progress';
 export { default as CopyButton } from './CopyButton';
-export { default as PodsCodeMirror } from './PodsCodeMirror';
+export { default as FilterableObjectsList } from './FilterableObjectsList';
 /* eslint-disable */
 export { default as FieldWrapper } from './FieldWrapper';
 export { default as PageLayout } from './PageLayout';

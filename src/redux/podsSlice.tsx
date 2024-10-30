@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { set } from 'date-fns';
 
-interface PodsState {
+export interface PodsState {
   // arctiveXxxId: string; // Active item ID, used to store state when moving in and out of specific items.
   // Tab bars, used to store state when moving in and out of specific tabs.
   podTab: string;
@@ -62,3 +62,9 @@ const podsSlice = createSlice({
 
 export const { updateState } = podsSlice.actions;
 export default podsSlice.reducer;
+
+// GET
+// const { podTab, podRootTab } = useAppSelector((state) => state.pods);
+
+// POST
+// dispatch(updateState({"podTab": tabValue, "podRootTab": rootTabValue}));

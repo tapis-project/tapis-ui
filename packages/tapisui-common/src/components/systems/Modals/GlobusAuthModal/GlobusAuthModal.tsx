@@ -32,9 +32,15 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
   };
   const [input, setInput] = useState(initialInput);
   const { data, isLoading, isError, isSuccess, error } =
-    Hooks.useGetGlobusAuthUrl({
-      systemId,
-    });
+    Hooks.useGetGlobusAuthUrl(
+      {
+        systemId,
+      },
+      {
+        refetchOnWindowFocus: false,
+      }
+    );
+
   const {
     generate,
     isLoading: isLoadingGenTokens,
@@ -46,6 +52,8 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
   } = Hooks.useGenerateGlobusTokens();
 
   const result = data?.result || undefined;
+
+  console.log({ result });
 
   return (
     <Dialog
@@ -125,7 +133,6 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
         </Button>
         <Button
           onClick={() => {
-            console.log({ result });
             generate(
               {
                 systemId: systemId,

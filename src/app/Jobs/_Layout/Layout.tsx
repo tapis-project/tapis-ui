@@ -1,10 +1,9 @@
 import React from 'react';
-import { JobsNav, JobsLayoutToolbar } from '../_components';
+import { JobsNav } from '../_components';
 import { Router } from '../_Router';
 import {
   PageLayout,
   LayoutBody,
-  LayoutHeader,
   LayoutNavWrapper,
   SectionHeader,
 } from '@tapis/tapisui-common';
@@ -29,7 +28,14 @@ const Layout: React.FC = () => {
 
   const sidebar = (
     <LayoutNavWrapper>
-      <JobsNav />
+      <div
+        style={{
+          borderRight: '1px solid #CCCCCC',
+          borderBottom: '1px solid #CCCCCC',
+        }}
+      >
+        <JobsNav />
+      </div>
     </LayoutNavWrapper>
   );
 
