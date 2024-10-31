@@ -9,8 +9,8 @@ const extension = createExtension({
     password: true,
     implicit: {
       authorizationPath: 'https://scoped.tapis.io/v3/oauth2/authorize',
-      clientId: 'seisscoped', // TODO
-      redirectURI: 'https://scoped.tapis.io/v3/oauth2/idp',
+      clientId: 'seisscoped2024v2',
+      redirectURI: 'https://scoped.tapis.io/#/oauth2',
       responseType: 'token',
     },
   },
