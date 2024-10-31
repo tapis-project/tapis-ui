@@ -19,6 +19,7 @@ import {
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
 import { Apps, Systems } from '@tapis/tapis-typescript';
+import { useExtension } from 'extensions';
 
 type DashboardCardProps = {
   icon: string;
@@ -67,6 +68,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const { accessToken, claims } = useTapisConfig();
+  const { extension } = useExtension();
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
@@ -121,22 +123,26 @@ const Dashboard: React.FC = () => {
               counter={`${jobs?.data?.result?.length} jobs`}
               loading={jobs?.isLoading}
             />
-            <DashboardCard
-              icon="share"
-              name="ML Hub"
-              text="View available models and datasets, run inference and training on ML models"
-              link="/ml-hub"
-              counter={`${4} services`}
-              loading={apps?.isLoading}
-            />
-            <DashboardCard
-              icon="simulation"
-              name="ML Edge"
-              text="View available reports and create new analysis"
-              link="/ml-edge"
-              counter={`${2} services`}
-              loading={apps?.isLoading}
-            />
+            {(extension !== undefined && extension.showMLHub) && (
+              <DashboardCard
+                icon="share"
+                name="ML Hub"
+                text="View available models and datasets, run inference and training on ML models"
+                link="/ml-hub"
+                counter={`${4} services`}
+                loading={apps?.isLoading}
+              />
+            )}
+            {(extension !== undefined && extension.showMLEdge) && (
+              <DashboardCard
+                icon="simulation"
+                name="ML Edge"
+                text="View available reports and create new analysis"
+                link="/ml-edge"
+                counter={`${2} services`}
+                loading={apps?.isLoading}
+              />
+            )}
           </>
         ) : (
           <Card>

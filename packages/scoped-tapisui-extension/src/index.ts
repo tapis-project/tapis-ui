@@ -16,6 +16,9 @@ const extension = createExtension({
   },
   removeServices: [EnumTapisCoreService.Apps],
   mainSidebarServices: ['systems', 'apps', 'jobs', 'files'],
+  showMLHub: false,
+  showMLEdge: false,
+  showSecondarySideBar: false,
   authMethods: ['implicit', 'password'],
   logo: {
     // filePath from https://x.com/SEIS_SCOPED
