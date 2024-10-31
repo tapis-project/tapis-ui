@@ -8,7 +8,7 @@ import {
   FormControl,
 } from '@mui/material';
 import { Models } from '@tapis/tapis-typescript';
-import styles from './SearchBar.module.scss'
+import styles from './SearchBar.module.scss';
 
 type SearchProps = {
   models: Array<Models.ModelShortInfo>;
@@ -54,70 +54,69 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           matchBothDropdownsToSearch();
         }}
       >
-      <FormControl variant="outlined" margin="normal">
-        <InputLabel size="normal" id="FilterBy">
-          {' '}
-          Filter By:{' '}
-        </InputLabel>
-        <Select
-          label="FilterBy"
-          labelId="filterby"
+        <FormControl variant="outlined" margin="normal">
+          <InputLabel size="normal" id="FilterBy">
+            {' '}
+            Filter By:{' '}
+          </InputLabel>
+          <Select
+            label="FilterBy"
+            labelId="filterby"
+            size="small"
+            name="FilterBy"
+            value={currentFilter}
+            onChange={(e) =>
+              setCurrentFilter(
+                e.target.value.toLowerCase() as keyof Models.ModelShortInfo
+              )
+            }
+          >
+            <MenuItem value="author">Author</MenuItem>
+            <MenuItem value="model_id">ID</MenuItem>
+            <MenuItem value="library_name">Library</MenuItem>
+            <MenuItem value="task">Task</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" margin="normal">
+          <InputLabel size="normal" id="FilterType">
+            {' '}
+            Filter Type:{' '}
+          </InputLabel>
+          <Select
+            label="FilterType"
+            labelId="filtertype"
+            size="small"
+            name="FilterType"
+            value={currentFilterType}
+            onChange={(event) => {
+              setFilterType(event.target.value as string);
+            }}
+          >
+            <MenuItem value="includes">Contains</MenuItem>
+            <MenuItem value="startsWith">Starts With</MenuItem>
+            <MenuItem value="endsWith">Ends With</MenuItem>
+          </Select>
+        </FormControl>
+
+        <TextField
+          name="search"
+          placeholder={`Search by ${
+            currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)
+          }`}
+          value={currentFilterBy}
+          onChange={handleFilterByChange}
           size="small"
-          name="FilterBy"
-          value={currentFilter}
-          onChange={(e) =>
-            setCurrentFilter(
-              e.target.value.toLowerCase() as keyof Models.ModelShortInfo
-            )
-          }
-        >
-          <MenuItem value="author">Author</MenuItem>
-          <MenuItem value="model_id">ID</MenuItem>
-          <MenuItem value="library_name">Library</MenuItem>
-          <MenuItem value="task">Task</MenuItem>
-        </Select>
-      </FormControl>
+          margin="normal"
+        />
 
-      <FormControl variant="outlined" margin="normal">
-        <InputLabel size="normal" id="FilterType">
-          {' '}
-          Filter Type:{' '}
-        </InputLabel>
-        <Select
-          label="FilterType"
-          labelId="filtertype"
-          size="small"
-          name="FilterType"
-          value={currentFilterType}
-          onChange={(event) => {
-            setFilterType(event.target.value as string);
-          }}
-        >
-          <MenuItem value="includes">Contains</MenuItem>
-          <MenuItem value="startsWith">Starts With</MenuItem>
-          <MenuItem value="endsWith">Ends With</MenuItem>
-        </Select>
-      </FormControl>
-
-      <TextField
-        name="search"
-        placeholder={`Search by ${
-          currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)
-        }`}
-        value={currentFilterBy}
-        onChange={handleFilterByChange}
-        size="small"
-        margin="normal"
-      />
-
-      <FormControl variant="outlined" margin="normal">
-        <Button variant="outline-success" type="submit" size="small">
-          Search
-        </Button>
-      </FormControl>
+        <FormControl variant="outlined" margin="normal">
+          <Button variant="outline-success" type="submit" size="small">
+            Search
+          </Button>
+        </FormControl>
       </Form>
     </div>
-
   );
 };
 
