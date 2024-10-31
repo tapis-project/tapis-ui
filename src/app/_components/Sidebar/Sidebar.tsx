@@ -265,7 +265,7 @@ const Sidebar: React.FC = () => {
           <>
             {mainSidebarItems.map((item) => item)}
             {secondarySidebarItems.length > 0 && 
-            (extension !== undefined && extension.showSecondarySideBar) && (
+            (extension !== undefined && extension.showSecondarySideBar != false) && (
               <>
                 <div
                   onClick={toggleSecondaryItems}

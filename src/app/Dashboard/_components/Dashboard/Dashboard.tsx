@@ -123,7 +123,7 @@ const Dashboard: React.FC = () => {
               counter={`${jobs?.data?.result?.length} jobs`}
               loading={jobs?.isLoading}
             />
-            {(extension !== undefined && extension.showMLHub) && (
+            {(extension !== undefined && extension.showMLHub != false) && (
               <DashboardCard
                 icon="share"
                 name="ML Hub"
@@ -133,7 +133,7 @@ const Dashboard: React.FC = () => {
                 loading={apps?.isLoading}
               />
             )}
-            {(extension !== undefined && extension.showMLEdge) && (
+            {(extension !== undefined && extension.showMLEdge != false) && (
               <DashboardCard
                 icon="simulation"
                 name="ML Edge"
