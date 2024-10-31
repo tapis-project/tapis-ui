@@ -8,6 +8,7 @@ import {
   FormControl,
 } from '@mui/material';
 import { Models } from '@tapis/tapis-typescript';
+import styles from './SearchBar.module.scss'
 
 type SearchProps = {
   models: Array<Models.ModelShortInfo>;
@@ -46,12 +47,13 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
   };
 
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        matchBothDropdownsToSearch();
-      }}
-    >
+    <div className={`${styles['searchBar']}`}>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          matchBothDropdownsToSearch();
+        }}
+      >
       <FormControl variant="outlined" margin="normal">
         <InputLabel size="normal" id="FilterBy">
           {' '}
@@ -113,7 +115,9 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           Search
         </Button>
       </FormControl>
-    </Form>
+      </Form>
+    </div>
+
   );
 };
 
