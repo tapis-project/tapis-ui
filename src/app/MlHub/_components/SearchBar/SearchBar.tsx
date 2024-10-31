@@ -16,7 +16,8 @@ type SearchProps = {
 
 const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
   const [currentFilterBy, setCurrentFilterBy] = useState<string>('');
-  const [currentFilter, setCurrentFilter] = useState<keyof Models.ModelShortInfo>('author');
+  const [currentFilter, setCurrentFilter] =
+    useState<keyof Models.ModelShortInfo>('author');
   const [currentFilterType, setFilterType] = useState<string>('includes');
 
   const handleFilterByChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +63,11 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           size="small"
           name="FilterBy"
           value={currentFilter}
-          onChange={(e) => setCurrentFilter(e.target.value.toLowerCase() as keyof Models.ModelShortInfo)}
+          onChange={(e) =>
+            setCurrentFilter(
+              e.target.value.toLowerCase() as keyof Models.ModelShortInfo
+            )
+          }
         >
           <MenuItem value="author">Author</MenuItem>
           <MenuItem value="model_id">ID</MenuItem>
@@ -82,9 +87,7 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           size="small"
           name="FilterType"
           value={currentFilterType}
-          onChange={(
-            event
-          ) => {
+          onChange={(event) => {
             setFilterType(event.target.value as string);
           }}
         >
