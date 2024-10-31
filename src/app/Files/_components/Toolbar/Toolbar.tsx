@@ -13,7 +13,10 @@ import CreatePostitModal from './CreatePostitModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
-import { Files as FilesHooks, Systems as SystemsHooks } from '@tapis/tapisui-hooks';
+import {
+  Files as FilesHooks,
+  Systems as SystemsHooks,
+} from '@tapis/tapisui-hooks';
 import { useNotifications } from 'app/_components/Notifications';
 import { Alert, AlertTitle } from '@mui/material';
 
@@ -65,26 +68,41 @@ const Toolbar: React.FC<ToolbarProps> = ({ systemId, currentPath }) => {
   const { download } = FilesHooks.useDownload();
   const { add } = useNotifications();
 
-  const { data, isLoading: isLoadingPermissions, error: errorPermissions } = FilesHooks.usePermissions({ systemId, path: currentPath });
+  const {
+    data,
+    isLoading: isLoadingPermissions,
+    error: errorPermissions,
+  } = FilesHooks.usePermissions({ systemId, path: currentPath });
   const permission = data?.result?.permission;
-  const { data: systemData, isLoading, error, isSuccess } = SystemsHooks.useDetails({
+  const {
+    data: systemData,
+    isLoading,
+    error,
+    isSuccess,
+  } = SystemsHooks.useDetails({
     systemId,
     select: 'allAttributes',
   });
 
-  const system = systemData?.result ?? undefined
+  const system = systemData?.result ?? undefined;
 
-  const canModify = useCallback((system: Systems.TapisSystem | undefined, permission: Files.PermEnum | undefined) => {
-    if (system && system.isPublic) {
-      return true
-    }
+  const canModify = useCallback(
+    (
+      system: Systems.TapisSystem | undefined,
+      permission: Files.PermEnum | undefined
+    ) => {
+      if (system && system.isPublic) {
+        return true;
+      }
 
-    if (permission === Files.PermEnum.Modify) {
-      return true
-    }
+      if (permission === Files.PermEnum.Modify) {
+        return true;
+      }
 
-    return false
-  }, [systemId, currentPath])
+      return false;
+    },
+    [systemId, currentPath]
+  );
 
   const onDownload = useCallback(() => {
     selectedFiles.forEach((file) => {
@@ -120,7 +138,10 @@ const Toolbar: React.FC<ToolbarProps> = ({ systemId, currentPath }) => {
     setModal(undefined);
   };
   return (
-    <QueryWrapper isLoading={isLoading || isLoadingPermissions} error={[error, errorPermissions]}>
+    <QueryWrapper
+      isLoading={isLoading || isLoadingPermissions}
+      error={[error, errorPermissions]}
+    >
       <div id="file-operation-toolbar">
         {pathname !== '/files' && (
           <div className={styles['toolbar-wrapper']}>
@@ -155,7 +176,9 @@ const Toolbar: React.FC<ToolbarProps> = ({ systemId, currentPath }) => {
             <ToolbarButton
               text="Copy"
               icon="copy"
-              disabled={selectedFiles.length === 0 || !canModify(system, permission)}
+              disabled={
+                selectedFiles.length === 0 || !canModify(system, permission)
+              }
               onClick={() => setModal('copy')}
               aria-label="Copy"
             />
