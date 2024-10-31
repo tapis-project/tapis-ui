@@ -13,7 +13,7 @@ const Models: React.FC = () => {
   const models: ModelsModule.RespModelsObject['result'] = data?.result ?? {};
   const { path } = useRouteMatch();
   const [filteredModels, setFilteredModels] = useState<
-    Array<ModelsModule.RespModelsObject['result'][number]>
+    Array<ModelsModule.ModelShortInfo>
   >(Object.entries(models).map(([_, model]) => model));
 
   return (

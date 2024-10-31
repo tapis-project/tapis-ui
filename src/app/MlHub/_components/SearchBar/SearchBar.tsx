@@ -16,17 +16,11 @@ type SearchProps = {
 
 const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
   const [currentFilterBy, setCurrentFilterBy] = useState<string>('');
-  const [currentFilter, setCurrentFilter] = useState<string>('author');
+  const [currentFilter, setCurrentFilter] = useState<keyof Models.ModelShortInfo>('author');
   const [currentFilterType, setFilterType] = useState<string>('includes');
 
   const handleFilterByChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentFilterBy(event.target.value);
-  };
-
-  const handleFilterTypeChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    setFilterType(event.target.value as string);
   };
 
   const matchBothDropdownsToSearch = () => {
@@ -68,7 +62,7 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           size="small"
           name="FilterBy"
           value={currentFilter}
-          onChange={(e) => setCurrentFilter(e.target.value.toLowerCase())}
+          onChange={(e) => setCurrentFilter(e.target.value.toLowerCase() as keyof Models.ModelShortInfo)}
         >
           <MenuItem value="author">Author</MenuItem>
           <MenuItem value="model_id">ID</MenuItem>
@@ -88,7 +82,11 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           size="small"
           name="FilterType"
           value={currentFilterType}
-          onChange={handleFilterTypeChange}
+          onChange={(
+            event
+          ) => {
+            setFilterType(event.target.value as string);
+          }}
         >
           <MenuItem value="includes">Contains</MenuItem>
           <MenuItem value="startsWith">Starts With</MenuItem>
