@@ -47,13 +47,13 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
   };
 
   return (
-    <div className={`${styles['searchBar']}`}>
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          matchBothDropdownsToSearch();
-        }}
-      >
+    <Form
+      onSubmit={(e) => {
+        e.preventDefault();
+        matchBothDropdownsToSearch();
+      }}
+    >
+      <div className={`${styles['searchBar']}`}>
         <FormControl variant="outlined" margin="normal">
           <InputLabel size="normal" id="FilterBy">
             {' '}
@@ -115,8 +115,8 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
             Search
           </Button>
         </FormControl>
-      </Form>
-    </div>
+      </div>
+    </Form>
   );
 };
 
