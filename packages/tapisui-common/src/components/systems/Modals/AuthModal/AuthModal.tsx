@@ -138,12 +138,20 @@ const AuthModal: React.FC<ModalProps> = ({
         )}
         <div>
           {defaultAuthnMethod === Systems.AuthnEnum.PkiKeys && (
-            <Alert severity="warning" style={{ marginTop: '8px' }}>
+            <Alert severity="info" style={{ marginTop: '8px' }}>
+              You can generate an ssh key-pair by running the following command
+              in a shell.
+              <br />
+              <br />
+              <b>ssh-keygen -t rsa -b 4096 -m PEM</b>
+              <br />
+              <br />
               Ensure that the public key you paste below has already been placed
               on the host for this system or Tapis will not be able to
               authenticate with the host on your behalf.
             </Alert>
           )}
+
           {defaultAuthnMethod === Systems.AuthnEnum.PkiKeys && (
             <div className={styles['form']}>
               <FormControl variant="standard">

@@ -1,7 +1,7 @@
-import { Files } from '@tapis/tapis-typescript';
+import { Files, Systems } from '@tapis/tapis-typescript';
 import React, { useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { Icon } from '@tapis/tapisui-common';
+import { Icon, QueryWrapper } from '@tapis/tapisui-common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import MoveCopyModal from './MoveCopyModal';
@@ -13,8 +13,9 @@ import CreatePostitModal from './CreatePostitModal';
 import TransferModal from './TransferModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
-import { Files as Hooks } from '@tapis/tapisui-hooks';
+import { Files as FilesHooks, Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import { useNotifications } from 'app/_components/Notifications';
+import { Alert, AlertTitle } from '@mui/material';
 
 type ToolbarButtonProps = {
   text: string;
@@ -61,16 +62,33 @@ const Toolbar: React.FC<ToolbarProps> = ({ systemId, currentPath }) => {
   const { selectedFiles } = useFilesSelect();
   const { pathname } = useLocation();
 
-  const { download } = Hooks.useDownload();
+  const { download } = FilesHooks.useDownload();
   const { add } = useNotifications();
 
-  const { data } = Hooks.usePermissions({ systemId, path: currentPath });
+  const { data, isLoading: isLoadingPermissions, error: errorPermissions } = FilesHooks.usePermissions({ systemId, path: currentPath });
   const permission = data?.result?.permission;
+  const { data: systemData, isLoading, error, isSuccess } = SystemsHooks.useDetails({
+    systemId,
+    select: 'allAttributes',
+  });
+
+  const system = systemData?.result ?? undefined
+
+  const canModify = useCallback((system: Systems.TapisSystem | undefined, permission: Files.PermEnum | undefined) => {
+    if (system && system.isPublic) {
+      return true
+    }
+
+    if (permission === Files.PermEnum.Modify) {
+      return true
+    }
+
+    return false
+  }, [systemId, currentPath])
 
   const onDownload = useCallback(() => {
     selectedFiles.forEach((file) => {
-      // TODO Consider making the DownloadStreamParams in a type in this file
-      const params: Hooks.DownloadStreamParams = {
+      const params: FilesHooks.DownloadStreamParams = {
         systemId,
         path: file.path ?? '',
         destination: file.name ?? 'tapisfile',
@@ -102,158 +120,160 @@ const Toolbar: React.FC<ToolbarProps> = ({ systemId, currentPath }) => {
     setModal(undefined);
   };
   return (
-    <div id="file-operation-toolbar">
-      {pathname !== '/files' && (
-        <div className={styles['toolbar-wrapper']}>
-          <ToolbarButton
-            text="View"
-            icon="file"
-            disabled={
-              selectedFiles.length !== 1 ||
-              selectedFiles[0].type !== Files.FileTypeEnum.File
-            }
-            onClick={() => setModal('postit')}
-            aria-label="View file"
-          />
-          <ToolbarButton
-            text="Rename"
-            icon="rename"
-            disabled={
-              selectedFiles.length !== 1 || permission !== Files.PermEnum.Modify
-            }
-            onClick={() => setModal('rename')}
-            aria-label="Rename"
-          />
-          <ToolbarButton
-            text="Move"
-            icon="move"
-            disabled={
-              selectedFiles.length === 0 || permission !== Files.PermEnum.Modify
-            }
-            onClick={() => setModal('move')}
-            aria-label="Move"
-          />
-          <ToolbarButton
-            text="Copy"
-            icon="copy"
-            disabled={selectedFiles.length === 0}
-            onClick={() => setModal('copy')}
-            aria-label="Copy"
-          />
-          {/*
-              <ToolbarButton
-                text="Permissions"
-                icon="gear"
-                disabled={selectedFiles.length !== 1 || permission !== Files.FilePermissionPermissionEnum.Modify}
-                onClick={() => setModal('permissions')}
+    <QueryWrapper isLoading={isLoading || isLoadingPermissions} error={[error, errorPermissions]}>
+      <div id="file-operation-toolbar">
+        {pathname !== '/files' && (
+          <div className={styles['toolbar-wrapper']}>
+            <ToolbarButton
+              text="View"
+              icon="file"
+              disabled={
+                selectedFiles.length !== 1 ||
+                selectedFiles[0].type !== Files.FileTypeEnum.File
+              }
+              onClick={() => setModal('postit')}
+              aria-label="View file"
+            />
+            <ToolbarButton
+              text="Rename"
+              icon="rename"
+              disabled={
+                selectedFiles.length !== 1 || !canModify(system, permission)
+              }
+              onClick={() => setModal('rename')}
+              aria-label="Rename"
+            />
+            <ToolbarButton
+              text="Move"
+              icon="move"
+              disabled={
+                selectedFiles.length !== 1 || !canModify(system, permission)
+              }
+              onClick={() => setModal('move')}
+              aria-label="Move"
+            />
+            <ToolbarButton
+              text="Copy"
+              icon="copy"
+              disabled={selectedFiles.length === 0 || !canModify(system, permission)}
+              onClick={() => setModal('copy')}
+              aria-label="Copy"
+            />
+            {/*
+                <ToolbarButton
+                  text="Permissions"
+                  icon="gear"
+                  disabled={selectedFiles.length !== 1 || permission !== Files.FilePermissionPermissionEnum.Modify}
+                  onClick={() => setModal('permissions')}
+                />
+              */}
+            <ToolbarButton
+              text="Transfers"
+              icon="globe"
+              disabled={false}
+              onClick={() => setModal('transfer')}
+            />
+            <ToolbarButton
+              text="Download"
+              icon="download"
+              disabled={selectedFiles.length === 0}
+              onClick={onDownload}
+              aria-label="Download"
+            />
+            <ToolbarButton
+              text="Upload"
+              icon="upload"
+              disabled={!canModify(system, permission)}
+              onClick={() => {
+                setModal('upload');
+              }}
+              aria-label="Upload"
+            />
+            <ToolbarButton
+              text="Folder"
+              icon="add"
+              disabled={!canModify(system, permission)}
+              onClick={() => setModal('createdir')}
+              aria-label="Add"
+            />
+            <ToolbarButton
+              text="Delete"
+              icon="trash"
+              disabled={
+                selectedFiles.length !== 1 || !canModify(system, permission)
+              }
+              onClick={() => setModal('delete')}
+              aria-label="Delete"
+            />
+            {modal === 'createdir' && (
+              <CreateDirModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
               />
-            */}
-          <ToolbarButton
-            text="Transfers"
-            icon="globe"
-            disabled={false}
-            onClick={() => setModal('transfer')}
-          />
-          <ToolbarButton
-            text="Download"
-            icon="download"
-            disabled={selectedFiles.length === 0}
-            onClick={onDownload}
-            aria-label="Download"
-          />
-          <ToolbarButton
-            text="Upload"
-            icon="upload"
-            disabled={permission !== Files.PermEnum.Modify}
-            onClick={() => {
-              setModal('upload');
-            }}
-            aria-label="Upload"
-          />
-          <ToolbarButton
-            text="Folder"
-            icon="add"
-            disabled={permission !== Files.PermEnum.Modify}
-            onClick={() => setModal('createdir')}
-            aria-label="Add"
-          />
-          <ToolbarButton
-            text="Delete"
-            icon="trash"
-            disabled={
-              selectedFiles.length === 0 || permission !== Files.PermEnum.Modify
-            }
-            onClick={() => setModal('delete')}
-            aria-label="Delete"
-          />
-          {modal === 'createdir' && (
-            <CreateDirModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-            />
-          )}
-          {modal === 'copy' && (
-            <MoveCopyModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-              operation={Files.MoveCopyRequestOperationEnum.Copy}
-            />
-          )}
-          {modal === 'move' && (
-            <MoveCopyModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-              operation={Files.MoveCopyRequestOperationEnum.Move}
-            />
-          )}
-          {modal === 'rename' && (
-            <RenameModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-            />
-          )}
-          {modal === 'transfer' && (
-            <TransferModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-            />
-          )}
-          {modal === 'upload' && (
-            <UploadModal
-              toggle={toggle}
-              path={currentPath}
-              systemId={systemId}
-            />
-          )}
-          {modal === 'permissions' && (
-            <PermissionsModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-            />
-          )}
-          {modal === 'delete' && (
-            <DeleteModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-            />
-          )}
-          {modal === 'postit' && (
-            <CreatePostitModal
-              toggle={toggle}
-              systemId={systemId}
-              path={currentPath}
-            />
-          )}
-        </div>
-      )}
-    </div>
+            )}
+            {modal === 'copy' && (
+              <MoveCopyModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+                operation={Files.MoveCopyRequestOperationEnum.Copy}
+              />
+            )}
+            {modal === 'move' && (
+              <MoveCopyModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+                operation={Files.MoveCopyRequestOperationEnum.Move}
+              />
+            )}
+            {modal === 'rename' && (
+              <RenameModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === 'transfer' && (
+              <TransferModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === 'upload' && (
+              <UploadModal
+                toggle={toggle}
+                path={currentPath}
+                systemId={systemId}
+              />
+            )}
+            {modal === 'permissions' && (
+              <PermissionsModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === 'delete' && (
+              <DeleteModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === 'postit' && (
+              <CreatePostitModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    </QueryWrapper>
   );
 };
 

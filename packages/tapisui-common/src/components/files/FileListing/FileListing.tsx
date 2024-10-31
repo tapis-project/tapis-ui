@@ -2,14 +2,22 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
-import { Icon, InfiniteScrollTable } from '../../../ui';
+import { InfiniteScrollTable } from '../../../ui';
 import { QueryWrapper } from '../../../wrappers';
 import { Row, Column, CellProps } from 'react-table';
 import sizeFormat from '../../../utils/sizeFormat';
 import { Button } from 'reactstrap';
 import { formatDateTimeFromValue } from '../../../utils/timeFormat';
-import { CheckBoxOutlineBlank, CheckBox } from '@mui/icons-material';
+import {
+  CheckBoxOutlineBlank,
+  CheckBox,
+  InsertDriveFileOutlined,
+  FolderOutlined,
+  Link,
+  QuestionMark,
+} from '@mui/icons-material';
 import styles from './FileListing.module.scss';
+import { Tooltip } from '@mui/material';
 
 export type OnSelectCallback = (files: Array<Files.FileInfo>) => any;
 export type OnNavigateCallback = (file: Files.FileInfo) => any;
@@ -100,6 +108,28 @@ type FileListingTableProps = {
   fields?: Array<'size' | 'lastModified'>;
 };
 
+const resolveIcon = (type: Files.FileInfo['type']) => {
+  let icon: React.ReactElement = <></>;
+  switch (type) {
+    case Files.FileTypeEnum.File:
+      icon = <InsertDriveFileOutlined />;
+      break;
+    case Files.FileTypeEnum.Dir:
+      icon = <FolderOutlined />;
+      break;
+    case Files.FileTypeEnum.SymbolicLink:
+      icon = <Link />;
+      break;
+    case Files.FileTypeEnum.Other:
+    case Files.FileTypeEnum.Unknown:
+    default:
+      icon = <QuestionMark />;
+      break;
+  }
+
+  return <Tooltip title={type}>{icon}</Tooltip>;
+};
+
 export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
   ({
     files,
@@ -122,7 +152,7 @@ export const FileListingTable: React.FC<FileListingTableProps> = React.memo(
       {
         Header: '',
         accessor: 'type',
-        Cell: (el) => <Icon name={el.value === 'file' ? 'file' : 'folder'} />,
+        Cell: (el) => resolveIcon(el.value),
       },
       {
         Header: 'filename',
