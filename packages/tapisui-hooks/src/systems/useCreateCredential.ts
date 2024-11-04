@@ -28,7 +28,7 @@ const useCreateCredential = () => {
             ...params,
             userName: params.userName
               ? params.userName
-              : claims['sub'].split('@')[0],
+              : claims['tapis/username'],
           },
           basePath,
           jwt

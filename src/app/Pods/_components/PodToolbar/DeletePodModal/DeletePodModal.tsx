@@ -15,10 +15,7 @@ import { useLocation } from 'react-router-dom';
 
 const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
-  const effectiveUserId = claims['sub'].substring(
-    0,
-    claims['sub'].lastIndexOf('@')
-  );
+  const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useListPods(); //{search: `owner.like.${''}`,}
   const pods: Array<Pods.PodResponseModel> = data?.result ?? [];
 
