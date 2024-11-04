@@ -55,13 +55,12 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
     >
       <div className={`${styles['searchBar']}`}>
         <FormControl variant="outlined" margin="normal">
-          <InputLabel size="normal" id="FilterBy">
-            {' '}
-            Filter By:{' '}
+          <InputLabel size="normal" id="Filter by">
+            Filter by
           </InputLabel>
           <Select
-            label="FilterBy"
-            labelId="filterby"
+            label="Filter by"
+            labelId="Filter by"
             size="small"
             name="FilterBy"
             value={currentFilter}
@@ -79,13 +78,12 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
         </FormControl>
 
         <FormControl variant="outlined" margin="normal">
-          <InputLabel size="normal" id="FilterType">
-            {' '}
-            Filter Type:{' '}
+          <InputLabel size="normal" id="Filter type">
+            Filter type
           </InputLabel>
           <Select
-            label="FilterType"
-            labelId="filtertype"
+            label="Filter type"
+            labelId="Filter type"
             size="small"
             name="FilterType"
             value={currentFilterType}
@@ -98,8 +96,8 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
             <MenuItem value="endsWith">Ends With</MenuItem>
           </Select>
         </FormControl>
-
         <TextField
+          label="Search"
           name="search"
           placeholder={`Search by ${
             currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)
@@ -109,7 +107,6 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
           size="small"
           margin="normal"
         />
-
         <FormControl variant="outlined" margin="normal">
           <Button variant="outline-success" type="submit" size="small">
             Search
