@@ -15,6 +15,13 @@ const Models: React.FC = () => {
   const [filteredModels, setFilteredModels] = useState<
     Array<ModelsModule.ModelShortInfo>
   >(Object.entries(models).map(([_, model]) => model));
+  const handleFilter = () => {
+    if (filteredModels.length = 0 ) {
+            return models; }
+          else {
+            {setFilteredModels};
+          }
+  }
 
   return (
     <QueryWrapper
@@ -24,7 +31,7 @@ const Models: React.FC = () => {
     >
       <SearchBar
         models={Object.entries(models).map(([_, model]) => model)}
-        onFilter={setFilteredModels}
+        onFilter={handleFilter}
       />
       <Table responsive striped>
         <thead>
@@ -36,6 +43,7 @@ const Models: React.FC = () => {
           </tr>
         </thead>
         <tbody>
+          {/* nested ternary operator */}
           {filteredModels.length > 0 ? (
             filteredModels.map((model) => (
               <tr key={model.model_id}>
@@ -59,7 +67,18 @@ const Models: React.FC = () => {
                 No models found
               </td>
             </tr>
-          )}
+          ) }
+            {Object.entries(models).map((model) => (
+              <><td className={`${styles['model-name-column']}`}>
+                <Icon name="simulation" />
+                <span>
+                  <Link to={`${path}/${model[0]}`}> {model[0]} </Link>
+                </span>
+              </td><td>
+                  {model[1].pipeline_tag ? model[1].pipeline_tag : <i>None</i>}
+                </td><td>{model[1].downloads}</td></>
+            ))
+          }
         </tbody>
       </Table>
     </QueryWrapper>
