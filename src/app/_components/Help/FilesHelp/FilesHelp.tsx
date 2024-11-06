@@ -9,3 +9,5 @@ const FilesHelp: React.FC = () => {
     />
     )
 }
+
+export default FilesHelp;
