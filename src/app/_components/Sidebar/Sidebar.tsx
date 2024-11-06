@@ -321,9 +321,9 @@ const Sidebar: React.FC = () => {
               <div>
                 <SettingsRounded sx={{ width: 24, height: 24 }} />
               </div>
-              {claims['sub'] ? (
+              {claims['tapis/username'] ? (
                 <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {claims['sub'].split('@')[0]}
+                  {claims['tapis/username']}
                   <br />@{claims['sub'].split('@')[1]}
                 </div>
               ) : (

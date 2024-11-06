@@ -27,10 +27,7 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
   }
   const { claims } = useTapisConfig();
   const history = useHistory();
-  const effectiveUserId = claims['sub'].substring(
-    0,
-    claims['sub'].lastIndexOf('@')
-  );
+  const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` });
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 

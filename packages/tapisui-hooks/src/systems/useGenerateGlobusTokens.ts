@@ -26,7 +26,7 @@ const useGenerateGlobusTokens = () => {
         API.generateGlobusTokens(
           {
             ...params,
-            userName: claims['sub'].split('@')[0],
+            userName: claims['tapis/username'],
           },
           basePath,
           jwt

@@ -26,7 +26,7 @@ const Layout: React.FC = () => {
         
         <Breadcrumbs breadcrumbs={[{ text: 'Files' }, ...crumbs]} />
       </div> */}
-      <Toolbar systemId={systemId} currentPath={currentPath} />
+      {systemId && <Toolbar systemId={systemId} currentPath={currentPath} />}
     </LayoutHeader>
   );
 
