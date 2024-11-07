@@ -7,7 +7,7 @@ const AppsHelp: React.FC = () => {
     title = "Tapis Apps"
     iframeUrl='https://tapis.readthedocs.io/en/latest/technical/apps.html'
     />
-    )
-}
+    );
+};
 
 export default AppsHelp;

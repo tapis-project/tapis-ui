@@ -9,11 +9,15 @@ import {
 import AppsToolbar from '../_components/AppsToolbar';
 
 import { Router } from '../_Router';
+import AppsHelp from 'app/_components/Help/AppsHelp';
 
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <div>Apps</div>
+        <div>Apps</div>
+        <span style={{ marginLeft: '16px' }}>
+          <AppsHelp/>
+        </span>
       <AppsToolbar />
     </LayoutHeader>
   );
