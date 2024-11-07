@@ -14,9 +14,11 @@ import AppsHelp from 'app/_components/Help/AppsHelp';
 const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
-      <div>Apps</div>
+      <span>
+      Apps
       <span style={{ marginLeft: '16px' }}>
         <AppsHelp />
+      </span>
       </span>
       <AppsToolbar />
     </LayoutHeader>

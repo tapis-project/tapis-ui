@@ -59,7 +59,7 @@ const SystemToolbar: React.FC = () => {
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
-            text="Create"
+            text="Create New System"
             icon={<Add />}
             disabled={false}
             onClick={() => setModal('createsystem')}
