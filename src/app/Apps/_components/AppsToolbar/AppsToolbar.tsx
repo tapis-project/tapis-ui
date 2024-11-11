@@ -53,21 +53,13 @@ const AppsToolbar: React.FC = () => {
     <div id="file-operation-toolbar">
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
-          {/* <ToolbarButton
-            text="Create a New App"
-            icon="add"
-            disabled={false}
-            onClick={() => setModal('createApp')}
-            aria-label="createApp"
-          /> */}
           <ToolbarButton
-            text="Create New App"
+            text="Create App"
             icon={<Add />}
             disabled={false}
             onClick={() => setModal('createApp')}
             aria-label="createApp"
           />
-
           {modal === 'createApp' && <CreateAppModal toggle={toggle} />}
         </div>
       )}
