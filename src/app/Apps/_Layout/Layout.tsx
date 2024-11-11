@@ -15,10 +15,10 @@ const Layout: React.FC = () => {
   const header = (
     <LayoutHeader>
       <span>
-      Apps
-      <span style={{ marginLeft: '16px' }}>
-        <AppsHelp />
-      </span>
+        Apps
+        <span style={{ marginLeft: '16px' }}>
+          <AppsHelp />
+        </span>
       </span>
       <AppsToolbar />
     </LayoutHeader>

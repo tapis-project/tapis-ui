@@ -60,7 +60,7 @@ const AppsToolbar: React.FC = () => {
             onClick={() => setModal('createApp')}
             aria-label="createApp"
           /> */}
-                    <ToolbarButton
+          <ToolbarButton
             text="Create New App"
             icon={<Add />}
             disabled={false}

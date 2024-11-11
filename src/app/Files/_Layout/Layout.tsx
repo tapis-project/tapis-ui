@@ -24,9 +24,9 @@ const Layout: React.FC = () => {
     <LayoutHeader>
       <span className={`${styles['Files']}`}>
         Files
-          <span className = {`${styles['Files-Help']}`} >
-            <FilesHelp />
-          </span>
+        <span className={`${styles['Files-Help']}`}>
+          <FilesHelp />
+        </span>
       </span>
       {/* <div className={styles.breadcrumbs}>
         

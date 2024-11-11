@@ -20,8 +20,8 @@ const Layout: React.FC = () => {
             Jobs
           </Link>
         </span>
-        <span className = {`${styles['Jobs-Help']}`} >
-         <JobsHelp />
+        <span className={`${styles['Jobs-Help']}`}>
+          <JobsHelp />
         </span>
       </span>
     </SectionHeader>
