@@ -59,47 +59,13 @@ const SystemToolbar: React.FC = () => {
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
-            text="Create"
+            text="Create System"
             icon={<Add />}
             disabled={false}
             onClick={() => setModal('createsystem')}
             aria-label="createSystem"
           />
-          {/* <ToolbarButton
-            text="Undelete"
-            icon={<Add />}
-            disabled={false}
-            onClick={() => setModal('undeletesystem')}
-            aria-label="undeleteSystem"
-          />
-          <ToolbarButton
-            color="error"
-            text="Delete"
-            icon={<Delete />}
-            disabled={false}
-            onClick={() => setModal('deletesystem')}
-            aria-label="deleteSystem"
-          /> */}
-          {/* New button for creating user credentials */}
-          {/* <ToolbarButton
-            text="Create User Credential"
-            icon="add" // Assuming 'add' is the icon for user credentials
-            disabled={false}
-            onClick={() => setModal('createusercredential')}
-            aria-label="createUserCredential"
-          /> */}
-          {/* Conditionally rendered modals */}
           {modal === 'createsystem' && <CreateSystemModal toggle={toggle} />}
-          {/* {modal === 'deletesystem' && <DeleteSystemModal toggle={toggle} />}
-          {modal === 'undeletesystem' && (
-            <UndeleteSystemModal toggle={toggle} />
-          )} */}
-          {/* {modal === 'createusercredential' && (
-            <CreateUserCredentialModal
-              toggle={toggle}
-              isOpen={modal === 'createusercredential'}
-            />
-          )} */}
         </div>
       )}
     </div>

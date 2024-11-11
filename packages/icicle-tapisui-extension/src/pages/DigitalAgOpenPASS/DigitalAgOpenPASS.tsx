@@ -16,7 +16,7 @@ export const DigitalAgOpenPASS: React.FC = () => {
         style={{ flexGrow: 1, border: 'none' }}
         id="OpenPASS"
         title="ICICLE OpenPASS"
-        src="https://go.osu.edu/icicle-installopenpass"
+        src="https://reroutlab.org/ei/"
       />
     </div>
   );

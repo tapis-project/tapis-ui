@@ -8,18 +8,19 @@ import {
   SectionHeader,
 } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
+import styles from './Layout.module.scss';
 import { JobsHelp } from 'app/_components/Help';
 
 const Layout: React.FC = () => {
   const header = (
     <SectionHeader>
-      <span>
+      <span className={`${styles['Jobs']}`}>
         <span>
           <Link to="/jobs" style={{ color: '#444444' }}>
             Jobs
           </Link>
         </span>
-        <span style={{ marginLeft: '16px', marginTop: '-1px' }}>
+        <span className={`${styles['Jobs-Help']}`}>
           <JobsHelp />
         </span>
       </span>

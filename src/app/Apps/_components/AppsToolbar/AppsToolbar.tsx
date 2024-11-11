@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Button } from 'reactstrap';
+// import { Button } from 'reactstrap';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './AppsToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreateAppModal from './CreateAppModal';
+import { Button } from '@mui/material';
+import { Add } from '@mui/icons-material';
 
 type ToolbarButtonProps = {
   text: string;
-  icon: string;
+  icon: any;
   onClick: () => void;
   disabled: boolean;
 };
@@ -29,10 +31,12 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
         disabled={disabled}
         onClick={onClick}
         className={styles['toolbar-btn']}
+        startIcon={icon}
+        variant="outlined"
+        size="small"
         {...rest}
       >
-        <Icon name={icon}></Icon>
-        <span> {text}</span>
+        <span>{text}</span>
       </Button>
     </div>
   );
@@ -50,13 +54,12 @@ const AppsToolbar: React.FC = () => {
       {pathname && (
         <div className={styles['toolbar-wrapper']}>
           <ToolbarButton
-            text="Create a New App"
-            icon="add"
+            text="Create App"
+            icon={<Add />}
             disabled={false}
             onClick={() => setModal('createApp')}
             aria-label="createApp"
           />
-
           {modal === 'createApp' && <CreateAppModal toggle={toggle} />}
         </div>
       )}

@@ -73,7 +73,7 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
             <MenuItem value="author">Author</MenuItem>
             <MenuItem value="model_id">ID</MenuItem>
             <MenuItem value="library_name">Library</MenuItem>
-            <MenuItem value="task">Task</MenuItem>
+            <MenuItem value="pipeline_tag">Task</MenuItem>
           </Select>
         </FormControl>
 
