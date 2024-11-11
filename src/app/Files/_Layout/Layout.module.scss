@@ -4,24 +4,14 @@
   line-height: 1.8em;
 }
 
-.LayoutHeader{
-  padding: 0%;
+.Files {
+  margin: 9px;
+  // margin-top: 1cqi;
+  position: relative;
+  top: 10px; right: 08px;
+  
 }
 
-// .toolbar-wrapper {
-//   padding: 0;
-//   margin: 0;
-//   margin-top: 0.5em;
-//   display: flex !important;
-//   gap: 8px;
-// }
-
-// .toolbar-btn {
-//   height: 2rem;
-//   align-items: center;
-//   font-size: 0.7em !important;
-// }
-
-// .toolbar-btn:disabled {
-//   color: #999999 !important;
-// }
+.Files-Help {
+  padding-left: 1cap;
+}

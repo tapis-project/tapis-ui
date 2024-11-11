@@ -22,11 +22,11 @@ const Layout: React.FC = () => {
   const crumbs = breadcrumbsFromPathname(pathname).splice(1);
   const header = (
     <LayoutHeader>
-      <span>
-      Files
-      <span style={{ marginLeft: '16px' }}>
-      <FilesHelp />
-      </span>
+      <span className={`${styles['Files']}`}>
+        Files
+          <span className = {`${styles['Files-Help']}`} >
+            <FilesHelp />
+          </span>
       </span>
       {/* <div className={styles.breadcrumbs}>
         
