@@ -68,7 +68,7 @@ const EnvVariablesRender: React.FC = () => {
             onClick={() => arrayHelpers.push({ key: '', value: '' })}
             size="sm"
           >
-            + Add
+            + Adds
           </Button>
         </div>
       )}
