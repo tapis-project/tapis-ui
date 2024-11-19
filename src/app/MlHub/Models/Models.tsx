@@ -16,6 +16,12 @@ const Models: React.FC = () => {
     Array<ModelsModule.ModelShortInfo>
   >(Object.entries(models).map(([_, model]) => model));
   const handleFilter = () => {
+    while (filteredModels.length = 0) {
+      return (
+        <>
+        </>
+      )
+    } 
     if ((filteredModels.length = 0)) {
       return models;
     } else {
