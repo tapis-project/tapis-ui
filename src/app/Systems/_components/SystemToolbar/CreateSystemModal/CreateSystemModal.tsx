@@ -48,7 +48,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   // used for the canExec checkbox
   const [exec, setIfExec] = useState(false);
   const ifChecked = useCallback(() => {
-    if (document.getElementById("canExec")?.value === true) {
+    if (document.getElementById("canExec")?.checked === true) {
       setIfExec(!exec);
     } 
   }, [setIfExec, exec])
