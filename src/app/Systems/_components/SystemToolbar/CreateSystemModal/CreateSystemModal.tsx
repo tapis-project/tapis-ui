@@ -44,6 +44,16 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const onChange = useCallback(() => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
+  
+  // used for the canExec checkbox
+  const [exec, setIfExec] = useState(false);
+  const ifChecked = useCallback(() => {
+    if (document.getElementById("canExec")?.value === true) {
+      setIfExec(!exec);
+    } 
+  }, [setIfExec, exec])
+
+
 
   const validationSchema = Yup.object({
     sysname: Yup.string()
@@ -365,16 +375,24 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     return <option>{values}</option>;
                   })}
                 </FormikSelect>
-                {true ? (
+                {/* {true ? (
                   <FormikCheck
                     name="canExec"
                     required={true}
                     label="Can Execute"
                     description={'Decides if the system can execute'}
                   />
-                ) : null}
-
-                <AdvancedSettings simplified={simplified} />
+                ) : null} */}
+            
+                <FormikCheck
+                  name= "canExec"
+                  required={true}
+                  label= "Can Execute"
+                  description={'Decides if the system can execute'}
+                  type='checkbox'
+                  onChange={ifChecked}
+                />
+                <AdvancedSettings simplified={simplified} canExec={exec} />
               </Form>
             )}
           </Formik>
