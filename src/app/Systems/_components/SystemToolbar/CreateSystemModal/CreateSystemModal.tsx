@@ -44,11 +44,9 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const onChange = useCallback(() => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
-  
+
   // used for the canExec checkbox
   const [exec, setExec] = useState(true);
-
-
 
   const validationSchema = Yup.object({
     sysname: Yup.string()
@@ -324,12 +322,12 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 />
 
                 <FormikInput
-                          name="rootDir"
-                          label="Root Directory"
-                          required={false}
-                          description={`Root directory`}
-                          aria-label="Input"
-                        />
+                  name="rootDir"
+                  label="Root Directory"
+                  required={false}
+                  description={`Root directory`}
+                  aria-label="Input"
+                />
 
                 <FormikSelect
                   name="defaultAuthnMethod"
@@ -353,16 +351,16 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   description={`Effective user id`}
                   aria-label="Input"
                 />
-            
+
                 <FormikCheck
-                  name= "canExec"
+                  name="canExec"
                   required={true}
-                  label= "Can Execute"
+                  label="Can Execute"
                   description={'Enables system execution'}
-                  type='checkbox'
+                  type="checkbox"
                   checked={exec}
-                  onClick={e => {
-                    setExec(!exec)
+                  onClick={(e) => {
+                    setExec(!exec);
                   }}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newValue = e.target.checked;

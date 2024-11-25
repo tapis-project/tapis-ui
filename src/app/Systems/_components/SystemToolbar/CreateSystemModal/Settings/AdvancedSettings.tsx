@@ -20,7 +20,10 @@ type AdvancedSettingsProp = {
   canExec: boolean;
 };
 
-const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec }) => {
+const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
+  simplified,
+  canExec,
+}) => {
   //used when trying to read the current value of a parameter
   const { values } = useFormikContext();
 
@@ -32,14 +35,13 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec 
     [values]
   );
 
-
   //reading the runtimeType at its current state
   const runtimeType = (values as Partial<Systems.ReqPostSystem>).jobRuntimes;
 
   if (simplified) {
     if (canExec) {
-    return (
-      <>
+      return (
+        <>
           <FormikSelect
             name="jobRuntimes"
             description="The job runtime type for the system"
@@ -54,31 +56,32 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec 
               return <option>{values}</option>;
             })}
           </FormikSelect>
-        <FormikInput
-          name="version"
-          label={`${runtimeType} Version`}
-          required={false}
-          description={`Version of ${runtimeType}`}
-          aria-label="Input"
-          disabled={true}
-        />
-        {isS3 ? (
           <FormikInput
-            name="bucketName"
-            label="Bucket Name"
+            name="version"
+            label={`${runtimeType} Version`}
             required={false}
-            description={`Bucket name`}
+            description={`Version of ${runtimeType}`}
             aria-label="Input"
+            disabled={true}
           />
-        ) : null}
-        <JobSettings />
-        <BatchSettings />
-        <ProxySettings />
-        <CmdSettings />
-        <TagsSettings />
-      </>
-    );
-  } } else {
+          {isS3 ? (
+            <FormikInput
+              name="bucketName"
+              label="Bucket Name"
+              required={false}
+              description={`Bucket name`}
+              aria-label="Input"
+            />
+          ) : null}
+          <JobSettings />
+          <BatchSettings />
+          <ProxySettings />
+          <CmdSettings />
+          <TagsSettings />
+        </>
+      );
+    }
+  } else {
     return null;
   }
 };
