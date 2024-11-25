@@ -8,7 +8,6 @@ import { useFormikContext } from 'formik';
 import styles from '../CreateSystemModal.module.scss';
 import BatchSettings from './Batch/BatchSettings';
 import ProxySettings from './ProxySettings';
-// import DtnSettings from './DtnSettings';
 import CmdSettings from './CmdSettings';
 import TagsSettings from './TagsSettings';
 import JobSettings from './Job/JobSettings';
@@ -33,40 +32,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec 
     [values]
   );
 
-  // look to the AdvancedSettings, if exec is True, remove Attribute hidden, if exec = false, leave them be
-  const [currentIfExec, setIfExec] = useState(false)
-  
-  const ifExecHandler = () => {
-    if (canExec === true) {
-      const ExecSysSettings = document.getElementById("ExecSysSettings");
-      ExecSysSettings?.removeAttribute("hidden") &&
-      setIfExec(true)
-    } else {
-      setIfExec(false)
-    }
-  }
-
-  ifExecHandler()
-
 
   //reading the runtimeType at its current state
   const runtimeType = (values as Partial<Systems.ReqPostSystem>).jobRuntimes;
 
   if (simplified) {
+    if (canExec) {
     return (
-      <Collapse
-        title="Advanced Settings"
-        className={styles['item']}
-        open={true}
-      >
-        <FormikInput
-          name="rootDir"
-          label="Root Directory"
-          required={false}
-          description={`Root directory`}
-          aria-label="Input"
-        />
-        <option hidden value= "ExecSysSettings">
+      <>
           <FormikSelect
             name="jobRuntimes"
             description="The job runtime type for the system"
@@ -81,7 +54,6 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec 
               return <option>{values}</option>;
             })}
           </FormikSelect>
-        </option>
         <FormikInput
           name="version"
           label={`${runtimeType} Version`}
@@ -89,13 +61,6 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec 
           description={`Version of ${runtimeType}`}
           aria-label="Input"
           disabled={true}
-        />
-        <FormikInput
-          name="effectiveUserId"
-          label="Effective User ID"
-          required={false}
-          description={`Effective user id`}
-          aria-label="Input"
         />
         {isS3 ? (
           <FormikInput
@@ -106,17 +71,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified, canExec 
             aria-label="Input"
           />
         ) : null}
-        <option hidden value="ExecSysSettings">
         <JobSettings />
         <BatchSettings />
         <ProxySettings />
-        {/* <DtnSettings /> */}
         <CmdSettings />
-        </option>
         <TagsSettings />
-      </Collapse>
+      </>
     );
-  } else {
+  } } else {
     return null;
   }
 };

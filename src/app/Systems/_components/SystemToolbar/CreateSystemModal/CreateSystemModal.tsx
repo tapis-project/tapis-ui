@@ -46,12 +46,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [setSimplified, simplified]);
   
   // used for the canExec checkbox
-  const [exec, setIfExec] = useState(false);
-  const ifChecked = useCallback(() => {
-    if (document.getElementById("canExec")?.checked === true) {
-      setIfExec(!exec);
-    } 
-  }, [setIfExec, exec])
+  const [exec, setExec] = useState(true);
 
 
 
@@ -101,10 +96,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       256,
       'Proxy Host should not be longer than 256 characters'
     ),
-    // dtnSystemId: Yup.string().max(
-    //   80,
-    //   'DTN System ID should not be longer than 80 characters'
-    // ),
     mpiCmd: Yup.string().max(
       126,
       'mpiCmd should not be longer than 126 characters'
@@ -152,12 +143,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     proxyHost: undefined,
     proxyPort: 0,
 
-    //dtn
-    // isDtn: false,
-    // dtnSystemId: undefined,
-    // dtnMountPoint: undefined,
-    // dtnMountSourcePath: undefined,
-
     //cmd
     enableCmdPrefix: false,
     mpiCmd: undefined,
@@ -197,12 +182,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     proxyHost,
     proxyPort,
 
-    // //dtn
-    // isDtn,
-    // dtnSystemId,
-    // dtnMountPoint,
-    // dtnMountSourcePath,
-
     //cmd
     enableCmdPrefix,
     mpiCmd,
@@ -238,12 +217,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     useProxy: boolean;
     proxyHost: string | undefined;
     proxyPort: number;
-
-    //dtn
-    // isDtn: boolean;
-    // dtnSystemId: string | undefined;
-    // dtnMountPoint: string | undefined;
-    // dtnMountSourcePath: string | undefined;
 
     //cmd
     enableCmdPrefix: boolean;
@@ -285,12 +258,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         proxyHost,
         proxyPort,
 
-        //dtn
-        // isDtn,
-        // dtnSystemId,
-        // dtnMountPoint,
-        // dtnMountSourcePath,
-
         //cmd
         // enableCmdPrefix,
         // mpiCmd,
@@ -320,12 +287,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           >
             {() => (
               <Form id="newsystem-form">
-                <FormGroup check>
-                  <Label check size="sm" className={`form-field__label`}>
-                    <Input type="checkbox" onChange={onChange} />
-                    Advanced Settings
-                  </Label>
-                </FormGroup>
                 <FormikInput
                   name="sysname"
                   label="System Name"
@@ -361,6 +322,15 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   description={`Host of the system`}
                   aria-label="Input"
                 />
+
+                <FormikInput
+                          name="rootDir"
+                          label="Root Directory"
+                          required={false}
+                          description={`Root directory`}
+                          aria-label="Input"
+                        />
+
                 <FormikSelect
                   name="defaultAuthnMethod"
                   description="Authentication method for the system"
@@ -375,22 +345,29 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     return <option>{values}</option>;
                   })}
                 </FormikSelect>
-                {/* {true ? (
-                  <FormikCheck
-                    name="canExec"
-                    required={true}
-                    label="Can Execute"
-                    description={'Decides if the system can execute'}
-                  />
-                ) : null} */}
+
+                <FormikInput
+                  name="effectiveUserId"
+                  label="Effective User ID"
+                  required={false}
+                  description={`Effective user id`}
+                  aria-label="Input"
+                />
             
                 <FormikCheck
                   name= "canExec"
                   required={true}
                   label= "Can Execute"
-                  description={'Decides if the system can execute'}
+                  description={'Enables system execution'}
                   type='checkbox'
-                  onChange={ifChecked}
+                  checked={exec}
+                  onClick={e => {
+                    setExec(!exec)
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const newValue = e.target.checked;
+                    setExec(newValue); // Update local state `exec`
+                  }}
                 />
                 <AdvancedSettings simplified={simplified} canExec={exec} />
               </Form>
