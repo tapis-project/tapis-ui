@@ -2,13 +2,12 @@ import { FormikInput, Collapse } from '@tapis/tapisui-common';
 import { FormikSelect } from '@tapis/tapisui-common';
 import { RuntimeTypeEnum } from '@tapis/tapis-typescript-systems';
 import { Systems } from '@tapis/tapis-typescript';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { SystemTypeEnum } from '@tapis/tapis-typescript-systems';
 import { useFormikContext } from 'formik';
 import styles from '../CreateSystemModal.module.scss';
 import BatchSettings from './Batch/BatchSettings';
 import ProxySettings from './ProxySettings';
-// import DtnSettings from './DtnSettings';
 import CmdSettings from './CmdSettings';
 import TagsSettings from './TagsSettings';
 import JobSettings from './Job/JobSettings';
@@ -18,9 +17,13 @@ const runtimeTypes = Object.values(RuntimeTypeEnum);
 
 type AdvancedSettingsProp = {
   simplified: boolean;
+  canExec: boolean;
 };
 
-const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified }) => {
+const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
+  simplified,
+  canExec,
+}) => {
   //used when trying to read the current value of a parameter
   const { values } = useFormikContext();
 
@@ -36,65 +39,48 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ simplified }) => {
   const runtimeType = (values as Partial<Systems.ReqPostSystem>).jobRuntimes;
 
   if (simplified) {
-    return (
-      <Collapse
-        title="Advanced Settings"
-        className={styles['item']}
-        open={true}
-      >
-        <FormikInput
-          name="rootDir"
-          label="Root Directory"
-          required={false}
-          description={`Root directory`}
-          aria-label="Input"
-        />
-        <FormikSelect
-          name="jobRuntimes"
-          description="The job runtime type for the system"
-          label="Runtime Type"
-          required={false}
-          data-testid="jobRuntimes"
-        >
-          <option disabled value="">
-            Select a job runtime
-          </option>
-          {runtimeTypes.map((values) => {
-            return <option>{values}</option>;
-          })}
-        </FormikSelect>
-        <FormikInput
-          name="version"
-          label={`${runtimeType} Version`}
-          required={false}
-          description={`Version of ${runtimeType}`}
-          aria-label="Input"
-          disabled={true}
-        />
-        <FormikInput
-          name="effectiveUserId"
-          label="Effective User ID"
-          required={false}
-          description={`Effective user id`}
-          aria-label="Input"
-        />
-        {isS3 ? (
-          <FormikInput
-            name="bucketName"
-            label="Bucket Name"
+    if (canExec) {
+      return (
+        <>
+          <FormikSelect
+            name="jobRuntimes"
+            description="The job runtime type for the system"
+            label="Runtime Type"
             required={false}
-            description={`Bucket name`}
+            data-testid="jobRuntimes"
+          >
+            <option disabled value="">
+              Select a job runtime
+            </option>
+            {runtimeTypes.map((values) => {
+              return <option>{values}</option>;
+            })}
+          </FormikSelect>
+          <FormikInput
+            name="version"
+            label={`${runtimeType} Version`}
+            required={false}
+            description={`Version of ${runtimeType}`}
             aria-label="Input"
+            disabled={true}
           />
-        ) : null}
-        <JobSettings />
-        <BatchSettings />
-        <ProxySettings />
-        {/* <DtnSettings /> */}
-        <CmdSettings />
-        <TagsSettings />
-      </Collapse>
-    );
+          {isS3 ? (
+            <FormikInput
+              name="bucketName"
+              label="Bucket Name"
+              required={false}
+              description={`Bucket name`}
+              aria-label="Input"
+            />
+          ) : null}
+          <JobSettings />
+          <BatchSettings />
+          <ProxySettings />
+          <CmdSettings />
+          <TagsSettings />
+        </>
+      );
+    }
   } else {
     return null;
   }
