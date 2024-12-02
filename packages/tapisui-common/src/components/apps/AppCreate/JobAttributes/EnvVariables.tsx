@@ -42,12 +42,12 @@ const EnvVariableField: React.FC<EnvVariableFieldProps> = ({
         label="Value"
         description="A value for this environment variable"
       />
-      <FormikInput
+      {/* <FormikInput
         name={`jobAttributes.parameterSet.envVariables.${index}.description`}
         required={false}
         label="Description"
         description="A description for this environment variable"
-      />
+      /> */}
       <Button size="sm" onClick={() => arrayHelpers.remove(index)}>
         Remove
       </Button>
