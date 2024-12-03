@@ -39,11 +39,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     reset();
   }, [reset]);
 
-  //used for the advanced checkbox
-  const [simplified, setSimplified] = useState(false);
-  const onChange = useCallback(() => {
-    setSimplified(!simplified);
-  }, [setSimplified, simplified]);
+ 
 
   // used for the canExec checkbox
   const [exec, setExec] = useState(true);
@@ -367,7 +363,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     setExec(newValue); // Update local state `exec`
                   }}
                 />
-                <AdvancedSettings simplified={simplified} canExec={exec} />
+                <AdvancedSettings canExec={exec} />
               </Form>
             )}
           </Formik>

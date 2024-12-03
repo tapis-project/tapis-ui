@@ -16,12 +16,10 @@ import JobSettings from './Job/JobSettings';
 const runtimeTypes = Object.values(RuntimeTypeEnum);
 
 type AdvancedSettingsProp = {
-  simplified: boolean;
   canExec: boolean;
 };
 
 const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
-  simplified,
   canExec,
 }) => {
   //used when trying to read the current value of a parameter
@@ -38,10 +36,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
   //reading the runtimeType at its current state
   const runtimeType = (values as Partial<Systems.ReqPostSystem>).jobRuntimes;
 
-  if (simplified) {
     if (canExec) {
       return (
-        <>
+        <div>
           <FormikSelect
             name="jobRuntimes"
             description="The job runtime type for the system"
@@ -78,9 +75,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
           <ProxySettings />
           <CmdSettings />
           <TagsSettings />
-        </>
+        </div>
       );
-    }
   } else {
     return null;
   }
