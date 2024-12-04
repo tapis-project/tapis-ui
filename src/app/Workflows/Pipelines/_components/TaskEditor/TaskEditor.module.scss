@@ -1,0 +1,46 @@
+.menu {
+  width: 100%;
+  padding: 4px;
+  border-bottom: 1px solid #cccccc;
+  display: flex;
+  justify-content: space-between;
+}
+
+.back {
+  padding: 2px;
+  border: 2px solid #cccccc;
+  border-radius: 3px;
+}
+
+.back:hover {
+  cursor: pointer;
+  border: 2px solid #333333;
+  transition: 0.2s;
+}
+
+.close {
+  padding: 2px;
+  border: 2px solid #cccccc;
+  border-radius: 3px;
+}
+
+.close:hover {
+  cursor: pointer;
+  border: 2px solid red;
+  color: red;
+  transition: 0.2s;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.body-with-sidebar {
+  width: 70%;
+  max-width: 70%;
+}
+
+.body-wo-sidebar {
+  width: 100%;
+}

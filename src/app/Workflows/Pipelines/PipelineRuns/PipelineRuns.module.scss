@@ -1,0 +1,79 @@
+.center {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  gap: 0.5em;
+}
+
+.pipeline-run-container {
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.pipeline-run-body {
+  padding: 1em;
+  border: 1px solid #dddddd;
+  margin-bottom: 1em;
+}
+
+.pipeline-run-body p {
+  padding: 0;
+  margin: 0;
+}
+
+.section-header {
+  margin-top: 16px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.separator {
+  margin-top: 1em;
+}
+
+.task-executions {
+  padding-top: 8px;
+}
+
+.task-executions p {
+  padding: 8px;
+}
+
+.runs {
+  border-bottom: 1px solid #cccccc;
+}
+
+.runs-table {
+  border-radius: 3px 3px 0 0;
+}
+
+.run-status-text {
+  display: inline-block;
+}
+
+.run-status-icon {
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 16px;
+  height: 12px;
+  width: 12px;
+}
+
+.run-status-icon-failed {
+  background-color: #d32f2f;
+}
+
+.run-status-icon-completed {
+  background-color: #15bd42;
+}
+
+.run-status-icon-pending {
+  background-color: #ffa726;
+}
+
+.run-status-icon-active {
+  background-color: #ffa726;
+}

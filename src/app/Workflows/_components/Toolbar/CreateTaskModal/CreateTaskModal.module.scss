@@ -1,0 +1,66 @@
+.form-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.execution-profile {
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  padding: 0.5em;
+}
+
+.tasks-container {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.section {
+  padding: 1em;
+  border-bottom: 1px solid #dddddd;
+}
+
+.tasks-section-last {
+  padding: 1em;
+}
+
+.task-inputs {
+  display: grid;
+  gap: 1em;
+}
+
+.task-input {
+  position: relative;
+  // padding: .5em;
+  border-bottom: 1px solid #dddddd;
+}
+
+.remove-button {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+
+.add-button {
+  display: inline-block;
+  height: 40px;
+  margin-top: 38px;
+}
+
+.subheader {
+  color: #777777;
+  font-size: small;
+}
+
+.count {
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 2px;
+}
+
+.add-task {
+  display: grid;
+  grid-template-columns: 2fr auto auto;
+  gap: 1em;
+}

@@ -1,0 +1,55 @@
+.container {
+  padding: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 1em;
+}
+
+.count {
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 2px;
+}
+
+.center {
+  text-align: center;
+}
+
+.tasks {
+  padding-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.task {
+  border-radius: 3px;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  border: 1px solid #dddddd;
+}
+
+.task-header {
+  background-color: #eeeeee;
+  padding: 8px;
+  border-bottom: 1px solid #dddddd;
+  position: relative;
+}
+
+.remove-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 2px;
+}
+
+.task-body {
+  padding: 8px;
+}
+
+.tasks p {
+  margin: 0;
+  padding: 0;
+}

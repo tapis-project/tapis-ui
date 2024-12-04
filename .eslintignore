@@ -3,3 +3,7 @@ coverage
 build
 webpack.*.js
 *.test.js
+dist
+packages/tapisui-common/**/*.js
+scripts
+src/app/**/*.js

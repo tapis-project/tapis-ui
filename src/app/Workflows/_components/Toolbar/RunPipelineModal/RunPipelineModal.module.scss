@@ -1,0 +1,31 @@
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.key-vals {
+  display: grid;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.key-val {
+  position: relative;
+  padding: 0.5em;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.remove-button {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+
+.add-button {
+  display: inline-block;
+  height: 40px;
+  margin-top: 38px;
+}

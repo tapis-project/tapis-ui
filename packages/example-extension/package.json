@@ -1,0 +1,35 @@
+{
+  "name": "<YOUR_PACKAGE_NAME>",
+  "version": "<YOUR_PACKAGE_VERIONS>",
+  "description": "",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "npm run build && npm publish --access public",
+    "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
+    "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files"
+  },
+  "keywords": [
+    "typescript",
+    "tapisui"
+  ],
+  "author": "<YOUR_NAME>",
+  "license": "MIT",
+  "dependencies": {
+    "@tapis/tapis-typescript": "^0.0.55",
+    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
+    "@tapis/tapisui-common": "file:../tapisui-common",
+    "@tapis/tapisui-hooks": "file:../tapisui-hooks",
+    "copyfiles": "^2.4.1",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.33",
+    "typescript": "^4.9.5",
+    "@tapis/tapisui-extension-devtools": "file:../tapisui-extension-devtools",
+    "sass": "^1.77.6"
+  }
+}

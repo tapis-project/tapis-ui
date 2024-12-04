@@ -1,0 +1,32 @@
+.sidebar {
+  min-width: 30%;
+  max-width: 30%;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+}
+
+.menu {
+  background: #ffffff;
+  width: 100%;
+  border-bottom: 1px solid #cccccc;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  padding-left: 16px;
+}
+
+.menu h2 {
+  margin: 0;
+}
+
+.back {
+  padding: 2px;
+  border: 2px solid #cccccc;
+  border-radius: 3px;
+}
+
+.back:hover {
+  cursor: pointer;
+  border: 2px solid #333333;
+  transition: 0.2s;
+}

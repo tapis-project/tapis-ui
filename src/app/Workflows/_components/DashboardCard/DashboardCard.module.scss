@@ -1,0 +1,30 @@
+.card {
+  text-align: center;
+  border-radius: 3px;
+  border: 1px solid #808080;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 38px;
+  transition: 0.2s;
+  color: #666666;
+  text-decoration: none;
+}
+
+.title {
+  font-size: 20px;
+  text-align: center;
+}
+
+.count {
+  font-size: 32px;
+  text-align: center;
+}
+
+.card:hover {
+  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.25);
+}
+
+.icon {
+  margin: 0 auto;
+  // transform: scale(1.5) // Causes scroll bar to activate for some reason
+}

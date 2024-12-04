@@ -1,0 +1,38 @@
+$core-portal-color-primary: #9d85ef;
+
+.nav-list {
+  --vertical-buffer: 0.75rem;
+  --min-width: 100%;
+  list-style: none;
+  flex-direction: column;
+  flex: 1;
+  height: calc(100vh - 130px);
+}
+
+.nav-link {
+  min-width: var(--min-width);
+  border: none;
+  padding-left: var(--horizontal-buffer);
+  color: #707070;
+  cursor: pointer;
+  display: block;
+}
+.nav-link:hover {
+  color: #707070;
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background: rgba($core-portal-color-primary, 0.25);
+}
+
+.nav-text {
+  padding-left: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+}

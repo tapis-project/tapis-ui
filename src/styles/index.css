@@ -1,0 +1,28 @@
+@import url('bootstrap/dist/css/bootstrap.css');
+@import url('./global.css');
+
+/*
+  Sectioning Root
+  ===
+  https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Sectioning_root
+*/
+
+body {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+  Inline Text Semantics
+  ===
+  https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics
+*/
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

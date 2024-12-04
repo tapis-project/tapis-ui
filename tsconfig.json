@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
+    "paths": {
+      "@redux": ["./redux/index.tsx"],
+      "@redux/*": ["./redux/*"]
+    },
     "lib": ["dom", "dom.iterable", "esnext"],
+    // "lib": ["es6", "dom"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -15,7 +23,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "types": ["vite/client"]
+    // "useDefineForClassFields": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["packages"]
 }

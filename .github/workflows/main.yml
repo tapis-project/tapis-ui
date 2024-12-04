@@ -1,56 +1,49 @@
 name: CI
 
-# Controls when the action will run. Triggers the workflow on pushes to main or on pull request events
 on:
   push:
-    branches: [dev, stage, release-*]
+    branches: [dev, staging, test, release-**]
   pull_request:
-    branches: ['**']
+    branches: [dev, staging, test, release-**]
+  workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   Client_Side_Unit_Tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
+          node-version: 22.4.x
+      # - uses: actions/cache@v1
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
       - name: npm ci
-        run: |
-          npm ci
+        run: rm -rf node_modules && rm package-lock.json && npm install
       - name: Client Side Unit Tests
         run: |
           npm run test
-
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
   Client_Side_Linting:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
+          node-version: 22.4.x
+      # - uses: actions/cache@v1
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
       - name: npm ci
         run: |
           npm ci
@@ -77,9 +70,8 @@ jobs:
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
           fi
-          echo $GITHUB_OUTPUT
       - name: Extract Production Release Version
-        if: steps.check_is_production_release.outputs.branch_name == true
+        if: ${{ steps.check_is_production_release.outputs.is_production_release == 'true' }}
         shell: bash
         run: echo version=$(echo ${{ steps.extract_branch.outputs.branch_name }} | sed -e 's!release-!!') >> $GITHUB_OUTPUT
         id: extract_version
@@ -110,11 +102,10 @@ jobs:
           password: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
       - name: Build_Tapis_UI_Image
         run: |
-          BRANCH="${{ needs.Set_Image_Tag.outputs.image_tag }}"
-          if [[ "${{ contains(needs.Set_Image_Tag.outputs.image_tag, 'refs/pull/') }}" ]]; then
+          BRANCH="${{ needs.Resolve_Image_Tag.outputs.image_tag }}"
+          if [ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" == true ]; then
             BRANCH=dev
           fi
-          docker build -f Dockerfile -t tapis/tapisui:"$BRANCH" .
+          docker build -f Dockerfile -t tapis/tapisui:$BRANCH .
       - name: Push_All_Tags
         run: docker push --all-tags tapis/tapisui
-

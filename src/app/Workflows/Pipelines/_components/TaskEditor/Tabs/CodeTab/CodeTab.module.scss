@@ -1,0 +1,26 @@
+.code-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #cccccc;
+  min-height: 320px;
+  max-height: 100%;
+}
+
+.code-runtime {
+  font-size: 14px;
+}
+
+.code-container-header {
+  padding: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
+}
+
+.code-container-header-item {
+  cursor: pointer;
+}
+
+.code {
+}

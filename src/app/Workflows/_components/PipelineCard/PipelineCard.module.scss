@@ -1,0 +1,121 @@
+.cards-container {
+  display: block;
+  width: 100%;
+  padding: 16px;
+}
+
+.paginator {
+  padding: 0;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.cards {
+  display: grid;
+
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 100%;
+}
+
+.col-1 {
+  grid-template-columns: repeat(1, minmax(320px, 1fr));
+}
+
+.col-2 {
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+}
+
+.col-3 {
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
+}
+
+.card {
+  display: block;
+  position: relative;
+  border-radius: 3px;
+  border: 1px solid #808080;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  height: 120px;
+  padding: 16px;
+  transition: 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.25);
+}
+
+.skeletons {
+  margin-top: 16px;
+}
+
+.skeleton {
+  box-shadow: none;
+  border: none;
+}
+
+.skeleton:hover {
+  box-shadow: none;
+}
+
+.card-status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #15bd42;
+  border-radius: 100%;
+}
+
+.card-title {
+  font-weight: 600px;
+  text-decoration: none;
+  color: #111111;
+}
+
+.card-title {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.more {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.more:hover {
+  cursor: pointer;
+}
+
+.expand {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  transform: rotateY(0deg) rotate(45deg);
+}
+
+.expand:hover {
+  cursor: pointer;
+}
+
+.group {
+  margin: 0;
+  display: table;
+}
+
+.run {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  font-size: 11px;
+}
+
+.link {
+  color: #2a9aeb;
+  font-size: 11px;
+}
+
+.link:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,18 @@
+/* ELEMENTS: (Content) Sectioning Elements */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Content_sectioning */
+
+h1,
+h2,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+}
+
+h2 {
+  font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
+}
+h3 {
+  font-size: 0.9375rem; /* ~15px (12px design * 1.2 design-to-app ratio) */
+  font-weight: bold;
+}

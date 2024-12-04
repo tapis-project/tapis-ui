@@ -1,0 +1,12 @@
+.dashboard-card-container {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(320px, 1fr));
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.container {
+  padding: 16px;
+}

@@ -1,0 +1,73 @@
+.modal-settings {
+  max-height: 38rem;
+  overflow-y: scroll;
+}
+
+.item {
+  border: 1px dotted lightgray;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 1em;
+}
+
+.array {
+  border: 1px solid gray;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.key-val-env-vars {
+  display: grid;
+  gap: 16px;
+}
+
+.key-val-env-var {
+  position: relative;
+  padding: 0.5em;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.remove-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+
+.add-button {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 1em;
+  align-items: center;
+}
+
+.grid-half {
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+  gap: 1em;
+  align-items: center;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1em;
+  align-items: center;
+}
+
+.grid-5 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.count {
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 2px;
+}
