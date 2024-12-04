@@ -68,7 +68,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 const Dashboard: React.FC = () => {
   const { accessToken, claims } = useTapisConfig();
   const systems = SystemsHooks.useList({
-    listType: Systems.ListTypeEnum.All
+    listType: Systems.ListTypeEnum.All,
   });
   const jobs = JobsHooks.useList({});
   const apps = AppsHooks.useList({ select: 'jobAttributes,version' });
