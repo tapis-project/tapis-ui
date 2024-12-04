@@ -12,3 +12,5 @@ export { default as checkUserCredential } from './checkUserCredential';
 export { default as getUserPerms } from './getUserPerms';
 export { default as getGlobusAuthUrl } from './getGlobusAuthUrl';
 export { default as generateGlobusTokens } from './generateGlobusTokens';
+export { default as grantUserPerms } from './grantUserPerms';
+export { default as shareSystem } from './shareSystem';

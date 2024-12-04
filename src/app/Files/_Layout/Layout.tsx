@@ -13,6 +13,7 @@ import { useLocation } from 'react-router-dom';
 import { breadcrumbsFromPathname } from '@tapis/tapisui-common';
 import styles from './Layout.module.scss';
 import { FilesProvider } from '../_components/FilesContext';
+import FilesHelp from 'app/_components/Help/FilesHelp';
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
@@ -21,12 +22,17 @@ const Layout: React.FC = () => {
   const crumbs = breadcrumbsFromPathname(pathname).splice(1);
   const header = (
     <LayoutHeader>
-      Files
+      <span className={`${styles['Files']}`}>
+        Files
+        <span className={`${styles['Files-Help']}`}>
+          <FilesHelp />
+        </span>
+      </span>
       {/* <div className={styles.breadcrumbs}>
         
         <Breadcrumbs breadcrumbs={[{ text: 'Files' }, ...crumbs]} />
       </div> */}
-      <Toolbar systemId={systemId} currentPath={currentPath} />
+      {systemId && <Toolbar systemId={systemId} currentPath={currentPath} />}
     </LayoutHeader>
   );
 

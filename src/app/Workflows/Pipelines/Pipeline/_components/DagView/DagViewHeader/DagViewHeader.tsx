@@ -7,7 +7,8 @@ import {
   PipelineRunDuration,
 } from 'app/Workflows/Pipelines/PipelineRuns/_components';
 import { Link } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { LoadingButton as Button } from '@mui/lab';
+import { Alert, AlertTitle } from '@mui/material';
 import { Workflows } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '@tapis/tapisui-common';
 
@@ -28,6 +29,15 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({
     return '';
   }
   const [open, setOpen] = useState<string | undefined>(undefined);
+  const {
+    terminate,
+    invalidate,
+    isLoading: isTerminating,
+    isSuccess: terminated,
+    isError: isTerminationError,
+    error: terminationError,
+    reset,
+  } = Hooks.PipelineRuns.useTerminate();
   const { data, isError, error, isLoading } = Hooks.PipelineRuns.useDetails({
     groupId,
     pipelineId,
@@ -36,13 +46,56 @@ const DagViewHeader: React.FC<DagViewHeaderProps> = ({
   const run = data?.result || {};
   return (
     <div className={styles['header']}>
-      {isError && error.message}
+      {isError && error && (
+        <Alert severity="error" onClose={() => {}}>
+          {error.message}
+        </Alert>
+      )}
+      {isTerminationError && terminationError && (
+        <Alert
+          severity="error"
+          onClose={() => {
+            reset();
+          }}
+        >
+          {terminationError.message}
+        </Alert>
+      )}
       {isLoading ? (
         'Loading...'
       ) : (
         <div>
           <PipelineRunSummary status={run.status}>
             {pipelineId}
+            {![
+              Workflows.EnumRunStatus.Completed,
+              Workflows.EnumRunStatus.Failed,
+              Workflows.EnumRunStatus.Terminated,
+              Workflows.EnumRunStatus.Terminating,
+            ].includes(run.status!) && (
+              <Button
+                size="small"
+                variant="outlined"
+                color="error"
+                disabled={isTerminating || terminated}
+                onClick={() => {
+                  terminate(
+                    {
+                      groupId,
+                      pipelineId,
+                      pipelineRunUuid: run.uuid!,
+                    },
+                    {
+                      onSuccess: () => {
+                        invalidate();
+                      },
+                    }
+                  );
+                }}
+              >
+                Terminate
+              </Button>
+            )}
             <Link
               style={{ color: '#707070' }}
               to={`/workflows/pipelines/${groupId}/${pipelineId}/runs/${pipelineRunUuid}`}

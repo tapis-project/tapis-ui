@@ -13,7 +13,12 @@
     "@mui/x-data-grid": "^7.7.0",
     "@mui/x-tree-view": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.7",
-    "@tapis/tapis-typescript": "^0.0.51",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-python": "^6.1.6",
+    "@uiw/codemirror-theme-vscode": "^4.22.2",
+    "@uiw/react-codemirror": "^4.19.7",
+    "@uiw/react-textarea-code-editor": "^2.0.6",
+    "@tapis/tapis-typescript": "^0.0.55",
     "@tapis/tapisui-api": "file:./packages/tapisui-api",
     "@tapis/tapisui-common": "file:./packages/tapisui-common",
     "@tapis/tapisui-extensions-core": "file:./packages/tapisui-extensions-core",
@@ -50,13 +55,6 @@
     "vite": "^5.2.12",
     "web-vitals": "^1.1.2",
     "yup": "^0.32.11"
-  },
-  "peerDependencies": {
-    "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/lang-python": "^6.1.6",
-    "@uiw/codemirror-theme-vscode": "^4.22.2",
-    "@uiw/react-codemirror": "^4.19.7",
-    "@uiw/react-textarea-code-editor": "^2.0.6"
   },
   "homepage": "https://tapis-project.github.io/tapis-ui",
   "scripts": {

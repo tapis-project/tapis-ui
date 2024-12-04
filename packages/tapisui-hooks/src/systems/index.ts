@@ -1,3 +1,4 @@
+export { default as queryKeys } from './queryKeys';
 export { default as useList } from './useList';
 export { default as useDeletedList } from './useDeletedList';
 export { default as useDetails } from './useDetails';
@@ -13,4 +14,5 @@ export { default as useCheckCredential } from './useCheckCredential';
 export { default as useGetUserPerms } from './useGetUserPerms';
 export { default as useGetGlobusAuthUrl } from './useGetGlobusAuthUrl';
 export { default as useGenerateGlobusTokens } from './useGenerateGlobusTokens';
-export { default as queryKeys } from './queryKeys';
+export { default as useShareSystem } from './useShareSystem';
+export { default as useGrantUserPerms } from './useGrantUserPerms';

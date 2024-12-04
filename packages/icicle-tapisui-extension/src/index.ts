@@ -22,7 +22,7 @@ const extension = createExtension({
     implicit: {
       authorizationPath: 'https://icicleai.tapis.io/v3/oauth2/authorize',
       clientId: 'tapisui-implicit-client',
-      redirectURI: 'https://icicleai.tapis.io/tapis-ui/#/oauth2',
+      redirectURI: 'https://icicleai.tapis.io/#/oauth2',
       responseType: 'token',
     },
   },

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Systems } from '@tapis/tapis-typescript';
 import { SectionHeader, LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
@@ -14,6 +15,7 @@ import {
   Systems as SystemsHooks,
   Jobs as JobsHooks,
   Apps as AppsHooks,
+  Authenticator as AuthenticatorHooks,
 } from '@tapis/tapisui-hooks';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
@@ -65,7 +67,9 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const { accessToken, claims } = useTapisConfig();
-  const systems = SystemsHooks.useList({});
+  const systems = SystemsHooks.useList({
+    listType: Systems.ListTypeEnum.All,
+  });
   const jobs = JobsHooks.useList({});
   const apps = AppsHooks.useList({ select: 'jobAttributes,version' });
 
