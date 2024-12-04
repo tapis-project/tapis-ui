@@ -39,8 +39,6 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     reset();
   }, [reset]);
 
- 
-
   // used for the canExec checkbox
   const [exec, setExec] = useState(true);
 
