@@ -2,7 +2,7 @@ import { errorDecoder } from '../utils';
 import * as StreamSaver from 'streamsaver';
 // import StreamSaver from 'streamsaver'; // Old, don't know why it stopped working
 
-const downloadStream = (
+const downloadStream = async (
   systemId: string,
   path: string,
   destination: string,
@@ -11,6 +11,7 @@ const downloadStream = (
   basePath: string,
   jwt: string
 ): Promise<Response> => {
+  const StreamSaver = (await import('streamsaver')).default;
   const fileStream = StreamSaver.createWriteStream(destination);
   const url = `${basePath}/v3/files/content/${systemId}/${path}${
     zip ? '?zip=true' : ''

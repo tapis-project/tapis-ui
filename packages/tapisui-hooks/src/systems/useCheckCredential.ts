@@ -17,7 +17,7 @@ const useCheckCredential = (
       API.checkUserCredential(
         {
           ...params,
-          userName: claims['sub'].split('@')[0],
+          userName: claims['tapis/username'],
         },
         basePath,
         accessToken?.access_token || ''

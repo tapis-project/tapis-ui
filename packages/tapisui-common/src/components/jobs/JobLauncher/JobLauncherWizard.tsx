@@ -77,7 +77,10 @@ const JobLauncherWizard: React.FC<JobLauncherWizardProps> = ({
     isLoading: systemsIsLoading,
     error: systemsError,
   } = SystemsHooks.useList(
-    { select: 'allAttributes', listType: Systems.ListTypeEnum.All },
+    {
+      select: 'allAttributes',
+      listType: Systems.ListTypeEnum.All,
+    },
     { refetchOnWindowFocus: false }
   );
   const {

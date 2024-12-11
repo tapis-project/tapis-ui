@@ -5,39 +5,25 @@
   align-items: center;
 }
 
-.run-status-icon {
-  border-radius: 50%;
-  height: 12px;
-  width: 12px;
+.rotate {
+  animation: spin 1.5s linear infinite;
+  -webkit-animation: spin 1.5s linear infinite;
+  -moz-animation: spin 1.5s linear infinite;
 }
 
-.run-status-icon-failed {
-  background-color: #d32f2f;
-}
-
-.run-status-icon-completed {
-  background-color: #15bd42;
-}
-
-.run-status-icon-pending {
-  background-color: #ffa726;
-}
-
-.run-status-icon-active {
-  background-color: #ffa726;
-  animation: active 1.5s infinite;
-}
-
-.run-status-icon-submitted {
-  background-color: #42a5f5;
-}
-
-@keyframes active {
-  0%,
+@-moz-keyframes spin {
   100% {
-    background-color: #ffb74d;
+    -moz-transform: rotate(360deg);
   }
-  50% {
-    background-color: #f57c01;
+}
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }

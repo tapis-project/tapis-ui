@@ -1,6 +1,6 @@
 {
   "name": "@tapis/tapisui-common",
-  "version": "0.0.9",
+  "version": "0.0.14",
   "description": "Common React components for TapisUI",
   "scripts": {
     "test": "vitest run",
@@ -46,7 +46,7 @@
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.0",
     "@rollup/plugin-commonjs": "^26.0.1",
-    "@tapis/tapis-typescript": "^0.0.52",
+    "@tapis/tapis-typescript": "^0.0.55",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",
     "@vitejs/plugin-react": "^4.3.1",
     "bootstrap": "^4.6.2",
@@ -55,7 +55,7 @@
     "normalize-path": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^18.3.1",
-    "react-copy-to-clipboard": "^5.0.2",
+    "copy-to-clipboard": "3.3.3",
     "react-dropzone": "^10.2.1",
     "react-query": "^3.39.3",
     "react-resize-detector": "^11.0.1",

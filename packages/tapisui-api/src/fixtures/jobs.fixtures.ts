@@ -5,15 +5,15 @@ export const jobInfo: Jobs.JobListDTO = {
   name: 'SleepSeconds',
   owner: 'testuser2',
   appId: 'SleepSeconds',
-  created: 1624465572,
+  created: new Date(),
   status: Jobs.JobListDTOStatusEnum.Finished,
-  remoteStarted: 1624465572,
-  ended: 1624465572,
+  remoteStarted: new Date(),
+  ended: new Date(),
   tenant: 'dev',
   execSystemId: 'tapisv3-exec2',
   archiveSystemId: 'tapisv3-exec2',
   appVersion: '0.0.1',
-  lastUpdated: 1624465572,
+  lastUpdated: new Date(),
 };
 
 export const validJobSubmission = {

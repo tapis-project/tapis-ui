@@ -6,3 +6,4 @@ export { default as hideJob } from './hideJob';
 export { default as unhideJob } from './unhideJob';
 export { default as resubmit } from './resubmit';
 export { default as getJobOutputList } from './getJobOutputList';
+export { default as searchSQL } from './searchSQL';

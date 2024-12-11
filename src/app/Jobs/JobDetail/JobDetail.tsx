@@ -82,7 +82,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   });
   const job: Jobs.Job | undefined = useMemo(() => data?.result, [data]);
   const { resubmit, isLoading: isLoadingResubmit } = Hooks.useResubmit({
-    jobuuid: jobUuid,
+    jobUuid,
   });
   const {
     cancel,
