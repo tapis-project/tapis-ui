@@ -86,6 +86,7 @@ dirs=(
   "packages/tapisui-extensions-core"
   "packages/tapisui-extension-devtools"
   "packages/icicle-tapisui-extension"
+  "packages/scoped-tapisui-extension"
   ""
 )
 
