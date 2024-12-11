@@ -264,39 +264,40 @@ const Sidebar: React.FC = () => {
         {accessToken && (
           <>
             {mainSidebarItems.map((item) => item)}
-            {secondarySidebarItems.length > 0 && 
-            (extension !== undefined && extension.showSecondarySideBar != false) && (
-              <>
-                <div
-                  onClick={toggleSecondaryItems}
-                  style={{
-                    whiteSpace: 'nowrap',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <ListItemButton
-                    sx={{
-                      color: '#707070',
-                      pl: '1.4rem',
-                      pt: '5px',
-                      pb: '5px',
+            {secondarySidebarItems.length > 0 &&
+              extension !== undefined &&
+              extension.showSecondarySideBar != false && (
+                <>
+                  <div
+                    onClick={toggleSecondaryItems}
+                    style={{
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
                     }}
                   >
-                    {openSecondary ? (
-                      <ExpandLessRounded />
-                    ) : (
-                      <ExpandMoreRounded />
-                    )}
-                    {expanded && (
-                      <ListItemText primary="More" sx={{ pl: '.5rem' }} />
-                    )}
-                  </ListItemButton>
-                </div>
-                <Collapse in={openSecondary}>
-                  {secondarySidebarItems.map((item) => item)}
-                </Collapse>
-              </>
-            )}
+                    <ListItemButton
+                      sx={{
+                        color: '#707070',
+                        pl: '1.4rem',
+                        pt: '5px',
+                        pb: '5px',
+                      }}
+                    >
+                      {openSecondary ? (
+                        <ExpandLessRounded />
+                      ) : (
+                        <ExpandMoreRounded />
+                      )}
+                      {expanded && (
+                        <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                      )}
+                    </ListItemButton>
+                  </div>
+                  <Collapse in={openSecondary}>
+                    {secondarySidebarItems.map((item) => item)}
+                  </Collapse>
+                </>
+              )}
           </>
         )}
       </Navbar>
