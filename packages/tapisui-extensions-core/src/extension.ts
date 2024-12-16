@@ -33,6 +33,9 @@ export class Extension {
   public mainSidebarServices = [];
   public authMethods = [];
   public allowMutiTenant: boolean = true;
+  public showMLHub: boolean = true;
+  public showMLEdge: boolean = true;
+  public showSecondarySideBar: boolean = true;
   public serviceMap: ServiceMap = {};
   private config: Configuration;
   public serviceCustomizations: ServiceCustomizations;
@@ -46,6 +49,9 @@ export class Extension {
   setConfiguration(config: Configuration): void {
     this.config = config;
     this.allowMutiTenant = config.allowMultiTenant;
+    this.showMLHub = config.showMLHub;
+    this.showMLEdge = config.showMLEdge;
+    this.showSecondarySideBar = config.showSecondarySideBar;
     this.mainSidebarServices = config.mainSidebarServices || [];
     this.setAuthentication();
     this.setServiceCustomizations();
