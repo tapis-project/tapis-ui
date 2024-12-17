@@ -62,6 +62,7 @@ import {
   SharingModal,
   PermissionsModal,
 } from '../Modals';
+import getUserPerms from '@tapis/tapisui-api';
 
 const AuthButton: React.FC<{
   toggle: () => void;
