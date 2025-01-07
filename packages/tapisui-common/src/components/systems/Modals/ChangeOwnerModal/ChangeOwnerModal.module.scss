@@ -1,0 +1,14 @@
+.form {
+  width: 100%;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.perms {
+  display: flex;
+  gap: 8px;
+  flex-direction: row;
+  cursor: pointer;
+  padding: 16px;
+}

@@ -2,14 +2,15 @@ import { Systems } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
 const changeOwner = (
-  params: Systems.GetUserPermsRequest,
-  basePath: string,
+  params: Systems.ChangeSystemOwnerRequest,
+  systemId: string,
+  username: string,
   jwt: string
 ) => {
   const api: Systems.PermissionsApi = apiGenerator<Systems.PermissionsApi>(
     Systems,
     Systems.PermissionsApi,
-    basePath,
+    username,
     jwt
   );
   return errorDecoder<Systems.RespNameArray>(() => api.getUserPerms(params));
