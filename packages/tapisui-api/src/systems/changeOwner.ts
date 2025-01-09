@@ -12,7 +12,6 @@ const changeOwner = (
     basePath,
     jwt
   );
-  // return errorDecoder<Systems.RespNameArray>(() => api.changeOwner(params));
   return errorDecoder<Systems.RespChangeCount>(() =>
     api.changeSystemOwner(params)
   );

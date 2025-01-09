@@ -16,3 +16,4 @@ export { default as useGetGlobusAuthUrl } from './useGetGlobusAuthUrl';
 export { default as useGenerateGlobusTokens } from './useGenerateGlobusTokens';
 export { default as useShareSystem } from './useShareSystem';
 export { default as useGrantUserPerms } from './useGrantUserPerms';
+export { default as useChangeOwner } from './useChangeOwner';
