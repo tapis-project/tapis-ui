@@ -3,17 +3,19 @@ import { apiGenerator, errorDecoder } from '../utils';
 
 const changeOwner = (
   params: Systems.ChangeSystemOwnerRequest,
-  systemId: string,
-  username: string,
+  basePath: string,
   jwt: string
 ) => {
-  const api: Systems.PermissionsApi = apiGenerator<Systems.PermissionsApi>(
+  const api: Systems.SystemsApi = apiGenerator<Systems.SystemsApi>(
     Systems,
-    Systems.PermissionsApi,
-    username,
+    Systems.SystemsApi,
+    basePath,
     jwt
   );
-  return errorDecoder<Systems.RespNameArray>(() => api.getUserPerms(params));
+  // return errorDecoder<Systems.RespNameArray>(() => api.changeOwner(params));
+  return errorDecoder<Systems.RespChangeCount>(() =>
+    api.changeSystemOwner(params)
+  );
 };
 
 export default changeOwner;
