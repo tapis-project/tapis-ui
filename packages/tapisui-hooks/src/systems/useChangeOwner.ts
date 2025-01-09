@@ -14,7 +14,7 @@ const useChangeOwner = () => {
       Systems.RespChangeCount,
       Error,
       Systems.ChangeSystemOwnerRequest
-    >([QueryKeys.createUserCredential, basePath, jwt], (params) =>
+    >([QueryKeys.changeOwner, basePath, jwt], (params) =>
       API.changeOwner(params, basePath, jwt)
     );
 
@@ -31,7 +31,7 @@ const useChangeOwner = () => {
     error,
     reset,
     invalidate,
-    grant: (
+    change: (
       params: Systems.ChangeSystemOwnerRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<

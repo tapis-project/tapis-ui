@@ -27,8 +27,8 @@ type ModalProps = {
 };
 
 const ChangeOwnerModal: React.FC<ModalProps> = ({ open, toggle, system }) => {
-  const { grant, isLoading, isError, isSuccess, error, reset, invalidate } =
-    SystemsHooks.useGrantUserPerms();
+  const { change, isLoading, isError, isSuccess, error, reset, invalidate } =
+    SystemsHooks.useChangeOwner();
   const inputInitialState: { username?: string; perms: string[] } = {
     username: undefined,
     perms: [],
@@ -83,8 +83,7 @@ const ChangeOwnerModal: React.FC<ModalProps> = ({ open, toggle, system }) => {
                 }}
               />
               <FormHelperText>
-                The username of the user for whom you want to grant ownership
-                access
+                The username of the user for whom you want to give ownership
               </FormHelperText>
             </FormControl>
           </div>
@@ -116,14 +115,13 @@ const ChangeOwnerModal: React.FC<ModalProps> = ({ open, toggle, system }) => {
               </Select>
             </FormControl>
             <FormHelperText>
-              The username of the user for whom you want to grant ownership
-              access
+              The username of the user for whom you want to give ownership
             </FormHelperText>
           </div>
         )}
         {input.username && (
           <div className={styles['perms']}>
-            {['READ', 'MODIFY', 'EXECUTE'].map((perm) => {
+            {['Select'].map((perm) => {
               return (
                 <Chip
                   label={perm}
@@ -169,13 +167,10 @@ const ChangeOwnerModal: React.FC<ModalProps> = ({ open, toggle, system }) => {
             input.perms.length === 0
           }
           onClick={() => {
-            grant(
+            change(
               {
                 systemId: system.id!,
                 userName: input.username!,
-                reqPerms: {
-                  permissions: input.perms,
-                },
               },
               {
                 onSuccess: () => {
