@@ -61,6 +61,7 @@ import {
   UnShareSystemPublicModal,
   SharingModal,
   PermissionsModal,
+  ChangeOwnerModal,
 } from '../Modals';
 
 const AuthButton: React.FC<{
@@ -211,7 +212,13 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
               <ListItemText>Make public</ListItemText>
             </MenuItem>
           )}
-          <MenuItem disabled={system.owner !== username}>
+          {/* <MenuItem disabled={system.owner !== username}> */}
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('changeowner');
+            }}
+          >
             <ListItemIcon>
               <Dns fontSize="small" color="error" />
             </ListItemIcon>
@@ -285,6 +292,13 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
       <PermissionsModal
         system={system}
         open={modal === 'manageperms'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+      <ChangeOwnerModal
+        system={system}
+        open={modal === 'changeowner'}
         toggle={() => {
           setModal(undefined);
         }}
