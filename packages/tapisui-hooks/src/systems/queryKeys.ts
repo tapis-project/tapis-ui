@@ -1,3 +1,5 @@
+import { changeOwner } from '@tapis/tapisui-api/dist/systems';
+
 const QueryKeys = {
   list: 'systems/list',
   details: 'systems/details',
@@ -14,6 +16,7 @@ const QueryKeys = {
   generateGlobusTokens: 'systems/generateGlobusTokens',
   shareSystem: 'systems/shareSystem',
   grantUserPerms: 'systems/grantUserPerms',
+  changeOwner: 'systems/changeOwner',
 };
 
 export default QueryKeys;
