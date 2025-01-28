@@ -2,7 +2,7 @@ import { Button } from 'reactstrap';
 import { GenericModal } from '../../../../ui';
 import { SubmitWrapper } from '../../../../wrappers';
 import { useEffect } from 'react';
-import styles from './ShareSystemPublicModal.module.scss';
+import styles from './DisableSystemModal.module.scss';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import { Alert, AlertTitle } from '@mui/material';
@@ -10,23 +10,22 @@ import { Alert, AlertTitle } from '@mui/material';
 const DisableSystemModal: React.FC<{
   toggle: () => void;
   open: boolean;
-  system: Systems.TapisSystem;
-}> = ({ toggle, open, system }) => {
+  systemId: string;
+}> = ({ toggle, open, systemId }) => {
   if (!open) {
     return <></>;
   }
   const queryString = window.location.href;
-  const systemId = queryString.substring(queryString.indexOf('systems/') + 8);
 
-  const { shareSystemPublic, isLoading, error, isSuccess, reset } =
-    Hooks.useShareSystemPublic();
+  const { disable, isLoading, error, isSuccess, reset } =
+    Hooks.useDisableSystem({ systemId });
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const onSubmit = () => {
-    shareSystemPublic(systemId);
+    disable({ systemId });
   };
 
   return (
@@ -35,23 +34,6 @@ const DisableSystemModal: React.FC<{
       title="Disable System"
       body={
         <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-          {!system.isDynamicEffectiveUser && (
-            <Alert severity="error">
-              <AlertTitle>Security Concern</AlertTitle>
-              This system is using a <b>static effective user</b>. Making this
-              system public will enable <b>every user</b> in this tenant to
-              perform operations on this system's host as if they were user{' '}
-              <b>{system.effectiveUserId}</b>. This operation <b>IS</b>{' '}
-              permitted, but consider the aforementioned security concers before
-              proceeding.
-              <br />
-              <br />
-              To improve security, consider changing this systems{' '}
-              <b>effectiveUserId</b> to <b>{'${apiUserId}'}</b>
-              <br />
-              <br />
-            </Alert>
-          )}
           <Alert severity="info">
             <AlertTitle>Permissions Required</AlertTitle>
             Changing the visibility of a system requires <b>MODIFY</b>{' '}
@@ -69,7 +51,7 @@ const DisableSystemModal: React.FC<{
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `System ${system.id} is now public` : ''}
+          success={isSuccess ? `System ${systemId} is now disabled` : ''}
           reverse={true}
         >
           <Button
