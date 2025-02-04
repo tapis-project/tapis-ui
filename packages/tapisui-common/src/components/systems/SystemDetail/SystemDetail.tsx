@@ -63,6 +63,7 @@ import {
   PermissionsModal,
   ChangeOwnerModal,
   DisableSystemModal,
+  EnableSystemModal,
 } from '../Modals';
 
 const AuthButton: React.FC<{
@@ -240,7 +241,13 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
               <ListItemText>Disable</ListItemText>
             </MenuItem>
           ) : (
-            <MenuItem>
+            <MenuItem
+              onClick={() => {
+                setAnchorEl(null);
+                setModal('enablesystem');
+              }}
+              disabled={username !== system.owner}
+            >
               <ListItemIcon>
                 <LockOpen fontSize="small" color="error" />
               </ListItemIcon>
@@ -315,6 +322,14 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
       <DisableSystemModal
         systemId={system.id!}
         open={modal === 'disablesystem'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
+
+      <EnableSystemModal
+        systemId={system.id!}
+        open={modal === 'enablesystem'}
         toggle={() => {
           setModal(undefined);
         }}

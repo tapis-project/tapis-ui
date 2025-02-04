@@ -2,13 +2,12 @@ import { Button } from 'reactstrap';
 import { GenericModal } from '../../../../ui';
 import { SubmitWrapper } from '../../../../wrappers';
 import { useEffect } from 'react';
-import styles from './DisableSystemModal.module.scss';
+import styles from './EnableSystemModal.module.scss';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
-import { useDisableSystem } from '@tapis/tapisui-hooks/dist/systems';
 import { Systems } from '@tapis/tapis-typescript';
 import { Alert, AlertTitle } from '@mui/material';
 
-const DisableSystemModal: React.FC<{
+const EnableSystemModal: React.FC<{
   toggle: () => void;
   open: boolean;
   systemId: string;
@@ -17,7 +16,7 @@ const DisableSystemModal: React.FC<{
     return <></>;
   }
 
-  const { disable, isLoading, error, isSuccess, reset } = useDisableSystem({
+  const { enable, isLoading, error, isSuccess, reset } = Hooks.useEnableSystem({
     systemId,
   });
 
@@ -26,13 +25,13 @@ const DisableSystemModal: React.FC<{
   }, [reset]);
 
   const onSubmit = () => {
-    disable({ systemId });
+    enable({ systemId });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Disable System"
+      title="Enable System"
       body={
         <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
           <Alert severity="info">
@@ -42,8 +41,7 @@ const DisableSystemModal: React.FC<{
           </Alert>
           <Alert severity="warning">
             <AlertTitle>Visibility Change</AlertTitle>
-            Disabling a system will make it invisible and unusable to every user
-            on this tenant.
+            Enabling a system will make it visible to every user on this tenant.
           </Alert>
         </div>
       }
@@ -52,7 +50,7 @@ const DisableSystemModal: React.FC<{
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `System ${systemId} is now disabled` : ''}
+          success={isSuccess ? `System ${systemId} is now enabled` : ''}
           reverse={true}
         >
           <Button
@@ -63,7 +61,7 @@ const DisableSystemModal: React.FC<{
             aria-label="Submit"
             type="submit"
           >
-            Disable System
+            Enable System
           </Button>
         </SubmitWrapper>
       }
@@ -71,4 +69,4 @@ const DisableSystemModal: React.FC<{
   );
 };
 
-export default DisableSystemModal;
+export default EnableSystemModal;
