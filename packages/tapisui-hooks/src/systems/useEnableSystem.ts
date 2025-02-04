@@ -28,7 +28,7 @@ const useEnableSystem = (params: Systems.EnableSystemRequest) => {
     error,
     reset,
     invalidate,
-    disable: (
+    enable: (
       params: Systems.EnableSystemRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
