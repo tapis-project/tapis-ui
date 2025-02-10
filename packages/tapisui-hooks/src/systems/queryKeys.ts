@@ -1,5 +1,3 @@
-import { changeOwner, disableSystem } from '@tapis/tapisui-api/dist/systems';
-
 const QueryKeys = {
   list: 'systems/list',
   details: 'systems/details',
@@ -18,6 +16,7 @@ const QueryKeys = {
   grantUserPerms: 'systems/grantUserPerms',
   changeOwner: 'systems/changeOwner',
   disableSystem: 'systems/disableSystem',
+  enableSystem: 'systems/enableSystem',
 };
 
 export default QueryKeys;
