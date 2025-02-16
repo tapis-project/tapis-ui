@@ -15,7 +15,7 @@ const extension = createExtension({
     },
   },
   removeServices: [EnumTapisCoreService.Apps],
-  mainSidebarServices: ['systems', 'apps', 'jobs', 'files'],
+  mainSidebarServices: ['systems', 'apps', 'jobs', 'files', 'pods'],
   showMLHub: false,
   showMLEdge: false,
   showSecondarySideBar: false,
