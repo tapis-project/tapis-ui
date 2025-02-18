@@ -30,8 +30,7 @@ const SystemsNav: React.FC = () => {
     computeTotal: true,
   });
 
-  const {mutate} = useMutation([data, isLoading, error]) 
-
+  const { mutate } = useMutation([data, isLoading, error]);
 
   // Fetch deleted systems listing
   const {
