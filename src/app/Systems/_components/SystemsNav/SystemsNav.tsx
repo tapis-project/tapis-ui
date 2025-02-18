@@ -13,6 +13,7 @@ import {
   LockOpen,
 } from '@mui/icons-material';
 import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
+import { useMutation } from 'react-query';
 
 const SystemsNav: React.FC = () => {
   const [undeleteSystem, setUndeleteSystem] = useState<string | undefined>(
@@ -28,6 +29,9 @@ const SystemsNav: React.FC = () => {
     select: 'allAttributes',
     computeTotal: true,
   });
+
+  const {mutate} = useMutation([data, isLoading, error]) 
+
 
   // Fetch deleted systems listing
   const {
@@ -50,7 +54,7 @@ const SystemsNav: React.FC = () => {
           objects={systems}
           defaultField={'isPublic'}
           defaultOnClickItem={(system: any) => {
-            history.push(`${url}/${system.id}`);
+            history.push(`${url}/${system.id!}`);
           }}
           includeAll={true}
           includeAllGroupLabel="All Systems"
@@ -120,9 +124,6 @@ const SystemsNav: React.FC = () => {
                 ) : (
                   <Lock color="error" />
                 ),
-              onClickItem: (object) => {
-                // TODO Trigger re-enable modal
-              },
             },
           ]}
         >
