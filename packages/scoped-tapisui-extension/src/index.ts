@@ -27,9 +27,8 @@ const extension = createExtension({
     text: 'SCOPED',
   },
   icon: {
-    // filePath from https://www.youtube.com/@scoped6259
-    filePath:
-      'https://yt3.googleusercontent.com/ZW2nLowlwtI10OWxxGp0cwV-20_djQdrNBzF7rU_7_a4EfBzDKMHx_GPlhEqw_mPMrCQWPVCSg=s160-c-k-c0x00ffffff-no-rj',
+    // filePath from https://github.com/SeisSCOPED
+    filePath: 'https://avatars.githubusercontent.com/u/72624873?s=200&v=4',
     text: 'SCOPED',
   },
 });
