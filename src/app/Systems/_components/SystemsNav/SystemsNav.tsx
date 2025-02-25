@@ -28,8 +28,9 @@ const SystemsNav: React.FC = () => {
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
     computeTotal: true,
-    limit: 1000,
+    limit: 1000
   });
+  
 
   // Fetch deleted systems listing
   const {
@@ -47,7 +48,7 @@ const SystemsNav: React.FC = () => {
           borderBottom: '1px solid #CCCCCC',
           borderRight: '1px solid #CCCCCC',
         }}
-        className={styles['scroll-container']}
+        className={styles["scroll-container"]}
       >
         <FilterableObjectsList
           objects={systems}
