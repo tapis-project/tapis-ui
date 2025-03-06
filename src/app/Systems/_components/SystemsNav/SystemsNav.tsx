@@ -31,7 +31,6 @@ const SystemsNav: React.FC = () => {
     limit: 1000,
   });
 
-
   // Fetch deleted systems listing
   const {
     data: deletedData,
@@ -40,7 +39,6 @@ const SystemsNav: React.FC = () => {
   } = Hooks.useDeletedList();
   const deletedSystems: Array<Systems.TapisSystem> = deletedData?.result ?? [];
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
-
 
   return (
     <QueryWrapper isLoading={isLoading} error={[error]}>
