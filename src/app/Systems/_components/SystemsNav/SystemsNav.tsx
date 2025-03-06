@@ -16,7 +16,6 @@ import { Alert, AlertTitle } from '@mui/material';
 import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
 import styles from './SystemsNav.module.scss';
 
-
 const SystemsNav: React.FC = () => {
   const [undeleteSystem, setUndeleteSystem] = useState<string | undefined>(
     undefined
@@ -33,7 +32,6 @@ const SystemsNav: React.FC = () => {
     limit: 1000,
   });
 
-  const { mutate } = useMutation([data, isLoading, error]);
 
   // Fetch deleted systems listing
   const {
@@ -44,15 +42,7 @@ const SystemsNav: React.FC = () => {
   const deletedSystems: Array<Systems.TapisSystem> = deletedData?.result ?? [];
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
-  const { reset } = Hooks.useDisableSystem({ systemId: 'systems' });
 
-  const {
-    data: permsData,
-    isError,
-    error: permsError,
-  } = Hooks.useGetUserPerms({
-    systemId: 'systemId',
-  });
   return (
     <QueryWrapper isLoading={isLoading} error={[error]}>
       <div
