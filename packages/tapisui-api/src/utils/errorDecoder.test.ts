@@ -24,7 +24,7 @@ describe('Error Decoder', () => {
   it('Returns a json error', () => {
     // The json method returns a Promise
     const jsonError = { 
-      json: () => Promise.resolve({ message: 'An unexpected error occurred' })
+      json: () => Promise.resolve({ message: 'JSON error' })
     };
 
     const promise = errorDecoder<ResultType>(
