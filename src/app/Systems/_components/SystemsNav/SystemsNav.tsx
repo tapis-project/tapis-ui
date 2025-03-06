@@ -12,11 +12,7 @@ import {
   Lock,
   LockOpen,
 } from '@mui/icons-material';
-import {
-  Alert,
-  AlertTitle
-}
-from '@mui/material'
+import { Alert, AlertTitle } from '@mui/material';
 import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
 import styles from './SystemsNav.module.scss';
 
@@ -25,10 +21,9 @@ const SystemsNav: React.FC = () => {
     undefined
   );
 
-  
   const { url } = useRouteMatch();
   const history = useHistory();
-  
+
   // Fetch systems listing
   const { data, isLoading, error } = Hooks.useList({
     listType: Systems.ListTypeEnum.All,
@@ -36,7 +31,7 @@ const SystemsNav: React.FC = () => {
     computeTotal: true,
     limit: 1000,
   });
-  
+
   // Fetch deleted systems listing
   const {
     data: deletedData,
@@ -46,11 +41,15 @@ const SystemsNav: React.FC = () => {
   const deletedSystems: Array<Systems.TapisSystem> = deletedData?.result ?? [];
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
-  const {reset} = Hooks.useDisableSystem({systemId:"systems"})
-  
-  const {data:permsData, isError, error:permsError} = Hooks.useGetUserPerms({
-    systemId:'systemId'
-  })
+  const { reset } = Hooks.useDisableSystem({ systemId: 'systems' });
+
+  const {
+    data: permsData,
+    isError,
+    error: permsError,
+  } = Hooks.useGetUserPerms({
+    systemId: 'systemId',
+  });
   return (
     <QueryWrapper isLoading={isLoading} error={[error]}>
       <div
@@ -133,7 +132,7 @@ const SystemsNav: React.FC = () => {
                   <LockOpen color="success" />
                 ) : (
                   <Lock color="error" />
-                )
+                ),
             },
           ]}
         >
