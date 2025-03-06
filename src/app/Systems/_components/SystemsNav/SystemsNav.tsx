@@ -46,7 +46,6 @@ const SystemsNav: React.FC = () => {
   const deletedSystems: Array<Systems.TapisSystem> = deletedData?.result ?? [];
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
-
   return (
     <QueryWrapper isLoading={isLoading} error={[error]}>
       <div
