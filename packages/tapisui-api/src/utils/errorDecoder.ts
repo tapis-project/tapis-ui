@@ -11,7 +11,7 @@ const errorDecoder = async <T>(func: () => Promise<T>): Promise<T> => {
     // Check if the error has a 'json' method to handle specific API errors
     if ((error as DecodableError).json) {
       const decoded = await (error as DecodableError).json();
-      const message = decoded.message || 'An unexpected error occurred';
+      const message = decoded.message || 'JSON error';
       throw new Error(message); // Throw the decoded error message
     } else {
       // Rethrow the error if it's not decodable
