@@ -42,6 +42,9 @@ type ServiceCustomizations = {
 export type Configuration = {
   component?: Component;
   allowMultiTenant?: boolean;
+  showMLHub?: boolean;
+  showMLEdge?: boolean;
+  showSecondarySideBar?: boolean;
   authentication?: OAuth;
   mainSidebarServices?: Array<string>;
   removeServices?: Array<EnumTapisCoreService>;

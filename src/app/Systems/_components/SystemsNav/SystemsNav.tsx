@@ -16,6 +16,7 @@ import { Alert, AlertTitle } from '@mui/material';
 import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
 import styles from './SystemsNav.module.scss';
 
+
 const SystemsNav: React.FC = () => {
   const [undeleteSystem, setUndeleteSystem] = useState<string | undefined>(
     undefined
@@ -31,6 +32,8 @@ const SystemsNav: React.FC = () => {
     computeTotal: true,
     limit: 1000,
   });
+
+  const { mutate } = useMutation([data, isLoading, error]);
 
   // Fetch deleted systems listing
   const {
@@ -63,7 +66,7 @@ const SystemsNav: React.FC = () => {
           objects={systems}
           defaultField={'isPublic'}
           defaultOnClickItem={(system: any) => {
-            history.push(`${url}/${system.id}`);
+            history.push(`${url}/${system.id!}`);
           }}
           includeAll={true}
           includeAllGroupLabel="All Systems"
