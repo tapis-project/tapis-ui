@@ -46,11 +46,7 @@ const SystemsNav: React.FC = () => {
   const deletedSystems: Array<Systems.TapisSystem> = deletedData?.result ?? [];
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
 
-  const {reset} = Hooks.useDisableSystem({systemId:"systems"})
-  
-  const {data:permsData, isError, error:permsError} = Hooks.useGetUserPerms({
-    systemId:'systemId'
-  })
+
   return (
     <QueryWrapper isLoading={isLoading} error={[error]}>
       <div
