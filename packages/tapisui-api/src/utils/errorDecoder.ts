@@ -8,7 +8,11 @@ const errorDecoder = async <T>(func: () => Promise<T>) => {
     // rethrow it
     if ((error as any).json) {
       const decoded = await (error as any).json();
-      throw decoded;
+      let message = decoded.message;
+      if (message === undefined) {
+        throw new Error('An unexpected Error occured ');
+      }
+      throw new Error(decoded.message);
     } else {
       throw error;
     }
