@@ -31,6 +31,6 @@ describe('Error Decoder', () => {
       () => new Promise((_, reject) => reject(jsonError))
     );
     
-    return expect(promise).rejects.toThrow('An unexpected error occurred');
+    return expect(promise).rejects.toThrow('JSON error');
   });
 });
