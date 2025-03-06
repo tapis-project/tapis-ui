@@ -22,10 +22,10 @@ describe('Error Decoder', () => {
   });
 
   it('Returns a json error', () => {
-    const jsonError = { json: () => 'JSON error' };
+    const jsonError = { json: () => 'An unexpected error occurred' };
     const promise = errorDecoder<ResultType>(
       () => new Promise((_, reject) => reject(jsonError))
     );
-    return expect(promise).rejects.toBe('JSON error');
+    return expect(promise).rejects.toBe('An unexpected error occurred');
   });
 });
