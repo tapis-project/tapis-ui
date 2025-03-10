@@ -2,7 +2,7 @@ import {
   createExtension,
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
-import { MongoExpress } from './pages';
+import { SeismoDB } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -16,7 +16,7 @@ const extension = createExtension({
     },
   },
   removeServices: [EnumTapisCoreService.Apps],
-  mainSidebarServices: ['systems', 'apps', 'jobs', 'files', 'mongo-express'],
+  mainSidebarServices: ['systems', 'apps', 'jobs', 'files', 'seismo-db'],
   showMLHub: false,
   showMLEdge: false,
   showSecondarySideBar: false,
@@ -35,10 +35,10 @@ const extension = createExtension({
 });
 
 extension.registerService({
-  id: 'mongo-express',
-  sidebarDisplayName: 'MongoExp',
+  id: 'seismo-db',
+  sidebarDisplayName: 'SeismoDB',
   iconName: 'visualization',
-  component: MongoExpress,
+  component: SeismoDB,
 });
 
 export { extension };

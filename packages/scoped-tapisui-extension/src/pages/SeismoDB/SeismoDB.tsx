@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { SectionHeader } from '@tapis/tapisui-common';
 
-const MongoExpress: React.FC = () => {
+const SeismoDB: React.FC = () => {
   return (
     <div
       style={{
@@ -20,4 +20,4 @@ const MongoExpress: React.FC = () => {
   );
 };
 
-export default MongoExpress;
+export default SeismoDB;

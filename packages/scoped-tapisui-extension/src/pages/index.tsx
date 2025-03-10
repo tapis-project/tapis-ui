@@ -1,1 +1,1 @@
-export { MongoExpress } from './MongoExpress';
+export { SeismoDB } from './SeismoDB';
