@@ -73,6 +73,7 @@ const Dashboard: React.FC = () => {
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
     computeTotal: true,
+    limit: 1000,
   });
   const jobs = JobsHooks.useList({});
   const apps = AppsHooks.useList({
