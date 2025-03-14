@@ -12,3 +12,6 @@ const Router: React.FC = () => {
     </Switch>
     )
 }
+
+
+export default Router;
