@@ -2,7 +2,7 @@ import React from "react";
 
 const Menu: React.FC = () => {
     return <>
-    Coming Soon</>
+    Under Construction</>
 }
 
 export default Menu;
