@@ -41,37 +41,35 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useAppDispatch();
   const { podTab, podRootTab } = useAppSelector((state) => state.pods);
 
-  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod({
-    podId: objId,
-  });
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod({ podId: objId },  { enabled: !!objId });
   const {
     data: dataLogs,
     isLoading: isLoadingLogs,
     isFetching: isFetchingLogs,
     error: errorLogs,
     invalidate: invalidateLogs,
-  } = Hooks.useGetPodLogs({ podId: objId });
+  } = Hooks.useGetPodLogs({ podId: objId }, { enabled: !!objId });
   const {
     data: dataSecrets,
     isLoading: isLoadingSecrets,
     isFetching: isFetchingSecrets,
     error: errorSecrets,
     invalidate: invalidateSecrets,
-  } = Hooks.useGetPodSecrets({ podId: objId });
+  } = Hooks.useGetPodSecrets({ podId: objId }, { enabled: !!objId });
   const {
     data: dataPerms,
     isLoading: isLoadingPerms,
     isFetching: isFetchingPerms,
     error: errorPerms,
     invalidate: invalidatePerms,
-  } = Hooks.useGetPodPermissions({ podId: objId });
+  } = Hooks.useGetPodPermissions({ podId: objId }, { enabled: !!objId });
   const {
     data: dataDerived,
     isLoading: isLoadingDerived,
     isFetching: isFetchingDerived,
     error: errorDerived,
     invalidate: invalidateDerived,
-  } = Hooks.useGetPodDerived({ podId: objId });
+  } = Hooks.useGetPodDerived({ podId: objId }, { enabled: !!objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';

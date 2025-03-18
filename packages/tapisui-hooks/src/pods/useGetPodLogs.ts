@@ -26,6 +26,8 @@ const useGetPodLogs = (
       cacheTime: 20000,
       // Keep the enabled option to control query activation based on accessToken presence
       enabled: !!accessToken,
+      // Spread any user-provided options to allow for customization
+      ...options,
     }
   );
 

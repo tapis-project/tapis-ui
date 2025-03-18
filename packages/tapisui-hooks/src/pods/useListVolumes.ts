@@ -14,8 +14,8 @@ const useListVolumes = (
     // which is expected behavior for not having a token
     () => API.listVolumes(basePath, accessToken?.access_token || ''),
     {
-      ...options,
       enabled: !!accessToken,
+      ...options,
     }
   );
   return result;

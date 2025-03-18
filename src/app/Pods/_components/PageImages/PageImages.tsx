@@ -43,10 +43,10 @@ import { useAppSelector, updateState, useAppDispatch } from '@redux';
 const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useAppDispatch();
   const { imageTab, imageRootTab } = useAppSelector((state) => state.pods);
-
-  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetImage({
-    imageId: objId,
-  });
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetImage(
+    { imageId: objId },
+    { enabled: !!objId }
+  );
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
