@@ -7,7 +7,6 @@ const Router: React.FC = () => {
     return (
     <Switch>
         <Route path={`${path}`} exact>
-            {path}
         </Route>
     </Switch>
     )

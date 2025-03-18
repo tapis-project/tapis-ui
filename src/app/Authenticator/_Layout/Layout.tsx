@@ -7,7 +7,7 @@ const Layout: React.FC = () => {
     const body = (
         <LayoutBody>
             <Menu/>
-            ok
+            
             <Router/>
         </LayoutBody>
     )
