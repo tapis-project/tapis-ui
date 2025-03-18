@@ -43,17 +43,18 @@ const PageTemplates: React.FC<{
 }> = ({ objId, tagId }) => {
   const dispatch = useAppDispatch();
   const { data, isLoading, isFetching, error, invalidate } =
-    Hooks.useGetTemplate({
-      templateId: objId,
-    });
+    Hooks.useGetTemplate({ templateId: objId }, { enabled: !!objId });
   const {
     data: dataTags,
     isLoading: isLoadingTags,
     error: errorTags,
-  } = Hooks.useListTemplateTags({
-    templateId: objId as string,
-    full: true,
-  });
+  } = Hooks.useListTemplateTags(
+    {
+      templateId: objId as string,
+      full: true,
+    },
+    { enabled: !!objId }
+  );
   const {
     data: dataTemplatesAndTags,
     isLoading: isLoadingTemplatesAndTags,

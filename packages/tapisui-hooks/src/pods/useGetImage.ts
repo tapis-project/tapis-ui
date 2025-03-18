@@ -14,8 +14,8 @@ const useGetImage = (
     [QueryKeys.getImage, params, accessToken],
     () => API.getImage(params, basePath, accessToken?.access_token ?? ''),
     {
-      ...options,
       enabled: !!accessToken,
+      ...options,
     }
   );
 

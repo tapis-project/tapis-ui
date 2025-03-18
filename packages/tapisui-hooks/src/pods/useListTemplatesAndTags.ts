@@ -20,8 +20,8 @@ const useListTemplatesAndTags = (
         accessToken?.access_token || ''
       ),
     {
-      ...options,
       enabled: !!accessToken,
+      ...options,
     }
   );
   return result;

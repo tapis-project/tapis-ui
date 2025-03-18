@@ -14,8 +14,8 @@ const useListSnapshots = (
     // which is expected behavior for not having a token
     () => API.listSnapshots(basePath, accessToken?.access_token || ''),
     {
-      ...options,
       enabled: !!accessToken,
+      ...options,
     }
   );
   return result;

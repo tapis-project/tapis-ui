@@ -14,8 +14,8 @@ const useListPods = (
     // which is expected behavior for not having a token
     () => API.listPods(basePath, accessToken?.access_token || ''),
     {
-      ...options,
       enabled: !!accessToken,
+      ...options,
     }
   );
   return result;
