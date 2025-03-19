@@ -41,7 +41,10 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useAppDispatch();
   const { podTab, podRootTab } = useAppSelector((state) => state.pods);
 
-  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod({ podId: objId },  { enabled: !!objId });
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod(
+    { podId: objId },
+    { enabled: !!objId }
+  );
   const {
     data: dataLogs,
     isLoading: isLoadingLogs,
