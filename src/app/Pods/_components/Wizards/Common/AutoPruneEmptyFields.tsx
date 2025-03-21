@@ -4,10 +4,12 @@ import * as Yup from 'yup';
 
 interface AutoPruneEmptyFieldsProps {
   validationSchema: Yup.ObjectSchema<any>;
+  doNotPruneKeys?: Array<string>;
 }
 
 const AutoPruneEmptyFields: React.FC<AutoPruneEmptyFieldsProps> = ({
   validationSchema,
+  doNotPruneKeys, // Allow us to specify keys that should not be pruned and aren't w
 }) => {
   const { values, setFieldValue } = useFormikContext<any>();
 
@@ -30,6 +32,10 @@ const AutoPruneEmptyFields: React.FC<AutoPruneEmptyFieldsProps> = ({
       Object.keys(obj).forEach((key) => {
         // Skip pruning for required fields
         if (requiredKeys.includes(key)) {
+          return;
+        }
+
+        if (doNotPruneKeys?.includes(key)) {
           return;
         }
 

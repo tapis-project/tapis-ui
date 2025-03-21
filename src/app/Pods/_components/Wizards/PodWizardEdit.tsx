@@ -41,6 +41,8 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
     command: Yup.string(),
+    image: Yup.string(),
+    template: Yup.string(),
     time_to_stop_default: Yup.number().min(-1),
     time_to_stop_instance: Yup.number().min(-1),
     environment_variables: Yup.array().of(
@@ -183,6 +185,8 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
     {
       description,
       command,
+      image,
+      template,
       time_to_stop_default,
       time_to_stop_instance,
       environment_variables,
@@ -193,14 +197,26 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
     { setSubmitting }: any
   ) => {
     const newPod = {
-      description,
+      description: description ? description : undefined,
       command: command ? JSON.parse(command) : undefined,
-      time_to_stop_default,
-      time_to_stop_instance,
-      environment_variables: envVarsArrayToInputObject(environment_variables),
-      networking: networkingArrayToInputObject(networking),
-      volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
-      resources,
+      template: template ? template : undefined,
+      image: image ? JSON.parse(image) : undefined,
+      time_to_stop_default: time_to_stop_default
+        ? time_to_stop_default
+        : undefined,
+      time_to_stop_instance: time_to_stop_instance
+        ? time_to_stop_instance
+        : undefined,
+      environment_variables: environment_variables
+        ? envVarsArrayToInputObject(environment_variables)
+        : undefined,
+      networking: networking
+        ? networkingArrayToInputObject(networking)
+        : undefined,
+      volume_mounts: volume_mounts
+        ? volume_mountsArrayToInputObject(volume_mounts)
+        : undefined,
+      resources: resources ? resources : undefined,
     };
 
     updatePod({ podId: objId, updatePod: newPod }, { onSuccess });
@@ -254,6 +270,18 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
             name="command"
             label="Command"
             description='Pod Command - Overwrites docker image. ex. ["sleep", "5000"]'
+          />
+          <FMTextField
+            formik={formik}
+            name="image"
+            label="Image"
+            description="Docker Image - Docker image to run in the pod"
+          />
+          <FMTextField
+            formik={formik}
+            name="template"
+            label="Template"
+            description="Template - Template to use for the pod"
           />
           <FMTextField
             formik={formik}
@@ -318,48 +346,50 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
             render={(arrayHelpers) => (
               <div>
                 <div className={styles['key-val-env-vars']}>
-                  {formik.values.networking &&
-                    formik.values.networking.length > 0 &&
-                    formik.values.networking.map((_: any, i: any) => (
-                      <div key={i} className={styles['key-val-env-var']}>
-                        <FMTextField
-                          formik={formik}
-                          name={`networking.${i}.id`}
-                          label="ID"
-                          description="desc3replace!"
-                        />
-                        <FMTextField
-                          formik={formik}
-                          name={`networking.${i}.protocol`}
-                          label="Protocol"
-                          description="desc4replace!"
-                        />
-                        <FMSelect
-                          formik={formik}
-                          name={`networking.${i}.protocol`}
-                          label="protocol2"
-                          children={<MenuItem value={10}>Ten</MenuItem>}
-                          description={''}
-                          labelId={''}
-                        />
-                        <FMTextField
-                          formik={formik}
-                          name={`networking.${i}.port`}
-                          label="Port"
-                          description="desc5replace!"
-                        />
-                        <Button
-                          variant="outlined"
-                          className={styles['remove-button']}
-                          type="button"
-                          color="error"
-                          onClick={() => arrayHelpers.remove(i)}
-                          size="medium"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
+                  {Array.isArray(formik.values.networking) &&
+                    (formik.values.networking as any[]).length > 0 &&
+                    (formik.values.networking as any[]).map(
+                      (_: any, i: any) => (
+                        <div key={i} className={styles['key-val-env-var']}>
+                          <FMTextField
+                            formik={formik}
+                            name={`networking.${i}.id`}
+                            label="ID"
+                            description="desc3replace!"
+                          />
+                          <FMTextField
+                            formik={formik}
+                            name={`networking.${i}.protocol`}
+                            label="Protocol"
+                            description="desc4replace!"
+                          />
+                          <FMSelect
+                            formik={formik}
+                            name={`networking.${i}.protocol`}
+                            label="protocol2"
+                            children={<MenuItem value={10}>Ten</MenuItem>}
+                            description={''}
+                            labelId={''}
+                          />
+                          <FMTextField
+                            formik={formik}
+                            name={`networking.${i}.port`}
+                            label="Port"
+                            description="desc5replace!"
+                          />
+                          <Button
+                            variant="outlined"
+                            className={styles['remove-button']}
+                            type="button"
+                            color="error"
+                            onClick={() => arrayHelpers.remove(i)}
+                            size="medium"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      )
+                    )}
                 </div>
                 <Button
                   type="button"

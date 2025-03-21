@@ -289,7 +289,7 @@ Select or create a pod to get started.`;
           id: 'createPod',
           label: 'Create Pod',
           tabValue: 'createPod',
-          disabled: true,
+          disabled: false,
         },
       ];
     }

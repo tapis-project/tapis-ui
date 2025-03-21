@@ -28,9 +28,8 @@ const PodWizard: React.FC<PodWizardProps> = ({ sharedData, setSharedData }) => {
   const initialValues: any = {
     pod_id: '',
     description: '',
-    size_limit: '',
-    source_volume_id: '',
-    source_volume_path: '',
+    image: '',
+    template: '',
   };
 
   const { createPod, isLoading, error, isSuccess, reset } =
@@ -45,18 +44,11 @@ const PodWizard: React.FC<PodWizardProps> = ({ sharedData, setSharedData }) => {
       .min(1)
       .max(128, 'Pod ID should not be longer than 128 characters')
       .required('Pod ID is required'),
+    image: Yup.string(),
+    template: Yup.string(),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
-    size_limit: Yup.number().min(1).max(20000).required(),
-    source_volume_id: Yup.string()
-      .min(1)
-      .max(128, 'Source Volume ID should not be longer than 128 characters')
-      .required('Source Volume ID is required'),
-    source_volume_path: Yup.string()
-      .min(1)
-      .max(2048, 'Source Volume Path should not be longer than 2048 characters')
-      .required('Source Volume Path is required'),
   });
 
   const onSubmit = (
@@ -131,21 +123,15 @@ const PodWizard: React.FC<PodWizardProps> = ({ sharedData, setSharedData }) => {
           />
           <FMTextField
             formik={formik}
-            name="size_limit"
-            label="Size Limit"
-            description="Limit on the size of the pod in megabytes (MB)"
+            name="image"
+            label="Image"
+            description="The image to use for the pod."
           />
           <FMTextField
             formik={formik}
-            name="source_volume_id"
-            label="Source Volume ID"
-            description="The volume_id to use as source of pod."
-          />
-          <FMTextField
-            formik={formik}
-            name="source_volume_path"
-            label="Source Volume Path"
-            description="The path to the volume to use as source of pod."
+            name="template"
+            label="Template"
+            description="The template to use for the pod."
           />
         </form>
       </FormikProvider>
