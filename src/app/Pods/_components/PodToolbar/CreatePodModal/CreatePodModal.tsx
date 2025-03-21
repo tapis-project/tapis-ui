@@ -397,7 +397,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       description: description ? description : undefined,
       command: command ? JSON.parse(command) : undefined,
       template: template ? template : undefined,
-      image: image ? JSON.parse(image) : undefined,
+      image: image ? image : undefined,
       time_to_stop_default: time_to_stop_default
         ? time_to_stop_default
         : undefined,
