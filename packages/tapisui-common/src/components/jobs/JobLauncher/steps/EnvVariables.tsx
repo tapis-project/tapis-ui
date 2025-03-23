@@ -107,9 +107,9 @@ const validationSchema = Yup.object().shape({
         key: Yup.string()
           .min(1)
           .required('A key name is required for this environment variable'),
-        value: Yup.string().required(
-          'A value is required for this environment variable'
-        ),
+        value: Yup.string()
+          .min(1)
+          .required('A value is required for this environment variable'),
       })
     ),
   }),

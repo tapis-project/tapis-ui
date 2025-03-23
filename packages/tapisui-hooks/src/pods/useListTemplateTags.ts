@@ -17,6 +17,7 @@ const useListTemplateTags = (
       API.listTemplateTags(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
+      ...options,
     }
   );
   return result;

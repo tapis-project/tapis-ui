@@ -15,8 +15,8 @@ const useListTemplates = (
     // which is expected behavior for not having a token
     () => API.listTemplates(basePath, accessToken?.access_token || ''),
     {
-      ...options,
       enabled: !!accessToken,
+      ...options,
     }
   );
 

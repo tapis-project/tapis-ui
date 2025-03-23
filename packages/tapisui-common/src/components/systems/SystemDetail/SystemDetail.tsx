@@ -146,7 +146,7 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
             </ListItemIcon>
             <ListItemText>Share</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem disabled={true}>
             <ListItemIcon>
               <ContentCopy fontSize="small" />
             </ListItemIcon>

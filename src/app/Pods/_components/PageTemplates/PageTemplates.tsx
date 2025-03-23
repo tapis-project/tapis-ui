@@ -43,17 +43,18 @@ const PageTemplates: React.FC<{
 }> = ({ objId, tagId }) => {
   const dispatch = useAppDispatch();
   const { data, isLoading, isFetching, error, invalidate } =
-    Hooks.useGetTemplate({
-      templateId: objId,
-    });
+    Hooks.useGetTemplate({ templateId: objId }, { enabled: !!objId });
   const {
     data: dataTags,
     isLoading: isLoadingTags,
     error: errorTags,
-  } = Hooks.useListTemplateTags({
-    templateId: objId as string,
-    full: true,
-  });
+  } = Hooks.useListTemplateTags(
+    {
+      templateId: objId as string,
+      full: true,
+    },
+    { enabled: !!objId }
+  );
   const {
     data: dataTemplatesAndTags,
     isLoading: isLoadingTemplatesAndTags,
@@ -252,30 +253,6 @@ templateNavExpandedItems: ${templateNavExpandedItems}
     return leftButtons;
   };
 
-  const calculateTimeSinceCreation = (creation_ts: string) => {
-    const creationDate = new Date(creation_ts);
-    const now = new Date();
-    const diffInSeconds = Math.floor(
-      (now.getTime() - creationDate.getTime()) / 1000
-    );
-
-    if (diffInSeconds < 120) {
-      return `${diffInSeconds} seconds since creation`;
-    } else if (diffInSeconds < 7200) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return `${minutes} minutes since creation`;
-    } else if (diffInSeconds < 172800) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return `${hours} hours since creation`;
-    } else if (diffInSeconds) {
-      // < 604800) {
-      const days = Math.floor(diffInSeconds / 86400);
-      return `${days} days since creation`;
-    } else {
-      return '';
-    }
-  };
-
   const renderTabBar = (
     leftButtons: ButtonConfig[],
     rightButtons: ButtonConfig[]
@@ -408,46 +385,6 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                 //   )
                 // }
               />
-              {/* {!activeTemplate && !activeTemplateTag ? (
-                <div>
-                  {templateTab}; {templateRootTab}
-                </div>
-              ) : templateTags && templateTags.length > 0 ? (
-                templateTags.map((tag: any, index: number) => {
-                  const [tagName, tagTime] = tag.tag_timestamp.split('@');
-                  const timeSinceCreation = calculateTimeSinceCreation(
-                    tag.creation_ts
-                  );
-                  return (
-                    <Accordion key={index} defaultExpanded={index === 0}>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreRounded />}
-                        aria-controls={`tag-content-${index}`}
-                        id={`tag-header-${index}`}
-                      >
-                        <span>{tagName}</span>
-                        <span className={styles['secondaryText']}>
-                          @{tagTime}
-                        </span>
-                        <span
-                          style={{
-                            marginLeft: 'auto',
-                            fontSize: '0.8em',
-                            color: '#888',
-                          }}
-                        >
-                          {timeSinceCreation}
-                        </span>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <div>{JSON.stringify(tag, null, 2)}</div>
-                      </AccordionDetails>
-                    </Accordion>
-                  );
-                })
-              ) : (
-                <div>No tags available.</div>
-              )} */}
             </div>
           </div>
         </div>
