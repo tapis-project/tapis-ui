@@ -156,3 +156,5 @@ packages/react-devtools-shell/dist
 packages/react-devtools-scheduling-profiler/dist
 
 dist
+
+.env
