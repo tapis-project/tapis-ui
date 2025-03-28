@@ -6,23 +6,18 @@ import { resolveBasePath } from 'utils/resolveBasePath';
 const useExtension = () => {
   const { extensions } = useContext(ExtensionsContext);
   let basePath = resolveBasePath();
-
   let extension = undefined;
   let extensionName = undefined;
   for (extensionName in registeredExtensions) {
+    console.log({extensionName})
     if (registeredExtensions[extensionName].baseUrls.includes(basePath)) {
       extension = extensions[extensionName];
       break;
     }
-
-    return { extension: undefined };
+    extensionName = undefined;
   }
 
-  if (extension === undefined) {
-    console.error(
-      `Failure loading extension: Could not find an initialized extension for '${extensionName}'. `
-    );
-  }
+  console.log({ extension, extensionName, services: { workflows: { tasks } } })
 
   return { extension, extensionName, services: { workflows: { tasks } } };
 };
