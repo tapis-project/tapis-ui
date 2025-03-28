@@ -2,7 +2,7 @@ import {
   createExtension,
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
-import { SeismoDB } from './pages';
+import { GEO, SeismoDB } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -16,7 +16,15 @@ const extension = createExtension({
     },
   },
   removeServices: [EnumTapisCoreService.Apps],
-  mainSidebarServices: ['systems', 'apps', 'jobs', 'files', 'seismo-db'],
+  mainSidebarServices: [
+    'systems',
+    'apps',
+    'jobs',
+    'files',
+    'pods',
+    'seismo-db',
+    'geo',
+  ],
   showMLHub: false,
   showMLEdge: false,
   showSecondarySideBar: false,
@@ -32,6 +40,13 @@ const extension = createExtension({
     filePath: 'https://avatars.githubusercontent.com/u/72624873?s=200&v=4',
     text: 'SCOPED',
   },
+});
+
+extension.registerService({
+  id: 'geo',
+  sidebarDisplayName: 'GEO',
+  iconName: 'compass',
+  component: GEO,
 });
 
 extension.registerService({
