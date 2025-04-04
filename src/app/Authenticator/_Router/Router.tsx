@@ -1,16 +1,14 @@
-import React from "react";
-import { Switch, Route, useRouteMatch } from "react-router-dom";
+import React from 'react';
+import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
 const Router: React.FC = () => {
-    const {path} = useRouteMatch()
+  const { path } = useRouteMatch();
 
-    return (
+  return (
     <Switch>
-        <Route path={`${path}`} exact>
-        </Route>
+      <Route path={`${path}`} exact></Route>
     </Switch>
-    )
-}
-
+  );
+};
 
 export default Router;

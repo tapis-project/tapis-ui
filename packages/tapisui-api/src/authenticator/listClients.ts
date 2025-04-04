@@ -1,7 +1,11 @@
 import { Authenticator } from '@tapis/tapis-typescript';
 import { errorDecoder, apiGenerator } from '../utils';
 
-const listClients = (params: number, basePath: string, jwt: string) => {
+const listClients = (
+  params: Authenticator.ListClientsRequest,
+  basePath: string,
+  jwt: string
+) => {
   const api: Authenticator.ClientsApi = apiGenerator<Authenticator.ClientsApi>(
     Authenticator,
     Authenticator.ClientsApi,
@@ -14,7 +18,7 @@ const listClients = (params: number, basePath: string, jwt: string) => {
     offset: 1000,
   };
   return errorDecoder<Authenticator.RespListClients>(() =>
-    api.listClients(requestParameters)
+    api.listClients(params)
   );
 };
 

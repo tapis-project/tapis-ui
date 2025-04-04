@@ -92,7 +92,7 @@ const Sidebar: React.FC = () => {
     workflows: renderSidebarItem('/workflows', 'publications', 'Workflows'),
     pods: renderSidebarItem('/pods', 'visualization', 'Pods'),
     'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
-    authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator')
+    authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
   };
 
   if (extension !== undefined) {

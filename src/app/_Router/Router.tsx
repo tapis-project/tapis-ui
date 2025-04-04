@@ -61,7 +61,10 @@ const Router: React.FC = () => {
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
         <Pods />
       </ProtectedRoute>
-      <ProtectedRoute accessToken={accessToken?.access_token} path="/authenticator">
+      <ProtectedRoute
+        accessToken={accessToken?.access_token}
+        path="/authenticator"
+      >
         <Authenticator />
       </ProtectedRoute>
       {extension &&

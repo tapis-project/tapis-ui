@@ -1,18 +1,18 @@
 import { PageLayout, LayoutBody } from '@tapis/tapisui-common';
 import { Menu } from '../_components';
 import Router from '../_Router';
-import React  from 'react';
+import React from 'react';
 
 const Layout: React.FC = () => {
-    const body = (
-        <LayoutBody>
-            <Menu/>
-            
-            <Router/>
-        </LayoutBody>
-    )
+  const body = (
+    <LayoutBody>
+      <Menu />
 
-    return <PageLayout right={body}/>
-}
+      <Router />
+    </LayoutBody>
+  );
+
+  return <PageLayout right={body} />;
+};
 
 export default Layout;
