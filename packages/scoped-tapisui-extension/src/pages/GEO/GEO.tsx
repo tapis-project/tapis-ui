@@ -36,11 +36,11 @@ const StationIcon = new L.Icon({
 });
 
 const GEO: React.FC = () => {
-  const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [normalizedCoordinates, setNormalizedCoordinates] = useState<
+  const [earthquakes, setEarthquakes] = useState<[number, number][]>([]);
+  const [normalizedEarthquakes, setNormalizedEarthquakes] = useState<
     [number, number][]
   >([]);
-  const [allCoordinates, setAllCoordinates] = useState<[number, number][]>([]);
+  const [allEarthquakes, setAllEarthquakes] = useState<[number, number][]>([]);
   const [lonMin, setLonMin] = useState<string>('-180');
   const [lonMax, setLonMax] = useState<string>('180');
   const [latMin, setLatMin] = useState<string>('-180');
@@ -54,7 +54,7 @@ const GEO: React.FC = () => {
 
   const featureGroupRef = useRef<L.FeatureGroup>(null);
 
-  const fetchCoordinates = async (
+  const fetchEarthquakes = async (
     lonRange: [number, number],
     latRange: [number, number]
   ) => {
@@ -63,8 +63,8 @@ const GEO: React.FC = () => {
 
     try {
       const response = await fetch(
-        // 'https://mspassgeopod.pods.tacc.tapis.io/api/coordinates/',
-        'http://localhost:5050/api/coordinates/',
+        'https://mspassgeopod.pods.tacc.tapis.io/api/earthquakes/',
+        // 'http://localhost:5050/api/earthquakes/',
         {
           method: 'POST',
           headers: {
@@ -79,22 +79,22 @@ const GEO: React.FC = () => {
 
       const data = await response.json();
       if (data.coordinates) {
-        setCoordinates(data.coordinates);
-        setNormalizedCoordinates(data['normalized_coordinates']);
-        setAllCoordinates(data['all_coordinates']);
+        setEarthquakes(data.coordinates);
+        setNormalizedEarthquakes(data['normalized_coordinates']);
+        setAllEarthquakes(data['all_coordinates']);
       } else {
         setError(data.error || 'Unknown error from backend');
       }
     } catch (err) {
-      setError('Error fetching coordinates: ' + err);
+      setError('Error fetching earthquake coordinates: ' + err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch all coordinates on page load
+  // Fetch all earthquake coordinates on page load
   useEffect(() => {
-    fetchCoordinates([-180, 180], [-180, 180]);
+    fetchEarthquakes([-180, 180], [-180, 180]);
   }, []);
 
   const clearRectangle = () => {
@@ -159,7 +159,7 @@ const GEO: React.FC = () => {
     }
 
     setError(null);
-    fetchCoordinates([lonMinVal, lonMaxVal], [latMinVal, latMaxVal]);
+    fetchEarthquakes([lonMinVal, lonMaxVal], [latMinVal, latMaxVal]);
   };
 
   // Component to auto-fit map bounds
@@ -167,13 +167,13 @@ const GEO: React.FC = () => {
     const map = useMap();
 
     useEffect(() => {
-      if (fitBoundsEnabled && coordinates.length > 0) {
+      if (fitBoundsEnabled && earthquakes.length > 0) {
         const bounds = L.latLngBounds(
-          coordinates.map(([lon, lat]) => [lat, lon])
+          earthquakes.map(([lon, lat]) => [lat, lon])
         );
         map.fitBounds(bounds, { padding: [100, 100] });
       }
-    }, [coordinates, map, fitBoundsEnabled]);
+    }, [earthquakes, map, fitBoundsEnabled]);
 
     return null;
   };
@@ -186,7 +186,7 @@ const GEO: React.FC = () => {
     setLatMin('-180');
     setLatMax('180');
     setError(null);
-    fetchCoordinates([-180, 180], [-180, 180]);
+    fetchEarthquakes([-180, 180], [-180, 180]);
   };
 
   const onDraw = (e) => {
@@ -292,7 +292,7 @@ const GEO: React.FC = () => {
         {error && <p style={{ color: 'red', marginTop: '0.5rem' }}>{error}</p>}
         {!loading && !error && (
           <p style={{ marginTop: '0.5rem' }}>
-            Coordinates shown on map: {coordinates.length}
+            Earthquake Coordinates shown on map: {earthquakes.length}
           </p>
         )}
       </div>
@@ -334,10 +334,10 @@ const GEO: React.FC = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; OpenStreetMap contributors"
           />
-          {coordinates.length > 0 && <FitBounds />}
-          {allCoordinates.map(([lon, lat], idx) => {
+          {earthquakes.length > 0 && <FitBounds />}
+          {allEarthquakes.map(([lon, lat], idx) => {
             const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
-            const [normLon, normLat] = normalizedCoordinates[normIdx] || [];
+            const [normLon, normLat] = normalizedEarthquakes[normIdx] || [];
             const markerIcon = EarthquakeIcon;
             return (
               <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
