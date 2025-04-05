@@ -242,40 +242,56 @@ const GEO: React.FC = () => {
             e.preventDefault();
             handleSearch();
           }}
-          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+            width: '100%',
+          }}
         >
-          <label>
-            Longitude Min:&nbsp;
-            <input
-              style={{ width: '100%' }}
-              value={lonMin}
-              onChange={(e) => setLonMin(e.target.value)}
-            />
-          </label>
-          <label>
-            Longitude Max:&nbsp;
-            <input
-              style={{ width: '100%' }}
-              value={lonMax}
-              onChange={(e) => setLonMax(e.target.value)}
-            />
-          </label>
-          <label>
-            Latitude Min:&nbsp;
-            <input
-              style={{ width: '100%' }}
-              value={latMin}
-              onChange={(e) => setLatMin(e.target.value)}
-            />
-          </label>
-          <label>
-            Latitude Max:&nbsp;
-            <input
-              style={{ width: '100%' }}
-              value={latMax}
-              onChange={(e) => setLatMax(e.target.value)}
-            />
-          </label>
+          {/* Longitude Row */}
+          <div
+            style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+          >
+            <label>Longitude (Min / Max):</label>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+              <input
+                style={{ width: '50%' }}
+                placeholder="Min"
+                value={lonMin}
+                onChange={(e) => setLonMin(e.target.value)}
+              />
+              <input
+                style={{ width: '50%' }}
+                placeholder="Max"
+                value={lonMax}
+                onChange={(e) => setLonMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Latitude Row */}
+          <div
+            style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+          >
+            <label>Latitude (Min / Max):</label>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+              <input
+                style={{ width: '50%' }}
+                placeholder="Min"
+                value={latMin}
+                onChange={(e) => setLatMin(e.target.value)}
+              />
+              <input
+                style={{ width: '50%' }}
+                placeholder="Max"
+                value={latMax}
+                onChange={(e) => setLatMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Buttons */}
           <div>
             <button type="submit" style={{ marginRight: '0.5rem' }}>
               Search
@@ -292,7 +308,7 @@ const GEO: React.FC = () => {
         {error && <p style={{ color: 'red', marginTop: '0.5rem' }}>{error}</p>}
         {!loading && !error && (
           <p style={{ marginTop: '0.5rem' }}>
-            Earthquake Coordinates shown on map: {earthquakes.length}
+            Selected Earthquakes: {earthquakes.length}
           </p>
         )}
       </div>
