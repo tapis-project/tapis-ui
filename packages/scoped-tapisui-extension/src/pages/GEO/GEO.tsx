@@ -15,8 +15,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 
-let DefaultIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+const EarthquakeIcon = new L.Icon({
+  iconUrl:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -24,10 +25,22 @@ let DefaultIcon = L.icon({
   shadowSize: [41, 41],
 });
 
-L.Marker.prototype.options.icon = DefaultIcon;
+const StationIcon = new L.Icon({
+  iconUrl:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 const GEO: React.FC = () => {
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
+  const [normalizedCoordinates, setNormalizedCoordinates] = useState<
+    [number, number][]
+  >([]);
+  const [allCoordinates, setAllCoordinates] = useState<[number, number][]>([]);
   const [lonMin, setLonMin] = useState<string>('-180');
   const [lonMax, setLonMax] = useState<string>('180');
   const [latMin, setLatMin] = useState<string>('-180');
@@ -49,49 +62,29 @@ const GEO: React.FC = () => {
     setError(null);
 
     try {
-      let lonRanges: [number, number][] = [];
-
-      // Normalize longitudes greater than 180
-      const [lonMin, lonMax] = lonRange;
-
-      if (lonMax > 180) {
-        // Split into two ranges: from lonMin to 180, and -180 to (lonMax - 360)
-        lonRanges = [
-          [lonMin, 180],
-          [-180, lonMax - 360],
-        ];
-      } else {
-        lonRanges = [[lonMin, lonMax]];
-      }
-
-      const allCoordinates: [number, number][] = [];
-
-      for (const [min, max] of lonRanges) {
-        // http://localhost:5050/api/coordinates/
-        const response = await fetch(
-          'https://mspassgeopod.pods.tacc.tapis.io/api/coordinates/',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              lon_range: [min, max],
-              lat_range: latRange,
-            }),
-          }
-        );
-
-        const data = await response.json();
-        if (data.coordinates) {
-          allCoordinates.push(...data.coordinates);
-        } else {
-          setError(data.error || 'Unknown error from backend');
-          break;
+      const response = await fetch(
+        // 'https://mspassgeopod.pods.tacc.tapis.io/api/coordinates/',
+        'http://localhost:5050/api/coordinates/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lon_range: lonRange,
+            lat_range: latRange,
+          }),
         }
-      }
+      );
 
-      setCoordinates(allCoordinates);
+      const data = await response.json();
+      if (data.coordinates) {
+        setCoordinates(data.coordinates);
+        setNormalizedCoordinates(data['normalized_coordinates']);
+        setAllCoordinates(data['all_coordinates']);
+      } else {
+        setError(data.error || 'Unknown error from backend');
+      }
     } catch (err) {
       setError('Error fetching coordinates: ' + err);
     } finally {
@@ -126,8 +119,8 @@ const GEO: React.FC = () => {
       return;
     }
 
-    let lonMinVal = Number(lonMin);
-    let lonMaxVal = Number(lonMax);
+    const lonMinVal = Number(lonMin);
+    const lonMaxVal = Number(lonMax);
     const latMinVal = Number(latMin);
     const latMaxVal = Number(latMax);
 
@@ -143,11 +136,17 @@ const GEO: React.FC = () => {
     }
 
     // Range check
-    /*const outOfRange = (val: number) => val < -180 || val > 180;
-    if ([lonMinVal, lonMaxVal, latMinVal, latMaxVal].some(outOfRange)) {
-      setError('All values must be between -180 and 180.');
+    const lonOutOfRange = (val: number) => val < -540 || val > 540;
+    if ([lonMinVal, lonMaxVal].some(lonOutOfRange)) {
+      setError('Longitude value must be between -540 and 540.');
       return;
-    }*/
+    }
+
+    const latOutOfRange = (val: number) => val < -180 || val > 180;
+    if ([latMinVal, latMaxVal].some(latOutOfRange)) {
+      setError('Latitude value must be between -180 and 180.');
+      return;
+    }
 
     // Order check
     if (lonMinVal > lonMaxVal) {
@@ -225,7 +224,7 @@ const GEO: React.FC = () => {
       }}
     >
       {/* Left Panel: Inputs */}
-      <div style={{ width: '20%', paddingRight: '1rem' }}>
+      <div style={{ width: '20%', paddingRight: '1rem', overflow: 'auto' }}>
         <p>To search by drawing a location box:</p>
         <ul style={{ paddingLeft: '1.2rem', marginTop: '0.5rem' }}>
           <li>Click the top-right button;</li>
@@ -336,20 +335,28 @@ const GEO: React.FC = () => {
             attribution="&copy; OpenStreetMap contributors"
           />
           {coordinates.length > 0 && <FitBounds />}
-          {coordinates.flatMap(([lon, lat], idx) => {
-            const duplicates: [number, number][] = [
-              [lon, lat],
-              [lon - 360, lat],
-              [lon + 360, lat],
-            ];
-
-            return duplicates.map(([dlon, dlat], i) => (
-              <Marker key={`${idx}-${i}`} position={[dlat, dlon]}>
+          {allCoordinates.map(([lon, lat], idx) => {
+            const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
+            const [normLon, normLat] = normalizedCoordinates[normIdx] || [];
+            const markerIcon = EarthquakeIcon;
+            return (
+              <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
                 <Popup>
-                  Longitude: {lon.toFixed(6)}, Latitude: {lat.toFixed(6)}
+                  <strong>Original Coordinate (as your input)</strong>
+                  <br />
+                  Longitude: {lon}
+                  <br />
+                  Latitude: {lat}
+                  <br />
+                  <br />
+                  <strong>Normalized Coordinate (in database)</strong>
+                  <br />
+                  Longitude: {normLon}
+                  <br />
+                  Latitude: {normLat}
                 </Popup>
               </Marker>
-            ));
+            );
           })}
         </MapContainer>
       </div>
