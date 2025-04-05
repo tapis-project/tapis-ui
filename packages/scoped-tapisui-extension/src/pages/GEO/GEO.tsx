@@ -15,13 +15,27 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 
-const EarthquakeIcon = new L.Icon({
-  iconUrl:
-    'https://upload.wikimedia.org/wikipedia/commons/a/a0/Circle_-_black_simple.svg',
-  iconSize: [25, 25], // Adjust size as needed
-  iconAnchor: [12, 12], // Center the icon
-  popupAnchor: [0, -12], // Adjust popup position
-});
+const getEarthquakeIcon = (magnitude: number) => {
+  // Assumption (a rough range)
+  const minMag = 7.0;
+  const maxMag = 9.0;
+
+  const minSize = 25;
+  const maxSize = 40;
+
+  // Clamp and scale
+  const clampedMag = Math.max(minMag, Math.min(maxMag, magnitude));
+  const scale = (clampedMag - minMag) / (maxMag - minMag);
+  const size = minSize + scale * (maxSize - minSize);
+
+  return new L.Icon({
+    iconUrl:
+      'https://upload.wikimedia.org/wikipedia/commons/a/a0/Circle_-_black_simple.svg',
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
+};
 
 const StationIcon = new L.Icon({
   iconUrl:
@@ -34,18 +48,24 @@ const StationIcon = new L.Icon({
 const baseURL = 'https://mspassgeopod.pods.tacc.tapis.io';
 // const baseURL = 'http://localhost:5050';
 
-const GEO: React.FC = () => {
-  const [earthquakes, setEarthquakes] = useState<[number, number][]>([]); // as input
-  const [normalizedEarthquakes, setNormalizedEarthquakes] = useState<
-    [number, number][]
-  >([]); // -180 ~ 180
-  const [allEarthquakes, setAllEarthquakes] = useState<[number, number][]>([]); // -540 ~ 540
+type Coordinate = {
+  lon: number;
+  lat: number;
+  magnitude?: number;
+};
 
-  const [stations, setStations] = useState<[number, number][]>([]);
-  const [normalizedStations, setNormalizedStations] = useState<
-    [number, number][]
-  >([]);
-  const [allStations, setAllStations] = useState<[number, number][]>([]);
+const GEO: React.FC = () => {
+  const [earthquakes, setEarthquakes] = useState<Coordinate[]>([]); // as input
+  const [normalizedEarthquakes, setNormalizedEarthquakes] = useState<
+    Coordinate[]
+  >([]); // -180 ~ 180
+  const [allEarthquakes, setAllEarthquakes] = useState<Coordinate[]>([]); // -540 ~ 540
+
+  const [stations, setStations] = useState<Coordinate[]>([]);
+  const [normalizedStations, setNormalizedStations] = useState<Coordinate[]>(
+    []
+  );
+  const [allStations, setAllStations] = useState<Coordinate[]>([]);
 
   const [showEarthquakes, setShowEarthquakes] = useState(true);
   const [showStations, setShowStations] = useState(true);
@@ -233,7 +253,7 @@ const GEO: React.FC = () => {
       if (!fitBoundsEnabled) return;
 
       // Combine coordinates based on what's enabled
-      let coordinates: [number, number][] = [];
+      let coordinates: Coordinate[] = [];
 
       if (showEarthquakes) coordinates = coordinates.concat(earthquakes);
       if (showStations) coordinates = coordinates.concat(stations);
@@ -241,7 +261,7 @@ const GEO: React.FC = () => {
       if (coordinates.length === 0) return;
 
       const bounds = L.latLngBounds(
-        coordinates.map(([lon, lat]) => [lat, lon])
+        coordinates.map((coord) => [coord.lat, coord.lon])
       );
 
       map.fitBounds(bounds, { padding: [100, 100] });
@@ -475,10 +495,12 @@ const GEO: React.FC = () => {
           {((showEarthquakes && earthquakes.length > 0) ||
             (showStations && stations.length > 0)) && <FitBounds />}
           {showEarthquakes &&
-            allEarthquakes.map(([lon, lat], idx) => {
-              const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
-              const [normLon, normLat] = normalizedEarthquakes[normIdx] || [];
-              const markerIcon = EarthquakeIcon;
+            allEarthquakes.map((coord, idx) => {
+              const { lon, lat, magnitude } = coord;
+              const normCoord = normalizedEarthquakes[Math.floor(idx / 3)];
+              const normLon = normCoord?.lon;
+              const normLat = normCoord?.lat;
+              const markerIcon = getEarthquakeIcon(magnitude ?? 0); // fallback if magnitude is missing
               return (
                 <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
                   <Popup>
@@ -495,14 +517,22 @@ const GEO: React.FC = () => {
                     Longitude: {normLon}
                     <br />
                     Latitude: {normLat}
+                    {magnitude && (
+                      <>
+                        <br />
+                        <strong>Magnitude:</strong> {magnitude}
+                      </>
+                    )}
                   </Popup>
                 </Marker>
               );
             })}
           {showStations &&
-            allStations.map(([lon, lat], idx) => {
-              const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
-              const [normLon, normLat] = normalizedStations[normIdx] || [];
+            allStations.map((coord, idx) => {
+              const { lon, lat } = coord;
+              const normCoord = normalizedStations[Math.floor(idx / 3)];
+              const normLon = normCoord?.lon;
+              const normLat = normCoord?.lat;
               const markerIcon = StationIcon;
               return (
                 <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
