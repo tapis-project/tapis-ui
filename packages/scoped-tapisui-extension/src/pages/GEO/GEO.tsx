@@ -35,12 +35,28 @@ const StationIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
+const baseURL = 'https://mspassgeopod.pods.tacc.tapis.io';
+// const baseURL = 'http://localhost:5050'
+
 const GEO: React.FC = () => {
-  const [earthquakes, setEarthquakes] = useState<[number, number][]>([]);
+  const [earthquakes, setEarthquakes] = useState<[number, number][]>([]); // as input
   const [normalizedEarthquakes, setNormalizedEarthquakes] = useState<
     [number, number][]
+  >([]); // -180 ~ 180
+  const [allEarthquakes, setAllEarthquakes] = useState<[number, number][]>([]); // -540 ~ 540
+
+  const [stations, setStations] = useState<[number, number][]>([]);
+  const [normalizedStations, setNormalizedStations] = useState<
+    [number, number][]
   >([]);
-  const [allEarthquakes, setAllEarthquakes] = useState<[number, number][]>([]);
+  const [allStations, setAllStations] = useState<[number, number][]>([]);
+
+  const [showEarthquakes, setShowEarthquakes] = useState(true);
+  const [showStations, setShowStations] = useState(true);
+
+  const [tempShowEarthquakes, setTempShowEarthquakes] = useState(true);
+  const [tempShowStations, setTempShowStations] = useState(true);
+
   const [lonMin, setLonMin] = useState<string>('-180');
   const [lonMax, setLonMax] = useState<string>('180');
   const [latMin, setLatMin] = useState<string>('-180');
@@ -62,20 +78,16 @@ const GEO: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(
-        'https://mspassgeopod.pods.tacc.tapis.io/api/earthquakes/',
-        // 'http://localhost:5050/api/earthquakes/',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            lon_range: lonRange,
-            lat_range: latRange,
-          }),
-        }
-      );
+      const response = await fetch(baseURL + '/api/earthquakes/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lon_range: lonRange,
+          lat_range: latRange,
+        }),
+      });
 
       const data = await response.json();
       if (data.coordinates) {
@@ -92,9 +104,48 @@ const GEO: React.FC = () => {
     }
   };
 
-  // Fetch all earthquake coordinates on page load
+  const fetchStations = async (
+    lonRange: [number, number],
+    latRange: [number, number]
+  ) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(baseURL + '/api/stations/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lon_range: lonRange,
+          lat_range: latRange,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.coordinates) {
+        setStations(data.coordinates);
+        setNormalizedStations(data['normalized_coordinates']);
+        setAllStations(data['all_coordinates']);
+      } else {
+        setError(data.error || 'Unknown error from backend');
+      }
+    } catch (err) {
+      setError('Error fetching station coordinates: ' + err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch all coordinates on page load
   useEffect(() => {
+    setShowEarthquakes(true);
+    setShowStations(true);
+    setTempShowEarthquakes(true);
+    setTempShowStations(true);
     fetchEarthquakes([-180, 180], [-180, 180]);
+    fetchStations([-180, 180], [-180, 180]);
   }, []);
 
   const clearRectangle = () => {
@@ -107,6 +158,9 @@ const GEO: React.FC = () => {
   const handleSearch = () => {
     setFitBoundsEnabled(true);
     clearRectangle();
+
+    setShowEarthquakes(tempShowEarthquakes);
+    setShowStations(tempShowStations);
 
     // Empty check
     if (
@@ -159,7 +213,10 @@ const GEO: React.FC = () => {
     }
 
     setError(null);
-    fetchEarthquakes([lonMinVal, lonMaxVal], [latMinVal, latMaxVal]);
+    if (showEarthquakes)
+      fetchEarthquakes([lonMinVal, lonMaxVal], [latMinVal, latMaxVal]);
+    if (showStations)
+      fetchStations([lonMinVal, lonMaxVal], [latMinVal, latMaxVal]);
   };
 
   // Component to auto-fit map bounds
@@ -167,13 +224,29 @@ const GEO: React.FC = () => {
     const map = useMap();
 
     useEffect(() => {
-      if (fitBoundsEnabled && earthquakes.length > 0) {
-        const bounds = L.latLngBounds(
-          earthquakes.map(([lon, lat]) => [lat, lon])
-        );
-        map.fitBounds(bounds, { padding: [100, 100] });
-      }
-    }, [earthquakes, map, fitBoundsEnabled]);
+      if (!fitBoundsEnabled) return;
+
+      // Combine coordinates based on what's enabled
+      let coordinates: [number, number][] = [];
+
+      if (showEarthquakes) coordinates = coordinates.concat(earthquakes);
+      if (showStations) coordinates = coordinates.concat(stations);
+
+      if (coordinates.length === 0) return;
+
+      const bounds = L.latLngBounds(
+        coordinates.map(([lon, lat]) => [lat, lon])
+      );
+
+      map.fitBounds(bounds, { padding: [100, 100] });
+    }, [
+      fitBoundsEnabled,
+      showEarthquakes,
+      showStations,
+      earthquakes,
+      stations,
+      map,
+    ]);
 
     return null;
   };
@@ -181,12 +254,17 @@ const GEO: React.FC = () => {
   const handleResetToDefault = () => {
     setFitBoundsEnabled(true);
     clearRectangle();
+    setShowEarthquakes(true);
+    setShowStations(true);
+    setTempShowEarthquakes(true);
+    setTempShowStations(true);
     setLonMin('-180');
     setLonMax('180');
     setLatMin('-180');
     setLatMax('180');
     setError(null);
     fetchEarthquakes([-180, 180], [-180, 180]);
+    fetchStations([-180, 180], [-180, 180]);
   };
 
   const onDraw = (e) => {
@@ -291,6 +369,26 @@ const GEO: React.FC = () => {
             </div>
           </div>
 
+          {/* Boolean Toggle Checkboxes */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label style={{ marginBottom: 0 }}>
+              <input
+                type="checkbox"
+                checked={tempShowEarthquakes}
+                onChange={(e) => setTempShowEarthquakes(e.target.checked)}
+              />
+              &nbsp;Show Earthquakes
+            </label>
+            <label style={{ marginBottom: 0 }}>
+              <input
+                type="checkbox"
+                checked={tempShowStations}
+                onChange={(e) => setTempShowStations(e.target.checked)}
+              />
+              &nbsp;Show Stations
+            </label>
+          </div>
+
           {/* Buttons */}
           <div>
             <button type="submit" style={{ marginRight: '0.5rem' }}>
@@ -307,9 +405,23 @@ const GEO: React.FC = () => {
         )}
         {error && <p style={{ color: 'red', marginTop: '0.5rem' }}>{error}</p>}
         {!loading && !error && (
-          <p style={{ marginTop: '0.5rem' }}>
-            Selected Earthquakes: {earthquakes.length}
-          </p>
+          <>
+            {showEarthquakes && (
+              <p style={{ marginTop: '0.5rem', marginBottom: 0 }}>
+                Selected Earthquakes: {earthquakes.length}
+              </p>
+            )}
+            {showStations && (
+              <p
+                style={{
+                  marginTop: showEarthquakes ? 0 : '0.5rem',
+                  marginBottom: 0,
+                }}
+              >
+                Selected Stations: {stations.length}
+              </p>
+            )}
+          </>
         )}
       </div>
 
@@ -350,30 +462,58 @@ const GEO: React.FC = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; OpenStreetMap contributors"
           />
-          {earthquakes.length > 0 && <FitBounds />}
-          {allEarthquakes.map(([lon, lat], idx) => {
-            const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
-            const [normLon, normLat] = normalizedEarthquakes[normIdx] || [];
-            const markerIcon = EarthquakeIcon;
-            return (
-              <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
-                <Popup>
-                  <strong>Original Coordinate (as your input)</strong>
-                  <br />
-                  Longitude: {lon}
-                  <br />
-                  Latitude: {lat}
-                  <br />
-                  <br />
-                  <strong>Normalized Coordinate (in database)</strong>
-                  <br />
-                  Longitude: {normLon}
-                  <br />
-                  Latitude: {normLat}
-                </Popup>
-              </Marker>
-            );
-          })}
+          {((showEarthquakes && earthquakes.length > 0) ||
+            (showStations && stations.length > 0)) && <FitBounds />}
+          {showEarthquakes &&
+            allEarthquakes.map(([lon, lat], idx) => {
+              const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
+              const [normLon, normLat] = normalizedEarthquakes[normIdx] || [];
+              const markerIcon = EarthquakeIcon;
+              return (
+                <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
+                  <Popup>
+                    <strong>Earthquake</strong>
+                    <br />
+                    <strong>Original Coordinate (as your input)</strong>
+                    <br />
+                    Longitude: {lon}
+                    <br />
+                    Latitude: {lat}
+                    <br />
+                    <strong>Normalized Coordinate (in database)</strong>
+                    <br />
+                    Longitude: {normLon}
+                    <br />
+                    Latitude: {normLat}
+                  </Popup>
+                </Marker>
+              );
+            })}
+          {showStations &&
+            allStations.map(([lon, lat], idx) => {
+              const normIdx = Math.floor(idx / 3); // group of 3 entries per normalized coordinate
+              const [normLon, normLat] = normalizedStations[normIdx] || [];
+              const markerIcon = StationIcon;
+              return (
+                <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
+                  <Popup>
+                    <strong>Station</strong>
+                    <br />
+                    <strong>Original Coordinate (as your input)</strong>
+                    <br />
+                    Longitude: {lon}
+                    <br />
+                    Latitude: {lat}
+                    <br />
+                    <strong>Normalized Coordinate (in database)</strong>
+                    <br />
+                    Longitude: {normLon}
+                    <br />
+                    Latitude: {normLat}
+                  </Popup>
+                </Marker>
+              );
+            })}
         </MapContainer>
       </div>
     </div>
