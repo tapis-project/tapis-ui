@@ -17,26 +17,22 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 
 const EarthquakeIcon = new L.Icon({
   iconUrl:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
+    'https://upload.wikimedia.org/wikipedia/commons/a/a0/Circle_-_black_simple.svg',
+  iconSize: [25, 25], // Adjust size as needed
+  iconAnchor: [12, 12], // Center the icon
+  popupAnchor: [0, -12], // Adjust popup position
 });
 
 const StationIcon = new L.Icon({
   iconUrl:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
+    'https://upload.wikimedia.org/wikipedia/commons/1/19/Triangle_blue.svg',
+  iconSize: [25, 25],
+  iconAnchor: [12, 12],
+  popupAnchor: [0, -12],
 });
 
 const baseURL = 'https://mspassgeopod.pods.tacc.tapis.io';
-// const baseURL = 'http://localhost:5050'
+// const baseURL = 'http://localhost:5050';
 
 const GEO: React.FC = () => {
   const [earthquakes, setEarthquakes] = useState<[number, number][]>([]); // as input
