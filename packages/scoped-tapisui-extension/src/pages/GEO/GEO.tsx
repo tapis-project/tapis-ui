@@ -57,10 +57,16 @@ const GEO: React.FC = () => {
   const [tempShowEarthquakes, setTempShowEarthquakes] = useState(true);
   const [tempShowStations, setTempShowStations] = useState(true);
 
-  const [lonMin, setLonMin] = useState<string>('-180');
-  const [lonMax, setLonMax] = useState<string>('180');
-  const [latMin, setLatMin] = useState<string>('-180');
-  const [latMax, setLatMax] = useState<string>('180');
+  const lonMinRef = useRef<HTMLInputElement>(null);
+  const lonMaxRef = useRef<HTMLInputElement>(null);
+  const latMinRef = useRef<HTMLInputElement>(null);
+  const latMaxRef = useRef<HTMLInputElement>(null);
+
+  const [tempLonMin, setTempLonMin] = useState<string>('-180');
+  const [tempLonMax, setTempLonMax] = useState<string>('180');
+  const [tempLatMin, setTempLatMin] = useState<string>('-180');
+  const [tempLatMax, setTempLatMax] = useState<string>('180');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rectangleLayer, setRectangleLayer] = useState<L.Rectangle | null>(
@@ -161,22 +167,26 @@ const GEO: React.FC = () => {
 
     setShowEarthquakes(tempShowEarthquakes);
     setShowStations(tempShowStations);
+    const lonMinStr = lonMinRef.current?.value ?? '';
+    const lonMaxStr = lonMaxRef.current?.value ?? '';
+    const latMinStr = latMinRef.current?.value ?? '';
+    const latMaxStr = latMaxRef.current?.value ?? '';
 
     // Empty check
     if (
-      lonMin.trim() === '' ||
-      lonMax.trim() === '' ||
-      latMin.trim() === '' ||
-      latMax.trim() === ''
+      lonMinStr.trim() === '' ||
+      lonMaxStr.trim() === '' ||
+      latMinStr.trim() === '' ||
+      latMaxStr.trim() === ''
     ) {
       setError('All fields are required.');
       return;
     }
 
-    const lonMinVal = Number(lonMin);
-    const lonMaxVal = Number(lonMax);
-    const latMinVal = Number(latMin);
-    const latMaxVal = Number(latMax);
+    const lonMinVal = Number(lonMinStr);
+    const lonMaxVal = Number(lonMaxStr);
+    const latMinVal = Number(latMinStr);
+    const latMaxVal = Number(latMaxStr);
 
     // NaN check
     if (
@@ -258,10 +268,10 @@ const GEO: React.FC = () => {
     setShowStations(true);
     setTempShowEarthquakes(true);
     setTempShowStations(true);
-    setLonMin('-180');
-    setLonMax('180');
-    setLatMin('-180');
-    setLatMax('180');
+    setTempLonMin('-180');
+    setTempLonMax('180');
+    setTempLatMin('-180');
+    setTempLatMax('180');
     setError(null);
     fetchEarthquakes([-180, 180], [-180, 180]);
     fetchStations([-180, 180], [-180, 180]);
@@ -283,10 +293,10 @@ const GEO: React.FC = () => {
       const southWest = bounds.getSouthWest();
       const northEast = bounds.getNorthEast();
 
-      setLonMin(southWest.lng.toFixed(6));
-      setLatMin(southWest.lat.toFixed(6));
-      setLonMax(northEast.lng.toFixed(6));
-      setLatMax(northEast.lat.toFixed(6));
+      setTempLonMin(southWest.lng.toFixed(6));
+      setTempLatMin(southWest.lat.toFixed(6));
+      setTempLonMax(northEast.lng.toFixed(6));
+      setTempLatMax(northEast.lat.toFixed(6));
 
       featureGroupRef.current?.addLayer(layer);
       setRectangleLayer(layer);
@@ -334,16 +344,18 @@ const GEO: React.FC = () => {
             <label>Longitude (Min / Max):</label>
             <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
               <input
+                ref={lonMinRef}
                 style={{ width: '50%' }}
                 placeholder="Min"
-                value={lonMin}
-                onChange={(e) => setLonMin(e.target.value)}
+                value={tempLonMin}
+                onChange={(e) => setTempLonMin(e.target.value)}
               />
               <input
+                ref={lonMaxRef}
                 style={{ width: '50%' }}
                 placeholder="Max"
-                value={lonMax}
-                onChange={(e) => setLonMax(e.target.value)}
+                value={tempLonMax}
+                onChange={(e) => setTempLonMax(e.target.value)}
               />
             </div>
           </div>
@@ -355,16 +367,18 @@ const GEO: React.FC = () => {
             <label>Latitude (Min / Max):</label>
             <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
               <input
+                ref={latMinRef}
                 style={{ width: '50%' }}
                 placeholder="Min"
-                value={latMin}
-                onChange={(e) => setLatMin(e.target.value)}
+                value={tempLatMin}
+                onChange={(e) => setTempLatMin(e.target.value)}
               />
               <input
+                ref={latMaxRef}
                 style={{ width: '50%' }}
                 placeholder="Max"
-                value={latMax}
-                onChange={(e) => setLatMax(e.target.value)}
+                value={tempLatMax}
+                onChange={(e) => setTempLatMax(e.target.value)}
               />
             </div>
           </div>
