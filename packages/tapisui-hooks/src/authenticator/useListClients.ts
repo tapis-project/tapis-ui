@@ -4,11 +4,7 @@ import { Authenticator } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-const useListClients = (
-  params: Authenticator.ListClientsRequest,
-  basepath: string,
-  access_token: any
-) => {
+const useListClients = (params: Authenticator.ListClientsRequest = {}) => {
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<Authenticator.RespListClients, Error>(
     [QueryKeys.listClients, accessToken, params],
