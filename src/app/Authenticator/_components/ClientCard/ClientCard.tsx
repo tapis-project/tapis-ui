@@ -33,7 +33,6 @@ type ClientCardProps = {
 
 const ClientCard: React.FC<ClientCardProps> = ({client }) => {
   const [menuActive, setMenuActive] = useState(false);
-  const location = useLocation()
   return (
     <div className={styles['card']}>
     <Link
@@ -52,23 +51,5 @@ const ClientCard: React.FC<ClientCardProps> = ({client }) => {
   );
 };
 
-const ClientDetailsRedirect: React.FC = () => {
-  const location = useLocation<{ callbackUrl: string }>();
-  const history = useHistory();
 
-  useEffect(() => {
-    if (location.state?.callbackUrl) {
-      window.location.href = location.state.callbackUrl;
-    } else {
-      // fallback if no URL provided
-      history.replace('/');
-    }
-  }, [location, history]);
-
-  return <p>Redirecting...</p>;
-};
-
-
-
-export {ClientDetailsRedirect};
 export default ClientCard;
