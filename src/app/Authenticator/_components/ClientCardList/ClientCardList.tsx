@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Authenticator as Hooks, useTapisConfig } from "@tapis/tapisui-hooks";
-import styles from "../ClientCard/ClientCard.module.scss";
-import ClientCard from "../ClientCard";
-import { Skeleton, Pagination } from "@mui/material";
-import { Workflows } from "@tapis/tapis-typescript";
-import { SectionHeader } from "@tapis/tapisui-common";
-import { Wysiwyg } from "@mui/icons-material";
-import { Link } from "react-router-dom";
-import { Toolbar } from "app/Workflows/_components";
+import React, { useState } from 'react';
+import { Authenticator as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import styles from '../ClientCard/ClientCard.module.scss';
+import ClientCard from '../ClientCard';
+import { Skeleton, Pagination } from '@mui/material';
+import { Workflows } from '@tapis/tapis-typescript';
+import { SectionHeader } from '@tapis/tapisui-common';
+import { Wysiwyg } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+import { Toolbar } from 'app/Workflows/_components';
 
 type ClientCardListProps = {
   cardsPerPage?: number;
@@ -23,17 +23,17 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
   const colStyle = `col-${columns}`;
   return (
     <div>
-      <div className={styles["cards-container"]}>
+      <div className={styles['cards-container']}>
         <SectionHeader>
           <span>
-            <Wysiwyg fontSize={"large"} /> Clients{" "}
+            <Wysiwyg fontSize={'large'} /> Clients{' '}
             {clients && `[${clients.result!.length}]`}
           </span>
           {/* <Toolbar groupId={clients?.version} buttons={['createpipeline']} /> */}
         </SectionHeader>
         {clients && clients.result!.length > 0 && (
           <Pagination
-            className={styles["paginator"]}
+            className={styles['paginator']}
             shape="rounded"
             count={Math.ceil(clients.result!.length / cardsPerPage)}
             showFirstButton
@@ -46,20 +46,20 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
         )}
         {isLoading ? (
           <div
-            className={`${styles["cards"]} ${styles["skeletons"]} ${styles[colStyle]}`}
+            className={`${styles['cards']} ${styles['skeletons']} ${styles[colStyle]}`}
           >
             {[...Array(cardsPerPage).keys()].map(() => {
               return (
                 <Skeleton
                   variant="rectangular"
                   height="120px"
-                  className={`${styles["card"]} ${styles["skeleton"]}`}
+                  className={`${styles['card']} ${styles['skeleton']}`}
                 />
               );
             })}
           </div>
         ) : (
-          <div className={`${styles["cards"]} ${styles[colStyle]}`}>
+          <div className={`${styles['cards']} ${styles[colStyle]}`}>
             {clients?.result &&
               clients.result.map((client, i) => {
                 // Determine the page value for each card given that there are
