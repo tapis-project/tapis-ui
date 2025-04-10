@@ -20,7 +20,6 @@ const useExtension = () => {
 
   console.log({ extension, extensionName, services: { workflows: { tasks } } });
 
-
   return { extension, extensionName, services: { workflows: { tasks } } };
 };
 
