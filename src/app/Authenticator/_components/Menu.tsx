@@ -1,7 +1,7 @@
-import React from 'react';
-import AuthenticatorHelp from 'app/_components/Help/AuthenticatorHelp';
-import { SectionHeader } from '@tapis/tapisui-common';
-import { ClientCardList } from './ClientCardList';
+import React from "react";
+import AuthenticatorHelp from "app/_components/Help/AuthenticatorHelp";
+import { SectionHeader } from "@tapis/tapisui-common";
+import { ClientCardList } from "./ClientCardList";
 
 const Menu: React.FC = () => {
   return (
