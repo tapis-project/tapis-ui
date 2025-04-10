@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Authenticator as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
-import styles from './ClientCardList.module.scss';
+import styles from '../ClientCard/ClientCard.module.scss';
 import ClientCard from '../ClientCard';
 import { Skeleton, Pagination } from '@mui/material';
 import { Workflows } from '@tapis/tapis-typescript';
 import { SectionHeader } from '@tapis/tapisui-common';
-import { AccountTree } from '@mui/icons-material';
+import { Wysiwyg } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { Toolbar } from 'app/Workflows/_components';
 
@@ -26,10 +26,10 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
       <div className={styles['cards-container']}>
         <SectionHeader>
           <span>
-            <AccountTree fontSize={'large'} /> Pipelines{' '}
+            <Wysiwyg fontSize={'large'} /> Clients{' '}
             {clients && `[${clients.result!.length}]`}
           </span>
-          {/* <Toolbar groupId={groupId} buttons={['createpipeline']} /> */}
+          {/* <Toolbar groupId={clients?.version} buttons={['createpipeline']} /> */}
         </SectionHeader>
         {clients && clients.result!.length > 0 && (
           <Pagination
