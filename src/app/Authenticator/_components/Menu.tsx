@@ -10,7 +10,7 @@ const Menu: React.FC = () => {
         Authenticator
         <AuthenticatorHelp />
       </SectionHeader>
-      <ClientCardList/>
+      <ClientCardList />
     </div>
   );
 };

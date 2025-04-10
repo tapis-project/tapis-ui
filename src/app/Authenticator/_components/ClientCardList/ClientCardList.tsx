@@ -71,7 +71,7 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
                 ) {
                   return <></>;
                 }
-                return <ClientCard client={client}  />;
+                return <ClientCard client={client} />;
               })}
           </div>
         )}
