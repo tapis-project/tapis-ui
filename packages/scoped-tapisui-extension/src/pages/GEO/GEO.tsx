@@ -210,13 +210,10 @@ const GEO: React.FC = () => {
       map.removeLayer(markerLayerRef.current);
     }
 
-    const bounds = map.getBounds();
     const markers: L.Marker[] = [];
 
     if (showEarthquakes) {
       allEarthquakes.forEach((coord, idx) => {
-        if (!bounds.contains([coord.lat, coord.lon])) return;
-
         const icon = getCachedEarthquakeIcon(coord.magnitude ?? 0);
         const marker = L.marker([coord.lat, coord.lon], { icon });
 
@@ -250,8 +247,6 @@ const GEO: React.FC = () => {
 
     if (showStations) {
       allStations.forEach((coord, idx) => {
-        if (!bounds.contains([coord.lat, coord.lon])) return;
-
         const marker = L.marker([coord.lat, coord.lon], { icon: StationIcon });
 
         const normCoord = normalizedStations[Math.floor(idx / 3)];
