@@ -1,15 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { SectionHeader } from '@tapis/tapisui-common';
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap,
-  FeatureGroup,
-  Rectangle,
-} from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, FeatureGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
