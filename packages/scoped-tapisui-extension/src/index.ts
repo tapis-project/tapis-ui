@@ -31,8 +31,7 @@ const extension = createExtension({
   showSecondarySideBar: false,
   authMethods: ['implicit', 'password'],
   logo: {
-    filePath:
-      './logo_scoped.png',
+    filePath: './logo_scoped.png',
     text: 'SCOPED',
   },
   icon: {
