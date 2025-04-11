@@ -404,19 +404,24 @@ const GEO: React.FC = () => {
   };
 
   const handleResetToDefault = () => {
-    setFitBoundsEnabled(true);
-    clearRectangle();
-    setShowEarthquakes(true);
-    setShowStations(true);
-    setTempShowEarthquakes(true);
-    setTempShowStations(true);
+    // Set UI values (simulate user inputs)
     setTempLonMin('-180');
     setTempLonMax('180');
     setTempLatMin('-180');
     setTempLatMax('180');
+
+    setTempShowEarthquakes(true);
+    setTempShowStations(true);
+
+    // Apply visual reset
+    setFitBoundsEnabled(true);
+    clearRectangle();
     setError(null);
-    fetchEarthquakes([-180, 180], [-180, 180]);
-    fetchStations([-180, 180], [-180, 180]);
+
+    // 👇 simulate clicking search button
+    setTimeout(() => {
+      handleSearch();
+    }, 0);
   };
 
   const onDraw = (e) => {
