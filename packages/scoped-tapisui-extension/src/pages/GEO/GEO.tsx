@@ -229,10 +229,7 @@ const GEO: React.FC = () => {
           }
         `;
 
-        // Defer popup creation until marker is clicked
-        marker.on('click', () => {
-          marker.bindPopup(generatePopupContent()).openPopup();
-        });
+        marker.bindPopup(generatePopupContent());
         markers.push(marker);
       });
     }
@@ -256,10 +253,7 @@ const GEO: React.FC = () => {
           Lat: ${normLat}
         `;
 
-        // Defer popup creation until marker is clicked
-        marker.on('click', () => {
-          marker.bindPopup(generatePopupContent()).openPopup();
-        });
+        marker.bindPopup(generatePopupContent());
 
         markers.push(marker);
       });
