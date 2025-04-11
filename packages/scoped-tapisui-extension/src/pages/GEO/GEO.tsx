@@ -86,12 +86,15 @@ const GEO: React.FC = () => {
   const [tempLatMin, setTempLatMin] = useState<string>('-180');
   const [tempLatMax, setTempLatMax] = useState<string>('180');
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rectangleLayer, setRectangleLayer] = useState<L.Rectangle | null>(
     null
   );
   const [fitBoundsEnabled, setFitBoundsEnabled] = useState(false);
+
+  const [earthquakeFetchDone, setEarthquakeFetchDone] = useState(false);
+  const [stationFetchDone, setStationFetchDone] = useState(false);
 
   const featureGroupRef = useRef<L.FeatureGroup>(null);
   const mapRef = useRef<L.Map>(null);
@@ -114,7 +117,7 @@ const GEO: React.FC = () => {
     lonRange: [number, number],
     latRange: [number, number]
   ) => {
-    setLoading(true);
+    setEarthquakeFetchDone(false);
     setError(null);
 
     try {
@@ -140,7 +143,7 @@ const GEO: React.FC = () => {
     } catch (err) {
       setError('Error fetching earthquake coordinates: ' + err);
     } finally {
-      setLoading(false);
+      setEarthquakeFetchDone(true);
     }
   };
 
@@ -148,7 +151,7 @@ const GEO: React.FC = () => {
     lonRange: [number, number],
     latRange: [number, number]
   ) => {
-    setLoading(true);
+    setStationFetchDone(false);
     setError(null);
 
     try {
@@ -174,12 +177,15 @@ const GEO: React.FC = () => {
     } catch (err) {
       setError('Error fetching station coordinates: ' + err);
     } finally {
-      setLoading(false);
+      setStationFetchDone(true);
     }
   };
 
   // Fetch all coordinates on page load
   useEffect(() => {
+    setLoading(true);
+    setEarthquakeFetchDone(false);
+    setStationFetchDone(false);
     setShowEarthquakes(true);
     setShowStations(true);
     setTempShowEarthquakes(true);
@@ -187,6 +193,12 @@ const GEO: React.FC = () => {
     fetchEarthquakes([-180, 180], [-180, 180]);
     fetchStations([-180, 180], [-180, 180]);
   }, []);
+
+  useEffect(() => {
+    if (earthquakeFetchDone && stationFetchDone) {
+      setLoading(false); // ✅ only when both are truly done
+    }
+  }, [earthquakeFetchDone, stationFetchDone]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -294,6 +306,10 @@ const GEO: React.FC = () => {
   };
 
   const handleSearch = () => {
+    setLoading(true);
+    setEarthquakeFetchDone(false);
+    setStationFetchDone(false);
+
     setFitBoundsEnabled(true);
     clearRectangle();
 
