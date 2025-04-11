@@ -27,11 +27,22 @@ const useTapisConfig = () => {
   ): Promise<void> => {
     if (!resp) {
       Cookies.remove('tapis-token');
+      // Requires the correct domain as the cookie is set to the domain to remove
+      Cookies.remove('X-Tapis-Token', {domain: basePath.replace("https://", ".").replace("http://", ".")} )
       await refetch();
       return;
     }
+
     const expires = new Date(resp.expires_at ?? 0);
+
     Cookies.set('tapis-token', JSON.stringify(resp), { expires });
+    // Need to create wildcard path from current basePath
+    // basePath:   https://scoped.tapis.io, must turn into .scoped.tapis.io
+    Cookies.set('X-Tapis-Token', resp.access_token ?? '', {
+      expires,
+      domain: basePath.replace("https://", ".").replace("http://", "."),
+      secure: true,
+    });
     await refetch();
   };
 
