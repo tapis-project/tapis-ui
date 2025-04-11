@@ -14,13 +14,16 @@ import { EditControl } from 'react-leaflet-draw';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet-canvas-markers';
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 const getEarthquakeIcon = (magnitude: number) => {
   // Assumption (a rough range)
-  const minMag = 7.0;
+  const minMag = 4.5;
   const maxMag = 9.0;
 
-  const minSize = 25;
+  const minSize = 15;
   const maxSize = 40;
 
   // Clamp and scale
@@ -40,9 +43,9 @@ const getEarthquakeIcon = (magnitude: number) => {
 const StationIcon = new L.Icon({
   iconUrl:
     'https://upload.wikimedia.org/wikipedia/commons/1/19/Triangle_blue.svg',
-  iconSize: [25, 25],
-  iconAnchor: [12, 12],
-  popupAnchor: [0, -12],
+  iconSize: [15, 15],
+  iconAnchor: [7, 7],
+  popupAnchor: [0, -7],
 });
 
 const baseURL = 'https://mspassgeopod.pods.tacc.tapis.io';
@@ -91,6 +94,21 @@ const GEO: React.FC = () => {
   const [fitBoundsEnabled, setFitBoundsEnabled] = useState(false);
 
   const featureGroupRef = useRef<L.FeatureGroup>(null);
+  const mapRef = useRef<L.Map>(null);
+
+  const markerLayerRef = useRef<L.LayerGroup | null>(null);
+
+  const earthquakeIconCache = useRef<Map<number, L.Icon>>(new Map());
+
+  const getCachedEarthquakeIcon = (magnitude: number) => {
+    const mag = Math.round((magnitude ?? 0) * 10) / 10; // round to 1 decimal
+    if (earthquakeIconCache.current.has(mag))
+      return earthquakeIconCache.current.get(mag)!;
+
+    const icon = getEarthquakeIcon(mag);
+    earthquakeIconCache.current.set(mag, icon);
+    return icon;
+  };
 
   const fetchEarthquakes = async (
     lonRange: [number, number],
@@ -169,6 +187,104 @@ const GEO: React.FC = () => {
     fetchEarthquakes([-180, 180], [-180, 180]);
     fetchStations([-180, 180], [-180, 180]);
   }, []);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
+
+    // Clear previous marker layer if it exists
+    if (markerLayerRef.current) {
+      markerLayerRef.current.clearLayers();
+      map.removeLayer(markerLayerRef.current);
+    }
+
+    const bounds = map.getBounds();
+    const markers: L.Marker[] = [];
+
+    if (showEarthquakes) {
+      allEarthquakes.forEach((coord, idx) => {
+        if (!bounds.contains([coord.lat, coord.lon])) return;
+
+        const icon = getCachedEarthquakeIcon(coord.magnitude ?? 0);
+        const marker = L.marker([coord.lat, coord.lon], { icon });
+
+        const normCoord = normalizedEarthquakes[Math.floor(idx / 3)];
+        const normLon = normCoord?.lon;
+        const normLat = normCoord?.lat;
+
+        // Define popup content generator
+        const generatePopupContent = () => `
+          <strong>Earthquake</strong><br/>
+          <strong>Original Coordinate (as your input)</strong><br/>
+          Lon: ${coord.lon}<br/>
+          Lat: ${coord.lat}<br/>
+          <strong>Normalized Coordinate (in database)</strong><br/>
+          Lon: ${normLon}<br/>
+          Lat: ${normLat}<br/>
+          ${
+            coord.magnitude
+              ? `<strong>Magnitude:</strong> ${coord.magnitude}`
+              : ''
+          }
+        `;
+
+        // Defer popup creation until marker is clicked
+        marker.on('click', () => {
+          marker.bindPopup(generatePopupContent()).openPopup();
+        });
+        markers.push(marker);
+      });
+    }
+
+    if (showStations) {
+      allStations.forEach((coord, idx) => {
+        if (!bounds.contains([coord.lat, coord.lon])) return;
+
+        const marker = L.marker([coord.lat, coord.lon], { icon: StationIcon });
+
+        const normCoord = normalizedStations[Math.floor(idx / 3)];
+        const normLon = normCoord?.lon;
+        const normLat = normCoord?.lat;
+
+        // Define popup content generator
+        const generatePopupContent = () => `
+          <strong>Station</strong><br/>
+          <strong>Original Coordinate (as your input)</strong><br/>
+          Lon: ${coord.lon}<br/>
+          Lat: ${coord.lat}<br/>
+          <strong>Normalized Coordinate (in database)</strong><br/>
+          Lon: ${normLon}<br/>
+          Lat: ${normLat}
+        `;
+
+        // Defer popup creation until marker is clicked
+        marker.on('click', () => {
+          marker.bindPopup(generatePopupContent()).openPopup();
+        });
+
+        markers.push(marker);
+      });
+    }
+
+    // Create a new marker layer group and add it all at once
+    const layerGroup = L.markerClusterGroup({
+      disableClusteringAtZoom: 0, // 👈 disables visual clustering
+      chunkedLoading: true, // 👈 enables batching
+      chunkDelay: 50, // 👈 throttle updates (optional)
+      maxClusterRadius: 1, // 👈 disables grouping logic
+    });
+    layerGroup.addLayers(markers);
+
+    layerGroup.addTo(map);
+    markerLayerRef.current = layerGroup;
+  }, [
+    allEarthquakes,
+    allStations,
+    showEarthquakes,
+    showStations,
+    normalizedEarthquakes,
+    normalizedStations,
+  ]);
 
   const clearRectangle = () => {
     if (rectangleLayer) {
@@ -468,6 +584,7 @@ const GEO: React.FC = () => {
           ]}
           maxBoundsViscosity={1.0} // fully restrict dragging outside bounds
           style={{ height: '100%', width: '100%' }}
+          ref={mapRef}
         >
           <FeatureGroup ref={featureGroupRef}>
             <EditControl
@@ -494,66 +611,6 @@ const GEO: React.FC = () => {
           />
           {((showEarthquakes && earthquakes.length > 0) ||
             (showStations && stations.length > 0)) && <FitBounds />}
-          {showEarthquakes &&
-            allEarthquakes.map((coord, idx) => {
-              const { lon, lat, magnitude } = coord;
-              const normCoord = normalizedEarthquakes[Math.floor(idx / 3)];
-              const normLon = normCoord?.lon;
-              const normLat = normCoord?.lat;
-              const markerIcon = getEarthquakeIcon(magnitude ?? 0); // fallback if magnitude is missing
-              return (
-                <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
-                  <Popup>
-                    <strong>Earthquake</strong>
-                    <br />
-                    <strong>Original Coordinate (as your input)</strong>
-                    <br />
-                    Longitude: {lon}
-                    <br />
-                    Latitude: {lat}
-                    <br />
-                    <strong>Normalized Coordinate (in database)</strong>
-                    <br />
-                    Longitude: {normLon}
-                    <br />
-                    Latitude: {normLat}
-                    {magnitude && (
-                      <>
-                        <br />
-                        <strong>Magnitude:</strong> {magnitude}
-                      </>
-                    )}
-                  </Popup>
-                </Marker>
-              );
-            })}
-          {showStations &&
-            allStations.map((coord, idx) => {
-              const { lon, lat } = coord;
-              const normCoord = normalizedStations[Math.floor(idx / 3)];
-              const normLon = normCoord?.lon;
-              const normLat = normCoord?.lat;
-              const markerIcon = StationIcon;
-              return (
-                <Marker key={idx} position={[lat, lon]} icon={markerIcon}>
-                  <Popup>
-                    <strong>Station</strong>
-                    <br />
-                    <strong>Original Coordinate (as your input)</strong>
-                    <br />
-                    Longitude: {lon}
-                    <br />
-                    Latitude: {lat}
-                    <br />
-                    <strong>Normalized Coordinate (in database)</strong>
-                    <br />
-                    Longitude: {normLon}
-                    <br />
-                    Latitude: {normLat}
-                  </Popup>
-                </Marker>
-              );
-            })}
         </MapContainer>
       </div>
     </div>
