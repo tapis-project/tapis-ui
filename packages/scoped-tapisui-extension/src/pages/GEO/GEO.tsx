@@ -275,10 +275,9 @@ const GEO: React.FC = () => {
 
     // Create a new marker layer group and add it all at once
     const layerGroup = L.markerClusterGroup({
-      disableClusteringAtZoom: 0, // 👈 disables visual clustering
-      chunkedLoading: true, // 👈 enables batching
-      chunkDelay: 50, // 👈 throttle updates (optional)
-      maxClusterRadius: 1, // 👈 disables grouping logic
+      chunkedLoading: true,
+      chunkDelay: 50,
+      maxClusterRadius: 40, // ✅ Enables visual grouping of nearby markers
     });
     layerGroup.addLayers(markers);
 
