@@ -14,7 +14,7 @@ const SeismoDB: React.FC = () => {
     >
       <iframe
         style={{ flexGrow: 1, border: 'none' }}
-        src="https://mon.pods.tacc.develop.tapis.io/"
+        src="https://mon.pods.scoped.tapis.io/"
       />
     </div>
   );
