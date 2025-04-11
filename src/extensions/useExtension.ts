@@ -9,7 +9,7 @@ const useExtension = () => {
   let extension = undefined;
   let extensionName = undefined;
   for (extensionName in registeredExtensions) {
-    console.log({extensionName})
+    console.log({ extensionName });
     if (registeredExtensions[extensionName].baseUrls.includes(basePath)) {
       extension = extensions[extensionName];
       break;
@@ -17,7 +17,7 @@ const useExtension = () => {
     extensionName = undefined;
   }
 
-  console.log({ extension, extensionName, services: { workflows: { tasks } } })
+  console.log({ extension, extensionName, services: { workflows: { tasks } } });
 
   return { extension, extensionName, services: { workflows: { tasks } } };
 };
