@@ -189,7 +189,7 @@ const GEO: React.FC = () => {
     ) {
       setLoading(false); // ✅ only when both are truly done
     }
-  }, [earthquakeFetchDone, stationFetchDone]);
+  }, [earthquakeFetchDone, stationFetchDone, showEarthquakes, showStations]);
 
   useEffect(() => {
     if (!mapRef.current) return;
