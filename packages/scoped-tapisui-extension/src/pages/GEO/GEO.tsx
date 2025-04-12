@@ -54,13 +54,11 @@ const GEO: React.FC = () => {
   const [normalizedEarthquakes, setNormalizedEarthquakes] = useState<
     Coordinate[]
   >([]); // -180 ~ 180
-  const [allEarthquakes, setAllEarthquakes] = useState<Coordinate[]>([]); // -540 ~ 540
 
   const [stations, setStations] = useState<Coordinate[]>([]);
   const [normalizedStations, setNormalizedStations] = useState<Coordinate[]>(
     []
   );
-  const [allStations, setAllStations] = useState<Coordinate[]>([]);
 
   const [showEarthquakes, setShowEarthquakes] = useState(true);
   const [showStations, setShowStations] = useState(true);
@@ -128,7 +126,6 @@ const GEO: React.FC = () => {
       if (data.coordinates) {
         setEarthquakes(data.coordinates);
         setNormalizedEarthquakes(data['normalized_coordinates']);
-        setAllEarthquakes(data['all_coordinates']);
       } else {
         setError(data.error || 'Unknown error from backend');
       }
@@ -162,7 +159,6 @@ const GEO: React.FC = () => {
       if (data.coordinates) {
         setStations(data.coordinates);
         setNormalizedStations(data['normalized_coordinates']);
-        setAllStations(data['all_coordinates']);
       } else {
         setError(data.error || 'Unknown error from backend');
       }
@@ -187,7 +183,10 @@ const GEO: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (earthquakeFetchDone && stationFetchDone) {
+    if (
+      ((showEarthquakes && earthquakeFetchDone) || !showEarthquakes) &&
+      ((showStations && stationFetchDone) || !showStations)
+    ) {
       setLoading(false); // ✅ only when both are truly done
     }
   }, [earthquakeFetchDone, stationFetchDone]);
@@ -205,11 +204,11 @@ const GEO: React.FC = () => {
     const markers: L.Marker[] = [];
 
     if (showEarthquakes) {
-      allEarthquakes.forEach((coord, idx) => {
+      earthquakes.forEach((coord, idx) => {
         const icon = getCachedEarthquakeIcon(coord.magnitude ?? 0);
         const marker = L.marker([coord.lat, coord.lon], { icon });
 
-        const normCoord = normalizedEarthquakes[Math.floor(idx / 3)];
+        const normCoord = normalizedEarthquakes[idx];
         const normLon = normCoord?.lon;
         const normLat = normCoord?.lat;
 
@@ -235,10 +234,10 @@ const GEO: React.FC = () => {
     }
 
     if (showStations) {
-      allStations.forEach((coord, idx) => {
+      stations.forEach((coord, idx) => {
         const marker = L.marker([coord.lat, coord.lon], { icon: StationIcon });
 
-        const normCoord = normalizedStations[Math.floor(idx / 3)];
+        const normCoord = normalizedStations[idx];
         const normLon = normCoord?.lon;
         const normLat = normCoord?.lat;
 
@@ -270,8 +269,6 @@ const GEO: React.FC = () => {
     layerGroup.addTo(map);
     markerLayerRef.current = layerGroup;
   }, [
-    allEarthquakes,
-    allStations,
     showEarthquakes,
     showStations,
     normalizedEarthquakes,
