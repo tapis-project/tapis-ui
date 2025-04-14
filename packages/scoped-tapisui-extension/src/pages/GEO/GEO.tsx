@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { SectionHeader } from '@tapis/tapisui-common';
 import { MapContainer, TileLayer, useMap, FeatureGroup } from 'react-leaflet';
-import { EditControl as LeafletEditControl } from 'react-leaflet-draw';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -10,8 +9,9 @@ import 'leaflet-canvas-markers';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
-const EditControl = React.forwardRef((props: any, ref) => {
-  return <LeafletEditControl {...props} ref={ref} />;
+const EditControl = React.forwardRef<any, any>((props, ref) => {
+  const { EditControl: InternalEditControl } = require('react-leaflet-draw');
+  return <InternalEditControl {...props} ref={ref} />;
 });
 
 const getEarthquakeIcon = (magnitude: number) => {
