@@ -10,9 +10,9 @@ import 'leaflet-canvas-markers';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
-const EditControl = (props: any) => {
-  return <LeafletEditControl {...props} />;
-};
+const EditControl = React.forwardRef((props: any, ref) => {
+  return <LeafletEditControl {...props} ref={ref} />;
+});
 
 const getEarthquakeIcon = (magnitude: number) => {
   // Assumption (a rough range)
