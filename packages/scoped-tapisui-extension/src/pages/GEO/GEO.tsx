@@ -45,8 +45,8 @@ const StationIcon = new L.Icon({
 });
 
 // const baseURL = 'https://mspassgeopod.pods.tacc.tapis.io';
-// const baseURL = 'https://mspassgeopod.pods.scoped.tapis.io/';
-const baseURL = 'https://mspassgeopodnoauth.pods.scoped.tapis.io/';
+// const baseURL = 'https://mspassgeopod.pods.scoped.tapis.io';
+const baseURL = 'https://mspassgeopodnoauth.pods.scoped.tapis.io';
 // const baseURL = 'http://localhost:5050';
 
 type Coordinate = {
