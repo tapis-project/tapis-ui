@@ -9,6 +9,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-canvas-markers';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const EditControl = (props: any) => {
   return React.createElement(_EditControl, props);
@@ -45,8 +46,8 @@ const StationIcon = new L.Icon({
 });
 
 // const baseURL = 'https://mspassgeopod.pods.tacc.tapis.io';
-// const baseURL = 'https://mspassgeopod.pods.scoped.tapis.io';
-const baseURL = 'https://mspassgeopodnoauth.pods.scoped.tapis.io';
+const baseURL = 'https://mspassgeopod.pods.scoped.tapis.io';
+// const baseURL = 'https://mspassgeopodnoauth.pods.scoped.tapis.io';
 // const baseURL = 'http://localhost:5050';
 
 type Coordinate = {
@@ -99,6 +100,9 @@ const GEO: React.FC = () => {
 
   const earthquakeIconCache = useRef<Map<number, L.Icon>>(new Map());
 
+  const { basePath, accessToken } = useTapisConfig();
+  const jwt = accessToken?.access_token || '';
+
   const getCachedEarthquakeIcon = (magnitude: number) => {
     const mag = Math.round((magnitude ?? 0) * 10) / 10; // round to 1 decimal
     if (earthquakeIconCache.current.has(mag))
@@ -120,6 +124,7 @@ const GEO: React.FC = () => {
       const response = await fetch(baseURL + '/api/earthquakes/', {
         method: 'POST',
         headers: {
+          'X-Tapis-Token': jwt,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -153,6 +158,7 @@ const GEO: React.FC = () => {
       const response = await fetch(baseURL + '/api/stations/', {
         method: 'POST',
         headers: {
+          'X-Tapis-Token': jwt,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
