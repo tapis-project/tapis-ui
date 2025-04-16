@@ -10,7 +10,6 @@ const useExtension = () => {
   let extensionName = undefined;
   for (extensionName in registeredExtensions) {
     console.log({ extensionName });
-
     if (registeredExtensions[extensionName].baseUrls.includes(basePath)) {
       extension = extensions[extensionName];
       break;

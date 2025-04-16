@@ -16,20 +16,26 @@ const extension = createExtension({
     },
   },
   removeServices: [EnumTapisCoreService.Apps],
-  mainSidebarServices: ['systems', 'apps', 'jobs', 'files', 'seismo-db'],
+  mainSidebarServices: [
+    'systems',
+    'apps',
+    'jobs',
+    'files',
+    'pods',
+    'workflows',
+    'seismo-db',
+    'geo',
+  ],
   showMLHub: false,
   showMLEdge: false,
   showSecondarySideBar: false,
   authMethods: ['implicit', 'password'],
   logo: {
-    // filePath from https://x.com/SEIS_SCOPED
-    filePath:
-      'https://pbs.twimg.com/profile_banners/1431832137997582336/1631311944/1500x500',
+    filePath: './logo_scoped.png',
     text: 'SCOPED',
   },
   icon: {
-    // filePath from https://github.com/SeisSCOPED
-    filePath: 'https://avatars.githubusercontent.com/u/72624873?s=200&v=4',
+    filePath: './icon_scoped.png',
     text: 'SCOPED',
   },
 });
