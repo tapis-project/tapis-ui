@@ -2,7 +2,7 @@ import {
   createExtension,
   EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
-import { SeismoDB } from './pages';
+import { GEO, SeismoDB } from './pages';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -38,6 +38,13 @@ const extension = createExtension({
     filePath: './icon_scoped.png',
     text: 'SCOPED',
   },
+});
+
+extension.registerService({
+  id: 'geo',
+  sidebarDisplayName: 'GEO',
+  iconName: 'compass',
+  component: GEO,
 });
 
 extension.registerService({
