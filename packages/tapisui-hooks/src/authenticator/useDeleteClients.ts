@@ -35,7 +35,7 @@ const useDeleteClients = (params: Authenticator.DeleteClientRequest) => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Authenticator.RespDeleteClient, Error, DeleteClientParams>(
       [QueryKeys.deleteClients, basePath, jwt],
-      ({ clientId }) => API.deleteClients(params, basePath, jwt)
+      ({ clientId }) => API.deleteClients(basePath, jwt, clientId)
     );
 
   const invalidate = () => {

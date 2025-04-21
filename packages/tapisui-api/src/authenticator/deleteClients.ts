@@ -1,11 +1,7 @@
 import { Authenticator } from '@tapis/tapis-typescript';
 import { errorDecoder, apiGenerator } from '../utils';
 
-const deleteClients = (
-  params: Authenticator.DeleteClientRequest,
-  basePath: string,
-  jwt: string
-) => {
+const deleteClients = (basePath: string, jwt: string, clientId: string) => {
   const api: Authenticator.ClientsApi = apiGenerator<Authenticator.ClientsApi>(
     Authenticator,
     Authenticator.ClientsApi,
@@ -14,7 +10,7 @@ const deleteClients = (
   );
 
   return errorDecoder<Authenticator.RespDeleteClient>(() =>
-    api.deleteClient(params)
+    api.deleteClient({ clientId })
   );
 };
 

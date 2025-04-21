@@ -29,41 +29,41 @@ import { useDeleteClients } from '@tapis/tapisui-hooks/dist/authenticator';
 
 const ClientCardMenu: React.FC<{}> = () => {
   return (
-      <Paper
-        sx={{
-          width: 100,
-          maxWidth: '100%',
-          position: 'absolute',
-          top: 0,
-          right: 0,
-        }}
-      >
-    <MenuList dense>
-            <MenuItem
-              onClick={() => {
-                alert('edit');
-              }}
-            >
-              <ListItemIcon>
-                <Edit fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Edit</ListItemText>
-            </MenuItem>
-            <Divider />
-    <MenuItem
-        onClick={() => {
-          // useDeleteClients();
-          alert('are you sure you want to delete this client?')
-        }}
-      >
-        <ListItemIcon>
-          <Delete fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Delete</ListItemText>
-      </MenuItem>
-    </MenuList>
+    <Paper
+      sx={{
+        width: 100,
+        maxWidth: '100%',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+      }}
+    >
+      <MenuList dense>
+        <MenuItem
+          onClick={() => {
+            alert('edit');
+          }}
+        >
+          <ListItemIcon>
+            <Edit fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            // useDeleteClients();
+            alert('are you sure you want to delete this client?');
+          }}
+        >
+          <ListItemIcon>
+            <Delete fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </MenuList>
     </Paper>
-);
+  );
 };
 
 type ClientCardProps = {
