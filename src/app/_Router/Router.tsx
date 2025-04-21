@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { ProtectedRoute } from '@tapis/tapisui-common';
-import { Authenticator, useTapisConfig } from '@tapis/tapisui-hooks';
+import { Authenticator as Auth, useTapisConfig } from '@tapis/tapisui-hooks';
 
 import Apps from '../Apps';
 import Login from '../Login';
@@ -13,12 +13,13 @@ import Files from '../Files';
 import Workflows from '../Workflows';
 import MlHub from '../MlHub';
 import OAuth2 from '../OAuth2';
+import Authenticator from '../Authenticator';
 import UIPatterns from '../UIPatterns';
 import { useExtension } from 'extensions';
 
 const Router: React.FC = () => {
   const { accessToken } = useTapisConfig();
-  const { logout } = Authenticator.useLogin();
+  const { logout } = Auth.useLogin();
   const { extension } = useExtension();
 
   return (
@@ -59,6 +60,12 @@ const Router: React.FC = () => {
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
         <Pods />
+      </ProtectedRoute>
+      <ProtectedRoute
+        accessToken={accessToken?.access_token}
+        path="/authenticator"
+      >
+        <Authenticator />
       </ProtectedRoute>
       {extension &&
         Object.entries(extension.serviceMap).map(([_, service]) => {
