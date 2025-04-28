@@ -22,12 +22,18 @@ import {
   Visibility,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { useDeleteClients } from '@tapis/tapisui-hooks/dist/authenticator';
+import DeleteClientModal from './ClientCardModals/DeleteClientModal';
 
-// type ClientCardMenuProps = {
-// }
 
-const ClientCardMenu: React.FC<{}> = () => {
+
+type ClientCardMenuProps = {
+  toggleDeleteModal: () => void;
+}
+
+const ClientCardMenu: React.FC<ClientCardMenuProps> = ({toggleDeleteModal}) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+
   return (
     <Paper
       sx={{
@@ -52,8 +58,8 @@ const ClientCardMenu: React.FC<{}> = () => {
         <Divider />
         <MenuItem
           onClick={() => {
-            // useDeleteClients();
-            alert('are you sure you want to delete this client?');
+            toggleDeleteModal();
+            setAnchorEl(null)
           }}
         >
           <ListItemIcon>
@@ -73,6 +79,8 @@ type ClientCardProps = {
 const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
   const [menuActive, setMenuActive] = useState(false);
   const menuRef = useRef(null);
+  const [modal, setModal] = useState<string | undefined>(undefined);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <div className={styles['card']}>
@@ -96,9 +104,20 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           ref={menuRef}
           onMouseLeave={() => setMenuActive(false)}
           className={styles['menu-container']}
-        >
-          <ClientCardMenu />
+          >
+          <ClientCardMenu toggleDeleteModal={() => {
+            setModal('deleteclient')
+          }}
+            />
         </div>
+      )}
+      {modal==='deleteclient' && (
+        <DeleteClientModal  
+          client={client}
+          toggle={() => {
+            setModal(undefined);
+          }}
+        />
       )}
     </div>
   );
