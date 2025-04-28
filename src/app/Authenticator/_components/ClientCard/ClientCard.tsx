@@ -71,6 +71,7 @@ const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
   );
 };
 
+
 type ClientCardProps = {
   client: Authenticator.Client;
 };
@@ -80,6 +81,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
   const menuRef = useRef(null);
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
 
   return (
     <div className={styles['card']}>
@@ -119,6 +121,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           }}
         />
       )}
+
     </div>
   );
 };
