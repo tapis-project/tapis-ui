@@ -50,6 +50,7 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
   const onSubmit = ({ clientId }: { clientId: string }) => {
     deleteClients(clientId, {
       onSuccess: () => {
+        onSuccess();
         toggle();
       },
     });
