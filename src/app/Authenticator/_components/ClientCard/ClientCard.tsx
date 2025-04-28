@@ -24,15 +24,14 @@ import {
 import { Link } from 'react-router-dom';
 import DeleteClientModal from './ClientCardModals/DeleteClientModal';
 
-
-
 type ClientCardMenuProps = {
   toggleDeleteModal: () => void;
-}
+};
 
-const ClientCardMenu: React.FC<ClientCardMenuProps> = ({toggleDeleteModal}) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
+  toggleDeleteModal,
+}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <Paper
@@ -59,7 +58,7 @@ const ClientCardMenu: React.FC<ClientCardMenuProps> = ({toggleDeleteModal}) => {
         <MenuItem
           onClick={() => {
             toggleDeleteModal();
-            setAnchorEl(null)
+            setAnchorEl(null);
           }}
         >
           <ListItemIcon>
@@ -104,15 +103,16 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           ref={menuRef}
           onMouseLeave={() => setMenuActive(false)}
           className={styles['menu-container']}
-          >
-          <ClientCardMenu toggleDeleteModal={() => {
-            setModal('deleteclient')
-          }}
-            />
+        >
+          <ClientCardMenu
+            toggleDeleteModal={() => {
+              setModal('deleteclient');
+            }}
+          />
         </div>
       )}
-      {modal==='deleteclient' && (
-        <DeleteClientModal  
+      {modal === 'deleteclient' && (
+        <DeleteClientModal
           client={client}
           toggle={() => {
             setModal(undefined);
