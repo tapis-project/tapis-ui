@@ -8,6 +8,7 @@ import { SectionHeader } from '@tapis/tapisui-common';
 import { Wysiwyg } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { Toolbar } from 'app/Workflows/_components';
+import { ClientToolbar } from '../AuthenticatorToolbar';
 
 type ClientCardListProps = {
   cardsPerPage?: number;
@@ -31,6 +32,9 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
           </span>
           {/* <Toolbar groupId={clients?.version} buttons={['createpipeline']} /> */}
         </SectionHeader>
+        <div style={{marginTop: '16px'}}>
+        <ClientToolbar />
+        </div>
         {clients && clients.result!.length > 0 && (
           <Pagination
             className={styles['paginator']}
@@ -59,21 +63,21 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
             })}
           </div>
         ) : (
-          <div className={`${styles['cards']} ${styles[colStyle]}`}>
-            {clients?.result &&
-              clients.result.map((client, i) => {
-                // Determine the page value for each card given that there are
-                // 6 cards per page
-                i++;
-                if (
-                  i > cardsPerPage * page ||
-                  i <= cardsPerPage * page - cardsPerPage
-                ) {
-                  return <></>;
-                }
-                return <ClientCard client={client} />;
-              })}
-          </div>
+            <div className={`${styles['cards']} ${styles[colStyle]}`}>
+              {clients?.result &&
+                clients.result.map((client, i) => {
+                  // Determine the page value for each card given that there are
+                  // 6 cards per page
+                  i++;
+                  if (
+                    i > cardsPerPage * page ||
+                    i <= cardsPerPage * page - cardsPerPage
+                  ) {
+                    return <></>;
+                  }
+                  return <ClientCard client={client} /> ;
+                })}
+            </div>
         )}
       </div>
     </div>
