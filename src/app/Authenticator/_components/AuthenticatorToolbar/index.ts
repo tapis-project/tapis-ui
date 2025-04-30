@@ -1,1 +1,1 @@
-export {default as ClientToolbar} from './ClientToolbar'
+export { default as ClientToolbar } from './ClientToolbar';

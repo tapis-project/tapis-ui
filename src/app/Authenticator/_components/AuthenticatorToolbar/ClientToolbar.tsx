@@ -63,7 +63,7 @@ const ClientToolbar: React.FC = () => {
             onClick={() => setModal('createclient')}
             aria-label="createClient"
           />
-          {modal === 'createclient' && <CreateClientModal toggle={toggle}/>}
+          {modal === 'createclient' && <CreateClientModal toggle={toggle} />}
         </div>
       )}
     </div>
