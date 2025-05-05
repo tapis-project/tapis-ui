@@ -28,7 +28,9 @@ const useTapisConfig = () => {
     if (!resp) {
       Cookies.remove('tapis-token');
       // Requires the correct domain as the cookie is set to the domain to remove
-      Cookies.remove('X-Tapis-Token', {domain: basePath.replace("https://", ".").replace("http://", ".")} )
+      Cookies.remove('X-Tapis-Token', {
+        domain: basePath.replace('https://', '.').replace('http://', '.'),
+      });
       await refetch();
       return;
     }
@@ -40,7 +42,7 @@ const useTapisConfig = () => {
     // basePath:   https://scoped.tapis.io, must turn into .scoped.tapis.io
     Cookies.set('X-Tapis-Token', resp.access_token ?? '', {
       expires,
-      domain: basePath.replace("https://", ".").replace("http://", "."),
+      domain: basePath.replace('https://', '.').replace('http://', '.'),
       secure: true,
     });
     await refetch();
