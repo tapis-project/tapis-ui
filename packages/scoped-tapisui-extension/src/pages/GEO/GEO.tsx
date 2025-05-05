@@ -282,6 +282,7 @@ const GEO: React.FC = () => {
                   {
                     method: 'POST',
                     headers: {
+                      'X-Tapis-Token': jwt,
                       'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
