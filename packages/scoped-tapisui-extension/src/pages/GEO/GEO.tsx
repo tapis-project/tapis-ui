@@ -54,6 +54,7 @@ type Coordinate = {
   lon: number;
   lat: number;
   magnitude?: number;
+  id?: string;
 };
 
 const GEO: React.FC = () => {
@@ -261,10 +262,54 @@ const GEO: React.FC = () => {
           Lat: ${coord.lat}<br/>
           <strong>Normalized Coordinate (in database)</strong><br/>
           Lon: ${normLon}<br/>
-          Lat: ${normLat}
+          Lat: ${normLat}<br/>
+          ${coord.id ? `<strong>ID:</strong> ${coord.id}` : ''} <br/>
+          <button>Analyzing in Jupyter</button>
         `;
 
         marker.bindPopup(generatePopupContent());
+
+        marker.on('popupopen', () => {
+          const popupContent = marker.getPopup().getElement();
+          const button = popupContent.querySelector('button');
+          const notebookServerUrl = ''; // TODO!
+          const notebookToken = ''; // TODO!
+          if (button) {
+            button.addEventListener('click', async () => {
+              try {
+                const response = await fetch(
+                  baseURL + '/api/generate-station-notebook/',
+                  {
+                    method: 'POST',
+                    headers: {
+                      'X-Tapis-Token': jwt,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      station_id: coord.id,
+                      notebook_server_url: notebookServerUrl,
+                      notebook_token: notebookToken,
+                    }),
+                  }
+                );
+
+                const data = await response.json();
+                if (response.ok && data.filename) {
+                  const notebookFilename = data.filename;
+                  const notebookUrl = `${notebookServerUrl}/notebooks/${notebookFilename}?token=${notebookToken}`;
+                  window.open(notebookUrl, '_blank');
+                } else {
+                  alert(
+                    'Failed to generate notebook: ' +
+                      (data.error || 'Unknown error')
+                  );
+                }
+              } catch (err) {
+                alert('Error calling backend: ' + err);
+              }
+            });
+          }
+        });
 
         markers.push(marker);
       });
