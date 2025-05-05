@@ -1,3 +1,5 @@
+import { deleteClients } from '@tapis/tapisui-api/dist/authenticator';
+
 const QueryKeys = {
   login: 'authenticator/login',
   listProfiles: 'authenticator/listprofiles',
