@@ -272,8 +272,6 @@ const GEO: React.FC = () => {
         marker.on('popupopen', () => {
           const popupContent = marker.getPopup().getElement();
           const button = popupContent.querySelector('button');
-          const notebookServerUrl = ''; // TODO!
-          const notebookToken = ''; // TODO!
           if (button) {
             button.addEventListener('click', async () => {
               try {
@@ -287,17 +285,13 @@ const GEO: React.FC = () => {
                     },
                     body: JSON.stringify({
                       station_id: coord.id,
-                      notebook_server_url: notebookServerUrl,
-                      notebook_token: notebookToken,
                     }),
                   }
                 );
 
                 const data = await response.json();
-                if (response.ok && data.filename) {
-                  const notebookFilename = data.filename;
-                  const notebookUrl = `${notebookServerUrl}/notebooks/${notebookFilename}?token=${notebookToken}`;
-                  window.open(notebookUrl, '_blank');
+                if (response.ok && data.url) {
+                  window.open(data.url, '_blank');
                 } else {
                   alert(
                     'Failed to generate notebook: ' +
