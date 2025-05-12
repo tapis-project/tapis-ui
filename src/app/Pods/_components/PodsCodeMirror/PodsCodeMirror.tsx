@@ -57,7 +57,14 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
   //   rowSpacing={0.4}
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, overflow: 'hidden' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexGrow: 1,
+        overflow: 'hidden',
+      }}
+    >
       {isEditorVisible && (
         <Grid
           sx={{

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
-import { useHistory, useRouteMatch, useLocation, useParams } from 'react-router-dom';
+import {
+  useHistory,
+  useRouteMatch,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
@@ -15,7 +20,6 @@ import {
   Lock,
   LockOpen,
 } from '@mui/icons-material';
-
 
 const NavPods: React.FC = () => {
   const { url } = useRouteMatch();
@@ -61,11 +65,11 @@ const NavPods: React.FC = () => {
   // );
 
   //const { activePodId } = useAppSelector((state) => state.pods);
-  
+
   //const deletedSystems: Array<Pods.TapisSystem> = deletedData?.result ?? [];
-  const systems: Array<Pods.PodResponseModel> = (data?.result ?? []).slice().sort((a, b) =>
-    (a.pod_id ?? '').localeCompare(b.pod_id ?? '')
-  );
+  const systems: Array<Pods.PodResponseModel> = (data?.result ?? [])
+    .slice()
+    .sort((a, b) => (a.pod_id ?? '').localeCompare(b.pod_id ?? ''));
   //console.log('activePodId', activePodId);
   return (
     <QueryWrapper isLoading={isLoading} error={[error]}>
@@ -93,7 +97,9 @@ const NavPods: React.FC = () => {
           orderable={true}
           orderGroupsBy={'ASC'}
           selectedField={params.podId}
-          isSelectedItem={({ object, selectedField }) => object.pod_id === selectedField}
+          isSelectedItem={({ object, selectedField }) =>
+            object.pod_id === selectedField
+          }
           listItemIconStyle={{ minWidth: '42px' }}
           groups={[
             {
@@ -102,9 +108,7 @@ const NavPods: React.FC = () => {
               primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
               secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
               open: ['AVAILABLE'],
-              tooltip: (
-                { fieldValue }: any
-                ) => {
+              tooltip: ({ fieldValue }: any) => {
                 switch (fieldValue) {
                   case 'AVAILABLE':
                     return 'Pods in available status';
@@ -118,11 +122,8 @@ const NavPods: React.FC = () => {
                     return 'Pods in unknown status';
                 }
               },
-              groupLabel: ({ fieldValue }: any) =>
-                fieldValue,
-              groupIcon: (
-                { fieldValue }: any
-              ) => {
+              groupLabel: ({ fieldValue }: any) => fieldValue,
+              groupIcon: ({ fieldValue }: any) => {
                 switch (fieldValue) {
                   case 'AVAILABLE':
                     return <Public />;
@@ -139,13 +140,10 @@ const NavPods: React.FC = () => {
               groupItemIcon: <Dns />,
             },
           ]}
-        >
-        </FilterableObjectsList>
+        ></FilterableObjectsList>
       </div>
     </QueryWrapper>
   );
-
-
 };
 
 export default NavPods;
