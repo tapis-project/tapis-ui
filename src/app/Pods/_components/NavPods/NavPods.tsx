@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useAppSelector, updateState, useAppDispatch } from '@redux';
+import { useHistory, useRouteMatch, useLocation, useParams } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
+import { QueryWrapper, FilterableObjectsList } from '@tapis/tapisui-common';
 import PodsLoadingText from '../PodsLoadingText';
+import {
+  Dns,
+  Public,
+  Person,
+  Delete,
+  Restore,
+  Lock,
+  LockOpen,
+} from '@mui/icons-material';
+
 
 const NavPods: React.FC = () => {
   const { url } = useRouteMatch();
+  const history = useHistory();
+
+  const params = useParams<{ podId?: string }>();
+
   const { data, isLoading, error } = Hooks.useListPods();
   const definitions: Array<Pods.PodResponseModel> = data?.result ?? [];
   const loadingText = PodsLoadingText();
@@ -24,25 +40,112 @@ const NavPods: React.FC = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  return (
-    <Navbar>
-      {definitions.length ? (
-        definitions
-          .sort((a, b) => a.pod_id.localeCompare(b.pod_id))
-          .map((pod) => (
-            <NavItem
-              to={`/pods/${pod.pod_id}`}
-              icon="visualization"
-              key={pod.pod_id}
-            >
-              {`${pod.pod_id}`}
-            </NavItem>
-          ))
-      ) : (
-        <i style={{ padding: '16px' }}>No pods found</i>
-      )}
-    </Navbar>
+  // return (
+  //   <Navbar>
+  //     {definitions.length ? (
+  //       definitions
+  //         .sort((a, b) => a.pod_id.localeCompare(b.pod_id))
+  //         .map((pod) => (
+  //           <NavItem
+  //             to={`/pods/${pod.pod_id}`}
+  //             icon="visualization"
+  //             key={pod.pod_id}
+  //           >
+  //             {`${pod.pod_id}`}
+  //           </NavItem>
+  //         ))
+  //     ) : (
+  //       <i style={{ padding: '16px' }}>No pods found</i>
+  //     )}
+  //   </Navbar>
+  // );
+
+  //const { activePodId } = useAppSelector((state) => state.pods);
+  
+  //const deletedSystems: Array<Pods.TapisSystem> = deletedData?.result ?? [];
+  const systems: Array<Pods.PodResponseModel> = (data?.result ?? []).slice().sort((a, b) =>
+    (a.pod_id ?? '').localeCompare(b.pod_id ?? '')
   );
+  //console.log('activePodId', activePodId);
+  return (
+    <QueryWrapper isLoading={isLoading} error={[error]}>
+      <div
+        style={{
+          //borderBottom: '1px solid #CCCCCC',
+          borderRight: '1px solid #CCCCCC',
+        }}
+        //className={styles['scroll-container']}
+      >
+        <FilterableObjectsList
+          objects={systems}
+          defaultField={'status'}
+          defaultOnClickItem={(system: any) => {
+            history.push(`/pods/${system.pod_id!}`);
+          }}
+          includeAll={true}
+          includeAllGroupLabel="All Pods"
+          includeAllSelectorLabel="all pods"
+          includeAllPrimaryItemText={({ object }: any) => object.pod_id}
+          includeAllSecondaryItemText={({ object }: any) => object.host}
+          defaultGroupIcon={<Dns />}
+          filterable={false}
+          groupable={true}
+          orderable={true}
+          orderGroupsBy={'ASC'}
+          selectedField={params.podId}
+          isSelectedItem={({ object, selectedField }) => object.pod_id === selectedField}
+          listItemIconStyle={{ minWidth: '42px' }}
+          groups={[
+            {
+              field: 'status',
+              groupSelectorLabel: 'status',
+              primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
+              secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
+              open: ['AVAILABLE'],
+              tooltip: (
+                { fieldValue }: any
+                ) => {
+                switch (fieldValue) {
+                  case 'AVAILABLE':
+                    return 'Pods in available status';
+                  case 'ERROR':
+                    return 'Pods in error status';
+                  case 'CREATING':
+                    return 'Pods that are being created';
+                  case 'STOPPED':
+                    return 'Pods that are stopped';
+                  default:
+                    return 'Pods in unknown status';
+                }
+              },
+              groupLabel: ({ fieldValue }: any) =>
+                fieldValue,
+              groupIcon: (
+                { fieldValue }: any
+              ) => {
+                switch (fieldValue) {
+                  case 'AVAILABLE':
+                    return <Public />;
+                  case 'CREATING':
+                    return <Restore />;
+                  case 'ERROR':
+                    return <LockOpen />;
+                  case 'STOPPED':
+                    return <Lock />;
+                  default:
+                    return <Person />;
+                }
+              },
+              groupItemIcon: <Dns />,
+            },
+          ]}
+        >
+        </FilterableObjectsList>
+      </div>
+    </QueryWrapper>
+  );
+
+
 };
 
 export default NavPods;

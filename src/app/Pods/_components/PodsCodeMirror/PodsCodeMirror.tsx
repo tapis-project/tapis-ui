@@ -57,7 +57,7 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
   //   rowSpacing={0.4}
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, overflow: 'hidden' }}>
       {isEditorVisible && (
         <Grid
           sx={{
@@ -84,7 +84,7 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
         height="auto"
         rowSpacing={0.4}
         // height="44rem" (this causes side by side)
-        overflow="scroll"
+        overflow="auto"
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -119,7 +119,7 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
           )}
         </Grid>
 
-        <Grid container sx={{ flexGrow: 1 }}>
+        <Grid container overflow="auto" sx={{ flexGrow: 1 }}>
           <CodeMirror
             value={value}
             editable={false}
