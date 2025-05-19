@@ -21,7 +21,6 @@ interface Analysis {
   dataset: string;
   site: string;
   advancedConfig: string;
-  modelUrl: string;
   datasetUrl: string;
   device: number | string;
 }
@@ -43,7 +42,6 @@ const initialValues: Analysis = {
   dataset: '',
   site: '',
   advancedConfig: '',
-  modelUrl: '',
   datasetUrl: '',
   device: '',
 };
@@ -54,10 +52,6 @@ const validationSchema = Yup.object({
   dataset: Yup.string().required('Dataset is required'),
   site: Yup.string().required('Site is required'),
   advancedConfig: Yup.string(),
-  modelUrl: Yup.string().when('model', {
-    is: 'Other',
-    then: Yup.string().required('Model URL is required'),
-  }),
   datasetUrl: Yup.string().when('dataset', {
     is: 'Other',
     then: Yup.string().required('Dataset URL is required'),
@@ -480,35 +474,35 @@ const AnalysisForm: React.FC = () => {
                           </option>
                         );
                       })}
-                      <option value="url" label="-- provide model url --" />
+                      <option value="custom-model-id" label="-- provide model id --" />
                     </Input>
-                    {values.model === 'url' && (
+                    {values.model === 'custom-model-id' && (
                       <div className={styles.formGroup}>
-                        <label htmlFor={`modelUrl-${index}`}>Model URL</label>
+                        <label htmlFor={`model-${index}`}>Model Id</label>
                         <Input
                           type="text"
-                          id={`modelUrl-${index}`}
-                          name="modelUrl"
+                          id={`model-${index}`}
+                          name="model"
                           onChange={(e) =>
                             handleChangeAnalysis(
                               index,
-                              'modelUrl',
+                              'model',
                               e.target.value,
                               setFieldValue,
                               setFieldTouched
                             )
                           }
                           onBlur={handleBlur}
-                          value={values.modelUrl}
+                          value={values.model}
                           className={
-                            errors.modelUrl && touched.modelUrl
+                            errors.model && touched.model
                               ? 'is-invalid'
                               : ''
                           }
                         />
-                        {errors.modelUrl && touched.modelUrl && (
+                        {errors.model && touched.model && (
                           <div className="invalid-feedback">
-                            {errors.modelUrl || 'Model URL is required'}
+                            {errors.model || 'Model Id is required'}
                           </div>
                         )}
                       </div>
