@@ -1,4 +1,4 @@
-@import '../../styles/tools/mixins.scss';
+@use '../../styles/tools/mixins.scss' as mixins;
 
 /* Prevent from butting up against its label (like inside `DescriptionList`) */
 dd .container {
@@ -20,7 +20,7 @@ dd .container {
 
   padding-right: 1em;
 
-  @include truncate-with-ellipsis;
+  @include mixins.truncate-with-ellipsis;
 }
 
 /* States */

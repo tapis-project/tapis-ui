@@ -18,7 +18,7 @@ export default defineConfig({
       // 'process.env.NODE_ENV': 'production',
     },
   },
-  css: { preprocessorOptions: { scss: { charset: false } } },
+  css: { preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } } },
   optimizeDeps: {
     include: [
       '@emotion/styled',

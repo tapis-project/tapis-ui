@@ -20,16 +20,24 @@
   "license": "MIT",
   "dependencies": {
     "@tapis/tapis-typescript": "^0.0.55",
-    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-common": "file:../tapisui-common",
+    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",
+    "@types/leaflet": "^1.9.17",
     "copyfiles": "^2.4.1",
-    "react": "^18.3.1"
+    "leaflet": "^1.9.4",
+    "leaflet-canvas-markers": "^1.0.7",
+    "leaflet-draw": "^1.0.4",
+    "leaflet.markercluster": "^1.5.3",
+    "react": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-leaflet-draw": "^0.20.6"
   },
   "devDependencies": {
-    "@types/node": "^18.19.33",
-    "typescript": "^4.9.5",
     "@tapis/tapisui-extension-devtools": "file:../tapisui-extension-devtools",
-    "sass": "^1.77.6"
+    "@types/leaflet.markercluster": "^1.5.5",
+    "@types/node": "^18.19.33",
+    "sass": "^1.77.6",
+    "typescript": "^4.9.5"
   }
 }

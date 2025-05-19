@@ -77,6 +77,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
+  const podDerived: Pods.PodResponseModel | undefined = dataDerived?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
   const podPerms: Pods.PodPermissionsResponse | undefined =
@@ -170,7 +171,7 @@ Select or create a pod to get started.`;
             ? `error: ${error}`
             : isFetching
             ? loadingText
-            : JSON.stringify(dataDerived, null, 2);
+            : JSON.stringify(podDerived, null, 2);
         case 'logs':
           return error
             ? `error: ${errorLogs}`
@@ -229,6 +230,9 @@ Select or create a pod to get started.`;
         switch (podTab) {
           case 'details':
             invalidate();
+            break;
+          case 'derived':
+            invalidateDerived();
             break;
           case 'logs':
           case 'actionlogs':
@@ -416,7 +420,7 @@ Select or create a pod to get started.`;
           style={{
             margin: '1rem',
             flex: 1,
-            overflow: 'auto',
+            overflow: 'hidden',
           }}
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
