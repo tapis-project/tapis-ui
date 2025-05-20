@@ -13,6 +13,8 @@ import {
 } from '../constants';
 import { QueryWrapper, JobStatusIcon } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
+import { Chip, Stack } from '@mui/material';
+import { HelpOutline } from '@mui/icons-material';
 
 interface Analysis {
   id: string;
@@ -21,7 +23,6 @@ interface Analysis {
   dataset: string;
   site: string;
   advancedConfig: string;
-  datasetUrl: string;
   device: number | string;
 }
 
@@ -42,7 +43,6 @@ const initialValues: Analysis = {
   dataset: '',
   site: '',
   advancedConfig: '',
-  datasetUrl: '',
   device: '',
 };
 
@@ -52,10 +52,6 @@ const validationSchema = Yup.object({
   dataset: Yup.string().required('Dataset is required'),
   site: Yup.string().required('Site is required'),
   advancedConfig: Yup.string(),
-  datasetUrl: Yup.string().when('dataset', {
-    is: 'Other',
-    then: Yup.string().required('Dataset URL is required'),
-  }),
   device: Yup.string()
     .when('site', {
       is: 'TACC',
@@ -203,6 +199,8 @@ const AnalysisForm: React.FC = () => {
   const [tooltipOpen, setTooltipOpen] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [isProvidedModelId, setIsProvidedModelId] = useState(false);
+  const [isProvidedDatasetId, setIsProvidedDatasetId] = useState(false);
   const {
     submit,
     isLoading: submitIsLoading,
@@ -375,7 +373,27 @@ const AnalysisForm: React.FC = () => {
                     value: JSON.stringify(values.advancedConfig),
                   });
                 }
-
+                console.log({
+                  submission: {
+                    name: ML_EDGE_ANALYSIS_JOB_NAME,
+                    appId: ML_EDGE_APP_ID,
+                    appVersion: ML_EDGE_APP_VERSION,
+                    description: 'Invoke ctcontroller to run camera-traps',
+                    parameterSet: {
+                      envVariables,
+                      archiveFilter: {
+                        includeLaunchFiles: false,
+                      },
+                    },
+                    notes: {
+                      model: values.model,
+                      site: values.site,
+                      dataset: values.dataset,
+                      device: device.type,
+                      gpu: device.gpu,
+                    },
+                  },
+                });
                 submit({
                   name: ML_EDGE_ANALYSIS_JOB_NAME,
                   appId: ML_EDGE_APP_ID,
@@ -437,7 +455,16 @@ const AnalysisForm: React.FC = () => {
                   </div>
                   <div className={styles.formGroup}>
                     <label htmlFor={`model-${index}`}>Model</label>
-                    <span id={`modelHelp-${analysis.id}`}>?</span>
+                    <span id={`modelHelp-${analysis.id}`}>
+                      <HelpOutline
+                        fontSize="small"
+                        style={{
+                          cursor: 'help',
+                          marginLeft: '4px',
+                          marginBottom: '2px',
+                        }}
+                      />
+                    </span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`modelHelp-${analysis.id}`]}
@@ -446,65 +473,92 @@ const AnalysisForm: React.FC = () => {
                     >
                       Select a model
                     </Tooltip>
-                    <Input
-                      type="select"
-                      id={`model-${index}`}
-                      name="model"
-                      onChange={(e) =>
-                        handleChangeAnalysis(
-                          index,
-                          'model',
-                          e.target.value,
-                          setFieldValue,
-                          setFieldTouched
-                        )
-                      }
-                      onBlur={handleBlur}
-                      value={values.model}
+                    <Stack
+                      direction={'row'}
+                      spacing={1}
+                      style={{ marginBottom: '8px' }}
                     >
-                      <option value="" label="Select option" />
-                      {models.map((model) => {
-                        return (
-                          <option
-                            disabled={model.disabled}
-                            value={model.modelId}
-                          >
-                            {model.name}
-                            {model.description ? ` - ${model.description}` : ''}
-                          </option>
-                        );
-                      })}
-                      <option value="custom-model-id" label="-- provide model id --" />
-                    </Input>
-                    {values.model === 'custom-model-id' && (
-                      <div className={styles.formGroup}>
-                        <label htmlFor={`model-${index}`}>Model Id</label>
-                        <Input
-                          type="text"
-                          id={`model-${index}`}
-                          name="model"
-                          onChange={(e) =>
-                            handleChangeAnalysis(
-                              index,
-                              'model',
-                              e.target.value,
-                              setFieldValue,
-                              setFieldTouched
-                            )
-                          }
-                          onBlur={handleBlur}
-                          value={values.model}
-                          className={
-                            errors.model && touched.model
-                              ? 'is-invalid'
-                              : ''
-                          }
-                        />
-                        {errors.model && touched.model && (
-                          <div className="invalid-feedback">
-                            {errors.model || 'Model Id is required'}
-                          </div>
-                        )}
+                      <Chip
+                        style={{ cursor: 'pointer' }}
+                        size="small"
+                        label="select a model"
+                        color={isProvidedModelId ? 'default' : 'primary'}
+                        onClick={() => {
+                          setIsProvidedModelId(false);
+                        }}
+                      />
+                      <Chip
+                        style={{ cursor: 'pointer' }}
+                        size="small"
+                        label="provide model id"
+                        color={!isProvidedModelId ? 'default' : 'primary'}
+                        onClick={() => {
+                          setIsProvidedModelId(true);
+                        }}
+                      />
+                    </Stack>
+                    {!isProvidedModelId && (
+                      <Input
+                        type="select"
+                        id={`model-${index}`}
+                        name="model"
+                        onChange={(e) => {
+                          handleChangeAnalysis(
+                            index,
+                            'model',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          );
+                        }}
+                        onBlur={handleBlur}
+                        value={values.model}
+                      >
+                        <option value="" label="Select option" />
+                        {models.map((model) => {
+                          return (
+                            <option
+                              disabled={model.disabled}
+                              value={model.modelId}
+                            >
+                              {model.name}
+                              {model.description
+                                ? ` - ${model.description}`
+                                : ''}
+                            </option>
+                          );
+                        })}
+                      </Input>
+                    )}
+                    {isProvidedModelId && (
+                      <div>
+                        <div className={styles.formGroup}>
+                          <Input
+                            type="text"
+                            id={`model`}
+                            name="model"
+                            placeholder="Provide a Model Id"
+                            onChange={(e) =>
+                              handleChangeAnalysis(
+                                index,
+                                'model',
+                                e.target.value,
+                                setFieldValue,
+                                setFieldTouched
+                              )
+                            }
+                            onBlur={handleBlur}
+                            value={values.model}
+                            className={
+                              errors.model && touched.model ? 'is-invalid' : ''
+                            }
+                          />
+                          {errors.model && touched.model && (
+                            <div className="invalid-feedback">
+                              {errors.model || 'Model Id is required'}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                     {errors.model && touched.model && (
@@ -516,7 +570,16 @@ const AnalysisForm: React.FC = () => {
 
                   <div className={styles.formGroup}>
                     <label htmlFor={`dataset-${index}`}>Dataset</label>
-                    <span id={`datasetHelp-${analysis.id}`}>?</span>
+                    <span id={`datasetHelp-${analysis.id}`}>
+                      <HelpOutline
+                        fontSize="small"
+                        style={{
+                          cursor: 'help',
+                          marginLeft: '4px',
+                          marginBottom: '2px',
+                        }}
+                      />
+                    </span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`datasetHelp-${analysis.id}`]}
@@ -525,68 +588,93 @@ const AnalysisForm: React.FC = () => {
                     >
                       Select a dataset
                     </Tooltip>
-                    <Input
-                      type="select"
-                      id={`dataset-${index}`}
-                      name="dataset"
-                      onChange={(e) =>
-                        handleChangeAnalysis(
-                          index,
-                          'dataset',
-                          e.target.value,
-                          setFieldValue,
-                          setFieldTouched
-                        )
-                      }
-                      onBlur={handleBlur}
-                      value={values.dataset}
-                      className={
-                        !values.dataset && touched.dataset ? 'is-invalid' : ''
-                      }
+                    <Stack
+                      direction={'row'}
+                      spacing={1}
+                      style={{ marginBottom: '8px' }}
                     >
-                      <option value="" label="Select option" />
-                      {datasets.map((dataset) => {
-                        return (
-                          <option
-                            disabled={dataset.disabled}
-                            value={dataset.id}
-                            label={dataset.name}
+                      <Chip
+                        style={{ cursor: 'pointer' }}
+                        size="small"
+                        label="select a dataset"
+                        color={isProvidedDatasetId ? 'default' : 'primary'}
+                        onClick={() => {
+                          setIsProvidedDatasetId(false);
+                        }}
+                      />
+                      <Chip
+                        style={{ cursor: 'pointer' }}
+                        size="small"
+                        label="provide dataset id"
+                        color={!isProvidedDatasetId ? 'default' : 'primary'}
+                        onClick={() => {
+                          setIsProvidedDatasetId(true);
+                        }}
+                      />
+                    </Stack>
+                    {!isProvidedDatasetId && (
+                      <Input
+                        type="select"
+                        id={`dataset-${index}`}
+                        name="dataset"
+                        onChange={(e) =>
+                          handleChangeAnalysis(
+                            index,
+                            'dataset',
+                            e.target.value,
+                            setFieldValue,
+                            setFieldTouched
+                          )
+                        }
+                        onBlur={handleBlur}
+                        value={values.dataset}
+                        className={
+                          !values.dataset && touched.dataset ? 'is-invalid' : ''
+                        }
+                      >
+                        <option value="" label="Select option" />
+                        {datasets.map((dataset) => {
+                          return (
+                            <option
+                              disabled={dataset.disabled}
+                              value={dataset.id}
+                              label={dataset.name}
+                            />
+                          );
+                        })}
+                      </Input>
+                    )}
+                    {isProvidedDatasetId && (
+                      <div>
+                        <div className={styles.formGroup}>
+                          <Input
+                            type="text"
+                            id={`dataset`}
+                            name="dataset"
+                            placeholder="Provide a Dataset Id"
+                            onChange={(e) =>
+                              handleChangeAnalysis(
+                                index,
+                                'dataset',
+                                e.target.value,
+                                setFieldValue,
+                                setFieldTouched
+                              )
+                            }
+                            onBlur={handleBlur}
+                            value={values.dataset}
+                            className={
+                              errors.dataset && touched.dataset
+                                ? 'is-invalid'
+                                : ''
+                            }
                           />
-                        );
-                      })}
-                      <option value="url" label="-- provide dataset url --" />
-                    </Input>
-                    {values.dataset === 'url' && (
-                      <div className={styles.formGroup}>
-                        <label htmlFor={`datasetUrl-${index}`}>
-                          Dataset URL
-                        </label>
-                        <Input
-                          type="text"
-                          id={`datasetUrl-${index}`}
-                          name="datasetUrl"
-                          onChange={(e) =>
-                            handleChangeAnalysis(
-                              index,
-                              'datasetUrl',
-                              e.target.value,
-                              setFieldValue,
-                              setFieldTouched
-                            )
-                          }
-                          onBlur={handleBlur}
-                          value={values.datasetUrl}
-                          className={
-                            !values.datasetUrl && touched.datasetUrl
-                              ? 'is-invalid'
-                              : ''
-                          }
-                        />
-                        {!values.datasetUrl && touched.datasetUrl && (
-                          <div className="invalid-feedback">
-                            {errors.datasetUrl || 'Dataset URL is required'}
-                          </div>
-                        )}
+                          {errors.dataset && touched.dataset && (
+                            <div className="invalid-feedback">
+                              {errors.dataset || 'Dataset Id is required'}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                     {!values.dataset && touched.dataset && (
@@ -598,7 +686,16 @@ const AnalysisForm: React.FC = () => {
 
                   <div className={styles.formGroup}>
                     <label htmlFor={`site-${index}`}>Site</label>
-                    <span id={`siteHelp-${analysis.id}`}>?</span>
+                    <span id={`siteHelp-${analysis.id}`}>
+                      <HelpOutline
+                        fontSize="small"
+                        style={{
+                          cursor: 'help',
+                          marginLeft: '4px',
+                          marginBottom: '2px',
+                        }}
+                      />
+                    </span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`siteHelp-${analysis.id}`]}
@@ -682,7 +779,16 @@ const AnalysisForm: React.FC = () => {
                     <label htmlFor={`advancedConfig-${index}`}>
                       Advanced Config
                     </label>
-                    <span id={`advancedConfigHelp-${analysis.id}`}>?</span>
+                    <span id={`advancedConfigHelp-${analysis.id}`}>
+                      <HelpOutline
+                        fontSize="small"
+                        style={{
+                          cursor: 'help',
+                          marginLeft: '4px',
+                          marginBottom: '2px',
+                        }}
+                      />
+                    </span>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`advancedConfigHelp-${analysis.id}`]}
