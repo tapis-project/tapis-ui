@@ -649,6 +649,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         toggle={() => {
           setModal(undefined);
         }}
+        effectiveUserId={system.effectiveUserId || ''}
       />
       <DeleteSystemModal
         systemId={system.id}

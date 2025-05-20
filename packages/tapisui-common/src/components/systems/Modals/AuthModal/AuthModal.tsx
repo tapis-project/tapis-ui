@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Systems as Hooks } from '@tapis/tapisui-hooks';
+import { Systems as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import styles from './AuthModal.module.scss';
 import { LoadingButton as Button } from '@mui/lab';
@@ -21,6 +21,7 @@ type ModalProps = {
   toggle: () => void;
   systemId: string;
   defaultAuthnMethod: Systems.AuthnEnum;
+  effectiveUserId: string; // new prop
 };
 
 type PKIKeys = {
@@ -39,6 +40,7 @@ type InputState = {
   password: string | undefined;
   accessKey: AccessKey;
   cert: string | undefined;
+  userName: string; // new field
 };
 
 const AuthModal: React.FC<ModalProps> = ({
@@ -46,7 +48,17 @@ const AuthModal: React.FC<ModalProps> = ({
   toggle,
   systemId,
   defaultAuthnMethod,
+  effectiveUserId, // new prop
 }) => {
+  const { claims } = useTapisConfig();
+  const tapisUserName = claims['tapis/username'];
+  // Determine default userNamea
+  let defaultUserName = '';
+  if (effectiveUserId === '${apiUserId}') {
+    defaultUserName = tapisUserName;
+  } else {
+    defaultUserName = effectiveUserId;
+  }
   const initialInput: InputState = {
     pkiKeys: {
       publicKey: undefined,
@@ -59,6 +71,7 @@ const AuthModal: React.FC<ModalProps> = ({
     },
     password: undefined,
     cert: undefined,
+    userName: defaultUserName, // set default
   };
   const [input, setInput] = useState(initialInput);
   const { create, isLoading, isError, isSuccess, error, reset, invalidate } =
@@ -119,6 +132,26 @@ const AuthModal: React.FC<ModalProps> = ({
     >
       <DialogTitle id="alert-dialog-title">Create credentials</DialogTitle>
       <DialogContent>
+        <div className={styles['form']} style={{ marginBottom: '16px' }}>
+          <FormControl variant="standard" fullWidth>
+            <InputLabel htmlFor="username">Username</InputLabel>
+            <Input
+              id="username"
+              value={input.userName}
+              onChange={(e) => {
+                setInput({
+                  ...input,
+                  userName: e.target.value,
+                });
+              }}
+            />
+            <FormHelperText>
+              The username associated with credential. Defaults to the system's
+              static effectiveUserId or your Tapis username if effectiveUserId
+              is dynamic.
+            </FormHelperText>
+          </FormControl>
+        </div>
         {isSuccess && (
           <Alert severity="success" style={{ marginTop: '8px' }}>
             Successfully created credentials
@@ -209,10 +242,12 @@ const AuthModal: React.FC<ModalProps> = ({
                   }}
                 />
                 <FormHelperText>
-                  Optional: 'loginUser' may be included in order to map the
-                  Tapis user to a username to be used when accessing the system.
-                  If the login user is not provided then there is no mapping and
-                  the Tapis user is always used when accessing the system
+                  Optional: <b>loginUser</b> may be included in order to map the
+                  Tapis user to the username used when accessing a system with
+                  dynamic <b>effectiveUserId</b> of <b>{'${apiUserId}'}</b>. In
+                  this case, <b>effectiveUserId</b> resolves to <b>loginUser</b>{' '}
+                  if exists or Tapis user if not. <b>loginUser</b> does not
+                  affect static effectiveUserId.
                 </FormHelperText>
               </FormControl>
             </div>
@@ -318,7 +353,8 @@ const AuthModal: React.FC<ModalProps> = ({
             if (reqUpdateCredential) {
               create(
                 {
-                  systemId,
+                  systemId: systemId,
+                  userName: input.userName, // use input.userName
                   reqUpdateCredential,
                 },
                 {
