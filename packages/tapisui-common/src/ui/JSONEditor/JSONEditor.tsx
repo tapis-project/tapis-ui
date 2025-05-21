@@ -32,7 +32,9 @@ const JSONEditor: React.FC<PropsWithChildren<JSONEditorProps>> = ({
       >
         {actions.map((action) => {
           return (
-            <Button variant="outlined" color="info" onClick={action.fn}>
+            <Button variant="outlined" color="info" onClick={(obj) => {
+              action.fn(obj)
+            }}>
               {action.name}
             </Button>
           );
