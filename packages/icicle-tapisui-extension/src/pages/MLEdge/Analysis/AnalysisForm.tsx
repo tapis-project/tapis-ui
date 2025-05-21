@@ -206,6 +206,7 @@ const AnalysisForm: React.FC = () => {
     isLoading: submitIsLoading,
     isError: submitIsError,
     isSuccess: submitIsSuccess,
+    error: isSubmitError,
   } = JobsHooks.useSubmit(ML_EDGE_APP_ID, ML_EDGE_APP_VERSION);
 
   const {
@@ -373,27 +374,34 @@ const AnalysisForm: React.FC = () => {
                     value: JSON.stringify(values.advancedConfig),
                   });
                 }
-                submit({
-                  name: ML_EDGE_ANALYSIS_JOB_NAME,
-                  appId: ML_EDGE_APP_ID,
-                  execSystemId: ML_EDGE_SYSTEM_ID,
-                  appVersion: ML_EDGE_APP_VERSION,
-                  description: 'Invoke ctcontroller to run camera-traps',
-                  parameterSet: {
-                    envVariables,
-                    archiveFilter: {
-                      includeLaunchFiles: false,
+                submit(
+                  {
+                    name: ML_EDGE_ANALYSIS_JOB_NAME,
+                    appId: ML_EDGE_APP_ID,
+                    execSystemId: ML_EDGE_SYSTEM_ID,
+                    appVersion: ML_EDGE_APP_VERSION,
+                    description: 'Invoke ctcontroller to run camera-traps',
+                    parameterSet: {
+                      envVariables,
+                      archiveFilter: {
+                        includeLaunchFiles: false,
+                      },
+                    },
+                    notes: {
+                      model: values.model,
+                      site: values.site,
+                      dataset: values.dataset,
+                      device: device.type,
+                      gpu: device.gpu,
                     },
                   },
-                  notes: {
-                    model: values.model,
-                    site: values.site,
-                    dataset: values.dataset,
-                    device: device.type,
-                    gpu: device.gpu,
-                  },
-                });
-                resetForm();
+                  {
+                    onSuccess: () => {
+                      alert('success');
+                      resetForm();
+                    },
+                  }
+                );
               }}
             >
               {({

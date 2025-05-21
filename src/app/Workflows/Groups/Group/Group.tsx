@@ -5,6 +5,7 @@ import {
   Icon,
   SectionHeader,
   QueryWrapper,
+  JSONEditor,
 } from '@tapis/tapisui-common';
 import { PipelineCardList, GroupSecretList, Toolbar } from '../../_components';
 import { useTapisConfig } from '@tapis/tapisui-hooks';

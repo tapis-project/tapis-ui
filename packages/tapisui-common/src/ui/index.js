@@ -15,6 +15,7 @@ export { FileInputDropZone } from './Form';
 export { default as InfiniteScrollTable } from './InfiniteScrollTable';
 export { default as Expand } from './Expand';
 export { default as Icon } from './Icon';
+export { default as JSONEditor } from './JSONEditor';
 export { default as Message } from './Message';
 export { default as InlineMessage } from './InlineMessage';
 export { default as SectionMessage } from './SectionMessage';
