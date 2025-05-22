@@ -1,7 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
-import { Button, Input, FormGroup, Label } from 'reactstrap';
-import { GenericModal } from '@tapis/tapisui-common';
-import { SubmitWrapper } from '@tapis/tapisui-common';
+import { Input, FormGroup, Label } from 'reactstrap';
 import { ToolbarModalProps } from '../AppsToolbar';
 import { ErrorMessage, Form, Formik } from 'formik';
 import { FormikInput } from '@tapis/tapisui-common';
@@ -15,19 +13,10 @@ import AdvancedSettings from './Settings/AdvancedSettings';
 import { LoadingButton } from '@mui/lab';
 import { JSONEditor } from "@tapis/tapisui-common";
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Alert,
-  AlertTitle,
-  Input as MUIInput,
-  Box,
 } from '@mui/material';
 
 import {
@@ -107,7 +96,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     runtimeOptions: Yup.string()
       .nullable(true)
       .oneOf([...runtimeOptionsValues, ''], 'Invalid runtime option')
-      .required('Runtime option is required unless using Docker'),
+      .required('Runtime options is required unless using Docker'),
     maxJobs: Yup.number().integer('Max Jobs must be an integer').nullable(),
     maxJobsPerUser: Yup.number()
       .integer('Max Jobs Per User must be an integer')
@@ -443,31 +432,60 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           withJson ? (
             <JSONEditor
               style={{width: "600px", marginTop: "8px"}}
+              renderNewlinesInError
+              obj={{
+                id: "",
+                version: "",
+                containerImage: ""
+              }}
               actions={[
                 {
                   color: "error",
-                  allowParseError: true,
-                  allowUndefinedValue: true,
                   name: "cancel",
-                  fn: toggle
+                  actionFn: toggle
                 },
                 {
                   name: "create app",
-                  fn: (obj: ReqPostApp | undefined) => {
+                  disableOnError: true,
+                  disableOnUndefined: true,
+                  disableOnIsLoading: true,
+                  disableOnSuccess: true,
+                  error: error !== null ? {
+                    title: "Error",
+                    message: error.message 
+                  } : undefined,
+                  isLoading,
+                  isSuccess,
+                  validator: (obj: ReqPostApp | undefined) => {
+                    let success: boolean = false;
+                    let message: string = "";
+                    try {
+                      validationSchema.validateSync(obj, { abortEarly: false });
+                      success = true
+                    } catch (e) {
+                      (e as Yup.ValidationError).errors.map((msg, i) => message = message + `#${i + 1}: ${msg}\n`)
+                    }
+
+                    return {
+                      success,
+                      message
+                    }
+                  },
+                  actionFn: (obj: ReqPostApp | undefined) => {
                     if (obj !== undefined) {
-                      console.log({obj});
-                      // createApp(
-                      //   {
-                      //     reqPostApp: obj,
-                      //   },
-                      //   true,
-                      //   { onSuccess }
-                      // );
+                      createApp(
+                        {
+                          reqPostApp: obj,
+                        },
+                        true,
+                        { onSuccess }
+                      );
                     }
                   }
                 }
-              ]
-            } />
+              ]}
+              onCloseError={() => {reset()}}
+            />
           ) : (
             <div className={styles['modal-settings']}>
               <Formik
