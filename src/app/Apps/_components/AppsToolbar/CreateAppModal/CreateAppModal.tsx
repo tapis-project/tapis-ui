@@ -12,6 +12,23 @@ import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import AdvancedSettings from './Settings/AdvancedSettings';
+import { LoadingButton } from '@mui/lab';
+import { JSONEditor } from "@tapis/tapisui-common";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Alert,
+  AlertTitle,
+  Input as MUIInput,
+  Box,
+} from '@mui/material';
 
 import {
   RuntimeEnum,
@@ -26,6 +43,7 @@ import {
   ParameterSetLogConfig,
   AppFileInput,
   AppFileInputArray,
+  ReqPostApp
 } from '@tapis/tapis-typescript-apps';
 
 const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
@@ -42,6 +60,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [reset]);
 
   const [simplified, setSimplified] = useState(false);
+  const [withJson, setWithJson] = useState(false)
   const onChange = useCallback(() => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
@@ -323,56 +342,6 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       maxMinutes: number | undefined;
     };
   }) => {
-    console.log('Submitting form with values:', {
-      id,
-      version,
-      containerImage,
-      description,
-      runtime,
-      runtimeOptions,
-      jobType,
-      owner,
-      enabled,
-      locked,
-      runtimeVersion,
-      maxJobs,
-      maxJobsPerUser,
-      strictFileInputs,
-
-      tags,
-      jobAttributes: {
-        // eslint-disable-next-line @typescript-eslint/no-redeclare
-        // description,
-        dynamicExecSystem,
-        execSystemConstraints,
-        execSystemId,
-        execSystemExecDir,
-        execSystemInputDir,
-        execSystemOutputDir,
-        execSystemLogicalQueue,
-        archiveSystemId,
-        archiveSystemDir,
-        archiveOnAppError,
-        isMpi,
-        mpiCmd,
-        cmdPrefix,
-        parameterSet: {
-          appArgs,
-          containerArgs,
-          schedulerOptions,
-          envVariables,
-          archiveFilter,
-          logConfig,
-        },
-        fileInputs,
-        fileInputArrays,
-        nodeCount,
-        coresPerNode,
-        memoryMB,
-        maxMinutes,
-      },
-    });
-
     const runtimeOptionsArray = runtimeOptions ? [runtimeOptions] : undefined;
 
     createApp(
@@ -433,115 +402,181 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   return (
-    <GenericModal
-      toggle={toggle}
-      title="Create New App"
-      body={
-        <div className={styles['modal-settings']}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
-          >
-            {(formikProps) => (
-              <Form id="newapp-form">
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="field-error"
-                />
-                <FormikInput
-                  name="id"
-                  label="Application ID"
-                  required={true}
-                  description={`App ID`}
-                  aria-label="Input"
-                />
-                <FormikInput
-                  name="version"
-                  label="Application Version"
-                  required={true}
-                  description={`App Version`}
-                  aria-label="Input"
-                />
-                <FormikInput
-                  name="containerImage"
-                  description="Container Image"
-                  label="Container Image"
-                  required={true}
-                  aria-label="Input"
-                />
-                <FormikInput
-                  name="description"
-                  label="Description"
-                  required={false}
-                  description={`App Description`}
-                  aria-label="Input"
-                />
-                <FormikSelect
-                  name="runtime"
-                  description="The application runtime"
-                  label="Runtime Type"
-                  required={false}
-                  data-testid="runtime"
-                >
-                  <option defaultValue={''}>Please select a runtime</option>
-                  {runtimeValues.map((values) => {
-                    return <option>{values}</option>;
-                  })}
-                </FormikSelect>
-
-                {formikProps.values.runtime !== RuntimeEnum.Docker && (
-                  <FormikSelect
-                    name="runtimeOptions"
-                    description="The runtime command for the application"
-                    label="Runtime Options"
-                    required={false}
-                    data-testid="runtimeOptions"
-                  >
-                    <option defaultValue={''}>
-                      Please select a runtime option
-                    </option>
-                    {runtimeOptionsValues.map((values) => {
-                      return <option>{values}</option>;
-                    })}
-                  </FormikSelect>
-                )}
-
-                <FormGroup check>
-                  <Label check size="sm" className={`form-field__label`}>
-                    <Input type="checkbox" onChange={onChange} />
-                    Advanced Settings
-                  </Label>
-                </FormGroup>
-                <AdvancedSettings simplified={simplified} />
-                {/* <AdvancedSettings simplified/> */}
-              </Form>
-            )}
-          </Formik>
+    <Dialog
+      open={true}
+      onClose={toggle}
+      aria-labelledby="Create System"
+      aria-describedby="A modal for creating a system"
+      maxWidth={false}      // disables the default maxWidth constraints
+      fullWidth={false}     // prevents auto-stretching to 100%
+      PaperProps={{
+        style: { width: 'auto' } // optional, helps content dictate width
+      }}
+    >
+      <DialogTitle id="alert-dialog-title">Create System</DialogTitle>
+      <DialogContent>
+        <div style={{display: "flex", flexDirection: "row", gap: "8px", justifyContent: "right"}}>
+          {
+            withJson && (
+              <LoadingButton
+                onClick={() => {setWithJson(false)}}
+                variant={"text"}
+                size="small"
+              >
+                create with form
+              </LoadingButton>
+            )
+          }
+          {
+            !withJson && (
+              <LoadingButton
+                onClick={() => {setWithJson(true)}}
+                variant="text"
+                size="small"
+              >
+                create with json editor
+              </LoadingButton>
+            )
+          }
         </div>
+        {
+          withJson ? (
+            <JSONEditor
+              style={{width: "600px", marginTop: "8px"}}
+              actions={[
+                {
+                  color: "error",
+                  allowParseError: true,
+                  allowUndefinedValue: true,
+                  name: "cancel",
+                  fn: toggle
+                },
+                {
+                  name: "create app",
+                  fn: (obj: ReqPostApp | undefined) => {
+                    if (obj !== undefined) {
+                      console.log({obj});
+                      // createApp(
+                      //   {
+                      //     reqPostApp: obj,
+                      //   },
+                      //   true,
+                      //   { onSuccess }
+                      // );
+                    }
+                  }
+                }
+              ]
+            } />
+          ) : (
+            <div className={styles['modal-settings']}>
+              <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={onSubmit}
+              >
+                {(formikProps) => (
+                  <Form id="newapp-form">
+                    <ErrorMessage
+                      name="name"
+                      component="div"
+                      className="field-error"
+                    />
+                    <FormikInput
+                      name="id"
+                      label="Application ID"
+                      required={true}
+                      description={`App ID`}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="version"
+                      label="Application Version"
+                      required={true}
+                      description={`App Version`}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="containerImage"
+                      description="Container Image"
+                      label="Container Image"
+                      required={true}
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="description"
+                      label="Description"
+                      required={false}
+                      description={`App Description`}
+                      aria-label="Input"
+                    />
+                    <FormikSelect
+                      name="runtime"
+                      description="The application runtime"
+                      label="Runtime Type"
+                      required={false}
+                      data-testid="runtime"
+                    >
+                      <option defaultValue={''}>Please select a runtime</option>
+                      {runtimeValues.map((values) => {
+                        return <option>{values}</option>;
+                      })}
+                    </FormikSelect>
+
+                    {formikProps.values.runtime !== RuntimeEnum.Docker && (
+                      <FormikSelect
+                        name="runtimeOptions"
+                        description="The runtime command for the application"
+                        label="Runtime Options"
+                        required={false}
+                        data-testid="runtimeOptions"
+                      >
+                        <option defaultValue={''}>
+                          Please select a runtime option
+                        </option>
+                        {runtimeOptionsValues.map((values) => {
+                          return <option>{values}</option>;
+                        })}
+                      </FormikSelect>
+                    )}
+
+                    <FormGroup check>
+                      <Label check size="sm" className={`form-field__label`}>
+                        <Input type="checkbox" onChange={onChange} />
+                        Advanced Settings
+                      </Label>
+                    </FormGroup>
+                    <AdvancedSettings simplified={simplified} />
+                    {/* <AdvancedSettings simplified/> */}
+                  </Form>
+                )}
+              </Formik>
+            </div>
+          )
+        }
+      </DialogContent>
+      {
+        !withJson && (
+          <DialogActions>
+            <LoadingButton
+              onClick={toggle}
+            >
+              {isSuccess ? 'Continue' : 'Cancel'}
+            </LoadingButton>
+            <LoadingButton
+              onClick={toggle}
+              disabled={isSuccess}
+              loading={isLoading}
+              variant="outlined"
+              autoFocus
+            >
+              Create App
+            </LoadingButton>
+          </DialogActions>
+        )
       }
-      footer={
-        <SubmitWrapper
-          className={styles['modal-footer']}
-          isLoading={isLoading}
-          error={error}
-          success={isSuccess ? `Successfully created a new app` : ''}
-          reverse={true}
-        >
-          <Button
-            form="newapp-form"
-            color="primary"
-            disabled={isLoading || isSuccess}
-            aria-label="Submit"
-            type="submit"
-          >
-            Create a new app
-          </Button>
-        </SubmitWrapper>
-      }
-    />
-  );
+    </Dialog>
+  )
 };
 
 export default CreateAppModal;

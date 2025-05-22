@@ -224,6 +224,19 @@ const AnalysisForm: React.FC = () => {
 
   const jobs = data?.result ?? [];
 
+  const filteredJobs = jobs.sort((a, b) => {
+    let atime = new Date(a.created).getTime();
+    let btime = new Date(b.created).getTime();
+
+    if (atime > btime) {
+      return -1;
+    }
+    if (atime < btime) {
+      return 1;
+    }
+    return 0;
+  });
+
   const toggleTooltip = (id: string) => {
     setTooltipOpen((prevState) => ({
       ...prevState,
@@ -363,7 +376,11 @@ const AnalysisForm: React.FC = () => {
                   },
                   {
                     key: 'CT_CONTROLLER_INPUT',
-                    value: dataset.url,
+                    value: values.dataset,
+                  },
+                  {
+                    key: 'CT_CONTROLLER_NUM_NODES',
+                    value: '1',
                   },
                 ];
 
@@ -397,7 +414,6 @@ const AnalysisForm: React.FC = () => {
                   },
                   {
                     onSuccess: () => {
-                      alert('success');
                       resetForm();
                     },
                   }
@@ -862,7 +878,7 @@ const AnalysisForm: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {jobs.map((job, index) => {
+              {filteredJobs.map((job, index) => {
                 const notes: any = job.notes ? job.notes : {};
                 return (
                   <tr key={index}>
