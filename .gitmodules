@@ -1,0 +1,3 @@
+[submodule "packages/icicle-tapisui-extension"]
+	path = packages/icicle-tapisui-extension
+	url = git@github.com:ICICLE-ai/tapisui-extension-icicle.git
