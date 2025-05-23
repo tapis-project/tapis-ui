@@ -70,6 +70,7 @@ const JSONEditor = <T,>({
           onClose={() => {
             onCloseError();
             setError(undefined);
+            setValue(value);
           }}
         >
           <AlertTitle>{error.title ? error.title : 'Error'}</AlertTitle>
@@ -181,18 +182,21 @@ const JSONEditor = <T,>({
               }
               loading={action.isLoading ? action.isLoading : false}
               onClick={() => {
-                let result = undefined;
+                let validation = undefined;
                 if (action.validator) {
-                  result = action.validator(value);
+                  console.log({ value });
+                  validation = action.validator(value);
                 }
 
-                if (result && !result.success) {
+                if (validation && !validation.success) {
                   setError({
                     title: 'Validation Error',
-                    message: result.message ? result.message : '',
+                    message: validation.message ? validation.message : '',
                   });
+
                   return;
                 }
+
                 action.actionFn(value);
               }}
             >

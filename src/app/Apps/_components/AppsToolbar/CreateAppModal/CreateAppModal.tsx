@@ -86,17 +86,20 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       2048,
       'Description should not be longer than 2048 characters'
     ),
-    owner: Yup.string().max(
-      60,
-      'Owner should not be longer than 60 characters'
-    ),
     enabled: Yup.boolean(),
     locked: Yup.boolean(),
     runtimeVersion: Yup.string(),
+    runtime: Yup.string()
+      .oneOf(runtimeValues)
+      .required(),
     runtimeOptions: Yup.string()
       .nullable(true)
       .oneOf([...runtimeOptionsValues, ''], 'Invalid runtime option')
-      .required('Runtime options is required unless using Docker'),
+      .when('runtime', {
+        is: (val: string) => val !== 'DOCKER',
+        then: (schema) => schema.required('runtimeOptions is required for SINGULARITY runtimes'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     maxJobs: Yup.number().integer('Max Jobs must be an integer').nullable(),
     maxJobsPerUser: Yup.number()
       .integer('Max Jobs Per User must be an integer')
