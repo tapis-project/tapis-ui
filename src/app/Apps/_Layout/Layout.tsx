@@ -6,7 +6,6 @@ import {
   LayoutHeader,
   LayoutNavWrapper,
 } from '@tapis/tapisui-common';
-import AppsToolbar from '../_components/AppsToolbar';
 
 import { Router } from '../_Router';
 import AppsHelp from 'app/_components/Help/AppsHelp';
@@ -20,7 +19,6 @@ const Layout: React.FC = () => {
           <AppsHelp />
         </span>
       </span>
-      <AppsToolbar />
     </LayoutHeader>
   );
 

@@ -180,6 +180,9 @@ const JSONEditor = <T,>({
           padding={16}
           color="black"
           style={{
+            overflowX: 'auto',
+            whiteSpace: 'pre',
+            wordWrap: 'unset',
             fontSize: 16,
             lineHeight: 1.5,
             backgroundColor: '#f5f5f5',

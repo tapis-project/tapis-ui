@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-// import { Button } from 'reactstrap';
-import { Icon } from '@tapis/tapisui-common';
 import styles from './AppsToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreateAppModal from './CreateAppModal';
 import { Button } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import { Add, Update } from '@mui/icons-material';
+import UpdateAppModal from './UpdateAppModal';
+import { Apps } from '@tapis/tapis-typescript';
 
 type ToolbarButtonProps = {
   text: string;
@@ -42,27 +42,48 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
-const AppsToolbar: React.FC = () => {
+type AppsToolbarProps = {
+  include?: Array<"create" | "update">
+  app?: Apps.RespApp | undefined
+}
+
+const AppsToolbar: React.FC<AppsToolbarProps> = ({
+  app,
+  include = ["create"]
+}) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const { pathname } = useLocation();
 
   const toggle = () => {
     setModal(undefined);
   };
   return (
     <div id="file-operation-toolbar">
-      {pathname && (
-        <div className={styles['toolbar-wrapper']}>
-          <ToolbarButton
-            text="Create App"
-            icon={<Add />}
-            disabled={false}
-            onClick={() => setModal('createApp')}
-            aria-label="createApp"
-          />
-          {modal === 'createApp' && <CreateAppModal toggle={toggle} />}
-        </div>
-      )}
+      <div className={styles['toolbar-wrapper']} style={{justifyContent: "right"}}>
+        {
+          app && include.includes("update") && (
+            <ToolbarButton
+              text="Update"
+              icon={<Update />}
+              disabled={false}
+              onClick={() => setModal('updateapp')}
+              aria-label="updateapp"
+            />
+          )
+        }
+        {
+          include.includes("create") && (
+            <ToolbarButton
+              text="new"
+              icon={<Add />}
+              disabled={false}
+              onClick={() => setModal('createapp')}
+              aria-label="createapp"
+            />
+          )
+        }
+        {modal === 'createapp' && <CreateAppModal toggle={toggle} />}
+        {modal === 'updateapp' && app && <UpdateAppModal app={app} toggle={toggle} />}
+      </div>
     </div>
   );
 };

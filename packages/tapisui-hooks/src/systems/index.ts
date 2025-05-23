@@ -19,3 +19,4 @@ export { default as useGrantUserPerms } from './useGrantUserPerms';
 export { default as useChangeOwner } from './useChangeOwner';
 export { default as useDisableSystem } from './useDisableSystem';
 export { default as useEnableSystem } from './useEnableSystem';
+export { default as usePatch } from './usePatch';
