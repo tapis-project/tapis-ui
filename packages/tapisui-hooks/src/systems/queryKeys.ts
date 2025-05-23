@@ -1,6 +1,7 @@
 const QueryKeys = {
   list: 'systems/list',
   details: 'systems/details',
+  patch: 'systems/patch',
   listSchedulerProfiles: 'systems/listScehdulerProfiles',
   makeNewSystem: 'systems/makeNewSystem',
   deleteSystem: 'systems/deleteSystem',

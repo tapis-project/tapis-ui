@@ -17,3 +17,4 @@ export { default as shareSystem } from './shareSystem';
 export { default as changeOwner } from './changeOwner';
 export { default as disableSystem } from './disableSystem';
 export { default as enableSystem } from './enableSystem';
+export { default as patch } from './patch';
