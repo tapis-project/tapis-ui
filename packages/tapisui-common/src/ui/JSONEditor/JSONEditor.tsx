@@ -8,6 +8,17 @@ type ActionValidationResult = {
   message?: string | undefined;
 };
 
+export type ActionError = {
+  title?: string;
+  message: string;
+};
+
+type ActionResult = {
+  success: boolean;
+  message?: string | undefined;
+  error?: ActionError;
+};
+
 type Action<T> = {
   name: string;
   color?: 'error' | 'info';
@@ -20,11 +31,7 @@ type Action<T> = {
   isLoading?: boolean;
   isSuccess?: boolean;
   error?: ActionError;
-};
-
-export type ActionError = {
-  title?: string;
-  message: string;
+  result?: ActionResult;
 };
 
 type JSONEditorProps<T = any> = {
@@ -32,6 +39,7 @@ type JSONEditorProps<T = any> = {
   actions?: Array<Action<T>>;
   style?: React.CSSProperties;
   onCloseError?: () => void;
+  onCloseSuccess?: () => void;
   renderNewlinesInError?: boolean;
 };
 
@@ -40,23 +48,34 @@ const JSONEditor = <T,>({
   actions = [],
   style = {},
   onCloseError = () => {},
+  onCloseSuccess = () => {},
   renderNewlinesInError = false,
 }: PropsWithChildren<JSONEditorProps<T>>): React.ReactElement => {
   const [lines, setLines] = useState(0);
   const [value, setValue] = useState<T | undefined>(undefined);
   const [error, setError] = useState<ActionError | undefined>(undefined);
+  const [result, setResult] = useState<ActionResult | undefined>(undefined);
+
+  useEffect(() => {
+    if (value === undefined) {
+      setValue(obj);
+    }
+  }, []);
 
   useEffect(() => {
     try {
       let objString = JSON.stringify(obj, null, 2);
-      setLines(objString.split('\n').length);
+      if (objString !== undefined) {
+        setLines(objString.split('\n').length);
+      }
     } catch (e) {
       setError({
         title: 'ParseError',
         message: (e as Error).message,
       });
     }
-    setValue(obj);
+
+    // setValue(obj);
   }, [obj]);
 
   return (
@@ -84,6 +103,20 @@ const JSONEditor = <T,>({
                 );
               })
             : error.message}
+        </Alert>
+      )}
+      {result && (
+        <Alert
+          style={{
+            maxWidth: '600px',
+          }}
+          severity="success"
+          onClose={() => {
+            onCloseSuccess();
+            setResult(undefined);
+          }}
+        >
+          {result.message}
         </Alert>
       )}
       <div
@@ -125,6 +158,7 @@ const JSONEditor = <T,>({
           language={'json'}
           placeholder={`Please enter valid json`}
           onChange={(e) => {
+            // Sets the line numbers
             setLines(e.target.value.split('\n').length);
             if (e.target.value === '') {
               setValue(undefined);
@@ -169,6 +203,10 @@ const JSONEditor = <T,>({
           if (action.error !== undefined && error === undefined) {
             setError(action.error);
           }
+
+          if (action.result !== undefined && result == undefined) {
+            setResult(action.result);
+          }
           return (
             <LoadingButton
               variant="outlined"
@@ -184,7 +222,6 @@ const JSONEditor = <T,>({
               onClick={() => {
                 let validation = undefined;
                 if (action.validator) {
-                  console.log({ value });
                   validation = action.validator(value);
                 }
 

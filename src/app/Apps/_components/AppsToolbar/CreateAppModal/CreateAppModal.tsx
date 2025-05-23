@@ -89,17 +89,17 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     enabled: Yup.boolean(),
     locked: Yup.boolean(),
     runtimeVersion: Yup.string(),
-    runtime: Yup.string()
-      .oneOf(runtimeValues)
-      .required(),
-    runtimeOptions: Yup.string()
-      .nullable(true)
-      .oneOf([...runtimeOptionsValues, ''], 'Invalid runtime option')
-      .when('runtime', {
-        is: (val: string) => val !== 'DOCKER',
-        then: (schema) => schema.required('runtimeOptions is required for SINGULARITY runtimes'),
-        otherwise: (schema) => schema.notRequired(),
-      }),
+    // runtime: Yup.string()
+    //   .oneOf(runtimeValues)
+    //   .required(),
+    // runtimeOptions: Yup.string()
+    //   .nullable(true)
+    //   .oneOf([...runtimeOptionsValues, ''], 'Invalid runtime option')
+    //   .when('runtime', {
+    //     is: (val: string) => val !== 'DOCKER',
+    //     then: (schema) => schema.required('runtimeOptions is required for SINGULARITY runtimes'),
+    //     otherwise: (schema) => schema.notRequired(),
+    //   }),
     maxJobs: Yup.number().integer('Max Jobs must be an integer').nullable(),
     maxJobsPerUser: Yup.number()
       .integer('Max Jobs Per User must be an integer')
@@ -397,15 +397,15 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     <Dialog
       open={true}
       onClose={toggle}
-      aria-labelledby="Create System"
-      aria-describedby="A modal for creating a system"
+      aria-labelledby="Create App"
+      aria-describedby="A modal for creating an app"
       maxWidth={false}      // disables the default maxWidth constraints
       fullWidth={false}     // prevents auto-stretching to 100%
       PaperProps={{
         style: { width: 'auto' } // optional, helps content dictate width
       }}
     >
-      <DialogTitle id="alert-dialog-title">Create System</DialogTitle>
+      <DialogTitle id="dialog-title">Create App</DialogTitle>
       <DialogContent>
         <div style={{display: "flex", flexDirection: "row", gap: "8px", justifyContent: "right"}}>
           {
@@ -443,8 +443,8 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
               }}
               actions={[
                 {
-                  color: "error",
-                  name: "cancel",
+                  color: !isSuccess ? "error" : "info",
+                  name: !isSuccess ? "cancel" : "continue",
                   actionFn: toggle
                 },
                 {
@@ -456,6 +456,10 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   error: error !== null ? {
                     title: "Error",
                     message: error.message 
+                  } : undefined,
+                  result: isSuccess ? {
+                    success: isSuccess,
+                    message: "Successfully created app"
                   } : undefined,
                   isLoading,
                   isSuccess,
@@ -488,6 +492,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 }
               ]}
               onCloseError={() => {reset()}}
+              onCloseSuccess={() => {reset()}}
             />
           ) : (
             <div className={styles['modal-settings']}>
