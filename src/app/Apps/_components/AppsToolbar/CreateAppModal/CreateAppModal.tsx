@@ -405,32 +405,30 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         style: { width: 'auto' } // optional, helps content dictate width
       }}
     >
-      <DialogTitle id="dialog-title">Create App</DialogTitle>
-      <DialogContent>
-        <div style={{display: "flex", flexDirection: "row", gap: "8px", justifyContent: "right"}}>
-          {
-            withJson && (
-              <LoadingButton
-                onClick={() => {setWithJson(false)}}
-                variant={"text"}
-                size="small"
-              >
-                create with form
-              </LoadingButton>
-            )
-          }
-          {
-            !withJson && (
-              <LoadingButton
-                onClick={() => {setWithJson(true)}}
-                variant="text"
-                size="small"
-              >
-                create with json editor
-              </LoadingButton>
-            )
-          }
+      <DialogTitle id="dialog-title" style={{display: "flex", justifyContent: "space-between"}}>
+        <div>Create App</div>
+        <div style={{display: "flex", flexDirection: "row", gap: "8px",}}>
+          <LoadingButton
+            onClick={() => {setWithJson(false)}}
+            variant={!withJson ? "contained" : "outlined"}
+            color='info'
+            size="small"
+            
+          >
+            form
+          </LoadingButton>
+        
+          <LoadingButton
+            onClick={() => {setWithJson(true)}}
+            variant={withJson ? "contained" : "outlined"}
+            color="info"
+            size="small"
+          >
+            json editor
+          </LoadingButton>
         </div>
+      </DialogTitle>
+      <DialogContent>
         {
           withJson ? (
             <JSONEditor
