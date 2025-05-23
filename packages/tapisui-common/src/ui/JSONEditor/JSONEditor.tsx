@@ -1,7 +1,9 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Alert, AlertTitle } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
+import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 
 type ActionValidationResult = {
   success: boolean;
@@ -51,7 +53,6 @@ const JSONEditor = <T,>({
   onCloseSuccess = () => {},
   renderNewlinesInError = false,
 }: PropsWithChildren<JSONEditorProps<T>>): React.ReactElement => {
-  const [lines, setLines] = useState(0);
   const [value, setValue] = useState<T | undefined>(undefined);
   const [error, setError] = useState<ActionError | undefined>(undefined);
   const [result, setResult] = useState<ActionResult | undefined>(undefined);
@@ -65,9 +66,6 @@ const JSONEditor = <T,>({
   useEffect(() => {
     try {
       let objString = JSON.stringify(obj, null, 2);
-      if (objString !== undefined) {
-        setLines(objString.split('\n').length);
-      }
     } catch (e) {
       setError({
         title: 'ParseError',
@@ -126,48 +124,21 @@ const JSONEditor = <T,>({
           fontFamily: 'monospace',
         }}
       >
-        {lines > 0 && (
-          <div
-            style={{
-              paddingTop: '24px',
-              paddingRight: '4px',
-              display: 'flex',
-              flexDirection: 'column',
-              fontSize: '16px',
-              lineHeight: '1.5',
-              userSelect: 'none',
-            }}
-          >
-            {[...Array(lines).keys()].map((num) => (
-              <div
-                style={{
-                  minWidth: '24px',
-                  paddingRight: '4px',
-                  paddingLeft: '4px',
-                  textAlign: 'right',
-                  backgroundColor: num % 2 == 0 ? 'lightgray' : '#f5f5f5',
-                }}
-              >
-                {num + 1}
-              </div>
-            ))}
-          </div>
-        )}
-        <CodeEditor
+        <CodeMirror
           value={JSON.stringify(obj, null, 2)}
-          language={'json'}
+          editable
+          extensions={[json()]}
+          theme={vscodeDark}
           placeholder={`Please enter valid json`}
-          onChange={(e) => {
-            // Sets the line numbers
-            setLines(e.target.value.split('\n').length);
-            if (e.target.value === '') {
+          onChange={(value) => {
+            if (value === '') {
               setValue(undefined);
               setError(undefined);
               return;
             }
 
             try {
-              let json = JSON.parse(e.target.value) as T;
+              let json = JSON.parse(value) as T;
               setValue(json);
               setError(undefined);
             } catch (e) {
@@ -177,7 +148,6 @@ const JSONEditor = <T,>({
               });
             }
           }}
-          padding={16}
           color="black"
           style={{
             overflowX: 'auto',
