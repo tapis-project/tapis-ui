@@ -12,7 +12,6 @@ export type ToolbarModalProps = {
   system: Systems.TapisSystem;
 };
 
-
 const UpdateSystemModal: React.FC<ToolbarModalProps> = ({ toggle, system }) => {
   const { isLoading, isSuccess, error, reset, patch, invalidate } =
     Hooks.usePatch();
@@ -29,7 +28,7 @@ const UpdateSystemModal: React.FC<ToolbarModalProps> = ({ toggle, system }) => {
     description: Yup.string().max(
       2048,
       'Description should not be longer than 2048 characters'
-    )
+    ),
   });
 
   return (
