@@ -44,13 +44,13 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 };
 
 type AppsToolbarProps = {
-  include?: Array<"create" | "update" | "submit">
-  app?: Apps.RespApp | undefined
-}
+  include?: Array<'create' | 'update' | 'submit'>;
+  app?: Apps.RespApp | undefined;
+};
 
 const AppsToolbar: React.FC<AppsToolbarProps> = ({
   app,
-  include = ["create"]
+  include = ['create'],
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
 
@@ -59,43 +59,44 @@ const AppsToolbar: React.FC<AppsToolbarProps> = ({
   };
   return (
     <div id="file-operation-toolbar">
-      <div className={styles['toolbar-wrapper']} style={{justifyContent: "right"}}>
-        {
-          app && include.includes("submit") && (
-            <ToolbarButton
-              text="submit job"
-              icon={<RocketLaunch />}
-              disabled={false}
-              onClick={() => setModal('submitapp')}
-              aria-label="submitapp"
-            />
-          )
-        }
-        {
-          app && include.includes("update") && (
-            <ToolbarButton
-              text="Update"
-              icon={<Update />}
-              disabled={false}
-              onClick={() => setModal('updateapp')}
-              aria-label="updateapp"
-            />
-          )
-        }
-        {
-          include.includes("create") && (
-            <ToolbarButton
-              text="new"
-              icon={<Add />}
-              disabled={false}
-              onClick={() => setModal('createapp')}
-              aria-label="createapp"
-            />
-          )
-        }
+      <div
+        className={styles['toolbar-wrapper']}
+        style={{ justifyContent: 'right' }}
+      >
+        {app && include.includes('submit') && (
+          <ToolbarButton
+            text="submit job"
+            icon={<RocketLaunch />}
+            disabled={false}
+            onClick={() => setModal('submitapp')}
+            aria-label="submitapp"
+          />
+        )}
+        {app && include.includes('update') && (
+          <ToolbarButton
+            text="Update"
+            icon={<Update />}
+            disabled={false}
+            onClick={() => setModal('updateapp')}
+            aria-label="updateapp"
+          />
+        )}
+        {include.includes('create') && (
+          <ToolbarButton
+            text="new"
+            icon={<Add />}
+            disabled={false}
+            onClick={() => setModal('createapp')}
+            aria-label="createapp"
+          />
+        )}
         {modal === 'createapp' && <CreateAppModal toggle={toggle} />}
-        {modal === 'updateapp' && app && <UpdateAppModal app={app} toggle={toggle} />}
-        {modal === 'submitapp' && app && <JobLaunchModal app={app} toggle={toggle} />}
+        {modal === 'updateapp' && app && (
+          <UpdateAppModal app={app} toggle={toggle} />
+        )}
+        {modal === 'submitapp' && app && (
+          <JobLaunchModal app={app} toggle={toggle} />
+        )}
       </div>
     </div>
   );

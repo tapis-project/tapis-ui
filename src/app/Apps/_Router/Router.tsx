@@ -8,16 +8,24 @@ import {
 import JobLauncher from '../JobLauncher';
 import { SectionMessage } from '@tapis/tapisui-common';
 import AppsToolbar from '../_components/AppsToolbar';
-import AppDetails from "../AppDetails"
-
+import AppDetails from '../AppDetails';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <div style={{ margin: '1rem', display: "flex", flexDirection: "column", flex: 1, overflow: 'auto', gap: "8px" }}>
-          <div style={{display: "flex", justifyContent: "right"}}>
+        <div
+          style={{
+            margin: '1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            overflow: 'auto',
+            gap: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'right' }}>
             <AppsToolbar />
           </div>
           <SectionMessage type="info">
@@ -25,7 +33,7 @@ const Router: React.FC = () => {
           </SectionMessage>
         </div>
       </Route>
-      
+
       <Route
         path={`${path}/:appId/:appVersion`}
         exact
@@ -37,8 +45,7 @@ const Router: React.FC = () => {
           appId: string;
           appVersion: string;
         }>) => {
-          
-          return <AppDetails appId={appId} appVersion={appVersion}/>
+          return <AppDetails appId={appId} appVersion={appVersion} />;
         }}
       />
 

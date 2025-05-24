@@ -3,31 +3,24 @@ import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import { Apps } from '@tapis/tapis-typescript';
-import { JSONEditor } from "@tapis/tapisui-common";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@mui/material';
+import { JSONEditor } from '@tapis/tapisui-common';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 
 export type ToolbarModalProps = {
   toggle: () => void;
-  app: Apps.TapisApp
+  app: Apps.TapisApp;
 };
 
-import {
-  RuntimeEnum,
-  RuntimeOptionEnum,
-} from '@tapis/tapis-typescript-apps';
+import { RuntimeEnum, RuntimeOptionEnum } from '@tapis/tapis-typescript-apps';
 
 const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
   const { isLoading, isSuccess, error, reset, patch, invalidate } =
     Hooks.usePatch();
-  
+
   const onSuccess = useCallback(() => {
-    invalidate()
+    invalidate();
   }, [invalidate]);
-  
+
   useEffect(() => {
     reset();
   }, [reset]);
@@ -51,8 +44,7 @@ const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
     enabled: Yup.boolean(),
     locked: Yup.boolean(),
     runtimeVersion: Yup.string(),
-    runtime: Yup.string()
-      .oneOf(runtimeValues),
+    runtime: Yup.string().oneOf(runtimeValues),
     runtimeOptions: Yup.string()
       .nullable(true)
       .oneOf([...runtimeOptionsValues, ''], 'Invalid runtime option'),
@@ -144,56 +136,61 @@ const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
       onClose={toggle}
       aria-labelledby="Update App"
       aria-describedby="A modal for updating an app"
-      maxWidth={false}      // disables the default maxWidth constraints
-      fullWidth={false}     // prevents auto-stretching to 100%
+      maxWidth={false} // disables the default maxWidth constraints
+      fullWidth={false} // prevents auto-stretching to 100%
       PaperProps={{
-        style: { width: 'auto' } // optional, helps content dictate width
+        style: { width: 'auto' }, // optional, helps content dictate width
       }}
     >
-      <DialogTitle id="dialog-title">
-        Update App
-      </DialogTitle>
+      <DialogTitle id="dialog-title">Update App</DialogTitle>
       <DialogContent>
-      <JSONEditor
-          style={{width: "800px", marginTop: "8px", maxHeight: "500px"}}
+        <JSONEditor
+          style={{ width: '800px', marginTop: '8px', maxHeight: '500px' }}
           renderNewlinesInError
           obj={app as Apps.ReqPatchApp}
           actions={[
             {
-              color: !isSuccess ? "error" : "info",
-              name: !isSuccess ? "cancel" : "close",
-              actionFn: toggle
+              color: !isSuccess ? 'error' : 'info',
+              name: !isSuccess ? 'cancel' : 'close',
+              actionFn: toggle,
             },
             {
-              name: "update app",
+              name: 'update app',
               disableOnError: true,
               disableOnUndefined: true,
               disableOnIsLoading: true,
               disableOnSuccess: true,
-              error: error !== null ? {
-                title: "Error",
-                message: error.message 
-              } : undefined,
-              result: isSuccess ? {
-                success: isSuccess,
-                message: "Successfully updated app"
-              } : undefined,
+              error:
+                error !== null
+                  ? {
+                      title: 'Error',
+                      message: error.message,
+                    }
+                  : undefined,
+              result: isSuccess
+                ? {
+                    success: isSuccess,
+                    message: 'Successfully updated app',
+                  }
+                : undefined,
               isLoading,
               isSuccess,
               validator: (obj: Apps.ReqPatchApp | undefined) => {
                 let success: boolean = false;
-                let message: string = "";
+                let message: string = '';
                 try {
                   validationSchema.validateSync(obj, { abortEarly: false });
-                  success = true
+                  success = true;
                 } catch (e) {
-                  (e as Yup.ValidationError).errors.map((msg, i) => message = message + `#${i + 1}: ${msg}\n`)
+                  (e as Yup.ValidationError).errors.map(
+                    (msg, i) => (message = message + `#${i + 1}: ${msg}\n`)
+                  );
                 }
 
                 return {
                   success,
-                  message
-                }
+                  message,
+                };
               },
               actionFn: (obj: Apps.ReqPatchApp | undefined) => {
                 if (obj !== undefined) {
@@ -206,15 +203,19 @@ const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
                     { onSuccess }
                   );
                 }
-              }
-            }
+              },
+            },
           ]}
-          onCloseError={() => {reset()}}
-          onCloseSuccess={() => {reset()}}
+          onCloseError={() => {
+            reset();
+          }}
+          onCloseSuccess={() => {
+            reset();
+          }}
         />
       </DialogContent>
     </Dialog>
-  )
+  );
 };
 
 export default UpdateAppModal;
