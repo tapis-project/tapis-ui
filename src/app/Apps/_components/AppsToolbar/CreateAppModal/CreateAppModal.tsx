@@ -11,7 +11,7 @@ import { useQueryClient } from 'react-query';
 import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import AdvancedSettings from './Settings/AdvancedSettings';
 import { LoadingButton } from '@mui/lab';
-import { JSONEditor } from "@tapis/tapisui-common";
+import { JSONEditor } from '@tapis/tapisui-common';
 import {
   Dialog,
   DialogActions,
@@ -32,7 +32,7 @@ import {
   ParameterSetLogConfig,
   AppFileInput,
   AppFileInputArray,
-  ReqPostApp
+  ReqPostApp,
 } from '@tapis/tapis-typescript-apps';
 
 const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
@@ -49,7 +49,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [reset]);
 
   const [simplified, setSimplified] = useState(false);
-  const [withJson, setWithJson] = useState(false)
+  const [withJson, setWithJson] = useState(false);
   const onChange = useCallback(() => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
@@ -399,28 +399,34 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       onClose={toggle}
       aria-labelledby="Create App"
       aria-describedby="A modal for creating an app"
-      maxWidth={false}      // disables the default maxWidth constraints
-      fullWidth={false}     // prevents auto-stretching to 100%
+      maxWidth={false} // disables the default maxWidth constraints
+      fullWidth={false} // prevents auto-stretching to 100%
       PaperProps={{
-        style: { width: 'auto' } // optional, helps content dictate width
+        style: { width: 'auto' }, // optional, helps content dictate width
       }}
     >
-      <DialogTitle id="dialog-title" style={{display: "flex", justifyContent: "space-between"}}>
+      <DialogTitle
+        id="dialog-title"
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
         <div>Create App</div>
-        <div style={{display: "flex", flexDirection: "row", gap: "8px",}}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
           <LoadingButton
-            onClick={() => {setWithJson(false)}}
-            variant={!withJson ? "contained" : "outlined"}
-            color='info'
+            onClick={() => {
+              setWithJson(false);
+            }}
+            variant={!withJson ? 'contained' : 'outlined'}
+            color="info"
             size="small"
-            
           >
             form
           </LoadingButton>
-        
+
           <LoadingButton
-            onClick={() => {setWithJson(true)}}
-            variant={withJson ? "contained" : "outlined"}
+            onClick={() => {
+              setWithJson(true);
+            }}
+            variant={withJson ? 'contained' : 'outlined'}
             color="info"
             size="small"
           >
@@ -429,178 +435,183 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         </div>
       </DialogTitle>
       <DialogContent>
-        {
-          withJson ? (
-            <JSONEditor
-              style={{width: "600px", marginTop: "8px"}}
-              renderNewlinesInError
-              obj={{
-                id: "",
-                version: "",
-                containerImage: ""
-              }}
-              actions={[
-                {
-                  color: !isSuccess ? "error" : "info",
-                  name: !isSuccess ? "cancel" : "continue",
-                  actionFn: toggle
-                },
-                {
-                  name: "create app",
-                  disableOnError: true,
-                  disableOnUndefined: true,
-                  disableOnIsLoading: true,
-                  disableOnSuccess: true,
-                  error: error !== null ? {
-                    title: "Error",
-                    message: error.message 
-                  } : undefined,
-                  result: isSuccess ? {
-                    success: isSuccess,
-                    message: "Successfully created app"
-                  } : undefined,
-                  isLoading,
-                  isSuccess,
-                  validator: (obj: ReqPostApp | undefined) => {
-                    let success: boolean = false;
-                    let message: string = "";
-                    try {
-                      validationSchema.validateSync(obj, { abortEarly: false });
-                      success = true
-                    } catch (e) {
-                      (e as Yup.ValidationError).errors.map((msg, i) => message = message + `#${i + 1}: ${msg}\n`)
+        {withJson ? (
+          <JSONEditor
+            style={{ width: '600px', marginTop: '8px' }}
+            renderNewlinesInError
+            obj={{
+              id: '',
+              version: '',
+              containerImage: '',
+            }}
+            actions={[
+              {
+                color: !isSuccess ? 'error' : 'info',
+                name: !isSuccess ? 'cancel' : 'continue',
+                actionFn: toggle,
+              },
+              {
+                name: 'create app',
+                disableOnError: true,
+                disableOnUndefined: true,
+                disableOnIsLoading: true,
+                disableOnSuccess: true,
+                error:
+                  error !== null
+                    ? {
+                        title: 'Error',
+                        message: error.message,
+                      }
+                    : undefined,
+                result: isSuccess
+                  ? {
+                      success: isSuccess,
+                      message: 'Successfully created app',
                     }
-
-                    return {
-                      success,
-                      message
-                    }
-                  },
-                  actionFn: (obj: ReqPostApp | undefined) => {
-                    if (obj !== undefined) {
-                      createApp(
-                        {
-                          reqPostApp: obj,
-                        },
-                        true,
-                        { onSuccess }
-                      );
-                    }
+                  : undefined,
+                isLoading,
+                isSuccess,
+                validator: (obj: ReqPostApp | undefined) => {
+                  let success: boolean = false;
+                  let message: string = '';
+                  try {
+                    validationSchema.validateSync(obj, { abortEarly: false });
+                    success = true;
+                  } catch (e) {
+                    (e as Yup.ValidationError).errors.map(
+                      (msg, i) => (message = message + `#${i + 1}: ${msg}\n`)
+                    );
                   }
-                }
-              ]}
-              onCloseError={() => {reset()}}
-              onCloseSuccess={() => {reset()}}
-            />
-          ) : (
-            <div className={styles['modal-settings']}>
-              <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={onSubmit}
-              >
-                {(formikProps) => (
-                  <Form id="newapp-form">
-                    <ErrorMessage
-                      name="name"
-                      component="div"
-                      className="field-error"
-                    />
-                    <FormikInput
-                      name="id"
-                      label="Application ID"
-                      required={true}
-                      description={`App ID`}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="version"
-                      label="Application Version"
-                      required={true}
-                      description={`App Version`}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="containerImage"
-                      description="Container Image"
-                      label="Container Image"
-                      required={true}
-                      aria-label="Input"
-                    />
-                    <FormikInput
-                      name="description"
-                      label="Description"
-                      required={false}
-                      description={`App Description`}
-                      aria-label="Input"
-                    />
+
+                  return {
+                    success,
+                    message,
+                  };
+                },
+                actionFn: (obj: ReqPostApp | undefined) => {
+                  if (obj !== undefined) {
+                    createApp(
+                      {
+                        reqPostApp: obj,
+                      },
+                      true,
+                      { onSuccess }
+                    );
+                  }
+                },
+              },
+            ]}
+            onCloseError={() => {
+              reset();
+            }}
+            onCloseSuccess={() => {
+              reset();
+            }}
+          />
+        ) : (
+          <div className={styles['modal-settings']}>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={onSubmit}
+            >
+              {(formikProps) => (
+                <Form id="newapp-form">
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="field-error"
+                  />
+                  <FormikInput
+                    name="id"
+                    label="Application ID"
+                    required={true}
+                    description={`App ID`}
+                    aria-label="Input"
+                  />
+                  <FormikInput
+                    name="version"
+                    label="Application Version"
+                    required={true}
+                    description={`App Version`}
+                    aria-label="Input"
+                  />
+                  <FormikInput
+                    name="containerImage"
+                    description="Container Image"
+                    label="Container Image"
+                    required={true}
+                    aria-label="Input"
+                  />
+                  <FormikInput
+                    name="description"
+                    label="Description"
+                    required={false}
+                    description={`App Description`}
+                    aria-label="Input"
+                  />
+                  <FormikSelect
+                    name="runtime"
+                    description="The application runtime"
+                    label="Runtime Type"
+                    required={false}
+                    data-testid="runtime"
+                  >
+                    <option defaultValue={''}>Please select a runtime</option>
+                    {runtimeValues.map((values) => {
+                      return <option>{values}</option>;
+                    })}
+                  </FormikSelect>
+
+                  {formikProps.values.runtime !== RuntimeEnum.Docker && (
                     <FormikSelect
-                      name="runtime"
-                      description="The application runtime"
-                      label="Runtime Type"
+                      name="runtimeOptions"
+                      description="The runtime command for the application"
+                      label="Runtime Options"
                       required={false}
-                      data-testid="runtime"
+                      data-testid="runtimeOptions"
                     >
-                      <option defaultValue={''}>Please select a runtime</option>
-                      {runtimeValues.map((values) => {
+                      <option defaultValue={''}>
+                        Please select a runtime option
+                      </option>
+                      {runtimeOptionsValues.map((values) => {
                         return <option>{values}</option>;
                       })}
                     </FormikSelect>
+                  )}
 
-                    {formikProps.values.runtime !== RuntimeEnum.Docker && (
-                      <FormikSelect
-                        name="runtimeOptions"
-                        description="The runtime command for the application"
-                        label="Runtime Options"
-                        required={false}
-                        data-testid="runtimeOptions"
-                      >
-                        <option defaultValue={''}>
-                          Please select a runtime option
-                        </option>
-                        {runtimeOptionsValues.map((values) => {
-                          return <option>{values}</option>;
-                        })}
-                      </FormikSelect>
-                    )}
-
-                    <FormGroup check>
-                      <Label check size="sm" className={`form-field__label`}>
-                        <Input type="checkbox" onChange={onChange} />
-                        Advanced Settings
-                      </Label>
-                    </FormGroup>
-                    <AdvancedSettings simplified={simplified} />
-                    {/* <AdvancedSettings simplified/> */}
-                  </Form>
-                )}
-              </Formik>
-            </div>
-          )
-        }
+                  <FormGroup check>
+                    <Label check size="sm" className={`form-field__label`}>
+                      <Input type="checkbox" onChange={onChange} />
+                      Advanced Settings
+                    </Label>
+                  </FormGroup>
+                  <AdvancedSettings simplified={simplified} />
+                  {/* <AdvancedSettings simplified/> */}
+                </Form>
+              )}
+            </Formik>
+          </div>
+        )}
       </DialogContent>
-      {
-        !withJson && (
-          <DialogActions>
-            <LoadingButton
-              onClick={toggle}
-            >
-              {isSuccess ? 'Continue' : 'Cancel'}
-            </LoadingButton>
-            <LoadingButton
-              onClick={toggle}
-              disabled={isSuccess}
-              loading={isLoading}
-              variant="outlined"
-              autoFocus
-            >
-              Create App
-            </LoadingButton>
-          </DialogActions>
-        )
-      }
+      {!withJson && (
+        <DialogActions>
+          <LoadingButton onClick={toggle}>
+            {isSuccess ? 'Continue' : 'Cancel'}
+          </LoadingButton>
+          <LoadingButton
+            onClick={toggle}
+            disabled={isSuccess}
+            loading={isLoading}
+            variant="outlined"
+            autoFocus
+          >
+            Create App
+          </LoadingButton>
+        </DialogActions>
+      )}
     </Dialog>
-  )
+  );
 };
 
 export default CreateAppModal;
