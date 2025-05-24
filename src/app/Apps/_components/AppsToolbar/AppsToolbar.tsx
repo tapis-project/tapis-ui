@@ -83,7 +83,7 @@ const AppsToolbar: React.FC<AppsToolbarProps> = ({
         )}
         {include.includes('create') && (
           <ToolbarButton
-            text="new"
+            text="new app"
             icon={<Add />}
             disabled={false}
             onClick={() => setModal('createapp')}
