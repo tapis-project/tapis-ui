@@ -3,9 +3,10 @@ import styles from './AppsToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreateAppModal from './CreateAppModal';
 import { Button } from '@mui/material';
-import { Add, Update } from '@mui/icons-material';
+import { Add, RocketLaunch, Update } from '@mui/icons-material';
 import UpdateAppModal from './UpdateAppModal';
 import { Apps } from '@tapis/tapis-typescript';
+import JobLaunchModal from './JobLaunchModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -43,7 +44,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 };
 
 type AppsToolbarProps = {
-  include?: Array<"create" | "update">
+  include?: Array<"create" | "update" | "submit">
   app?: Apps.RespApp | undefined
 }
 
@@ -59,6 +60,17 @@ const AppsToolbar: React.FC<AppsToolbarProps> = ({
   return (
     <div id="file-operation-toolbar">
       <div className={styles['toolbar-wrapper']} style={{justifyContent: "right"}}>
+        {
+          app && include.includes("submit") && (
+            <ToolbarButton
+              text="submit job"
+              icon={<RocketLaunch />}
+              disabled={false}
+              onClick={() => setModal('submitapp')}
+              aria-label="submitapp"
+            />
+          )
+        }
         {
           app && include.includes("update") && (
             <ToolbarButton
@@ -83,6 +95,7 @@ const AppsToolbar: React.FC<AppsToolbarProps> = ({
         }
         {modal === 'createapp' && <CreateAppModal toggle={toggle} />}
         {modal === 'updateapp' && app && <UpdateAppModal app={app} toggle={toggle} />}
+        {modal === 'submitapp' && app && <JobLaunchModal app={app} toggle={toggle} />}
       </div>
     </div>
   );

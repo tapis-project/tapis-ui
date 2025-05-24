@@ -4,7 +4,7 @@ import { Apps } from '@tapis/tapisui-hooks';
 import { Skeleton, Button} from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { RocketLaunch } from '@mui/icons-material';
+import { RocketLaunch, DataObject } from '@mui/icons-material';
 import AppsToolbar from 'app/Apps/_components/AppsToolbar';
 
 const Layout: React.FC<{ appId: string; appVersion: string }> = ({
@@ -13,11 +13,9 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
 }) => {
   const { data, isLoading, isError, isSuccess } = Apps.useDetail({appId, appVersion})
   const app = data?.result ? data.result : undefined;
-  const { pathname } = useLocation();
 
   const header = <LayoutHeader type={'sub-header'}>
     Details
-    <Button startIcon={<RocketLaunch />} component={Link} to={`${pathname}/launch`}>Job Launcher</Button>
   </LayoutHeader>;
 
   const body = (
@@ -30,7 +28,7 @@ const Layout: React.FC<{ appId: string; appVersion: string }> = ({
       {
         isSuccess && (
           <div style={{display: "flex", flexDirection: "column", gap: "20px"}}>
-            <AppsToolbar app={app} include={["update", "create"]}/>
+            <AppsToolbar app={app} include={["update", "create", "submit"]}/>
             <JSONDisplay json={app}/>
           </div>
         )

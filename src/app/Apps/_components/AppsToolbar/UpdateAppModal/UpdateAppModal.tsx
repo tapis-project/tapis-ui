@@ -155,13 +155,13 @@ const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
       </DialogTitle>
       <DialogContent>
       <JSONEditor
-          style={{width: "800px", marginTop: "8px"}}
+          style={{width: "800px", marginTop: "8px", maxHeight: "500px"}}
           renderNewlinesInError
           obj={app as Apps.ReqPatchApp}
           actions={[
             {
               color: !isSuccess ? "error" : "info",
-              name: !isSuccess ? "cancel" : "continue",
+              name: !isSuccess ? "cancel" : "close",
               actionFn: toggle
             },
             {

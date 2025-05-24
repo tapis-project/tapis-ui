@@ -43,7 +43,7 @@ const Router: React.FC = () => {
       />
 
       <Route
-        path={`${path}/:appId/:appVersion/launch`}
+        path={`${path}/:appId/:appVersion/launcher`}
         render={({
           match: {
             params: { appVersion, appId },

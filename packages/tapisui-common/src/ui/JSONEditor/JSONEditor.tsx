@@ -150,9 +150,8 @@ const JSONEditor = <T,>({
           }}
           color="black"
           style={{
-            overflowX: 'auto',
+            overflow: 'auto',
             whiteSpace: 'pre',
-            wordWrap: 'unset',
             fontSize: 16,
             lineHeight: 1.5,
             backgroundColor: '#f5f5f5',
