@@ -865,6 +865,7 @@ const AnalysisForm: React.FC = () => {
           <table>
             <thead>
               <tr>
+                <th>Submitted</th>
                 <th>Started at</th>
                 <th>Ended</th>
                 <th>Status</th>
@@ -879,9 +880,14 @@ const AnalysisForm: React.FC = () => {
             </thead>
             <tbody>
               {filteredJobs.map((job, index) => {
+                const age =
+                  Math.floor(Date.now() / 1000) -
+                  Math.floor(new Date(job.created!).getTime() / 1000);
+
                 const notes: any = job.notes ? job.notes : {};
                 return (
                   <tr key={index}>
+                    <td>{age}s ago</td>
                     <td>{job.created}</td>
                     <td>{job.ended ? job.ended : ''}</td>
                     <td>

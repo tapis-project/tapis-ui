@@ -4,7 +4,7 @@ import { useQueryClient } from 'react-query';
 import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import { Apps } from '@tapis/tapis-typescript';
 import { JSONEditor } from '@tapis/tapisui-common';
-import { Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
 
 export type ToolbarModalProps = {
   toggle: () => void;
@@ -12,6 +12,7 @@ export type ToolbarModalProps = {
 };
 
 import { RuntimeEnum, RuntimeOptionEnum } from '@tapis/tapis-typescript-apps';
+import { Close } from '@mui/icons-material';
 
 const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
   const { isLoading, isSuccess, error, reset, patch, invalidate } =
@@ -142,7 +143,21 @@ const UpdateAppModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
         style: { width: 'auto' }, // optional, helps content dictate width
       }}
     >
-      <DialogTitle id="dialog-title">Update App</DialogTitle>
+      <DialogTitle id="dialog-title">
+        Update App
+        <IconButton
+          aria-label="close"
+          onClick={toggle}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <Close />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
         <JSONEditor
           style={{ width: '800px', marginTop: '8px', maxHeight: '500px' }}
