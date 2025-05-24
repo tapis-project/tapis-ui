@@ -5,7 +5,6 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-import JobLauncher from '../JobLauncher';
 import { SectionMessage } from '@tapis/tapisui-common';
 import AppsToolbar from '../_components/AppsToolbar';
 import AppDetails from '../AppDetails';
@@ -47,18 +46,6 @@ const Router: React.FC = () => {
         }>) => {
           return <AppDetails appId={appId} appVersion={appVersion} />;
         }}
-      />
-
-      <Route
-        path={`${path}/:appId/:appVersion/launcher`}
-        render={({
-          match: {
-            params: { appVersion, appId },
-          },
-        }: RouteComponentProps<{
-          appId: string;
-          appVersion: string;
-        }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
       />
     </Switch>
   );
