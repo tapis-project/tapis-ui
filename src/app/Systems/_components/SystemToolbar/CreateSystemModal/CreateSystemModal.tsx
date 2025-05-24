@@ -16,10 +16,36 @@ import {
   LogicalQueue,
   Capability,
   KeyValuePair,
+  ReqPostSystem
 } from '@tapis/tapis-typescript-systems';
 import { useQueryClient } from 'react-query';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import AdvancedSettings from './Settings/AdvancedSettings';
+/* eslint-disable no-template-curly-in-string */
+import { ErrorMessage } from 'formik';
+import { LoadingButton } from '@mui/lab';
+import { JSONEditor } from '@tapis/tapisui-common';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material';
+
+import {
+  RuntimeEnum,
+  RuntimeOptionEnum,
+  JobTypeEnum,
+} from '@tapis/tapis-typescript-apps';
+
+import {
+  AppArgSpec,
+  ParameterSetArchiveFilter,
+  ParameterSetLogConfig,
+  AppFileInput,
+  AppFileInputArray,
+} from '@tapis/tapis-typescript-apps';
+
 
 //Arrays that are used in the drop-down menus
 const systemTypes = Object.values(SystemTypeEnum);
@@ -41,16 +67,21 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
 
   // used for the canExec checkbox
   const [exec, setExec] = useState(true);
+  const [simplified, setSimplified] = useState(false);
+  const [withJson, setWithJson] = useState(false);
+  const onChange = useCallback(() => {
+    setSimplified(!simplified);
+  }, [setSimplified, simplified]);
 
   const validationSchema = Yup.object({
-    sysname: Yup.string()
+    id: Yup.string()
       .min(1)
-      .max(80, 'System name should not be longer than 80 characters')
+      .max(80, 'System id should not be longer than 80 characters')
       .matches(
         /^[a-zA-Z0-9_.-]+$/,
         "Must contain only alphanumeric characters and the following: '.', '_', '-'"
       )
-      .required('System name is a required field'),
+      .required('System id is a required field'),
     description: Yup.string().max(
       2048,
       'Description schould not be longer than 2048 characters'
@@ -267,23 +298,141 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   };
 
   return (
-    <GenericModal
-      toggle={toggle}
-      title="Create New System"
-      body={
-        <div className={styles['modal-settings']}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
+    <Dialog
+      open={true}
+      onClose={toggle}
+      aria-labelledby="Create System"
+      aria-describedby="A modal for creating a system"
+      maxWidth={false} // disables the default maxWidth constraints
+      fullWidth={false} // prevents auto-stretching to 100%
+      PaperProps={{
+        style: { width: 'auto' }, // optional, helps content dictate width
+      }}
+    >
+      <DialogTitle
+        id="dialog-title"
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
+        <div>Create System</div>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+          <LoadingButton
+            onClick={() => {
+              setWithJson(false);
+            }}
+            variant={!withJson ? 'contained' : 'outlined'}
+            color="info"
+            size="small"
           >
-            {() => (
-              <Form id="newsystem-form">
+            form
+          </LoadingButton>
+
+          <LoadingButton
+            onClick={() => {
+              setWithJson(true);
+            }}
+            variant={withJson ? 'contained' : 'outlined'}
+            color="info"
+            size="small"
+          >
+            json editor
+          </LoadingButton>
+        </div>
+      </DialogTitle>
+
+      <DialogContent>
+        {withJson ? (
+          <JSONEditor
+            style={{ width: '60vw', marginTop: '8px' }}
+            renderNewlinesInError
+            obj={{
+              id: '',
+              description: '',
+              systemType: SystemTypeEnum.Linux,
+              host: '',
+              defaultAuthnMethod: AuthnEnum.Password,
+              canExec: true,
+            }}
+            actions={[
+              {
+                color: !isSuccess ? 'error' : 'info',
+                name: !isSuccess ? 'cancel' : 'continue',
+                actionFn: toggle,
+              },
+              {
+                name: 'create system',
+                disableOnError: true,
+                disableOnUndefined: true,
+                disableOnIsLoading: true,
+                disableOnSuccess: true,
+                error:
+                  error !== null
+                    ? {
+                        title: 'Error',
+                        message: error.message,
+                      }
+                    : undefined,
+                result: isSuccess
+                  ? {
+                      success: isSuccess,
+                      message: 'Successfully created system',
+                    }
+                  : undefined,
+                isLoading,
+                isSuccess,
+                validator: (obj: ReqPostSystem | undefined) => {
+                  let success: boolean = false;
+                  let message: string = '';
+                  try {
+                    validationSchema.validateSync(obj, { abortEarly: false });
+                    success = true;
+                  } catch (e) {
+                    (e as Yup.ValidationError).errors.map(
+                      (msg, i) => (message = message + `#${i + 1}: ${msg}\n`)
+                    );
+                  }
+
+                  return {
+                    success,
+                    message,
+                  };
+                },
+                actionFn: (obj: ReqPostSystem | undefined) => {
+                  if (obj !== undefined) {
+                    makeNewSystem(
+                      obj,
+                      true,
+                      { onSuccess }
+                    );
+                  }
+                },
+              },
+            ]}
+            onCloseError={() => {
+              reset();
+            }}
+            onCloseSuccess={() => {
+              reset();
+            }}
+          />
+        ) : (
+          <div className={styles['modal-settings']}>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={onSubmit}
+            >
+              {(formikProps) => (
+                <Form id="newapp-form">
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="field-error"
+                  />
                 <FormikInput
-                  name="sysname"
-                  label="System Name"
+                  name="id"
+                  label="System ID"
                   required={true}
-                  description={`System name`}
+                  description={`System ID`}
                   aria-label="Input"
                 />
                 <FormikInput
@@ -361,32 +510,31 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     setExec(newValue); // Update local state `exec`
                   }}
                 />
-                <AdvancedSettings canExec={exec} />
-              </Form>
-            )}
-          </Formik>
-        </div>
-      }
-      footer={
-        <SubmitWrapper
-          className={styles['modal-footer']}
-          isLoading={isLoading}
-          error={error}
-          success={isSuccess ? `Successfully created a new system` : ''}
-          reverse={true}
-        >
-          <Button
-            form="newsystem-form"
-            color="primary"
-            disabled={isLoading || isSuccess}
-            aria-label="Submit"
-            type="submit"
+                  <AdvancedSettings canExec={exec} />
+                </Form>
+              )}
+            </Formik>
+          </div>
+        )}
+      </DialogContent>
+
+      {!withJson && (
+        <DialogActions>
+          <LoadingButton onClick={toggle}>
+            {isSuccess ? 'Continue' : 'Cancel'}
+          </LoadingButton>
+          <LoadingButton
+            onClick={toggle}
+            disabled={isSuccess}
+            loading={isLoading}
+            variant="outlined"
+            autoFocus
           >
-            Create
-          </Button>
-        </SubmitWrapper>
-      }
-    />
+            Create System
+          </LoadingButton>
+        </DialogActions>
+      )}
+    </Dialog>
   );
 };
 
