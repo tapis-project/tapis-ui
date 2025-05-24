@@ -4,24 +4,26 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    pnpm2nix.url = "github:nzbr/pnpm2nix-nzbr";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, pnpm2nix }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
         commonPackages = [
           pkgs.gnugrep
           pkgs.nodejs_22
-          pkgs.nodePackages.npm
-          #pkgs.pnpm
+          #pkgs.nodePackages.npm
+          pkgs.pnpm
           pkgs.git
           pkgs.xdg-utils
           pkgs.which
           pkgs.ripgrep
           pkgs.fd
           #pkgs.coreutils # clear is not provided # gives clear and other stuff!
-        ];
+        ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin pkgs.darwin.cctools; # Example: add Darwin-specific tools if needed
+
         NPM_CONFIG_PREFIX = "${toString ./.}/npm_config_prefix";
         
         # Using builtins.replaceStrings to convert newlines to their escaped form for the shell
@@ -44,16 +46,18 @@
             echo -e "node: $NODE_VERSION"
           fi
 
-          echo -e "\nnpm run commands:
+          echo -e "\npnpm run commands:
           ==========================
-            - npm run: list all available npm scripts
-            - npm run init-project: Install all dependencies in root and subpackages, should be ran first
-            - npm run init-project twice: Runs twice to fix problems on our side with install packages of subpackages
-            - npm run dev: Start the hot-reloading dev server
-            - npm run docker: docker build and deploy
-            - npm run test: Run all tests
-            - npm run prettier: Ran by 'dev', but should be done before commit
-            - npm run watcher: Ran by 'dev', watch and rebuild if any changes are made to the source code
+            - pnpm run: list all pnpm scripts in root package.json
+            - pnpm install: install all rootpkg and subpkg dependencies from one module location
+            - pnpm -r build: Build the rootpkg (-r to build all subpkgs)
+            - pnpm run dev: Start the hot-reloading dev server
+            - pnpm run docker: docker build and deploy
+            - pnpm run test: Run all tests
+            - pnpm run prettier: Ran by 'dev', but should be done before commit
+            - pnpm add <pkg> -w: Add a package to the root pkg in workspace
+            - pnpm list: List all packages in the workspace
+            - pnpm -r build | list | audit | outdated: cool commands, run pnpm for more info
 
           Common commands:
           ==========================
@@ -64,6 +68,26 @@
           "
         '';
         
+        inherit (pnpm2nix.packages.${system}) mkPnpmPackage;
+
+        frontend = mkPnpmPackage {
+          pname = "tapisui";
+          version = "1.0.0";
+          src = ./.;
+          nodejs = pkgs.nodejs_22;
+          pnpm = pkgs.pnpm;
+          #extraBuildInputs = commonPackages;
+          nativeBuildInputs = commonPackages;
+          configurePhase = ''
+            export HOME=$TMPDIR
+            pnpm install --frozen-lockfile
+            '';
+          buildPhase = ''
+            export HOME=$TMPDIR
+            pnpm install --frozen-lockfile
+            pnpm run build
+          '';
+        };
       in {
         devShells = {
           default = pkgs.mkShell {
@@ -71,6 +95,7 @@
               tapisWelcome
             ];
             shellHook = ''
+              #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"
               #export CHOKIDAR_USEPOLLING=true
@@ -88,22 +113,57 @@
             '';
           };
         };
-        # packages = {
-        #   # We could create packages for scripts here
-        #   welcome = tapisWelcome;
-        #   default = pkgs.stdenv.mkDerivation {
-        #     name = "tapis-docs";
-        #     src = ./.;
-        #     buildInputs = commonPackages;
-        #     buildPhase = ''
-        #       make html
-        #     '';
-        #     installPhase = ''
-        #       mkdir -p $out
-        #       cp -r build/html $out/
-        #     '';
-        #   };
-        # };
+        packages = {
+          inherit frontend;
+          # Default build using pnpm
+          default = pkgs.stdenv.mkDerivation {
+            name = "tapisui-build";
+            src = ./.;
+            buildInputs = commonPackages;
+            buildPhase = ''
+              export HOME=$TMPDIR
+              pnpm install --frozen-lockfile
+              pnpm run build --verbose
+            '';
+            installPhase = ''
+              mkdir -p $out
+              cp -r dist/* $out/
+            '';
+          };
+          carl = pkgs.stdenv.mkDerivation rec {
+            pname = "frontend";
+            version = "1.0.0";
+            src = ./.;
+
+            nativeBuildInputs = commonPackages;
+
+            buildPhase = ''
+              pnpm install --frozen-lockfile
+              pnpm run build
+            '';
+
+            installPhase = ''
+              mkdir -p $out
+              cp -r dist/* $out/
+            '';
+          };
+          # GitHub Pages build for Github actions
+          github-pages = pkgs.stdenv.mkDerivation {
+            name = "tapisui-gh-pages";
+            src = ./.;
+            buildInputs = commonPackages;
+            buildPhase = ''
+              export HOME=$TMPDIR
+              pnpm install --frozen-lockfile
+              pnpm run gh-pages
+            '';
+            installPhase = ''
+              mkdir -p $out
+              # Assuming gh-pages outputs to ./build
+              cp -r build/* $out/
+            '';
+          };
+        };
       }
     );
 }

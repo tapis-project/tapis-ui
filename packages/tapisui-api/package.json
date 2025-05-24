@@ -8,7 +8,8 @@
   "scripts": {
     "test": "vitest run --config vite.config.mts",
     "build": "npx tsc --skipLibCheck",
-    "push": "npx tsc --skipLibCheck && npm publish --access public"
+    "push": "npx tsc --skipLibCheck && npm publish --access public",
+    "watch": "npx tsc --build --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "",
