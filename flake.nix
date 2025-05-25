@@ -42,7 +42,9 @@
           if [[ "$1" == "version" || "$1" == "--version" ]]; then
             NPM_VERSION=$(${pkgs.nodePackages.npm}/bin/npm --version)
             NODE_VERSION=$(${pkgs.nodejs_22}/bin/node --version)
+            PNPM_VERSION=$(${pkgs.pnpm}/bin/pnpm --version)
             echo -e "npm: $NPM_VERSION"
+            echo -e "pnpm: $PNPM_VERSION"
             echo -e "node: $NODE_VERSION"
           fi
 
@@ -68,8 +70,8 @@
           "
         '';
         
+        ## This doesn't use anything yet, but might be a replacement for default mkDerivation
         inherit (pnpm2nix.packages.${system}) mkPnpmPackage;
-
         frontend = mkPnpmPackage {
           pname = "tapisui";
           version = "1.0.0";
@@ -95,6 +97,7 @@
               tapisWelcome
             ];
             shellHook = ''
+              alias npm="echo 'Howdy! we use pnpm round these parts. Use the nix flake or install pnpm (read readme).'"
               #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"
@@ -115,12 +118,14 @@
         };
         packages = {
           inherit frontend;
+          # You can run default mkDerivation with `nix build .#default`
           # Default build using pnpm
           default = pkgs.stdenv.mkDerivation {
             name = "tapisui-build";
             src = ./.;
             buildInputs = commonPackages;
             buildPhase = ''
+              echo "This doesn't work. :) Use 'nix develop' to enter the dev shell and run pnpm commands instead."
               export HOME=$TMPDIR
               pnpm install --frozen-lockfile
               pnpm run build --verbose
@@ -128,39 +133,6 @@
             installPhase = ''
               mkdir -p $out
               cp -r dist/* $out/
-            '';
-          };
-          carl = pkgs.stdenv.mkDerivation rec {
-            pname = "frontend";
-            version = "1.0.0";
-            src = ./.;
-
-            nativeBuildInputs = commonPackages;
-
-            buildPhase = ''
-              pnpm install --frozen-lockfile
-              pnpm run build
-            '';
-
-            installPhase = ''
-              mkdir -p $out
-              cp -r dist/* $out/
-            '';
-          };
-          # GitHub Pages build for Github actions
-          github-pages = pkgs.stdenv.mkDerivation {
-            name = "tapisui-gh-pages";
-            src = ./.;
-            buildInputs = commonPackages;
-            buildPhase = ''
-              export HOME=$TMPDIR
-              pnpm install --frozen-lockfile
-              pnpm run gh-pages
-            '';
-            installPhase = ''
-              mkdir -p $out
-              # Assuming gh-pages outputs to ./build
-              cp -r build/* $out/
             '';
           };
         };

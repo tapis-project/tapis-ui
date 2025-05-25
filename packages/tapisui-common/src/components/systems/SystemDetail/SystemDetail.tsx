@@ -285,7 +285,12 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
         </MenuList>
       </Menu>
       {modal === 'updatesystem' && system && (
-        <UpdateSystemModal system={system} toggle={() => {setModal(undefined)} } />
+        <UpdateSystemModal
+          system={system}
+          toggle={() => {
+            setModal(undefined);
+          }}
+        />
       )}
       <DeleteSystemModal
         systemId={system.id}

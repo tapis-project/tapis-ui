@@ -35,7 +35,6 @@
     "react-leaflet-draw": "^0.20.6"
   },
   "devDependencies": {
-    
     "@types/leaflet.markercluster": "^1.5.5",
     "@types/node": "^18.19.33",
     "sass": "^1.77.6",

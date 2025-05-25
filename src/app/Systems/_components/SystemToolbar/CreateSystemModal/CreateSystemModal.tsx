@@ -16,7 +16,7 @@ import {
   LogicalQueue,
   Capability,
   KeyValuePair,
-  ReqPostSystem
+  ReqPostSystem,
 } from '@tapis/tapis-typescript-systems';
 import { useQueryClient } from 'react-query';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
@@ -45,7 +45,6 @@ import {
   AppFileInput,
   AppFileInputArray,
 } from '@tapis/tapis-typescript-apps';
-
 
 //Arrays that are used in the drop-down menus
 const systemTypes = Object.values(SystemTypeEnum);
@@ -348,7 +347,8 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
               id: '',
               description: '',
               systemType: SystemTypeEnum.Linux,
-              host: '',
+              host: 'stampede2.tacc.utexas.edu',
+              rootDir: '/',
               defaultAuthnMethod: AuthnEnum.Password,
               canExec: true,
             }}
@@ -398,11 +398,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 },
                 actionFn: (obj: ReqPostSystem | undefined) => {
                   if (obj !== undefined) {
-                    makeNewSystem(
-                      obj,
-                      true,
-                      { onSuccess }
-                    );
+                    makeNewSystem(obj, true, { onSuccess });
                   }
                 },
               },
@@ -428,88 +424,88 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     component="div"
                     className="field-error"
                   />
-                <FormikInput
-                  name="id"
-                  label="System ID"
-                  required={true}
-                  description={`System ID`}
-                  aria-label="Input"
-                />
-                <FormikInput
-                  name="description"
-                  label="Description"
-                  required={false}
-                  description={`System description`}
-                  aria-label="Input"
-                />
-                <FormikSelect
-                  name="systemType"
-                  description="The system type"
-                  label="System Type"
-                  required={true}
-                  data-testid="systemType"
-                >
-                  <option disabled value={''}>
-                    Select a system type
-                  </option>
-                  {systemTypes.map((values) => {
-                    return <option>{values}</option>;
-                  })}
-                </FormikSelect>
-                <FormikInput
-                  name="host"
-                  label="Host"
-                  required={true}
-                  description={`Host of the system`}
-                  aria-label="Input"
-                />
+                  <FormikInput
+                    name="id"
+                    label="System ID"
+                    required={true}
+                    description={`System ID`}
+                    aria-label="Input"
+                  />
+                  <FormikInput
+                    name="description"
+                    label="Description"
+                    required={false}
+                    description={`System description`}
+                    aria-label="Input"
+                  />
+                  <FormikSelect
+                    name="systemType"
+                    description="The system type"
+                    label="System Type"
+                    required={true}
+                    data-testid="systemType"
+                  >
+                    <option disabled value={''}>
+                      Select a system type
+                    </option>
+                    {systemTypes.map((values) => {
+                      return <option>{values}</option>;
+                    })}
+                  </FormikSelect>
+                  <FormikInput
+                    name="host"
+                    label="Host"
+                    required={true}
+                    description={`Host of the system`}
+                    aria-label="Input"
+                  />
 
-                <FormikInput
-                  name="rootDir"
-                  label="Root Directory"
-                  required={false}
-                  description={`Root directory`}
-                  aria-label="Input"
-                />
+                  <FormikInput
+                    name="rootDir"
+                    label="Root Directory"
+                    required={false}
+                    description={`Root directory`}
+                    aria-label="Input"
+                  />
 
-                <FormikSelect
-                  name="defaultAuthnMethod"
-                  description="Authentication method for the system"
-                  label="Default Authentication Method"
-                  required={true}
-                  data-testid="defaultAuthnMethod"
-                >
-                  <option disabled value="">
-                    Select a default athenication method
-                  </option>
-                  {authnMethods.map((values) => {
-                    return <option>{values}</option>;
-                  })}
-                </FormikSelect>
+                  <FormikSelect
+                    name="defaultAuthnMethod"
+                    description="Authentication method for the system"
+                    label="Default Authentication Method"
+                    required={true}
+                    data-testid="defaultAuthnMethod"
+                  >
+                    <option disabled value="">
+                      Select a default athenication method
+                    </option>
+                    {authnMethods.map((values) => {
+                      return <option>{values}</option>;
+                    })}
+                  </FormikSelect>
 
-                <FormikInput
-                  name="effectiveUserId"
-                  label="Effective User ID"
-                  required={false}
-                  description={`Effective user id`}
-                  aria-label="Input"
-                />
+                  <FormikInput
+                    name="effectiveUserId"
+                    label="Effective User ID"
+                    required={false}
+                    description={`Effective user id`}
+                    aria-label="Input"
+                  />
 
-                <FormikCheck
-                  name="canExec"
-                  required={true}
-                  label="Can Execute"
-                  description={'Enables system execution'}
-                  type="checkbox"
-                  checked={exec}
-                  onClick={(e) => {
-                    setExec(!exec);
-                  }}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const newValue = e.target.checked;
-                    setExec(newValue); // Update local state `exec`
-                  }}
-                />
+                  <FormikCheck
+                    name="canExec"
+                    required={true}
+                    label="Can Execute"
+                    description={'Enables system execution'}
+                    type="checkbox"
+                    checked={exec}
+                    onClick={(e) => {
+                      setExec(!exec);
+                    }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const newValue = e.target.checked;
+                      setExec(newValue); // Update local state `exec`
+                    }}
+                  />
                   <AdvancedSettings canExec={exec} />
                 </Form>
               )}

@@ -95,7 +95,7 @@ export default defineConfig({
     //   ignored: [
     //     '!**/packages/**',
     //   ]
-      
+
     //   // Only watch dist folders for subpackages
     //   // paths: [ ... ] // Removed because 'paths' is not a valid WatchOptions property
     // },
@@ -105,7 +105,6 @@ export default defineConfig({
     //   //   '**packages**',
     //   // ],
     // },
-  
   },
   preview: {
     open: true,
