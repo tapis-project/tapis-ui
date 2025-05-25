@@ -1,3 +1,3 @@
-import JobLaunchModal from './MUIGenericModal';
+import MUIGenericModal from './MUIGenericModal';
 
-export default JobLaunchModal;
+export default MUIGenericModal;

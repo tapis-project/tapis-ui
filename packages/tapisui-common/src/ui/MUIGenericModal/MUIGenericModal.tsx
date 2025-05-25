@@ -1,9 +1,3 @@
-import { useEffect, useCallback, useState } from 'react';
-import * as Yup from 'yup';
-import { useQueryClient } from 'react-query';
-import { Apps as Hooks } from '@tapis/tapisui-hooks';
-import { Apps } from '@tapis/tapis-typescript';
-import { JSONEditor } from '@tapis/tapisui-common';
 import {
   Button,
   Dialog,
@@ -11,8 +5,7 @@ import {
   DialogTitle,
   IconButton,
 } from '@mui/material';
-import { JobLauncher } from '@tapis/tapisui-common';
-import { Close, DataObject, RocketLaunch } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 
 export type MUIGenericModalProps = {
   toggle: () => void;
