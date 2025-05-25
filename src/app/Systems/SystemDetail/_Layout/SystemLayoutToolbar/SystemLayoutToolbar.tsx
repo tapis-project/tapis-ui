@@ -40,6 +40,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
+/// Archive, no longer used as moved to new layout. System settings in settings button.
 const SystemLayoutToolbar: React.FC = () => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();

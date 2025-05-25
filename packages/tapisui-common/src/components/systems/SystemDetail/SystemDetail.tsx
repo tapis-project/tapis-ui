@@ -36,6 +36,7 @@ import {
   LinkOff,
   AccountTree,
   Share,
+  Update,
 } from '@mui/icons-material';
 import {
   Button,
@@ -64,6 +65,7 @@ import {
   ChangeOwnerModal,
   DisableSystemModal,
   EnableSystemModal,
+  UpdateSystemModal,
 } from '../Modals';
 
 const AuthButton: React.FC<{
@@ -111,6 +113,18 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
       >
         <MenuList disablePadding>
           <MenuItem
+            disabled={false}
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('updatesystem');
+            }}
+          >
+            <ListItemIcon>
+              <Update fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Update system</ListItemText>
+          </MenuItem>
+          <MenuItem
             disabled={!system.allowChildren}
             onClick={() => {
               setAnchorEl(null);
@@ -132,7 +146,7 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
             <ListItemIcon>
               <Security fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Manage Permissions</ListItemText>
+            <ListItemText>Manage permissions</ListItemText>
           </MenuItem>
           <MenuItem
             disabled={system.owner !== username}
@@ -270,6 +284,9 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
           )}
         </MenuList>
       </Menu>
+      {modal === 'updatesystem' && system && (
+        <UpdateSystemModal system={system} toggle={() => {setModal(undefined)} } />
+      )}
       <DeleteSystemModal
         systemId={system.id}
         open={modal === 'deletesystem'}
@@ -326,7 +343,6 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
           setModal(undefined);
         }}
       />
-
       <EnableSystemModal
         systemId={system.id!}
         open={modal === 'enablesystem'}
