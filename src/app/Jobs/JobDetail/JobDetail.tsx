@@ -31,7 +31,7 @@ import {
 } from 'app/Files/_components/FilesContext';
 
 const createJobDisplay = (job: any) => {
-  const keysToPrettyPrint = ['parameterSet', 'fileInputs', "notes"];
+  const keysToPrettyPrint = ['parameterSet', 'fileInputs', 'notes'];
   const jobDisplay: { [key: string]: any } = {};
 
   for (const key in job) {
