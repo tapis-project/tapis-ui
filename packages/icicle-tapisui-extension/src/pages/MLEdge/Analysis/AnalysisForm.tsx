@@ -148,12 +148,6 @@ const models = [
     disabled: true,
   },
   {
-    modelId: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
-    name: 'MegaDetector v4.1',
-    description: undefined,
-    disabled: true,
-  },
-  {
     modelId: 'megadetectorv5-ft-ena',
     name: 'MegaDetector v5 (FT ENA)',
     description: undefined,
