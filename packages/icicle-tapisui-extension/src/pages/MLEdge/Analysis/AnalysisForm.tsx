@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Button, Input, Tooltip } from 'reactstrap';
@@ -15,6 +15,7 @@ import { QueryWrapper, JobStatusIcon } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
 import { Chip, Stack } from '@mui/material';
 import { HelpOutline } from '@mui/icons-material';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 
 interface Analysis {
   id: string;
@@ -217,6 +218,7 @@ const AnalysisForm: React.FC = () => {
     error: listError,
   } = JobsHooks.useSearchSQL({
     computeTotal: true,
+    select: 'allAttributes',
     body: {
       search: [`name = '${ML_EDGE_ANALYSIS_JOB_NAME}'`],
     },
@@ -376,7 +378,9 @@ const AnalysisForm: React.FC = () => {
                   },
                   {
                     key: 'CT_CONTROLLER_INPUT',
-                    value: values.dataset,
+                    // HACK ctcontroller expects an empty string for the 15-image dataset,
+                    // which is why we are using a ternary operator below
+                    value: values.dataset === '15-image' ? '' : values.dataset,
                   },
                   {
                     key: 'CT_CONTROLLER_NUM_NODES',
@@ -836,7 +840,7 @@ const AnalysisForm: React.FC = () => {
       </div>
       <Button
         onClick={() => {
-          alert('Run All Analyses functionality coming soon');
+          alert('Run All Analyses functionality unavailable');
           // submit({
           //   name: 'ctctrl-tacc',
           //   appId: 'ctctrl-icicledev',
@@ -861,53 +865,156 @@ const AnalysisForm: React.FC = () => {
 
       <h2 className={styles.recentAnalysesTable}>Analyses</h2>
       <QueryWrapper isLoading={listIsLoading} error={listError}>
-        <div className={styles.recentAnalysesTable}>
-          <table>
-            <thead>
-              <tr>
-                <th>Submitted</th>
-                <th>Started at</th>
-                <th>Ended</th>
-                <th>Status</th>
-                <th>Site</th>
-                <th>Device</th>
-                <th>GPU</th>
-                <th>Model</th>
-                <th>Dataset</th>
-                <th>UUID</th>
-                <th>Results</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredJobs.map((job, index) => {
-                const age =
-                  Math.floor(Date.now() / 1000) -
-                  Math.floor(new Date(job.created!).getTime() / 1000);
+        <div style={{ width: '100%' }}>
+          <DataGrid
+            getRowHeight={() => 'auto'}
+            rows={filteredJobs.map((job) => {
+              const age =
+                Math.floor(Date.now() / 1000) -
+                Math.floor(new Date(job.created!).getTime() / 1000);
 
-                const notes: any = job.notes ? job.notes : {};
-                return (
-                  <tr key={index}>
-                    <td>{age}s ago</td>
-                    <td>{job.created}</td>
-                    <td>{job.ended ? job.ended : ''}</td>
-                    <td>
-                      <JobStatusIcon status={job.status!} />
-                      <span style={{ marginLeft: '8px' }}>{job.status}</span>
-                    </td>
-                    <td>{notes.site ? notes.site : 'unknown'}</td>
-                    <td>{notes.device ? notes.device : 'unknown'}</td>
-                    <td>{notes.gpu ? notes.gpu : 'unknown'}</td>
-                    <td>{notes.model ? notes.model : 'unknown'}</td>
-                    <td>{notes.dataset ? notes.dataset : 'unknown'}</td>
-                    <td>{job.uuid}</td>
-                    <td>
-                      <Link to={`/jobs/${job.uuid}`}>View</Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+              let notes: any = {};
+              if (job.notes !== undefined && typeof job.notes === 'string') {
+                try {
+                  notes = JSON.parse(job.notes);
+                } catch (_) {
+                  notes = job.notes;
+                }
+              }
+
+              // TODO Use useMemo for this function
+              let filteredModels = models.filter((m) => {
+                console.log({ uuid: job.uuid });
+                return m.modelId === notes.model;
+              });
+
+              console.log({ filteredModels });
+
+              let modelName =
+                filteredModels.length >= 1 && filteredModels[0] !== undefined
+                  ? filteredModels[0].name
+                  : 'unknown';
+
+              return {
+                id: job.uuid!,
+                age: `${age}s ago`,
+                startedAt: job.created!,
+                endedAt: job.ended!,
+                status: job.status!,
+                uuid: job.uuid!,
+                gpu: notes.gpu !== undefined ? notes.gpu.toString() : 'unknown',
+                site: notes.site,
+                model: modelName,
+                dataset:
+                  notes.dataset !== undefined ? notes.dataset : 'unknown',
+                device: notes.device,
+              };
+            })}
+            sx={{
+              [`& .${gridClasses.cell}`]: {
+                py: 1,
+              },
+              '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+                borderRight: '1px solid #f0f0f0',
+              },
+            }}
+            columns={[
+              {
+                field: 'age',
+                headerName: 'Submitted',
+                width: 100,
+              },
+              {
+                field: 'status',
+                width: 150,
+                hideSortIcons: true,
+                disableColumnMenu: true,
+                renderCell: (params) => {
+                  return (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <JobStatusIcon status={params.row.status!} />
+                      <span style={{ marginLeft: '8px', lineHeight: '24px' }}>
+                        {params.row.status}
+                      </span>
+                    </div>
+                  );
+                },
+              },
+              {
+                field: 'device',
+                headerName: 'Device',
+                width: 100,
+              },
+              {
+                field: 'gpu',
+                headerName: 'GPU',
+                width: 100,
+              },
+              {
+                field: 'model',
+                headerName: 'Model',
+                width: 200,
+              },
+              {
+                field: 'dataset',
+                headerName: 'Dataset',
+                width: 200,
+              },
+              {
+                field: 'startedAt',
+                headerName: 'Started at',
+                width: 100,
+                hideSortIcons: false,
+                sortable: true,
+              },
+              {
+                field: 'endedAt',
+                headerName: 'Ended at',
+                width: 100,
+                hideSortIcons: false,
+                sortable: true,
+              },
+              {
+                field: 'uuid',
+                headerName: 'UUID',
+                width: 100,
+                renderCell: (params) => (
+                  <div
+                    style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {params.row.uuid}
+                  </div>
+                ),
+              },
+              {
+                field: 'results',
+                hideSortIcons: true,
+                disableColumnMenu: true,
+                renderCell: (params) => {
+                  return <Link to={`/jobs/${params.row.uuid}`}>View</Link>;
+                },
+              },
+            ]}
+            autosizeOptions={{
+              includeOutliers: false,
+            }}
+            rowSelection={false}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+          />
         </div>
       </QueryWrapper>
     </div>
