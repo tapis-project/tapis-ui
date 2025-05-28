@@ -33,7 +33,7 @@
         # Convert newlines to literal \n for shell echo -e
         tapisuiHelpMsg = builtins.replaceStrings ["\n"] ["\\n"] helpText;
 
-        # Create a unified welcome script package with an optional version parameter
+        # welcome script package with an optional version parameter
         tapisWelcome = pkgs.writeScriptBin "welcome" ''
           #!${pkgs.bash}/bin/bash
           echo -e "Entering TapisUI development environment..."
@@ -67,6 +67,7 @@
             - welcome --version: shows npm and node version + welcome
             - nix develop -i: --ignore-environment to isolate nix shell from user env
             - nix develop .#welcome: runs welcome version in nix shell
+            - nix flake show: to view flake outputs
           "
         '';
         
@@ -97,7 +98,7 @@
               tapisWelcome
             ];
             shellHook = ''
-              alias npm="echo 'Howdy! we use pnpm round these parts. Use the nix flake or install pnpm (read readme).'"
+              alias npm="echo 'Howdy! We use pnpm round these parts. You seem to've found you using npm. More details in readme.'"
               #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"
