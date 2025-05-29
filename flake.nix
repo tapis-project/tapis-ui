@@ -48,7 +48,7 @@
             echo -e "node: $NODE_VERSION"
           fi
 
-          echo -e "\npnpm run commands:
+          echo -e "\npnpm commands:
           ==========================
             - pnpm run: list all pnpm scripts in root package.json
             - pnpm install: install all rootpkg and subpkg dependencies from one module location

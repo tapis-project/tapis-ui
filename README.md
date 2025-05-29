@@ -26,7 +26,24 @@
     - `ctrl+shift+c` in browser to inspect console and find errors. If you get an invariant error then there's more than likely a package issue.
 
 # pnpm rather than npm
-In May '25 TapisUI switched to using `pnpm` to manage the root package and all subpackages. `pnpm` manages all package `node_modules` from a central location and symlinks to directories when neccessary. `pnpm` also provides easy package resolution for self-referencing subpackages. This repo contains 10 packages and `pnpm` increases speed, decreases potential errors, and provides useful utitilies for dependency management and more. You will need to intall `pnpm` on your host OS or feel free to use a `nix` shell to manage all dependencies as described below.
+In May '25 TapisUI switched to using `pnpm` to manage the root package and all subpackages. `pnpm` manages all package `node_modules` from a central location and symlinks to directories when neccessary. `pnpm` also provides easy package resolution for self-referencing subpackages. This repo contains 10 packages and `pnpm` increases speed, decreases potential errors, and provides useful utitilies for dependency management and more. You will need to intall `pnpm`, here's [the install guide](https://pnpm.io/installation), and here's two things you could do:
+
+### Using pnpm install via npm
+Users can install pnpm via npm and run as so:
+```
+npm install pnpm
+npx pnpm install
+npx pnpm -r build
+npx pnpm dev
+```
+### Using pnpm which is already installed in Nix development flake
+`flake.nix` describes a development shell with pinned pnpm version, you can use that like this:
+```
+nix develop .#default
+pnpm install
+pnpm -r build
+pnpm dev
+```
 
 # *Experimental* Nix Development Shell
 TapisUI has optional nix package manager utility. Included in the repo root is a `flake.nix` and `lock.nix` file. The `flake.nix` file defines a flake's `description`, `inputs`, and `outputs`. `inputs` attr specifies the dependencies of a flake, these are locked with `lock.nix`. `outputs` are what the flake produces, one flake may simultaneously contain several types of outputs.
