@@ -1,13 +1,11 @@
 # Getting Started with TapisUI
 
-1. Clone TapisUI repo with `git clone --recurse-submodules git@github.com:tapis-project/tapis-ui.git`
-   1. We clone with `--recurse-submodules` to load linked repositories on clone
-   2. Run `git submodule update --init --recursive` to load at any other time
+1. Clone TapisUI repo with `git clone https://github.com:tapis-project/tapis-ui.git`
 2. `cd` into repo root directory
 3. Run `pnpm install` to install packages for root and all sub packages
 4. Run `pnpm -r build` to build root and all sub packages
 5. Run `pnpm run start` to serve vite TapisUI instance at **http://localhost:3000**
-   1. Optionally run `npm run dev` which enables hot-reloading after changes in subpackages along with serving TapisUI
+   1. Optionally run `pnpm run dev` which enables hot-reloading after changes in subpackages along with serving TapisUI
 6. Open the URL output by stdout to view the UI, generally **http://localhost:3000**
 7.  [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
 
@@ -46,11 +44,15 @@ pnpm dev
 ```
 
 # *Experimental* Nix Development Shell
-TapisUI has optional nix package manager utility. Included in the repo root is a `flake.nix` and `lock.nix` file. The `flake.nix` file defines a flake's `description`, `inputs`, and `outputs`. `inputs` attr specifies the dependencies of a flake, these are locked with `lock.nix`. `outputs` are what the flake produces, one flake may simultaneously contain several types of outputs.
+Nix is a *functional* package manager which stores packages in a central Nix *store* which links to final locations. TapisUI uses nix to solve dependency and reproducibility issues in development. [To install nix, view the official instructions here](https://nixos.org/download/#nix-install-linux). Another option is installing the [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer), their installer works on Mac better and installation turns on experimental features by default.
+
+TapisUI has optional nix development tools. Included in the repo root is a `flake.nix` and `lock.nix` file. The `flake.nix` file defines a flake's `description`, `inputs`, and `outputs`. `inputs` attr specifies the dependencies of a flake, these are locked with `lock.nix`. `outputs` are what the flake produces, one flake may simultaneously contain several types of outputs.
 
 This `flake.nix` specifies a default pkgs.mkShell. When ran with `nix develop` the user will be placed in a nix shell containing the packages needed to develop/deploy/test TapisUI. This optional utility allows developers to all work in a declarative manner.
 
-As mentioned, getting into this environment requires nix to be installed on your OS (nix can be used as a portable rootless package, but that hasn't been tested). Once you can run `nix` you should be able to run `nix develop .#default` to run the default mkshell output. Which will give you access to a welcome pkg and aforementioned development packages, in this case locked versions of `npm`, `pnpm`, `node.js`, `git`, and more. 
+As mentioned, getting into this environment requires nix to be installed on your OS (nix can be used as a portable rootless package, but that hasn't been tested). Once you can run `nix` you should be able to run `nix develop .#default` to run the default mkshell output. Which will give you access to a welcome pkg and aforementioned development packages, in this case locked versions of `npm`, `pnpm`, `node.js`, `git`, and more.
+
+Warning: We're using the flakes and nix-command features of Nix which are experimental. You can temporarily allow with `export NIX_CONFIG="experimental-features = nix-command flakes"`. If you use the Determinate Nix installer these features will already be allowed. If you want a more permanent override you can adjust nix.conf, home-manager, or NixOS [as described in the Flakes docs.](https://nixos.wiki/wiki/flakes)
 
 ```
 ➜  tapis-ui git:(dev) # nix develop
