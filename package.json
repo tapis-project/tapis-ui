@@ -138,6 +138,7 @@
     "@types/streamsaver": "^2.0.1",
     "@types/uuid": "^8.3.1",
     "chokidar": "^3.6.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "gh-pages": "^6.1.1",

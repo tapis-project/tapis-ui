@@ -12,8 +12,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: checkout git repo
-        uses: actions/checkout@v2
-      - name: Setup Node.js for use with actions
+        uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
         uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
@@ -28,9 +30,11 @@ jobs:
   Client_Side_Linting:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
           cache: 'pnpm'
