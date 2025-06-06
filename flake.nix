@@ -4,10 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    pnpm2nix.url = "github:nzbr/pnpm2nix-nzbr";
+    #pnpm2nix.url = "github:nzbr/pnpm2nix-nzbr";
   };
 
-  outputs = { self, nixpkgs, flake-utils, pnpm2nix }:
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -48,49 +48,48 @@
             echo -e "node: $NODE_VERSION"
           fi
 
-          echo -e "\npnpm commands:
+          echo -e "\nDevelopment commands:
           ==========================
-            - pnpm run: list all pnpm scripts in root package.json
+            - pnpm run init-project: initialize tapis-ui project, creates .env, installs deps, and runs
+            - pnpm run dev: Start a hot-reloading dev server
             - pnpm install: install all rootpkg and subpkg dependencies from one module location
             - pnpm -r build: Build the rootpkg (-r to build all subpkgs)
-            - pnpm run dev: Start the hot-reloading dev server
             - pnpm run docker: docker build and deploy
             - pnpm run test: Run all tests
             - pnpm run prettier: Ran by 'dev', but should be done before commit
-            - pnpm add <pkg> -w: Add a package to the root pkg in workspace
-            - pnpm list: List all packages in the workspace
-            - pnpm -r build | list | audit | outdated: cool commands, run pnpm for more info
 
-          Common commands:
+          Other commands:
           ==========================
             - welcome: callable from nix shell, shows this help message
             - welcome --version: shows npm and node version + welcome
             - nix develop -i: --ignore-environment to isolate nix shell from user env
             - nix develop .#welcome: runs welcome version in nix shell
             - nix flake show: to view flake outputs
+            - pnpm run: list all pnpm scripts in root package.json
+            - pnpm -r build | list | audit | outdated: cool commands, run pnpm for more info
           "
         '';
         
         ## This doesn't use anything yet, but might be a replacement for default mkDerivation
-        inherit (pnpm2nix.packages.${system}) mkPnpmPackage;
-        frontend = mkPnpmPackage {
-          pname = "tapisui";
-          version = "1.0.0";
-          src = ./.;
-          nodejs = pkgs.nodejs_22;
-          pnpm = pkgs.pnpm;
-          #extraBuildInputs = commonPackages;
-          nativeBuildInputs = commonPackages;
-          configurePhase = ''
-            export HOME=$TMPDIR
-            pnpm install --frozen-lockfile
-            '';
-          buildPhase = ''
-            export HOME=$TMPDIR
-            pnpm install --frozen-lockfile
-            pnpm run build
-          '';
-        };
+        # inherit (pnpm2nix.packages.${system}) mkPnpmPackage;
+        # frontend = mkPnpmPackage {
+        #   pname = "tapisui";
+        #   version = "1.0.0";
+        #   src = ./.;
+        #   nodejs = pkgs.nodejs_22;
+        #   pnpm = pkgs.pnpm;
+        #   #extraBuildInputs = commonPackages;
+        #   nativeBuildInputs = commonPackages;
+        #   configurePhase = ''
+        #     export HOME=$TMPDIR
+        #     pnpm install --frozen-lockfile
+        #     '';
+        #   buildPhase = ''
+        #     export HOME=$TMPDIR
+        #     pnpm install --frozen-lockfile
+        #     pnpm run build
+        #   '';
+        # };
       in {
         devShells = {
           default = pkgs.mkShell {
@@ -118,7 +117,7 @@
           };
         };
         packages = {
-          inherit frontend;
+          #inherit frontend;
           # You can run default mkDerivation with `nix build .#default`
           # Default build using pnpm
           default = pkgs.stdenv.mkDerivation {

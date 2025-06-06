@@ -81,7 +81,7 @@
   "scripts": {
     "start": "vite --config ./vite/vite.config.mts --clearScreen=false",
     "start-dev": "vite --host --config ./vite/vite.dev.config.mts",
-    "init-project": "chmod +x ./scripts/init-project.sh && ./scripts/init-project.sh",
+    "init-project": "[ ! -f .env ] && cp .env.template .env || true && pnpm install && pnpm -r build && pnpm start",
     "dev": "pnpm -r --parallel watch & pnpm run start",
     "build": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.config.mts",
     "build-dev": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.dev.config.mts",
