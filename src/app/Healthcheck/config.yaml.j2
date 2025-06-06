@@ -1,0 +1,212 @@
+storage:
+    type: sqlite
+    path: /data/data.db
+
+web:
+    port: {{ port | default("8080") }} 
+
+endpoints:
+{% for tenant in tenants %}
+{% if "systems" in tenant.services %}
+    - name: Systems HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/systems/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Systems
+    - name: Systems List {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/systems
+      interval: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Systems
+{% endif %}
+
+
+{% if "apps" in tenant.services %}
+    - name: Apps HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/apps/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Apps
+    - name: Apps List {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/apps
+      interval: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Apps
+{% endif %}
+
+
+{% if "jobs" in tenant.services %}
+    - name: Jobs HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/jobs/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Jobs
+    - name: Jobs List {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/jobs/list
+      interval: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Jobs
+{% endif %}
+
+
+{% if "notifications" in tenant.services %}
+    - name: Notifications HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/notifications/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Notifications
+    - name: Notifications Subscriptions List {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/notifications/subscriptions
+      interval: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Notifications
+{% endif %}
+
+
+{% if "files" in tenant.services %}
+    - name: Files HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/files/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Files
+{% endif %}
+
+
+{% if "meta" in tenant.services %}
+    - name: Meta HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/meta/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Meta
+{% endif %}
+
+
+{% if "sk" in tenant.services %}
+    - name: SK HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/security/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Security Kernel
+{% endif %}
+
+
+{% if "tenants" in tenant.services %}
+    - name: Tenants List {{ tenant.display }}
+      group: Tenants
+      url: {{ tenant.base_url }}/v3/tenants
+      interal: {{ tenant.servicecheck_interval  }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "tokens" in tenant.services %}
+    - name: Tokens HealthCheck {{ tenant.display }}
+      group: Tokens
+      url: {{ tenant.base_url }}/v3/tokens/ready
+      interal: {{ tenant.servicecheck_interval  }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "streams" in tenant.services %}
+    - name: Streams HealthCheck {{ tenant.display }}
+      group: Streams
+      url: {{ tenant.base_url }}/v3/streams/ready
+      interal: {{ tenant.servicecheck_interval  }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "actors" in tenant.services %}
+    - name: Actors List {{ tenant.display }}
+      group: Actors
+      url: {{ tenant.base_url }}/v3/actors
+      interal: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "pods" in tenant.services %}
+    - name: Pods List {{ tenant.display }}
+      group: Pods
+      url: {{ tenant.base_url }}/v3/pods
+      interal: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "globus_proxy" in tenant.services %}
+    - name: GlobusProxy HealthCheck {{ tenant.display }}
+      group: GlobusProxy
+      url: {{ tenant.base_url }}/v3/globus-proxy/healthcheck
+      interal: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "workflows" in tenant.services %}
+    - name: Workflows HealthCheck {{ tenant.display }}
+      url: {{ tenant.base_url }}/v3/workflows/healthcheck
+      interval: {{ tenant.healthcheck_interval }}
+      conditions:
+          - "[STATUS] == 200"
+      group: Workflows
+    - name: Workflows Groups List {{ tenant.display }}
+      group: Workflows
+      url: {{ tenant.base_url }}/v3/workflows/groups
+      interal: {{ tenant.servicecheck_interval  }}
+      headers:
+          X-Tapis-Token: {{ tenant.jwt }}
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+
+
+{% if "authenticator" in tenant.services %}
+    - name: Authenticator - HealthCheck {{ tenant.display }}
+      group: Authenticator
+      url: {{ tenant.base_url }}/v3/oauth2/hello
+      conditions:
+          - "[STATUS] == 200"
+    - name: Authenticator - Tokens Create {{ tenant.display }}
+      group: Authenticator
+      url: {{ tenant.base_url }}/v3/oauth2/tokens
+      headers:
+          Content-type: application/json
+      method: POST
+      body: '{"username": "{{ tenant.authn_username }}", "password": "{{ tenant.authn_password }}", "grant_type": "password"}'
+      conditions:
+          - "[STATUS] == 200"
+{% endif %}
+{% endfor %}

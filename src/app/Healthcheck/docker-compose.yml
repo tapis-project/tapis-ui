@@ -1,0 +1,16 @@
+# Note: This compose file require a config.yaml in the current working directory, generated using the
+#       tapis/status-config-builder image.
+
+services:
+  gatus:
+    # image: twinproduction/gatus:latest
+    image: tapis/gatus-debug
+    container_name: tapis-status
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.yaml:/config/config.yaml
+      - ./data:/data/
+    environment:
+      authn_username: "<FILL_IN_USERNAME>"
+      authn_password: "<FILL_IN_PASSWORD>"
