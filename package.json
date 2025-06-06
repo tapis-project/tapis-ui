@@ -91,7 +91,7 @@
     "docker-prod": "docker build -t uiprod .; docker run -p 3000:80 uiprod",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
-    "prettier": "prettier --single-quote --write .",
+    "prettier": "prettier --single-quote --write src packages",
     "gh-pages": "pnpm build && npx gh-pages -d dist"
   },
   "eslintConfig": {
