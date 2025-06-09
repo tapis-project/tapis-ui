@@ -4,7 +4,7 @@
 services:
   gatus:
     # image: twinproduction/gatus:latest
-    image: tapis/gatus-debug
+    image: twinproduction/gatus:latest
     container_name: tapis-status
     ports:
       - "8080:8080"
