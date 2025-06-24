@@ -7,12 +7,12 @@
 5. Run `pnpm run start` to serve vite TapisUI instance at **http://localhost:3000**
    1. Optionally run `pnpm run dev` which enables hot-reloading after changes in subpackages along with serving TapisUI
 6. Open the URL output by stdout to view the UI, generally **http://localhost:3000**
-7.  [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
+7. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
 
 # Development with TapisUI
 
 - `pnpm run start` starts dev vite instance with `vite.dev.config.mts` config.
-- `pnpm run dev` starts dev vite and `tsc --build` in `--watch` mode  which hot-reloads subpackages
+- `pnpm run dev` starts dev vite and `tsc --build` in `--watch` mode which hot-reloads subpackages
 - `pnpm run docker` will start instance like `pnpm run start`, but containerized.
 
 ### Production Builds
@@ -24,18 +24,24 @@
     - `ctrl+shift+c` in browser to inspect console and find errors. If you get an invariant error then there's more than likely a package issue.
 
 # pnpm rather than npm
+
 In May '25 TapisUI switched to using `pnpm` to manage the root package and all subpackages. `pnpm` manages all package `node_modules` from a central location and symlinks to directories when neccessary. `pnpm` also provides easy package resolution for self-referencing subpackages. This repo contains 10 packages and `pnpm` increases speed, decreases potential errors, and provides useful utitilies for dependency management and more. You will need to intall `pnpm`, here's [the install guide](https://pnpm.io/installation), and here's two things you could do:
 
 ### Using pnpm install via npm
+
 Users can install pnpm via npm and run as so:
+
 ```
 npm install pnpm
 npx pnpm install
 npx pnpm -r build
 npx pnpm dev
 ```
+
 ### Using pnpm which is already installed in Nix development flake
+
 `flake.nix` describes a development shell with pinned pnpm version, you can use that like this:
+
 ```
 nix develop .#default
 pnpm install
@@ -43,8 +49,9 @@ pnpm -r build
 pnpm dev
 ```
 
-# *Experimental* Nix Development Shell
-Nix is a *functional* package manager which stores packages in a central Nix *store* which links to final locations. TapisUI uses nix to solve dependency and reproducibility issues in development. [To install nix, view the official instructions here](https://nixos.org/download/#nix-install-linux). Another option is installing the [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer), their installer works on Mac better and installation turns on experimental features by default.
+# _Experimental_ Nix Development Shell
+
+Nix is a _functional_ package manager which stores packages in a central Nix _store_ which links to final locations. TapisUI uses nix to solve dependency and reproducibility issues in development. [To install nix, view the official instructions here](https://nixos.org/download/#nix-install-linux). Another option is installing the [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer), their installer works on Mac better and installation turns on experimental features by default.
 
 TapisUI has optional nix development tools. Included in the repo root is a `flake.nix` and `lock.nix` file. The `flake.nix` file defines a flake's `description`, `inputs`, and `outputs`. `inputs` attr specifies the dependencies of a flake, these are locked with `lock.nix`. `outputs` are what the flake produces, one flake may simultaneously contain several types of outputs.
 
@@ -98,8 +105,8 @@ This enables developers to use TapisUI features and ui in their own projects. Th
 - **tapisui-extensions-core** - A library for building extensions and plugins to TapisUI
 - **tapisui-extensions-devtools** - Devtools when working with tapisui-extensions
 
-
 # Learn More
+
 - [TapisUI wiki](https://github.com/tapis-project/tapis-ui/wiki) for help with deployment and developing extensions
 - [Tapis documentation](https://tapis.readthedocs.io/en/latest/contents.html) for more information on Tapis
 - [Tapis live-docs](https://tapis-project.github.io/live-docs) for OpenAPI V3 endpoint descriptions for all services (which UI makes use of)

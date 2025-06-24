@@ -8,24 +8,30 @@ import {
   SubmitWrapper,
   FMTextField,
   FMSelect,
+  JSONEditor,
 } from '@tapis/tapisui-common';
+import { Pods } from '@tapis/tapis-typescript';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
 import { useFormik, FormikProvider, FieldArray } from 'formik';
 import styles from './Common/Wizard.module.scss';
+import { env } from 'process';
 
 export type PodWizardProps = {
   sharedData: any;
   setSharedData: any;
+  editMode?: 'none' | 'form' | 'json';
 };
 
 const PodWizardEdit: React.FC<PodWizardProps> = ({
   sharedData,
   setSharedData,
+  editMode,
 }) => {
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.getPod);
+    queryClient.invalidateQueries(Hooks.queryKeys.getPodDerived);
     queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
@@ -45,25 +51,28 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
     template: Yup.string(),
     time_to_stop_default: Yup.number().min(-1),
     time_to_stop_instance: Yup.number().min(-1),
-    environment_variables: Yup.array().of(
-      Yup.object().shape({
-        key: Yup.string().required(),
-        value: Yup.string(),
-      })
-    ),
-    networking: Yup.array().of(
-      Yup.object().shape({
-        id: Yup.string(),
-        protocol: Yup.string(),
-        port: Yup.string(),
-      })
-    ),
-    volume_mounts: Yup.array().of(
-      Yup.object().shape({
-        mount_path: Yup.string(),
-        volume_id: Yup.string(),
-      })
-    ),
+    environment_variables: Yup.object(),
+    // environment_variables: Yup.array().of(
+    //   Yup.object().shape({
+    //     key: Yup.string().required(),
+    //     value: Yup.string(),
+    //   })
+    // ),
+    networking: Yup.object(),
+    // array().of(
+    //   Yup.object().shape({
+    //     id: Yup.string(),
+    //     protocol: Yup.string(),
+    //     port: Yup.string(),
+    //   })
+    // ),
+    volume_mounts: Yup.object(),
+    // volume_mounts: Yup.array().of(
+    //   Yup.object().shape({
+    //     mount_path: Yup.string(),
+    //     volume_id: Yup.string(),
+    //   })
+    // ),
     resources: Yup.object().shape({
       cpu_request: Yup.number().min(0),
       cpu_limit: Yup.number().min(0),
@@ -235,87 +244,271 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
 
   return (
     <div>
-      <SubmitWrapper
-        className={styles['modal-footer']}
-        isLoading={isLoading}
-        error={error}
-        success={isSuccess ? `Pod Updated.` : ''}
-        reverse={true}
-      >
-        <Button
-          sx={{ mb: '.75rem' }}
-          form="create-pod-form"
-          color="primary"
-          disabled={isLoading || Object.keys(formik.values).length === 0}
-          aria-label="Submit"
-          type="submit"
-          variant="outlined"
+      {editMode === 'json' ? (
+        <JSONEditor
+          style={{
+            width: '100%',
+            fontSize: 12,
+            lineHeight: 1,
+          }}
+          renderNewlinesInError
+          obj={formik.values}
+          actions={[
+            {
+              name: 'update pod',
+              disableOnError: true,
+              disableOnUndefined: true,
+              disableOnIsLoading: true,
+              disableOnSuccess: true,
+              // yupSchema: validationSchema, // Pass the Yup validation schema
+              error:
+                error !== null
+                  ? {
+                      title: 'Error',
+                      message: error.message,
+                    }
+                  : undefined,
+              result: isSuccess
+                ? {
+                    success: isSuccess,
+                    message: 'Successfully updated pod',
+                  }
+                : undefined,
+              isLoading,
+              isSuccess,
+              // validator: (obj: Pods.UpdatePodRequest | undefined) => {
+              //   let success = false;
+              //   let message = '';
+              //   try {
+              //     validationSchema.validateSync(obj, { abortEarly: false });
+              //     success = true;
+              //   } catch (e) {
+              //     (e as Yup.ValidationError).errors.map(
+              //       (msg, i) => (message = message + `#${i + 1}: ${msg}\n`)
+              //     );
+              //   }
+              //   //formik.setValues(obj); // Sync formik state with JSON editor
+              //   return { success, message };
+              // },
+              actionFn: (obj: any) => {
+                if (obj !== undefined) {
+                  updatePod(
+                    { podId: objId, updatePod: obj },
+                    {
+                      onSuccess: (data: any) => {
+                        if (
+                          data?.message ===
+                          'Incoming data made no changes to pod'
+                        ) {
+                          alert('No changes were made to the pod.');
+                        } else {
+                          onSuccess();
+                          //formik.setValues(obj); // Sync formik state with JSON editor
+                        }
+                      },
+                    }
+                  );
+                }
+              },
+            },
+          ]}
+          onCloseError={() => {
+            reset();
+          }}
+          onCloseSuccess={() => {
+            reset();
+          }}
+        />
+      ) : (
+        <SubmitWrapper
+          className={styles['modal-footer']}
+          isLoading={isLoading}
+          error={error}
+          success={isSuccess ? `Pod Updated.` : ''}
+          reverse={true}
         >
-          Update Pod
-        </Button>
-      </SubmitWrapper>
-
-      <FormikProvider value={formik}>
-        <form id="create-pod-form" onSubmit={formik.handleSubmit}>
-          <AutoPruneEmptyFields validationSchema={validationSchema} />
-          <FMTextField
-            formik={formik}
-            name="description"
-            label="Description"
-            multiline={true}
-            description="Description of this pod for future reference"
-          />
-          <FMTextField
-            formik={formik}
-            name="command"
-            label="Command"
-            description='Pod Command - Overwrites docker image. ex. ["sleep", "5000"]'
-          />
-          <FMTextField
-            formik={formik}
-            name="image"
-            label="Image"
-            description="Docker Image - Docker image to run in the pod"
-          />
-          <FMTextField
-            formik={formik}
-            name="template"
-            label="Template"
-            description="Template - Template to use for the pod"
-          />
-          <FMTextField
-            formik={formik}
-            name="time_to_stop_default"
-            label="Time To Stop - Default"
-            description="Default TTS - Seconds until pod is stopped, default for all instances"
-          />
-          <FMTextField
-            formik={formik}
-            name="time_to_stop_instance"
-            label="Time To Stop - Instance"
-            description="Instance TTS - Seconds until pod is stopped, for current instance"
-          />
-          <FieldArray
-            name="environment_variables"
-            render={(arrayHelpers) => (
-              <div>
-                <div className={styles['key-val-env-vars']}>
-                  {formik.values.environment_variables &&
-                    formik.values.environment_variables.length > 0 &&
-                    formik.values.environment_variables.map(
-                      (_: any, i: any) => (
+          <Button
+            sx={{ mb: '.75rem' }}
+            form="create-pod-form"
+            color="primary"
+            disabled={isLoading || Object.keys(formik.values).length === 0}
+            aria-label="Submit"
+            type="submit"
+            variant="outlined"
+          >
+            Update Pod
+          </Button>
+        </SubmitWrapper>
+      )}
+      {editMode !== 'json' && (
+        <FormikProvider value={formik}>
+          <form id="create-pod-form" onSubmit={formik.handleSubmit}>
+            <AutoPruneEmptyFields validationSchema={validationSchema} />
+            <FMTextField
+              formik={formik}
+              name="description"
+              label="Description"
+              multiline={true}
+              description="Description of this pod for future reference"
+            />
+            <FMTextField
+              formik={formik}
+              name="command"
+              label="Command"
+              description='Pod Command - Overwrites docker image. ex. ["sleep", "5000"]'
+            />
+            <FMTextField
+              formik={formik}
+              name="image"
+              label="Image"
+              description="Docker Image - Docker image to run in the pod"
+            />
+            <FMTextField
+              formik={formik}
+              name="template"
+              label="Template"
+              description="Template - Template to use for the pod"
+            />
+            <FMTextField
+              formik={formik}
+              name="time_to_stop_default"
+              label="Time To Stop - Default"
+              description="Default TTS - Seconds until pod is stopped, default for all instances"
+            />
+            <FMTextField
+              formik={formik}
+              name="time_to_stop_instance"
+              label="Time To Stop - Instance"
+              description="Instance TTS - Seconds until pod is stopped, for current instance"
+            />
+            <FieldArray
+              name="environment_variables"
+              render={(arrayHelpers) => (
+                <div>
+                  <div className={styles['key-val-env-vars']}>
+                    {formik.values.environment_variables &&
+                      formik.values.environment_variables.length > 0 &&
+                      formik.values.environment_variables.map(
+                        (_: any, i: any) => (
+                          <div key={i} className={styles['key-val-env-var']}>
+                            <FMTextField
+                              formik={formik}
+                              name={`environment_variables.${i}.key`}
+                              label="Key"
+                              description="desc1replace!"
+                            />
+                            <FMTextField
+                              formik={formik}
+                              name={`environment_variables.${i}.value`}
+                              label="Value"
+                              description="desc2replace!"
+                            />
+                            <Button
+                              variant="outlined"
+                              className={styles['remove-button']}
+                              type="button"
+                              color="error"
+                              onClick={() => arrayHelpers.remove(i)}
+                              size="medium"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        )
+                      )}
+                  </div>
+                  <Button
+                    type="button"
+                    className={styles['add-button']}
+                    onClick={() => arrayHelpers.push({ key: '', value: '' })}
+                  >
+                    + Add "environment_variable" object
+                  </Button>
+                </div>
+              )}
+            />
+            <FieldArray
+              name="networking"
+              render={(arrayHelpers) => (
+                <div>
+                  <div className={styles['key-val-env-vars']}>
+                    {Array.isArray(formik.values.networking) &&
+                      (formik.values.networking as any[]).length > 0 &&
+                      (formik.values.networking as any[]).map(
+                        (_: any, i: any) => (
+                          <div key={i} className={styles['key-val-env-var']}>
+                            <FMTextField
+                              formik={formik}
+                              name={`networking.${i}.id`}
+                              label="ID"
+                              description="desc3replace!"
+                            />
+                            <FMTextField
+                              formik={formik}
+                              name={`networking.${i}.protocol`}
+                              label="Protocol"
+                              description="desc4replace!"
+                            />
+                            <FMSelect
+                              formik={formik}
+                              name={`networking.${i}.protocol`}
+                              label="protocol2"
+                              children={<MenuItem value={10}>Ten</MenuItem>}
+                              description={''}
+                              labelId={''}
+                            />
+                            <FMTextField
+                              formik={formik}
+                              name={`networking.${i}.port`}
+                              label="Port"
+                              description="desc5replace!"
+                            />
+                            <Button
+                              variant="outlined"
+                              className={styles['remove-button']}
+                              type="button"
+                              color="error"
+                              onClick={() => arrayHelpers.remove(i)}
+                              size="medium"
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        )
+                      )}
+                  </div>
+                  <Button
+                    type="button"
+                    className={styles['add-button']}
+                    onClick={() =>
+                      arrayHelpers.push({ id: '', protocol: '', port: '' })
+                    }
+                  >
+                    + Add "networking" object
+                  </Button>
+                </div>
+              )}
+            />
+            <FieldArray
+              name="volume_mounts"
+              render={(arrayHelpers) => (
+                <div>
+                  <div className={styles['key-val-env-vars']}>
+                    {formik.values.volume_mounts &&
+                      formik.values.volume_mounts.length > 0 &&
+                      formik.values.volume_mounts.map((_: any, i: any) => (
                         <div key={i} className={styles['key-val-env-var']}>
                           <FMTextField
                             formik={formik}
-                            name={`environment_variables.${i}.key`}
-                            label="Key"
-                            description="desc1replace!"
+                            name={`volume_mounts.${i}.mount_path`}
+                            label="Mount Path"
+                            description="desc6replace!"
                           />
                           <FMTextField
                             formik={formik}
-                            name={`environment_variables.${i}.value`}
-                            label="Value"
-                            description="desc2replace!"
+                            name={`volume_mounts.${i}.volume_id`}
+                            label="Volume ID"
+                            description="desc7replace!"
                           />
                           <Button
                             variant="outlined"
@@ -328,159 +521,53 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
                             Remove
                           </Button>
                         </div>
-                      )
-                    )}
+                      ))}
+                  </div>
+                  <Button
+                    type="button"
+                    className={styles['add-button']}
+                    onClick={() =>
+                      arrayHelpers.push({ mount_path: '', volume_id: '' })
+                    }
+                  >
+                    + Add "volume_mount" object
+                  </Button>
                 </div>
-                <Button
-                  type="button"
-                  className={styles['add-button']}
-                  onClick={() => arrayHelpers.push({ key: '', value: '' })}
-                >
-                  + Add "environment_variable" object
-                </Button>
-              </div>
-            )}
-          />
-          <FieldArray
-            name="networking"
-            render={(arrayHelpers) => (
-              <div>
-                <div className={styles['key-val-env-vars']}>
-                  {Array.isArray(formik.values.networking) &&
-                    (formik.values.networking as any[]).length > 0 &&
-                    (formik.values.networking as any[]).map(
-                      (_: any, i: any) => (
-                        <div key={i} className={styles['key-val-env-var']}>
-                          <FMTextField
-                            formik={formik}
-                            name={`networking.${i}.id`}
-                            label="ID"
-                            description="desc3replace!"
-                          />
-                          <FMTextField
-                            formik={formik}
-                            name={`networking.${i}.protocol`}
-                            label="Protocol"
-                            description="desc4replace!"
-                          />
-                          <FMSelect
-                            formik={formik}
-                            name={`networking.${i}.protocol`}
-                            label="protocol2"
-                            children={<MenuItem value={10}>Ten</MenuItem>}
-                            description={''}
-                            labelId={''}
-                          />
-                          <FMTextField
-                            formik={formik}
-                            name={`networking.${i}.port`}
-                            label="Port"
-                            description="desc5replace!"
-                          />
-                          <Button
-                            variant="outlined"
-                            className={styles['remove-button']}
-                            type="button"
-                            color="error"
-                            onClick={() => arrayHelpers.remove(i)}
-                            size="medium"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      )
-                    )}
-                </div>
-                <Button
-                  type="button"
-                  className={styles['add-button']}
-                  onClick={() =>
-                    arrayHelpers.push({ id: '', protocol: '', port: '' })
-                  }
-                >
-                  + Add "networking" object
-                </Button>
-              </div>
-            )}
-          />
-          <FieldArray
-            name="volume_mounts"
-            render={(arrayHelpers) => (
-              <div>
-                <div className={styles['key-val-env-vars']}>
-                  {formik.values.volume_mounts &&
-                    formik.values.volume_mounts.length > 0 &&
-                    formik.values.volume_mounts.map((_: any, i: any) => (
-                      <div key={i} className={styles['key-val-env-var']}>
-                        <FMTextField
-                          formik={formik}
-                          name={`volume_mounts.${i}.mount_path`}
-                          label="Mount Path"
-                          description="desc6replace!"
-                        />
-                        <FMTextField
-                          formik={formik}
-                          name={`volume_mounts.${i}.volume_id`}
-                          label="Volume ID"
-                          description="desc7replace!"
-                        />
-                        <Button
-                          variant="outlined"
-                          className={styles['remove-button']}
-                          type="button"
-                          color="error"
-                          onClick={() => arrayHelpers.remove(i)}
-                          size="medium"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
-                </div>
-                <Button
-                  type="button"
-                  className={styles['add-button']}
-                  onClick={() =>
-                    arrayHelpers.push({ mount_path: '', volume_id: '' })
-                  }
-                >
-                  + Add "volume_mount" object
-                </Button>
-              </div>
-            )}
-          />
-          <FMTextField
-            formik={formik}
-            name="resources.cpu_request"
-            label="CPU Request"
-            description="CPU request for the pod"
-          />
-          <FMTextField
-            formik={formik}
-            name="resources.cpu_limit"
-            label="CPU Limit"
-            description="CPU limit for the pod"
-          />
-          <FMTextField
-            formik={formik}
-            name="resources.mem_request"
-            label="Memory Request"
-            description="Memory request for the pod"
-          />
-          <FMTextField
-            formik={formik}
-            name="resources.mem_limit"
-            label="Memory Limit"
-            description="Memory limit for the pod"
-          />
-          <FMTextField
-            formik={formik}
-            name="resources.gpus"
-            label="GPUs"
-            description="Number of GPUs for the pod"
-          />
-        </form>
-      </FormikProvider>
+              )}
+            />
+            <FMTextField
+              formik={formik}
+              name="resources.cpu_request"
+              label="CPU Request"
+              description="CPU request for the pod"
+            />
+            <FMTextField
+              formik={formik}
+              name="resources.cpu_limit"
+              label="CPU Limit"
+              description="CPU limit for the pod"
+            />
+            <FMTextField
+              formik={formik}
+              name="resources.mem_request"
+              label="Memory Request"
+              description="Memory request for the pod"
+            />
+            <FMTextField
+              formik={formik}
+              name="resources.mem_limit"
+              label="Memory Limit"
+              description="Memory limit for the pod"
+            />
+            <FMTextField
+              formik={formik}
+              name="resources.gpus"
+              label="GPUs"
+              description="Number of GPUs for the pod"
+            />
+          </form>
+        </FormikProvider>
+      )}
     </div>
   );
 };

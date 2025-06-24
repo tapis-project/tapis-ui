@@ -33,10 +33,10 @@
         # Convert newlines to literal \n for shell echo -e
         tapisuiHelpMsg = builtins.replaceStrings ["\n"] ["\\n"] helpText;
 
-        # welcome script package with an optional version parameter
-        tapisWelcome = pkgs.writeScriptBin "welcome" ''
+        # menu script package with an optional version parameter
+        tapisMenu = pkgs.writeScriptBin "menu" ''
           #!${pkgs.bash}/bin/bash
-          echo -e "Entering TapisUI development environment..."
+          echo -e "\033[34mEntering TapisUI development environment...\033[0m"
 
           # if input $1 is version or --version, show npm and node version
           if [[ "$1" == "version" || "$1" == "--version" ]]; then
@@ -60,14 +60,21 @@
 
           Other commands:
           ==========================
-            - welcome: callable from nix shell, shows this help message
-            - welcome --version: shows npm and node version + welcome
+            - menu: callable from nix shell, shows this help message
+            - menu --version: shows npm and node version + menu
             - nix develop -i: --ignore-environment to isolate nix shell from user env
-            - nix develop .#welcome: runs welcome version in nix shell
+            - nix develop .#menu: runs 'menu version' in nix shell
             - nix flake show: to view flake outputs
             - pnpm run: list all pnpm scripts in root package.json
             - pnpm -r build | list | audit | outdated: cool commands, run pnpm for more info
           "
+        '';
+        
+        # Create a welcome alias that points to menu
+        tapisWelcome = pkgs.writeScriptBin "welcome" ''
+          #!${pkgs.bash}/bin/bash
+          echo -e "\033[31m'welcome' is deprecated, use 'menu' instead.\033[0m"
+          ${tapisMenu}/bin/menu "$@"
         '';
         
         ## This doesn't use anything yet, but might be a replacement for default mkDerivation
@@ -94,24 +101,25 @@
         devShells = {
           default = pkgs.mkShell {
             packages = commonPackages ++ [
+              tapisMenu
               tapisWelcome
             ];
             shellHook = ''
-              alias npm="echo 'Howdy! We use pnpm round these parts. You seem to've found you using npm. More details in readme.'"
+              alias npm="echo -e '\033[33mHowdy! We use pnpm round these parts. Seem to have found you using npm. More details in readme.\033[0m' && pnpm"
               #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"
               #export CHOKIDAR_USEPOLLING=true
               #export SHELL=$(which zsh)
               #ulimit -n 2000
-              welcome version
+              menu version
             '';
           };
-          welcome = pkgs.mkShell {
-            packages = commonPackages ++ [ tapisWelcome ];
+          menu = pkgs.mkShell {
+            packages = commonPackages ++ [ tapisMenu tapisWelcome ];
             shellHook = ''
               # Just show the help message and exit
-              welcome version
+              menu version
               exit
             '';
           };

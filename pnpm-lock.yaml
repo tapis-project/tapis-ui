@@ -545,6 +545,9 @@ importers:
 
   packages/tapisui-common:
     dependencies:
+      '@codemirror/autocomplete':
+        specifier: ^6.18.6
+        version: 6.18.6
       '@jest/globals':
         specifier: 29.7.0
         version: 29.7.0
@@ -7939,6 +7942,7 @@ snapshots:
 
   '@tapis/tapisui-common@file:packages/tapisui-common(@babel/runtime@7.27.1)(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@types/react@18.3.22)(react@18.3.1))(@testing-library/dom@10.4.0)(@types/node@18.19.103)(@types/react-dom@18.3.7(@types/react@18.3.22))(@types/react@18.3.22)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@18.3.1(react@18.3.1))(rollup@4.41.0)(sass@1.89.0)(vite@6.3.5(@types/node@18.19.103)(sass@1.89.0))':
     dependencies:
+      '@codemirror/autocomplete': 6.18.6
       '@jest/globals': 29.7.0
       '@mui/icons-material': 5.17.1(@mui/material@5.17.1(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@types/react@18.3.22)(react@18.3.1))(@types/react@18.3.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.22)(react@18.3.1)
       '@mui/lab': 5.0.0-alpha.176(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@types/react@18.3.22)(react@18.3.1))(@mui/material@5.17.1(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.22)(react@18.3.1))(@types/react@18.3.22)(react@18.3.1))(@types/react@18.3.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

@@ -22,11 +22,11 @@
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@jest/globals": "29.7.0",
     "@tapis/tapis-typescript": "^0.0.55",
     "@testing-library/jest-dom": "6.6.3",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.17.17",
-    "@jest/globals": "29.7.0",
     "@types/node": "^20.14.6",
     "@types/normalize-path": "^3.0.0",
     "@types/react": "^18.3.3",
@@ -48,6 +48,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^6.18.6",
     "@jest/globals": "29.7.0",
     "@mui/icons-material": "^5.15.20",
     "@mui/lab": "^5.0.0-alpha.173",
