@@ -101,7 +101,9 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const pod: Pods.PodResponseModel | undefined = data?.result;
   // If no template, details tab is default
   useEffect(() => {
-    if (!pod?.template) {
+    if (pod?.template) {
+      dispatch(updateState({ podDetailTab: 'derived' }));
+    } else {
       dispatch(updateState({ podDetailTab: 'details' }));
     }
   }, [pod]);
