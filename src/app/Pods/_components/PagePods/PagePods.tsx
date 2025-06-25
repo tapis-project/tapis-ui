@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import {
@@ -99,6 +99,12 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: Pods.PodResponseModel | undefined = data?.result;
+  // If no template, details tab is default
+  useEffect(() => {
+    if (!pod?.template) {
+      dispatch(updateState({ podDetailTab: 'details' }));
+    }
+  }, [pod]);
   const podDerived: Pods.PodResponseModel | undefined = dataDerived?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
@@ -450,35 +456,37 @@ Select or create a pod to get started.`;
               >
                 {podDetailTab}
               </LoadingButton>
-              <Button
-                onClick={() =>
-                  dispatch(
-                    updateState({
-                      setDetailsDropdownOpen: !setDetailsDropdownOpen,
-                    })
-                  )
-                }
-                color={
-                  podTab === 'edit' ||
-                  podTab === 'derived' ||
-                  podTab === 'details'
-                    ? 'secondary'
-                    : 'primary'
-                }
-                sx={{
-                  fontSize: '14px',
-                  minWidth: '28px !important',
-                  width: '28px',
-                }}
-                variant="outlined"
-                aria-controls={
-                  setDetailsDropdownOpen ? 'details-menu' : undefined
-                }
-                aria-expanded={setDetailsDropdownOpen ? 'true' : undefined}
-                aria-haspopup="menu"
-              >
-                <ArrowDropDown />
-              </Button>
+              {objId !== undefined && pod?.template && (
+                <Button
+                  onClick={() =>
+                    dispatch(
+                      updateState({
+                        setDetailsDropdownOpen: !setDetailsDropdownOpen,
+                      })
+                    )
+                  }
+                  color={
+                    podTab === 'edit' ||
+                    podTab === 'derived' ||
+                    podTab === 'details'
+                      ? 'secondary'
+                      : 'primary'
+                  }
+                  sx={{
+                    fontSize: '14px',
+                    minWidth: '28px !important',
+                    width: '28px',
+                  }}
+                  variant="outlined"
+                  aria-controls={
+                    setDetailsDropdownOpen ? 'details-menu' : undefined
+                  }
+                  aria-expanded={setDetailsDropdownOpen ? 'true' : undefined}
+                  aria-haspopup="menu"
+                >
+                  <ArrowDropDown />
+                </Button>
+              )}
             </ButtonGroup>
           )}
           <Popper
