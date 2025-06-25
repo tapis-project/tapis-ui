@@ -9,3 +9,4 @@ export { TrainingCatalog } from './TrainingCatalog';
 export { CKNDashboard } from './CKNDashboard';
 export { CatalogAnalytics } from './CatalogAnalytics';
 export { ComponentCatalog } from './ComponentCatalog';
+export { Harvest } from './Harvest';
