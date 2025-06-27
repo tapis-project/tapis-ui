@@ -88,6 +88,7 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   selectedField?: string;
   isSelectedItem?: (args: { object: T; selectedField?: string }) => boolean;
   listItemIconStyle?: React.CSSProperties;
+  middleClickLink?: (object: T) => string | undefined;
 };
 
 export type FilterableObjectsListComponentProps<
@@ -136,6 +137,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     selectedField !== undefined &&
     (object.id === selectedField || object.pod_id === selectedField),
   listItemIconStyle = { minWidth: '56px' },
+  middleClickLink = undefined,
 }) => {
   const open = useMemo(() => {
     let concatenatedOpen: FilterableObjectsListState['open'] =
@@ -487,6 +489,9 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                             object,
                             groupIcon
                           );
+                          const mcLink = middleClickLink
+                            ? middleClickLink(object)
+                            : undefined;
                           return (
                             <ListItem disablePadding>
                               <ListItemButton
@@ -505,6 +510,14 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                                   group.onClickItem
                                     ? group.onClickItem(object)
                                     : defaultOnClickItem(object);
+                                }}
+                                onMouseDown={(event) => {
+                                  if (event.button === 1) {
+                                    event.preventDefault();
+                                    if (mcLink) {
+                                      window.open(mcLink, '_blank');
+                                    }
+                                  }
                                 }}
                                 selected={isSelectedItem({
                                   object,

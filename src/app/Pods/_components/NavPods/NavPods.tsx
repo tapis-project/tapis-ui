@@ -74,6 +74,8 @@ const NavPods: React.FC = () => {
         style={{
           //borderBottom: '1px solid #CCCCCC',
           borderRight: '1px solid #CCCCCC',
+          height: 'calc(100vh - 140px)', // Make the nav take full viewport height
+          overflowY: 'auto', // Enable vertical scrolling only for this div
         }}
         //className={styles['scroll-container']}
       >
@@ -98,6 +100,9 @@ const NavPods: React.FC = () => {
             object.pod_id === selectedField
           }
           listItemIconStyle={{ minWidth: '42px' }}
+          middleClickLink={(object: any) =>
+            object.pod_id ? `/#/pods/${object.pod_id}` : undefined
+          }
           groups={[
             {
               field: 'status',

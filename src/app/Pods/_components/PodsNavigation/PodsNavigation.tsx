@@ -51,9 +51,11 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     if (event.button === 1) {
       // Middle click
       event.preventDefault();
-      let url = `http://localhost:3000/#/pods/${destination}`;
-      if (id) {
-        url += `/${id}`;
+      let url;
+      if (destination === 'pods') {
+        url = '/#/pods';
+      } else {
+        url = `/#/pods/${destination}`;
       }
       window.open(url, '_blank');
     }
@@ -191,6 +193,8 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
         size="small"
         onClick={() => updateStateAndNavigate('pods', from, id)}
         onAuxClick={(event) => handleMiddleClick(event, 'pods', id)}
+        //href={'/#/pods'} ## we could use href here, but it would mean clicking the button would redirect to
+        // /pods/images rather than using stored state to navigate to most recently used pod
       >
         Pods
       </Button>
