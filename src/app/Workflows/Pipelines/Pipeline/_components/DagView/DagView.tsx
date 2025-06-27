@@ -279,7 +279,10 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   }, [groupId, pipeline]);
 
   const onConnect = useCallback(
-    (params: any) => setEdges((eds: any) => addEdge(params, eds) as any),
+    (params: any) => {
+      console.log({params})
+      setEdges((eds: any) => addEdge(params, eds) as any)
+    },
     []
   );
 
