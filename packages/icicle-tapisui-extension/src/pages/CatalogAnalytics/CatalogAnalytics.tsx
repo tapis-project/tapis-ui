@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SectionHeader } from '@tapis/tapisui-common';
 import { Component } from '@tapis/tapisui-extensions-core';
 
-export const TrainingCatalog: Component = ({ accessToken }) => {
+export const CatalogAnalytics: Component = ({ accessToken }) => {
   return (
     <div
       style={{
@@ -16,7 +16,7 @@ export const TrainingCatalog: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          src={`https://icicle-ai.github.io/training-catalog/other_resources/intro`}
+          src={`https://umami.pods.icicleai.tapis.io/dashboard`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
@@ -25,4 +25,4 @@ export const TrainingCatalog: Component = ({ accessToken }) => {
   );
 };
 
-export default TrainingCatalog;
+export default CatalogAnalytics;

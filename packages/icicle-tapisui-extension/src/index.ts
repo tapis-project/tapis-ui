@@ -8,11 +8,12 @@ import {
   DataLabeler,
   JupyterLab,
   OpenWebUI,
-  VisualAnalytics,
+  CatalogAnalytics,
   SmartScheduler,
   TrainingCatalog,
   CKNDashboard,
   DigitalAgOpenPASS,
+  ComponentCatalog,
 } from './pages';
 
 const extension = createExtension({
@@ -34,10 +35,15 @@ const extension = createExtension({
     'ml-edge',
     'open-web-ui',
     'jupyter-lab',
-    'visual-analytics',
+    'analytics',
     'training-catalog',
+    'component-catalog',
     'ckn-dashboard',
     'openpass',
+    'systems',
+    'jobs',
+    'files',
+    'apps',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -90,13 +96,6 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'visual-analytics',
-  sidebarDisplayName: 'Visual Analytics',
-  iconName: 'globe',
-  component: VisualAnalytics,
-});
-
-extension.registerService({
   id: 'smart-scheduler',
   sidebarDisplayName: 'Smart Scheduler',
   iconName: 'globe',
@@ -111,6 +110,13 @@ extension.registerService({
 });
 
 extension.registerService({
+  id: 'component-catalog',
+  sidebarDisplayName: 'Catalog',
+  iconName: 'globe',
+  component: ComponentCatalog,
+});
+
+extension.registerService({
   id: 'ckn-dashboard',
   sidebarDisplayName: 'CKN Dashboard',
   iconName: 'globe',
@@ -122,6 +128,13 @@ extension.registerService({
   sidebarDisplayName: 'OpenPASS',
   iconName: 'globe',
   component: DigitalAgOpenPASS,
+});
+
+extension.registerService({
+  id: 'analytics',
+  sidebarDisplayName: 'Analytics',
+  iconName: 'globe',
+  component: CatalogAnalytics,
 });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;

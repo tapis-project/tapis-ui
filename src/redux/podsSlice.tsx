@@ -6,6 +6,9 @@ export interface PodsState {
   // Tab bars, used to store state when moving in and out of specific tabs.
   podTab: string;
   podRootTab: string;
+  podEditTab: string;
+  podDetailTab: string;
+  podLogTab: string;
   activePodId?: string;
 
   imageTab?: string;
@@ -29,12 +32,18 @@ export interface PodsState {
   templateNavExpandedItems: string[];
 
   activePage?: string;
+
+  setDetailsDropdownOpen?: boolean;
+  setLogsDropdownOpen?: boolean;
 }
 
 const initialState: PodsState = {
   activePage: 'pods',
   podTab: 'details',
   podRootTab: 'dashboard',
+  podEditTab: 'form',
+  podDetailTab: 'derived',
+  podLogTab: 'logs',
   imageTab: 'details',
   imageRootTab: 'dashboard',
   volumeTab: 'details',
@@ -46,6 +55,8 @@ const initialState: PodsState = {
   templateRootTab: 'dashboard',
   templateNavExpandedItems: [],
   templateNavSelectedItems: '',
+  setDetailsDropdownOpen: false,
+  setLogsDropdownOpen: false,
 };
 
 const podsSlice = createSlice({

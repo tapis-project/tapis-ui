@@ -9,3 +9,4 @@ export { default as PermissionsModal } from './PermissionsModal';
 export { default as ChangeOwnerModal } from './ChangeOwnerModal';
 export { default as DisableSystemModal } from './DisableSystemModal';
 export { default as EnableSystemModal } from './EnableSystemModal';
+export { default as UpdateSystemModal } from './UpdateSystemModal';

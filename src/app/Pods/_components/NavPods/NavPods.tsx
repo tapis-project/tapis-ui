@@ -64,9 +64,6 @@ const NavPods: React.FC = () => {
   //   </Navbar>
   // );
 
-  //const { activePodId } = useAppSelector((state) => state.pods);
-
-  //const deletedSystems: Array<Pods.TapisSystem> = deletedData?.result ?? [];
   const systems: Array<Pods.PodResponseModel> = (data?.result ?? [])
     .slice()
     .sort((a, b) => (a.pod_id ?? '').localeCompare(b.pod_id ?? ''));
@@ -107,7 +104,7 @@ const NavPods: React.FC = () => {
               groupSelectorLabel: 'status',
               primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
               secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
-              open: ['AVAILABLE'],
+              open: ['AVAILABLE', 'CREATING', 'ERROR', 'COMPLETE'],
               tooltip: ({ fieldValue }: any) => {
                 switch (fieldValue) {
                   case 'AVAILABLE':

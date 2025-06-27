@@ -437,7 +437,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       <DialogContent>
         {withJson ? (
           <JSONEditor
-            style={{ width: '600px', marginTop: '8px' }}
+            style={{ width: '60vw', marginTop: '8px' }}
             renderNewlinesInError
             obj={{
               id: '',

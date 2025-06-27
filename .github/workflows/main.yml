@@ -11,45 +11,37 @@ jobs:
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v1
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
-      # - uses: actions/cache@v1
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
-      - name: npm ci
-        run: rm -rf node_modules && rm package-lock.json && npm install
-      - name: Client Side Unit Tests
-        run: |
-          npm run test
+          cache: 'pnpm'
+      - name: install packages
+        run: pnpm install --frozen-lockfile
+      - name: run tests
+        run: pnpm run test
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
   Client_Side_Linting:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
-      # - uses: actions/cache@v1
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
-      - name: npm ci
-        run: |
-          npm ci
+          cache: 'pnpm'
+      - name: install packages
+        run: pnpm install --frozen-lockfile
       - name: Client Side Linting
-        run: |
-          npm run lint
+        run: pnpm run lint
 
   Resolve_Image_Tag:
     runs-on: ubuntu-latest
@@ -106,6 +98,6 @@ jobs:
           if [ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" == true ]; then
             BRANCH=dev
           fi
-          docker build -f Dockerfile -t tapis/tapisui:$BRANCH .
+          docker build -f Dockerfile.nix -t tapis/tapisui:$BRANCH .
       - name: Push_All_Tags
         run: docker push --all-tags tapis/tapisui

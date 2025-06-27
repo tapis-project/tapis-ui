@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    #pnpm2nix.url = "github:nzbr/pnpm2nix-nzbr";
   };
 
   outputs = { self, nixpkgs, flake-utils }:
@@ -13,15 +14,16 @@
         commonPackages = [
           pkgs.gnugrep
           pkgs.nodejs_22
-          pkgs.nodePackages.npm
-          #pkgs.pnpm
+          #pkgs.nodePackages.npm
+          pkgs.pnpm
           pkgs.git
           pkgs.xdg-utils
           pkgs.which
           pkgs.ripgrep
           pkgs.fd
           #pkgs.coreutils # clear is not provided # gives clear and other stuff!
-        ];
+        ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin pkgs.darwin.cctools; # Example: add Darwin-specific tools if needed
+
         NPM_CONFIG_PREFIX = "${toString ./.}/npm_config_prefix";
         
         # Using builtins.replaceStrings to convert newlines to their escaped form for the shell
@@ -31,79 +33,117 @@
         # Convert newlines to literal \n for shell echo -e
         tapisuiHelpMsg = builtins.replaceStrings ["\n"] ["\\n"] helpText;
 
-        # Create a unified welcome script package with an optional version parameter
-        tapisWelcome = pkgs.writeScriptBin "welcome" ''
+        # menu script package with an optional version parameter
+        tapisMenu = pkgs.writeScriptBin "menu" ''
           #!${pkgs.bash}/bin/bash
-          echo -e "Entering TapisUI development environment..."
+          echo -e "\033[34mEntering TapisUI development environment...\033[0m"
 
           # if input $1 is version or --version, show npm and node version
           if [[ "$1" == "version" || "$1" == "--version" ]]; then
             NPM_VERSION=$(${pkgs.nodePackages.npm}/bin/npm --version)
             NODE_VERSION=$(${pkgs.nodejs_22}/bin/node --version)
+            PNPM_VERSION=$(${pkgs.pnpm}/bin/pnpm --version)
             echo -e "npm: $NPM_VERSION"
+            echo -e "pnpm: $PNPM_VERSION"
             echo -e "node: $NODE_VERSION"
           fi
 
-          echo -e "\nnpm run commands:
+          echo -e "\nDevelopment commands:
           ==========================
-            - npm run: list all available npm scripts
-            - npm run init-project: Install all dependencies in root and subpackages, should be ran first
-            - npm run init-project twice: Runs twice to fix problems on our side with install packages of subpackages
-            - npm run dev: Start the hot-reloading dev server
-            - npm run docker: docker build and deploy
-            - npm run test: Run all tests
-            - npm run prettier: Ran by 'dev', but should be done before commit
-            - npm run watcher: Ran by 'dev', watch and rebuild if any changes are made to the source code
+            - pnpm run init-project: initialize tapis-ui project, creates .env, installs deps, and runs
+            - pnpm run dev: Start a hot-reloading dev server
+            - pnpm install: install all rootpkg and subpkg dependencies from one module location
+            - pnpm -r build: Build the rootpkg (-r to build all subpkgs)
+            - pnpm run docker: docker build and deploy
+            - pnpm run test: Run all tests
+            - pnpm run prettier: Ran by 'dev', but should be done before commit
 
-          Common commands:
+          Other commands:
           ==========================
-            - welcome: callable from nix shell, shows this help message
-            - welcome --version: shows npm and node version + welcome
+            - menu: callable from nix shell, shows this help message
+            - menu --version: shows npm and node version + menu
             - nix develop -i: --ignore-environment to isolate nix shell from user env
-            - nix develop .#welcome: runs welcome version in nix shell
+            - nix develop .#menu: runs 'menu version' in nix shell
+            - nix flake show: to view flake outputs
+            - pnpm run: list all pnpm scripts in root package.json
+            - pnpm -r build | list | audit | outdated: cool commands, run pnpm for more info
           "
         '';
         
+        # Create a welcome alias that points to menu
+        tapisWelcome = pkgs.writeScriptBin "welcome" ''
+          #!${pkgs.bash}/bin/bash
+          echo -e "\033[31m'welcome' is deprecated, use 'menu' instead.\033[0m"
+          ${tapisMenu}/bin/menu "$@"
+        '';
+        
+        ## This doesn't use anything yet, but might be a replacement for default mkDerivation
+        # inherit (pnpm2nix.packages.${system}) mkPnpmPackage;
+        # frontend = mkPnpmPackage {
+        #   pname = "tapisui";
+        #   version = "1.0.0";
+        #   src = ./.;
+        #   nodejs = pkgs.nodejs_22;
+        #   pnpm = pkgs.pnpm;
+        #   #extraBuildInputs = commonPackages;
+        #   nativeBuildInputs = commonPackages;
+        #   configurePhase = ''
+        #     export HOME=$TMPDIR
+        #     pnpm install --frozen-lockfile
+        #     '';
+        #   buildPhase = ''
+        #     export HOME=$TMPDIR
+        #     pnpm install --frozen-lockfile
+        #     pnpm run build
+        #   '';
+        # };
       in {
         devShells = {
           default = pkgs.mkShell {
             packages = commonPackages ++ [
+              tapisMenu
               tapisWelcome
             ];
             shellHook = ''
+              alias npm="echo -e '\033[33mHowdy! We use pnpm round these parts. Seem to have found you using npm. More details in readme.\033[0m' && pnpm"
+              #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"
               #export CHOKIDAR_USEPOLLING=true
               #export SHELL=$(which zsh)
               #ulimit -n 2000
-              welcome version
+              menu version
             '';
           };
-          welcome = pkgs.mkShell {
-            packages = commonPackages ++ [ tapisWelcome ];
+          menu = pkgs.mkShell {
+            packages = commonPackages ++ [ tapisMenu tapisWelcome ];
             shellHook = ''
               # Just show the help message and exit
-              welcome version
+              menu version
               exit
             '';
           };
         };
-        # packages = {
-        #   # We could create packages for scripts here
-        #   welcome = tapisWelcome;
-        #   default = pkgs.stdenv.mkDerivation {
-        #     name = "tapis-docs";
-        #     src = ./.;
-        #     buildInputs = commonPackages;
-        #     buildPhase = ''
-        #       make html
-        #     '';
-        #     installPhase = ''
-        #       mkdir -p $out
-        #       cp -r build/html $out/
-        #     '';
-        #   };
-        # };
+        packages = {
+          #inherit frontend;
+          # You can run default mkDerivation with `nix build .#default`
+          # Default build using pnpm
+          default = pkgs.stdenv.mkDerivation {
+            name = "tapisui-build";
+            src = ./.;
+            buildInputs = commonPackages;
+            buildPhase = ''
+              echo "This doesn't work. :) Use 'nix develop' to enter the dev shell and run pnpm commands instead."
+              export HOME=$TMPDIR
+              pnpm install --frozen-lockfile
+              pnpm run build --verbose
+            '';
+            installPhase = ''
+              mkdir -p $out
+              cp -r dist/* $out/
+            '';
+          };
+        };
       }
     );
 }

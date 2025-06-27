@@ -1,0 +1,22 @@
+---
+id: icicleai-tapisui-extension
+name: ICICLEAI TapisUI Extension
+status: PrototypeRelease
+website: https://github.com/ICICLE-ai/tapisui-extension-icicle
+description: A TapisUI extension written in Typescript/React for exposing ICICLEAI functionality to TapisUI deployments for the 'icicleai' tenant in
+owner:
+  description: Institute member ultimately responsible for component, including the metadata contained in the catalog.
+primaryThrust: core/CI4AI
+sourceCodeUrl: https://github.com/ICICLE-ai/tapisui-extension-icicle
+targetIcicleRelease:
+  required: true
+  range: IcicleReleases
+  description: The ICICLE release that this component belongs to, e.g., None, VC3, etc. See enum.
+componentVersion: '0.1.0'
+licenseUrl:
+  required: true
+  description: URL to a description of the license governing the acceptable use of this component.
+releaseNotesUrl:
+  description: URL to a description of the release notes related to the component.
+codeReviewConducted: true
+publicAccess: true

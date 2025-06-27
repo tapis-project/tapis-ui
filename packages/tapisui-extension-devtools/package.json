@@ -8,7 +8,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "push": "npx tsc && npm publish --access public"
+    "push": "npx tsc && npm publish --access public",
+    "watch": "npx tsc --build --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "git",
