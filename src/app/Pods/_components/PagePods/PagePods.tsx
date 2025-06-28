@@ -101,12 +101,17 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const pod: Pods.PodResponseModel | undefined = data?.result;
   // If no template, details tab is default
   useEffect(() => {
-    if (pod?.template) {
-      dispatch(updateState({ podDetailTab: 'derived' }));
-    } else {
-      dispatch(updateState({ podDetailTab: 'details' }));
+    if (pod !== undefined) {
+      //console.log('Pod data is available:', objId);
+      if (pod?.template) {
+        dispatch(updateState({ podDetailTab: 'derived' }));
+        //console.log('Pod has template, setting podDetailTab to derived');
+      } else {
+        dispatch(updateState({ podDetailTab: 'details' }));
+        //console.log('Pod has no template, setting podDetailTab to details');
+      }
     }
-  }, [pod]);
+  }, [objId]); // Trigger on objId change, not pod change
   const podDerived: Pods.PodResponseModel | undefined = dataDerived?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;

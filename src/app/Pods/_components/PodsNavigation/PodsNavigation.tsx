@@ -40,6 +40,14 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     // More state like this maybe needed for other tabs to auto highlight correct tab
     if (history.location.pathname === '/pods') {
       dispatch(updateState({ activePage: 'podspage' }));
+    } else if (history.location.pathname.startsWith('/pods/templates')) {
+      dispatch(updateState({ activePage: 'templatespage' }));
+    } else if (history.location.pathname.startsWith('/pods/images')) {
+      dispatch(updateState({ activePage: 'imagespage' }));
+    } else if (history.location.pathname.startsWith('/pods/volumes')) {
+      dispatch(updateState({ activePage: 'volumespage' }));
+    } else if (history.location.pathname.startsWith('/pods/snapshots')) {
+      dispatch(updateState({ activePage: 'snapshotspage' }));
     }
   }, [history.location.pathname, dispatch]);
 
