@@ -2,18 +2,17 @@ import { Button } from 'reactstrap';
 import { Pods } from '@tapis/tapis-typescript';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodToolbar';
+import { ToolbarModalProps } from '../ToolbarModalProps';
 import { Form, Formik } from 'formik';
 import { FormikSelect } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
-import styles from './DeletePodModal.module.scss';
+import styles from './RestartPodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { Pods as Hooks } from '@tapis/tapisui-hooks';
-import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useTapisConfig, Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
 
-const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
   const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useListPods(); //{search: `owner.like.${''}`,}
@@ -25,37 +24,31 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
-  const { deletePod, isLoading, error, isSuccess, reset } =
-    Hooks.useDeletePod();      
+  const { restartPod, isLoading, error, isSuccess, reset } =
+    Hooks.useRestartPod();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const validationSchema = Yup.object({
-    podId: Yup.string(),
+    podId: Yup.string().required('Select which pod to restart'),
   });
 
   const podId = useLocation().pathname.split('/')[2];
-  // If location podId is not in pods, use empty string
-  //const initialPodId = podId && pods.some((pod) => pod.pod_id === podId) ? podId : '';
   var initialPodId = podId ? podId : '';
   const initialValues = {
-    podId: pods.length === 0 ? '' : initialPodId,
+    podId: initialPodId,
   };
-  // console.log('podId', podId);
-  // console.log('initialPodId', initialPodId);
 
-  const onSubmit = (values: { podId: string }, { resetForm }: { resetForm: () => void }) => {
-    deletePod({ podId: values.podId }, { onSuccess });
-    window.location.href = `/#/pods`;
-    resetForm();
+  const onSubmit = ({ podId }: { podId: string }) => {
+    restartPod({ podId }, { onSuccess });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Delete Pod"
+      title="Restart Pod"
       backdrop={true}
       body={
         <div className={styles['modal-settings']}>
@@ -63,7 +56,6 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
-            enableReinitialize={true}
           >
             {() => (
               <Form id="newpod-form">
@@ -74,19 +66,15 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   required={true}
                   data-testid="podId"
                 >
-                  {pods.length === 0 ? (
-                    <option disabled value={''} key="no-pods">
-                      No pods found
-                    </option>
+                  <option disabled value={''}>
+                    Select a pod to restart
+                  </option>
+                  {pods.length ? (
+                    pods.map((pod) => {
+                      return <option>{pod.pod_id}</option>;
+                    })
                   ) : (
-                    <>
-                      <option disabled value={''} key="default">
-                        Select a pod to delete
-                      </option>
-                      {pods.map((pod) => (
-                        <option key={pod.pod_id} value={pod.pod_id}>{pod.pod_id}</option>
-                      ))}
-                    </>
+                    <i>No pods found</i>
                   )}
                 </FormikSelect>
               </Form>
@@ -99,7 +87,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully deleted a pod` : ''}
+          success={isSuccess ? `Successfully restarted a pod` : ''}
           reverse={true}
         >
           <Button
@@ -109,7 +97,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             aria-label="Submit"
             type="submit"
           >
-            Delete pod
+            Restart pod
           </Button>
         </SubmitWrapper>
       }
@@ -117,4 +105,4 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   );
 };
 
-export default DeletePodModal;
+export default RestartPodModal;

@@ -3,8 +3,8 @@ import { Button } from 'reactstrap';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './PodToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
-import CreatePodModal from './CreatePodModal';
-import DeletePodModal from './DeletePodModal';
+import CreatePodModal from '../Modals/CreatePodModal';
+import DeletePodModal from '../Modals/DeletePodModal';
 import {
   StartPodModal,
   RestartPodModal,

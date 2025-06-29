@@ -59,13 +59,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const detailsAnchorRef = React.useRef<HTMLDivElement>(null);
   const logsAnchorRef = React.useRef<HTMLDivElement>(null);
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    error,
-    invalidate,
-  } = Hooks.useGetPod(
+  const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod(
     { podId: objId },
     { enabled: !!objId }
   );
@@ -113,7 +107,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
         //console.log('Pod has no template, setting podDetailTab to details');
       }
     }
-  }, [objId]); // Trigger on objId change, not pod change
+  }, [objId, pod?.template]); // Trigger on objId change, not pod change
   const podDerived: Pods.PodResponseModel | undefined = dataDerived?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
@@ -262,16 +256,40 @@ Select or create a pod to get started.`;
 
   const codeMirrorValue = getCodeMirrorValue();
 
-  const networkingUrl = Object.values(data?.result?.networking ?? {})[0]?.url as string | undefined;
+  const networkingUrl = Object.values(data?.result?.networking ?? {})[0]
+    ?.url as string | undefined;
   const podStatus = data?.result?.status;
 
   // Dashboard view button lists
   const dashboardLeftButtons = [
-    <Button key="dashboard" variant="outlined" size="small" color={podRootTab === 'dashboard' ? 'secondary' : 'primary'} onClick={() => dispatch(updateState({ podRootTab: 'dashboard' }))}>Dashboard</Button>,
-    <Button key="createPod" variant="outlined" size="small" color={podRootTab === 'createPod' ? 'secondary' : 'primary'} onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}>Create Pod</Button>,
+    <Button
+      key="dashboard"
+      variant="outlined"
+      size="small"
+      color={podRootTab === 'dashboard' ? 'secondary' : 'primary'}
+      onClick={() => dispatch(updateState({ podRootTab: 'dashboard' }))}
+    >
+      Dashboard
+    </Button>,
+    <Button
+      key="createPod"
+      variant="outlined"
+      size="small"
+      color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
+      onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
+    >
+      Create Pod
+    </Button>,
   ];
   const dashboardRightButtons = [
-    <Button key="help" variant="outlined" size="small" onClick={() => setModal('tooltip')}>Help</Button>,
+    <Button
+      key="help"
+      variant="outlined"
+      size="small"
+      onClick={() => setModal('tooltip')}
+    >
+      Help
+    </Button>,
   ];
 
   // Details view button lists (with split/popover button objects as React elements)
@@ -305,15 +323,15 @@ Select or create a pod to get started.`;
           case 'secrets':
             invalidateSecrets();
             break;
-          default:            
-          // Optionally handle any other cases or do nothing
-          break;
+          default:
+            // Optionally handle any other cases or do nothing
+            break;
         }
       }}
     >
       <RefreshRounded sx={{ height: '20px', maxWidth: '20px' }} />
     </LoadingButton>,
-    (podTab !== 'edit' ? (
+    podTab !== 'edit' ? (
       <Button
         key="edit"
         variant="outlined"
@@ -350,9 +368,7 @@ Select or create a pod to get started.`;
         </Button>
         <Button
           onClick={() => {
-            dispatch(
-              updateState({ podTab: 'edit', podEditTab: 'form' })
-            );
+            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
           }}
           color={podEditTab === 'form' ? 'secondary' : 'primary'}
           sx={{ minWidth: '60px' }}
@@ -362,9 +378,7 @@ Select or create a pod to get started.`;
         </Button>
         <Button
           onClick={() => {
-            dispatch(
-              updateState({ podTab: 'edit', podEditTab: 'json' })
-            );
+            dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
           }}
           color={podEditTab === 'json' ? 'secondary' : 'primary'}
           sx={{ minWidth: '60px' }}
@@ -373,14 +387,18 @@ Select or create a pod to get started.`;
           json
         </Button>
       </ButtonGroup>
-    )),
+    ),
     // Details/Derived split button (MUI SplitButton pattern)
     <React.Fragment key="details-split">
       <ButtonGroup variant="outlined" size="small" ref={detailsAnchorRef}>
         <LoadingButton
           sx={{ minWidth: '60px' }}
           variant="outlined"
-          color={podTab === 'edit' || podTab === 'derived' || podTab === 'details' ? 'secondary' : 'primary'}
+          color={
+            podTab === 'edit' || podTab === 'derived' || podTab === 'details'
+              ? 'secondary'
+              : 'primary'
+          }
           onClick={() => {
             invalidate();
             dispatch(updateState({ podTab: 'details' }));
@@ -391,10 +409,20 @@ Select or create a pod to get started.`;
         {objId !== undefined && pod?.template && (
           <Button
             onClick={() =>
-              dispatch(updateState({ setDetailsDropdownOpen: !setDetailsDropdownOpen }))
+              dispatch(
+                updateState({ setDetailsDropdownOpen: !setDetailsDropdownOpen })
+              )
             }
-            color={podTab === 'edit' || podTab === 'derived' || podTab === 'details' ? 'secondary' : 'primary'}
-            sx={{ fontSize: '14px', minWidth: '28px !important', width: '28px' }}
+            color={
+              podTab === 'edit' || podTab === 'derived' || podTab === 'details'
+                ? 'secondary'
+                : 'primary'
+            }
+            sx={{
+              fontSize: '14px',
+              minWidth: '28px !important',
+              width: '28px',
+            }}
             variant="outlined"
             aria-controls={setDetailsDropdownOpen ? 'details-menu' : undefined}
             aria-expanded={setDetailsDropdownOpen ? 'true' : undefined}
@@ -598,7 +626,18 @@ Select or create a pod to get started.`;
         )}
       </Popper>
     </React.Fragment>,
-    <Button key="secrets" variant="outlined" size="small" color={podTab === 'secrets' ? 'secondary' : 'primary'} onClick={() => {invalidate(); dispatch(updateState({ podTab: 'secrets' }));}}>Secrets</Button>,
+    <Button
+      key="secrets"
+      variant="outlined"
+      size="small"
+      color={podTab === 'secrets' ? 'secondary' : 'primary'}
+      onClick={() => {
+        invalidate();
+        dispatch(updateState({ podTab: 'secrets' }));
+      }}
+    >
+      Secrets
+    </Button>,
     <React.Fragment key="perms-split">
       <ButtonGroup variant="outlined" size="small">
         <LoadingButton
@@ -618,14 +657,18 @@ Select or create a pod to get started.`;
               setModal('podPermissions');
             }}
             color="primary"
-            sx={{ fontSize: '14px', minWidth: '28px !important', width: '28px' }}
+            sx={{
+              fontSize: '14px',
+              minWidth: '28px !important',
+              width: '28px',
+            }}
             variant="outlined"
           >
             +
           </Button>
         )}
       </ButtonGroup>
-    </React.Fragment>
+    </React.Fragment>,
   ];
 
   const detailsRightButtons = [
@@ -634,7 +677,9 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       color="primary"
-      disabled={objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'}
+      disabled={
+        objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
+      }
       onClick={() => {
         if (networkingUrl) {
           window.open('https://' + networkingUrl);
@@ -643,8 +688,22 @@ Select or create a pod to get started.`;
     >
       Link
     </Button>,
-    <Button key="help" variant="outlined" size="small" onClick={() => setModal('tooltip')}>Help</Button>,
-    <Button key="copy" variant="outlined" size="small" onClick={() => navigator.clipboard.writeText(getCodeMirrorValue() ?? '')}>Copy</Button>,
+    <Button
+      key="help"
+      variant="outlined"
+      size="small"
+      onClick={() => setModal('tooltip')}
+    >
+      Help
+    </Button>,
+    <Button
+      key="copy"
+      variant="outlined"
+      size="small"
+      onClick={() => navigator.clipboard.writeText(getCodeMirrorValue() ?? '')}
+    >
+      Copy
+    </Button>,
   ];
 
   // Refactor renderTabBar to just render the elements

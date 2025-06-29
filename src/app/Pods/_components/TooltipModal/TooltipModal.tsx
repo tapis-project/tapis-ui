@@ -1,6 +1,6 @@
 import React from 'react';
 import { GenericModal } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodFunctionBar/PodFunctionBar';
+import { ToolbarModalProps } from '../Modals/ToolbarModalProps';
 import styles from './TooltipModal.module.scss';
 // import { SubmitWrapper } from '@tapis/tapisui-common';
 // import { Button } from 'reactstrap';

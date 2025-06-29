@@ -276,20 +276,14 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     pod_id: '',
     description: undefined,
     command: undefined,
-    image: '',
-    template: '',
-    time_to_stop_default: 43200,
+    image: undefined,
+    template: undefined,
+    time_to_stop_default: undefined,
     time_to_stop_instance: undefined,
-    environment_variables: [],
-    networking: [],
-    volume_mounts: [],
-    resources: {
-      cpu_request: 250,
-      cpu_limit: 2000,
-      mem_request: 256,
-      mem_limit: 3072,
-      gpus: 0,
-    },
+    environment_variables: undefined,
+    volume_mounts: undefined,
+    networking: undefined,
+    resources: undefined,
   };
 
   /// Environment Variables area
@@ -382,32 +376,44 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     description: string | undefined;
     image: string | undefined;
     command: string | undefined;
-    template: string;
+    template: string | undefined;
     time_to_stop_default: number | undefined;
     time_to_stop_instance: number | undefined;
-    environment_variables: Array<EnvVarType>;
-    networking: Array<NetworkingType>;
-    volume_mounts: Array<VolumeMountsType>;
-    resources: {
-      cpu_request: number;
-      cpu_limit: number;
-      mem_request: number;
-      mem_limit: number;
-      gpus: number;
-    };
+    environment_variables: Array<EnvVarType> | undefined;
+    networking: Array<NetworkingType> | undefined;
+    volume_mounts: Array<VolumeMountsType> | undefined;
+    resources:
+      | {
+          cpu_request: number;
+          cpu_limit: number;
+          mem_request: number;
+          mem_limit: number;
+          gpus: number;
+        }
+      | undefined;
   }) => {
     const newPod = {
       pod_id,
-      description,
+      description: description ? description : undefined,
       command: command ? JSON.parse(command) : undefined,
-      image,
-      template,
-      time_to_stop_default,
-      time_to_stop_instance,
-      environment_variables: envVarsArrayToInputObject(environment_variables),
-      networking: networkingArrayToInputObject(networking),
-      volume_mounts: volume_mountsArrayToInputObject(volume_mounts),
-      resources,
+      template: template ? template : undefined,
+      image: image ? image : undefined,
+      time_to_stop_default: time_to_stop_default
+        ? time_to_stop_default
+        : undefined,
+      time_to_stop_instance: time_to_stop_instance
+        ? time_to_stop_instance
+        : undefined,
+      environment_variables: environment_variables
+        ? envVarsArrayToInputObject(environment_variables)
+        : undefined,
+      networking: networking
+        ? networkingArrayToInputObject(networking)
+        : undefined,
+      volume_mounts: volume_mounts
+        ? volume_mountsArrayToInputObject(volume_mounts)
+        : undefined,
+      resources: resources ? resources : undefined,
     };
 
     createPod({ newPod }, { onSuccess });
@@ -483,26 +489,29 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     render={(arrayHelpers) => (
                       <div>
                         <div className={styles['key-val-env-vars']}>
-                          {values.environment_variables &&
-                            values.environment_variables.length > 0 &&
-                            values.environment_variables.map((_, i) => (
-                              <div
-                                key={i}
-                                className={styles['key-val-env-var']}
-                              >
-                                <EnvVarValueSource index={i} />
-                                <Button
-                                  className={styles['remove-button']}
-                                  type="button"
-                                  color="danger"
-                                  disabled={false}
-                                  onClick={() => arrayHelpers.remove(i)}
-                                  size="sm"
+                          {Array.isArray(values.environment_variables) &&
+                            (values.environment_variables as any[]).length >
+                              0 &&
+                            (values.environment_variables as any[]).map(
+                              (_, i) => (
+                                <div
+                                  key={i}
+                                  className={styles['key-val-env-var']}
                                 >
-                                  <Icon name="trash" />
-                                </Button>
-                              </div>
-                            ))}
+                                  <EnvVarValueSource index={i} />
+                                  <Button
+                                    className={styles['remove-button']}
+                                    type="button"
+                                    color="danger"
+                                    disabled={false}
+                                    onClick={() => arrayHelpers.remove(i)}
+                                    size="sm"
+                                  >
+                                    <Icon name="trash" />
+                                  </Button>
+                                </div>
+                              )
+                            )}
                         </div>
                         <Button
                           type="button"
@@ -524,9 +533,9 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     render={(arrayHelpers) => (
                       <div>
                         <div className={styles['key-val-env-vars']}>
-                          {values.networking &&
-                            values.networking.length > 0 &&
-                            values.networking.map((_, i) => (
+                          {Array.isArray(values.networking) &&
+                            (values.networking as any[]).length > 0 &&
+                            (values.networking as any[]).map((_, i) => (
                               <div
                                 key={i}
                                 className={styles['key-val-env-var']}
@@ -569,9 +578,9 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     render={(arrayHelpers) => (
                       <div>
                         <div className={styles['key-val-env-vars']}>
-                          {values.volume_mounts &&
-                            values.volume_mounts.length > 0 &&
-                            values.volume_mounts.map((_, i) => (
+                          {Array.isArray(values.volume_mounts) &&
+                            (values.volume_mounts as any[]).length > 0 &&
+                            (values.volume_mounts as any[]).map((_, i) => (
                               <div
                                 key={i}
                                 className={styles['key-val-env-var']}
