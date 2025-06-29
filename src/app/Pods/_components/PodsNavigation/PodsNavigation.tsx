@@ -193,6 +193,8 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     dispatch(updateState(stateUpdates));
   };
 
+  // console.log('PodsNavigation: activePage', activePage);
+  // console.log('PodsNavigation: from', from);
   return (
     <Stack spacing={2} direction="row">
       <Button

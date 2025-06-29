@@ -26,7 +26,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   }, [queryClient]);
 
   const { deletePod, isLoading, error, isSuccess, reset } =
-    Hooks.useDeletePod();
+    Hooks.useDeletePod();      
 
   useEffect(() => {
     reset();
@@ -37,13 +37,19 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   });
 
   const podId = useLocation().pathname.split('/')[2];
-
+  // If location podId is not in pods, use empty string
+  //const initialPodId = podId && pods.some((pod) => pod.pod_id === podId) ? podId : '';
+  var initialPodId = podId ? podId : '';
   const initialValues = {
-    podId: podId,
+    podId: pods.length === 0 ? '' : initialPodId,
   };
+  // console.log('podId', podId);
+  // console.log('initialPodId', initialPodId);
 
-  const onSubmit = ({ podId }: { podId: string }) => {
-    deletePod({ podId }, { onSuccess });
+  const onSubmit = (values: { podId: string }, { resetForm }: { resetForm: () => void }) => {
+    deletePod({ podId: values.podId }, { onSuccess });
+    window.location.href = `/#/pods`;
+    resetForm();
   };
 
   return (
@@ -57,6 +63,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
+            enableReinitialize={true}
           >
             {() => (
               <Form id="newpod-form">
@@ -67,15 +74,19 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   required={true}
                   data-testid="podId"
                 >
-                  <option disabled value={''}>
-                    Select a pod to delete
-                  </option>
-                  {pods.length ? (
-                    pods.map((pod) => {
-                      return <option key={pod.pod_id}>{pod.pod_id}</option>;
-                    })
+                  {pods.length === 0 ? (
+                    <option disabled value={''} key="no-pods">
+                      No pods found
+                    </option>
                   ) : (
-                    <i>No pods found</i>
+                    <>
+                      <option disabled value={''} key="default">
+                        Select a pod to delete
+                      </option>
+                      {pods.map((pod) => (
+                        <option key={pod.pod_id} value={pod.pod_id}>{pod.pod_id}</option>
+                      ))}
+                    </>
                   )}
                 </FormikSelect>
               </Form>

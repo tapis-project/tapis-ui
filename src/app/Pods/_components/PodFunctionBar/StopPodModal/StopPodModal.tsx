@@ -36,9 +36,9 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   });
 
   const podId = useLocation().pathname.split('/')[2];
-
+  var initialPodId = podId ? podId : '';
   const initialValues = {
-    podId: podId,
+    podId: initialPodId,
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {

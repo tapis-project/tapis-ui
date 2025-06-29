@@ -109,7 +109,7 @@ const NavPods: React.FC = () => {
               groupSelectorLabel: 'status',
               primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
               secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
-              open: ['AVAILABLE', 'CREATING', 'ERROR', 'COMPLETE'],
+              open: ['AVAILABLE', 'CREATING', 'ERROR', 'COMPLETE', 'REQUESTED', 'DELETING'],
               tooltip: ({ fieldValue }: any) => {
                 switch (fieldValue) {
                   case 'AVAILABLE':
@@ -120,6 +120,12 @@ const NavPods: React.FC = () => {
                     return 'Pods that are being created';
                   case 'STOPPED':
                     return 'Pods that are stopped';
+                  case 'COMPLETE':
+                    return 'Pods that have completed their tasks - no longer running';
+                  case 'REQUESTED':
+                    return 'Pods that have been requested but not yet started';
+                  case 'DELETING':
+                    return 'Pods that are being deleted';
                   default:
                     return 'Pods in unknown status';
                 }

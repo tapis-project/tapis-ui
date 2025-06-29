@@ -38,7 +38,7 @@ export interface PodsState {
 }
 
 const initialState: PodsState = {
-  activePage: 'pods',
+  activePage: 'podspage',
   podTab: 'details',
   podRootTab: 'dashboard',
   podEditTab: 'form',
