@@ -12,12 +12,14 @@ import { useQueryClient } from 'react-query';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
+import { updateState, useAppDispatch } from '@redux';
 
 const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
   const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useListPods(); //{search: `owner.like.${''}`,}
   const pods: Array<Pods.PodResponseModel> = data?.result ?? [];
+  const dispatch = useAppDispatch();
 
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
@@ -52,6 +54,7 @@ const DeletePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   ) => {
     deletePod({ podId: values.podId }, { onSuccess });
     window.location.href = `/#/pods`;
+    dispatch(updateState({ podRootTab: 'dashboard' }));
     resetForm();
   };
 
