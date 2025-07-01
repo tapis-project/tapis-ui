@@ -413,7 +413,7 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
                 aria-label="Clear form data"
                 color="error"
                 variant="outlined"
-                disabled={isLoading || Object.keys(formik.values).length === 0}
+                disabled={isLoading || Object.keys(formik.values).length <= 1}
                 onClick={handleClear}
                 sx={{
                   maxWidth: '2rem',
@@ -427,7 +427,7 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
             </Tooltip>
             <Button
               color="primary"
-              disabled={isLoading || Object.keys(formik.values).length === 0}
+              disabled={isLoading || Object.keys(formik.values).length <= 1}
               aria-label="Submit"
               form="create-pod-form"
               type="submit"

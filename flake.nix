@@ -105,7 +105,7 @@
               tapisWelcome
             ];
             shellHook = ''
-              alias npm="echo -e '\033[33mHowdy! We use pnpm round these parts. Seem to have found you using npm. More details in readme.\033[0m' && pnpm"
+              alias npm="echo -e '\033[33mHowdy! We use pnpm round these parts. Seem to have found you using npm. More details in readme.\033[0m' && npm"
               #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"
