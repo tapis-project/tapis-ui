@@ -35,6 +35,10 @@ export interface PodsState {
 
   setDetailsDropdownOpen?: boolean;
   setLogsDropdownOpen?: boolean;
+
+  // Store current pod creation data (persisted between editors)
+  createPodData?: any;
+  updatePodData?: any;
 }
 
 const initialState: PodsState = {
@@ -57,6 +61,10 @@ const initialState: PodsState = {
   templateNavSelectedItems: '',
   setDetailsDropdownOpen: false,
   setLogsDropdownOpen: false,
+  // Persisted pod creation data
+  createPodData: undefined,
+  // Persisted pod update data
+  updatePodData: undefined,
 };
 
 const podsSlice = createSlice({

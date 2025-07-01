@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { Button, MenuItem } from '@mui/material';
+import React, { useEffect, useCallback, useRef } from 'react';
+import { Button, MenuItem, Tooltip } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
@@ -9,6 +9,7 @@ import {
   FMTextField,
   FMSelect,
   JSONEditor,
+  Icon,
 } from '@tapis/tapisui-common';
 import { Pods } from '@tapis/tapis-typescript';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
@@ -16,219 +17,137 @@ import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
 import { useFormik, FormikProvider, FieldArray } from 'formik';
 import styles from './Common/Wizard.module.scss';
 import { env } from 'process';
+import { useAppDispatch, useAppSelector, updateState } from '@redux';
+import {
+  CommandSection,
+  EnvVarsSection,
+  NetworkingSection,
+  VolumeMountsSection,
+  ResourcesSection,
+  PodWizardActionButtons,
+  handleClearForm,
+} from './PodWizardUtils';
 
 export type PodWizardProps = {
-  sharedData: any;
-  setSharedData: any;
+  // sharedData: any;
+  // setSharedData: any;
   editMode?: 'none' | 'form' | 'json';
+  pod: any;
+  onChange?: (values: any) => void;
 };
 
-const PodWizardEdit: React.FC<PodWizardProps> = ({
-  sharedData,
-  setSharedData,
-  editMode,
-}) => {
+const PodWizardEdit: React.FC<{
+  pod: any;
+  onChange?: (values: any) => void;
+}> = ({ pod, onChange }) => {
   const queryClient = useQueryClient();
-  const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.getPod);
-    queryClient.invalidateQueries(Hooks.queryKeys.getPodDerived);
-    queryClient.invalidateQueries(Hooks.queryKeys.listPods);
-  }, [queryClient]);
+  const dispatch = useAppDispatch();
+  const { podEditTab, updatePodData } = useAppSelector(
+    (state: any) => state.pods
+  );
+  const objId = pod?.pod_id;
 
-  const objId = useLocation().pathname.split('/')[2];
-
-  const initialValues: any = {
-    description: '',
-    command: '',
-  };
+  // Set initialValues to empty object for patch update
+  const initialValues: any = {};
 
   const validationSchema = Yup.object({
+    pod_id: Yup.string()
+      .min(1)
+      .max(80, 'Pod id should not be longer than 80 characters')
+      .matches(
+        /^[a-z0-9]+$/,
+        'Must contain only lowercase alphanumeric characters'
+      )
+      .required('Pod ID is a required field'),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
-    command: Yup.string(),
-    image: Yup.string(),
-    template: Yup.string(),
-    time_to_stop_default: Yup.number().min(-1),
-    time_to_stop_instance: Yup.number().min(-1),
-    environment_variables: Yup.object(),
-    // environment_variables: Yup.array().of(
-    //   Yup.object().shape({
-    //     key: Yup.string().required(),
-    //     value: Yup.string(),
-    //   })
-    // ),
-    networking: Yup.object(),
-    // array().of(
-    //   Yup.object().shape({
-    //     id: Yup.string(),
-    //     protocol: Yup.string(),
-    //     port: Yup.string(),
-    //   })
-    // ),
-    volume_mounts: Yup.object(),
-    // volume_mounts: Yup.array().of(
-    //   Yup.object().shape({
-    //     mount_path: Yup.string(),
-    //     volume_id: Yup.string(),
-    //   })
-    // ),
-    resources: Yup.object().shape({
-      cpu_request: Yup.number().min(0),
-      cpu_limit: Yup.number().min(0),
-      mem_request: Yup.number().min(0),
-      mem_limit: Yup.number().min(0),
-      gpus: Yup.number().min(0),
+    command: Yup.array().of(Yup.string().required('Command cannot be empty')),
+    environment_variables: Yup.object().test(
+      'env-vars-object',
+      'All environment variable keys and values must be non-empty strings and <= 128 chars',
+      (obj) => {
+        if (!obj) return true;
+        return Object.entries(obj).every(
+          ([k, v]) =>
+            typeof k === 'string' &&
+            (k as string).length > 0 &&
+            (k as string).length <= 128 &&
+            typeof v === 'string' &&
+            (v as string).length > 0 &&
+            (v as string).length <= 128
+        );
+      }
+    ),
+    networking: Yup.object().test(
+      'networking-object',
+      'Each networking entry must have protocol (<=128 chars) and port (number)',
+      (obj) => {
+        if (!obj) return true;
+        return Object.values(obj).every(
+          (v: any) =>
+            typeof v === 'object' &&
+            typeof v.protocol === 'string' &&
+            v.protocol.length > 0 &&
+            v.protocol.length <= 128 &&
+            (typeof v.port === 'number' ||
+              (typeof v.port === 'string' && v.port.length > 0))
+        );
+      }
+    ),
+    volume_mounts: Yup.object().test(
+      'volume-mounts-object',
+      'Each volume mount must have type, mount_path, sub_path (all <=128 chars)',
+      (obj) => {
+        if (!obj) return true;
+        return Object.values(obj).every(
+          (v: any) =>
+            typeof v === 'object' &&
+            typeof v.type === 'string' &&
+            v.type.length > 0 &&
+            v.type.length <= 128 &&
+            typeof v.mount_path === 'string' &&
+            v.mount_path.length > 0 &&
+            v.mount_path.length <= 128 &&
+            (typeof v.sub_path === 'string' ? v.sub_path.length <= 128 : true)
+        );
+      }
+    ),
+    resources: Yup.object({
+      cpu_request: Yup.string()
+        .min(0)
+        .max(128, 'CPU request should not be longer than 128 characters'),
+      cpu_limit: Yup.string()
+        .min(0)
+        .max(128, 'CPU limit should not be longer than 128 characters'),
+      mem_request: Yup.string()
+        .min(0)
+        .max(128, 'Memory request should not be longer than 128 characters'),
+      mem_limit: Yup.string()
+        .min(0)
+        .max(128, 'Memory limit should not be longer than 128 characters'),
+      gpus: Yup.string()
+        .min(0)
+        .max(128, 'GPUs should not be longer than 128 characters'),
     }),
+    time_to_stop_default: Yup.string(),
+    time_to_stop_instance: Yup.string(),
   });
 
-  enum PodProtocolEnum {
-    http = 'http',
-    tcp = 'tcp',
-    postgres = 'postgres',
-    local_only = 'local_only',
-  }
-
-  enum PodVolumeEnum {
-    tapisvolume = 'tapisvolume',
-    tapissnapshot = 'tapissnapshot',
-    pvc = 'pvc',
-  }
-
-  /// Environment Variables area
-  //////////////////////////////
-  type EnvVarType = {
-    key: string;
-    value: string;
-  };
-
-  type EnvVarsTransformFn = (envVars: Array<EnvVarType>) => {
-    [key: string]: string;
-  };
-
-  const envVarsArrayToInputObject: EnvVarsTransformFn = (envVars) => {
-    if (!envVars) {
-      console.warn('envVars is undefined');
-      return {};
-    }
-
-    const env: { [key: string]: string } = {};
-    envVars.forEach((envVar) => {
-      env[envVar.key] = envVar.value;
-    });
-    console.log(env);
-    return env;
-  };
-  /// Networking area
-  ///////////////////
-  type NetworkingType = {
-    id: string;
-    protocol: PodProtocolEnum;
-    port: string;
-  };
-
-  type NetworkingTransformFn = (envVars: Array<NetworkingType>) => {
-    [key: string]: object;
-  };
-
-  const networkingArrayToInputObject: NetworkingTransformFn = (
-    networkingArray
-  ) => {
-    if (!networkingArray) {
-      console.warn('networkingArray is undefined');
-      return {};
-    }
-
-    const env: { [key: string]: object } = {};
-    networkingArray.forEach((networkingArray) => {
-      env[networkingArray.id] = {
-        protocol: networkingArray.protocol,
-        port: networkingArray.port,
-      };
-    });
-    console.log(env);
-    return env;
-  };
-
-  /// Volume Mounts area
-  ///////////////////
-  type VolumeMountsType = {
-    id: string;
-    type: PodProtocolEnum;
-    mount_path: string;
-    sub_path: string;
-  };
-
-  type volumeMountsTransformFn = (volumes: Array<VolumeMountsType>) => {
-    [key: string]: object;
-  };
-
-  const volume_mountsArrayToInputObject: volumeMountsTransformFn = (
-    volumes
-  ) => {
-    if (!volumes) {
-      console.warn('volumes is undefined');
-      return {};
-    }
-
-    const formatted_volumes: { [key: string]: object } = {};
-    volumes.forEach((volume) => {
-      formatted_volumes[volume.id] = {
-        type: volume.type,
-        mount_path: volume.mount_path,
-        sub_path: volume.sub_path,
-      };
-    });
-    console.log(formatted_volumes);
-    return formatted_volumes;
-  };
+  const onSuccess = useCallback(() => {
+    queryClient.invalidateQueries(Hooks.queryKeys.getPod);
+    queryClient.invalidateQueries(Hooks.queryKeys.listPods);
+  }, [queryClient]);
 
   const { updatePod, isLoading, error, isSuccess, reset } =
     Hooks.useUpdatePod(objId);
 
-  useEffect(() => {
-    reset();
-  }, [reset]);
-
-  const onSubmit = (
-    {
-      description,
-      command,
-      image,
-      template,
-      time_to_stop_default,
-      time_to_stop_instance,
-      environment_variables,
-      networking,
-      volume_mounts,
-      resources,
-    }: any,
-    { setSubmitting }: any
-  ) => {
-    const newPod = {
-      description: description ? description : undefined,
-      command: command ? JSON.parse(command) : undefined,
-      template: template ? template : undefined,
-      image: image ? image : undefined,
-      time_to_stop_default: time_to_stop_default
-        ? time_to_stop_default
-        : undefined,
-      time_to_stop_instance: time_to_stop_instance
-        ? time_to_stop_instance
-        : undefined,
-      environment_variables: environment_variables
-        ? envVarsArrayToInputObject(environment_variables)
-        : undefined,
-      networking: networking
-        ? networkingArrayToInputObject(networking)
-        : undefined,
-      volume_mounts: volume_mounts
-        ? volume_mountsArrayToInputObject(volume_mounts)
-        : undefined,
-      resources: resources ? resources : undefined,
-    };
-
-    updatePod({ podId: objId, updatePod: newPod }, { onSuccess });
+  const onSubmit = (values: any, { setSubmitting }: any) => {
+    // Remove image/template from update (for both form and JSON modes)
+    const update = { ...values };
+    delete update.image;
+    delete update.template;
+    updatePod({ podId: objId, ...update }, { onSuccess });
     setSubmitting(false);
   };
 
@@ -236,15 +155,67 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
     initialValues,
     validationSchema,
     onSubmit,
+    enableReinitialize: true,
   });
 
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    setSharedData(formik.values);
-  }, [formik.values, setSharedData]);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      dispatch(updateState({ updatePodData: formik.values }));
+    }, 250);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [formik.values, dispatch]);
+
+  // Remove all Redux sync and onChange effects for updatePodData
+  // Only call onChange if provided
+  useEffect(() => {
+    if (onChange) onChange(formik.values);
+  }, [formik.values, onChange]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(updateState({ updatePodData: formik.values }));
+    };
+  }, []);
+
+  useEffect(() => {
+    if (podEditTab === 'form' && updatePodData) {
+      formik.setValues(updatePodData);
+    }
+  }, [podEditTab]);
+
+  // Helper to clear the form to all empty strings
+  const clearedValues = {
+    description: '',
+    command: [],
+    time_to_stop_default: '',
+    time_to_stop_instance: '',
+    environment_variables: {},
+    volume_mounts: {},
+    networking: {},
+    resources: {
+      cpu_request: '',
+      cpu_limit: '',
+      mem_request: '',
+      mem_limit: '',
+      gpus: '',
+    },
+  };
+  const handleClear = useCallback(() => {
+    handleClearForm({
+      formik,
+      dispatch,
+      reduxKey: 'updatePodData',
+      clearedValues,
+    });
+  }, [formik, dispatch]);
 
   return (
     <div>
-      {editMode === 'json' ? (
+      {podEditTab === 'json' ? (
         <JSONEditor
           style={{
             width: '100%',
@@ -255,12 +226,11 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
           obj={formik.values}
           actions={[
             {
-              name: 'update pod',
+              name: 'Update Pod',
               disableOnError: true,
               disableOnUndefined: true,
               disableOnIsLoading: true,
               disableOnSuccess: true,
-              // yupSchema: validationSchema, // Pass the Yup validation schema
               error:
                 error !== null
                   ? {
@@ -276,38 +246,12 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
                 : undefined,
               isLoading,
               isSuccess,
-              // validator: (obj: Pods.UpdatePodRequest | undefined) => {
-              //   let success = false;
-              //   let message = '';
-              //   try {
-              //     validationSchema.validateSync(obj, { abortEarly: false });
-              //     success = true;
-              //   } catch (e) {
-              //     (e as Yup.ValidationError).errors.map(
-              //       (msg, i) => (message = message + `#${i + 1}: ${msg}\n`)
-              //     );
-              //   }
-              //   //formik.setValues(obj); // Sync formik state with JSON editor
-              //   return { success, message };
-              // },
               actionFn: (obj: any) => {
                 if (obj !== undefined) {
-                  updatePod(
-                    { podId: objId, updatePod: obj },
-                    {
-                      onSuccess: (data: any) => {
-                        if (
-                          data?.message ===
-                          'Incoming data made no changes to pod'
-                        ) {
-                          alert('No changes were made to the pod.');
-                        } else {
-                          onSuccess();
-                          //formik.setValues(obj); // Sync formik state with JSON editor
-                        }
-                      },
-                    }
-                  );
+                  const filtered = { ...obj };
+                  delete filtered.image;
+                  delete filtered.template;
+                  updatePod({ podId: objId, ...filtered }, { onSuccess });
                 }
               },
             },
@@ -324,26 +268,48 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Pod Updated.` : ''}
+          success={isSuccess ? `Pod updated.` : ''}
           reverse={true}
         >
-          <Button
-            sx={{ mb: '.75rem' }}
-            form="create-pod-form"
-            color="primary"
-            disabled={isLoading || Object.keys(formik.values).length === 0}
-            aria-label="Submit"
-            type="submit"
-            variant="outlined"
-          >
-            Update Pod
-          </Button>
+          <PodWizardActionButtons
+            isLoading={isLoading}
+            isDisabled={Object.keys(formik.values).length === 0}
+            onDelete={handleClear}
+            submitLabel="Update Pod"
+            deleteLabel="Clear form"
+            deleteTooltip="Clear form data"
+            submitFormId="edit-pod-form"
+          />
         </SubmitWrapper>
       )}
-      {editMode !== 'json' && (
+      {podEditTab !== 'json' && (
         <FormikProvider value={formik}>
-          <form id="create-pod-form" onSubmit={formik.handleSubmit}>
-            <AutoPruneEmptyFields validationSchema={validationSchema} />
+          <form id="edit-pod-form" onSubmit={formik.handleSubmit}>
+            <AutoPruneEmptyFields
+              validationSchema={validationSchema}
+              deepCheck={false}
+            />
+            <FMTextField
+              formik={formik}
+              name="pod_id"
+              label="Pod ID"
+              description="ID for this pod, unique per-tenant"
+              disabled
+            />
+            <FMTextField
+              formik={formik}
+              name="image"
+              label="Image"
+              description="Docker image to use, must be on allowlist. ex. mongo:6.0"
+              disabled
+            />
+            <FMTextField
+              formik={formik}
+              name="template"
+              label="Template"
+              description="Pods template to use."
+              disabled
+            />
             <FMTextField
               formik={formik}
               name="description"
@@ -353,218 +319,21 @@ const PodWizardEdit: React.FC<PodWizardProps> = ({
             />
             <FMTextField
               formik={formik}
-              name="command"
-              label="Command"
-              description='Pod Command - Overwrites docker image. ex. ["sleep", "5000"]'
-            />
-            <FMTextField
-              formik={formik}
-              name="image"
-              label="Image"
-              description="Docker Image - Docker image to run in the pod"
-            />
-            <FMTextField
-              formik={formik}
-              name="template"
-              label="Template"
-              description="Template - Template to use for the pod"
-            />
-            <FMTextField
-              formik={formik}
               name="time_to_stop_default"
               label="Time To Stop - Default"
-              description="Default TTS - Seconds until pod is stopped, default for all instances"
+              description="Default TTS - Seconds until pod is stopped, set each time pod is started"
             />
             <FMTextField
               formik={formik}
               name="time_to_stop_instance"
               label="Time To Stop - Instance"
-              description="Instance TTS - Seconds until pod is stopped, for current instance"
+              description="Instance TTS - Seconds until pod is stopped, for only current 'run'"
             />
-            <FieldArray
-              name="environment_variables"
-              render={(arrayHelpers) => (
-                <div>
-                  <div className={styles['key-val-env-vars']}>
-                    {formik.values.environment_variables &&
-                      formik.values.environment_variables.length > 0 &&
-                      formik.values.environment_variables.map(
-                        (_: any, i: any) => (
-                          <div key={i} className={styles['key-val-env-var']}>
-                            <FMTextField
-                              formik={formik}
-                              name={`environment_variables.${i}.key`}
-                              label="Key"
-                              description="desc1replace!"
-                            />
-                            <FMTextField
-                              formik={formik}
-                              name={`environment_variables.${i}.value`}
-                              label="Value"
-                              description="desc2replace!"
-                            />
-                            <Button
-                              variant="outlined"
-                              className={styles['remove-button']}
-                              type="button"
-                              color="error"
-                              onClick={() => arrayHelpers.remove(i)}
-                              size="medium"
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        )
-                      )}
-                  </div>
-                  <Button
-                    type="button"
-                    className={styles['add-button']}
-                    onClick={() => arrayHelpers.push({ key: '', value: '' })}
-                  >
-                    + Add "environment_variable" object
-                  </Button>
-                </div>
-              )}
-            />
-            <FieldArray
-              name="networking"
-              render={(arrayHelpers) => (
-                <div>
-                  <div className={styles['key-val-env-vars']}>
-                    {Array.isArray(formik.values.networking) &&
-                      (formik.values.networking as any[]).length > 0 &&
-                      (formik.values.networking as any[]).map(
-                        (_: any, i: any) => (
-                          <div key={i} className={styles['key-val-env-var']}>
-                            <FMTextField
-                              formik={formik}
-                              name={`networking.${i}.id`}
-                              label="ID"
-                              description="desc3replace!"
-                            />
-                            <FMTextField
-                              formik={formik}
-                              name={`networking.${i}.protocol`}
-                              label="Protocol"
-                              description="desc4replace!"
-                            />
-                            <FMSelect
-                              formik={formik}
-                              name={`networking.${i}.protocol`}
-                              label="protocol2"
-                              children={<MenuItem value={10}>Ten</MenuItem>}
-                              description={''}
-                              labelId={''}
-                            />
-                            <FMTextField
-                              formik={formik}
-                              name={`networking.${i}.port`}
-                              label="Port"
-                              description="desc5replace!"
-                            />
-                            <Button
-                              variant="outlined"
-                              className={styles['remove-button']}
-                              type="button"
-                              color="error"
-                              onClick={() => arrayHelpers.remove(i)}
-                              size="medium"
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        )
-                      )}
-                  </div>
-                  <Button
-                    type="button"
-                    className={styles['add-button']}
-                    onClick={() =>
-                      arrayHelpers.push({ id: '', protocol: '', port: '' })
-                    }
-                  >
-                    + Add "networking" object
-                  </Button>
-                </div>
-              )}
-            />
-            <FieldArray
-              name="volume_mounts"
-              render={(arrayHelpers) => (
-                <div>
-                  <div className={styles['key-val-env-vars']}>
-                    {formik.values.volume_mounts &&
-                      formik.values.volume_mounts.length > 0 &&
-                      formik.values.volume_mounts.map((_: any, i: any) => (
-                        <div key={i} className={styles['key-val-env-var']}>
-                          <FMTextField
-                            formik={formik}
-                            name={`volume_mounts.${i}.mount_path`}
-                            label="Mount Path"
-                            description="desc6replace!"
-                          />
-                          <FMTextField
-                            formik={formik}
-                            name={`volume_mounts.${i}.volume_id`}
-                            label="Volume ID"
-                            description="desc7replace!"
-                          />
-                          <Button
-                            variant="outlined"
-                            className={styles['remove-button']}
-                            type="button"
-                            color="error"
-                            onClick={() => arrayHelpers.remove(i)}
-                            size="medium"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      ))}
-                  </div>
-                  <Button
-                    type="button"
-                    className={styles['add-button']}
-                    onClick={() =>
-                      arrayHelpers.push({ mount_path: '', volume_id: '' })
-                    }
-                  >
-                    + Add "volume_mount" object
-                  </Button>
-                </div>
-              )}
-            />
-            <FMTextField
-              formik={formik}
-              name="resources.cpu_request"
-              label="CPU Request"
-              description="CPU request for the pod"
-            />
-            <FMTextField
-              formik={formik}
-              name="resources.cpu_limit"
-              label="CPU Limit"
-              description="CPU limit for the pod"
-            />
-            <FMTextField
-              formik={formik}
-              name="resources.mem_request"
-              label="Memory Request"
-              description="Memory request for the pod"
-            />
-            <FMTextField
-              formik={formik}
-              name="resources.mem_limit"
-              label="Memory Limit"
-              description="Memory limit for the pod"
-            />
-            <FMTextField
-              formik={formik}
-              name="resources.gpus"
-              label="GPUs"
-              description="Number of GPUs for the pod"
-            />
+            <CommandSection formik={formik} />
+            <EnvVarsSection formik={formik} />
+            <NetworkingSection formik={formik} />
+            <VolumeMountsSection formik={formik} />
+            <ResourcesSection formik={formik} />
           </form>
         </FormikProvider>
       )}

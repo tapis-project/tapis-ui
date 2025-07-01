@@ -50,6 +50,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     podRootTab,
     podEditTab,
     podDetailTab,
+    createPodData,
     podLogTab,
     setDetailsDropdownOpen,
     setLogsDropdownOpen,
@@ -179,8 +180,6 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     return null;
   };
 
-  const [sharedData, setSharedData] = useState({});
-
   const getCodeMirrorValue = () => {
     if (objId === undefined) {
       switch (podRootTab) {
@@ -193,7 +192,7 @@ The output of the service is a encrypted, networked, Kubernetes pod.
 
 Select or create a pod to get started.`;
         case 'createPod':
-          return JSON.stringify(sharedData, null, 2);
+          return JSON.stringify(createPodData, null, 2);
         default:
           return ''; // Default or placeholder value
       }
@@ -271,15 +270,64 @@ Select or create a pod to get started.`;
     >
       Dashboard
     </Button>,
-    <Button
-      key="createPod"
-      variant="outlined"
-      size="small"
-      color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
-      onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
-    >
-      Create Pod
-    </Button>,
+    podRootTab !== 'createPod' ? (
+      <Button
+        key="createPod"
+        variant="outlined"
+        size="small"
+        color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
+        onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
+      >
+        Create Pod
+      </Button>
+    ) : (
+      <ButtonGroup
+        key="createPod-group"
+        variant="outlined"
+        size="small"
+        sx={{ height: '32px' }}
+      >
+        <Button
+          onClick={() => {
+            dispatch(updateState({ podRootTab: 'dashboard' }));
+          }}
+          color="error"
+          sx={{
+            minWidth: '28px !important',
+            width: '28px',
+            p: 0,
+            borderRight: '1px solid rgba(0,0,0,0.12)',
+          }}
+          variant="outlined"
+        >
+          x
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
+            );
+          }}
+          color={podEditTab === 'form' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px' }}
+          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+        >
+          form
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              updateState({ podRootTab: 'createPod', podEditTab: 'json' })
+            );
+          }}
+          color={podEditTab === 'json' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px' }}
+          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
+        >
+          json
+        </Button>
+      </ButtonGroup>
+    ),
   ];
   const dashboardRightButtons = [
     <Button
@@ -765,7 +813,7 @@ Select or create a pod to get started.`;
           <div className={styles['container']}>
             <PodsCodeMirror
               editValue={
-                podTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
+                podTab === 'edit' ? JSON.stringify(createPodData, null, 2) : ''
               }
               value={codeMirrorValue?.toString() ?? ''}
               isVisible={true}
@@ -775,16 +823,9 @@ Select or create a pod to get started.`;
               }
               editPanel={
                 podTab === 'edit' && objId !== undefined ? (
-                  <PodWizardEdit
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                    editMode={podEditTab}
-                  />
+                  <PodWizardEdit pod={pod} />
                 ) : (
-                  <PodWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
+                  <PodWizard />
                 )
               }
               //scrollToBottom should be true if podTab == 'log' or 'actionlogs'
