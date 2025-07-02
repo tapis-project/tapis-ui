@@ -254,15 +254,26 @@ Select or create a pod to get started.`;
 
   const codeMirrorValue = getCodeMirrorValue();
 
-
-  const networkingObj = (data?.result?.networking ?? {})['default']
+  const networkingObj = (data?.result?.networking ?? {})['default'];
   const networkingProtocol = networkingObj?.protocol;
-  var networkingUrl = networkingObj?.url as string | undefined ?? undefined;
+  var networkingUrl = (networkingObj?.url as string | undefined) ?? undefined;
   const tapisUiUriRedirect = networkingObj?.tapis_ui_uri_redirect ?? false;
-  const tapisUIUri = networkingObj?.tapis_ui_uri ?? "";
+  const tapisUIUri = networkingObj?.tapis_ui_uri ?? '';
   // add tapisUIUriRedirect to the networkingUrl if both exist
-  console.log('networkingurl and object', networkingUrl, tapisUiUriRedirect, tapisUIUri, networkingObj, data?.result?.networking);
-  if (networkingUrl && tapisUiUriRedirect && tapisUIUri && networkingProtocol === 'http') {
+  console.log(
+    'networkingurl and object',
+    networkingUrl,
+    tapisUiUriRedirect,
+    tapisUIUri,
+    networkingObj,
+    data?.result?.networking
+  );
+  if (
+    networkingUrl &&
+    tapisUiUriRedirect &&
+    tapisUIUri &&
+    networkingProtocol === 'http'
+  ) {
     networkingUrl = `${networkingUrl}${tapisUIUri}`;
   }
   const podStatus = data?.result?.status;
@@ -728,8 +739,13 @@ Select or create a pod to get started.`;
   ];
 
   const detailsRightButtons = [
-    tapisUiUriRedirect && networkingObj?.tapis_ui_uri_description && networkingUrl ? (
-      <Tooltip key="networking-tooltip" title={networkingObj?.tapis_ui_uri_description}>
+    tapisUiUriRedirect &&
+    networkingObj?.tapis_ui_uri_description &&
+    networkingUrl ? (
+      <Tooltip
+        key="networking-tooltip"
+        title={networkingObj?.tapis_ui_uri_description}
+      >
         <span>
           <Button
             key="networking"

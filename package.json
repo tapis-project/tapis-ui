@@ -82,7 +82,7 @@
     "start": "vite --config ./vite/vite.config.mts --clearScreen=false",
     "start-dev": "vite --host --config ./vite/vite.dev.config.mts",
     "init-project": "[ ! -f .env ] && cp .env.template .env || true && pnpm install && pnpm -r build && pnpm start",
-    "dev": "pnpm -r --parallel watch & pnpm run start",
+    "dev": "pnpm -r --parallel watch & pnpm run start & (sleep 3 && pnpm run prettier-loop)",
     "build": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.config.mts",
     "build-dev": "tsc && NODE_OPTIONS=--max-old-space-size=9000 vite build --config ./vite/vite.dev.config.mts",
     "preview": "vite preview --config ./vite/vite.config.mts",
@@ -91,7 +91,8 @@
     "docker-prod": "docker build -t uiprod -f Dockerfile.nix .; docker run -p 3000:80 uiprod",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
-    "prettier": "prettier --single-quote --write src packages",
+    "prettier": "prettier --loglevel=warn --single-quote --write src packages",
+    "prettier-loop": "while true; echo -e '\n##################\nprettier run start\n##################'; do pnpm prettier; echo -e '#####################################\nprettier run end - next run in 5 mins\n#####################################\n'; sleep 300; done",
     "gh-pages": "pnpm build && npx gh-pages -d dist"
   },
   "eslintConfig": {

@@ -51,12 +51,13 @@
           echo -e "\nDevelopment commands:
           ==========================
             - pnpm run init-project: initialize tapis-ui project, creates .env, installs deps, and runs
-            - pnpm run dev: Start a hot-reloading dev server
+            - pnpm run dev: Start a hot-reloading dev server + auto-prettier
             - pnpm install: install all rootpkg and subpkg dependencies from one module location
             - pnpm -r build: Build the rootpkg (-r to build all subpkgs)
             - pnpm run docker: docker build and deploy
             - pnpm run test: Run all tests
-            - pnpm run prettier: Should be done before commit
+            - pnpm run prettier: Loop ran by dev, but should be ran before commit always
+            - pnpm run prettier-loop: Ran by dev, prettier every 5 minutes
             - pnpm up -r @tapis/tapis-typescript@0.0.56: Update all pkgs with a specific lib version
 
           Other commands:
