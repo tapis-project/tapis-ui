@@ -85,11 +85,12 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
-  const [view, setView] = useState<View>("io");
+  const [view, setView] = useState<View>('io');
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { patch, isLoading, isError, error, isSuccess, reset } = Hooks.Tasks.usePatch()
-  
+  const { patch, isLoading, isError, error, isSuccess, reset } =
+    Hooks.Tasks.usePatch();
+
   const tasks = pipeline.tasks!;
   const env = pipeline.env || {}
   const params = pipeline.params || {}
@@ -122,8 +123,8 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       animated: false,
       style: { stroke: '#777777', strokeWidth: '2px' },
     };
-    return edge
-  }
+    return edge;
+  };
 
   const nodeTypes = useMemo(
     () => ({
@@ -213,7 +214,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           groupId,
           pipelineId: pipeline.id,
           tasks,
-          showIO: view === "io"
+          showIO: view === 'io',
         },
       });
 
@@ -300,7 +301,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       }
 
       // Input and output edges
-      if (view === "io") {
+      if (view === 'io') {
         for (const key of Object.keys(taskInput!)) {
           const input = taskInput![key];
           const valueFrom = input.value_from;
@@ -315,10 +316,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return initialEdges;
   }, [groupId, pipeline, view]);
 
-  const onConnect = useCallback(
-    (params: any) => {
-      let parentTask = tasks.filter((t) => t.id == params.source)[0];
-      let childTask = tasks.filter((t) => t.id == params.target)[0];
+  const onConnect = useCallback((params: any) => {
+    let parentTask = tasks.filter((t) => t.id == params.source)[0];
+    let childTask = tasks.filter((t) => t.id == params.target)[0];
 
       patch(
         {
@@ -341,13 +341,11 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               return addEdge(createDependencyEdge(params.source, params.target), eds) as any;
             })
 
-            reset()
-          }
-        }
-      )
-    },
-    []
-  );
+          reset();
+        },
+      }
+    );
+  }, []);
 
   const onLayout = useCallback(
     ({
@@ -480,7 +478,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               onClick={() => {
                 handleToggleView('flow');
               }}
-              variant={view === "flow" ? 'filled' : 'outlined'}
+              variant={view === 'flow' ? 'filled' : 'outlined'}
               color="primary"
               style={{ marginLeft: '8px' }}
               size="small"
@@ -491,7 +489,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               onClick={() => {
                 handleToggleView('io');
               }}
-              variant={view === "io" ? 'filled' : 'outlined'}
+              variant={view === 'io' ? 'filled' : 'outlined'}
               color="primary"
               style={{ marginLeft: '8px' }}
               size="small"
