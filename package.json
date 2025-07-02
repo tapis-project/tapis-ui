@@ -21,7 +21,7 @@
     "@mui/x-tree-view": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@scoped/tapisui-extension": "workspace:*",
-    "@tapis/tapis-typescript": "^0.0.55",
+    "@tapis/tapis-typescript": "^0.0.56",
     "@tapis/tapis-typescript-apps": "0.0.9",
     "@tapis/tapis-typescript-systems": "0.0.6",
     "@tapis/tapisui-api": "workspace:*",

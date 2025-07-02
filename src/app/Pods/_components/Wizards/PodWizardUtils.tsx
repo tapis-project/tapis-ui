@@ -608,16 +608,18 @@ export const PodWizardActionButtons = ({
     }}
   >
     <Tooltip title={deleteTooltip}>
-      <Button
-        aria-label={deleteLabel}
-        color="error"
-        variant="outlined"
-        disabled={isLoading || isDisabled}
-        onClick={onDelete}
-        sx={{ maxWidth: '2rem', minWidth: '2rem', height: 30, px: '.8rem' }}
-      >
-        <Icon name="trash" />
-      </Button>
+      <span>
+        <Button
+          aria-label={deleteLabel}
+          color="error"
+          variant="outlined"
+          disabled={isLoading || isDisabled}
+          onClick={onDelete}
+          sx={{ maxWidth: '2rem', minWidth: '2rem', height: 30, px: '.8rem' }}
+        >
+          <Icon name="trash" />
+        </Button>
+      </span>
     </Tooltip>
     <Button
       color="primary"

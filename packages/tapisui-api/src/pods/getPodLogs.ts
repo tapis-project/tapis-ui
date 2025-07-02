@@ -6,9 +6,9 @@ const getPodLogs = (
   basePath: string,
   jwt: string
 ): Promise<Pods.PodLogsResponse> => {
-  const api: Pods.LogsApi = apiGenerator<Pods.LogsApi>(
+  const api: Pods.PodsApi = apiGenerator<Pods.PodsApi>(
     Pods,
-    Pods.LogsApi,
+    Pods.PodsApi,
     basePath,
     jwt
   );

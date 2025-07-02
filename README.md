@@ -51,7 +51,7 @@ pnpm dev
 
 # _Experimental_ Nix Development Shell
 
-Nix is a _functional_ package manager which stores packages in a central Nix _store_ which links to final locations. TapisUI uses nix to solve dependency and reproducibility issues in development. [To install nix, view the official instructions here](https://nixos.org/download/#nix-install-linux). Another option is installing the [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer), their installer works on Mac better and installation turns on experimental features by default.
+Nix is a _functional_ package manager which stores packages in a central Nix _store_ which links to final locations. TapisUI uses nix to solve dependency and reproducibility issues in development. [To install nix, view the official instructions here](https://nixos.org/download/#nix-install-linux). A potentially "better" installation option is the [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer), their installer works better on all OS's and it enables experimental features by default (of which we use).
 
 TapisUI has optional nix development tools. Included in the repo root is a `flake.nix` and `lock.nix` file. The `flake.nix` file defines a flake's `description`, `inputs`, and `outputs`. `inputs` attr specifies the dependencies of a flake, these are locked with `lock.nix`. `outputs` are what the flake produces, one flake may simultaneously contain several types of outputs.
 

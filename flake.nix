@@ -56,7 +56,8 @@
             - pnpm -r build: Build the rootpkg (-r to build all subpkgs)
             - pnpm run docker: docker build and deploy
             - pnpm run test: Run all tests
-            - pnpm run prettier: Ran by 'dev', but should be done before commit
+            - pnpm run prettier: Should be done before commit
+            - pnpm up -r @tapis/tapis-typescript@0.0.56: Update all pkgs with a specific lib version
 
           Other commands:
           ==========================

@@ -45,7 +45,6 @@ const protocolOptions = [
 const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
   onChange,
 }) => {
-  const queryClient = useQueryClient();
   // Remove createPodData from Redux as a live source of truth
   // Use only Formik for state
   // Optionally, you can load a draft from Redux on mount if you want draft persistence
@@ -61,27 +60,14 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
     setLogsDropdownOpen,
   } = useAppSelector((state) => state.pods);
 
-  // Local state for add-new fields
-  const [newFields, setNewFields] = useState({
-    envKey: '',
-    envValue: '',
-    netKey: '',
-    netPort: '',
-    netProtocol: '',
-    volKey: '',
-    volType: '',
-    volMountPath: '',
-    volSubPath: '',
-  });
-
   // Redux for persistent pod creation data
   const dispatch = useAppDispatch();
 
-  const handleNewFieldChange = (field: string, value: string) => {
-    setNewFields((prev) => ({ ...prev, [field]: value }));
-  };
+  const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
+    //console.log('onSuccess called, invalidating queries... objId:', objId);
     queryClient.invalidateQueries(Hooks.queryKeys.getPod);
+    queryClient.invalidateQueries(Hooks.queryKeys.getPodDerived);
     queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 

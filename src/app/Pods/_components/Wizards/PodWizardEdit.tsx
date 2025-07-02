@@ -40,7 +40,6 @@ const PodWizardEdit: React.FC<{
   pod: any;
   onChange?: (values: any) => void;
 }> = ({ pod, onChange }) => {
-  const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const { podEditTab, updatePodData } = useAppSelector(
     (state: any) => state.pods
@@ -57,8 +56,7 @@ const PodWizardEdit: React.FC<{
       .matches(
         /^[a-z0-9]+$/,
         'Must contain only lowercase alphanumeric characters'
-      )
-      .required('Pod ID is a required field'),
+      ),
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
@@ -134,8 +132,11 @@ const PodWizardEdit: React.FC<{
     time_to_stop_instance: Yup.string(),
   });
 
+  const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
+    //console.log('onSuccess called, invalidating queries... objId:', objId);
     queryClient.invalidateQueries(Hooks.queryKeys.getPod);
+    queryClient.invalidateQueries(Hooks.queryKeys.getPodDerived);
     queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
@@ -143,11 +144,26 @@ const PodWizardEdit: React.FC<{
     Hooks.useUpdatePod(objId);
 
   const onSubmit = (values: any, { setSubmitting }: any) => {
-    // Remove image/template from update (for both form and JSON modes)
-    const update = { ...values };
-    delete update.image;
-    delete update.template;
-    updatePod({ podId: objId, ...update }, { onSuccess });
+    console.log('onSubmit called with:', JSON.stringify(values));
+    // Build sparse updatePod object
+    const newPod: any = {};
+    Object.entries(values).forEach(([key, val]) => {
+      if (
+        val === undefined ||
+        val === null ||
+        (typeof val === 'string' && val.trim() === '') ||
+        (Array.isArray(val) && val.length === 0) ||
+        (typeof val === 'object' &&
+          !Array.isArray(val) &&
+          Object.keys(val).length === 0)
+      ) {
+        // skip empty
+        return;
+      }
+      newPod[key] = val;
+    });
+    console.log('Updating pod with (sparse):', newPod);
+    updatePod({ podId: objId, updatePod: newPod }, { onSuccess });
     setSubmitting(false);
   };
 
@@ -251,7 +267,11 @@ const PodWizardEdit: React.FC<{
                   const filtered = { ...obj };
                   delete filtered.image;
                   delete filtered.template;
-                  updatePod({ podId: objId, ...filtered }, { onSuccess });
+                  // console.log('Updating pod: {objId} with (filtered):', objId, filtered);
+                  updatePod(
+                    { podId: objId, updatePod: filtered },
+                    { onSuccess }
+                  );
                 }
               },
             },
@@ -273,7 +293,7 @@ const PodWizardEdit: React.FC<{
         >
           <PodWizardActionButtons
             isLoading={isLoading}
-            isDisabled={Object.keys(formik.values).length === 0}
+            isDisabled={isLoading || Object.keys(formik.values).length === 0}
             onDelete={handleClear}
             submitLabel="Update Pod"
             deleteLabel="Clear form"
@@ -284,7 +304,18 @@ const PodWizardEdit: React.FC<{
       )}
       {podEditTab !== 'json' && (
         <FormikProvider value={formik}>
-          <form id="edit-pod-form" onSubmit={formik.handleSubmit}>
+          <form
+            id="edit-pod-form"
+            onSubmit={(e) => {
+              console.log(
+                'FORM onSubmit event! formik.errors:',
+                formik.errors,
+                'formik.values:',
+                formik.values
+              );
+              formik.handleSubmit(e);
+            }}
+          >
             <AutoPruneEmptyFields
               validationSchema={validationSchema}
               deepCheck={false}
