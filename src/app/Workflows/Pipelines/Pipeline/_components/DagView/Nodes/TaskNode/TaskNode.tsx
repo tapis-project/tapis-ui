@@ -67,8 +67,8 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
   let { task, tasks, groupId, pipelineId, showIO } = data as NodeType;
-  let inputs = task.input || {}
-  let outputs = task.output || {}
+  let inputs = task.input || {};
+  let outputs = task.output || {};
   return (
     <>
       <TaskUpdateProvider
@@ -77,7 +77,12 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
         groupId={groupId}
         pipelineId={pipelineId}
       >
-        <StandardHandle id={`task-${task.id}-target`} type="target" position={Position.Left} style={{top: "26px"}} />
+        <StandardHandle
+          id={`task-${task.id}-target`}
+          type="target"
+          position={Position.Left}
+          style={{ top: '26px' }}
+        />
         <div className={styles['node']}>
           <div className={styles['body']}>
             <div className={styles['header']}>
@@ -87,76 +92,75 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
               />
               <span className={styles['title']}>{task.id}</span>
             </div>
-            {
-              task.description && (
-                <div className={styles['body']}>
-                  <p className={styles['description']}>
-                    {task.description}
-                  </p>
-                </div>
-              )
-            }
+            {task.description && (
+              <div className={styles['body']}>
+                <p className={styles['description']}>{task.description}</p>
+              </div>
+            )}
           </div>
           <div>
-            {
-              Object.keys(inputs).length > 0 && showIO && (
-                <div className={styles['io']}>
-                  {
-                    Object.keys(inputs).map((key) => {
-                      let type = inputs[key].type;
-                      let required = inputs[key].required;
-                      let description = inputs[key].description;
-                      return (
-                        <div
-                          className={styles['io-item']}
-                          style={{position: "relative"}}
-                        >
-                          <div>
-                            <StandardHandle id={`input-${task.id}-${key}`} type="target" position={Position.Left} />
-                          </div>
-                          <div>
-                            <Tooltip title={key}>
-                              <span>{key} {required && (<span style={{color: "red"}}>*</span>)}</span>
-                            </Tooltip>
-                            <div className={styles['io-item-type']}>
-                              {type}
-                            </div>
-                            {description}
-                          </div>
+            {Object.keys(inputs).length > 0 && showIO && (
+              <div className={styles['io']}>
+                {Object.keys(inputs).map((key) => {
+                  let type = inputs[key].type;
+                  let required = inputs[key].required;
+                  let description = inputs[key].description;
+                  return (
+                    <div
+                      className={styles['io-item']}
+                      style={{ position: 'relative' }}
+                    >
+                      <div>
+                        <StandardHandle
+                          id={`input-${task.id}-${key}`}
+                          type="target"
+                          position={Position.Left}
+                        />
+                      </div>
+                      <div>
+                        <Tooltip title={key}>
+                          <span>
+                            {key}{' '}
+                            {required && (
+                              <span style={{ color: 'red' }}>*</span>
+                            )}
+                          </span>
+                        </Tooltip>
+                        <div className={styles['io-item-type']}>{type}</div>
+                        {description}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {Object.keys(outputs).length > 0 && showIO && (
+              <div className={styles['io']}>
+                {Object.keys(outputs).map((key) => {
+                  let output: any = outputs[key];
+                  return (
+                    <div
+                      className={styles['io-item']}
+                      style={{ position: 'relative' }}
+                    >
+                      <div style={{ textAlign: 'right' }}>
+                        <Tooltip title={key}>
+                          <span>{key}</span>
+                        </Tooltip>
+                        <div className={styles['io-item-type']}>
+                          {output.type}
                         </div>
-                      )
-                    })
-                  }
-                </div>
-              )
-            }
-            {
-              Object.keys(outputs).length > 0 && showIO && (
-                <div className={styles['io']}>
-                  {
-                    Object.keys(outputs).map((key) => {
-                      let output: any = outputs[key];
-                      return (
-                        <div
-                          className={styles['io-item']}
-                          style={{position: "relative"}}
-                        >
-                          <div style={{textAlign: "right"}}>
-                            <Tooltip title={key}>
-                              <span>{key}</span>
-                            </Tooltip>
-                            <div className={styles['io-item-type']}>
-                              {output.type}
-                            </div>
-                          </div>
-                            <StandardHandle id={`output-${task.id}-${key}`} type="source" position={Position.Right} />
-                        </div>
-                      )
-                    })
-                  }
-                </div>
-              )
-            }
+                      </div>
+                      <StandardHandle
+                        id={`output-${task.id}-${key}`}
+                        type="source"
+                        position={Position.Right}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
           <div className={styles['footer']}>
             <Edit
@@ -180,7 +184,12 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
           open={modal === 'delete'}
           toggle={() => setModal(undefined)}
         />
-        <StandardHandle id={`task-${task.id}-source`} type="source" position={Position.Right} style={{top: "26px"}} />
+        <StandardHandle
+          id={`task-${task.id}-source`}
+          type="source"
+          position={Position.Right}
+          style={{ top: '26px' }}
+        />
       </TaskUpdateProvider>
     </>
   );

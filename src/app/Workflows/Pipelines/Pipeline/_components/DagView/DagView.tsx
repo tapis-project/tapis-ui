@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useLayoutEffect } from 'react';
-import { EnvironmentNode, TaskNode, ArgsNode} from './Nodes';
+import { EnvironmentNode, TaskNode, ArgsNode } from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
@@ -83,15 +83,16 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
-  const [view, setView] = useState<View>("io");
+  const [view, setView] = useState<View>('io');
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { patch, isLoading, isError, error, isSuccess, reset } = Hooks.Tasks.usePatch()
-  
+  const { patch, isLoading, isError, error, isSuccess, reset } =
+    Hooks.Tasks.usePatch();
+
   const tasks = pipeline.tasks!;
-  const env = pipeline.env || {}
-  const params = pipeline.params || {}
-  
+  const env = pipeline.env || {};
+  const params = pipeline.params || {};
+
   const create_dependency_edge = (source: string, target: string) => {
     const edge = {
       id: `e-${source}-${target}`,
@@ -103,10 +104,15 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       animated: true,
       style: { stroke: '#777777', strokeWidth: '2px' },
     };
-    return edge
-  }
+    return edge;
+  };
 
-  const create_io_edge = (source: string, output: string, target: string, input: string) => {
+  const create_io_edge = (
+    source: string,
+    output: string,
+    target: string,
+    input: string
+  ) => {
     const edge = {
       id: `e-${source}-${output}-${target}-${input}`,
       type: 'smoothbezier',
@@ -117,18 +123,17 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       animated: false,
       style: { stroke: '#777777', strokeWidth: '2px' },
     };
-    return edge
-  }
+    return edge;
+  };
 
   const nodeTypes = useMemo(
     () => ({
       standard: TaskNode,
       args: ArgsNode,
-      env: EnvironmentNode
+      env: EnvironmentNode,
     }),
     []
   );
-  
 
   const handleToggleView = (view: View) => {
     setView(view);
@@ -151,7 +156,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           groupId,
           pipelineId: pipeline.id,
           tasks,
-          showIO: view === "io"
+          showIO: view === 'io',
         },
       });
       i++;
@@ -172,8 +177,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         position: { x: 0, y: Object.entries(env).length * 25 + 100 },
         type: 'args',
         data: { pipeline },
-        height:
-          200 + 25 * Object.keys(params).length,
+        height: 200 + 25 * Object.keys(params).length,
         width: 300,
       },
     ];
@@ -225,13 +229,20 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       }
 
       // Input and output edges
-      if (view === "io") {
+      if (view === 'io') {
         for (const key of Object.keys(taskInput!)) {
           const input = taskInput![key];
           const valueFrom = input.value_from;
           if (valueFrom && valueFrom.task_output) {
             const taskOutput = valueFrom.task_output;
-            initialEdges.push(create_io_edge(taskOutput.task_id, taskOutput.output_id, task.id!, key))
+            initialEdges.push(
+              create_io_edge(
+                taskOutput.task_id,
+                taskOutput.output_id,
+                task.id!,
+                key
+              )
+            );
           }
         }
       }
@@ -240,39 +251,39 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return initialEdges;
   }, [groupId, pipeline, view]);
 
-  const onConnect = useCallback(
-    (params: any) => {
-      let parentTask = tasks.filter((t) => t.id == params.source)[0];
-      let childTask = tasks.filter((t) => t.id == params.target)[0];
+  const onConnect = useCallback((params: any) => {
+    let parentTask = tasks.filter((t) => t.id == params.source)[0];
+    let childTask = tasks.filter((t) => t.id == params.target)[0];
 
-      patch(
-        {
-          groupId,
-          pipelineId: pipeline.id!,
-          task: {
-            type: childTask.type!,
-            depends_on: [
-              ...childTask.depends_on!.filter((t) => t.id !== parentTask.id),
-              {
-                id: parentTask.id!
-              }
-            ]
-          } as unknown as Workflows.Task,
-          taskId: childTask.id!
+    patch(
+      {
+        groupId,
+        pipelineId: pipeline.id!,
+        task: {
+          type: childTask.type!,
+          depends_on: [
+            ...childTask.depends_on!.filter((t) => t.id !== parentTask.id),
+            {
+              id: parentTask.id!,
+            },
+          ],
+        } as unknown as Workflows.Task,
+        taskId: childTask.id!,
+      },
+      {
+        onSuccess: () => {
+          setEdges((eds: any) => {
+            return addEdge(
+              create_dependency_edge(params.source, params.target),
+              eds
+            ) as any;
+          });
+
+          reset();
         },
-        {
-          onSuccess: () => {
-            setEdges((eds: any) => {
-              return addEdge(create_dependency_edge(params.source, params.target), eds) as any;
-            })
-
-            reset()
-          }
-        }
-      )
-    },
-    []
-  );
+      }
+    );
+  }, []);
 
   const onLayout = useCallback(
     ({
@@ -364,7 +375,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               onClick={() => {
                 handleToggleView('flow');
               }}
-              variant={view === "flow" ? 'filled' : 'outlined'}
+              variant={view === 'flow' ? 'filled' : 'outlined'}
               color="primary"
               style={{ marginLeft: '8px' }}
               size="small"
@@ -375,7 +386,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               onClick={() => {
                 handleToggleView('io');
               }}
-              variant={view === "io" ? 'filled' : 'outlined'}
+              variant={view === 'io' ? 'filled' : 'outlined'}
               color="primary"
               style={{ marginLeft: '8px' }}
               size="small"

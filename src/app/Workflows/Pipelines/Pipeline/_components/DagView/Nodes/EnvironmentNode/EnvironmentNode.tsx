@@ -19,7 +19,7 @@ const envImgSrc =
 
 const EnvironmentNode: React.FC<NodeProps> = ({ id, data }) => {
   const { pipeline } = data as NodeType;
-  const params = pipeline.params || {}
+  const params = pipeline.params || {};
   return (
     <>
       <div className={styles['node']}>
@@ -30,39 +30,39 @@ const EnvironmentNode: React.FC<NodeProps> = ({ id, data }) => {
           </div>
         </div>
         <div>
-          {
-            Object.keys(params).length > 0 && (
-              <div className={styles['io']}>
-                {
-                  Object.keys(params).map((key) => {
-                    // let param = pipeline.params![key];
-                    return (
-                      <div
-                        className={styles['io-item']}
-                        style={{position: "relative"}}
-                      >
-                        <div>
-                          <StandardHandle id={`arg-${key}`} type="source" position={Position.Right} />
-                        </div>
-                        <div>
-                          <Tooltip title={key}>
-                            <span>{key}</span>
-                          </Tooltip>
-                        </div>
-                      </div>
-                    )
-                  })
-                }
-              </div>
-            )
-          }
+          {Object.keys(params).length > 0 && (
+            <div className={styles['io']}>
+              {Object.keys(params).map((key) => {
+                // let param = pipeline.params![key];
+                return (
+                  <div
+                    className={styles['io-item']}
+                    style={{ position: 'relative' }}
+                  >
+                    <div>
+                      <StandardHandle
+                        id={`arg-${key}`}
+                        type="source"
+                        position={Position.Right}
+                      />
+                    </div>
+                    <div>
+                      <Tooltip title={key}>
+                        <span>{key}</span>
+                      </Tooltip>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
       <StandardHandle
         id={`env-handle-${pipeline.id}`}
         type="source"
         position={Position.Right}
-        style={{top: "26px"}}
+        style={{ top: '26px' }}
       />
     </>
   );

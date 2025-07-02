@@ -23,6 +23,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@jest/globals": "29.7.0",
+    "@tapis/tapis-typescript": "^0.0.56",
     "@testing-library/jest-dom": "6.6.3",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.17.17",
