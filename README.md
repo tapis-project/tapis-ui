@@ -43,7 +43,7 @@ npx pnpm dev
 `flake.nix` describes a development shell with pinned pnpm version, you can use that like this:
 
 ```
-nix develop .#default
+nix develop .#default --extra-experimental-features 'nix-command flakes'
 pnpm install
 pnpm -r build
 pnpm dev

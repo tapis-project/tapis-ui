@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState, useLayoutEffect } from 'react';
-import { EnvironmentNode, TaskNode, ArgsNode, ConditionalNode } from './Nodes';
+import { EnvironmentNode, TaskNode, ArgsNode} from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
+import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
 import { DagViewHeader } from './DagViewHeader';
-import { Chip } from '@mui/material';
+import { Alert, AlertTitle, Chip } from '@mui/material';
 import { DataObject, Share, Bolt, AltRoute } from '@mui/icons-material';
 import {
   ReactFlow,
@@ -36,12 +37,12 @@ import '@xyflow/react/dist/style.css';
 const elk = new ELK();
 
 const elkOptions = {
-  'elk.algorithm': 'mrtree',
+  'elk.algorithm': 'layered',
   'elk.layered.spacing.nodeNodeBetweenLayers': '100',
   'elk.spacing.nodeNode': '80',
 };
 
-type View = 'data' | 'dependencies' | 'conditionals';
+type View = 'io' | 'flow';
 
 const getLayoutedElements: any = (
   nodes: Array<ElkNode>,
@@ -82,57 +83,66 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
-
-  const tasks = pipeline.tasks!;
+  const [view, setView] = useState<View>("io");
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { patch, isLoading, isError, error, isSuccess, reset } = Hooks.Tasks.usePatch()
+  
+  const tasks = pipeline.tasks!;
+  const env = pipeline.env || {}
+  const params = pipeline.params || {}
+  
+  const create_dependency_edge = (source: string, target: string) => {
+    const edge = {
+      id: `e-${source}-${target}`,
+      type: 'smoothbezier',
+      source,
+      sourceHandle: `task-${source}-source`,
+      target,
+      targetHandle: `task-${target}-target`,
+      animated: true,
+      style: { stroke: '#777777', strokeWidth: '2px' },
+    };
+    return edge
+  }
+
+  const create_io_edge = (source: string, output: string, target: string, input: string) => {
+    const edge = {
+      id: `e-${source}-${output}-${target}-${input}`,
+      type: 'smoothbezier',
+      source,
+      sourceHandle: `output-${source}-${output}`,
+      target,
+      targetHandle: `input-${target}-${input}`,
+      animated: false,
+      style: { stroke: '#777777', strokeWidth: '2px' },
+    };
+    return edge
+  }
 
   const nodeTypes = useMemo(
     () => ({
       standard: TaskNode,
       args: ArgsNode,
-      env: EnvironmentNode,
-      conditional: ConditionalNode,
+      env: EnvironmentNode
     }),
     []
   );
-  const [views, setViews] = useState<{ [K in View]: boolean }>({
-    conditionals: true,
-    data: true,
-    dependencies: true,
-  });
+  
 
   const handleToggleView = (view: View) => {
-    alert(!views[view]);
-    setViews({
-      ...views,
-      [view]: !views[view],
-    });
+    setView(view);
   };
 
   const calculateNodes = useCallback(() => {
-    let conditionalOffset = 0;
     let initialNodes: Array<Node> = [];
     let i = 0;
     for (let task of tasks) {
-      if (task.conditions!.length > 0 && views.conditionals) {
-        initialNodes.push({
-          id: `conditional-${task.id!}`,
-          position: {
-            x: (i + 1 + conditionalOffset) * 350,
-            y: Object.entries(pipeline.env!).length * 25 + 30,
-          },
-          type: 'conditional',
-          data: { task: task, groupId, pipelineId: pipeline.id },
-        });
-        conditionalOffset++;
-      }
-
       initialNodes.push({
         id: task.id!,
         position: {
-          x: (i + 1 + conditionalOffset) * 350,
-          y: Object.entries(pipeline.env!).length * 25 + 30,
+          x: (i + 1) * 350,
+          y: Object.entries(env!).length * 25 + 30,
         },
         type: 'standard',
         data: {
@@ -141,6 +151,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           groupId,
           pipelineId: pipeline.id,
           tasks,
+          showIO: view === "io"
         },
       });
       i++;
@@ -153,45 +164,26 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         position: { x: 0, y: 0 },
         type: 'env',
         data: { pipeline },
-        height: 200 + 25 * Object.keys(pipeline.env ? pipeline.env : {}).length,
+        height: 200 + 25 * Object.keys(env).length,
         width: 300,
       },
       {
         id: `${pipeline.id}-args`,
-        position: { x: 0, y: Object.entries(pipeline.env!).length * 25 + 100 },
+        position: { x: 0, y: Object.entries(env).length * 25 + 100 },
         type: 'args',
         data: { pipeline },
         height:
-          200 + 25 * Object.keys(pipeline.params ? pipeline.params : {}).length,
+          200 + 25 * Object.keys(params).length,
         width: 300,
       },
     ];
 
     return initialNodes;
-  }, [views, setViews, groupId, pipeline]);
+  }, [view, setView, groupId, pipeline]);
 
   const calculateEdges = useCallback(() => {
-    if (!views.dependencies) {
-      return [];
-    }
     const initialEdges: Array<Edge> = [];
     for (const task of tasks) {
-      if (task.conditions!.length > 0 && views.conditionals) {
-        initialEdges.push({
-          id: `e-conditional-${task.id}-${task.id}`,
-          type: 'step',
-          source: `conditional-${task.id}`,
-          target: task.id!,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 10,
-            height: 10,
-            color: '#000000',
-          },
-          animated: true,
-          style: { stroke: '#000000', strokeWidth: '3px' },
-        });
-      }
       const taskInput = task.input ? task.input : {};
       for (let input of Object.entries(taskInput)) {
         let [_, v] = input;
@@ -204,17 +196,11 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           // Edge from the environment to the task
           initialEdges.push({
             id: `e-${pipeline.id}-env-${task.id}`,
-            type: 'step',
+            type: 'smoothbezier',
             source: `${pipeline.id}-env`,
             target: task.id!,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              width: 10,
-              height: 10,
-              color: '#000000',
-            },
             animated: true,
-            style: { stroke: '#000000', strokeWidth: '3px' },
+            style: { stroke: '#777777', strokeWidth: '2px' },
           });
           hasEnvDep = true;
           continue;
@@ -224,64 +210,66 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           // Edge from the environment to the task
           initialEdges.push({
             id: `e-${pipeline.id}-env-${task.id}`,
-            type: 'step',
+            type: 'smoothbezier',
             source: `${pipeline.id}-args`,
             target: task.id!,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              width: 10,
-              height: 10,
-              color: '#000000',
-            },
             animated: true,
-            style: { stroke: '#000000', strokeWidth: '3px' },
+            style: { stroke: '#777777', strokeWidth: '2px' },
           });
           hasArgsDep = true;
           continue;
         }
       }
       for (const dep of task.depends_on!) {
-        // Add edges from the conditional node to the dependent task
-        if (task.conditions!.length > 0 && views.conditionals) {
-          // Edge from the conditional to the parent task
-          initialEdges.push({
-            id: `e-conditional-${dep.id}-c-${task.id}`,
-            type: 'step',
-            source: dep.id!,
-            target: `conditional-${task.id}`,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              width: 10,
-              height: 10,
-              color: '#000000',
-            },
-            animated: true,
-            style: { stroke: '#000000', strokeWidth: '3px' },
-          });
+        initialEdges.push(create_dependency_edge(dep.id!, task.id!));
+      }
+
+      // Input and output edges
+      if (view === "io") {
+        for (const key of Object.keys(taskInput!)) {
+          const input = taskInput![key];
+          const valueFrom = input.value_from;
+          if (valueFrom && valueFrom.task_output) {
+            const taskOutput = valueFrom.task_output;
+            initialEdges.push(create_io_edge(taskOutput.task_id, taskOutput.output_id, task.id!, key))
+          }
         }
-        initialEdges.push({
-          id: `e-${dep.id}-${task.id}`,
-          type: 'step',
-          source: dep.id!,
-          target: task.id!,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 10,
-            height: 10,
-            color: '#000000',
-          },
-          animated: true,
-          style: { stroke: '#000000', strokeWidth: '3px' },
-        });
       }
     }
+
     return initialEdges;
-  }, [groupId, pipeline]);
+  }, [groupId, pipeline, view]);
 
   const onConnect = useCallback(
     (params: any) => {
-      console.log({params})
-      setEdges((eds: any) => addEdge(params, eds) as any)
+      let parentTask = tasks.filter((t) => t.id == params.source)[0];
+      let childTask = tasks.filter((t) => t.id == params.target)[0];
+
+      patch(
+        {
+          groupId,
+          pipelineId: pipeline.id!,
+          task: {
+            type: childTask.type!,
+            depends_on: [
+              ...childTask.depends_on!.filter((t) => t.id !== parentTask.id),
+              {
+                id: parentTask.id!
+              }
+            ]
+          } as unknown as Workflows.Task,
+          taskId: childTask.id!
+        },
+        {
+          onSuccess: () => {
+            setEdges((eds: any) => {
+              return addEdge(create_dependency_edge(params.source, params.target), eds) as any;
+            })
+
+            reset()
+          }
+        }
+      )
     },
     []
   );
@@ -307,16 +295,28 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         }
       );
     },
-    [views, setViews, nodes, edges, groupId, pipeline]
+    [view, setView, nodes, edges, groupId, pipeline]
   );
 
   // Calculate the initial layout on mount.
   useLayoutEffect(() => {
     onLayout({ direction: 'RIGHT', useInitialNodes: true });
-  }, [views, setViews, groupId, pipeline]);
+  }, [view, setView, groupId, pipeline]);
 
   return (
     <div>
+      {isError && error && (
+        <Alert
+          severity="error"
+          style={{ marginTop: '8px' }}
+          onClose={() => {
+            reset();
+          }}
+        >
+          <AlertTitle>Error</AlertTitle>
+          {error.message}
+        </Alert>
+      )}
       <DagViewHeader
         groupId={groupId}
         pipelineId={pipeline.id!}
@@ -332,8 +332,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           defaultViewport={{ x: 120, y: 60, zoom: 1 }}
-          panOnScroll={true}
-          panOnScrollSpeed={1}
+          zoomOnScroll={true}
         >
           <DagViewDrawer
             groupId={groupId}
@@ -363,36 +362,25 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           <Panel position="top-right">
             <Chip
               onClick={() => {
-                handleToggleView('data');
+                handleToggleView('flow');
               }}
-              variant={views.data ? 'filled' : 'outlined'}
+              variant={view === "flow" ? 'filled' : 'outlined'}
               color="primary"
               style={{ marginLeft: '8px' }}
               size="small"
-              label="data"
-              icon={<DataObject />}
-            />
-            <Chip
-              onClick={() => {
-                handleToggleView('dependencies');
-              }}
-              variant={views.dependencies ? 'filled' : 'outlined'}
-              color="primary"
-              style={{ marginLeft: '8px' }}
-              size="small"
-              label="dependenies"
+              label="flow"
               icon={<Share />}
             />
             <Chip
               onClick={() => {
-                handleToggleView('conditionals');
+                handleToggleView('io');
               }}
-              variant={views.conditionals ? 'filled' : 'outlined'}
+              variant={view === "io" ? 'filled' : 'outlined'}
               color="primary"
               style={{ marginLeft: '8px' }}
               size="small"
-              label="conditionals"
-              icon={<AltRoute />}
+              label="i/o"
+              icon={<DataObject />}
             />
           </Panel>
           <Controls
