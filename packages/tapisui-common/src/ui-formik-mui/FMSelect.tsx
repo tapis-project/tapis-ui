@@ -13,22 +13,30 @@ interface FMSelectProps {
   formik: FormikProps<any>;
   name: string;
   label: string;
-  description: string;
+  description?: string;
   type?: string;
   size?: 'small' | 'medium';
   labelId: string;
   children: React.ReactNode;
+  value?: any; // Optional value override
+  style?: React.CSSProperties; // Add style prop
+  onChange?: any; // Optional custom onChange
+  SelectProps?: any; // New prop for Select component
 }
 
 const FMSelect: React.FC<FMSelectProps> = ({
   formik,
   name,
   label,
-  description,
+  description = '',
   type = 'text',
   size = 'small',
   labelId,
   children,
+  value,
+  style = {}, // Default to empty object
+  onChange,
+  SelectProps, // Destructure new prop
 }) => {
   return (
     <FormControl
@@ -45,10 +53,12 @@ const FMSelect: React.FC<FMSelectProps> = ({
         labelId={labelId}
         label={label}
         type={type}
-        value={formik.values[name]}
-        onChange={formik.handleChange}
+        style={{ ...style }}
+        value={value !== undefined ? value : formik.values[name]}
+        onChange={onChange ? onChange : formik.handleChange}
         onBlur={formik.handleBlur}
         size={size}
+        {...SelectProps} // Pass SelectProps to Select
       >
         {children}
       </Select>

@@ -2,17 +2,18 @@ import { Button } from 'reactstrap';
 import { Pods } from '@tapis/tapis-typescript';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodFunctionBar';
+import { ToolbarModalProps } from '../ToolbarModalProps';
 import { Form, Formik } from 'formik';
 import { FormikSelect } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
-import styles from './RestartPodModal.module.scss';
+import styles from './StartPodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { useTapisConfig, Pods as Hooks } from '@tapis/tapisui-hooks';
+import { Pods as Hooks } from '@tapis/tapisui-hooks';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
 
-const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+const StartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
   const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useListPods(); //{search: `owner.like.${''}`,}
@@ -21,34 +22,33 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   //Allows the pod list to update without the user having to refresh the page
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.listPods);
+    queryClient.invalidateQueries(Hooks.queryKeys.getPod);
   }, [queryClient]);
 
-  const { restartPod, isLoading, error, isSuccess, reset } =
-    Hooks.useRestartPod();
+  const { startPod, isLoading, error, isSuccess, reset } = Hooks.useStartPod();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const validationSchema = Yup.object({
-    podId: Yup.string().required('Select which pod to restart'),
+    podId: Yup.string().required('Required'),
   });
 
   const podId = useLocation().pathname.split('/')[2];
-
+  var initialPodId = podId ? podId : '';
   const initialValues = {
-    podId: podId,
+    podId: initialPodId,
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    restartPod({ podId }, { onSuccess });
+    startPod({ podId }, { onSuccess });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Restart Pod"
+      title="Start Pod"
       backdrop={true}
       body={
         <div className={styles['modal-settings']}>
@@ -67,7 +67,7 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   data-testid="podId"
                 >
                   <option disabled value={''}>
-                    Select a pod to restart
+                    Select a pod to start
                   </option>
                   {pods.length ? (
                     pods.map((pod) => {
@@ -87,7 +87,7 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully restarted a pod` : ''}
+          success={isSuccess ? `Successfully started a pod` : ''}
           reverse={true}
         >
           <Button
@@ -97,7 +97,7 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             aria-label="Submit"
             type="submit"
           >
-            Restart pod
+            Start pod
           </Button>
         </SubmitWrapper>
       }
@@ -105,4 +105,4 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   );
 };
 
-export default RestartPodModal;
+export default StartPodModal;

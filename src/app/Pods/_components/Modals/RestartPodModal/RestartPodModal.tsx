@@ -2,18 +2,17 @@ import { Button } from 'reactstrap';
 import { Pods } from '@tapis/tapis-typescript';
 import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../PodFunctionBar';
+import { ToolbarModalProps } from '../ToolbarModalProps';
 import { Form, Formik } from 'formik';
 import { FormikSelect } from '@tapis/tapisui-common';
 import { useEffect, useCallback } from 'react';
-import styles from './StopPodModal.module.scss';
+import styles from './RestartPodModal.module.scss';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { Pods as Hooks } from '@tapis/tapisui-hooks';
-import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useTapisConfig, Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
 
-const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
+const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
   const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useListPods(); //{search: `owner.like.${''}`,}
@@ -25,30 +24,31 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     queryClient.invalidateQueries(Hooks.queryKeys.listPods);
   }, [queryClient]);
 
-  const { stopPod, isLoading, error, isSuccess, reset } = Hooks.useStopPod();
+  const { restartPod, isLoading, error, isSuccess, reset } =
+    Hooks.useRestartPod();
 
   useEffect(() => {
     reset();
   }, [reset]);
 
   const validationSchema = Yup.object({
-    podId: Yup.string(),
+    podId: Yup.string().required('Select which pod to restart'),
   });
 
   const podId = useLocation().pathname.split('/')[2];
-
+  var initialPodId = podId ? podId : '';
   const initialValues = {
-    podId: podId,
+    podId: initialPodId,
   };
 
   const onSubmit = ({ podId }: { podId: string }) => {
-    stopPod({ podId }, { onSuccess });
+    restartPod({ podId }, { onSuccess });
   };
 
   return (
     <GenericModal
       toggle={toggle}
-      title="Stop Pod"
+      title="Restart Pod"
       backdrop={true}
       body={
         <div className={styles['modal-settings']}>
@@ -67,7 +67,7 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                   data-testid="podId"
                 >
                   <option disabled value={''}>
-                    Select a pod to stop
+                    Select a pod to restart
                   </option>
                   {pods.length ? (
                     pods.map((pod) => {
@@ -87,7 +87,7 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
           className={styles['modal-footer']}
           isLoading={isLoading}
           error={error}
-          success={isSuccess ? `Successfully stopped a pod` : ''}
+          success={isSuccess ? `Successfully restarted a pod` : ''}
           reverse={true}
         >
           <Button
@@ -97,7 +97,7 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             aria-label="Submit"
             type="submit"
           >
-            Stop pod
+            Restart pod
           </Button>
         </SubmitWrapper>
       }
@@ -105,4 +105,4 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   );
 };
 
-export default StopPodModal;
+export default RestartPodModal;

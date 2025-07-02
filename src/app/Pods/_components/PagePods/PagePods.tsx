@@ -36,16 +36,12 @@ import {
 } from '@mui/material';
 
 import PodToolbar from 'app/Pods/_components/PodToolbar';
-// import { SnapshotWizard, SnapshotWizardEdit } from '../';
-import { UpdatePodBase } from '../PodToolbar/CreatePodModal';
 import { PodWizard, PodWizardEdit } from '../';
 import { PodPermissionModal } from '../Modals';
-import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import Box from '@mui/material/Box';
 
 const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useAppDispatch();
@@ -54,6 +50,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     podRootTab,
     podEditTab,
     podDetailTab,
+    createPodData,
     podLogTab,
     setDetailsDropdownOpen,
     setLogsDropdownOpen,
@@ -101,12 +98,17 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const pod: Pods.PodResponseModel | undefined = data?.result;
   // If no template, details tab is default
   useEffect(() => {
-    if (pod?.template) {
-      dispatch(updateState({ podDetailTab: 'derived' }));
-    } else {
-      dispatch(updateState({ podDetailTab: 'details' }));
+    if (pod !== undefined) {
+      //console.log('Pod data is available:', objId);
+      if (pod?.template) {
+        dispatch(updateState({ podDetailTab: 'derived' }));
+        //console.log('Pod has template, setting podDetailTab to derived');
+      } else {
+        dispatch(updateState({ podDetailTab: 'details' }));
+        //console.log('Pod has no template, setting podDetailTab to details');
+      }
     }
-  }, [pod]);
+  }, [objId, pod?.template]); // Trigger on objId change, not pod change
   const podDerived: Pods.PodResponseModel | undefined = dataDerived?.result;
   const podLogs: Pods.LogsModel | undefined = dataLogs?.result;
   const podSecrets: Pods.CredentialsModel | undefined = dataSecrets?.result;
@@ -178,8 +180,6 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     return null;
   };
 
-  const [sharedData, setSharedData] = useState({});
-
   const getCodeMirrorValue = () => {
     if (objId === undefined) {
       switch (podRootTab) {
@@ -192,7 +192,7 @@ The output of the service is a encrypted, networked, Kubernetes pod.
 
 Select or create a pod to get started.`;
         case 'createPod':
-          return JSON.stringify(sharedData, null, 2);
+          return JSON.stringify(createPodData, null, 2);
         default:
           return ''; // Default or placeholder value
       }
@@ -255,21 +255,101 @@ Select or create a pod to get started.`;
 
   const codeMirrorValue = getCodeMirrorValue();
 
-  type ButtonConfig = {
-    id: string;
-    label: string;
-    tabValue?: string; // Made optional to accommodate both uses
-    icon?: JSX.Element;
-    disabled?: boolean;
-    customOnClick?: () => void;
-  };
+  const networkingUrl = Object.values(data?.result?.networking ?? {})[0]
+    ?.url as string | undefined;
+  const podStatus = data?.result?.status;
 
-  const leftButtons: ButtonConfig[] = [
-    {
-      id: 'refresh',
-      label: 'Refresh',
-      icon: <RefreshRounded sx={{ height: '20px', maxWidth: '20px' }} />,
-      customOnClick: () => {
+  // Dashboard view button lists
+  const dashboardLeftButtons = [
+    <Button
+      key="dashboard"
+      variant="outlined"
+      size="small"
+      color={podRootTab === 'dashboard' ? 'secondary' : 'primary'}
+      onClick={() => dispatch(updateState({ podRootTab: 'dashboard' }))}
+    >
+      Dashboard
+    </Button>,
+    podRootTab !== 'createPod' ? (
+      <Button
+        key="createPod"
+        variant="outlined"
+        size="small"
+        color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
+        onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
+      >
+        Create Pod
+      </Button>
+    ) : (
+      <ButtonGroup
+        key="createPod-group"
+        variant="outlined"
+        size="small"
+        sx={{ height: '32px' }}
+      >
+        <Button
+          onClick={() => {
+            dispatch(updateState({ podRootTab: 'dashboard' }));
+          }}
+          color="error"
+          sx={{
+            minWidth: '28px !important',
+            width: '28px',
+            p: 0,
+            borderRight: '1px solid rgba(0,0,0,0.12)',
+          }}
+          variant="outlined"
+        >
+          x
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
+            );
+          }}
+          color={podEditTab === 'form' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px' }}
+          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+        >
+          form
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              updateState({ podRootTab: 'createPod', podEditTab: 'json' })
+            );
+          }}
+          color={podEditTab === 'json' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px' }}
+          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
+        >
+          json
+        </Button>
+      </ButtonGroup>
+    ),
+  ];
+  const dashboardRightButtons = [
+    <Button
+      key="help"
+      variant="outlined"
+      size="small"
+      onClick={() => setModal('tooltip')}
+    >
+      Help
+    </Button>,
+  ];
+
+  // Details view button lists (with split/popover button objects as React elements)
+  const detailsLeftButtons = [
+    <LoadingButton
+      key="refresh"
+      sx={{ minWidth: '10px' }}
+      loading={isFetching || isFetchingLogs || isFetchingSecrets}
+      variant="outlined"
+      color="primary"
+      size="small"
+      onClick={() => {
         switch (podTab) {
           case 'edit':
           case 'details':
@@ -295,63 +375,389 @@ Select or create a pod to get started.`;
             // Optionally handle any other cases or do nothing
             break;
         }
-      },
-    },
-    { id: 'details', label: 'Details', tabValue: 'details' },
-    { id: 'derived', label: 'Derived', tabValue: 'derived' },
-    { id: 'logs', label: 'Logs', tabValue: 'logs' },
-    { id: 'actionlogs', label: 'Action Logs', tabValue: 'actionlogs' },
-    { id: 'secrets', label: 'Secrets', tabValue: 'secrets' },
-    { id: 'perms', label: 'Perms', tabValue: 'perms' },
+      }}
+    >
+      <RefreshRounded sx={{ height: '20px', maxWidth: '20px' }} />
+    </LoadingButton>,
+    podTab !== 'edit' ? (
+      <Button
+        key="edit"
+        variant="outlined"
+        color="primary"
+        size="small"
+        onClick={() => {
+          dispatch(updateState({ podTab: 'edit' }));
+        }}
+        sx={{ minWidth: '60px', height: '32px' }}
+      >
+        Edit
+      </Button>
+    ) : (
+      <ButtonGroup
+        key="edit-group"
+        variant="outlined"
+        size="small"
+        sx={{ height: '32px' }}
+      >
+        <Button
+          onClick={() => {
+            dispatch(updateState({ podTab: 'details' }));
+          }}
+          color="error"
+          sx={{
+            minWidth: '28px !important',
+            width: '28px',
+            p: 0,
+            borderRight: '1px solid rgba(0,0,0,0.12)',
+          }}
+          variant="outlined"
+        >
+          x
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
+          }}
+          color={podEditTab === 'form' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px' }}
+          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+        >
+          form
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
+          }}
+          color={podEditTab === 'json' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px' }}
+          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
+        >
+          json
+        </Button>
+      </ButtonGroup>
+    ),
+    // Details/Derived split button (MUI SplitButton pattern)
+    <React.Fragment key="details-split">
+      <ButtonGroup variant="outlined" size="small" ref={detailsAnchorRef}>
+        <LoadingButton
+          sx={{ minWidth: '60px' }}
+          variant="outlined"
+          color={
+            podTab === 'edit' || podTab === 'derived' || podTab === 'details'
+              ? 'secondary'
+              : 'primary'
+          }
+          onClick={() => {
+            invalidate();
+            dispatch(updateState({ podTab: 'details' }));
+          }}
+        >
+          {podDetailTab}
+        </LoadingButton>
+        {objId !== undefined && pod?.template && (
+          <Button
+            onClick={() =>
+              dispatch(
+                updateState({ setDetailsDropdownOpen: !setDetailsDropdownOpen })
+              )
+            }
+            color={
+              podTab === 'edit' || podTab === 'derived' || podTab === 'details'
+                ? 'secondary'
+                : 'primary'
+            }
+            sx={{
+              fontSize: '14px',
+              minWidth: '28px !important',
+              width: '28px',
+            }}
+            variant="outlined"
+            aria-controls={setDetailsDropdownOpen ? 'details-menu' : undefined}
+            aria-expanded={setDetailsDropdownOpen ? 'true' : undefined}
+            aria-haspopup="menu"
+          >
+            <ArrowDropDown />
+          </Button>
+        )}
+      </ButtonGroup>
+      <Popper
+        sx={{ zIndex: 1 }}
+        open={setDetailsDropdownOpen}
+        anchorEl={detailsAnchorRef.current}
+        role={undefined}
+        transition
+        disablePortal
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === 'bottom' ? 'center top' : 'center bottom',
+            }}
+          >
+            <Paper>
+              <ClickAwayListener
+                onClickAway={() =>
+                  dispatch(updateState({ setDetailsDropdownOpen: false }))
+                }
+              >
+                <MenuList id="details-menu" autoFocusItem>
+                  <MenuItem
+                    selected={podEditTab === 'details'}
+                    onClick={() => {
+                      invalidate();
+                      if (podTab === 'edit') {
+                        dispatch(
+                          updateState({
+                            podDetailTab: 'details',
+                            setDetailsDropdownOpen: false,
+                          })
+                        );
+                      } else {
+                        dispatch(
+                          updateState({
+                            podTab: 'details',
+                            podDetailTab: 'details',
+                            setDetailsDropdownOpen: false,
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    Details
+                  </MenuItem>
+                  <MenuItem
+                    selected={podEditTab === 'derived'}
+                    onClick={() => {
+                      invalidateDerived();
+                      if (podTab === 'edit') {
+                        dispatch(
+                          updateState({
+                            podDetailTab: 'derived',
+                            setDetailsDropdownOpen: false,
+                          })
+                        );
+                      } else {
+                        dispatch(
+                          updateState({
+                            podTab: 'details',
+                            podDetailTab: 'derived',
+                            setDetailsDropdownOpen: false,
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    Derived
+                  </MenuItem>
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </React.Fragment>,
+    // Logs/Actions split button (MUI SplitButton pattern)
+    <React.Fragment key="logs-split">
+      <ButtonGroup variant="outlined" size="small" ref={logsAnchorRef}>
+        <LoadingButton
+          sx={{ minWidth: '60px' }}
+          variant="outlined"
+          color={
+            (podTab === 'logs' || podTab === 'actionlogs') &&
+            (podLogTab === 'logs' || podLogTab === 'actions')
+              ? 'secondary'
+              : 'primary'
+          }
+          onClick={() => {
+            invalidateLogs();
+            dispatch(updateState({ podTab: 'logs' }));
+          }}
+        >
+          {podLogTab}
+        </LoadingButton>
+        <Button
+          onClick={() =>
+            dispatch(updateState({ setLogsDropdownOpen: !setLogsDropdownOpen }))
+          }
+          color={
+            (podTab === 'logs' || podTab === 'actionlogs') &&
+            (podLogTab === 'logs' || podLogTab === 'actions')
+              ? 'secondary'
+              : 'primary'
+          }
+          sx={{ fontSize: '14px', minWidth: '28px !important', width: '28px' }}
+          variant="outlined"
+          aria-controls={setLogsDropdownOpen ? 'logs-menu' : undefined}
+          aria-expanded={setLogsDropdownOpen ? 'true' : undefined}
+          aria-haspopup="menu"
+        >
+          <ArrowDropDown />
+        </Button>
+      </ButtonGroup>
+      <Popper
+        sx={{ zIndex: 1 }}
+        open={setLogsDropdownOpen}
+        anchorEl={logsAnchorRef.current}
+        role={undefined}
+        transition
+        disablePortal
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === 'bottom' ? 'center top' : 'center bottom',
+            }}
+          >
+            <Paper>
+              <ClickAwayListener
+                onClickAway={() =>
+                  dispatch(updateState({ setLogsDropdownOpen: false }))
+                }
+              >
+                <MenuList id="logs-menu" autoFocusItem>
+                  <MenuItem
+                    selected={podLogTab === 'logs'}
+                    onClick={() => {
+                      invalidateLogs();
+                      if (podTab === 'edit') {
+                        dispatch(
+                          updateState({
+                            podLogTab: 'logs',
+                            setLogsDropdownOpen: false,
+                          })
+                        );
+                      } else {
+                        dispatch(
+                          updateState({
+                            podTab: 'logs',
+                            podLogTab: 'logs',
+                            setLogsDropdownOpen: false,
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    Logs
+                  </MenuItem>
+                  <MenuItem
+                    selected={podLogTab === 'actionlogs'}
+                    onClick={() => {
+                      invalidateLogs();
+                      if (podTab === 'edit') {
+                        dispatch(
+                          updateState({
+                            podLogTab: 'actions',
+                            setLogsDropdownOpen: false,
+                          })
+                        );
+                      } else {
+                        dispatch(
+                          updateState({
+                            podTab: 'logs',
+                            podLogTab: 'actions',
+                            setLogsDropdownOpen: false,
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    Actions
+                  </MenuItem>
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </React.Fragment>,
+    <Button
+      key="secrets"
+      variant="outlined"
+      size="small"
+      color={podTab === 'secrets' ? 'secondary' : 'primary'}
+      onClick={() => {
+        invalidate();
+        dispatch(updateState({ podTab: 'secrets' }));
+      }}
+    >
+      Secrets
+    </Button>,
+    <React.Fragment key="perms-split">
+      <ButtonGroup variant="outlined" size="small">
+        <LoadingButton
+          sx={{ minWidth: '60px' }}
+          variant="outlined"
+          color={podTab === 'perms' ? 'secondary' : 'primary'}
+          onClick={() => {
+            invalidate();
+            dispatch(updateState({ podTab: 'perms' }));
+          }}
+        >
+          Perms
+        </LoadingButton>
+        {podTab === 'perms' && (
+          <Button
+            onClick={() => {
+              setModal('podPermissions');
+            }}
+            color="primary"
+            sx={{
+              fontSize: '14px',
+              minWidth: '28px !important',
+              width: '28px',
+            }}
+            variant="outlined"
+          >
+            +
+          </Button>
+        )}
+      </ButtonGroup>
+    </React.Fragment>,
   ];
 
-  const networkingUrl = Object.values(data?.result?.networking ?? {})[0]?.url;
-
-  const podStatus = data?.result?.status;
-
-  const rightButtons: ButtonConfig[] = [
-    {
-      id: 'networking',
-      label: 'Link',
-      disabled:
-        objId === undefined || !networkingUrl || podStatus != 'AVAILABLE',
-      customOnClick: () => {
+  const detailsRightButtons = [
+    <Button
+      key="networking"
+      variant="outlined"
+      size="small"
+      color="primary"
+      disabled={
+        objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
+      }
+      onClick={() => {
         if (networkingUrl) {
           window.open('https://' + networkingUrl);
         }
-      },
-    },
-    {
-      id: 'help',
-      label: 'Help',
-      customOnClick: () => setModal('tooltip'),
-    },
-    {
-      id: 'copy',
-      label: 'Copy',
-      customOnClick: () =>
-        navigator.clipboard.writeText(getCodeMirrorValue() ?? ''),
-    },
+      }}
+    >
+      Link
+    </Button>,
+    <Button
+      key="help"
+      variant="outlined"
+      size="small"
+      onClick={() => setModal('tooltip')}
+    >
+      Help
+    </Button>,
+    <Button
+      key="copy"
+      variant="outlined"
+      size="small"
+      onClick={() => navigator.clipboard.writeText(getCodeMirrorValue() ?? '')}
+    >
+      Copy
+    </Button>,
   ];
 
-  const getTabBarButtons = () => {
-    if (objId === undefined) {
-      return [
-        { id: 'dashboard', label: 'Dashboard', tabValue: 'dashboard' },
-        {
-          id: 'createPod',
-          label: 'Create Pod',
-          tabValue: 'createPod',
-          disabled: false,
-        },
-      ];
-    }
-    return leftButtons;
-  };
-
+  // Refactor renderTabBar to just render the elements
   const renderTabBar = (
-    leftButtons: ButtonConfig[],
-    rightButtons: ButtonConfig[]
+    leftButtons: React.ReactNode[],
+    rightButtons: React.ReactNode[]
   ) => {
     return (
       <div
@@ -363,445 +769,10 @@ Select or create a pod to get started.`;
         }}
       >
         <Stack spacing={2} direction="row">
-          {/* Refresh button */}
-          <LoadingButton
-            sx={{ minWidth: '10px' }}
-            loading={isFetching || isFetchingLogs || isFetchingSecrets}
-            key={'refresh'}
-            variant="outlined"
-            color="primary"
-            size="small"
-            onClick={() => {
-              leftButtons[0].customOnClick && leftButtons[0].customOnClick();
-            }}
-          >
-            {leftButtons[0].icon || leftButtons[0].label}
-          </LoadingButton>
-          {/* Edit split button */}
-          {objId !== undefined &&
-            (podTab !== 'edit' ? (
-              <Button
-                variant="outlined"
-                color="primary"
-                size="small"
-                onClick={() => {
-                  dispatch(updateState({ podTab: 'edit' }));
-                }}
-                sx={{ minWidth: '60px', height: '32px' }}
-              >
-                Edit
-              </Button>
-            ) : (
-              <ButtonGroup
-                variant="outlined"
-                size="small"
-                sx={{ height: '32px' }}
-              >
-                <Button
-                  onClick={() => {
-                    dispatch(updateState({ podTab: 'details' }));
-                  }}
-                  color="error"
-                  sx={{
-                    minWidth: '28px !important',
-                    width: '28px',
-                    p: 0,
-                    borderRight: '1px solid rgba(0,0,0,0.12)',
-                  }}
-                  variant="outlined"
-                >
-                  x
-                </Button>
-                <Button
-                  onClick={() => {
-                    dispatch(
-                      updateState({ podTab: 'edit', podEditTab: 'form' })
-                    );
-                  }}
-                  color={podEditTab === 'form' ? 'secondary' : 'primary'}
-                  sx={{ minWidth: '60px' }}
-                  variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
-                >
-                  form
-                </Button>
-                <Button
-                  onClick={() => {
-                    dispatch(
-                      updateState({ podTab: 'edit', podEditTab: 'json' })
-                    );
-                  }}
-                  color={podEditTab === 'json' ? 'secondary' : 'primary'}
-                  sx={{ minWidth: '60px' }}
-                  variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
-                >
-                  json
-                </Button>
-              </ButtonGroup>
-            ))}
-          {/* Details/Derived split button */}
-          {objId !== undefined && (
-            <ButtonGroup variant="outlined" size="small" ref={detailsAnchorRef}>
-              <LoadingButton
-                sx={{ minWidth: '6 0px' }}
-                variant="outlined"
-                color={
-                  podTab === 'edit' ||
-                  podTab === 'derived' ||
-                  podTab === 'details'
-                    ? 'secondary'
-                    : 'primary'
-                }
-                onClick={() => {
-                  invalidate();
-                  dispatch(updateState({ podTab: 'details' }));
-                }}
-              >
-                {podDetailTab}
-              </LoadingButton>
-              {objId !== undefined && pod?.template && (
-                <Button
-                  onClick={() =>
-                    dispatch(
-                      updateState({
-                        setDetailsDropdownOpen: !setDetailsDropdownOpen,
-                      })
-                    )
-                  }
-                  color={
-                    podTab === 'edit' ||
-                    podTab === 'derived' ||
-                    podTab === 'details'
-                      ? 'secondary'
-                      : 'primary'
-                  }
-                  sx={{
-                    fontSize: '14px',
-                    minWidth: '28px !important',
-                    width: '28px',
-                  }}
-                  variant="outlined"
-                  aria-controls={
-                    setDetailsDropdownOpen ? 'details-menu' : undefined
-                  }
-                  aria-expanded={setDetailsDropdownOpen ? 'true' : undefined}
-                  aria-haspopup="menu"
-                >
-                  <ArrowDropDown />
-                </Button>
-              )}
-            </ButtonGroup>
-          )}
-          <Popper
-            sx={{ zIndex: 1 }}
-            open={setDetailsDropdownOpen}
-            anchorEl={detailsAnchorRef.current}
-            role={undefined}
-            transition
-            disablePortal
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{
-                  transformOrigin:
-                    placement === 'bottom' ? 'center top' : 'center bottom',
-                }}
-              >
-                <Paper>
-                  <ClickAwayListener
-                    onClickAway={() =>
-                      dispatch(updateState({ setDetailsDropdownOpen: false }))
-                    }
-                  >
-                    <MenuList id="details-menu" autoFocusItem>
-                      <MenuItem
-                        selected={podEditTab === 'details'}
-                        onClick={() => {
-                          invalidate();
-                          if (podTab === 'edit') {
-                            dispatch(
-                              updateState({
-                                podDetailTab: 'details',
-                                setDetailsDropdownOpen: false,
-                              })
-                            );
-                          } else {
-                            dispatch(
-                              updateState({
-                                podTab: 'details',
-                                podDetailTab: 'details',
-                                setDetailsDropdownOpen: false,
-                              })
-                            );
-                          }
-                        }}
-                      >
-                        Details
-                      </MenuItem>
-                      <MenuItem
-                        selected={podEditTab === 'derived'}
-                        onClick={() => {
-                          invalidateDerived();
-                          if (podTab === 'edit') {
-                            dispatch(
-                              updateState({
-                                podDetailTab: 'derived',
-                                setDetailsDropdownOpen: false,
-                              })
-                            );
-                          } else {
-                            dispatch(
-                              updateState({
-                                podTab: 'details',
-                                podDetailTab: 'derived',
-                                setDetailsDropdownOpen: false,
-                              })
-                            );
-                          }
-                        }}
-                      >
-                        Derived
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-          {/* Logs/Actions split button */}
-          {objId !== undefined && (
-            <ButtonGroup variant="outlined" size="small" ref={logsAnchorRef}>
-              <LoadingButton
-                sx={{ minWidth: '60px' }}
-                variant="outlined"
-                color={
-                  (podTab === 'logs' || podTab === 'actionlogs') &&
-                  (podLogTab === 'logs' || podLogTab === 'actions')
-                    ? 'secondary'
-                    : 'primary'
-                }
-                onClick={() => {
-                  invalidateLogs();
-                  dispatch(updateState({ podTab: 'logs' }));
-                }}
-              >
-                {podLogTab}
-              </LoadingButton>
-              <Button
-                onClick={() =>
-                  dispatch(
-                    updateState({ setLogsDropdownOpen: !setLogsDropdownOpen })
-                  )
-                }
-                color={
-                  (podTab === 'logs' || podTab === 'actionlogs') &&
-                  (podLogTab === 'logs' || podLogTab === 'actions')
-                    ? 'secondary'
-                    : 'primary'
-                }
-                sx={{
-                  fontSize: '14px',
-                  minWidth: '28px !important',
-                  width: '28px',
-                }}
-                variant="outlined"
-                aria-controls={setLogsDropdownOpen ? 'logs-menu' : undefined}
-                aria-expanded={setLogsDropdownOpen ? 'true' : undefined}
-                aria-haspopup="menu"
-              >
-                <ArrowDropDown />
-              </Button>
-            </ButtonGroup>
-          )}
-          <Popper
-            sx={{ zIndex: 1 }}
-            open={setLogsDropdownOpen}
-            anchorEl={logsAnchorRef.current}
-            role={undefined}
-            transition
-            disablePortal
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{
-                  transformOrigin:
-                    placement === 'bottom' ? 'center top' : 'center bottom',
-                }}
-              >
-                <Paper>
-                  <ClickAwayListener
-                    onClickAway={() =>
-                      dispatch(updateState({ setLogsDropdownOpen: false }))
-                    }
-                  >
-                    <MenuList id="logs-menu" autoFocusItem>
-                      <MenuItem
-                        selected={podLogTab === 'logs'}
-                        onClick={() => {
-                          invalidateLogs();
-                          if (podTab === 'edit') {
-                            dispatch(
-                              updateState({
-                                podLogTab: 'logs',
-                                setLogsDropdownOpen: false,
-                              })
-                            );
-                          } else {
-                            dispatch(
-                              updateState({
-                                podTab: 'logs',
-                                podLogTab: 'logs',
-                                setLogsDropdownOpen: false,
-                              })
-                            );
-                          }
-                        }}
-                      >
-                        Logs
-                      </MenuItem>
-                      <MenuItem
-                        selected={podLogTab === 'actionlogs'}
-                        onClick={() => {
-                          invalidateLogs();
-                          if (podTab === 'edit') {
-                            dispatch(
-                              updateState({
-                                podLogTab: 'actions',
-                                setLogsDropdownOpen: false,
-                              })
-                            );
-                          } else {
-                            dispatch(
-                              updateState({
-                                podTab: 'logs',
-                                podLogTab: 'actions',
-                                setLogsDropdownOpen: false,
-                              })
-                            );
-                          }
-                        }}
-                      >
-                        Actions
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-          {/* Other left buttons */}
-          {leftButtons
-            .slice(1)
-            .filter(
-              (button) =>
-                !['details', 'derived', 'logs', 'actionlogs'].includes(
-                  button.id
-                )
-            )
-            .map(({ id, label, tabValue, customOnClick, icon, disabled }) => {
-              // Special handling for permissions button with split button
-              if (id === 'perms' && objId !== undefined) {
-                return (
-                  <ButtonGroup key={id} variant="outlined" size="small">
-                    <LoadingButton
-                      sx={{ minWidth: '60px' }}
-                      variant="outlined"
-                      disabled={disabled}
-                      color={
-                        podTab === tabValue || podRootTab === tabValue
-                          ? 'secondary'
-                          : 'primary'
-                      }
-                      onClick={() => {
-                        invalidate();
-                        if (customOnClick) {
-                          customOnClick();
-                        } else if (tabValue) {
-                          dispatch(updateState({ podTab: tabValue }));
-                        }
-                      }}
-                    >
-                      {icon || label}
-                    </LoadingButton>
-                    {podTab === 'perms' && (
-                      <Button
-                        onClick={() => {
-                          setModal('podPermissions');
-                        }}
-                        color="primary"
-                        sx={{
-                          fontSize: '14px',
-                          minWidth: '28px !important',
-                          width: '28px',
-                        }}
-                        variant="outlined"
-                      >
-                        +
-                      </Button>
-                    )}
-                  </ButtonGroup>
-                );
-              }
-
-              // Regular buttons
-              return (
-                <LoadingButton
-                  sx={{ minWidth: '10px' }}
-                  key={id}
-                  variant="outlined"
-                  disabled={disabled}
-                  color={
-                    podTab === tabValue || podRootTab === tabValue
-                      ? 'secondary'
-                      : 'primary'
-                  }
-                  size="small"
-                  onClick={() => {
-                    invalidate();
-                    if (customOnClick) {
-                      customOnClick();
-                    } else if (tabValue) {
-                      if (objId === undefined) {
-                        dispatch(updateState({ podRootTab: tabValue }));
-                      } else {
-                        dispatch(updateState({ podTab: tabValue }));
-                      }
-                    }
-                  }}
-                >
-                  {icon || label}
-                </LoadingButton>
-              );
-            })}
+          {leftButtons.map((btn, idx) => btn)}
         </Stack>
-
         <Stack spacing={2} direction="row">
-          {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
-            <Button
-              key={id}
-              variant="outlined"
-              color={
-                podTab === tabValue || podRootTab === tabValue
-                  ? 'secondary'
-                  : 'primary'
-              }
-              size="small"
-              onClick={() => {
-                if (customOnClick) {
-                  customOnClick();
-                } else if (tabValue) {
-                  if (objId === undefined) {
-                    dispatch(updateState({ podRootTab: tabValue }));
-                  } else {
-                    dispatch(updateState({ podTab: tabValue }));
-                  }
-                }
-              }}
-            >
-              {label}
-            </Button>
-          ))}
+          {rightButtons.map((btn, idx) => btn)}
         </Stack>
       </div>
     );
@@ -836,11 +807,13 @@ Select or create a pod to get started.`;
             overflow: 'hidden',
           }}
         >
-          {renderTabBar(getTabBarButtons(), rightButtons)}
+          {objId === undefined
+            ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
+            : renderTabBar(detailsLeftButtons, detailsRightButtons)}
           <div className={styles['container']}>
             <PodsCodeMirror
               editValue={
-                podTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
+                podTab === 'edit' ? JSON.stringify(createPodData, null, 2) : ''
               }
               value={codeMirrorValue?.toString() ?? ''}
               isVisible={true}
@@ -850,16 +823,9 @@ Select or create a pod to get started.`;
               }
               editPanel={
                 podTab === 'edit' && objId !== undefined ? (
-                  <PodWizardEdit
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                    editMode={podEditTab}
-                  />
+                  <PodWizardEdit pod={pod} />
                 ) : (
-                  <PodWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
+                  <PodWizard />
                 )
               }
               //scrollToBottom should be true if podTab == 'log' or 'actionlogs'

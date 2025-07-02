@@ -14,6 +14,7 @@ import {
   CKNDashboard,
   DigitalAgOpenPASS,
   ComponentCatalog,
+  Harvest,
 } from './pages';
 
 const extension = createExtension({
@@ -44,6 +45,7 @@ const extension = createExtension({
     'jobs',
     'files',
     'apps',
+    'harvest',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -128,6 +130,12 @@ extension.registerService({
   sidebarDisplayName: 'OpenPASS',
   iconName: 'globe',
   component: DigitalAgOpenPASS,
+});
+extension.registerService({
+  id: 'harvest',
+  sidebarDisplayName: 'Harvest',
+  iconName: 'globe',
+  component: Harvest,
 });
 
 extension.registerService({

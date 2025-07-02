@@ -56,7 +56,8 @@
             - pnpm -r build: Build the rootpkg (-r to build all subpkgs)
             - pnpm run docker: docker build and deploy
             - pnpm run test: Run all tests
-            - pnpm run prettier: Ran by 'dev', but should be done before commit
+            - pnpm run prettier: Should be done before commit
+            - pnpm up -r @tapis/tapis-typescript@0.0.56: Update all pkgs with a specific lib version
 
           Other commands:
           ==========================
@@ -105,7 +106,7 @@
               tapisWelcome
             ];
             shellHook = ''
-              alias npm="echo -e '\033[33mHowdy! We use pnpm round these parts. Seem to have found you using npm. More details in readme.\033[0m' && pnpm"
+              alias npm="echo -e '\033[33mHowdy! We use pnpm round these parts. Seem to have found you using npm. More details in readme.\033[0m' && npm"
               #alias npm=pnpm
               #export NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}
               #export PATH="${NPM_CONFIG_PREFIX}/bin:$PATH"

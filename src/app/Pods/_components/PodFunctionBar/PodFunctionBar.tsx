@@ -3,9 +3,9 @@ import { Button } from 'reactstrap';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './PodFunctionBar.module.scss';
 import { useLocation } from 'react-router-dom';
-import StartPodModal from './StartPodModal';
-import RestartPodModal from './RestartPodModal';
-import StopPodModal from './StopPodModal';
+import StartPodModal from '../Modals/StartPodModal';
+import RestartPodModal from '../Modals/RestartPodModal';
+import StopPodModal from '../Modals/StopPodModal';
 
 type ToolbarButtonProps = {
   text: string;

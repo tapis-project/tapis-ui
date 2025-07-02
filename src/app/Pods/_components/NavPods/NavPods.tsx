@@ -74,6 +74,8 @@ const NavPods: React.FC = () => {
         style={{
           //borderBottom: '1px solid #CCCCCC',
           borderRight: '1px solid #CCCCCC',
+          height: 'calc(100vh - 140px)', // Make the nav take full viewport height
+          overflowY: 'auto', // Enable vertical scrolling only for this div
         }}
         //className={styles['scroll-container']}
       >
@@ -98,13 +100,23 @@ const NavPods: React.FC = () => {
             object.pod_id === selectedField
           }
           listItemIconStyle={{ minWidth: '42px' }}
+          middleClickLink={(object: any) =>
+            object.pod_id ? `/#/pods/${object.pod_id}` : undefined
+          }
           groups={[
             {
               field: 'status',
               groupSelectorLabel: 'status',
               primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
               secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
-              open: ['AVAILABLE', 'CREATING', 'ERROR', 'COMPLETE'],
+              open: [
+                'AVAILABLE',
+                'CREATING',
+                'ERROR',
+                'COMPLETE',
+                'REQUESTED',
+                'DELETING',
+              ],
               tooltip: ({ fieldValue }: any) => {
                 switch (fieldValue) {
                   case 'AVAILABLE':
@@ -115,6 +127,12 @@ const NavPods: React.FC = () => {
                     return 'Pods that are being created';
                   case 'STOPPED':
                     return 'Pods that are stopped';
+                  case 'COMPLETE':
+                    return 'Pods that have completed their tasks - no longer running';
+                  case 'REQUESTED':
+                    return 'Pods that have been requested but not yet started';
+                  case 'DELETING':
+                    return 'Pods that are being deleted';
                   default:
                     return 'Pods in unknown status';
                 }
