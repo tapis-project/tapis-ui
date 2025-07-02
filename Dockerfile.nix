@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7-labs
-FROM nixos/nix:2.21.0 as build-stage
+FROM nixos/nix:2.26.4 as build-stage
 
 WORKDIR /tapisui
 

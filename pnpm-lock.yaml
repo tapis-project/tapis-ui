@@ -238,8 +238,8 @@ importers:
         specifier: ^25.0.8
         version: 25.0.8(rollup@4.44.1)
       '@tapis/tapisui-extension-devtools':
-        specifier: file:./packages/tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        specifier: workspace:*
+        version: link:packages/tapisui-extension-devtools
       '@testing-library/react':
         specifier: ^11.2.7
         version: 11.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
