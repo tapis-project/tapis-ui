@@ -1,5 +1,5 @@
 .node {
-  border: 1px solid #666666;
+  border: 1px solid red;
   border-radius: 8px 8px 8px 8px;
   min-width: 100px;
   background-color: #ffffff;
@@ -28,13 +28,9 @@
   padding-right: 16px;
   font-size: 12px;
   font-weight: bold;
-  color: #666666;
+  color: red;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.io-item-error {
-  color: red;
 }
 
 .io-item-type {
@@ -52,6 +48,7 @@
 
 .title {
   padding-left: 8px;
+  color: red;
 }
 
 .body {

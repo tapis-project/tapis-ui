@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useLayoutEffect } from 'react';
-import { EnvironmentNode, TaskNode, ArgsNode} from './Nodes';
+import { EnvironmentNode, TaskNode, ArgsNode, MissingTaskNode } from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
@@ -15,10 +15,10 @@ import {
   useEdgesState,
   addEdge,
   BackgroundVariant,
-  MarkerType,
   Edge,
   Node,
   Panel,
+  getOutgoers,
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
@@ -33,6 +33,7 @@ import ELK, {
   LayoutOptions,
 } from 'elkjs/lib/elk.bundled.js';
 import '@xyflow/react/dist/style.css';
+import ld from "lodash";
 
 const elk = new ELK();
 
@@ -40,6 +41,7 @@ const elkOptions = {
   'elk.algorithm': 'layered',
   'elk.layered.spacing.nodeNodeBetweenLayers': '100',
   'elk.spacing.nodeNode': '80',
+  'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES'
 };
 
 type View = 'io' | 'flow';
@@ -91,11 +93,13 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const tasks = pipeline.tasks!;
   const env = pipeline.env || {}
   const params = pipeline.params || {}
+
+  const { getNodes, getEdges } = useReactFlow();
   
-  const create_dependency_edge = (source: string, target: string) => {
+  const createDependencyEdge = (source: string, target: string) => {
     const edge = {
       id: `e-${source}-${target}`,
-      type: 'smoothbezier',
+      type: 'default',
       source,
       sourceHandle: `task-${source}-source`,
       target,
@@ -103,13 +107,14 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       animated: true,
       style: { stroke: '#777777', strokeWidth: '2px' },
     };
+
     return edge
   }
 
-  const create_io_edge = (source: string, output: string, target: string, input: string) => {
+  const createIOEdge = (source: string, output: string, target: string, input: string) => {
     const edge = {
       id: `e-${source}-${output}-${target}-${input}`,
-      type: 'smoothbezier',
+      type: 'default',
       source,
       sourceHandle: `output-${source}-${output}`,
       target,
@@ -124,25 +129,82 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     () => ({
       standard: TaskNode,
       args: ArgsNode,
-      env: EnvironmentNode
+      env: EnvironmentNode,
+      missing: MissingTaskNode,
     }),
     []
   );
-  
 
   const handleToggleView = (view: View) => {
     setView(view);
   };
 
+  type ResolvedRefs = {
+    env: Array<String>,
+    params: Array<String>,
+    task_outputs: {
+      [key: string]: Array<string>
+    }
+  }
+
+  const resolveTaskInputRefs = (inputs: {[key: string]: Workflows.SpecWithValue} = {}): ResolvedRefs  => {
+    let env: ResolvedRefs['env'] = [];
+    let params: ResolvedRefs['params'] = [];
+    let task_outputs: ResolvedRefs['task_outputs'] = {};
+    for (let [_, input] of Object.entries(inputs)) {
+      let valueFrom = input.value_from || {};
+      let sources = Object.keys(valueFrom);
+      for (let source of sources) {
+        switch (source) {
+          case "env": {
+            env.push(valueFrom.env!)
+            continue;
+          }
+          case "args": {
+            params.push(valueFrom.args!)
+            continue;
+          }
+          case "task_output": {
+            let output = valueFrom.task_output;
+            if (!output) {
+              continue;
+            }
+  
+            task_outputs = {
+              ...task_outputs,
+              [output.task_id]: [
+                ...(task_outputs[output.task_id] || []),
+                output.output_id
+              ]
+            }
+            continue;
+          }
+        }
+      }
+    }
+    
+    return {
+      env,
+      params,
+      task_outputs
+    }
+  }
+
   const calculateNodes = useCallback(() => {
     let initialNodes: Array<Node> = [];
-    let i = 0;
+    let taskIds = tasks.map((task) => task.id!)
+    let taskInputRefs: ResolvedRefs = {
+      env: [],
+      params: [],
+      task_outputs: {}
+    };
     for (let task of tasks) {
+      taskInputRefs = ld.merge(taskInputRefs, resolveTaskInputRefs(task.input))
       initialNodes.push({
         id: task.id!,
         position: {
-          x: (i + 1) * 350,
-          y: Object.entries(env!).length * 25 + 30,
+          x: 0,
+          y: 0
         },
         type: 'standard',
         data: {
@@ -154,7 +216,26 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           showIO: view === "io"
         },
       });
-      i++;
+
+      // Check the dependencies for missing tasks. Create a MissingTaskNode for each
+      // missing task
+      for (let dep of (task.depends_on || [])) {
+        if (!taskIds.includes(dep.id!)) {
+          initialNodes.push({
+            id: dep.id!,
+            position: {
+              x: 0,
+              y: 0
+            },
+            type: 'missing',
+            data: {
+              taskId: dep.id!,
+              inputs: [],
+              outputs: [],
+            },
+          });
+        }
+      }
     }
 
     initialNodes = [
@@ -163,18 +244,13 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         id: `${pipeline.id}-env`,
         position: { x: 0, y: 0 },
         type: 'env',
-        data: { pipeline },
-        height: 200 + 25 * Object.keys(env).length,
-        width: 300,
+        data: { pipeline, referencedKeys: taskInputRefs.env.filter(e => e !== undefined) }
       },
       {
         id: `${pipeline.id}-args`,
-        position: { x: 0, y: Object.entries(env).length * 25 + 100 },
+        position: { x: 0, y: 0 },
         type: 'args',
-        data: { pipeline },
-        height:
-          200 + 25 * Object.keys(params).length,
-        width: 300,
+        data: { pipeline, referencedKeys: taskInputRefs.params.filter(e => e !== undefined) }
       },
     ];
 
@@ -186,42 +262,41 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     for (const task of tasks) {
       const taskInput = task.input ? task.input : {};
       for (let input of Object.entries(taskInput)) {
-        let [_, v] = input;
-        let hasArgsDep = false;
-        let hasEnvDep = false;
-        if (hasArgsDep && hasEnvDep) {
-          break;
-        }
+        let [k, v] = input;
+        
         if (v.value_from?.env !== undefined) {
-          // Edge from the environment to the task
+          // Edges from the environment to the task
           initialEdges.push({
-            id: `e-${pipeline.id}-env-${task.id}`,
-            type: 'smoothbezier',
+            id: `e-env.${v.value_from.env}->${task.id}.${k}`,
+            type: 'default',
             source: `${pipeline.id}-env`,
+            sourceHandle: `env-${v.value_from.env}`,
             target: task.id!,
-            animated: true,
+            targetHandle: `input-${task.id}-${k}`,
+            animated: false,
             style: { stroke: '#777777', strokeWidth: '2px' },
           });
-          hasEnvDep = true;
           continue;
         }
 
         if (v.value_from?.args !== undefined) {
           // Edge from the environment to the task
           initialEdges.push({
-            id: `e-${pipeline.id}-env-${task.id}`,
-            type: 'smoothbezier',
+            id: `e-args.${v.value_from.env}->${task.id}.${k}`,
+            type: 'default',
             source: `${pipeline.id}-args`,
+            sourceHandle: `arg-${v.value_from.args}`,
             target: task.id!,
-            animated: true,
+            targetHandle: `input-${task.id}-${k}`,
+            animated: false,
             style: { stroke: '#777777', strokeWidth: '2px' },
           });
-          hasArgsDep = true;
           continue;
         }
       }
+
       for (const dep of task.depends_on!) {
-        initialEdges.push(create_dependency_edge(dep.id!, task.id!));
+        initialEdges.push(createDependencyEdge(dep.id!, task.id!));
       }
 
       // Input and output edges
@@ -231,7 +306,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           const valueFrom = input.value_from;
           if (valueFrom && valueFrom.task_output) {
             const taskOutput = valueFrom.task_output;
-            initialEdges.push(create_io_edge(taskOutput.task_id, taskOutput.output_id, task.id!, key))
+            initialEdges.push(createIOEdge(taskOutput.task_id, taskOutput.output_id, task.id!, key))
           }
         }
       }
@@ -263,7 +338,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         {
           onSuccess: () => {
             setEdges((eds: any) => {
-              return addEdge(create_dependency_edge(params.source, params.target), eds) as any;
+              return addEdge(createDependencyEdge(params.source, params.target), eds) as any;
             })
 
             reset()
@@ -296,6 +371,30 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       );
     },
     [view, setView, nodes, edges, groupId, pipeline]
+  );
+
+  const isValidConnection = useCallback(
+    (connection: any) => {
+      // we are using getNodes and getEdges helpers here
+      // to make sure we create isValidConnection function only once
+      const nodes = getNodes();
+      const edges = getEdges();
+      const target = nodes.find((node) => node.id === connection.target);
+      const hasCycle = (node: any, visited = new Set()) => {
+        if (visited.has(node.id)) return false;
+ 
+        visited.add(node.id);
+ 
+        for (const outgoer of getOutgoers(node, nodes, edges)) {
+          if (outgoer.id === connection.source) return true;
+          if (hasCycle(outgoer, visited)) return true;
+        }
+      };
+ 
+      if (target!.id === connection.source) return false;
+      return !hasCycle(target);
+    },
+    [getNodes, getEdges],
   );
 
   // Calculate the initial layout on mount.
@@ -331,6 +430,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           onConnect={onConnect}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          isValidConnection={isValidConnection}
           defaultViewport={{ x: 120, y: 60, zoom: 1 }}
           zoomOnScroll={true}
         >
@@ -358,6 +458,22 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               label="actions"
               icon={<Bolt />}
             />
+          </Panel>
+          <Panel position="bottom-left" style={{marginLeft: "56px", userSelect: "none"}}>
+            <div style={{ display: "flex", flexDirection: "column", backgroundColor: '#FFFFFFF', padding: '8px', border: '1px solid #666666', borderRadius: '4px', fontSize: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "row", gap: "8px"}}>
+                <svg height="10" width="40">
+                  <line x1="0" y1="5" x2="40" y2="5" stroke="#777" strokeWidth="1" strokeDasharray="5,5" />
+                </svg>
+                <span> Dependency </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "row", gap: "8px"}}>
+                <svg height="10" width="40">
+                  <line x1="0" y1="5" x2="40" y2="5" stroke="#777" strokeWidth="1" strokeDasharray="0" />
+                </svg>
+                <span>I/O</span>
+              </div>
+            </div>
           </Panel>
           <Panel position="top-right">
             <Chip
