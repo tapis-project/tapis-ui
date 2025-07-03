@@ -15,6 +15,8 @@ type NodeType = {
   groupId: string;
   pipelineId: string;
   showIO: boolean;
+  // Task outputs that are referenced in other tasks either correctly or erroneously
+  referencedKeys: Array<string>;
 };
 
 const resolveImageBuildNodeImage = (builder: Workflows.EnumBuilder) => {
@@ -66,9 +68,15 @@ const resolveNodeImage = (task: Workflows.Task) => {
 const TaskNode: React.FC<NodeProps> = ({ data }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
-  let { task, tasks, groupId, pipelineId, showIO } = data as NodeType;
+  let { task, tasks, groupId, pipelineId, showIO, referencedKeys } =
+    data as NodeType;
   let inputs = task.input || {};
   let outputs = task.output || {};
+
+  // References from inputs of other tasks to outputs from this task that do not exist
+  const missingRefs = referencedKeys.filter(
+    (k) => !Object.keys(outputs).includes(k)
+  );
   return (
     <>
       <TaskUpdateProvider
@@ -156,6 +164,33 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                         type="source"
                         position={Position.Right}
                       />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {missingRefs.length > 0 && (
+              <div className={styles['io']}>
+                {missingRefs.map((key) => {
+                  return (
+                    <div
+                      className={`${styles['io-item']} ${styles['io-item-error']}`}
+                      style={{ position: 'relative' }}
+                    >
+                      <div>
+                        <StandardHandle
+                          id={`output-${task.id}-${key}`}
+                          type="source"
+                          position={Position.Right}
+                        />
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <Tooltip
+                          title={`Output '${key}' is referenced by some task(s) but does not exist. Either add this output or remove the task input(s) that references it.`}
+                        >
+                          <span>{key}</span>
+                        </Tooltip>
+                      </div>
                     </div>
                   );
                 })}
