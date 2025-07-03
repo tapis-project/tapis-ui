@@ -3,7 +3,7 @@ import { Position, NodeProps } from '@xyflow/react';
 import styles from './TaskNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Edit, Delete } from '@mui/icons-material';
+import { DeleteOutline, OpenWith } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { TaskUpdateProvider } from 'app/Workflows/_context';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
@@ -92,20 +92,51 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
           style={{ top: '26px' }}
         />
         <div className={styles['node']}>
-          <div className={styles['body']}>
-            <div className={styles['header']}>
+          <div
+            className={styles['header']}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div
+              style={{
+                width: '300px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               <img
                 src={resolveNodeImage(task)}
                 className={styles['header-img']}
               />
-              <span className={styles['title']}>{task.id}</span>
+              <Tooltip title={task.id}>
+                <span className={styles['title']}>{task.id}</span>
+              </Tooltip>
             </div>
-            {task.description && (
-              <div className={styles['body']}>
-                <p className={styles['description']}>{task.description}</p>
-              </div>
-            )}
+            <div />
+            <div style={{ marginTop: '4px' }}>
+              <DeleteOutline
+                className={styles['action']}
+                sx={{
+                  color: '#666666',
+                  '&:hover': {
+                    color: 'red',
+                  },
+                }}
+                fontSize="large"
+                onClick={() => {
+                  setModal('delete');
+                }}
+              />
+            </div>
           </div>
+          {task.description && (
+            <div className={styles['body']}>
+              <p className={styles['description']}>{task.description}</p>
+            </div>
+          )}
           <div>
             {Object.keys(inputs).length > 0 && showIO && (
               <div className={styles['io']}>
@@ -113,6 +144,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                   let type = inputs[key].type;
                   let required = inputs[key].required;
                   let description = inputs[key].description;
+                  let value = inputs[key].value;
                   return (
                     <div
                       className={styles['io-item']}
@@ -136,6 +168,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                         </Tooltip>
                         <div className={styles['io-item-type']}>{type}</div>
                         {description}
+                        {value as string}
                       </div>
                     </div>
                   );
@@ -198,19 +231,20 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
             )}
           </div>
           <div className={styles['footer']}>
-            <Edit
+            <OpenWith
               className={styles['action']}
+              sx={{
+                color: '#666666',
+                transform: 'rotate(45deg)',
+                '&:hover': {
+                  color: '#999999',
+                },
+              }}
+              fontSize="large"
               onClick={() => {
                 history.push(
                   `/workflows/pipelines/${groupId}/${pipelineId}/tasks/${task.id}`
                 );
-              }}
-            />
-            <Delete
-              className={styles['action-danger']}
-              color="error"
-              onClick={() => {
-                setModal('delete');
               }}
             />
           </div>

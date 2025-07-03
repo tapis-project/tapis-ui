@@ -14,6 +14,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  padding: 4px 16px 4px 8px;
 }
 
 .io {
@@ -55,7 +56,7 @@
 }
 
 .body {
-  padding: 4px 8px 4px 8px;
+  padding: 8px 8px 8px 16px;
 }
 
 .description {
@@ -65,7 +66,7 @@
 }
 
 .footer {
-  padding: 8px;
+  padding: 8px 16px 8px 8px;
   display: flex;
   flex-direction: row;
   justify-content: right;
@@ -74,16 +75,6 @@
 }
 
 .action {
-  border: 1px solid #000000;
-  border-radius: 3px;
-  padding: 2px;
-  color: #000000;
-  cursor: pointer;
-}
-
-.action-danger {
-  border: 1px solid red;
-  border-radius: 3px;
   padding: 2px;
   cursor: pointer;
 }

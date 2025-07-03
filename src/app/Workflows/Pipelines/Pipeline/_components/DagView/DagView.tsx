@@ -111,7 +111,25 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return edge;
   };
 
-  const createIOEdge = (
+  const createEnvOrArgToTaskEdge = (
+    envKey: string,
+    taskId: string,
+    inputId: string,
+    scope: 'env' | 'args'
+  ) => {
+    return {
+      id: `e-${scope}.${envKey}->${taskId}.${inputId}`,
+      type: 'default',
+      source: `${scope}-${pipeline.id}`,
+      sourceHandle: `${scope === 'env' ? 'env' : 'arg'}-${envKey}`,
+      target: taskId,
+      targetHandle: `input-${taskId}-${inputId}`,
+      animated: false,
+      style: { stroke: '#777777', strokeWidth: '2px' },
+    };
+  };
+
+  const createTaskIOEdge = (
     source: string,
     output: string,
     target: string,
@@ -265,7 +283,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     initialNodes = [
       ...initialNodes,
       {
-        id: `${pipeline.id}-env`,
+        id: `env-${pipeline.id}`,
         position: { x: 0, y: 0 },
         type: 'env',
         data: {
@@ -274,7 +292,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         },
       },
       {
-        id: `${pipeline.id}-args`,
+        id: `args-${pipeline.id}`,
         position: { x: 0, y: 0 },
         type: 'args',
         data: {
@@ -295,32 +313,17 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         let [k, v] = input;
 
         if (v.value_from?.env !== undefined) {
-          // Edges from the environment to the task
-          initialEdges.push({
-            id: `e-env.${v.value_from.env}->${task.id}.${k}`,
-            type: 'default',
-            source: `${pipeline.id}-env`,
-            sourceHandle: `env-${v.value_from.env}`,
-            target: task.id!,
-            targetHandle: `input-${task.id}-${k}`,
-            animated: false,
-            style: { stroke: '#777777', strokeWidth: '2px' },
-          });
+          initialEdges.push(
+            createEnvOrArgToTaskEdge(v.value_from.env, task.id!, k, 'env')
+          );
           continue;
         }
 
         if (v.value_from?.args !== undefined) {
           // Edge from the environment to the task
-          initialEdges.push({
-            id: `e-args.${v.value_from.env}->${task.id}.${k}`,
-            type: 'default',
-            source: `${pipeline.id}-args`,
-            sourceHandle: `arg-${v.value_from.args}`,
-            target: task.id!,
-            targetHandle: `input-${task.id}-${k}`,
-            animated: false,
-            style: { stroke: '#777777', strokeWidth: '2px' },
-          });
+          initialEdges.push(
+            createEnvOrArgToTaskEdge(v.value_from.args, task.id!, k, 'args')
+          );
           continue;
         }
       }
@@ -337,7 +340,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           if (valueFrom && valueFrom.task_output) {
             const taskOutput = valueFrom.task_output;
             initialEdges.push(
-              createIOEdge(
+              createTaskIOEdge(
                 taskOutput.task_id,
                 taskOutput.output_id,
                 task.id!,
@@ -352,9 +355,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return initialEdges;
   }, [groupId, pipeline, view]);
 
-  const onConnect = useCallback((params: any) => {
-    let parentTask = tasks.filter((t) => t.id == params.source)[0];
-    let childTask = tasks.filter((t) => t.id == params.target)[0];
+  const handleDependencyPatch = (parentTaskId: string, childTaskId: string) => {
+    let parentTask = tasks.filter((t) => t.id == parentTaskId)[0];
+    let childTask = tasks.filter((t) => t.id == childTaskId)[0];
 
     patch(
       {
@@ -375,7 +378,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         onSuccess: () => {
           setEdges((eds: any) => {
             return addEdge(
-              createDependencyEdge(params.source, params.target),
+              createDependencyEdge(parentTaskId, childTaskId),
               eds
             ) as any;
           });
@@ -384,6 +387,137 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         },
       }
     );
+  };
+
+  const handleTaskInputPatch = (
+    parentTaskId: string,
+    outputId: string,
+    childTaskId: string,
+    inputId: string
+  ) => {
+    let childTask = tasks.filter((t) => t.id == childTaskId)[0];
+    let input = childTask.input || {};
+
+    patch(
+      {
+        groupId,
+        pipelineId: pipeline.id!,
+        task: {
+          type: childTask.type!,
+          input: {
+            ...input,
+            [inputId]: {
+              value_from: {
+                task_output: {
+                  task_id: parentTaskId,
+                  output_id: outputId,
+                },
+              },
+            },
+          },
+        } as unknown as Workflows.Task,
+        taskId: childTaskId!,
+      },
+      {
+        onSuccess: () => {
+          setEdges((eds: any) => {
+            return addEdge(
+              createTaskIOEdge(parentTaskId, outputId, childTaskId, inputId),
+              eds
+            ) as any;
+          });
+
+          reset();
+        },
+      }
+    );
+  };
+
+  const handlePipelineInputPatch = (
+    taskId: string,
+    sourceKey: string,
+    inputId: string,
+    scope: 'env' | 'args'
+  ) => {
+    let task = tasks.filter((t) => t.id == taskId)[0];
+    let input = task.input || {};
+
+    patch(
+      {
+        groupId,
+        pipelineId: pipeline.id!,
+        task: {
+          type: task.type!,
+          input: {
+            ...input,
+            [inputId]: {
+              value_from: {
+                [scope]: sourceKey,
+              },
+            },
+          },
+        } as unknown as Workflows.Task,
+        taskId: task.id!,
+      },
+      {
+        onSuccess: () => {
+          setEdges((eds: any) => {
+            return addEdge(
+              createEnvOrArgToTaskEdge(sourceKey, task.id!, inputId, scope),
+              eds
+            ) as any;
+          });
+
+          reset();
+        },
+      }
+    );
+  };
+
+  const onConnect = useCallback((params: any) => {
+    if (
+      params.sourceHandle.startsWith('task') &&
+      params.targetHandle.startsWith('task')
+    ) {
+      handleDependencyPatch(params.source, params.target);
+    }
+
+    if (
+      params.sourceHandle.startsWith('output') &&
+      params.targetHandle.startsWith('input')
+    ) {
+      let inputIdPrefix = `input-${params.target}-`;
+      let inputId: string = params.targetHandle.slice(inputIdPrefix.length);
+
+      let outputIdPrefix = `output-${params.source}-`;
+      let outputId: string = params.sourceHandle.slice(outputIdPrefix.length);
+
+      handleTaskInputPatch(params.source, outputId, params.target, inputId);
+    }
+
+    if (
+      params.source === `args-${pipeline.id}` &&
+      params.targetHandle.startsWith('input')
+    ) {
+      let inputIdPrefix = `input-${params.target}-`;
+      let inputId: string = params.targetHandle.slice(inputIdPrefix.length);
+
+      let sourceKeyPrefix = `arg-`;
+      let sourceKey: string = params.sourceHandle.slice(sourceKeyPrefix.length);
+      handlePipelineInputPatch(params.target, sourceKey, inputId, 'args');
+    }
+
+    if (
+      params.source === `env-${pipeline.id}` &&
+      params.targetHandle.startsWith('input')
+    ) {
+      let inputIdPrefix = `input-${params.target}-`;
+      let inputId: string = params.targetHandle.slice(inputIdPrefix.length);
+
+      let sourceKeyPrefix = `env-`;
+      let sourceKey: string = params.sourceHandle.slice(sourceKeyPrefix.length);
+      handlePipelineInputPatch(params.target, sourceKey, inputId, 'env');
+    }
   }, []);
 
   const onLayout = useCallback(
@@ -440,15 +574,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   }, [view, setView, groupId, pipeline]);
 
   return (
-    <div
-      style={{ cursor: isLoading ? 'loading' : 'default' }}
-      onClick={(e) => {
-        // Prevent any clicking when loading
-        if (isLoading) {
-          e.preventDefault();
-        }
-      }}
-    >
+    <div>
       {isError && error && (
         <Alert
           severity="error"

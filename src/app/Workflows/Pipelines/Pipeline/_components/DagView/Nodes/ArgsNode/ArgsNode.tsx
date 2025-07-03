@@ -37,7 +37,6 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
           {Object.keys(params).length > 0 && (
             <div className={styles['io']}>
               {Object.keys(params).map((key) => {
-                // let param = pipeline.params![key];
                 return (
                   <div
                     className={styles['io-item']}
