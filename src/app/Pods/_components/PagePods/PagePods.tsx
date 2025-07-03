@@ -12,7 +12,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { decode } from 'base-64';
-import { Stack } from '@mui/material';
+import { Stack, Button, Tooltip } from '@mui/material';
 import {
   CopyButton,
   TooltipModal,
@@ -22,7 +22,6 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from '../Pages.module.scss';
-import { Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded, ArrowDropDown } from '@mui/icons-material';
 import { SectionMessage } from '@tapis/tapisui-common';
@@ -255,8 +254,28 @@ Select or create a pod to get started.`;
 
   const codeMirrorValue = getCodeMirrorValue();
 
-  const networkingUrl = Object.values(data?.result?.networking ?? {})[0]
-    ?.url as string | undefined;
+  const networkingObj = (data?.result?.networking ?? {})['default'];
+  const networkingProtocol = networkingObj?.protocol;
+  var networkingUrl = (networkingObj?.url as string | undefined) ?? undefined;
+  const tapisUiUriRedirect = networkingObj?.tapis_ui_uri_redirect ?? false;
+  const tapisUIUri = networkingObj?.tapis_ui_uri ?? '';
+  // add tapisUIUriRedirect to the networkingUrl if both exist
+  console.log(
+    'networkingurl and object',
+    networkingUrl,
+    tapisUiUriRedirect,
+    tapisUIUri,
+    networkingObj,
+    data?.result?.networking
+  );
+  if (
+    networkingUrl &&
+    tapisUiUriRedirect &&
+    tapisUIUri &&
+    networkingProtocol === 'http'
+  ) {
+    networkingUrl = `${networkingUrl}${tapisUIUri}`;
+  }
   const podStatus = data?.result?.status;
 
   // Dashboard view button lists
@@ -720,22 +739,48 @@ Select or create a pod to get started.`;
   ];
 
   const detailsRightButtons = [
-    <Button
-      key="networking"
-      variant="outlined"
-      size="small"
-      color="primary"
-      disabled={
-        objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
-      }
-      onClick={() => {
-        if (networkingUrl) {
-          window.open('https://' + networkingUrl);
+    tapisUiUriRedirect &&
+    networkingObj?.tapis_ui_uri_description &&
+    networkingUrl ? (
+      <Tooltip
+        key="networking-tooltip"
+        title={networkingObj?.tapis_ui_uri_description}
+      >
+        <span>
+          <Button
+            key="networking"
+            variant="outlined"
+            size="small"
+            color="primary"
+            disabled={
+              objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
+            }
+            component="a"
+            href={networkingUrl ? `https://${networkingUrl}` : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Link
+          </Button>
+        </span>
+      </Tooltip>
+    ) : (
+      <Button
+        key="networking"
+        variant="outlined"
+        size="small"
+        color="primary"
+        disabled={
+          objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
         }
-      }}
-    >
-      Link
-    </Button>,
+        component="a"
+        href={networkingUrl ? `https://${networkingUrl}` : undefined}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Link
+      </Button>
+    ),
     <Button
       key="help"
       variant="outlined"
