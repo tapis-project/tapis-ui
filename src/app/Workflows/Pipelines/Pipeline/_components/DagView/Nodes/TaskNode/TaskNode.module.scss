@@ -21,6 +21,13 @@
   padding-top: 8px;
   padding-bottom: 8px;
   border-top: 1px solid #666666;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.io-title {
+  text-align: center;
 }
 
 .io-item {
@@ -32,6 +39,12 @@
   color: #666666;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-top: #666666;
+  border-bottom: #666666;
+}
+
+.io-text-field {
+  width: 100%;
 }
 
 .io-item-error {

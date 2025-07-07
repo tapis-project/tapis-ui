@@ -3,11 +3,11 @@ import { Position, NodeProps } from '@xyflow/react';
 import styles from './TaskNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
-import { DeleteOutline, OpenWith } from '@mui/icons-material';
+import { DeleteOutline, ErrorOutline, OpenWith } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { TaskUpdateProvider } from 'app/Workflows/_context';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
-import { Tooltip } from '@mui/material';
+import { FormHelperText, TextField, Tooltip } from '@mui/material';
 
 type NodeType = {
   task: Workflows.Task;
@@ -158,17 +158,35 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                         />
                       </div>
                       <div>
-                        <Tooltip title={key}>
-                          <span>
-                            {key}{' '}
-                            {required && (
-                              <span style={{ color: 'red' }}>*</span>
-                            )}
-                          </span>
-                        </Tooltip>
-                        <div className={styles['io-item-type']}>{type}</div>
-                        {description}
-                        {value as string}
+                        {value ? (
+                          <div>
+                            <TextField
+                              className={styles['io-text-field']}
+                              defaultValue={value as string}
+                              size="small"
+                              margin="none"
+                              disabled
+                              label={key}
+                              variant="outlined"
+                              onChange={() => {}}
+                            />
+                            <FormHelperText>{type}</FormHelperText>
+                            <FormHelperText>{description}</FormHelperText>
+                          </div>
+                        ) : (
+                          <div>
+                            <Tooltip title={key}>
+                              <span>
+                                {key}{' '}
+                                {required && (
+                                  <span style={{ color: 'red' }}>*</span>
+                                )}
+                              </span>
+                            </Tooltip>
+                            <div className={styles['io-item-type']}>{type}</div>
+                            {description}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -202,7 +220,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                 })}
               </div>
             )}
-            {missingRefs.length > 0 && (
+            {missingRefs.length > 0 && showIO && (
               <div className={styles['io']}>
                 {missingRefs.map((key) => {
                   return (
@@ -221,7 +239,13 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                         <Tooltip
                           title={`Output '${key}' is referenced by some task(s) but does not exist. Either add this output or remove the task input(s) that references it.`}
                         >
-                          <span>{key}</span>
+                          <div>
+                            <span>{key}</span>
+                            <ErrorOutline
+                              fontSize="small"
+                              sx={{ marginLeft: '8px', color: 'red' }}
+                            />
+                          </div>
                         </Tooltip>
                       </div>
                     </div>

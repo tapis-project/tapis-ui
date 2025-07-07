@@ -238,6 +238,19 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       };
     }
 
+    // Remove duplicates from each input source
+    taskInputRefs.env = Array.from(new Set(taskInputRefs.env)).filter(
+      (e) => e !== undefined
+    );
+    taskInputRefs.params = Array.from(new Set(taskInputRefs.params)).filter(
+      (p) => p !== undefined
+    );
+    for (let taskId of Object.keys(taskInputRefs.taskOutputs)) {
+      taskInputRefs.taskOutputs[taskId] = Array.from(
+        new Set(taskInputRefs.taskOutputs[taskId])
+      );
+    }
+
     for (let task of tasks) {
       initialNodes.push({
         id: task.id!,
@@ -274,6 +287,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               taskId: dep.id!,
               inputs: [],
               outputs: [],
+              showIO: view === 'io',
             },
           });
         }
@@ -289,6 +303,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         data: {
           pipeline,
           referencedKeys: taskInputRefs.env.filter((e) => e !== undefined),
+          showIO: view === 'io',
         },
       },
       {
@@ -298,6 +313,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         data: {
           pipeline,
           referencedKeys: taskInputRefs.params.filter((e) => e !== undefined),
+          showIO: view === 'io',
         },
       },
     ];
@@ -359,6 +375,13 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     let parentTask = tasks.filter((t) => t.id == parentTaskId)[0];
     let childTask = tasks.filter((t) => t.id == childTaskId)[0];
 
+    // Optimistically create the edge
+    setEdges((eds: any) => {
+      return addEdge(
+        createDependencyEdge(parentTaskId, childTaskId),
+        eds
+      ) as any;
+    });
     patch(
       {
         groupId,
@@ -376,14 +399,15 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       },
       {
         onSuccess: () => {
-          setEdges((eds: any) => {
-            return addEdge(
-              createDependencyEdge(parentTaskId, childTaskId),
-              eds
-            ) as any;
-          });
-
           reset();
+        },
+        onError: () => {
+          setEdges((eds) => {
+            return eds.filter(
+              (ed: any) =>
+                ed.source !== parentTaskId && ed.target !== childTaskId
+            );
+          });
         },
       }
     );
@@ -593,18 +617,8 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         pipelineRunUuid={pipeline.current_run}
         pipeline={pipeline}
       />
-      <div className={styles['dag']}>
-        <ReactFlow
-          nodeTypes={nodeTypes}
-          nodes={nodes}
-          edges={edges}
-          onConnect={onConnect}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          isValidConnection={isValidConnection}
-          defaultViewport={{ x: 120, y: 60, zoom: 1 }}
-          zoomOnScroll={true}
-        >
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div style={{ position: 'relative' }}>
           <DagViewDrawer
             groupId={groupId}
             pipelineId={pipeline.id!}
@@ -619,104 +633,118 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               setModal('runpipeline');
             }}
           />
-          <Panel position="top-left">
-            <Chip
-              onClick={() => {
-                setDrawerOpen(true);
-              }}
-              color={'primary'}
-              size="small"
-              label="actions"
-              icon={<Bolt />}
-            />
-          </Panel>
-          <Panel
-            position="bottom-left"
-            style={{ marginLeft: '56px', userSelect: 'none' }}
+        </div>
+        <div className={styles['dag']}>
+          <ReactFlow
+            nodeTypes={nodeTypes}
+            nodes={nodes}
+            edges={edges}
+            onConnect={onConnect}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            isValidConnection={isValidConnection}
+            defaultViewport={{ x: 120, y: 60, zoom: 1 }}
+            zoomOnScroll={true}
           >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                backgroundColor: '#FFFFFFF',
-                padding: '8px',
-                border: '1px solid #666666',
-                borderRadius: '4px',
-                fontSize: '10px',
-              }}
+            <Panel position="top-left">
+              <Chip
+                onClick={() => {
+                  setDrawerOpen(true);
+                }}
+                color={'primary'}
+                size="small"
+                label="actions"
+                icon={<Bolt />}
+              />
+            </Panel>
+            <Panel
+              position="bottom-left"
+              style={{ marginLeft: '56px', userSelect: 'none' }}
             >
               <div
-                style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundColor: '#FFFFFFF',
+                  padding: '8px',
+                  border: '1px solid #666666',
+                  borderRadius: '4px',
+                  fontSize: '10px',
+                }}
               >
-                <svg height="10" width="40">
-                  <line
-                    x1="0"
-                    y1="5"
-                    x2="40"
-                    y2="5"
-                    stroke="#777"
-                    strokeWidth="1"
-                    strokeDasharray="5,5"
-                  />
-                </svg>
-                <span> Dependency </span>
+                <div
+                  style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
+                >
+                  <svg height="10" width="40">
+                    <line
+                      x1="0"
+                      y1="5"
+                      x2="40"
+                      y2="5"
+                      stroke="#777"
+                      strokeWidth="1"
+                      strokeDasharray="5,5"
+                    />
+                  </svg>
+                  <span> Dependency </span>
+                </div>
+                <div
+                  style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
+                >
+                  <svg height="10" width="40">
+                    <line
+                      x1="0"
+                      y1="5"
+                      x2="40"
+                      y2="5"
+                      stroke="#777"
+                      strokeWidth="1"
+                      strokeDasharray="0"
+                    />
+                  </svg>
+                  <span>I/O</span>
+                </div>
               </div>
-              <div
-                style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
-              >
-                <svg height="10" width="40">
-                  <line
-                    x1="0"
-                    y1="5"
-                    x2="40"
-                    y2="5"
-                    stroke="#777"
-                    strokeWidth="1"
-                    strokeDasharray="0"
-                  />
-                </svg>
-                <span>I/O</span>
-              </div>
-            </div>
-          </Panel>
-          <Panel position="top-right">
-            <Chip
-              onClick={() => {
-                handleToggleView('flow');
+            </Panel>
+            <Panel position="top-right">
+              <Chip
+                onClick={() => {
+                  handleToggleView('flow');
+                }}
+                variant={view === 'flow' ? 'filled' : 'outlined'}
+                color="primary"
+                style={{ marginLeft: '8px' }}
+                size="small"
+                label="flow"
+                icon={<Share />}
+              />
+              <Chip
+                onClick={() => {
+                  handleToggleView('io');
+                }}
+                variant={view === 'io' ? 'filled' : 'outlined'}
+                color="primary"
+                style={{ marginLeft: '8px' }}
+                size="small"
+                label="i/o"
+                icon={<DataObject />}
+              />
+            </Panel>
+            <Controls
+              position="bottom-left"
+              style={{
+                color: 'black',
+                border: '1px solid #999999',
+                borderRadius: '1px',
               }}
-              variant={view === 'flow' ? 'filled' : 'outlined'}
-              color="primary"
-              style={{ marginLeft: '8px' }}
-              size="small"
-              label="flow"
-              icon={<Share />}
             />
-            <Chip
-              onClick={() => {
-                handleToggleView('io');
-              }}
-              variant={view === 'io' ? 'filled' : 'outlined'}
-              color="primary"
-              style={{ marginLeft: '8px' }}
-              size="small"
-              label="i/o"
-              icon={<DataObject />}
+            <MiniMap
+              position="bottom-right"
+              style={{ border: '1px solid #999999', borderRadius: '1px' }}
             />
-          </Panel>
-          <Controls
-            position="bottom-left"
-            style={{
-              color: 'black',
-              border: '1px solid #999999',
-              borderRadius: '1px',
-            }}
-          />
-          <MiniMap
-            position="bottom-right"
-            style={{ border: '1px solid #999999', borderRadius: '1px' }}
-          />
-          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        </ReactFlow>
+            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+          </ReactFlow>
+        </div>
         <CreateTaskModal
           open={modal === 'createtask'}
           toggle={() => {

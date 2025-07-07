@@ -8,12 +8,13 @@ import {
 import styles from './EnvironmentNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit, Delete, ErrorOutline } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 
 type NodeType = {
   pipeline: Workflows.Pipeline;
+  showIO: boolean;
   // Env vars that are referenced in other tasks either correctly or erroneously
   referencedKeys: Array<string>;
 };
@@ -22,11 +23,10 @@ const envImgSrc =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYYthigYhTiUuc_ELgxR0ePiN5wXgL7AVHxA&s';
 
 const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
-  const { pipeline, referencedKeys } = data as NodeType;
+  const { pipeline, referencedKeys, showIO } = data as NodeType;
   const keys = Object.keys(pipeline.env || {});
   // References from tasks to env variables that do not exist
   const missingRefs = referencedKeys.filter((k) => !keys.includes(k));
-
   return (
     <>
       <div className={styles['node']}>
@@ -62,7 +62,7 @@ const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
               })}
             </div>
           )}
-          {missingRefs.length > 0 && (
+          {missingRefs.length > 0 && showIO && (
             <div className={styles['io']}>
               {missingRefs.map((key) => {
                 return (
@@ -81,7 +81,13 @@ const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
                       <Tooltip
                         title={`Envrionment variable '${key}' is referenced by some task(s) but does not exist. Either add this envrionment variable or remove the task input(s) that references it.`}
                       >
-                        <span>{key}</span>
+                        <div>
+                          <span>{key}</span>
+                          <ErrorOutline
+                            fontSize="small"
+                            sx={{ marginLeft: '8px', color: 'red' }}
+                          />
+                        </div>
                       </Tooltip>
                     </div>
                   </div>
