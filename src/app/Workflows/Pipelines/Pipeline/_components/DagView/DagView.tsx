@@ -251,6 +251,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       );
     }
 
+    // Add the node for each task to the nodes list
     for (let task of tasks) {
       initialNodes.push({
         id: task.id!,
@@ -263,7 +264,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           label: task.id!,
           task: task,
           groupId,
-          pipelineId: pipeline.id,
+          pipeline,
           tasks,
           showIO: view === 'io',
           referencedKeys: (taskInputRefs.taskOutputs[task.id!] || []).filter(
@@ -294,6 +295,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       }
     }
 
+    // Add the nodes for the pipeline environment and the pipeline params
     initialNodes = [
       ...initialNodes,
       {

@@ -3,7 +3,12 @@ import { Position, NodeProps } from '@xyflow/react';
 import styles from './TaskNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
-import { DeleteOutline, ErrorOutline, OpenWith } from '@mui/icons-material';
+import {
+  DeleteOutline,
+  ErrorOutline,
+  OpenWith,
+  WarningAmber,
+} from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { TaskUpdateProvider } from 'app/Workflows/_context';
 import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
@@ -13,7 +18,7 @@ type NodeType = {
   task: Workflows.Task;
   tasks: Array<Workflows.Task>;
   groupId: string;
-  pipelineId: string;
+  pipeline: Workflows.Pipeline;
   showIO: boolean;
   // Task outputs that are referenced in other tasks either correctly or erroneously
   referencedKeys: Array<string>;
@@ -65,10 +70,96 @@ const resolveNodeImage = (task: Workflows.Task) => {
   }
 };
 
+type InputValidation =
+  | {
+      type: 'success';
+    }
+  | {
+      type: 'warning' | 'error';
+      message: string;
+      context: 'input' | 'inputType';
+    };
+
+// Returns null if no error and a string (error) when there is an error
+const validateTaskInput = (
+  key: string,
+  input: Workflows.SpecWithValue,
+  pipeline: Workflows.Pipeline
+): InputValidation => {
+  // ValueFrom objects should only have one key, therefore we will validate
+  // the first one we find and return the result
+  let sourceType = undefined;
+  let env = pipeline.env || {};
+  let params = pipeline.params || {};
+
+  let envKey = input.value_from?.env;
+  if (envKey !== undefined) {
+    if (env[envKey] === undefined) {
+      return {
+        type: 'error',
+        message: `This input is referencing an environment variable that does not exist (${envKey})`,
+        context: 'input',
+      };
+    }
+    sourceType = env[envKey].type as string;
+  }
+
+  let paramKey = input.value_from?.args;
+  if (paramKey !== undefined) {
+    if (params[paramKey] === undefined) {
+      return {
+        type: 'warning',
+        message: `This input is referencing a parameter that is not defined in the pipeline (${paramKey})`,
+        context: 'input',
+      };
+    }
+    sourceType = params[paramKey].type as string;
+  }
+
+  let taskOutput = input.value_from?.task_output;
+  if (taskOutput !== undefined) {
+    let taskId = taskOutput.task_id;
+    let outputId = taskOutput.output_id;
+    let filteredTasks = pipeline.tasks!.filter((t) => {
+      return t.id === taskId;
+    });
+
+    if (filteredTasks.length < 1) {
+      return {
+        type: 'error',
+        message: `This input is referencing an output of a task that does not exist (${taskId})`,
+        context: 'input',
+      };
+    }
+
+    let task = filteredTasks[0];
+    let outputs = Object.keys(task.output || {});
+    if (outputs === undefined || !outputs.includes(outputId)) {
+      return {
+        type: 'error',
+        message: `Output '${outputId}' does not exist on task '${taskId}'`,
+        context: 'input',
+      };
+    }
+
+    sourceType = (task.output![outputId] as any).type;
+  }
+
+  if (input.type !== sourceType) {
+    return {
+      type: 'warning',
+      message: `The value for input '${key}' is expected to be of type '${input.type}' but is receiving a value with type '${sourceType}'`,
+      context: 'inputType',
+    };
+  }
+
+  return { type: 'success' };
+};
+
 const TaskNode: React.FC<NodeProps> = ({ data }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
-  let { task, tasks, groupId, pipelineId, showIO, referencedKeys } =
+  let { task, tasks, groupId, pipeline, showIO, referencedKeys } =
     data as NodeType;
   let inputs = task.input || {};
   let outputs = task.output || {};
@@ -83,7 +174,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
         task={task}
         tasks={tasks}
         groupId={groupId}
-        pipelineId={pipelineId}
+        pipelineId={pipeline.id!}
       >
         <StandardHandle
           id={`task-${task.id}-target`}
@@ -141,6 +232,11 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
             {Object.keys(inputs).length > 0 && showIO && (
               <div className={styles['io']}>
                 {Object.keys(inputs).map((key) => {
+                  let validation = validateTaskInput(
+                    key,
+                    inputs[key],
+                    pipeline
+                  );
                   let type = inputs[key].type;
                   let required = inputs[key].required;
                   let description = inputs[key].description;
@@ -175,15 +271,46 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                           </div>
                         ) : (
                           <div>
+                            {validation.type === 'error' &&
+                              validation.context === 'input' && (
+                                <Tooltip title={validation.message}>
+                                  <ErrorOutline
+                                    fontSize="small"
+                                    sx={{ color: 'red', marginRight: '4px' }}
+                                  />
+                                </Tooltip>
+                              )}
+                            {validation.type === 'warning' &&
+                              validation.context === 'input' && (
+                                <Tooltip title={validation.message}>
+                                  <WarningAmber
+                                    fontSize="small"
+                                    color="warning"
+                                    sx={{ marginRight: '4px' }}
+                                  />
+                                </Tooltip>
+                              )}
                             <Tooltip title={key}>
-                              <span>
+                              <span style={{ lineHeight: '20px' }}>
                                 {key}{' '}
                                 {required && (
                                   <span style={{ color: 'red' }}>*</span>
                                 )}
                               </span>
                             </Tooltip>
-                            <div className={styles['io-item-type']}>{type}</div>
+                            <div className={styles['io-item-type']}>
+                              {validation.type === 'warning' &&
+                                validation.context === 'inputType' && (
+                                  <Tooltip title={validation.message}>
+                                    <WarningAmber
+                                      fontSize="small"
+                                      color="warning"
+                                      sx={{ marginRight: '4px' }}
+                                    />
+                                  </Tooltip>
+                                )}
+                              {type}
+                            </div>
                             {description}
                           </div>
                         )}
@@ -267,7 +394,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
               fontSize="large"
               onClick={() => {
                 history.push(
-                  `/workflows/pipelines/${groupId}/${pipelineId}/tasks/${task.id}`
+                  `/workflows/pipelines/${groupId}/${pipeline.id}/tasks/${task.id}`
                 );
               }}
             />

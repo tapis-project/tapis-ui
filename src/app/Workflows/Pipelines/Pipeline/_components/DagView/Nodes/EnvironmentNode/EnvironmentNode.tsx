@@ -24,7 +24,8 @@ const envImgSrc =
 
 const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
   const { pipeline, referencedKeys, showIO } = data as NodeType;
-  const keys = Object.keys(pipeline.env || {});
+  const env = pipeline.env || {};
+  const keys = Object.keys(env);
   // References from tasks to env variables that do not exist
   const missingRefs = referencedKeys.filter((k) => !keys.includes(k));
   return (
@@ -57,6 +58,13 @@ const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
                         <span>{key}</span>
                       </Tooltip>
                     </div>
+                    <div
+                      className={styles['io-item-type']}
+                      style={{ textAlign: 'right' }}
+                    >
+                      {env[key].type}
+                    </div>
+                    <div>{env[key].description}</div>
                   </div>
                 );
               })}

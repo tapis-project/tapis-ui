@@ -13,10 +13,16 @@ type NodeType = {
   taskId: string;
   outputs: Array<string>;
   inputs: Array<String>;
+  showIO: boolean;
 };
 
 const TaskNode: React.FC<NodeProps> = ({ data }) => {
-  const { taskId, inputs = [], outputs = [] } = data as NodeType;
+  const {
+    taskId,
+    inputs = [],
+    outputs = [],
+    showIO = false,
+  } = data as NodeType;
   return (
     <>
       <div className={styles['node']}>
@@ -34,7 +40,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
           </Alert>
         </div>
         <div>
-          {inputs.length > 0 && (
+          {inputs.length > 0 && showIO && (
             <div className={styles['io']}>
               {Object.keys(inputs).map((key) => {
                 return (
@@ -59,7 +65,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
               })}
             </div>
           )}
-          {outputs.length > 0 && (
+          {outputs.length > 0 && showIO && (
             <div className={styles['io']}>
               {Object.keys(outputs).map((key) => {
                 return (
