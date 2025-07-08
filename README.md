@@ -1,4 +1,11 @@
-# Getting Started with TapisUI
+# TapisUI - React TypeScript UI for Tapis
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/tapis-project/tapis-ui?label=git%20tag&sort=semver)](https://github.com/tapis-project/tapis-ui/tags)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/tapis/tapisui?label=image&sort=semver)](https://hub.docker.com/r/tapis/tapisui/tags)
+[![docs](https://img.shields.io/badge/docs-grey)](https://tapis.readthedocs.io/en/latest/technical/tapisui.html)
+[![live-docs](https://img.shields.io/badge/live--docs-grey)](https://tapis-project.github.io/live-docs)
+
+
+## Getting Started with TapisUI
 
 1. Clone TapisUI repo with `git clone https://github.com:tapis-project/tapis-ui.git`
 2. `cd` into repo root directory
@@ -9,7 +16,7 @@
 6. Open the URL output by stdout to view the UI, generally **http://localhost:3000**
 7. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
 
-# Development with TapisUI
+## Development with TapisUI
 
 - `pnpm run start` starts dev vite instance with `vite.dev.config.mts` config.
 - `pnpm run dev` starts dev vite and `tsc --build` in `--watch` mode which hot-reloads subpackages
@@ -23,11 +30,13 @@
   - Packages must be pristine for build to work. Docker might be more reproducible.
     - `ctrl+shift+c` in browser to inspect console and find errors. If you get an invariant error then there's more than likely a package issue.
 
-# pnpm rather than npm
+### Package Manager (pnpm v. npm)
+---
 
 In May '25 TapisUI switched to using `pnpm` to manage the root package and all subpackages. `pnpm` manages all package `node_modules` from a central location and symlinks to directories when neccessary. `pnpm` also provides easy package resolution for self-referencing subpackages. This repo contains 10 packages and `pnpm` increases speed, decreases potential errors, and provides useful utitilies for dependency management and more. You will need to intall `pnpm`, here's [the install guide](https://pnpm.io/installation), and here's two things you could do:
 
 ### Using pnpm install via npm
+
 
 Users can install pnpm via npm and run as so:
 
@@ -49,7 +58,7 @@ pnpm -r build
 pnpm dev
 ```
 
-# _Experimental_ Nix Development Shell
+## _Experimental_ Nix Development Shell
 
 Nix is a _functional_ package manager which stores packages in a central Nix _store_ which links to final locations. TapisUI uses nix to solve dependency and reproducibility issues in development. [To install nix, view the official instructions here](https://nixos.org/download/#nix-install-linux). A potentially "better" installation option is the [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer), their installer works better on all OS's and it enables experimental features by default (of which we use).
 
@@ -94,7 +103,7 @@ Read more about [nix flakes here](https://nixos-and-flakes.thiscute.world/other-
 
 Once again these Nix tools are currently optional. Using them should streamline development, but feel free to install packages through your OS or preferred method.
 
-# TapisUI supporting packages
+## TapisUI supporting packages
 
 Much of the functionality and components used in TapisUI exist as their own NPM packages.
 This enables developers to use TapisUI features and ui in their own projects. These packages are located in the `lib` directory in the root of TapisUI. There are 4 main packages.
@@ -105,7 +114,7 @@ This enables developers to use TapisUI features and ui in their own projects. Th
 - **tapisui-extensions-core** - A library for building extensions and plugins to TapisUI
 - **tapisui-extensions-devtools** - Devtools when working with tapisui-extensions
 
-# Learn More
+## Learn More
 
 - [TapisUI wiki](https://github.com/tapis-project/tapis-ui/wiki) for help with deployment and developing extensions
 - [Tapis documentation](https://tapis.readthedocs.io/en/latest/contents.html) for more information on Tapis
