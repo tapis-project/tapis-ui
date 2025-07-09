@@ -4,8 +4,8 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
 import { DagViewHeader } from './DagViewHeader';
-import { Alert, AlertTitle, Chip } from '@mui/material';
-import { DataObject, Share, Bolt, AltRoute } from '@mui/icons-material';
+import { Alert, AlertTitle, Chip, Fab } from '@mui/material';
+import { DataObject, Share, Add, Publish } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -631,9 +631,6 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
             onClickCreateTask={() => {
               setModal('createtask');
             }}
-            onClickRunPipeline={() => {
-              setModal('runpipeline');
-            }}
           />
         </div>
         <div className={styles['dag']}>
@@ -648,17 +645,6 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
             defaultViewport={{ x: 120, y: 60, zoom: 1 }}
             zoomOnScroll={true}
           >
-            <Panel position="top-left">
-              <Chip
-                onClick={() => {
-                  setDrawerOpen(true);
-                }}
-                color={'primary'}
-                size="small"
-                label="actions"
-                icon={<Bolt />}
-              />
-            </Panel>
             <Panel
               position="bottom-left"
               style={{ marginLeft: '56px', userSelect: 'none' }}
@@ -740,6 +726,31 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
                 borderRadius: '1px',
               }}
             />
+            <Panel
+              position="top-left"
+              style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
+            >
+              <Fab
+                size="small"
+                color="primary"
+                aria-label="add"
+                onClick={() => {
+                  setModal('runpipeline');
+                }}
+              >
+                <Publish />
+              </Fab>
+              <Fab
+                size="small"
+                color="primary"
+                aria-label="add"
+                onClick={() => {
+                  setDrawerOpen(true);
+                }}
+              >
+                <Add />
+              </Fab>
+            </Panel>
             <MiniMap
               position="bottom-right"
               style={{ border: '1px solid #999999', borderRadius: '1px' }}

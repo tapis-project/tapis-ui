@@ -2,12 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import type { TypedUseSelectorHook } from 'react-redux';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import podsReducer from './podsSlice';
+// import { Workflows } from './';
 // import systemsReducer from './systemsSlice';
 
 const store = configureStore({
   reducer: {
     pods: podsReducer,
-    // systems: systemsReducer
+    // workflows: Workflows.reducer,
   },
 });
 

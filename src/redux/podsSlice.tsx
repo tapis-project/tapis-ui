@@ -82,8 +82,10 @@ const podsSlice = createSlice({
 export const { updateState } = podsSlice.actions;
 export default podsSlice.reducer;
 
+// Examples:
+// import { updateState, useAppDispatch, useAppSelector } from '@redux';
 // GET
 // const { podTab, podRootTab } = useAppSelector((state) => state.pods);
-
 // POST
+// const dispatch = useAppDispatch();
 // dispatch(updateState({"podTab": tabValue, "podRootTab": rootTabValue}));

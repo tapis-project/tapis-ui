@@ -24,19 +24,19 @@ export const tasks: Array<Workflows.Task> = [
       TAPIS_BASE_URL: {
         type: Workflows.EnumTaskIOType.String,
         value_from: {
-          env: 'TAPIS_BASE_URL',
+          args: 'TAPIS_BASE_URL',
         },
       },
       TAPIS_USERNAME: {
         type: Workflows.EnumTaskIOType.String,
         value_from: {
-          env: 'TAPIS_USERNAME',
+          args: 'TAPIS_USERNAME',
         },
       },
       TAPIS_PASSWORD: {
         type: Workflows.EnumTaskIOType.String,
         value_from: {
-          env: 'TAPIS_PASSWORD',
+          args: 'TAPIS_PASSWORD',
         },
       },
     },

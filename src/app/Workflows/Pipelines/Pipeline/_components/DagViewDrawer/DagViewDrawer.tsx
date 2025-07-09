@@ -21,7 +21,6 @@ type DagViewDrawerProps = {
   toggle: () => void;
   open: boolean;
   onClickCreateTask: () => void;
-  onClickRunPipeline: () => void;
   onError?: () => void;
 };
 
@@ -31,7 +30,6 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
   toggle,
   open,
   onClickCreateTask,
-  onClickRunPipeline,
   onError,
 }) => {
   const { extension, extensionName, services } = useExtension();
@@ -67,17 +65,6 @@ const DagViewDrawer: React.FC<DagViewDrawerProps> = ({
     <Drawer open={open} onClose={toggle} anchor="left">
       <Box role="presentation" onClick={toggle}>
         <List>
-          <ListItem disablePadding>
-            <ListItemButton onClick={onClickRunPipeline}>
-              <ListItemIcon>
-                <Publish />
-              </ListItemIcon>
-              <ListItemText
-                primary={'Run Pipeline'}
-                secondary={`Run pipeline '${pipelineId}'`}
-              />
-            </ListItemButton>
-          </ListItem>
           <ListItem disablePadding>
             <ListItemButton onClick={onClickCreateTask}>
               <ListItemIcon>

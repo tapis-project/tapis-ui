@@ -3,7 +3,7 @@ import { Position, NodeProps } from '@xyflow/react';
 import styles from './ArgsNode.module.scss';
 import { StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
-import { Edit, Delete, ErrorOutline } from '@mui/icons-material';
+import { Edit, Delete, WarningAmber } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 
@@ -65,7 +65,7 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
               {missingRefs.map((key) => {
                 return (
                   <div
-                    className={`${styles['io-item']} ${styles['io-item-error']}`}
+                    className={`${styles['io-item']} ${styles['io-item-warning']}`}
                     style={{ position: 'relative' }}
                   >
                     <div>
@@ -77,14 +77,10 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <Tooltip
-                        title={`Parameter '${key}' is referenced by some task(s) but does not exist. Either add this parameter to the pipeline or remove the task input(s) that references it.`}
+                        title={`Parameter '${key}' must be provided at runtime`}
                       >
                         <div>
                           <span>{key}</span>
-                          <ErrorOutline
-                            fontSize="small"
-                            sx={{ marginLeft: '8px', color: 'red' }}
-                          />
                         </div>
                       </Tooltip>
                     </div>

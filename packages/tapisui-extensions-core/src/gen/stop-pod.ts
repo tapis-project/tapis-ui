@@ -1,6 +1,6 @@
 export const task = {
   id: 'stop-pod',
-  description: 'Starts a pod in the Tapis Pods service',
+  description: 'Stops a pod in the Tapis Pods service',
   type: 'function',
   execution_profile: {
     flavor: 'c1tiny',
@@ -17,28 +17,10 @@ export const task = {
     },
   ],
   input: {
-    TAPIS_BASE_URL: {
-      type: 'string',
-      value_from: {
-        env: 'TAPIS_BASE_URL',
-      },
-    },
-    TAPIS_USERNAME: {
-      type: 'string',
-      value_from: {
-        env: 'TAPIS_USERNAME',
-      },
-    },
-    TAPIS_PASSWORD: {
-      type: 'string',
-      value_from: {
-        env: 'TAPIS_PASSWORD',
-      },
-    },
     TAPIS_JWT: {
       type: 'string',
       value_from: {
-        env: 'TAPIS_JWT',
+        args: 'TAPIS_JWT',
       },
     },
     POD_ID: {
@@ -49,7 +31,7 @@ export const task = {
     },
     OPERATION: {
       type: 'string',
-      value: 'RESTART',
+      value: 'STOP',
     },
     POLL_INTERVAL: {
       type: 'string',

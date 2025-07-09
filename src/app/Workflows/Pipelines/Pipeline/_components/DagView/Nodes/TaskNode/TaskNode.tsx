@@ -177,6 +177,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
         pipelineId={pipeline.id!}
       >
         <StandardHandle
+          key={`task-${task.id}-target`}
           id={`task-${task.id}-target`}
           type="target"
           position={Position.Left}
@@ -248,6 +249,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                     >
                       <div>
                         <StandardHandle
+                          key={`input-${task.id}-${key}`}
                           id={`input-${task.id}-${key}`}
                           type="target"
                           position={Position.Left}
