@@ -14,7 +14,7 @@ describe('Error Decoder', () => {
     return expect(promise).resolves.toBe(mockResult);
   });
 
-  it('Returns a non json error', () => {
+  it('Returns a non-json error', () => {
     const promise = errorDecoder<ResultType>(
       () => new Promise((_, reject) => reject('Mock error'))
     );
@@ -22,10 +22,15 @@ describe('Error Decoder', () => {
   });
 
   it('Returns a json error', () => {
-    const jsonError = { json: () => 'JSON error' };
+    // The json method returns a Promise
+    const jsonError = {
+      json: () => Promise.resolve({ message: 'An unexpected error occurred' }),
+    };
+
     const promise = errorDecoder<ResultType>(
       () => new Promise((_, reject) => reject(jsonError))
     );
-    return expect(promise).rejects.toBe('JSON error');
+
+    return expect(promise).rejects.toThrow('An unexpected error occurred');
   });
 });

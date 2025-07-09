@@ -20,13 +20,6 @@ import { Button } from 'reactstrap';
 import { encode } from 'base-64';
 import { TaskFormProps } from '../Task';
 
-// const Runtimes = Workflows.EnumRuntimeEnvironment
-
-enum Runtimes {
-  PythonSingularity = 'tapis/workflows-python-singularity:0.1.0',
-  Python39 = 'python:3.9',
-}
-
 const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
   // eslint-disable-next-line
   const defaultCode = `# Use the execution context to fetch input data, save data to outputs,\n# and terminate the task with the stdout and stderr functions\nfrom owe_python_sdk.runtime import execution_context as ctx`;
@@ -55,7 +48,7 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
         )
     ),
     runtime: Yup.string()
-      .oneOf(Object.values(Runtimes))
+      .oneOf(Object.values(Workflows.EnumRuntimeEnvironment))
       .required('Runtime is required'),
   });
 
@@ -93,16 +86,18 @@ const FunctionTask: React.FC<TaskFormProps> = ({ pipeline, onSubmit }) => {
                     <option disabled value={''} selected={true}>
                       -- select an option --
                     </option>
-                    {Object.values(Runtimes).map((runtime) => {
-                      return (
-                        <option
-                          value={runtime}
-                          selected={runtime === values.runtime}
-                        >
-                          {runtime}
-                        </option>
-                      );
-                    })}
+                    {Object.values(Workflows.EnumRuntimeEnvironment).map(
+                      (runtime) => {
+                        return (
+                          <option
+                            value={runtime}
+                            selected={runtime === values.runtime}
+                          >
+                            {runtime}
+                          </option>
+                        );
+                      }
+                    )}
                   </FormikSelect>
                   <FormikSelect
                     name={`installer`}

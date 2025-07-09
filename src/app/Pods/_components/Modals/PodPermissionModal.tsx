@@ -22,7 +22,7 @@ const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const location = useLocation();
-  const podIdFromLocation = location.pathname.split('/')[3] || '';
+  const podIdFromLocation = location.pathname.split('/')[2] || '';
 
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.getPodPermissions);

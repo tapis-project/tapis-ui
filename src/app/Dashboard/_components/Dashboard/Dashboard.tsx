@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Systems } from '@tapis/tapis-typescript';
 import { SectionHeader, LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
@@ -19,6 +18,8 @@ import {
 } from '@tapis/tapisui-hooks';
 import styles from './Dashboard.module.scss';
 import './Dashboard.scss';
+import { Apps, Systems } from '@tapis/tapis-typescript';
+import { useExtension } from 'extensions';
 
 type DashboardCardProps = {
   icon: string;
@@ -67,11 +68,19 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const { accessToken, claims } = useTapisConfig();
+  const { extension } = useExtension();
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
+    select: 'allAttributes',
+    computeTotal: true,
+    limit: 1000,
   });
   const jobs = JobsHooks.useList({});
-  const apps = AppsHooks.useList({ select: 'jobAttributes,version' });
+  const apps = AppsHooks.useList({
+    listType: Apps.ListTypeEnum.All,
+    select: 'jobAttributes,version',
+    computeTotal: true,
+  });
 
   return (
     <div>
@@ -115,22 +124,26 @@ const Dashboard: React.FC = () => {
               counter={`${jobs?.data?.result?.length} jobs`}
               loading={jobs?.isLoading}
             />
-            <DashboardCard
-              icon="share"
-              name="ML Hub"
-              text="View available models and datasets, run inference and training on ML models"
-              link="/ml-hub"
-              counter={`${4} services`}
-              loading={apps?.isLoading}
-            />
-            <DashboardCard
-              icon="simulation"
-              name="ML Edge"
-              text="View available reports and create new analysis"
-              link="/ml-edge"
-              counter={`${2} services`}
-              loading={apps?.isLoading}
-            />
+            {extension !== undefined && extension.showMLHub != false && (
+              <DashboardCard
+                icon="share"
+                name="ML Hub"
+                text="View available models and datasets, run inference and training on ML models"
+                link="/ml-hub"
+                counter={`${4} services`}
+                loading={apps?.isLoading}
+              />
+            )}
+            {extension !== undefined && extension.showMLEdge != false && (
+              <DashboardCard
+                icon="simulation"
+                name="ML Edge"
+                text="View available reports and create new analysis"
+                link="/ml-edge"
+                counter={`${2} services`}
+                loading={apps?.isLoading}
+              />
+            )}
           </>
         ) : (
           <Card>

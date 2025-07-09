@@ -5,7 +5,7 @@ import styles from './Dashboard.module.scss';
 import { PipelineCard } from '../_components';
 import { Skeleton, Pagination } from '@mui/material';
 import { Workflows } from '@tapis/tapis-typescript';
-import { SectionHeader, Help } from '@tapis/tapisui-common';
+import { SectionHeader } from '@tapis/tapisui-common';
 import { DashboardCard } from '../_components/DashboardCard';
 import { PeopleAlt, Storage, AccountTree, Key } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -22,7 +22,6 @@ const Dashboard: React.FC = () => {
       groupMapping[group.uuid!] = group;
     }
   });
-  // const identities = Hooks.Identities.useList();
   const archives = Hooks.Archives.useListAll({ groupIds });
   const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll({
     groupIds,

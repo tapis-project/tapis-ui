@@ -10,7 +10,6 @@ import { SectionMessage } from '@tapis/tapisui-common';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
-
   return (
     <Switch>
       <Route path={`${path}`} exact>
@@ -27,9 +26,9 @@ const Router: React.FC = () => {
           match: {
             params: { systemId },
           },
-        }: RouteComponentProps<{ systemId: string }>) => (
-          <SystemDetail systemId={systemId} />
-        )}
+        }: RouteComponentProps<{ systemId: string }>) => {
+          return <SystemDetail systemId={systemId} />;
+        }}
       />
     </Switch>
   );

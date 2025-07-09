@@ -8,7 +8,8 @@
   "scripts": {
     "test": "vitest run",
     "build": "npx tsc --skipLibCheck",
-    "push": "npx tsc --skipLibCheck && npm publish --access public"
+    "push": "npx tsc --skipLibCheck && npm publish --access public",
+    "watch": "npx tsc --build --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "",
@@ -27,14 +28,14 @@
     ]
   },
   "dependencies": {
-    "react-query": "^3.19.2",
-    "@tapis/tapis-typescript": "^0.0.55",
+    "@tapis/tapis-typescript": "^0.0.56",
     "@tapis/tapisui-api": "file:../tapisui-api",
     "cross-fetch": "^3.1.4",
     "js-cookie": "^3.0.0",
     "jsdom": "^24.1.0",
     "jwt-decode": "^3.1.2",
     "react": "^18.3.1",
+    "react-query": "^3.19.2",
     "rxjs": "^6.6.7",
     "streamsaver": "^2.0.5",
     "typescript": "^4.3.5",

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-// import { Button } from 'reactstrap';
-import { Icon } from '@tapis/tapisui-common';
 import styles from './AppsToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import CreateAppModal from './CreateAppModal';
 import { Button } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import { Add, RocketLaunch, Update } from '@mui/icons-material';
+import UpdateAppModal from './UpdateAppModal';
+import { Apps } from '@tapis/tapis-typescript';
+import JobLaunchModal from './JobLaunchModal';
 
 type ToolbarButtonProps = {
   text: string;
@@ -42,27 +43,61 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
-const AppsToolbar: React.FC = () => {
+type AppsToolbarProps = {
+  include?: Array<'create' | 'update' | 'submit'>;
+  app?: Apps.RespApp | undefined;
+};
+
+const AppsToolbar: React.FC<AppsToolbarProps> = ({
+  app,
+  include = ['create'],
+}) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const { pathname } = useLocation();
 
   const toggle = () => {
     setModal(undefined);
   };
   return (
     <div id="file-operation-toolbar">
-      {pathname && (
-        <div className={styles['toolbar-wrapper']}>
+      <div
+        className={styles['toolbar-wrapper']}
+        style={{ justifyContent: 'right' }}
+      >
+        {app && include.includes('submit') && (
           <ToolbarButton
-            text="Create App"
+            text="submit job"
+            icon={<RocketLaunch />}
+            disabled={false}
+            onClick={() => setModal('submitapp')}
+            aria-label="submitapp"
+          />
+        )}
+        {app && include.includes('update') && (
+          <ToolbarButton
+            text="Update"
+            icon={<Update />}
+            disabled={false}
+            onClick={() => setModal('updateapp')}
+            aria-label="updateapp"
+          />
+        )}
+        {include.includes('create') && (
+          <ToolbarButton
+            text="new app"
             icon={<Add />}
             disabled={false}
-            onClick={() => setModal('createApp')}
-            aria-label="createApp"
+            onClick={() => setModal('createapp')}
+            aria-label="createapp"
           />
-          {modal === 'createApp' && <CreateAppModal toggle={toggle} />}
-        </div>
-      )}
+        )}
+        {modal === 'createapp' && <CreateAppModal toggle={toggle} />}
+        {modal === 'updateapp' && app && (
+          <UpdateAppModal app={app} toggle={toggle} />
+        )}
+        {modal === 'submitapp' && app && (
+          <JobLaunchModal app={app} toggle={toggle} />
+        )}
+      </div>
     </div>
   );
 };

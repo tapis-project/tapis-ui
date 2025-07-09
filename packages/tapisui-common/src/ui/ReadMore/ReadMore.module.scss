@@ -1,4 +1,4 @@
-@import '../../styles/tools/mixins.scss';
+@use '../../styles/tools/mixins.scss' as mixins;
 
 .clamped {
   overflow: hidden;

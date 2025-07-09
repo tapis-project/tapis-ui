@@ -43,11 +43,11 @@ const Layout: React.FC = () => {
 
   return (
     <NotificationsProvider>
-      <div style={{ height: '100%' }}>
+      <div style={{ display: 'flex', height: '100vh' }}>
         <PageLayout
           left={<Sidebar />}
           right={
-            <div style={{ height: '100%' }}>
+            <div style={{ height: '100vh' }}>
               <div>{crumbs && crumbs.length == 0 ? null : header}</div>
               <div className="body">
                 <Router />

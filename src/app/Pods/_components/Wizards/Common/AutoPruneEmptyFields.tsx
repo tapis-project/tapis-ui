@@ -4,10 +4,14 @@ import * as Yup from 'yup';
 
 interface AutoPruneEmptyFieldsProps {
   validationSchema: Yup.ObjectSchema<any>;
+  doNotPruneKeys?: Array<string>;
+  deepCheck?: boolean; // Add deepCheck flag
 }
 
 const AutoPruneEmptyFields: React.FC<AutoPruneEmptyFieldsProps> = ({
   validationSchema,
+  doNotPruneKeys, // Allow us to specify keys that should not be pruned and aren't w
+  deepCheck = true, // Default to true
 }) => {
   const { values, setFieldValue } = useFormikContext<any>();
 
@@ -33,8 +37,28 @@ const AutoPruneEmptyFields: React.FC<AutoPruneEmptyFieldsProps> = ({
           return;
         }
 
+        if (doNotPruneKeys?.includes(key)) {
+          return;
+        }
+
         const value = obj[key];
         const path = parentKey ? `${parentKey}.${key}` : key;
+
+        // Special handling for environment_variables: do not prune empty string values inside it
+        if (
+          key === 'environment_variables' &&
+          typeof value === 'object' &&
+          value !== null &&
+          !Array.isArray(value)
+        ) {
+          // Only prune if the whole object is empty, not its keys
+          if (Object.keys(value).length === 0) {
+            setFieldValue(path, undefined);
+          }
+          // Do not prune keys with empty string values inside environment_variables
+          return;
+        }
+
         const isEmptyString = value === '';
         const isEmptyArray = Array.isArray(value) && value.length === 0;
         const isEmptyObject =
@@ -56,7 +80,7 @@ const AutoPruneEmptyFields: React.FC<AutoPruneEmptyFieldsProps> = ({
     };
 
     pruneEmptyFields(values);
-  }, [values, setFieldValue, requiredKeys]);
+  }, [values, setFieldValue, requiredKeys, deepCheck]);
 
   return null; // This component does not render anything
 };

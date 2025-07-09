@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation, MutateOptions } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Jobs as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
@@ -31,9 +31,12 @@ const useSubmit = (appId: string, appVersion: string) => {
     data,
     error,
     reset,
-    submit: (request: Jobs.ReqSubmitJob) => {
+    submit: (
+      request: Jobs.ReqSubmitJob,
+      options?: MutateOptions<Jobs.RespSubmitJob, Error, Jobs.ReqSubmitJob>
+    ) => {
       // Call mutate to trigger a single post-like API operation
-      return mutate(request);
+      return mutate(request, options);
     },
   };
 };

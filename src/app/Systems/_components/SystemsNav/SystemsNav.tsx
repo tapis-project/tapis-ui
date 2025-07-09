@@ -12,7 +12,9 @@ import {
   Lock,
   LockOpen,
 } from '@mui/icons-material';
+import { Alert, AlertTitle } from '@mui/material';
 import UndeleteSystemModal from '../SystemToolbar/UndeleteSystemModal';
+import styles from './SystemsNav.module.scss';
 
 const SystemsNav: React.FC = () => {
   const [undeleteSystem, setUndeleteSystem] = useState<string | undefined>(
@@ -27,6 +29,7 @@ const SystemsNav: React.FC = () => {
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
     computeTotal: true,
+    limit: 1000,
   });
 
   // Fetch deleted systems listing
@@ -45,12 +48,13 @@ const SystemsNav: React.FC = () => {
           borderBottom: '1px solid #CCCCCC',
           borderRight: '1px solid #CCCCCC',
         }}
+        className={styles['scroll-container']}
       >
         <FilterableObjectsList
           objects={systems}
           defaultField={'isPublic'}
           defaultOnClickItem={(system: any) => {
-            history.push(`${url}/${system.id}`);
+            history.push(`${url}/${system.id!}`);
           }}
           includeAll={true}
           includeAllGroupLabel="All Systems"
@@ -120,9 +124,6 @@ const SystemsNav: React.FC = () => {
                 ) : (
                   <Lock color="error" />
                 ),
-              onClickItem: (object) => {
-                // TODO Trigger re-enable modal
-              },
             },
           ]}
         >

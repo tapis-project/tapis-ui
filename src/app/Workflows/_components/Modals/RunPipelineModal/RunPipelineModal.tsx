@@ -107,12 +107,52 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
 
   const pipelineParams = pipeline.params || {};
 
-  const initialValues = {
+  const deriveArgsFromTaskInput = (tasks: Array<Workflows.Task>) => {
+    let usedArgKeys: Array<string> = [];
+    let derivedArgs: Array<{
+      key: string;
+      value: string;
+      description?: string;
+      type: string;
+    }> = [];
+    for (let task of tasks) {
+      let inputs = task.input || {};
+      for (let key in inputs) {
+        let input = inputs[key];
+        if (
+          input.value_from?.args !== undefined &&
+          !usedArgKeys.includes(input.value_from.args)
+        ) {
+          derivedArgs.push({
+            key: input.value_from.args,
+            value: '',
+            description: input.description,
+            type: input.type!,
+          });
+          usedArgKeys.push(input.value_from.args);
+        }
+      }
+    }
+
+    return derivedArgs;
+  };
+
+  let initialValues = {
     groupId,
     pipelineId,
-    params: Object.entries(pipelineParams).map(([key, _]) => {
-      return { key, value: '' };
-    }),
+    params: [
+      // ...Object.entries(pipelineParams).map(([key, _]) => {
+      //   return { key, value: '' };
+      // }),
+      ...deriveArgsFromTaskInput(pipeline.tasks!),
+    ],
+  };
+
+  const isSecretField = (key: string) => {
+    return (
+      key.toLowerCase().includes('password') ||
+      key.toLowerCase().includes('secret')
+    );
   };
 
   return (
@@ -151,26 +191,28 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
             render={({ values }) => (
               <Form id="runpipeline-form">
                 <div className={styles['grid-2']}>
-                  <FormikInput
-                    name="groupId"
-                    type="text"
-                    label={'group id'}
-                    required={true}
-                    value={groupId}
-                    disabled={true}
-                    description=""
-                    aria-label="Input"
-                  />
-                  <FormikInput
-                    name="pipelineId"
-                    type="text"
-                    label={'pipeline id'}
-                    required={true}
-                    description=""
-                    value={pipelineId}
-                    disabled={true}
-                    aria-label="Input"
-                  />
+                  <div style={{ display: 'none' }}>
+                    <FormikInput
+                      name="groupId"
+                      type="text"
+                      label={'group id'}
+                      required={true}
+                      value={groupId}
+                      disabled={true}
+                      description=""
+                      aria-label="Input"
+                    />
+                    <FormikInput
+                      name="pipelineId"
+                      type="text"
+                      label={'pipeline id'}
+                      required={true}
+                      description=""
+                      value={pipelineId}
+                      disabled={true}
+                      aria-label="Input"
+                    />
+                  </div>
                 </div>
                 <div className={styles['section-container']}>
                   <SectionHeader>
@@ -194,27 +236,26 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                           name={`params.${i}.key`}
                                           label={'key'}
                                           required={true}
-                                          description={
-                                            pipelineParams[param.key]
-                                              ?.description || ''
-                                          }
+                                          description={param.description || ''}
                                           aria-label="Input"
-                                          disabled={
-                                            pipelineParams[param.key]
-                                              ?.required || false
-                                          }
+                                          disabled={true}
                                         />
                                         <FormikInput
                                           id={`params.${i}.value`}
                                           name={`params.${i}.value`}
                                           label="value"
                                           required
-                                          description={`Parameter value`}
+                                          type={
+                                            isSecretField(param.key)
+                                              ? 'password'
+                                              : undefined
+                                          }
+                                          description={`${param.type}`}
                                           aria-label="Input"
                                           value=""
                                         />
                                       </div>
-                                      {!pipelineParams[param.key]?.required && (
+                                      {/* {!pipelineParams[param.key]?.required && (
                                         <Button
                                           type="button"
                                           disabled={false}
@@ -224,23 +265,25 @@ const PipelineRunModal: React.FC<RunPipelineModalProps> = ({
                                         >
                                           Delete
                                         </Button>
-                                      )}
+                                      )} */}
                                     </div>
                                   );
                                 })}
                             </div>
-                            <Button
+                            {/* <Button
                               type="button"
                               className={styles['add-button']}
                               onClick={() => {
                                 arrayHelpers.push({
                                   key: '',
                                   value: '',
+                                  description: '',
+                                  type: '',
                                 });
                               }}
                             >
                               + Add Arg
-                            </Button>
+                            </Button> */}
                           </div>
                         );
                       }}

@@ -5,15 +5,28 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-import JobLauncher from '../JobLauncher';
 import { SectionMessage } from '@tapis/tapisui-common';
+import AppsToolbar from '../_components/AppsToolbar';
+import AppDetails from '../AppDetails';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
+        <div
+          style={{
+            margin: '1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            overflow: 'auto',
+            gap: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'right' }}>
+            <AppsToolbar />
+          </div>
           <SectionMessage type="info">
             Select an app from the list.
           </SectionMessage>
@@ -22,6 +35,7 @@ const Router: React.FC = () => {
 
       <Route
         path={`${path}/:appId/:appVersion`}
+        exact
         render={({
           match: {
             params: { appVersion, appId },
@@ -29,7 +43,9 @@ const Router: React.FC = () => {
         }: RouteComponentProps<{
           appId: string;
           appVersion: string;
-        }>) => <JobLauncher appId={appId} appVersion={appVersion} />}
+        }>) => {
+          return <AppDetails appId={appId} appVersion={appVersion} />;
+        }}
       />
     </Switch>
   );

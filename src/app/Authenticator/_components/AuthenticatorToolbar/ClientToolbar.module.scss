@@ -1,0 +1,15 @@
+.toolbar-wrapper {
+  display: flex !important;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.toolbar-btn {
+  height: 2rem;
+  align-items: center;
+  font-size: 0.7em !important;
+}
+
+.toolbar-btn:disabled {
+  color: #999999 !important;
+}

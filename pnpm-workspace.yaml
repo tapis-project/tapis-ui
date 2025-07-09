@@ -1,0 +1,13 @@
+# https://pnpm.io/settings
+packages:
+  - .
+  - packages/*
+  - packages/** # this is useful for nested packages like package1/package2'
+includeWorkspaceRoot: 'false' # if true build will ran at root as well. When we generally just need start.
+linkWorkspacePackages: 'true'
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js-pure
+  - esbuild
+#injectWorkspacePackages: "true"
+#preferWorkspacePackages: "true"

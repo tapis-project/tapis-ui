@@ -6,3 +6,7 @@ export { default as UnShareSystemPublicModal } from './UnShareSystemPublicModal'
 export { default as CreateChildSystemModal } from './CreateChildSystemModal';
 export { default as SharingModal } from './SharingModal';
 export { default as PermissionsModal } from './PermissionsModal';
+export { default as ChangeOwnerModal } from './ChangeOwnerModal';
+export { default as DisableSystemModal } from './DisableSystemModal';
+export { default as EnableSystemModal } from './EnableSystemModal';
+export { default as UpdateSystemModal } from './UpdateSystemModal';

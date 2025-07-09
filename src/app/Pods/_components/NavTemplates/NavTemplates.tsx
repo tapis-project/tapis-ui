@@ -144,9 +144,9 @@ const NavTemplates: React.FC = () => {
 
     tags.forEach((tag: any) => {
       const [prefix, timestamp] = tag.tag_timestamp.split('@');
-      const formattedTimestamp = format(new Date(timestamp), 'yyyy/MM/dd');
-      const timeAgo = formatTimeAgo(timestamp);
-
+      const parsedDate = new Date(timestamp.replace(/-/g, '/'));
+      const formattedTimestamp = format(parsedDate, 'yyyy/MM/dd');
+      const timeAgo = formatTimeAgo(timestamp.replace(/-/g, '/'));
       if (!groupedTags[prefix]) {
         groupedTags[prefix] = [];
       }
