@@ -23,6 +23,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
     outputs = [],
     showIO = false,
   } = data as NodeType;
+
   return (
     <>
       <div className={styles['node']}>
@@ -31,18 +32,18 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
             <AlertTitle>Missing dependency</AlertTitle>
             <p>
               Task '<b>{taskId}</b>' doesn't exist but is specified as a
-              dependencies in other task(s)
+              dependencies in other task(s) and/or its outputs are referenced
             </p>
             <p>
               To fix this, create a task with an id of '<b>{taskId}</b>' or
-              remove it from all other task's dependencies
+              remove it from all other task's dependencies and input specifications
             </p>
           </Alert>
         </div>
         <div>
           {inputs.length > 0 && showIO && (
             <div className={styles['io']}>
-              {Object.keys(inputs).map((key) => {
+              {inputs.map((key) => {
                 return (
                   <div
                     className={styles['io-item']}
@@ -67,7 +68,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
           )}
           {outputs.length > 0 && showIO && (
             <div className={styles['io']}>
-              {Object.keys(outputs).map((key) => {
+              {outputs.map((key) => {
                 return (
                   <div
                     className={styles['io-item']}
@@ -75,12 +76,12 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                   >
                     <div>
                       <StandardHandle
-                        id={`input-${taskId}-${key}`}
-                        type="target"
+                        id={`output-${taskId}-${key}`}
+                        type="source"
                         position={Position.Right}
                       />
                     </div>
-                    <div>
+                    <div style={{ textAlign: 'right' }}>
                       <Tooltip title={key}>
                         <span>{key}</span>
                       </Tooltip>

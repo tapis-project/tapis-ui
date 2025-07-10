@@ -82,6 +82,55 @@ const getLayoutedElements: any = (
     .catch(console.error);
 };
 
+const newTaskNode = (node: {
+  task: Workflows.Task;
+  pipeline: Workflows.Pipeline;
+  groupId: string;
+  showIO: boolean;
+  referencedKeys: Array<string>;
+}): Node => {
+  return {
+    id: node.task.id!,
+    position: {
+      x: 0,
+      y: 0,
+    },
+    type: 'standard',
+    data: {
+      label: node.task.id!,
+      task: node.task,
+      groupId: node.groupId,
+      pipeline: node.pipeline,
+      tasks: node.pipeline.tasks,
+      showIO: node.showIO,
+      referencedKeys: node.referencedKeys,
+    },
+  };
+};
+
+type MissingTaskNode = {
+  taskId: string;
+  showIO: boolean;
+  outputs: Array<string>;
+};
+
+const newMissingTaskNode = (node: MissingTaskNode) => {
+  return {
+    id: node.taskId,
+    position: {
+      x: 0,
+      y: 0,
+    },
+    type: 'missing',
+    data: {
+      taskId: node.taskId!,
+      inputs: [],
+      outputs: node.outputs,
+      showIO: node.showIO,
+    },
+  };
+};
+
 const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -215,9 +264,34 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     };
   };
 
-  const calculateNodes = useCallback(() => {
-    let initialNodes: Array<Node> = [];
-    let taskIds = tasks.map((task) => task.id!);
+  const findMissingTaskIds = (
+    task: Workflows.Task,
+    existingTaskIds: Array<string>
+  ) => {
+    // Check the dependencies for missing tasks. Create a MissingTaskNode for each
+    // missing task
+    let missingTaskIds: Array<string> = [];
+    for (let dep of task.depends_on || []) {
+      if (!existingTaskIds.includes(dep.id!)) {
+        missingTaskIds.push(dep.id!);
+      }
+    }
+
+    // Create inputs for
+    let input = task.input || {};
+    Object.keys(input).map((key) => {
+      let taskId = input[key].value_from?.task_output?.task_id;
+      if (taskId !== undefined && !missingTaskIds.includes(taskId)) {
+        missingTaskIds.push(taskId);
+      }
+    });
+
+    return missingTaskIds;
+  };
+
+  const resolveAllTaskInputRefs = (
+    tasks: Array<Workflows.Task>
+  ): ResolvedRefs => {
     let taskInputRefs: ResolvedRefs = {
       env: [],
       params: [],
@@ -245,53 +319,44 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     taskInputRefs.params = Array.from(new Set(taskInputRefs.params)).filter(
       (p) => p !== undefined
     );
-    for (let taskId of Object.keys(taskInputRefs.taskOutputs)) {
+    Object.keys(taskInputRefs.taskOutputs).map((taskId) => {
       taskInputRefs.taskOutputs[taskId] = Array.from(
         new Set(taskInputRefs.taskOutputs[taskId])
       );
-    }
+    });
+
+    return taskInputRefs;
+  };
+
+  const calculateNodes = useCallback(() => {
+    let initialNodes: Array<Node> = [];
+    let taskInputRefs = resolveAllTaskInputRefs(tasks);
 
     // Add the node for each task to the nodes list
+    let taskIds = tasks.map((task) => task.id!);
     for (let task of tasks) {
-      initialNodes.push({
-        id: task.id!,
-        position: {
-          x: 0,
-          y: 0,
-        },
-        type: 'standard',
-        data: {
-          label: task.id!,
-          task: task,
-          groupId,
+      initialNodes.push(
+        newTaskNode({
+          task,
           pipeline,
-          tasks,
+          groupId,
           showIO: view === 'io',
           referencedKeys: (taskInputRefs.taskOutputs[task.id!] || []).filter(
             (e) => e !== undefined
           ),
-        },
-      });
+        })
+      );
 
       // Check the dependencies for missing tasks. Create a MissingTaskNode for each
       // missing task
-      for (let dep of task.depends_on || []) {
-        if (!taskIds.includes(dep.id!)) {
-          initialNodes.push({
-            id: dep.id!,
-            position: {
-              x: 0,
-              y: 0,
-            },
-            type: 'missing',
-            data: {
-              taskId: dep.id!,
-              inputs: [],
-              outputs: [],
-              showIO: view === 'io',
-            },
-          });
-        }
+      for (let id of findMissingTaskIds(task, taskIds)) {
+        initialNodes.push(
+          newMissingTaskNode({
+            taskId: id,
+            showIO: view === 'io',
+            outputs: taskInputRefs.taskOutputs[id],
+          })
+        );
       }
     }
 
