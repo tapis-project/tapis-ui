@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Position, NodeProps } from '@xyflow/react';
 import styles from './MissingTaskNode.module.scss';
 import { StandardHandle } from '../../Handles';
-import { Workflows } from '@tapis/tapis-typescript';
-import { Edit, Delete } from '@mui/icons-material';
-import { useHistory } from 'react-router-dom';
-import { TaskUpdateProvider } from 'app/Workflows/_context';
-import { DeleteTaskModal } from 'app/Workflows/_components/Modals';
 import { Alert, AlertTitle, Tooltip } from '@mui/material';
 
 type NodeType = {
