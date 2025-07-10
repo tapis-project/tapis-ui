@@ -36,7 +36,8 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
             </p>
             <p>
               To fix this, create a task with an id of '<b>{taskId}</b>' or
-              remove it from all other task's dependencies and input specifications
+              remove it from all other task's dependencies and input
+              specifications
             </p>
           </Alert>
         </div>
