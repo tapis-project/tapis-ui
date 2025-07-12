@@ -277,6 +277,7 @@ Select or create a pod to get started.`;
     networkingUrl = `${networkingUrl}${tapisUIUri}`;
   }
   const podStatus = data?.result?.status;
+  const podDerivedStatus = dataDerived?.result?.status;
 
   // Dashboard view button lists
   const dashboardLeftButtons = [
@@ -741,7 +742,8 @@ Select or create a pod to get started.`;
   const detailsRightButtons = [
     tapisUiUriRedirect &&
     networkingObj?.tapis_ui_uri_description &&
-    networkingUrl ? (
+    networkingUrl &&
+    (podStatus === 'AVAILABLE' || podDerivedStatus === 'AVAILABLE') ? (
       <Tooltip
         key="networking-tooltip"
         title={networkingObj?.tapis_ui_uri_description}
@@ -753,7 +755,9 @@ Select or create a pod to get started.`;
             size="small"
             color="primary"
             disabled={
-              objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
+              objId === undefined ||
+              !networkingUrl ||
+              !(podStatus === 'AVAILABLE' || podDerivedStatus === 'AVAILABLE')
             }
             component="a"
             href={networkingUrl ? `https://${networkingUrl}` : undefined}
@@ -771,7 +775,9 @@ Select or create a pod to get started.`;
         size="small"
         color="primary"
         disabled={
-          objId === undefined || !networkingUrl || podStatus != 'AVAILABLE'
+          objId === undefined ||
+          !networkingUrl ||
+          !(podStatus === 'AVAILABLE' || podDerivedStatus === 'AVAILABLE')
         }
         component="a"
         href={networkingUrl ? `https://${networkingUrl}` : undefined}
