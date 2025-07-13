@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import {
@@ -53,7 +54,9 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     podLogTab,
     setDetailsDropdownOpen,
     setLogsDropdownOpen,
+    templateNavExpandedItems,
   } = useAppSelector((state) => state.pods);
+  const history = useHistory();
 
   // Add missing refs for dropdown anchors
   const detailsAnchorRef = React.useRef<HTMLDivElement>(null);
@@ -260,14 +263,14 @@ Select or create a pod to get started.`;
   const tapisUiUriRedirect = networkingObj?.tapis_ui_uri_redirect ?? false;
   const tapisUIUri = networkingObj?.tapis_ui_uri ?? '';
   // add tapisUIUriRedirect to the networkingUrl if both exist
-  console.log(
-    'networkingurl and object',
-    networkingUrl,
-    tapisUiUriRedirect,
-    tapisUIUri,
-    networkingObj,
-    data?.result?.networking
-  );
+  // console.log(
+  //   'networkingurl and object',
+  //   networkingUrl,
+  //   tapisUiUriRedirect,
+  //   tapisUIUri,
+  //   networkingObj,
+  //   data?.result?.networking
+  // );
   if (
     networkingUrl &&
     tapisUiUriRedirect &&
@@ -548,6 +551,45 @@ Select or create a pod to get started.`;
                     Details
                   </MenuItem>
                   <MenuItem
+                    onClick={() => {
+                      invalidateDerived();
+                      let template = pod?.template || '';
+                      // Split template string like 'postgres:14@2025-07-12-16:41:56'
+                      let inp_template_id = '';
+                      let template_id_part = '';
+                      let input_tag = '';
+                      let tag_part = '';
+                      if (template) {
+                        [template_id_part, tag_part] = template.split('@');
+                        if (template_id_part && tag_part) {
+                          [inp_template_id, input_tag] =
+                            template_id_part.split(':');
+                        }
+                      }
+                      history.push(
+                        `/pods/templates/${inp_template_id}/tags/${input_tag}@${tag_part}` // Navigate to template tag
+                      );
+                      dispatch(
+                        updateState({
+                          setDetailsDropdownOpen: false,
+                          templateNavExpandedItems: [
+                            ...(Array.isArray(templateNavExpandedItems)
+                              ? templateNavExpandedItems
+                              : []),
+                            inp_template_id,
+                            `${inp_template_id}-${input_tag}`,
+                          ],
+                          templateNavSelectedItems: `${inp_template_id}-${input_tag}-${tag_part}`,
+                          templateTagTab: 'detailsTag',
+                          templateTab: 'detailsTag',
+                          templateRootTab: 'dashboard',
+                        })
+                      );
+                    }}
+                  >
+                    Visit Tag
+                  </MenuItem>
+                  <MenuItem
                     selected={podEditTab === 'derived'}
                     onClick={() => {
                       invalidateDerived();
@@ -743,6 +785,7 @@ Select or create a pod to get started.`;
     tapisUiUriRedirect &&
     networkingObj?.tapis_ui_uri_description &&
     networkingUrl &&
+    networkingObj?.protocol == 'http' &&
     (podStatus === 'AVAILABLE' || podDerivedStatus === 'AVAILABLE') ? (
       <Tooltip
         key="networking-tooltip"
@@ -777,6 +820,7 @@ Select or create a pod to get started.`;
         disabled={
           objId === undefined ||
           !networkingUrl ||
+          networkingObj?.protocol !== 'http' ||
           !(podStatus === 'AVAILABLE' || podDerivedStatus === 'AVAILABLE')
         }
         component="a"
