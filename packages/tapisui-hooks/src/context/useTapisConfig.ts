@@ -16,7 +16,7 @@ const useTapisConfig = () => {
     return undefined;
   };
 
-  const { data, refetch } = useQuery<
+  let { data, refetch } = useQuery<
     Authenticator.NewAccessTokenResponse | undefined
   >('tapis-token', getAccessToken, {
     initialData: () => getAccessToken(),
@@ -52,11 +52,32 @@ const useTapisConfig = () => {
     ? jwt_decode(data?.access_token)
     : {};
 
+  const pathTenantId = basePath
+    .replace('https://', '')
+    .replace('http://', '')
+    .split('.')[0];
+
+  const tokenTenantId = claims['tapis/tenant_id'] ?? undefined;
+
+  const tenantMatchDomain = basePath
+    .toLowerCase()
+    .includes(tokenTenantId ? tokenTenantId.toLowerCase() + '.' : '');
+
+  if (!tenantMatchDomain) {
+    console.error(
+      `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Setting accessToken to undefined.`
+    );
+    data = undefined;
+  }
+
   return {
     basePath,
     accessToken: data,
     setAccessToken,
     claims,
+    pathTenantId: pathTenantId ?? undefined,
+    tokenTenantId: tokenTenantId ?? "couldn't derive tenant_id",
+    tenantMatchDomain: tenantMatchDomain,
     username: claims['tapis/username'],
   };
 };

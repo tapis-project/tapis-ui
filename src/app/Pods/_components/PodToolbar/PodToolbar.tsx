@@ -4,6 +4,7 @@ import { Icon } from '@tapis/tapisui-common';
 import styles from './PodToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
 import DeletePodModal from '../Modals/DeletePodModal';
+import SavePodAsTagModal from '../Modals/SavePodAsTagModal';
 import {
   StartPodModal,
   RestartPodModal,
@@ -88,6 +89,13 @@ const PodToolbar: React.FC = () => {
             aria-label="createPod"
           />
           <ToolbarButton
+            text="Save as Tag"
+            icon="save"
+            disabled={false}
+            onClick={() => setModal('savepodastag')}
+            aria-label="savePodAsTag"
+          />
+          <ToolbarButton
             text="Delete"
             icon="trash"
             disabled={false}
@@ -98,6 +106,7 @@ const PodToolbar: React.FC = () => {
           {modal === 'restartpod' && <RestartPodModal toggle={toggle} />}
           {modal === 'stoppod' && <StopPodModal toggle={toggle} />}
           {modal === 'deletepod' && <DeletePodModal toggle={toggle} />}
+          {modal === 'savepodastag' && <SavePodAsTagModal toggle={toggle} />}
         </div>
       )}
     </div>

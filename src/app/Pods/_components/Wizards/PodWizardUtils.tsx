@@ -407,7 +407,7 @@ export const VolumeMountsSection = ({ formik }: any) => (
         Object.entries(formik.values.volume_mounts).length > 0 &&
         Object.entries(formik.values.volume_mounts).map(
           ([key, value]: [string, any], i) => (
-            <div key={key} style={{ display: 'flex', marginBottom: '.5rem' }}>
+            <div key={i} style={{ display: 'flex', marginBottom: '.5rem' }}>
               <div
                 style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
               >
@@ -656,4 +656,15 @@ export function handleClearForm({
   dispatch(updateState({ [reduxKey]: '' })); // set to '' to clear touched, etc
   formik.resetForm({ values: clearedValues, touched: {}, errors: {} });
   if (reset) reset();
+}
+
+/**
+ * Sort pods by pod_id alphabetically (case-insensitive, null-safe)
+ */
+export function sortPodsById<T extends { pod_id?: string }>(pods: T[]): T[] {
+  return [...pods].sort((a, b) =>
+    (a.pod_id || '').localeCompare(b.pod_id || '', undefined, {
+      sensitivity: 'base',
+    })
+  );
 }

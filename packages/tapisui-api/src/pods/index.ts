@@ -42,3 +42,4 @@ export { default as updateSnapshot } from './updateSnapshot';
 export { default as updateTemplate } from './updateTemplate';
 export { default as updateVolume } from './updateVolume';
 export { default as uploadToVolume } from './uploadToVolume';
+export { default as savePodAsTag } from './savePodAsTag';

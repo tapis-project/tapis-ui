@@ -14,6 +14,7 @@ const QueryKeys = {
   getPodSecrets: 'pods/getPodSecrets',
   deletePodPermission: 'pods/deletePodPermission',
   listPods: 'pods/listPods',
+  savePodAsTag: 'pods/savePodAsTag',
 
   // Templates
   getTemplate: 'pods/getTemplate',
