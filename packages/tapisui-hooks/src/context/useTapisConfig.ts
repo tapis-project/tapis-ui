@@ -52,6 +52,11 @@ const useTapisConfig = () => {
     ? jwt_decode(data?.access_token)
     : {};
 
+  const pathTenantId = basePath
+    .replace('https://', '')
+    .replace('http://', '')
+    .split('.')[0];
+
   const tokenTenantId = claims['tapis/tenant_id'] ?? undefined;
 
   const tenantMatchDomain = basePath
@@ -70,6 +75,7 @@ const useTapisConfig = () => {
     accessToken: data,
     setAccessToken,
     claims,
+    pathTenantId: pathTenantId ?? undefined,
     tokenTenantId: tokenTenantId ?? "couldn't derive tenant_id",
     tenantMatchDomain: tenantMatchDomain,
     username: claims['tapis/username'],
