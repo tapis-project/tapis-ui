@@ -7,3 +7,4 @@ export { AddInputModal } from './AddInputModal';
 export { AddOutputModal } from './AddOutputModal';
 export { CreateSecretModal } from './CreateSecretModal';
 export { AddGroupSecretModal } from './AddGroupSecretModal';
+export { ImportTasksModal } from './ImportTasksModal';

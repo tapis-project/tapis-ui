@@ -1,11 +1,14 @@
+import { Workflows } from '@tapis/tapis-typescript';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface WorkflowsState {
-  activePipelineId?: string;
+  currentGroupId?: string;
+  groups: Array<Workflows.Group>;
 }
 
 const initialState: WorkflowsState = {
-  activePipelineId: undefined,
+  currentGroupId: undefined,
+  groups: [],
 };
 
 const workflowsSlice = createSlice({

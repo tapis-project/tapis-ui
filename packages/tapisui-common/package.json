@@ -23,7 +23,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@jest/globals": "29.7.0",
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.58",
     "@testing-library/jest-dom": "6.6.3",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.17.17",
@@ -54,7 +54,7 @@
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.0",
     "@rollup/plugin-commonjs": "^26.0.1",
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.58",
     "@tapis/tapis-typescript-apps": "0.0.9",
     "@tapis/tapis-typescript-systems": "0.0.6",
     "@tapis/tapisui-hooks": "0.0.3",

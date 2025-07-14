@@ -26,72 +26,70 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
   );
 
   return (
-    <>
-      <div className={styles['node']}>
-        <div className={styles['body']}>
-          <div className={styles['header']}>
-            <img src={argImageSrc} className={styles['header-img']} />
-            <span className={styles['title']}>Arguments</span>
-          </div>
-        </div>
-        <div>
-          {Object.keys(params).length > 0 && (
-            <div className={styles['io']}>
-              {Object.keys(params).map((key) => {
-                return (
-                  <div
-                    className={styles['io-item']}
-                    style={{ position: 'relative' }}
-                  >
-                    <div>
-                      <StandardHandle
-                        id={`arg-${key}`}
-                        type="source"
-                        position={Position.Right}
-                      />
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <Tooltip title={key}>
-                        <span>{key}</span>
-                      </Tooltip>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          {missingRefs.length > 0 && showIO && (
-            <div className={styles['io']}>
-              {missingRefs.map((key) => {
-                return (
-                  <div
-                    className={`${styles['io-item']} ${styles['io-item-warning']}`}
-                    style={{ position: 'relative' }}
-                  >
-                    <div>
-                      <StandardHandle
-                        id={`arg-${key}`}
-                        type="source"
-                        position={Position.Right}
-                      />
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <Tooltip
-                        title={`Parameter '${key}' must be provided at runtime`}
-                      >
-                        <div>
-                          <span>{key}</span>
-                        </div>
-                      </Tooltip>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+    <div key="args-node" className={styles['node']}>
+      <div className={styles['body']}>
+        <div className={styles['header']}>
+          <img src={argImageSrc} className={styles['header-img']} />
+          <span className={styles['title']}>Arguments</span>
         </div>
       </div>
-    </>
+      <div>
+        {Object.keys(params).length > 0 && (
+          <div className={styles['io']}>
+            {Object.keys(params).map((key) => {
+              return (
+                <div
+                  className={styles['io-item']}
+                  style={{ position: 'relative' }}
+                >
+                  <div>
+                    <StandardHandle
+                      id={`arg-${key}`}
+                      type="source"
+                      position={Position.Right}
+                    />
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <Tooltip title={key}>
+                      <span>{key}</span>
+                    </Tooltip>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {missingRefs.length > 0 && showIO && (
+          <div className={styles['io']}>
+            {missingRefs.map((key) => {
+              return (
+                <div
+                  className={`${styles['io-item']} ${styles['io-item-warning']}`}
+                  style={{ position: 'relative' }}
+                >
+                  <div>
+                    <StandardHandle
+                      id={`arg-${key}`}
+                      type="source"
+                      position={Position.Right}
+                    />
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <Tooltip
+                      title={`Parameter '${key}' must be provided at runtime`}
+                    >
+                      <div>
+                        <span>{key}</span>
+                      </div>
+                    </Tooltip>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

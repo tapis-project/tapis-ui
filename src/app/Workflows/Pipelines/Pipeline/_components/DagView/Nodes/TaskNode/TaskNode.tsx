@@ -169,7 +169,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
     (k) => !Object.keys(outputs).includes(k)
   );
   return (
-    <>
+    <div key={`task-node-${task.id}`}>
       <TaskUpdateProvider
         task={task}
         tasks={tasks}
@@ -244,6 +244,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                   let value = inputs[key].value;
                   return (
                     <div
+                      key={`task-node-${task.id}-input-${key}`}
                       className={styles['io-item']}
                       style={{ position: 'relative' }}
                     >
@@ -413,7 +414,7 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
           style={{ top: '26px' }}
         />
       </TaskUpdateProvider>
-    </>
+    </div>
   );
 };
 

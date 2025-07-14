@@ -20,7 +20,7 @@
   "author": "Yizhou Wang",
   "license": "MIT",
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.58",
     "@tapis/tapisui-common": "workspace:*",
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",

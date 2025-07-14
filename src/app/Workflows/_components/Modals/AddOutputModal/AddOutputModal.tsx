@@ -25,7 +25,7 @@ type AddOutputModalProps = {
 
 type OutputState = {
   id?: string;
-  type?: Workflows.EnumTaskIOType;
+  type?: string;
 };
 
 const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
@@ -117,36 +117,29 @@ const AddOutputModal: React.FC<AddOutputModalProps> = ({ open, toggle }) => {
               margin="dense"
               style={{ marginBottom: '-16px' }}
             >
-              <InputLabel size="small" id="type">
-                Type
-              </InputLabel>
-              <Select
-                size="small"
-                label="type"
-                labelId="type"
+              <InputLabel htmlFor="output-type">Type</InputLabel>
+              <Input
+                id="output-type"
                 onChange={(e) => {
                   setOutput({
                     ...output,
-                    type: e.target.value as Workflows.EnumTaskIOType,
+                    type: e.target.value as string,
                   });
                   setTaskPatch(task, {
                     output: {
                       ...taskPatch.output,
                       [output.id!]: {
                         ...taskPatch.output![output.id!],
-                        type: e.target.value as Workflows.EnumTaskIOType,
+                        type: e.target.value as string,
                       },
                     },
                   });
                 }}
-              >
-                {Object.values(Workflows.EnumTaskIOType).map((type) => {
-                  return <MenuItem value={type}>{type}</MenuItem>;
-                })}
-              </Select>
+              />
             </FormControl>
             <FormHelperText>
-              The data type of this output's value
+              The data type of the output. This is entierly free form to allow
+              workflow developers to implement their own type checking.
             </FormHelperText>
           </div>
         )}

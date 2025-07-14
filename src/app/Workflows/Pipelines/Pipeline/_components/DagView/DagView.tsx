@@ -4,8 +4,8 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
 import { DagViewHeader } from './DagViewHeader';
-import { Alert, AlertTitle, Chip, Fab } from '@mui/material';
-import { DataObject, Share, Add, Publish } from '@mui/icons-material';
+import { Alert, AlertTitle, Chip, Fab, Tooltip } from '@mui/material';
+import { DataObject, Share, Add, Publish, Login } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -25,6 +25,7 @@ import {
 import {
   CreateTaskModal,
   RunPipelineModal,
+  ImportTasksModal,
 } from 'app/Workflows/_components/Modals';
 import { DagViewDrawer } from '../DagViewDrawer';
 import ELK, {
@@ -795,26 +796,42 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
               position="top-left"
               style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
             >
-              <Fab
-                size="small"
-                color="primary"
-                aria-label="add"
-                onClick={() => {
-                  setModal('runpipeline');
-                }}
-              >
-                <Publish />
-              </Fab>
-              <Fab
-                size="small"
-                color="primary"
-                aria-label="add"
-                onClick={() => {
-                  setDrawerOpen(true);
-                }}
-              >
-                <Add />
-              </Fab>
+              <Tooltip title={'Run pipeline'}>
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    setModal('runpipeline');
+                  }}
+                >
+                  <Publish />
+                </Fab>
+              </Tooltip>
+              <Tooltip title={'New task'}>
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    setDrawerOpen(true);
+                  }}
+                >
+                  <Add />
+                </Fab>
+              </Tooltip>
+              <Tooltip title={'Import tasks'}>
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    setModal('importtasks');
+                  }}
+                >
+                  <Login />
+                </Fab>
+              </Tooltip>
             </Panel>
             <MiniMap
               position="bottom-right"
@@ -823,6 +840,14 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
         </div>
+        <ImportTasksModal
+          open={modal === 'importtasks'}
+          toggle={() => {
+            setModal(undefined);
+          }}
+          groupId={groupId}
+          pipeline={pipeline}
+        />
         <CreateTaskModal
           open={modal === 'createtask'}
           toggle={() => {

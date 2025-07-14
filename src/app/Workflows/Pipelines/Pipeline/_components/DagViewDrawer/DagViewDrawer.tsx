@@ -12,8 +12,11 @@ import {
   ListItem,
   ListItemButton,
   ListSubheader,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
-import { Add, Publish } from '@mui/icons-material';
+import { Add, Login } from '@mui/icons-material';
 
 type DagViewDrawerProps = {
   groupId: string;
