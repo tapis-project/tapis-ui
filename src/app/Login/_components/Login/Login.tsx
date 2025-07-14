@@ -21,6 +21,7 @@ const Login: React.FC = () => {
   const [authError, setAuthError] = useState<string | undefined>(undefined);
   const [iframeError, setIframeError] = useState<string | undefined>(undefined);
   const [iframeReady, setIframeReady] = useState<boolean>(false);
+  const [cookieString, setCookieString] = useState(document.cookie);
 
   // Auth order
   // 1. extension.implicit
@@ -64,7 +65,9 @@ const Login: React.FC = () => {
       `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
     );
 
-    //passwordAuth = AuthenticatorHooks.getPasswordAuth();
+    passwordAuth = location.href.startsWith('http://localhost:3000')
+      ? true
+      : false;
   }
 
   // implicitAuthURL = `https://dev.develop.tapis.io/v3/oauth2/authorize?client_id=tapisui-implicit-client-cgarcia&response_type=token&redirect_uri=${encodeURIComponent(
@@ -124,11 +127,18 @@ const Login: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCookieString(document.cookie);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       {`cookies enabled: ${navigator.cookieEnabled}`}
       <br />
-      {`cookies: ${JSON.stringify(document.cookie)}`}
+      {`cookies: ${JSON.stringify(cookieString)}`}
       <br />
       {`basePath: ${basePath}`}
       {passwordAuth && activeAuthMethod === 'password' && (
