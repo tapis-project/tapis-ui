@@ -47,7 +47,10 @@ const useTapisConfig = () => {
     });
     await refetch();
   };
-
+  console.debug(
+    `useTapisConfig: basePath: ${basePath}, data.access_token exists:`,
+    JSON.stringify(data?.access_token ? true : false, null, 2)
+  );
   const claims: { [key: string]: any } = data?.access_token
     ? jwt_decode(data?.access_token)
     : {};
@@ -67,7 +70,7 @@ const useTapisConfig = () => {
     console.error(
       `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Setting accessToken to undefined.`
     );
-    data = undefined;
+    data = {};
   }
 
   return {

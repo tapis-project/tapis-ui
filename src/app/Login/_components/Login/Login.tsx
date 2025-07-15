@@ -127,20 +127,8 @@ const Login: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCookieString(document.cookie);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div>
-      {`cookies enabled: ${navigator.cookieEnabled}`}
-      <br />
-      {`cookies: ${JSON.stringify(cookieString)}`}
-      <br />
-      {`basePath: ${basePath}`}
       {passwordAuth && activeAuthMethod === 'password' && (
         <Formik
           initialValues={initialValues}
@@ -204,19 +192,23 @@ const Login: React.FC = () => {
         <div
           style={{
             width: '100%',
-            height: '100%',
+            height: 'calc(100vh - 7rem)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'scroll',
-            marginTop: '2rem',
+            marginTop: '1rem',
           }}
         >
-          {iframeError && (
-            <div style={{ color: 'red', marginTop: '1rem' }}>{iframeError}</div>
+          {iframeError && <div style={{ color: 'red' }}>{iframeError}</div>}
+          {!iframeError && !iframeReady && (
+            <div style={{ color: 'blue' }}>Loading...</div>
           )}
           {iframeReady && !iframeError && (
             <iframe
-              style={{ flexGrow: 1, border: 'none', minHeight: '600px' }}
+              style={{
+                flexGrow: 1,
+                border: 'none',
+              }}
               id="LoginIframe"
               title="Tapis Login"
               src={implicitAuthURL}
