@@ -127,20 +127,8 @@ const Login: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCookieString(document.cookie);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div>
-      {`cookies enabled: ${navigator.cookieEnabled}`}
-      <br />
-      {`cookies: ${JSON.stringify(cookieString)}`}
-      <br />
-      {`basePath: ${basePath}`}
       {passwordAuth && activeAuthMethod === 'password' && (
         <Formik
           initialValues={initialValues}
