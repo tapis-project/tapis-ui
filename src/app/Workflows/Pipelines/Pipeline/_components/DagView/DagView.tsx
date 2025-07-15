@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo, useState, useLayoutEffect } from 'react';
-import { EnvironmentNode, TaskNode, ArgsNode, MissingTaskNode } from './Nodes';
+import {
+  EnvironmentNode,
+  TaskNode,
+  ArgsNode,
+  MissingTaskNode,
+  LayoutNode,
+} from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
@@ -62,8 +68,8 @@ const getLayoutedElements: any = (
       sourcePosition: 'right',
 
       // Hardcode a width and height for elk to use when layouting.
-      width: 300,
-      height: 100,
+      width: node.width ?? 300,
+      height: node.height ?? 200,
     })),
     edges: edges,
   };
@@ -81,6 +87,28 @@ const getLayoutedElements: any = (
       edges: layoutedGraph.edges,
     }))
     .catch(console.error);
+};
+
+const newLayoutNode = ({
+  id,
+  isLayoutRoot = false,
+}: {
+  id: string;
+  isLayoutRoot?: boolean;
+}) => {
+  return {
+    id,
+    position: {
+      x: 0,
+      y: 0,
+    },
+    height: 25,
+    width: 25,
+    type: 'layout',
+    data: {
+      isLayoutRoot,
+    },
+  };
 };
 
 const newTaskNode = (node: {
@@ -161,6 +189,42 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return edge;
   };
 
+  const createLayoutRootToEnvOrArgsEdge = (scope: 'env' | 'args') => {
+    return {
+      id: `e-layoutRoot->${scope}`,
+      type: 'default',
+      source: 'layoutRoot',
+      sourceHandle: 'layoutRoot-layout-source',
+      target: `${scope}-${pipeline.id}`,
+      targetHandle: `${scope}-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createEnvOrArgsToTaskRootEdge = (scope: 'env' | 'args') => {
+    return {
+      id: `e-taskRoot->${scope}`,
+      type: 'default',
+      target: 'taskRoot',
+      targetHandle: 'taskRoot-layout-target',
+      source: `${scope}-${pipeline.id}`,
+      sourceHandle: `${scope}-layout-source`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createTaskNodeToInitialTaskEdge = (taskId: string) => {
+    return {
+      id: `e-taskRoot->task-${taskId}`,
+      type: 'default',
+      source: 'taskRoot',
+      sourceHandle: 'taskRoot-layout-source',
+      target: `${taskId}`,
+      targetHandle: `task-${taskId}-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
   const createEnvOrArgToTaskEdge = (
     envKey: string,
     taskId: string,
@@ -200,6 +264,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
   const nodeTypes = useMemo(
     () => ({
+      layout: LayoutNode,
       standard: TaskNode,
       args: ArgsNode,
       env: EnvironmentNode,
@@ -333,6 +398,11 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     let initialNodes: Array<Node> = [];
     let taskInputRefs = resolveAllTaskInputRefs(tasks);
 
+    // First, create the root layout node and the task rootNode.
+    // The env and the args nodes will connect to this to improve the layout
+    initialNodes.push(newLayoutNode({ id: 'layoutRoot', isLayoutRoot: true }));
+    initialNodes.push(newLayoutNode({ id: 'taskRoot', isLayoutRoot: false }));
+
     // Add the node for each task to the nodes list
     let taskIds = tasks.map((task) => task.id!);
     for (let task of tasks) {
@@ -391,7 +461,21 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
   const calculateEdges = useCallback(() => {
     const initialEdges: Array<Edge> = [];
+
+    // First create the edge between the root layout node and the args and env
+    // nodes as well as the args and env nodes to the task root node
+    initialEdges.push(createLayoutRootToEnvOrArgsEdge('args'));
+    initialEdges.push(createLayoutRootToEnvOrArgsEdge('env'));
+    initialEdges.push(createEnvOrArgsToTaskRootEdge('args'));
+    initialEdges.push(createEnvOrArgsToTaskRootEdge('env'));
+
     for (const task of tasks) {
+      // First, create a connection between the task root layout node and all nodes
+      // for tasks that do not have dependencies (initial tasks)
+      if ((task.depends_on || []).length === 0) {
+        initialEdges.push(createTaskNodeToInitialTaskEdge(task.id!));
+      }
+
       const taskInput = task.input ? task.input : {};
       for (let input of Object.entries(taskInput)) {
         let [k, v] = input;

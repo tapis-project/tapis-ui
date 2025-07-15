@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Position, NodeProps } from '@xyflow/react';
 import styles from './TaskNode.module.scss';
-import { StandardHandle } from '../../Handles';
+import { HiddenHandle, StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
 import {
   DeleteOutline,
@@ -109,7 +109,7 @@ const validateTaskInput = (
     if (params[paramKey] === undefined) {
       return {
         type: 'warning',
-        message: `This input is referencing a parameter that is not defined in the pipeline (${paramKey})`,
+        message: `This value must be provided at runtime (${paramKey})`,
         context: 'input',
       };
     }
@@ -169,141 +169,130 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
     (k) => !Object.keys(outputs).includes(k)
   );
   return (
-    <div key={`task-node-${task.id}`}>
-      <TaskUpdateProvider
-        task={task}
-        tasks={tasks}
-        groupId={groupId}
-        pipelineId={pipeline.id!}
-      >
-        <StandardHandle
-          key={`task-${task.id}-target`}
-          id={`task-${task.id}-target`}
-          type="target"
-          position={Position.Left}
-          style={{ top: '26px' }}
-        />
-        <div className={styles['node']}>
-          <div
-            className={styles['header']}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
+    <>
+      <HiddenHandle
+        key={`task-${task.id}-layout-target`}
+        id={`task-${task.id}-layout-target`}
+        type="target"
+        position={Position.Left}
+        style={{ top: '26px' }}
+      />
+      <div key={`task-node-${task.id}`}>
+        <TaskUpdateProvider
+          task={task}
+          tasks={tasks}
+          groupId={groupId}
+          pipelineId={pipeline.id!}
+        >
+          <StandardHandle
+            key={`task-${task.id}-target`}
+            id={`task-${task.id}-target`}
+            type="target"
+            position={Position.Left}
+            style={{ top: '26px' }}
+          />
+          <div className={styles['node']}>
             <div
+              className={styles['header']}
               style={{
-                width: '300px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                display: 'flex',
+                justifyContent: 'space-between',
               }}
             >
-              <img
-                src={resolveNodeImage(task)}
-                className={styles['header-img']}
-              />
-              <Tooltip title={task.id}>
-                <span className={styles['title']}>{task.id}</span>
-              </Tooltip>
-            </div>
-            <div />
-            <div style={{ marginTop: '4px' }}>
-              <DeleteOutline
-                className={styles['action']}
-                sx={{
-                  color: '#666666',
-                  '&:hover': {
-                    color: 'red',
-                  },
+              <div
+                style={{
+                  width: '300px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
-                fontSize="large"
-                onClick={() => {
-                  setModal('delete');
-                }}
-              />
+              >
+                <img
+                  src={resolveNodeImage(task)}
+                  className={styles['header-img']}
+                />
+                <Tooltip title={task.id}>
+                  <span className={styles['title']}>{task.id}</span>
+                </Tooltip>
+              </div>
+              <div />
+              <div style={{ marginTop: '4px' }}>
+                <DeleteOutline
+                  className={styles['action']}
+                  sx={{
+                    color: '#666666',
+                    '&:hover': {
+                      color: 'red',
+                    },
+                  }}
+                  fontSize="large"
+                  onClick={() => {
+                    setModal('delete');
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          {task.description && (
-            <div className={styles['body']}>
-              <p className={styles['description']}>{task.description}</p>
-            </div>
-          )}
-          <div>
-            {Object.keys(inputs).length > 0 && showIO && (
-              <div className={styles['io']}>
-                {Object.keys(inputs).map((key) => {
-                  let validation = validateTaskInput(
-                    key,
-                    inputs[key],
-                    pipeline
-                  );
-                  let type = inputs[key].type;
-                  let required = inputs[key].required;
-                  let description = inputs[key].description;
-                  let value = inputs[key].value;
-                  return (
-                    <div
-                      key={`task-node-${task.id}-input-${key}`}
-                      className={styles['io-item']}
-                      style={{ position: 'relative' }}
-                    >
-                      <div>
-                        <StandardHandle
-                          key={`input-${task.id}-${key}`}
-                          id={`input-${task.id}-${key}`}
-                          type="target"
-                          position={Position.Left}
-                        />
-                      </div>
-                      <div>
-                        {value ? (
-                          <div>
-                            <TextField
-                              className={styles['io-text-field']}
-                              defaultValue={value as string}
-                              size="small"
-                              margin="none"
-                              disabled
-                              label={key}
-                              variant="outlined"
-                              onChange={() => {}}
-                            />
-                            <FormHelperText>{type}</FormHelperText>
-                            <FormHelperText>{description}</FormHelperText>
-                          </div>
-                        ) : (
-                          <div>
-                            {validation.type === 'error' &&
-                              validation.context === 'input' && (
-                                <Tooltip title={validation.message}>
-                                  <ErrorOutline
-                                    fontSize="small"
-                                    sx={{ color: 'red', marginRight: '4px' }}
-                                  />
-                                </Tooltip>
-                              )}
-                            {validation.type === 'warning' &&
-                              validation.context === 'input' && (
-                                <Tooltip title={validation.message}>
-                                  <WarningAmber
-                                    fontSize="small"
-                                    color="warning"
-                                    sx={{ marginRight: '4px' }}
-                                  />
-                                </Tooltip>
-                              )}
-                            <Tooltip title={key}>
-                              <span style={{ lineHeight: '20px' }}>
-                                {key}{' '}
-                                {required && (
-                                  <span style={{ color: 'red' }}>*</span>
+            {task.description && (
+              <div className={styles['body']}>
+                <p className={styles['description']}>{task.description}</p>
+              </div>
+            )}
+            <div>
+              {Object.keys(inputs).length > 0 && showIO && (
+                <div className={styles['io']}>
+                  {Object.keys(inputs).map((key) => {
+                    let validation = validateTaskInput(
+                      key,
+                      inputs[key],
+                      pipeline
+                    );
+                    let type = inputs[key].type;
+                    let required = inputs[key].required;
+                    let description = inputs[key].description;
+                    let value = inputs[key].value;
+                    return (
+                      <div
+                        key={`task-node-${task.id}-input-${key}`}
+                        className={styles['io-item']}
+                        style={{ position: 'relative' }}
+                      >
+                        <div>
+                          <StandardHandle
+                            key={`input-${task.id}-${key}`}
+                            id={`input-${task.id}-${key}`}
+                            type="target"
+                            position={Position.Left}
+                          />
+                        </div>
+                        <div>
+                          {value ? (
+                            <div>
+                              <TextField
+                                className={styles['io-text-field']}
+                                defaultValue={value as string}
+                                size="small"
+                                margin="none"
+                                disabled
+                                label={key}
+                                variant="outlined"
+                                onChange={() => {}}
+                              />
+                              <FormHelperText>{type}</FormHelperText>
+                              <FormHelperText>{description}</FormHelperText>
+                            </div>
+                          ) : (
+                            <div>
+                              {validation.type === 'error' &&
+                                validation.context === 'input' && (
+                                  <Tooltip title={validation.message}>
+                                    <ErrorOutline
+                                      fontSize="small"
+                                      sx={{ color: 'red', marginRight: '4px' }}
+                                    />
+                                  </Tooltip>
                                 )}
-                              </span>
-                            </Tooltip>
-                            <div className={styles['io-item-type']}>
                               {validation.type === 'warning' &&
-                                validation.context === 'inputType' && (
+                                validation.context === 'input' && (
                                   <Tooltip title={validation.message}>
                                     <WarningAmber
                                       fontSize="small"
@@ -312,109 +301,129 @@ const TaskNode: React.FC<NodeProps> = ({ data }) => {
                                     />
                                   </Tooltip>
                                 )}
-                              {type}
+                              <Tooltip title={key}>
+                                <span style={{ lineHeight: '20px' }}>
+                                  {key}{' '}
+                                  {required && (
+                                    <span style={{ color: 'red' }}>*</span>
+                                  )}
+                                </span>
+                              </Tooltip>
+                              <div className={styles['io-item-type']}>
+                                {validation.type === 'warning' &&
+                                  validation.context === 'inputType' && (
+                                    <Tooltip title={validation.message}>
+                                      <WarningAmber
+                                        fontSize="small"
+                                        color="warning"
+                                        sx={{ marginRight: '4px' }}
+                                      />
+                                    </Tooltip>
+                                  )}
+                                {type}
+                              </div>
+                              {description}
                             </div>
-                            {description}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {Object.keys(outputs).length > 0 && showIO && (
-              <div className={styles['io']}>
-                {Object.keys(outputs).map((key) => {
-                  let output: any = outputs[key];
-                  return (
-                    <div
-                      className={styles['io-item']}
-                      style={{ position: 'relative' }}
-                    >
-                      <div style={{ textAlign: 'right' }}>
-                        <Tooltip title={key}>
-                          <span>{key}</span>
-                        </Tooltip>
-                        <div className={styles['io-item-type']}>
-                          {output.type}
+                          )}
                         </div>
                       </div>
-                      <StandardHandle
-                        id={`output-${task.id}-${key}`}
-                        type="source"
-                        position={Position.Right}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {missingRefs.length > 0 && showIO && (
-              <div className={styles['io']}>
-                {missingRefs.map((key) => {
-                  return (
-                    <div
-                      className={`${styles['io-item']} ${styles['io-item-error']}`}
-                      style={{ position: 'relative' }}
-                    >
-                      <div>
+                    );
+                  })}
+                </div>
+              )}
+              {Object.keys(outputs).length > 0 && showIO && (
+                <div className={styles['io']}>
+                  {Object.keys(outputs).map((key) => {
+                    let output: any = outputs[key];
+                    return (
+                      <div
+                        className={styles['io-item']}
+                        style={{ position: 'relative' }}
+                      >
+                        <div style={{ textAlign: 'right' }}>
+                          <Tooltip title={key}>
+                            <span>{key}</span>
+                          </Tooltip>
+                          <div className={styles['io-item-type']}>
+                            {output.type}
+                          </div>
+                        </div>
                         <StandardHandle
                           id={`output-${task.id}-${key}`}
                           type="source"
                           position={Position.Right}
                         />
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <Tooltip
-                          title={`Output '${key}' is referenced by some task(s) but does not exist. Either add this output or remove the task input(s) that references it.`}
-                        >
-                          <div>
-                            <span>{key}</span>
-                            <ErrorOutline
-                              fontSize="small"
-                              sx={{ marginLeft: '8px', color: 'red' }}
-                            />
-                          </div>
-                        </Tooltip>
+                    );
+                  })}
+                </div>
+              )}
+              {missingRefs.length > 0 && showIO && (
+                <div className={styles['io']}>
+                  {missingRefs.map((key) => {
+                    return (
+                      <div
+                        className={`${styles['io-item']} ${styles['io-item-error']}`}
+                        style={{ position: 'relative' }}
+                      >
+                        <div>
+                          <StandardHandle
+                            id={`output-${task.id}-${key}`}
+                            type="source"
+                            position={Position.Right}
+                          />
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <Tooltip
+                            title={`Output '${key}' is referenced by some task(s) but does not exist. Either add this output or remove the task input(s) that references it.`}
+                          >
+                            <div>
+                              <span>{key}</span>
+                              <ErrorOutline
+                                fontSize="small"
+                                sx={{ marginLeft: '8px', color: 'red' }}
+                              />
+                            </div>
+                          </Tooltip>
+                        </div>
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <div className={styles['footer']}>
+              <OpenWith
+                className={styles['action']}
+                sx={{
+                  color: '#666666',
+                  transform: 'rotate(45deg)',
+                  '&:hover': {
+                    color: '#999999',
+                  },
+                }}
+                fontSize="large"
+                onClick={() => {
+                  history.push(
+                    `/workflows/pipelines/${groupId}/${pipeline.id}/tasks/${task.id}`
                   );
-                })}
-              </div>
-            )}
+                }}
+              />
+            </div>
           </div>
-          <div className={styles['footer']}>
-            <OpenWith
-              className={styles['action']}
-              sx={{
-                color: '#666666',
-                transform: 'rotate(45deg)',
-                '&:hover': {
-                  color: '#999999',
-                },
-              }}
-              fontSize="large"
-              onClick={() => {
-                history.push(
-                  `/workflows/pipelines/${groupId}/${pipeline.id}/tasks/${task.id}`
-                );
-              }}
-            />
-          </div>
-        </div>
-        <DeleteTaskModal
-          open={modal === 'delete'}
-          toggle={() => setModal(undefined)}
-        />
-        <StandardHandle
-          id={`task-${task.id}-source`}
-          type="source"
-          position={Position.Right}
-          style={{ top: '26px' }}
-        />
-      </TaskUpdateProvider>
-    </div>
+          <DeleteTaskModal
+            open={modal === 'delete'}
+            toggle={() => setModal(undefined)}
+          />
+          <StandardHandle
+            id={`task-${task.id}-source`}
+            type="source"
+            position={Position.Right}
+            style={{ top: '26px' }}
+          />
+        </TaskUpdateProvider>
+      </div>
+    </>
   );
 };
 

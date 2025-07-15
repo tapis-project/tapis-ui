@@ -1,11 +1,11 @@
 import React from 'react';
 import { Position, NodeProps } from '@xyflow/react';
 import styles from './ArgsNode.module.scss';
-import { StandardHandle } from '../../Handles';
+import { HiddenHandle, StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Edit, Delete, WarningAmber } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
-import { Tooltip } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 
 type NodeType = {
   pipeline: Workflows.Pipeline;
@@ -19,77 +19,72 @@ const argImageSrc =
 
 const ArgsNode: React.FC<NodeProps> = ({ data }) => {
   const { pipeline, referencedKeys, showIO } = data as NodeType;
-  const params = pipeline.params || {};
-  // References from tasks to env variables that do not exist
-  const missingRefs = referencedKeys.filter(
-    (k) => !Object.keys(params).includes(k)
-  );
+  // const params = pipeline.params || {};
 
   return (
-    <div key="args-node" className={styles['node']}>
-      <div className={styles['body']}>
-        <div className={styles['header']}>
-          <img src={argImageSrc} className={styles['header-img']} />
-          <span className={styles['title']}>Arguments</span>
+    <>
+      <HiddenHandle
+        key={`args-layout-target`}
+        id={`args-layout-target`}
+        type="target"
+        position={Position.Left}
+        style={{ top: '26px' }}
+      />
+      <div key="args-node" className={styles['node']}>
+        <div className={styles['body']}>
+          <div className={styles['header']}>
+            <img src={argImageSrc} className={styles['header-img']} />
+            <span className={styles['title']}>Arguments</span>
+          </div>
+        </div>
+        <div>
+          {referencedKeys.length > 0 && showIO && (
+            <div className={styles['io']}>
+              {referencedKeys.map((key) => {
+                return (
+                  <div
+                    className={`${styles['io-item']} ${styles['io-item-warning']}`}
+                    style={{ position: 'relative' }}
+                  >
+                    <div>
+                      <StandardHandle
+                        id={`arg-${key}`}
+                        type="source"
+                        position={Position.Right}
+                      />
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <TextField
+                        fullWidth
+                        defaultValue={''}
+                        required
+                        size="small"
+                        margin="none"
+                        label={key}
+                        variant="outlined"
+                        onChange={() => {}}
+                        sx={{
+                          '& label.MuiInputLabel-asterisk': {
+                            color: 'red', // or any custom color
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
-      <div>
-        {Object.keys(params).length > 0 && (
-          <div className={styles['io']}>
-            {Object.keys(params).map((key) => {
-              return (
-                <div
-                  className={styles['io-item']}
-                  style={{ position: 'relative' }}
-                >
-                  <div>
-                    <StandardHandle
-                      id={`arg-${key}`}
-                      type="source"
-                      position={Position.Right}
-                    />
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <Tooltip title={key}>
-                      <span>{key}</span>
-                    </Tooltip>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {missingRefs.length > 0 && showIO && (
-          <div className={styles['io']}>
-            {missingRefs.map((key) => {
-              return (
-                <div
-                  className={`${styles['io-item']} ${styles['io-item-warning']}`}
-                  style={{ position: 'relative' }}
-                >
-                  <div>
-                    <StandardHandle
-                      id={`arg-${key}`}
-                      type="source"
-                      position={Position.Right}
-                    />
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <Tooltip
-                      title={`Parameter '${key}' must be provided at runtime`}
-                    >
-                      <div>
-                        <span>{key}</span>
-                      </div>
-                    </Tooltip>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
+      <HiddenHandle
+        key={`args-layout-source`}
+        id={`args-layout-source`}
+        type="source"
+        position={Position.Right}
+        style={{ top: '26px' }}
+      />
+    </>
   );
 };
 
