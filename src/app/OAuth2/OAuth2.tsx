@@ -16,6 +16,10 @@ const OAuth2: React.FC = () => {
 
   useEffect(() => {
     setAccessToken({ access_token, expires_at, expires_in });
+    // Notify parent window (if in iframe) of successful auth
+    if (window.parent !== window) {
+      window.parent.postMessage('tapis-auth-success', window.location.origin);
+    }
     navigate.push(`/`);
     // eslint-disable-next-line
   }, []);
