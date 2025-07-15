@@ -60,7 +60,7 @@ const Login: React.FC = () => {
       defaultAuthURL +
       `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
         defaultRedirectURI
-      )}`;
+      )}&use_iframe_redirect=true`;
     console.debug(
       `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
     );
