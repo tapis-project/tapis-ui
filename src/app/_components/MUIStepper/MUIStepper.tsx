@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Box, Stepper, Step, StepLabel, Button } from '@mui/material';
 import { default as StepperStateProvider } from './StepperStateProvider';
+import { LoadingButton } from '@mui/lab';
 
 export type State = Record<any, any>;
 
@@ -15,6 +16,9 @@ interface MUIStepperProps {
   initialState: State;
   onClickFinish?: (state: State) => void;
   finishButtonText?: string;
+  backDisabled?: boolean;
+  nextIsLoading?: boolean;
+  nextDisabled?: boolean;
 }
 
 const MUIStepper = ({
@@ -22,6 +26,9 @@ const MUIStepper = ({
   initialState,
   onClickFinish,
   finishButtonText,
+  backDisabled = false,
+  nextIsLoading = false,
+  nextDisabled = false,
 }: MUIStepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState<State>(initialState);
@@ -66,6 +73,51 @@ const MUIStepper = ({
     return false;
   }, [activeStep, setActiveStep, state, setState]);
 
+  const renderNextButton = useCallback(() => {
+    if (nextIsLoading) {
+      console.log('NEXT IS LOADING');
+    }
+    return (
+      <LoadingButton
+        loading={nextIsLoading}
+        disabled={resolveNextCondition || nextDisabled}
+        onClick={activeStep !== steps.length - 1 ? handleNext : handleFinish}
+      >
+        {activeStep === steps.length - 1
+          ? finishButtonText
+            ? finishButtonText
+            : 'Finish'
+          : 'Next'}
+      </LoadingButton>
+    );
+  }, [
+    activeStep,
+    setActiveStep,
+    handleNext,
+    handleFinish,
+    resolveNextCondition,
+    finishButtonText,
+    nextIsLoading,
+    nextDisabled,
+  ]);
+
+  const renderBackButton = useCallback(() => {
+    return (
+      <>
+        {steps.length > 1 && activeStep > 0 && (
+          <Button
+            color="inherit"
+            disabled={activeStep === 0 || backDisabled}
+            onClick={handleBack}
+            sx={{ mr: 1 }}
+          >
+            Back
+          </Button>
+        )}
+      </>
+    );
+  }, [backDisabled, activeStep, setActiveStep, handleBack]);
+
   const renderStepper = useCallback(
     () => (
       <Box sx={{ width: '100%' }}>
@@ -78,35 +130,13 @@ const MUIStepper = ({
         </Stepper>
         {getStep().element}
         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          <Button
-            color="inherit"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
-            Back
-          </Button>
+          {renderBackButton()}
           <Box sx={{ flex: '1 1 auto' }} />
-          <Button
-            // Pain in the ass. Needed to use an IIFE here to make use of type
-            // narrowing; couldn't do it well with a ternary. I mean probably could
-            // have put that in a function but that would make this even harder to
-            // reason about.
-            disabled={resolveNextCondition}
-            onClick={
-              activeStep !== steps.length - 1 ? handleNext : handleFinish
-            }
-          >
-            {activeStep === steps.length - 1
-              ? finishButtonText
-                ? finishButtonText
-                : 'Finish'
-              : 'Next'}
-          </Button>
+          {renderNextButton()}
         </Box>
       </Box>
     ),
-    [activeStep, setActiveStep, state, setState]
+    [activeStep, setActiveStep, state, setState, initialState, steps]
   );
 
   return (

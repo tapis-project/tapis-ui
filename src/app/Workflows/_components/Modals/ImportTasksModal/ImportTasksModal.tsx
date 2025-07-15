@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import { LoadingButton as Button } from '@mui/lab';
@@ -19,33 +19,34 @@ import {
   AlertTitle,
   Input,
   IconButton,
+  Autocomplete,
+  TextField,
+  OutlinedInput,
 } from '@mui/material';
 import { useAppSelector } from '@redux';
 import { Close, Login } from '@mui/icons-material';
 
 const SelectGroupStep: React.FC = () => {
-  const { state, updateState } = useStepperState();
+  const { updateState } = useStepperState();
   const { groups } = useAppSelector((state) => state.workflows);
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
-      <InputLabel size="small" id="mode">
-        Group
-      </InputLabel>
-      <Select
-        label="Group"
-        labelId="mode"
-        size="small"
-        defaultValue={state.groupId}
-        onChange={(e) => {
-          updateState({
-            groupId: e.target.value,
-          });
+      <Autocomplete
+        options={groups}
+        getOptionLabel={(option: Workflows.Group) => option.id!}
+        id="disable-close-on-select"
+        disableClearable
+        onChange={(_, value) => {
+          if (value !== null) {
+            updateState({
+              groupId: value.id!,
+            });
+          }
         }}
-      >
-        {groups.map((group: Workflows.Group) => {
-          return <MenuItem value={group.id!}>{group.id}</MenuItem>;
-        })}
-      </Select>
+        renderInput={(params) => (
+          <TextField {...params} label="Group" variant="standard" />
+        )}
+      />
       <FormHelperText>Choose a group</FormHelperText>
     </FormControl>
   );
@@ -62,25 +63,22 @@ const SelectPipelineStep: React.FC = () => {
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
       <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
-        <InputLabel size="small" id="mode">
-          Pipeline
-        </InputLabel>
-        <Select
-          label="Pipeline"
-          labelId="mode"
-          size="small"
-          defaultValue={state.pipelineId}
-          onChange={(e) => {
-            updateState({
-              pipelineId: pipelines.filter((p) => p.id === e.target.value)[0]
-                .id,
-            });
+        <Autocomplete
+          options={pipelines}
+          getOptionLabel={(option: Workflows.Pipeline) => option.id!}
+          id="disable-close-on-select"
+          disableClearable
+          onChange={(_, value) => {
+            if (value !== null) {
+              updateState({
+                pipelineId: pipelines.filter((p) => p.id === value.id)[0].id,
+              });
+            }
           }}
-        >
-          {pipelines.map((pipeline: Workflows.Pipeline) => {
-            return <MenuItem value={pipeline.id!}>{pipeline.id}</MenuItem>;
-          })}
-        </Select>
+          renderInput={(params) => (
+            <TextField {...params} label="Pipeline" variant="standard" />
+          )}
+        />
         <FormHelperText>Choose a pipeline</FormHelperText>
       </FormControl>
     </QueryWrapper>
@@ -89,22 +87,15 @@ const SelectPipelineStep: React.FC = () => {
 
 const SelectTasksStep: React.FC = () => {
   const { state, updateState } = useStepperState();
-  const { data, isLoading, error } = Hooks.Pipelines.useDetails({
-    groupId: state.groupId as string,
-    pipelineId: state.pipelineId as string,
-  });
-
-  const importAllLabel = 'Import all tasks';
-
-  const importAll = useMemo(
-    () =>
-      state?.selectedTasks === undefined
-        ? false
-        : state.selectedTasks.includes(importAllLabel),
-    [state, updateState]
-  );
+  const { data, isLoading, isSuccess, isError, error } =
+    Hooks.Pipelines.useDetails({
+      groupId: state.groupId as string,
+      pipelineId: state.pipelineId as string,
+    });
 
   const tasks = data?.result?.tasks ?? [];
+
+  const importAllLabel = 'Import all tasks';
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
@@ -118,18 +109,33 @@ const SelectTasksStep: React.FC = () => {
           size="small"
           multiple
           onChange={(e) => {
-            let value = e.target.value;
+            const value = e.target.value;
+            // On autofill we get a stringified value.
+            const selectedTaskIds: Array<string> =
+              typeof value === 'string' ? value.split(',') : value;
+
+            let selectedTasks = tasks.filter((t) =>
+              selectedTaskIds.includes(t.id!)
+            );
+
+            if (selectedTaskIds.includes(importAllLabel)) {
+              selectedTasks = tasks.filter(
+                (t) => !selectedTaskIds.includes(t.id!)
+              );
+            }
             updateState({
-              // On autofill we get a stringified value.
-              selectedTasks:
-                typeof value === 'string' ? value.split(',') : value,
+              selectedTasks,
             });
           }}
-          value={state?.selectedTasks || []}
+          value={
+            state?.selectedTasks
+              ? state.selectedTasks.map((t: Workflows.Task) => t.id)
+              : []
+          }
           disabled={tasks.length === 0}
         >
           {tasks.length === 0 ? (
-            <MenuItem disabled>-- No tasks available to import--</MenuItem>
+            <MenuItem disabled>No options available</MenuItem>
           ) : (
             <MenuItem value={importAllLabel}>
               <Login style={{ marginRight: '8px' }} /> {importAllLabel}
@@ -137,19 +143,7 @@ const SelectTasksStep: React.FC = () => {
           )}
           {tasks.map((task: Workflows.Task) => {
             return (
-              <MenuItem
-                key={task.id}
-                sx={{
-                  '&.Mui-selected': {
-                    backgroundColor: importAll ? '#FFCCCB' : '#E5EEFA',
-                  },
-                  '&.Mui-selected:hover': {
-                    backgroundColor: importAll ? '#FFCCCB' : '#E5EEFA',
-                  },
-                }}
-                value={task.id!}
-              >
-                {importAll && 'except '}
+              <MenuItem key={task.id} value={task.id!}>
                 {task.id}
               </MenuItem>
             );
@@ -160,6 +154,87 @@ const SelectTasksStep: React.FC = () => {
     </QueryWrapper>
   );
 };
+
+// const RenameTaskIdsStep: React.FC = () => {
+//   const { state, updateState } = useStepperState();
+//   const resolveErrors = useCallback(
+//     (selectedTaskId: string) => {
+//       let existsInTarget: boolean = state.targetPipeline.tasks
+//         .map((t: Workflows.Task) => t.id)
+//         .includes(selectedTaskId);
+
+//       let isDuplicate =
+//         state.selectedTasks.filter(
+//           (t: Workflows.Task) => t.id === selectedTaskId
+//         ).length > 1;
+
+//       return [existsInTarget, isDuplicate];
+//     },
+//     [state, updateState]
+//   );
+
+//   return (
+//     <div>
+//       {state.selectedTasks.map((task: Workflows.Task) => {
+//         let errors = resolveErrors(task.id!);
+//         let isError: boolean = errors.some((e) => e);
+//         const helperText = () => {
+//           if (errors[0]) {
+//             return `This pipeline you are importing this task to already has a task with an id of '${task.id}'. Change the id before submitting`;
+//           }
+
+//           if (errors[1]) {
+//             return `Tasks must have unique ids`;
+//           }
+
+//           return `Task '${task.id}' will be imported into the current pipeline with this id `;
+//         };
+//         return (
+//           <div
+//             key={`${task.id}`}
+//             style={{
+//               display: 'flex',
+//               flexDirection: 'row',
+//               gap: '16px',
+//               marginTop: '16px',
+//               marginBottom: '16px',
+//             }}
+//           >
+//             <div style={{ flex: 1 }}>
+//               <FormControl fullWidth margin="dense">
+//                 <TextField
+//                   size="small"
+//                   variant="outlined"
+//                   id="Original Id"
+//                   label="Original Id"
+//                   disabled
+//                   value={task.id}
+//                 />
+//               </FormControl>
+//             </div>
+//             <div style={{ flex: 1 }}>
+//               <TextField
+//                 id="New Id"
+//                 label="New Id"
+//                 required
+//                 fullWidth
+//                 margin="dense"
+//                 variant="outlined"
+//                 size="small"
+//                 error={isError}
+//                 helperText={helperText()}
+//                 FormHelperTextProps={{
+//                   style: { color: isError ? 'red' : 'inherit' },
+//                 }}
+//                 defaultValue={task.id}
+//               />
+//             </div>
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
 
 type ImportTasksModalProps = {
   pipeline: Workflows.Pipeline;
@@ -174,18 +249,22 @@ const ImportTasksModal: React.FC<ImportTasksModalProps> = ({
   groupId,
   pipeline,
 }) => {
-  const { create, isLoading, error } = Hooks.Tasks.useCreate();
+  const { patch, isLoading, isError, error, isSuccess, invalidate, reset } =
+    Hooks.Pipelines.usePatch();
 
-  const createTask = (task: Workflows.Task) => {
-    create(
+  const batchCreateTasks = (tasks: Array<Workflows.Task>) => {
+    patch(
       {
         groupId,
         pipelineId: pipeline.id!,
-        reqTask: {
-          ...(task as any),
+        reqPatchPipeline: {
+          tasks: tasks as Array<Workflows.ReqTask>,
         },
       },
       {
+        onSuccess: () => {
+          invalidate();
+        },
         onError: (e) => {
           console.log(e.message);
         },
@@ -199,7 +278,7 @@ const ImportTasksModal: React.FC<ImportTasksModalProps> = ({
       open={open}
       onClose={toggle}
       aria-labelledby="Import tasks"
-      aria-describedby="A modal for copying tasks from other pipelines"
+      aria-describedby="A modal for importing tasks from other pipelines"
     >
       <DialogTitle id="alert-dialog-title">
         Import tasks
@@ -217,6 +296,18 @@ const ImportTasksModal: React.FC<ImportTasksModalProps> = ({
         </IconButton>
       </DialogTitle>
       <DialogContent>
+        {isError && error && (
+          <Alert
+            style={{ marginBottom: '8px' }}
+            severity="error"
+            onClose={() => {
+              reset();
+            }}
+          >
+            <AlertTitle>Error</AlertTitle>
+            {error.message}
+          </Alert>
+        )}
         <MUIStepper
           initialState={{
             targetGroupId: groupId,
@@ -225,10 +316,13 @@ const ImportTasksModal: React.FC<ImportTasksModalProps> = ({
             groupId: undefined,
             pipelineId: undefined,
           }}
+          backDisabled={isSuccess}
+          nextIsLoading={isLoading}
+          nextDisabled={isError || isLoading || isSuccess}
           onClickFinish={(state) => {
-            state.selectedTasks.map((taskId: string) => {
-              console.log({ taskId });
-            });
+            if (state.selectedTasks && state.selectedTasks.length > 0) {
+              batchCreateTasks(state.selectedTasks);
+            }
           }}
           finishButtonText="import"
           steps={[
@@ -249,6 +343,14 @@ const ImportTasksModal: React.FC<ImportTasksModalProps> = ({
                 state.selectedTasks !== undefined &&
                 state.selectedTasks.length > 0,
             },
+            // {
+            //   label: 'Rename tasks',
+            //   element: <RenameTaskIdsStep />,
+            //   nextCondition: (state) =>
+            //     state.validFields !== undefined &&
+            //     state.validFields.length > 0 &&
+            //     state.validFields.length === state.selectedTasks.length,
+            // },
           ]}
         />
       </DialogContent>
