@@ -13,7 +13,8 @@ import styles from './Login.module.scss';
 
 const Login: React.FC = () => {
   const { login, isLoading, error } = AuthenticatorHooks.useLogin();
-  const { accessToken, basePath, pathTenantId } = useTapisConfig();
+  const { accessToken, basePath, pathTenantId, setAccessToken } =
+    useTapisConfig();
   const { extension } = useExtension();
   const [activeAuthMethod, setActiveAuthMethod] = useState<
     undefined | 'implicit' | 'password'
@@ -116,9 +117,18 @@ const Login: React.FC = () => {
     // Listen for postMessage from iframe (OAuth2 redirect page)
     function handleMessage(event: MessageEvent) {
       // You may want to check event.origin for security
-      if (event.data === 'tapis-auth-success') {
-        // Reload or update state to reflect successful auth
-        window.location.reload();
+      if (event.data && event.data.type === 'tapis-auth-success') {
+        // Set access token from event data
+        console.debug(
+          `Login: handleMessage: event.data.access_token: ${JSON.stringify(event.data)}`
+        );
+        setAccessToken({
+          access_token: event.data.access_token,
+          expires_at: event.data.expires_at || 't',
+          expires_in: event.data.expires_in || 14400,
+        });
+        // Redirect to home page or wherever appropriate
+        window.location.href = '/';
       }
     }
     window.addEventListener('message', handleMessage);
