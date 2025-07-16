@@ -1,14 +1,12 @@
 import {
   useMutation,
   MutateOptions,
-  QueryClient,
   useQueryClient,
 } from 'react-query';
 import { Authenticator as API } from '@tapis/tapisui-api';
 import { Authenticator } from '@tapis/tapis-typescript';
 import { useTapisConfig } from 'context';
 import QueryKeys from './queryKeys';
-import { updateClient } from '@tapis/tapisui-api/dist/authenticator';
 
 type UpdateClientParams = {
   clientId: string;
@@ -40,6 +38,8 @@ const useUpdateClient = () => {
     invalidate,
     updateClient: (
       clientId: string,
+      callback_url: string,
+      display_name: string,
       options?: MutateOptions<
         Authenticator.RespUpdateClient,
         Error,
