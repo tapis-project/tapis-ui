@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import {
   Authenticator as AuthenticatorHooks,
@@ -15,14 +16,13 @@ const Login: React.FC = () => {
   const { login, isLoading, error } = AuthenticatorHooks.useLogin();
   const { accessToken, basePath, pathTenantId, setAccessToken } =
     useTapisConfig();
+  const navigate = useHistory();
   const { extension } = useExtension();
   const [activeAuthMethod, setActiveAuthMethod] = useState<
     undefined | 'implicit' | 'password'
   >(undefined);
-  const [authError, setAuthError] = useState<string | undefined>(undefined);
   const [iframeError, setIframeError] = useState<string | undefined>(undefined);
   const [iframeReady, setIframeReady] = useState<boolean>(false);
-  const [cookieString, setCookieString] = useState(document.cookie);
 
   // Auth order
   // 1. extension.implicit
@@ -116,11 +116,17 @@ const Login: React.FC = () => {
   useEffect(() => {
     // Listen for postMessage from iframe (OAuth2 redirect page)
     function handleMessage(event: MessageEvent) {
+      console.log(
+        `Login: handleMessage: event.data: ${JSON.stringify(event.data)}`
+      );
+      console.log('typeof event.data:', typeof event.data, event.data);
       // You may want to check event.origin for security
       if (event.data && event.data.type === 'tapis-auth-success') {
         // Set access token from event data
-        console.debug(
-          `Login: handleMessage: event.data.access_token: ${JSON.stringify(event.data)}`
+        console.log(
+          `Login: handleMessage.new: event.data.access_token: ${JSON.stringify(
+            event.data
+          )}`
         );
         setAccessToken({
           access_token: event.data.access_token,
@@ -128,7 +134,7 @@ const Login: React.FC = () => {
           expires_in: event.data.expires_in || 14400,
         });
         // Redirect to home page or wherever appropriate
-        window.location.href = '/';
+        navigate.push(`/`);
       }
     }
     window.addEventListener('message', handleMessage);
@@ -192,6 +198,8 @@ const Login: React.FC = () => {
               onClick={() => {
                 setActiveAuthMethod('implicit');
               }}
+              //change to loading until iframeReady is true
+              isLoading={!iframeReady}
             >
               Log in with your institution
             </Button>
@@ -210,9 +218,6 @@ const Login: React.FC = () => {
           }}
         >
           {iframeError && <div style={{ color: 'red' }}>{iframeError}</div>}
-          {!iframeError && !iframeReady && (
-            <div style={{ color: 'blue' }}>Loading...</div>
-          )}
           {iframeReady && !iframeError && (
             <iframe
               style={{
