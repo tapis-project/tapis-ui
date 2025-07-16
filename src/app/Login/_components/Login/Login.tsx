@@ -122,19 +122,17 @@ const Login: React.FC = () => {
       console.log('typeof event.data:', typeof event.data, event.data);
       // You may want to check event.origin for security
       if (event.data && event.data.type === 'tapis-auth-success') {
-        // Set access token from event data
-        console.log(
-          `Login: handleMessage.new: event.data.access_token: ${JSON.stringify(
-            event.data
-          )}`
-        );
-        setAccessToken({
-          access_token: event.data.access_token,
-          expires_at: event.data.expires_at || 't',
-          expires_in: event.data.expires_in || 14400,
-        });
-        // Redirect to home page or wherever appropriate
-        navigate.push(`/`);
+        if (event.data.access_token) {
+          setAccessToken({
+            access_token: event.data.access_token,
+            expires_at: event.data.expires_at || 't',
+            expires_in: event.data.expires_in || 14400,
+          });
+          // Redirect to home page or wherever appropriate
+          navigate.push(`/`);
+        } else {
+          setIframeError('No access token received from auth service.');
+        }
       }
     }
     window.addEventListener('message', handleMessage);
