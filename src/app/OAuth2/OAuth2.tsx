@@ -15,13 +15,12 @@ const OAuth2: React.FC = () => {
   const expires_in = 14400;
 
   useEffect(() => {
-    setAccessToken({ access_token, expires_at, expires_in });
-    // Notify parent window (if in iframe) of successful auth
-    //if (window.parent !== window) {
-    //window.parent.postMessage('tapis-auth-success', window.location.origin);
-    //}
-    navigate.push(`/`);
-    // eslint-disable-next-line
+    // Wait for setAccessToken before the push. Otherwise user might get placed back to / without set token
+    const doAuth = async () => {
+      await setAccessToken({ access_token, expires_at, expires_in });
+      navigate.push(`/`);
+    };
+    doAuth();
   }, []);
 
   return <></>;

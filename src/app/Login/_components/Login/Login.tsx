@@ -46,12 +46,7 @@ const Login: React.FC = () => {
       }&redirect_uri=${encodeURIComponent(
         implicitAuth.redirectURI
       )}&use_iframe_redirect=${String(implicitIframe)}`;
-    // TODO Remove below. Testing localhost
-    // implicitAuthURL =
-    //   implicitAuth.authorizationPath +
-    //   `?client_id=${implicitAuth.clientId}&response_type=${
-    //     implicitAuth.responseType
-    //   }&redirect_uri=${encodeURIComponent('http://localhost:3000/#/oauth2')}`;
+    // TODO - Get localhost working with http://localhost:3000/#/oauth2
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
   } else {
@@ -73,9 +68,12 @@ const Login: React.FC = () => {
       `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
     );
 
-    passwordAuth = location.href.startsWith('http://localhost:3000')
-      ? true
-      : false;
+    // For development add password Auth as implicit hasn't been implemented for localhost yet.
+    // TODO: remove implicitAuth check. Shouldn't show password auth ever, but clients not bootstrapped yet.
+    passwordAuth =
+      location.href.startsWith('http://localhost:3000') || !implicitAuthURL
+        ? true
+        : false;
   }
 
   useEffect(() => {
@@ -134,37 +132,58 @@ const Login: React.FC = () => {
     }
   }, [activeAuthMethod, implicitAuthURL]);
 
+  // Handle implicit auth via iframe or redirect
   useEffect(() => {
-    // Listen for postMessage from iframe (OAuth2 redirect page)
-    function handleMessage(event: MessageEvent) {
-      console.log(
-        `Login: handleMessage: event.data: ${JSON.stringify(event.data)}`
-      );
-      console.log('typeof event.data:', typeof event.data, event.data);
-      // You may want to check event.origin for security
-      if (event.data && event.data.type === 'tapis-auth-success') {
-        if (event.data.access_token && event.data.access_token !== 'None') {
-          setAccessToken({
-            access_token: event.data.access_token,
-            expires_at: event.data.expires_at || 't',
-            expires_in: event.data.expires_in || 14400,
+    if (activeAuthMethod === 'implicit' && implicitAuthURL) {
+      setImplicitError(undefined);
+      setImplicitReady(false);
+      if (implicitIframe) {
+        // Attempt to fetch the implicit auth URL to check if it's valid
+        // Possible client might not exist for tenant.
+        fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
+          .then((response) => {
+            if (response.status === 400) {
+              setImplicitError('There was an error getting auth context (400)');
+            } else {
+              setImplicitReady(true);
+            }
+          })
+          .catch(() => {
+            setImplicitError(
+              'There was an error connecting to the authentication service.'
+            );
           });
-          // Redirect to home page or wherever appropriate
-          navigate.push(`/`);
-        } else {
-          setImplicitError('Auth service return token not formed as expected.');
-        }
-      }
-    }
-    window.addEventListener('message', handleMessage);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, []);
 
-  useEffect(() => {
-    if (activeAuthMethod === 'implicit' && !implicitIframe && implicitAuthURL) {
-      window.location.replace(implicitAuthURL);
+        // Listen for postMessage from iframe (OAuth2 redirect page)
+        function handleMessage(event: MessageEvent) {
+          console.log(
+            `Login: handleMessage: event.data: ${JSON.stringify(event.data)}`
+          );
+          console.log('typeof event.data:', typeof event.data, event.data);
+          // You may want to check event.origin for security
+          if (event.data && event.data.type === 'tapis-auth-success') {
+            if (event.data.access_token && event.data.access_token !== 'None') {
+              setAccessToken({
+                access_token: event.data.access_token,
+                expires_at: event.data.expires_at || 't',
+                expires_in: event.data.expires_in || 14400,
+              });
+              // Redirect to home page or wherever appropriate
+              navigate.push(`/`);
+            } else {
+              setImplicitError(
+                'Auth service return token not formed as expected.'
+              );
+            }
+          }
+        }
+        window.addEventListener('message', handleMessage);
+        return () => {
+          window.removeEventListener('message', handleMessage);
+        };
+      } else if (implicitAuthURL) {
+        window.location.replace(implicitAuthURL);
+      }
     }
   }, [activeAuthMethod, implicitIframe, implicitAuthURL]);
 
