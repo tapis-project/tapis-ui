@@ -21,16 +21,21 @@ const Login: React.FC = () => {
   const [activeAuthMethod, setActiveAuthMethod] = useState<
     undefined | 'implicit' | 'password'
   >(undefined);
-  const [iframeError, setIframeError] = useState<string | undefined>(undefined);
-  const [iframeReady, setIframeReady] = useState<boolean>(false);
+  const [implicitError, setImplicitError] = useState<string | undefined>(
+    undefined
+  );
+  const [implicitReady, setImplicitReady] = useState<boolean>(false);
 
+  // If there's only one, we don't prompt users to choose auth to use.
   // Auth order
   // 1. extension.implicit
+  // 1a. default - redirect
+  // 1b. nondefault - iframe - federated auth breaks due to iframe permissions on external sites
   // 2. extension.password
   // 3. default implicit client or error message
   // 4. default password client or error message
-
   let implicitAuthURL: string | undefined = undefined;
+  let implicitIframe: boolean = false;
   let passwordAuth = undefined;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
@@ -38,7 +43,9 @@ const Login: React.FC = () => {
       implicitAuth.authorizationPath +
       `?client_id=${implicitAuth.clientId}&response_type=${
         implicitAuth.responseType
-      }&redirect_uri=${encodeURIComponent(implicitAuth.redirectURI)}`;
+      }&redirect_uri=${encodeURIComponent(
+        implicitAuth.redirectURI
+      )}&use_iframe_redirect=${String(implicitIframe)}`;
     // TODO Remove below. Testing localhost
     // implicitAuthURL =
     //   implicitAuth.authorizationPath +
@@ -61,7 +68,7 @@ const Login: React.FC = () => {
       defaultAuthURL +
       `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
         defaultRedirectURI
-      )}&use_iframe_redirect=true`;
+      )}&use_iframe_redirect=${String(implicitIframe)}`;
     console.debug(
       `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
     );
@@ -71,9 +78,23 @@ const Login: React.FC = () => {
       : false;
   }
 
-  // implicitAuthURL = `https://dev.develop.tapis.io/v3/oauth2/authorize?client_id=tapisui-implicit-client-cgarcia&response_type=token&redirect_uri=${encodeURIComponent(
-  //   'http://localhost:3000'
-  // )}`;
+  useEffect(() => {
+    if (implicitAuthURL && passwordAuth) {
+      // Both auth methods available, show buttons
+      setActiveAuthMethod(undefined);
+    } else if (implicitAuthURL) {
+      // Only implicit auth available
+      setActiveAuthMethod('implicit');
+    } else if (passwordAuth) {
+      // Only password auth available
+      setActiveAuthMethod('password');
+    } else {
+      // No auth methods available, show error
+      setImplicitError(
+        'No authentication methods available. Please contact Tapis admins for TapisUI tenant support.'
+      );
+    }
+  }, [implicitAuthURL, passwordAuth]);
 
   const onSubmit = ({
     username,
@@ -95,18 +116,18 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (activeAuthMethod === 'implicit' && implicitAuthURL) {
-      setIframeError(undefined);
-      setIframeReady(false);
+      setImplicitError(undefined);
+      setImplicitReady(false);
       fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
         .then((response) => {
           if (response.status === 400) {
-            setIframeError('There was an error getting auth context (400)');
+            setImplicitError('There was an error getting auth context (400)');
           } else {
-            setIframeReady(true);
+            setImplicitReady(true);
           }
         })
         .catch(() => {
-          setIframeError(
+          setImplicitError(
             'There was an error connecting to the authentication service.'
           );
         });
@@ -122,7 +143,7 @@ const Login: React.FC = () => {
       console.log('typeof event.data:', typeof event.data, event.data);
       // You may want to check event.origin for security
       if (event.data && event.data.type === 'tapis-auth-success') {
-        if (event.data.access_token) {
+        if (event.data.access_token && event.data.access_token !== 'None') {
           setAccessToken({
             access_token: event.data.access_token,
             expires_at: event.data.expires_at || 't',
@@ -131,7 +152,7 @@ const Login: React.FC = () => {
           // Redirect to home page or wherever appropriate
           navigate.push(`/`);
         } else {
-          setIframeError('No access token received from auth service.');
+          setImplicitError('Auth service return token not formed as expected.');
         }
       }
     }
@@ -140,6 +161,12 @@ const Login: React.FC = () => {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (activeAuthMethod === 'implicit' && !implicitIframe && implicitAuthURL) {
+      window.location.replace(implicitAuthURL);
+    }
+  }, [activeAuthMethod, implicitIframe, implicitAuthURL]);
 
   return (
     <div>
@@ -196,15 +223,15 @@ const Login: React.FC = () => {
               onClick={() => {
                 setActiveAuthMethod('implicit');
               }}
-              //change to loading until iframeReady is true
-              isLoading={!iframeReady}
+              //change to loading until implicitReady is true
+              isLoading={!implicitReady}
             >
               Log in with your institution
             </Button>
           )}
         </div>
       )}
-      {activeAuthMethod === 'implicit' && (
+      {activeAuthMethod === 'implicit' && implicitIframe && (
         <div
           style={{
             width: '100%',
@@ -215,8 +242,8 @@ const Login: React.FC = () => {
             marginTop: '1rem',
           }}
         >
-          {iframeError && <div style={{ color: 'red' }}>{iframeError}</div>}
-          {iframeReady && !iframeError && (
+          {implicitError && <div style={{ color: 'red' }}>{implicitError}</div>}
+          {implicitReady && !implicitError && (
             <iframe
               style={{
                 flexGrow: 1,
