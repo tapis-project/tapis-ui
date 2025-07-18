@@ -16,7 +16,7 @@ const useTapisConfig = () => {
     return undefined;
   };
 
-  let { data, refetch } = useQuery<
+  const { data, refetch } = useQuery<
     Authenticator.NewAccessTokenResponse | undefined
   >('tapis-token', getAccessToken, {
     initialData: () => getAccessToken(),
@@ -47,27 +47,32 @@ const useTapisConfig = () => {
     });
     await refetch();
   };
-
+  console.debug(
+    `useTapisConfig: basePath: ${basePath}, data.access_token exists:`,
+    JSON.stringify(data?.access_token ? true : false, null, 2)
+  );
   const claims: { [key: string]: any } = data?.access_token
     ? jwt_decode(data?.access_token)
     : {};
 
   const pathTenantId = basePath
-    .replace('https://', '')
-    .replace('http://', '')
-    .split('.')[0];
+    ? basePath.replace('https://', '').replace('http://', '').split('.')[0]
+    : undefined;
 
-  const tokenTenantId = claims['tapis/tenant_id'] ?? undefined;
+  const tokenTenantId: string | undefined =
+    claims['tapis/tenant_id'] ?? undefined;
 
-  const tenantMatchDomain = basePath
-    .toLowerCase()
-    .includes(tokenTenantId ? tokenTenantId.toLowerCase() + '.' : '');
+  // Inline logic for domainsMatched
+  const domainsMatched =
+    basePath && tokenTenantId
+      ? basePath.toLowerCase().includes(tokenTenantId.toLowerCase() + '.')
+      : false;
 
-  if (!tenantMatchDomain) {
+  if (tokenTenantId && Object.keys(claims).length > 0 && !domainsMatched) {
     console.error(
-      `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Setting accessToken to undefined.`
+      `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Logging user out.`
     );
-    data = undefined;
+    setAccessToken(null);
   }
 
   return {
@@ -77,7 +82,7 @@ const useTapisConfig = () => {
     claims,
     pathTenantId: pathTenantId ?? undefined,
     tokenTenantId: tokenTenantId ?? "couldn't derive tenant_id",
-    tenantMatchDomain: tenantMatchDomain,
+    domainsMatched: domainsMatched,
     username: claims['tapis/username'],
   };
 };

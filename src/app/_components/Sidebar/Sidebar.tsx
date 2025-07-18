@@ -57,7 +57,7 @@ type SidebarItems = {
 };
 
 const Sidebar: React.FC = () => {
-  const { accessToken, claims, tenantMatchDomain, basePath } = useTapisConfig();
+  const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
   const { extension } = useExtension();
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
@@ -411,7 +411,7 @@ const Sidebar: React.FC = () => {
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Sign out</ListItemText>
+            <ListItemText>Logout</ListItemText>
           </MenuItem>
         ) : (
           <MenuItem onClick={() => history.push('/login')}>
@@ -436,7 +436,7 @@ const Sidebar: React.FC = () => {
           <Typography variant="h6">Access Token Object</Typography>
           <CodeMirror
             value={
-              tenantMatchDomain
+              domainsMatched
                 ? JSON.stringify(accessToken, null, 2)
                 : 'Access token tenant_id and current domain are out-of-sync. Please log-in again.'
             }

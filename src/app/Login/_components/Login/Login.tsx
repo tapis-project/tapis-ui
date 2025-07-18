@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import {
   Authenticator as AuthenticatorHooks,
@@ -13,23 +14,28 @@ import styles from './Login.module.scss';
 
 const Login: React.FC = () => {
   const { login, isLoading, error } = AuthenticatorHooks.useLogin();
-  const { accessToken, basePath, pathTenantId } = useTapisConfig();
+  const { accessToken, basePath, pathTenantId, setAccessToken } =
+    useTapisConfig();
+  const navigate = useHistory();
   const { extension } = useExtension();
   const [activeAuthMethod, setActiveAuthMethod] = useState<
     undefined | 'implicit' | 'password'
   >(undefined);
-  const [authError, setAuthError] = useState<string | undefined>(undefined);
-  const [iframeError, setIframeError] = useState<string | undefined>(undefined);
-  const [iframeReady, setIframeReady] = useState<boolean>(false);
-  const [cookieString, setCookieString] = useState(document.cookie);
+  const [implicitError, setImplicitError] = useState<string | undefined>(
+    undefined
+  );
+  const [implicitReady, setImplicitReady] = useState<boolean>(false);
 
+  // If there's only one, we don't prompt users to choose auth to use.
   // Auth order
   // 1. extension.implicit
+  // 1a. default - redirect
+  // 1b. nondefault - iframe - federated auth breaks due to iframe permissions on external sites
   // 2. extension.password
   // 3. default implicit client or error message
   // 4. default password client or error message
-
   let implicitAuthURL: string | undefined = undefined;
+  let implicitIframe: boolean = false;
   let passwordAuth = undefined;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
@@ -37,13 +43,10 @@ const Login: React.FC = () => {
       implicitAuth.authorizationPath +
       `?client_id=${implicitAuth.clientId}&response_type=${
         implicitAuth.responseType
-      }&redirect_uri=${encodeURIComponent(implicitAuth.redirectURI)}`;
-    // TODO Remove below. Testing localhost
-    // implicitAuthURL =
-    //   implicitAuth.authorizationPath +
-    //   `?client_id=${implicitAuth.clientId}&response_type=${
-    //     implicitAuth.responseType
-    //   }&redirect_uri=${encodeURIComponent('http://localhost:3000/#/oauth2')}`;
+      }&redirect_uri=${encodeURIComponent(
+        implicitAuth.redirectURI
+      )}&use_iframe_redirect=${String(implicitIframe)}`;
+    // TODO - Get localhost working with http://localhost:3000/#/oauth2
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
   } else {
@@ -60,19 +63,36 @@ const Login: React.FC = () => {
       defaultAuthURL +
       `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
         defaultRedirectURI
-      )}`;
+      )}&use_iframe_redirect=${String(implicitIframe)}`;
     console.debug(
       `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
     );
 
-    passwordAuth = location.href.startsWith('http://localhost:3000')
-      ? true
-      : false;
+    // For development add password Auth as implicit hasn't been implemented for localhost yet.
+    // TODO: remove implicitAuth check. Shouldn't show password auth ever, but clients not bootstrapped yet.
+    passwordAuth =
+      location.href.startsWith('http://localhost:3000') || !implicitAuthURL
+        ? true
+        : true; // always password auth for now
   }
 
-  // implicitAuthURL = `https://dev.develop.tapis.io/v3/oauth2/authorize?client_id=tapisui-implicit-client-cgarcia&response_type=token&redirect_uri=${encodeURIComponent(
-  //   'http://localhost:3000'
-  // )}`;
+  useEffect(() => {
+    if (implicitAuthURL && passwordAuth) {
+      // Both auth methods available, show buttons
+      setActiveAuthMethod(undefined);
+    } else if (implicitAuthURL) {
+      // Only implicit auth available
+      setActiveAuthMethod('implicit');
+    } else if (passwordAuth) {
+      // Only password auth available
+      setActiveAuthMethod('password');
+    } else {
+      // No auth methods available, show error
+      setImplicitError(
+        'No authentication methods available. Please contact Tapis admins for TapisUI tenant support.'
+      );
+    }
+  }, [implicitAuthURL, passwordAuth]);
 
   const onSubmit = ({
     username,
@@ -94,53 +114,81 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (activeAuthMethod === 'implicit' && implicitAuthURL) {
-      setIframeError(undefined);
-      setIframeReady(false);
+      setImplicitError(undefined);
+      setImplicitReady(false);
       fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
         .then((response) => {
           if (response.status === 400) {
-            setIframeError('There was an error getting auth context (400)');
+            setImplicitError('There was an error getting auth context (400)');
           } else {
-            setIframeReady(true);
+            setImplicitReady(true);
           }
         })
         .catch(() => {
-          setIframeError(
+          setImplicitError(
             'There was an error connecting to the authentication service.'
           );
         });
     }
   }, [activeAuthMethod, implicitAuthURL]);
 
+  // Handle implicit auth via iframe or redirect
   useEffect(() => {
-    // Listen for postMessage from iframe (OAuth2 redirect page)
-    function handleMessage(event: MessageEvent) {
-      // You may want to check event.origin for security
-      if (event.data === 'tapis-auth-success') {
-        // Reload or update state to reflect successful auth
-        window.location.reload();
+    if (activeAuthMethod === 'implicit' && implicitAuthURL) {
+      setImplicitError(undefined);
+      setImplicitReady(false);
+      if (implicitIframe) {
+        // Attempt to fetch the implicit auth URL to check if it's valid
+        // Possible client might not exist for tenant.
+        fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
+          .then((response) => {
+            if (response.status === 400) {
+              setImplicitError('There was an error getting auth context (400)');
+            } else {
+              setImplicitReady(true);
+            }
+          })
+          .catch(() => {
+            setImplicitError(
+              'There was an error connecting to the authentication service.'
+            );
+          });
+
+        // Listen for postMessage from iframe (OAuth2 redirect page)
+        function handleMessage(event: MessageEvent) {
+          console.log(
+            `Login: handleMessage: event.data: ${JSON.stringify(event.data)}`
+          );
+          console.log('typeof event.data:', typeof event.data, event.data);
+          // You may want to check event.origin for security
+          if (event.data && event.data.type === 'tapis-auth-success') {
+            if (event.data.access_token && event.data.access_token !== 'None') {
+              setAccessToken({
+                access_token: event.data.access_token,
+                expires_at: event.data.expires_at || 't',
+                expires_in: event.data.expires_in || 14400,
+              });
+              // Redirect to home page or wherever appropriate
+              navigate.push(`/`);
+            } else {
+              setImplicitError(
+                'Auth service return token not formed as expected.'
+              );
+            }
+          }
+        }
+        window.addEventListener('message', handleMessage);
+        return () => {
+          window.removeEventListener('message', handleMessage);
+        };
+      } else if (implicitAuthURL) {
+        window.location.replace(implicitAuthURL);
       }
     }
-    window.addEventListener('message', handleMessage);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCookieString(document.cookie);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [activeAuthMethod, implicitIframe, implicitAuthURL]);
 
   return (
     <div>
-      {`cookies enabled: ${navigator.cookieEnabled}`}
-      <br />
-      {`cookies: ${JSON.stringify(cookieString)}`}
-      <br />
-      {`basePath: ${basePath}`}
       {passwordAuth && activeAuthMethod === 'password' && (
         <Formik
           initialValues={initialValues}
@@ -190,33 +238,36 @@ const Login: React.FC = () => {
           )}
           {implicitAuthURL !== undefined && (
             <Button
-              disabled={false}
+              disabled={!!implicitError || !implicitReady}
               onClick={() => {
                 setActiveAuthMethod('implicit');
               }}
+              //change to loading until implicitReady is true
+              isLoading={!implicitReady}
             >
               Log in with your institution
             </Button>
           )}
         </div>
       )}
-      {activeAuthMethod === 'implicit' && (
+      {activeAuthMethod === 'implicit' && implicitIframe && (
         <div
           style={{
             width: '100%',
-            height: '100%',
+            height: 'calc(100vh - 7rem)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'scroll',
-            marginTop: '2rem',
+            marginTop: '1rem',
           }}
         >
-          {iframeError && (
-            <div style={{ color: 'red', marginTop: '1rem' }}>{iframeError}</div>
-          )}
-          {iframeReady && !iframeError && (
+          {implicitError && <div style={{ color: 'red' }}>{implicitError}</div>}
+          {implicitReady && !implicitError && (
             <iframe
-              style={{ flexGrow: 1, border: 'none', minHeight: '600px' }}
+              style={{
+                flexGrow: 1,
+                border: 'none',
+              }}
               id="LoginIframe"
               title="Tapis Login"
               src={implicitAuthURL}
