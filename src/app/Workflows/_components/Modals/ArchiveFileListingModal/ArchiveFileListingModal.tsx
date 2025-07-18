@@ -41,7 +41,9 @@ const ArchiveFileListingModal: React.FC<ArchiveFileListingModalProps> = ({
   archive,
 }) => {
   const { select, selectedFiles, unselect } = useFilesSelect();
-  const formattedArchiveDir = archive.archive_dir.startsWith('/') ? archive.archive_dir.slice(1) : archive.archive_dir;
+  const formattedArchiveDir = archive.archive_dir.startsWith('/')
+    ? archive.archive_dir.slice(1)
+    : archive.archive_dir;
   return (
     <Dialog
       open={open}
