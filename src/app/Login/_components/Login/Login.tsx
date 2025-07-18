@@ -73,7 +73,7 @@ const Login: React.FC = () => {
     passwordAuth =
       location.href.startsWith('http://localhost:3000') || !implicitAuthURL
         ? true
-        : false;
+        : true; // always password auth for now
   }
 
   useEffect(() => {
@@ -238,7 +238,7 @@ const Login: React.FC = () => {
           )}
           {implicitAuthURL !== undefined && (
             <Button
-              disabled={false}
+              disabled={!!implicitError || !implicitReady}
               onClick={() => {
                 setActiveAuthMethod('implicit');
               }}
