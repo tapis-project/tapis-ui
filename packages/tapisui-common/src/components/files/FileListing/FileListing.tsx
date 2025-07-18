@@ -270,7 +270,7 @@ const FileListing: React.FC<FileListingProps> = ({
     fetchNextPage,
     concatenatedResults,
     isFetchingNextPage,
-  } = Hooks.useList({ systemId, path });
+  } = Hooks.useList({ systemId, path }, { retry: 0 });
 
   const infiniteScrollCallback = useCallback(() => {
     if (hasNextPage) {

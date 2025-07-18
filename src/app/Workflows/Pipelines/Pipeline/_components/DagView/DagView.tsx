@@ -11,7 +11,7 @@ import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
 import { DagViewHeader } from './DagViewHeader';
 import { Alert, AlertTitle, Chip, Fab, Tooltip } from '@mui/material';
-import { DataObject, Share, Add, Publish, Login } from '@mui/icons-material';
+import { DataObject, Share, Add, SaveAlt } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -29,11 +29,9 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import {
-  CreateTaskModal,
-  RunPipelineModal,
+  CreateFunctionTaskModal,
   ImportTasksModal,
 } from 'app/Workflows/_components/Modals';
-import { DagViewDrawer } from '../DagViewDrawer';
 import ELK, {
   ElkNode,
   ElkExtendedEdge,
@@ -41,6 +39,7 @@ import ELK, {
 } from 'elkjs/lib/elk.bundled.js';
 import '@xyflow/react/dist/style.css';
 import _ from 'lodash';
+import { ArchivesNode } from './Nodes/ArchivesNode';
 
 const elk = new ELK();
 
@@ -118,13 +117,17 @@ const newTaskNode = (node: {
   showIO: boolean;
   referencedKeys: Array<string>;
 }): Node => {
+  let height: number | undefined;
+  let width: number | undefined;
   return {
     id: node.task.id!,
     position: {
       x: 0,
       y: 0,
     },
-    type: 'standard',
+    height,
+    width,
+    type: 'task',
     data: {
       label: node.task.id!,
       task: node.task,
@@ -166,8 +169,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const { fitView } = useReactFlow();
   const [view, setView] = useState<View>('io');
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const { patch, isLoading, isError, error, isSuccess, reset } =
+  // NOTE TODO Loading the pipeline data here again just to get the invalidate
+  // hook. Maybe just load it here
+  const { patch, isLoading, isError, error, isSuccess, reset, invalidate } =
     Hooks.Tasks.usePatch();
 
   const tasks = pipeline.tasks!;
@@ -209,6 +213,30 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       targetHandle: 'taskRoot-layout-target',
       source: `${scope}-${pipeline.id}`,
       sourceHandle: `${scope}-layout-source`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createLayoutRootToArchEdge = () => {
+    return {
+      id: `e-layoutRoot->arch`,
+      type: 'default',
+      source: 'layoutRoot',
+      sourceHandle: 'layoutRoot-layout-source',
+      target: `arch-${pipeline.id}`,
+      targetHandle: `arch-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createArchToTaskRootEdge = () => {
+    return {
+      id: `e-taskRoot->arch`,
+      type: 'default',
+      target: 'taskRoot',
+      targetHandle: 'taskRoot-layout-target',
+      source: `arch-${pipeline.id}`,
+      sourceHandle: `arch-layout-source`,
       style: { stroke: 'transparent', strokeWidth: 0 },
     };
   };
@@ -265,8 +293,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const nodeTypes = useMemo(
     () => ({
       layout: LayoutNode,
-      standard: TaskNode,
+      task: TaskNode,
       args: ArgsNode,
+      arch: ArchivesNode,
       env: EnvironmentNode,
       missing: MissingTaskNode,
     }),
@@ -343,14 +372,15 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       }
     }
 
-    // Create inputs for
-    let input = task.input || {};
-    Object.keys(input).map((key) => {
-      let taskId = input[key].value_from?.task_output?.task_id;
-      if (taskId !== undefined && !missingTaskIds.includes(taskId)) {
-        missingTaskIds.push(taskId);
-      }
-    });
+    // TODO Fix this below! I guess it is supposed to find references to outputs
+    // of tasks that do not exist but it doesn't do that
+    // let input = task.input || {};
+    // Object.keys(input).map((key) => {
+    //   let taskId = input[key].value_from?.task_output?.task_id;
+    //   if (taskId !== undefined && !missingTaskIds.includes(taskId)) {
+    //     missingTaskIds.push(taskId);
+    //   }
+    // });
 
     return missingTaskIds;
   };
@@ -438,7 +468,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         id: `env-${pipeline.id}`,
         position: { x: 0, y: 0 },
         type: 'env',
+        width: 400,
         data: {
+          groupId,
           pipeline,
           referencedKeys: taskInputRefs.env.filter((e) => e !== undefined),
           showIO: view === 'io',
@@ -448,9 +480,24 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         id: `args-${pipeline.id}`,
         position: { x: 0, y: 0 },
         type: 'args',
+        width: 400,
         data: {
+          groupId,
           pipeline,
           referencedKeys: taskInputRefs.params.filter((e) => e !== undefined),
+          showIO: view === 'io',
+        },
+      },
+
+      // Add the archives nodes
+      {
+        id: `arch-${pipeline.id}`,
+        position: { x: 0, y: 0 },
+        type: 'arch',
+        width: 400,
+        data: {
+          groupId,
+          pipeline,
           showIO: view === 'io',
         },
       },
@@ -462,8 +509,10 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const calculateEdges = useCallback(() => {
     const initialEdges: Array<Edge> = [];
 
-    // First create the edge between the root layout node and the args and env
-    // nodes as well as the args and env nodes to the task root node
+    // First create the edge between the root layout node and the args, env,
+    // and archives node
+    initialEdges.push(createArchToTaskRootEdge());
+    initialEdges.push(createLayoutRootToArchEdge());
     initialEdges.push(createLayoutRootToEnvOrArgsEdge('args'));
     initialEdges.push(createLayoutRootToEnvOrArgsEdge('env'));
     initialEdges.push(createEnvOrArgsToTaskRootEdge('args'));
@@ -694,6 +743,8 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       let sourceKey: string = params.sourceHandle.slice(sourceKeyPrefix.length);
       handlePipelineInputPatch(params.target, sourceKey, inputId, 'env');
     }
+
+    invalidate();
   }, []);
 
   const onLayout = useCallback(
@@ -770,19 +821,6 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         pipeline={pipeline}
       />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ position: 'relative' }}>
-          <DagViewDrawer
-            groupId={groupId}
-            pipelineId={pipeline.id!}
-            open={drawerOpen}
-            toggle={() => {
-              setDrawerOpen(false);
-            }}
-            onClickCreateTask={() => {
-              setModal('createtask');
-            }}
-          />
-        </div>
         <div className={styles['dag']}>
           <ReactFlow
             nodeTypes={nodeTypes}
@@ -878,33 +916,21 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
             />
             <Panel
               position="top-left"
-              style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
             >
-              <Tooltip title={'Run pipeline'}>
+              <Tooltip title={'New task'} placement="right">
                 <Fab
                   size="small"
                   color="primary"
                   aria-label="add"
                   onClick={() => {
-                    setModal('runpipeline');
-                  }}
-                >
-                  <Publish />
-                </Fab>
-              </Tooltip>
-              <Tooltip title={'New task'}>
-                <Fab
-                  size="small"
-                  color="primary"
-                  aria-label="add"
-                  onClick={() => {
-                    setDrawerOpen(true);
+                    setModal('createfunctiontask');
                   }}
                 >
                   <Add />
                 </Fab>
               </Tooltip>
-              <Tooltip title={'Import tasks'}>
+              <Tooltip title={'Import tasks'} placement="right">
                 <Fab
                   size="small"
                   color="primary"
@@ -913,7 +939,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
                     setModal('importtasks');
                   }}
                 >
-                  <Login />
+                  <SaveAlt />
                 </Fab>
               </Tooltip>
             </Panel>
@@ -932,21 +958,12 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
           groupId={groupId}
           pipeline={pipeline}
         />
-        <CreateTaskModal
-          open={modal === 'createtask'}
+        <CreateFunctionTaskModal
+          open={modal === 'createfunctiontask'}
           toggle={() => {
             setModal(undefined);
           }}
           groupId={groupId}
-          pipelineId={pipeline.id!}
-        />
-        <RunPipelineModal
-          open={modal === 'runpipeline'}
-          toggle={() => {
-            setModal(undefined);
-          }}
-          groupId={groupId}
-          pipelineId={pipeline.id!}
           pipeline={pipeline}
         />
       </div>

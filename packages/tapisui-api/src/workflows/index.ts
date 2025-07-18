@@ -8,3 +8,4 @@ export * as TaskExecutions from './taskexecutions';
 export * as Tasks from './tasks';
 export * as Secrets from './secrets';
 export * as GroupSecrets from './groupsecrets';
+export * as PipelineArchives from './pipelinearchives';

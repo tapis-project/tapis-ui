@@ -8,3 +8,7 @@ export { AddOutputModal } from './AddOutputModal';
 export { CreateSecretModal } from './CreateSecretModal';
 export { AddGroupSecretModal } from './AddGroupSecretModal';
 export { ImportTasksModal } from './ImportTasksModal';
+export { AddPipelineEnvVarModal } from './AddPipelineEnvVarModal';
+export { CreateFunctionTaskModal } from './CreateFunctionTaskModal';
+export { AddPipelineArchiveModal } from './AddPipelineArchiveModal';
+export { ArchiveFileListingModal } from './ArchiveFileListingModal';

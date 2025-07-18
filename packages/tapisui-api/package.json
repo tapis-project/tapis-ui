@@ -28,7 +28,7 @@
     ]
   },
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.58",
+    "@tapis/tapis-typescript": "^0.0.60",
     "axios": "^1.7.5",
     "cross-fetch": "^3.1.4",
     "streamsaver": "^2.0.5",

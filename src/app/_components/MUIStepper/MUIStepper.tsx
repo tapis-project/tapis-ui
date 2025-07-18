@@ -74,9 +74,6 @@ const MUIStepper = ({
   }, [activeStep, setActiveStep, state, setState]);
 
   const renderNextButton = useCallback(() => {
-    if (nextIsLoading) {
-      console.log('NEXT IS LOADING');
-    }
     return (
       <LoadingButton
         loading={nextIsLoading}
