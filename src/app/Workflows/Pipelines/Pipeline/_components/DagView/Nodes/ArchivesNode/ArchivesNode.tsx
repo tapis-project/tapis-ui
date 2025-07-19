@@ -14,14 +14,12 @@ import {
   ArchiveFileListingModal,
 } from 'app/Workflows/_components/Modals';
 import { QueryWrapper } from '@tapis/tapisui-common';
+import { useHistory } from 'react-router-dom';
 
 type NodeType = {
   groupId: string;
   pipeline: Workflows.Pipeline;
   showIO: boolean;
-  // Env vars that are referenced in other tasks either correctly or erroneously
-  referencedKeys: Array<string>;
-  onClickAdd: () => void;
 };
 
 const archImgSrc =
@@ -35,6 +33,8 @@ const Archive: React.FC<{
   const { isLoading, isSuccess, isError, error, reset } =
     Hooks.PipelineArchives.useCreate();
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const history = useHistory();
+  let arch = archive as Workflows.TapisSystemArchive;
 
   return (
     <div
@@ -72,12 +72,15 @@ const Archive: React.FC<{
         <div
           style={{ cursor: 'pointer' }}
           onClick={() => {
-            setModal('filelisting');
+            // setModal('filelisting');
+            history.push(`/files/${arch.system_id}/`);
           }}
         >
           <div style={{ textAlign: 'right' }}>
-            <Tooltip title={archive.id}>
-              <span>{archive.id}</span>
+            <Tooltip title={arch.id}>
+              <span>
+                {archive.id} - tapis://{arch.system_id}
+              </span>
             </Tooltip>
           </div>
           <div
@@ -101,7 +104,7 @@ const Archive: React.FC<{
   );
 };
 
-const ArchivesNode: React.FC<NodeProps> = ({ data }) => {
+const ArchivesNode: React.FC<NodeProps> = ({ id, data }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pipeline, showIO, groupId } = data as NodeType;
   const {
@@ -180,6 +183,12 @@ const ArchivesNode: React.FC<NodeProps> = ({ data }) => {
         type="source"
         position={Position.Right}
         style={{ top: '26px' }}
+      />
+      <HiddenHandle
+        key={`${id}-layout-bottom-target`}
+        id={`${id}-layout-bottom-target`}
+        type="target"
+        position={Position.Bottom}
       />
       <AddPipelineArchiveModal
         pipeline={pipeline}

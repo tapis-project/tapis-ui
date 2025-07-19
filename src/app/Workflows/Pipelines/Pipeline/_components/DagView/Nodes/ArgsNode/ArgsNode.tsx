@@ -27,7 +27,7 @@ type RunPipelineOnSubmitProps = {
   params: Array<{ key: string; value: string }>;
 };
 
-const ArgsNode: React.FC<NodeProps> = ({ data }) => {
+const ArgsNode: React.FC<NodeProps> = ({ id, data }) => {
   // const params = pipeline.params || {};
   const { pipeline, groupId, referencedKeys, showIO } = data as NodeType;
   const initialState: ArgState = {};
@@ -73,12 +73,21 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
       return false;
     }
 
-    const values = Object.keys(argState).map((key) => {
-      return argState[key];
-    });
-
-    return !values.some((v) => !v);
+    for (let k of referencedKeys) {
+      if (!argState[k]) {
+        return false
+      }
+    }
+    
+    return true
   }, [argState, setArgState]);
+
+  const isSecretField = (key: string) => {
+    return (
+      key.toLowerCase().includes('password') ||
+      key.toLowerCase().includes('secret')
+    );
+  };
 
   return (
     <>
@@ -87,7 +96,12 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
         id={`args-layout-target`}
         type="target"
         position={Position.Left}
-        style={{ top: '26px' }}
+      />
+      <HiddenHandle
+        key={`${id}-layout-top-source`}
+        id={`${id}-layout-top-source`}
+        type="source"
+        position={Position.Top}
       />
       <div key="args-node" className={styles['node']}>
         <div className={styles['body']}>
@@ -138,6 +152,8 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
                         fullWidth
                         defaultValue={''}
                         required
+                        autoComplete="off"
+                        // type={isSecretField(key) ? 'password' : undefined}
                         size="small"
                         margin="none"
                         label={key}
@@ -208,11 +224,16 @@ const ArgsNode: React.FC<NodeProps> = ({ data }) => {
         </div>
       </div>
       <HiddenHandle
+        key={`${id}-layout-bottom-target`}
+        id={`${id}-layout-bottom-target`}
+        type="target"
+        position={Position.Bottom}
+      />
+      <HiddenHandle
         key={`args-layout-source`}
         id={`args-layout-source`}
         type="source"
         position={Position.Right}
-        style={{ top: '26px' }}
       />
     </>
   );

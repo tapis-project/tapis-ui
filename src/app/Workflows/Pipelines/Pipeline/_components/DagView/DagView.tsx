@@ -88,13 +88,7 @@ const getLayoutedElements: any = (
     .catch(console.error);
 };
 
-const newLayoutNode = ({
-  id,
-  isLayoutRoot = false,
-}: {
-  id: string;
-  isLayoutRoot?: boolean;
-}) => {
+const newLayoutNode = ({ id }: { id: string }) => {
   return {
     id,
     position: {
@@ -104,9 +98,7 @@ const newLayoutNode = ({
     height: 25,
     width: 25,
     type: 'layout',
-    data: {
-      isLayoutRoot,
-    },
+    data: {},
   };
 };
 
@@ -178,6 +170,13 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
   const { getNodes, getEdges } = useReactFlow();
 
+  const coreNodeName = useCallback(
+    (name: 'env' | 'args' | 'arch') => {
+      return `${name}-${pipeline.id}`;
+    },
+    [pipeline]
+  );
+
   const createDependencyEdge = (source: string, target: string) => {
     const edge = {
       id: `e-${source}-${target}`,
@@ -199,8 +198,32 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       type: 'default',
       source: 'layoutRoot',
       sourceHandle: 'layoutRoot-layout-source',
-      target: `${scope}-${pipeline.id}`,
+      target: coreNodeName(scope),
       targetHandle: `${scope}-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  type LayoutEdge = {
+    source: string;
+    sourceHandlePosition: 'top' | 'right';
+    target: string;
+    targetHandlePosition: 'bottom' | 'right';
+  };
+
+  const createLayoutEdge = ({
+    source,
+    sourceHandlePosition,
+    target,
+    targetHandlePosition,
+  }: LayoutEdge) => {
+    return {
+      id: `e-${source}->${target}`,
+      type: 'default',
+      target: `${target}`,
+      targetHandle: `${target}-layout-${targetHandlePosition}-target`,
+      source: `${source}`,
+      sourceHandle: `${source}-layout-${sourceHandlePosition}-source`,
       style: { stroke: 'transparent', strokeWidth: 0 },
     };
   };
@@ -211,7 +234,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       type: 'default',
       target: 'taskRoot',
       targetHandle: 'taskRoot-layout-target',
-      source: `${scope}-${pipeline.id}`,
+      source: coreNodeName(scope),
       sourceHandle: `${scope}-layout-source`,
       style: { stroke: 'transparent', strokeWidth: 0 },
     };
@@ -223,7 +246,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       type: 'default',
       source: 'layoutRoot',
       sourceHandle: 'layoutRoot-layout-source',
-      target: `arch-${pipeline.id}`,
+      target: coreNodeName('arch'),
       targetHandle: `arch-layout-target`,
       style: { stroke: 'transparent', strokeWidth: 0 },
     };
@@ -235,7 +258,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       type: 'default',
       target: 'taskRoot',
       targetHandle: 'taskRoot-layout-target',
-      source: `arch-${pipeline.id}`,
+      source: coreNodeName('arch'),
       sourceHandle: `arch-layout-source`,
       style: { stroke: 'transparent', strokeWidth: 0 },
     };
@@ -262,7 +285,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return {
       id: `e-${scope}.${envKey}->${taskId}.${inputId}`,
       type: 'default',
-      source: `${scope}-${pipeline.id}`,
+      source: coreNodeName(scope),
       sourceHandle: `${scope === 'env' ? 'env' : 'arg'}-${envKey}`,
       target: taskId,
       targetHandle: `input-${taskId}-${inputId}`,
@@ -428,10 +451,9 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     let initialNodes: Array<Node> = [];
     let taskInputRefs = resolveAllTaskInputRefs(tasks);
 
-    // First, create the root layout node and the task rootNode.
-    // The env and the args nodes will connect to this to improve the layout
-    initialNodes.push(newLayoutNode({ id: 'layoutRoot', isLayoutRoot: true }));
-    initialNodes.push(newLayoutNode({ id: 'taskRoot', isLayoutRoot: false }));
+    // Layout nodes to improve node positioning
+    initialNodes.push(newLayoutNode({ id: 'layoutRoot' }));
+    initialNodes.push(newLayoutNode({ id: 'taskRoot' }));
 
     // Add the node for each task to the nodes list
     let taskIds = tasks.map((task) => task.id!);
@@ -465,7 +487,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     initialNodes = [
       ...initialNodes,
       {
-        id: `env-${pipeline.id}`,
+        id: coreNodeName('env'),
         position: { x: 0, y: 0 },
         type: 'env',
         width: 400,
@@ -477,7 +499,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         },
       },
       {
-        id: `args-${pipeline.id}`,
+        id: coreNodeName('args'),
         position: { x: 0, y: 0 },
         type: 'args',
         width: 400,
@@ -491,7 +513,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
       // Add the archives nodes
       {
-        id: `arch-${pipeline.id}`,
+        id: coreNodeName('arch'),
         position: { x: 0, y: 0 },
         type: 'arch',
         width: 400,
@@ -721,7 +743,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     }
 
     if (
-      params.source === `args-${pipeline.id}` &&
+      params.source === coreNodeName('args') &&
       params.targetHandle.startsWith('input')
     ) {
       let inputIdPrefix = `input-${params.target}-`;
@@ -733,7 +755,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     }
 
     if (
-      params.source === `env-${pipeline.id}` &&
+      params.source === coreNodeName('env') &&
       params.targetHandle.startsWith('input')
     ) {
       let inputIdPrefix = `input-${params.target}-`;

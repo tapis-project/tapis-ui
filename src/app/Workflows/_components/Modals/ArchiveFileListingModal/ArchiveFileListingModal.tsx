@@ -58,7 +58,7 @@ const ArchiveFileListingModal: React.FC<ArchiveFileListingModalProps> = ({
       }}
     >
       <DialogTitle id="alert-dialog-title">
-        Archive file listing
+        Archive
         <IconButton
           aria-label="close"
           onClick={toggle}
@@ -73,6 +73,7 @@ const ArchiveFileListingModal: React.FC<ArchiveFileListingModalProps> = ({
         </IconButton>
       </DialogTitle>
       <DialogContent>
+        <h2>Tapis System: {archive.system_id}</h2>
         <div style={{ paddingBottom: '16px' }}>
           <Toolbar
             systemId={archive.system_id}
@@ -82,8 +83,8 @@ const ArchiveFileListingModal: React.FC<ArchiveFileListingModalProps> = ({
         </div>
         <FileListing
           systemId={archive.system_id}
-          path={`${formattedArchiveDir}`}
-          location={`/files/${archive.system_id}/${formattedArchiveDir}`}
+          path={`/`}
+          location={`/files/${archive.system_id}`}
           selectMode={{ mode: 'multi', types: ['dir', 'file'] }}
           selectedFiles={selectedFiles}
           onSelect={(files) => select(files, 'multi')}

@@ -120,6 +120,12 @@ const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
         position={Position.Left}
         style={{ top: '26px' }}
       />
+      <HiddenHandle
+        key={`env-layout-top-source`}
+        id={`env-layout-top-source`}
+        type="source"
+        position={Position.Top}
+      />
       <div key="env-node" className={styles['node']}>
         <div className={styles['body']}>
           <div
@@ -208,6 +214,12 @@ const EnvironmentNode: React.FC<NodeProps> = ({ data }) => {
           )}
         </div>
       </div>
+      <HiddenHandle
+        key={`env-layout-bottom-target`}
+        id={`env-layout-bottom-target`}
+        type="target"
+        position={Position.Bottom}
+      />
       <HiddenHandle
         key={`env-layout-source`}
         id={`env-layout-source`}
