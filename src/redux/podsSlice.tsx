@@ -39,6 +39,11 @@ export interface PodsState {
   // Store current pod creation data (persisted between editors)
   createPodData?: any;
   updatePodData?: any;
+  // Store current template creation data
+  createTemplateData?: any;
+  // Store current template tag creation data
+  createTemplateTagData?: any;
+  createTemplateTagTemplateId?: string;
 }
 
 const initialState: PodsState = {
@@ -65,6 +70,11 @@ const initialState: PodsState = {
   createPodData: undefined,
   // Persisted pod update data
   updatePodData: undefined,
+  // Persisted template creation data
+  createTemplateData: undefined,
+  // Persisted template tag creation data
+  createTemplateTagData: undefined,
+  createTemplateTagTemplateId: undefined,
 };
 
 const podsSlice = createSlice({

@@ -24,7 +24,6 @@ const TaskUpdateProvider: React.FC<
   // This flag indicates whether a task has been patched but has yet to be
   // committed
   const [dirty, setDirty] = useState(false);
-
   // The state and setter of the task patch to be commited
   const [taskPatch, setTaskPatch] = useState<Partial<Workflows.FunctionTask>>(
     JSON.parse(JSON.stringify(task))

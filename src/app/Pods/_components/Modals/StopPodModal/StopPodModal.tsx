@@ -12,6 +12,7 @@ import { useQueryClient } from 'react-query';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
+import { sortPodsById } from '../../Wizards/PodWizardUtils';
 
 const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
@@ -45,6 +46,8 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     stopPod({ podId }, { onSuccess });
   };
 
+  const sortedPods = sortPodsById(pods);
+
   return (
     <GenericModal
       toggle={toggle}
@@ -70,8 +73,8 @@ const StopPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     Select a pod to stop
                   </option>
                   {pods.length ? (
-                    pods.map((pod) => {
-                      return <option>{pod.pod_id}</option>;
+                    sortedPods.map((pod) => {
+                      return <option key={pod.pod_id}>{pod.pod_id}</option>;
                     })
                   ) : (
                     <i>No pods found</i>

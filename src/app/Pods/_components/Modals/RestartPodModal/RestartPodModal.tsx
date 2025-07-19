@@ -11,6 +11,8 @@ import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { useTapisConfig, Pods as Hooks } from '@tapis/tapisui-hooks';
 import { useLocation } from 'react-router-dom';
+import { Switch, FormControlLabel, FormHelperText } from '@mui/material';
+import { sortPodsById } from '../../Wizards/PodWizardUtils';
 
 const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const { claims } = useTapisConfig();
@@ -33,17 +35,27 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
 
   const validationSchema = Yup.object({
     podId: Yup.string().required('Select which pod to restart'),
+    grabLatestTemplateTag: Yup.boolean(),
   });
 
   const podId = useLocation().pathname.split('/')[2];
   var initialPodId = podId ? podId : '';
   const initialValues = {
     podId: initialPodId,
+    grabLatestTemplateTag: false,
   };
 
-  const onSubmit = ({ podId }: { podId: string }) => {
-    restartPod({ podId }, { onSuccess });
+  const onSubmit = ({
+    podId,
+    grabLatestTemplateTag,
+  }: {
+    podId: string;
+    grabLatestTemplateTag: boolean;
+  }) => {
+    restartPod({ podId, grabLatestTemplateTag }, { onSuccess });
   };
+
+  const sortedPods = sortPodsById(pods);
 
   return (
     <GenericModal
@@ -57,28 +69,78 @@ const RestartPodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            {() => (
-              <Form id="newpod-form">
-                <FormikSelect
-                  name="podId"
-                  description="The pod id"
-                  label="Pod ID"
-                  required={true}
-                  data-testid="podId"
-                >
-                  <option disabled value={''}>
-                    Select a pod to restart
-                  </option>
-                  {pods.length ? (
-                    pods.map((pod) => {
-                      return <option>{pod.pod_id}</option>;
-                    })
-                  ) : (
-                    <i>No pods found</i>
+            {({ values, setFieldValue, errors, touched }) => {
+              const selectedPod = pods.find(
+                (pod) => pod.pod_id === values.podId
+              );
+              const hasTemplate = selectedPod && selectedPod.template;
+              let templateInfo = '';
+              if (hasTemplate) {
+                templateInfo = `Pod '${
+                  selectedPod.pod_id
+                }' is using template:tag@version of:\n ${
+                  selectedPod.template || ''
+                }`;
+              }
+              return (
+                <Form id="newpod-form">
+                  <FormikSelect
+                    name="podId"
+                    description="The pod id"
+                    label="Pod ID"
+                    required={true}
+                    data-testid="podId"
+                  >
+                    <option disabled value={''}>
+                      Select a pod to restart
+                    </option>
+                    {pods.length ? (
+                      sortedPods.map((pod) => {
+                        return <option key={pod.pod_id}>{pod.pod_id}</option>;
+                      })
+                    ) : (
+                      <i>No pods found</i>
+                    )}
+                  </FormikSelect>
+                  {hasTemplate && (
+                    <>
+                      <div
+                        style={{
+                          marginTop: 8,
+                          marginBottom: 8,
+                          fontSize: '0.95em',
+                          color: '#555',
+                        }}
+                      >
+                        {templateInfo}
+                      </div>
+                      <div style={{ marginTop: 8, marginLeft: 0 }}>
+                        {touched.grabLatestTemplateTag &&
+                          errors.grabLatestTemplateTag && (
+                            <FormHelperText error>
+                              {errors.grabLatestTemplateTag}
+                            </FormHelperText>
+                          )}
+                        <FormControlLabel
+                          labelPlacement="start"
+                          control={
+                            <Switch
+                              checked={values.grabLatestTemplateTag}
+                              onChange={(_, checked) =>
+                                setFieldValue('grabLatestTemplateTag', checked)
+                              }
+                              name="grabLatestTemplateTag"
+                              color="primary"
+                            />
+                          }
+                          label="Fetch latest version of template tag."
+                        />
+                      </div>
+                    </>
                   )}
-                </FormikSelect>
-              </Form>
-            )}
+                </Form>
+              );
+            }}
           </Formik>
         </div>
       }

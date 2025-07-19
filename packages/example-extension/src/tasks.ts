@@ -9,7 +9,7 @@ export const tasks: Array<Workflows.Task> = [
     },
     input: {
       OBJECT: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         description: 'Django search parameter - object',
         required: false,
         value_from: {
@@ -17,7 +17,7 @@ export const tasks: Array<Workflows.Task> = [
         },
       },
       PREDICATE: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         description: 'Django search parameter - predicate',
         required: false,
         value_from: {
@@ -25,7 +25,7 @@ export const tasks: Array<Workflows.Task> = [
         },
       },
       API_HOST: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         description: 'Django API host url',
         required: false,
         value_from: {

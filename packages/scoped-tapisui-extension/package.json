@@ -7,6 +7,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
+    "bundle": "echo 'no bundle in scoped - skipping'; exit; npx tsc src/bundle.ts --skipLibCheck",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "npm run build && npm publish --access public",
     "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
@@ -20,7 +21,7 @@
   "author": "Yizhou Wang",
   "license": "MIT",
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.60",
     "@tapis/tapisui-common": "workspace:*",
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",

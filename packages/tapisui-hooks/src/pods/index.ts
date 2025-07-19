@@ -42,4 +42,5 @@ export { default as useGetTemplate } from './useGetTemplate';
 export { default as useListTemplateTags } from './useListTemplateTags';
 export { default as useListTemplatesAndTags } from './useListTemplatesAndTags';
 export { default as useUpdateSnapshot } from './useUpdateSnapshot';
+export { default as useSavePodAsTag } from './useSavePodAsTag';
 export { default as queryKeys } from './queryKeys';

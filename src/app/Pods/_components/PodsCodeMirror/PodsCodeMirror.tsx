@@ -101,8 +101,9 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
       >
         <CodeMirror
           value={value}
-          editable={false}
-          readOnly={true}
+          editable={editable}
+          readOnly={!editable}
+          onChange={onChange}
           extensions={[json(), EditorView.lineWrapping]}
           // height = "22rem"
           // height="46rem" // Keep this for correct height horizontal scroll # if removed, breaks slinky view

@@ -20,7 +20,7 @@
   "author": "<YOUR_NAME>",
   "license": "MIT",
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.60",
     "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-common": "file:../tapisui-common",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
@@ -12,6 +12,7 @@ import {
   Tabs,
   JSONDisplay,
   QueryWrapper,
+  SubmitWrapper,
 } from '@tapis/tapisui-common';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
@@ -24,6 +25,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   AccordionActions,
+  TextField,
 } from '@mui/material';
 import { ExpandMoreRounded } from '@mui/icons-material';
 import styles from '../Pages.module.scss';
@@ -36,18 +38,21 @@ import {
 } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
+import { template } from 'lodash';
 
 const PageTemplates: React.FC<{
   objId: string | undefined;
   tagId: string;
 }> = ({ objId, tagId }) => {
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const { data, isLoading, isFetching, error, invalidate } =
     Hooks.useGetTemplate({ templateId: objId }, { enabled: !!objId });
   const {
     data: dataTags,
     isLoading: isLoadingTags,
     error: errorTags,
+    invalidate: invalidateTags,
   } = Hooks.useListTemplateTags(
     {
       templateId: objId as string,
@@ -59,9 +64,29 @@ const PageTemplates: React.FC<{
     data: dataTemplatesAndTags,
     isLoading: isLoadingTemplatesAndTags,
     error: errorTemplatesAndTags,
+    invalidate: invalidateTemplatesAndTags,
   } = Hooks.useListTemplatesAndTags({
     full: true,
   });
+
+  // Add create hooks
+  const {
+    createTemplate,
+    isLoading: isCreatingTemplate,
+    isError: isCreateTemplateError,
+    isSuccess: isCreateTemplateSuccess,
+    error: createTemplateError,
+    reset: resetCreateTemplate,
+  } = Hooks.useCreateTemplate();
+
+  const {
+    createTemplateTag,
+    isLoading: isCreatingTemplateTag,
+    isError: isCreateTemplateTagError,
+    isSuccess: isCreateTemplateTagSuccess,
+    error: createTemplateTagError,
+    reset: resetCreateTemplateTag,
+  } = Hooks.useCreateTemplateTag();
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
@@ -82,6 +107,9 @@ const PageTemplates: React.FC<{
     templateRootTab,
     templateNavSelectedItems,
     templateNavExpandedItems,
+    createTemplateData,
+    createTemplateTagData,
+    createTemplateTagTemplateId,
   } = useAppSelector((state) => state.pods);
 
   const loadingText = PodsLoadingText();
@@ -181,6 +209,7 @@ Select or create a template to get started.`;
           } else if (isLoadingTags) {
             return loadingText;
           } else {
+            console.log(tagId, 'tagId');
             const matchingTag = templateTags.find(
               (tag: { tag_timestamp: string }) => tag.tag_timestamp === tagId
             );
@@ -233,8 +262,9 @@ templateNavExpandedItems: ${templateNavExpandedItems}
     {
       id: 'copy',
       label: 'Copy',
-      customOnClick: () =>
-        navigator.clipboard.writeText(getCodeMirrorValue() ?? ''),
+      customOnClick() {
+        return navigator.clipboard.writeText(getCodeMirrorValue() ?? '');
+      },
     },
   ];
 
@@ -246,11 +276,54 @@ templateNavExpandedItems: ${templateNavExpandedItems}
           id: 'createTemplate',
           label: 'Create Template',
           tabValue: 'createTemplate',
-          disabled: true,
+        },
+        {
+          id: 'createTemplateTag',
+          label: 'Create Template Tag',
+          tabValue: 'createTemplateTag',
         },
       ];
     }
     return leftButtons;
+  };
+
+  // Add Create New Tag button to left tab bar group if on detailsTag view
+  const getLeftButtons = () => {
+    const baseButtons: ButtonConfig[] = [
+      { id: 'details', label: 'Template Details', tabValue: 'details' },
+      {
+        id: 'detailsTag',
+        label: 'Tag Details',
+        tabValue: 'detailsTag',
+        disabled: !tagId.includes('@'),
+      },
+    ];
+    // Only show Create New Tag and Create Pod From Tag if on detailsTag view and a matching tag exists
+    if (
+      objId &&
+      templateTab === 'detailsTag' &&
+      templateTags &&
+      tagId &&
+      tagId.includes('@')
+    ) {
+      const matchingTag = templateTags.find(
+        (tag: { tag_timestamp: string }) => tag.tag_timestamp === tagId
+      );
+      if (matchingTag) {
+        baseButtons.push({
+          id: 'createNewTag',
+          label: 'Create New Tag',
+          customOnClick: () => handleCreateNewTagFromTagDetails(matchingTag),
+        });
+        // Add Create Pod From Tag button
+        baseButtons.push({
+          id: 'createPodFromTag',
+          label: 'Create Pod From Tag',
+          customOnClick: () => handleCreatePodFromTag(matchingTag),
+        });
+      }
+    }
+    return baseButtons;
   };
 
   const renderTabBar = (
@@ -331,6 +404,250 @@ templateNavExpandedItems: ${templateNavExpandedItems}
     </div>
   );
 
+  // Ensure createTemplateData is initialized when entering createTemplate tab
+  useEffect(() => {
+    if (
+      templateRootTab === 'createTemplate' &&
+      objId === undefined &&
+      !createTemplateData
+    ) {
+      dispatch(
+        updateState({
+          createTemplateData: {
+            template_id: '<fill in template id>',
+            description: '<fill in template description>',
+            metatags: ['custom'],
+          },
+        })
+      );
+    }
+  }, [templateRootTab, objId, createTemplateData, dispatch]);
+
+  // Add onChange handlers to update Redux state directly
+  const handleTemplateJsonChange = (v: string) => {
+    try {
+      dispatch(updateState({ createTemplateData: JSON.parse(v) }));
+    } catch (e) {
+      // Optionally handle JSON parse error
+    }
+  };
+  const handleTemplateTagJsonChange = (v: string) => {
+    try {
+      dispatch(updateState({ createTemplateTagData: JSON.parse(v) }));
+    } catch (e) {
+      // Optionally handle JSON parse error
+    }
+  };
+
+  // Submit handlers
+  const handleSubmitTemplate = () => {
+    if (createTemplateData) {
+      createTemplate(
+        { newTemplate: createTemplateData },
+        {
+          onSuccess: () => {
+            // Optionally redirect or show success message
+            console.log('Template created successfully');
+            invalidateTemplatesAndTags();
+            //dispatch(updateState({ templateRootTab: 'dashboard' }));
+          },
+          onError: (error) => {
+            console.error('Error creating template:', error);
+          },
+        }
+      );
+    }
+  };
+
+  const handleSubmitTemplateTag = () => {
+    if (createTemplateTagData && createTemplateTagTemplateId) {
+      createTemplateTag(
+        {
+          templateId: createTemplateTagTemplateId,
+          newTemplateTag: createTemplateTagData,
+        },
+        {
+          onSuccess: () => {
+            // Optionally redirect or show success message
+            console.log('Template tag created successfully');
+            invalidateTemplatesAndTags();
+            //dispatch(updateState({ templateRootTab: 'dashboard' }));
+          },
+          onError: (error) => {
+            console.error('Error creating template tag:', error);
+          },
+        }
+      );
+    }
+  };
+
+  // Handler for Create New Tag from tag details
+  // this needs to get rid of a few extra fields or empties. Such as deleting tagObj['pod_definition']['creation_ts'] if it exists
+  const handleCreateNewTagFromTagDetails = (tagObj: any) => {
+    // Remove some extra returned fields
+    const templateIdForTag = tagObj.template_id;
+    delete tagObj.creation_ts;
+    delete tagObj.tag_timestamp;
+    delete tagObj.added_by;
+    delete tagObj.template_id;
+    dispatch(
+      updateState({
+        templateRootTab: 'createTemplateTag',
+        createTemplateTagData: tagObj,
+        createTemplateTagTemplateId: templateIdForTag,
+      })
+    );
+    history.push('/pods/templates');
+  };
+
+  // Handler for Create Pod From Tag
+  const handleCreatePodFromTag = (tagObj: any) => {
+    // Prefill pod creation form with pod_definition from tagObj
+    const podDef = tagObj.pod_definition || {};
+    dispatch(
+      updateState({
+        podRootTab: 'createPod',
+        podEditTab: 'form',
+        createPodData: {
+          template: tagObj.template_id + ':' + tagObj.tag_timestamp,
+        },
+      })
+    );
+    history.push('/pods');
+  };
+
+  // Add createTemplate and createTemplateTag pages using PodsCodeMirror for preview
+  const renderCreateTemplate = () => (
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '2rem' }}>
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginBottom: '8px',
+          }}
+        >
+          <SubmitWrapper
+            isLoading={isCreatingTemplate}
+            error={createTemplateError}
+            success={
+              isCreateTemplateSuccess
+                ? 'Template created successfully!'
+                : undefined
+            }
+            reverse={true}
+          >
+            <LoadingButton
+              variant="outlined"
+              color="primary"
+              size="small"
+              loading={isCreatingTemplate}
+              onClick={handleSubmitTemplate}
+              disabled={!createTemplateData}
+            >
+              Submit Template
+            </LoadingButton>
+          </SubmitWrapper>
+        </div>
+        <PodsCodeMirror
+          value={
+            createTemplateData
+              ? JSON.stringify(createTemplateData, null, 2)
+              : JSON.stringify(
+                  {
+                    template_id: '<fill in template id>',
+                    description: '<fill in template description>',
+                    metatags: ['custom'],
+                  },
+                  null,
+                  2
+                )
+          }
+          height="400px"
+          //extensions={[json()]}
+          //theme={vscodeDark}
+          isVisible={true}
+          editable={true}
+          onChange={handleTemplateJsonChange}
+        />
+      </div>
+    </div>
+  );
+
+  const renderCreateTemplateTag = () => (
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '2rem' }}>
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '8px',
+          }}
+        >
+          <TextField
+            id="template-id-input"
+            label="Template ID"
+            size="small"
+            margin="none"
+            variant="outlined"
+            value={createTemplateTagTemplateId || ''}
+            onChange={(e) =>
+              dispatch(
+                updateState({ createTemplateTagTemplateId: e.target.value })
+              )
+            }
+            InputLabelProps={
+              { style: { fontSize: '0.8rem' } } // Adjust label font size
+            }
+            inputProps={{
+              style: {
+                height: '1rem',
+                fontSize: '0.9rem', // Adjust font size to match MUI's small variant
+                margin: '0rem',
+              },
+            }}
+          />
+          <SubmitWrapper
+            isLoading={isCreatingTemplateTag}
+            error={createTemplateTagError}
+            success={
+              isCreateTemplateTagSuccess
+                ? 'Template tag created successfully!'
+                : undefined
+            }
+            reverse={true}
+          >
+            <LoadingButton
+              variant="outlined"
+              color="primary"
+              size="small"
+              loading={isCreatingTemplateTag}
+              onClick={handleSubmitTemplateTag}
+              disabled={!createTemplateTagData}
+            >
+              Submit Template Tag
+            </LoadingButton>
+          </SubmitWrapper>
+        </div>
+        <PodsCodeMirror
+          value={
+            createTemplateTagData
+              ? JSON.stringify(createTemplateTagData, null, 2)
+              : '{}'
+          }
+          height="400px"
+          isVisible={true}
+          editable={true}
+          //extensions={[json()]}
+          //theme={vscodeDark}
+          onChange={handleTemplateTagJsonChange}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div>
       <div
@@ -360,31 +677,33 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             overflow: 'auto',
           }}
         >
-          {renderTabBar(getTabBarButtons(), rightButtons)}
+          {renderTabBar(
+            objId === undefined ? getTabBarButtons() : getLeftButtons(),
+            rightButtons
+          )}
 
           <div className={styles['container']}>
             <div>
-              <PodsCodeMirror
-                // editValue={
-                //   templateTab === 'edit'
-                //     ? JSON.stringify(sharedData, null, 2)
-                //     : ''
-                // }
-                value={codeMirrorValue?.toString() ?? ''}
-                isVisible={true}
-                isEditorVisible={
-                  // (templateTab === 'edit' && objId !== undefined) ||
-                  templateRootTab === 'createTemplate' && objId === undefined
-                }
-                // editPanel={
-                //   templateTab === 'edit' && objId !== undefined ? (
-                //     <div> "TNothing yet!"</div>
-
-                //   ) : (
-                //     <div />
-                //   )
-                // }
-              />
+              {/* Render create template/tag editors if on those tabs */}
+              {templateRootTab === 'createTemplate' && objId === undefined
+                ? renderCreateTemplate()
+                : templateRootTab === 'createTemplateTag' && objId === undefined
+                ? renderCreateTemplateTag()
+                : null}
+              {/* Default code mirror for other views */}
+              {!(templateRootTab === 'createTemplate' && objId === undefined) &&
+                !(
+                  templateRootTab === 'createTemplateTag' && objId === undefined
+                ) && (
+                  <PodsCodeMirror
+                    value={codeMirrorValue?.toString() ?? ''}
+                    isVisible={true}
+                    isEditorVisible={
+                      templateRootTab === 'createTemplate' &&
+                      objId === undefined
+                    }
+                  />
+                )}
             </div>
           </div>
         </div>

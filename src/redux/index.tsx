@@ -6,5 +6,4 @@ export {
   useAppStore,
 } from './store';
 export { updateState, type PodsState } from './podsSlice';
-// import * as Workflows from './workflowsSlice';
-// export { Workflows };
+export * as Workflows from './workflowsSlice';

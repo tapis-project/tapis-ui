@@ -6,7 +6,7 @@ import { SectionHeader, PageLayout } from '@tapis/tapisui-common';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const Layout: React.FC = () => {
-  const { accessToken } = useTapisConfig();
+  const { accessToken, basePath } = useTapisConfig();
   let location = useLocation<{ from: Location }>();
   let { from } = location.state || { from: { pathname: '/' } };
 
@@ -17,7 +17,9 @@ const Layout: React.FC = () => {
   const body = (
     <>
       <div className="container">
-        <SectionHeader>Login</SectionHeader>
+        <SectionHeader>
+          Login to {basePath.replace('https://', '').replace('http://', '')}
+        </SectionHeader>
         <TapisLogin />
       </div>
     </>

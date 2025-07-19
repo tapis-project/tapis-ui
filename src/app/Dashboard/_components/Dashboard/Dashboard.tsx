@@ -67,7 +67,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-  const { accessToken, claims } = useTapisConfig();
+  const { accessToken, claims, basePath } = useTapisConfig();
   const { extension } = useExtension();
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
@@ -86,7 +86,8 @@ const Dashboard: React.FC = () => {
     <div>
       <SectionHeader>
         <div style={{ marginLeft: '1.2rem' }}>
-          Dashboard for {claims['tapis/tenant_id']}
+          Dashboard for{' '}
+          {basePath.replace('https://', '').replace('http://', '')}
         </div>
       </SectionHeader>
       <div className={styles.cards}>

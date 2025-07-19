@@ -1,11 +1,17 @@
 import React, { useCallback, useMemo, useState, useLayoutEffect } from 'react';
-import { EnvironmentNode, TaskNode, ArgsNode, MissingTaskNode } from './Nodes';
+import {
+  EnvironmentNode,
+  TaskNode,
+  ArgsNode,
+  MissingTaskNode,
+  LayoutNode,
+} from './Nodes';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
 import { DagViewHeader } from './DagViewHeader';
-import { Alert, AlertTitle, Chip, Fab } from '@mui/material';
-import { DataObject, Share, Add, Publish } from '@mui/icons-material';
+import { Alert, AlertTitle, Chip, Fab, Tooltip } from '@mui/material';
+import { DataObject, Share, Add, SaveAlt } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -23,10 +29,9 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import {
-  CreateTaskModal,
-  RunPipelineModal,
+  CreateFunctionTaskModal,
+  ImportTasksModal,
 } from 'app/Workflows/_components/Modals';
-import { DagViewDrawer } from '../DagViewDrawer';
 import ELK, {
   ElkNode,
   ElkExtendedEdge,
@@ -34,6 +39,7 @@ import ELK, {
 } from 'elkjs/lib/elk.bundled.js';
 import '@xyflow/react/dist/style.css';
 import _ from 'lodash';
+import { ArchivesNode } from './Nodes/ArchivesNode';
 
 const elk = new ELK();
 
@@ -61,8 +67,8 @@ const getLayoutedElements: any = (
       sourcePosition: 'right',
 
       // Hardcode a width and height for elk to use when layouting.
-      width: 300,
-      height: 100,
+      width: node.width ?? 300,
+      height: node.height ?? 200,
     })),
     edges: edges,
   };
@@ -82,19 +88,94 @@ const getLayoutedElements: any = (
     .catch(console.error);
 };
 
+const newLayoutNode = ({ id }: { id: string }) => {
+  return {
+    id,
+    position: {
+      x: 0,
+      y: 0,
+    },
+    height: 25,
+    width: 25,
+    type: 'layout',
+    data: {},
+  };
+};
+
+const newTaskNode = (node: {
+  task: Workflows.Task;
+  pipeline: Workflows.Pipeline;
+  groupId: string;
+  showIO: boolean;
+  referencedKeys: Array<string>;
+}): Node => {
+  let height: number | undefined;
+  let width: number | undefined;
+  return {
+    id: node.task.id!,
+    position: {
+      x: 0,
+      y: 0,
+    },
+    height,
+    width,
+    type: 'task',
+    data: {
+      label: node.task.id!,
+      task: node.task,
+      groupId: node.groupId,
+      pipeline: node.pipeline,
+      tasks: node.pipeline.tasks,
+      showIO: node.showIO,
+      referencedKeys: node.referencedKeys,
+    },
+  };
+};
+
+type MissingTaskNode = {
+  taskId: string;
+  showIO: boolean;
+  outputs: Array<string>;
+};
+
+const newMissingTaskNode = (node: MissingTaskNode) => {
+  return {
+    id: node.taskId,
+    position: {
+      x: 0,
+      y: 0,
+    },
+    type: 'missing',
+    data: {
+      taskId: node.taskId!,
+      inputs: [],
+      outputs: node.outputs,
+      showIO: node.showIO,
+    },
+  };
+};
+
 const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
   const [view, setView] = useState<View>('io');
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const { patch, isLoading, isError, error, isSuccess, reset } =
+  // NOTE TODO Loading the pipeline data here again just to get the invalidate
+  // hook. Maybe just load it here
+  const { patch, isLoading, isError, error, isSuccess, reset, invalidate } =
     Hooks.Tasks.usePatch();
 
   const tasks = pipeline.tasks!;
 
   const { getNodes, getEdges } = useReactFlow();
+
+  const coreNodeName = useCallback(
+    (name: 'env' | 'args' | 'arch') => {
+      return `${name}-${pipeline.id}`;
+    },
+    [pipeline]
+  );
 
   const createDependencyEdge = (source: string, target: string) => {
     const edge = {
@@ -111,6 +192,90 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return edge;
   };
 
+  const createLayoutRootToEnvOrArgsEdge = (scope: 'env' | 'args') => {
+    return {
+      id: `e-layoutRoot->${scope}`,
+      type: 'default',
+      source: 'layoutRoot',
+      sourceHandle: 'layoutRoot-layout-source',
+      target: coreNodeName(scope),
+      targetHandle: `${scope}-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  type LayoutEdge = {
+    source: string;
+    sourceHandlePosition: 'top' | 'right';
+    target: string;
+    targetHandlePosition: 'bottom' | 'right';
+  };
+
+  const createLayoutEdge = ({
+    source,
+    sourceHandlePosition,
+    target,
+    targetHandlePosition,
+  }: LayoutEdge) => {
+    return {
+      id: `e-${source}->${target}`,
+      type: 'default',
+      target: `${target}`,
+      targetHandle: `${target}-layout-${targetHandlePosition}-target`,
+      source: `${source}`,
+      sourceHandle: `${source}-layout-${sourceHandlePosition}-source`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createEnvOrArgsToTaskRootEdge = (scope: 'env' | 'args') => {
+    return {
+      id: `e-taskRoot->${scope}`,
+      type: 'default',
+      target: 'taskRoot',
+      targetHandle: 'taskRoot-layout-target',
+      source: coreNodeName(scope),
+      sourceHandle: `${scope}-layout-source`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createLayoutRootToArchEdge = () => {
+    return {
+      id: `e-layoutRoot->arch`,
+      type: 'default',
+      source: 'layoutRoot',
+      sourceHandle: 'layoutRoot-layout-source',
+      target: coreNodeName('arch'),
+      targetHandle: `arch-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createArchToTaskRootEdge = () => {
+    return {
+      id: `e-taskRoot->arch`,
+      type: 'default',
+      target: 'taskRoot',
+      targetHandle: 'taskRoot-layout-target',
+      source: coreNodeName('arch'),
+      sourceHandle: `arch-layout-source`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
+  const createTaskNodeToInitialTaskEdge = (taskId: string) => {
+    return {
+      id: `e-taskRoot->task-${taskId}`,
+      type: 'default',
+      source: 'taskRoot',
+      sourceHandle: 'taskRoot-layout-source',
+      target: `${taskId}`,
+      targetHandle: `task-${taskId}-layout-target`,
+      style: { stroke: 'transparent', strokeWidth: 0 },
+    };
+  };
+
   const createEnvOrArgToTaskEdge = (
     envKey: string,
     taskId: string,
@@ -120,7 +285,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     return {
       id: `e-${scope}.${envKey}->${taskId}.${inputId}`,
       type: 'default',
-      source: `${scope}-${pipeline.id}`,
+      source: coreNodeName(scope),
       sourceHandle: `${scope === 'env' ? 'env' : 'arg'}-${envKey}`,
       target: taskId,
       targetHandle: `input-${taskId}-${inputId}`,
@@ -150,8 +315,10 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
   const nodeTypes = useMemo(
     () => ({
-      standard: TaskNode,
+      layout: LayoutNode,
+      task: TaskNode,
       args: ArgsNode,
+      arch: ArchivesNode,
       env: EnvironmentNode,
       missing: MissingTaskNode,
     }),
@@ -215,9 +382,35 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     };
   };
 
-  const calculateNodes = useCallback(() => {
-    let initialNodes: Array<Node> = [];
-    let taskIds = tasks.map((task) => task.id!);
+  const findMissingTaskIds = (
+    task: Workflows.Task,
+    existingTaskIds: Array<string>
+  ) => {
+    // Check the dependencies for missing tasks. Create a MissingTaskNode for each
+    // missing task
+    let missingTaskIds: Array<string> = [];
+    for (let dep of task.depends_on || []) {
+      if (!existingTaskIds.includes(dep.id!)) {
+        missingTaskIds.push(dep.id!);
+      }
+    }
+
+    // TODO Fix this below! I guess it is supposed to find references to outputs
+    // of tasks that do not exist but it doesn't do that
+    // let input = task.input || {};
+    // Object.keys(input).map((key) => {
+    //   let taskId = input[key].value_from?.task_output?.task_id;
+    //   if (taskId !== undefined && !missingTaskIds.includes(taskId)) {
+    //     missingTaskIds.push(taskId);
+    //   }
+    // });
+
+    return missingTaskIds;
+  };
+
+  const resolveAllTaskInputRefs = (
+    tasks: Array<Workflows.Task>
+  ): ResolvedRefs => {
     let taskInputRefs: ResolvedRefs = {
       env: [],
       params: [],
@@ -245,53 +438,48 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     taskInputRefs.params = Array.from(new Set(taskInputRefs.params)).filter(
       (p) => p !== undefined
     );
-    for (let taskId of Object.keys(taskInputRefs.taskOutputs)) {
+    Object.keys(taskInputRefs.taskOutputs).map((taskId) => {
       taskInputRefs.taskOutputs[taskId] = Array.from(
         new Set(taskInputRefs.taskOutputs[taskId])
       );
-    }
+    });
+
+    return taskInputRefs;
+  };
+
+  const calculateNodes = useCallback(() => {
+    let initialNodes: Array<Node> = [];
+    let taskInputRefs = resolveAllTaskInputRefs(tasks);
+
+    // Layout nodes to improve node positioning
+    initialNodes.push(newLayoutNode({ id: 'layoutRoot' }));
+    initialNodes.push(newLayoutNode({ id: 'taskRoot' }));
 
     // Add the node for each task to the nodes list
+    let taskIds = tasks.map((task) => task.id!);
     for (let task of tasks) {
-      initialNodes.push({
-        id: task.id!,
-        position: {
-          x: 0,
-          y: 0,
-        },
-        type: 'standard',
-        data: {
-          label: task.id!,
-          task: task,
-          groupId,
+      initialNodes.push(
+        newTaskNode({
+          task,
           pipeline,
-          tasks,
+          groupId,
           showIO: view === 'io',
           referencedKeys: (taskInputRefs.taskOutputs[task.id!] || []).filter(
             (e) => e !== undefined
           ),
-        },
-      });
+        })
+      );
 
       // Check the dependencies for missing tasks. Create a MissingTaskNode for each
       // missing task
-      for (let dep of task.depends_on || []) {
-        if (!taskIds.includes(dep.id!)) {
-          initialNodes.push({
-            id: dep.id!,
-            position: {
-              x: 0,
-              y: 0,
-            },
-            type: 'missing',
-            data: {
-              taskId: dep.id!,
-              inputs: [],
-              outputs: [],
-              showIO: view === 'io',
-            },
-          });
-        }
+      for (let id of findMissingTaskIds(task, taskIds)) {
+        initialNodes.push(
+          newMissingTaskNode({
+            taskId: id,
+            showIO: view === 'io',
+            outputs: taskInputRefs.taskOutputs[id],
+          })
+        );
       }
     }
 
@@ -299,22 +487,39 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     initialNodes = [
       ...initialNodes,
       {
-        id: `env-${pipeline.id}`,
+        id: coreNodeName('env'),
         position: { x: 0, y: 0 },
         type: 'env',
+        width: 400,
         data: {
+          groupId,
           pipeline,
           referencedKeys: taskInputRefs.env.filter((e) => e !== undefined),
           showIO: view === 'io',
         },
       },
       {
-        id: `args-${pipeline.id}`,
+        id: coreNodeName('args'),
         position: { x: 0, y: 0 },
         type: 'args',
+        width: 400,
         data: {
+          groupId,
           pipeline,
           referencedKeys: taskInputRefs.params.filter((e) => e !== undefined),
+          showIO: view === 'io',
+        },
+      },
+
+      // Add the archives nodes
+      {
+        id: coreNodeName('arch'),
+        position: { x: 0, y: 0 },
+        type: 'arch',
+        width: 400,
+        data: {
+          groupId,
+          pipeline,
           showIO: view === 'io',
         },
       },
@@ -325,7 +530,23 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
 
   const calculateEdges = useCallback(() => {
     const initialEdges: Array<Edge> = [];
+
+    // First create the edge between the root layout node and the args, env,
+    // and archives node
+    initialEdges.push(createArchToTaskRootEdge());
+    initialEdges.push(createLayoutRootToArchEdge());
+    initialEdges.push(createLayoutRootToEnvOrArgsEdge('args'));
+    initialEdges.push(createLayoutRootToEnvOrArgsEdge('env'));
+    initialEdges.push(createEnvOrArgsToTaskRootEdge('args'));
+    initialEdges.push(createEnvOrArgsToTaskRootEdge('env'));
+
     for (const task of tasks) {
+      // First, create a connection between the task root layout node and all nodes
+      // for tasks that do not have dependencies (initial tasks)
+      if ((task.depends_on || []).length === 0) {
+        initialEdges.push(createTaskNodeToInitialTaskEdge(task.id!));
+      }
+
       const taskInput = task.input ? task.input : {};
       for (let input of Object.entries(taskInput)) {
         let [k, v] = input;
@@ -522,7 +743,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     }
 
     if (
-      params.source === `args-${pipeline.id}` &&
+      params.source === coreNodeName('args') &&
       params.targetHandle.startsWith('input')
     ) {
       let inputIdPrefix = `input-${params.target}-`;
@@ -534,7 +755,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
     }
 
     if (
-      params.source === `env-${pipeline.id}` &&
+      params.source === coreNodeName('env') &&
       params.targetHandle.startsWith('input')
     ) {
       let inputIdPrefix = `input-${params.target}-`;
@@ -544,6 +765,8 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
       let sourceKey: string = params.sourceHandle.slice(sourceKeyPrefix.length);
       handlePipelineInputPatch(params.target, sourceKey, inputId, 'env');
     }
+
+    invalidate();
   }, []);
 
   const onLayout = useCallback(
@@ -620,19 +843,6 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
         pipeline={pipeline}
       />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ position: 'relative' }}>
-          <DagViewDrawer
-            groupId={groupId}
-            pipelineId={pipeline.id!}
-            open={drawerOpen}
-            toggle={() => {
-              setDrawerOpen(false);
-            }}
-            onClickCreateTask={() => {
-              setModal('createtask');
-            }}
-          />
-        </div>
         <div className={styles['dag']}>
           <ReactFlow
             nodeTypes={nodeTypes}
@@ -728,28 +938,32 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
             />
             <Panel
               position="top-left"
-              style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
             >
-              <Fab
-                size="small"
-                color="primary"
-                aria-label="add"
-                onClick={() => {
-                  setModal('runpipeline');
-                }}
-              >
-                <Publish />
-              </Fab>
-              <Fab
-                size="small"
-                color="primary"
-                aria-label="add"
-                onClick={() => {
-                  setDrawerOpen(true);
-                }}
-              >
-                <Add />
-              </Fab>
+              <Tooltip title={'New task'} placement="right">
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    setModal('createfunctiontask');
+                  }}
+                >
+                  <Add />
+                </Fab>
+              </Tooltip>
+              <Tooltip title={'Import tasks'} placement="right">
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    setModal('importtasks');
+                  }}
+                >
+                  <SaveAlt />
+                </Fab>
+              </Tooltip>
             </Panel>
             <MiniMap
               position="bottom-right"
@@ -758,21 +972,20 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
         </div>
-        <CreateTaskModal
-          open={modal === 'createtask'}
+        <ImportTasksModal
+          open={modal === 'importtasks'}
           toggle={() => {
             setModal(undefined);
           }}
           groupId={groupId}
-          pipelineId={pipeline.id!}
+          pipeline={pipeline}
         />
-        <RunPipelineModal
-          open={modal === 'runpipeline'}
+        <CreateFunctionTaskModal
+          open={modal === 'createfunctiontask'}
           toggle={() => {
             setModal(undefined);
           }}
           groupId={groupId}
-          pipelineId={pipeline.id!}
           pipeline={pipeline}
         />
       </div>

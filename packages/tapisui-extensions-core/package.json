@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "node --loader ts-node/esm ./src/bundle.ts",
+    "bundle": "npx tsc src/bundle.ts --skipLibCheck",
     "build": "npx tsc",
     "push": "npx tsc && npm publish --access public",
     "watch": "npx tsc --build --watch --preserveWatchOutput"
@@ -37,7 +37,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.60",
     "simple-git": "^3.24.0"
   }
 }

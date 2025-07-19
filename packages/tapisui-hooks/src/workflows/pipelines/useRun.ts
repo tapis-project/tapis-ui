@@ -3,6 +3,7 @@ import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
+import { useQueryClient } from 'react-query';
 
 type RunPipelineHookParams = Workflows.RunPipelineRequest;
 
@@ -18,6 +19,12 @@ const useRun = () => {
       (params) => API.Pipelines.run(params, basePath, jwt)
     );
 
+  const queryClient = useQueryClient();
+
+  const invalidate = () => {
+    queryClient.invalidateQueries([QueryKeys.details]);
+  };
+
   // Return hook object with loading states and login function
   return {
     isLoading,
@@ -26,6 +33,7 @@ const useRun = () => {
     data,
     error,
     reset,
+    invalidate,
     run: (
       params: RunPipelineHookParams,
       // react-query options to allow callbacks such as onSuccess

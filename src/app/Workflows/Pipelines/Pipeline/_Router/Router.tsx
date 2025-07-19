@@ -11,13 +11,10 @@ import { default as Pipeline } from '../Pipeline';
 import { default as PipelineRunsLayout } from '../../PipelineRuns';
 import { default as TaskLayout } from '../../Task';
 import { Menu } from 'app/Workflows/Pipelines/Pipeline/_components';
-// import { Workflows, useAppSelector, useAppDispatch } from '@redux';
 
 const Router: React.FC = () => {
   const location = useLocation();
   const { path } = useRouteMatch();
-  // const dispatch = useAppDispatch();
-  // const { activePipelineId } = useAppSelector((state) => state.workflows);
   return (
     <Switch>
       <Route path={`${path}`} exact>
@@ -50,7 +47,7 @@ const Router: React.FC = () => {
 
           return (
             <>
-              <Menu tab={tab} />
+              {/* <Menu tab={tab} /> */}
               <Pipeline groupId={groupId} pipelineId={pipelineId} tab={tab} />
             </>
           );
