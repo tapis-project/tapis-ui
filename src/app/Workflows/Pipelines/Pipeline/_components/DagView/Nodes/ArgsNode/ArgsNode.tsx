@@ -75,11 +75,11 @@ const ArgsNode: React.FC<NodeProps> = ({ id, data }) => {
 
     for (let k of referencedKeys) {
       if (!argState[k]) {
-        return false
+        return false;
       }
     }
-    
-    return true
+
+    return true;
   }, [argState, setArgState]);
 
   const isSecretField = (key: string) => {
