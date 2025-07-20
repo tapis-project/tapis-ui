@@ -386,6 +386,7 @@ const Sidebar: React.FC = () => {
           onClick={() => {
             history.push('/workflows/secrets');
           }}
+          disabled={!(claims && claims['sub'])}
         >
           <ListItemIcon>
             <Key fontSize="small" />

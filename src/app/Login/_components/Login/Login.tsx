@@ -76,24 +76,6 @@ const Login: React.FC = () => {
         : true; // always password auth for now
   }
 
-  useEffect(() => {
-    if (implicitAuthURL && passwordAuth) {
-      // Both auth methods available, show buttons
-      setActiveAuthMethod(undefined);
-    } else if (implicitAuthURL) {
-      // Only implicit auth available
-      setActiveAuthMethod('implicit');
-    } else if (passwordAuth) {
-      // Only password auth available
-      setActiveAuthMethod('password');
-    } else {
-      // No auth methods available, show error
-      setImplicitError(
-        'No authentication methods available. Please contact Tapis admins for TapisUI tenant support.'
-      );
-    }
-  }, [implicitAuthURL, passwordAuth]);
-
   const onSubmit = ({
     username,
     password,
@@ -113,24 +95,62 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
-    if (activeAuthMethod === 'implicit' && implicitAuthURL) {
+    if (implicitAuthURL && passwordAuth) {
+      // Both auth methods available, show buttons
+      setActiveAuthMethod(undefined);
+    } else if (implicitAuthURL) {
+      // Only implicit auth available
+      setActiveAuthMethod('implicit');
+    } else if (passwordAuth) {
+      // Only password auth available
+      setActiveAuthMethod('password');
+    } else {
+      // No auth methods available, show error
+      setImplicitError(
+        'No authentication methods available. Please contact Tapis admins for TapisUI tenant support.'
+      );
+    }
+  }, [implicitAuthURL, passwordAuth]);
+
+  // Combine the two useEffects for checking implicit auth URL validity and readiness
+  useEffect(() => {
+    // Only check if we're on the login selection screen or about to use implicit auth
+    if (
+      (activeAuthMethod === 'implicit' || activeAuthMethod === undefined) &&
+      implicitAuthURL
+    ) {
       setImplicitError(undefined);
       setImplicitReady(false);
-      fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
+      fetch(implicitAuthURL, { method: 'GET' })
         .then((response) => {
-          if (response.status === 400) {
-            setImplicitError('There was an error getting auth context (400)');
-          } else {
+          if (activeAuthMethod === 'implicit' && implicitIframe) {
+            // Special case for iframe: 400 means error
+            if (response.status === 400) {
+              setImplicitError('There was an error getting auth context (400)');
+              setImplicitReady(false);
+              return;
+            }
+          }
+          if (response.status === 200) {
             setImplicitReady(true);
+          } else {
+            console.debug(
+              `Login: implicitAuthURL: ${implicitAuthURL}. Tenant probably doesn't have default client created? Talk to admin.`
+            );
+            setImplicitError(
+              `Authentication service not available. Contact Tapis admins for federated auth support on this tenant.`
+            );
+            setImplicitReady(false);
           }
         })
         .catch(() => {
           setImplicitError(
             'There was an error connecting to the authentication service.'
           );
+          setImplicitReady(false);
         });
     }
-  }, [activeAuthMethod, implicitAuthURL]);
+  }, [activeAuthMethod, implicitAuthURL, implicitIframe]);
 
   // Handle implicit auth via iframe or redirect
   useEffect(() => {
@@ -140,7 +160,7 @@ const Login: React.FC = () => {
       if (implicitIframe) {
         // Attempt to fetch the implicit auth URL to check if it's valid
         // Possible client might not exist for tenant.
-        fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
+        fetch(implicitAuthURL, { method: 'GET' })
           .then((response) => {
             if (response.status === 400) {
               setImplicitError('There was an error getting auth context (400)');
@@ -225,7 +245,7 @@ const Login: React.FC = () => {
           </Form>
         </Formik>
       )}
-      {activeAuthMethod === undefined && (
+      {(activeAuthMethod === undefined || activeAuthMethod === 'implicit') && (
         <div className={styles['buttons']}>
           {passwordAuth && (
             <Button
@@ -233,20 +253,29 @@ const Login: React.FC = () => {
                 setActiveAuthMethod('password');
               }}
             >
-              Log with username and password
+              Log in with username and password
             </Button>
           )}
           {implicitAuthURL !== undefined && (
-            <Button
-              disabled={!!implicitError || !implicitReady}
-              onClick={() => {
-                setActiveAuthMethod('implicit');
-              }}
-              //change to loading until implicitReady is true
-              isLoading={!implicitReady}
-            >
-              Log in with your institution
-            </Button>
+            <>
+              <Button
+                // Only disable when using default implicit auth as client for tenant might not exist.
+                // if extension.getAuthByType('implicit') then we assume the config is correct.
+                disabled={extension ? false : !!implicitError || !implicitReady}
+                onClick={() => {
+                  setActiveAuthMethod('implicit');
+                }}
+                //change to loading until implicitReady is true
+                isLoading={!implicitReady}
+              >
+                Log in with your institution
+              </Button>
+              {/* {implicitError && (
+                <div style={{ color: 'red', marginTop: '0.5em' }}>
+                  {implicitError}
+                </div>
+              )} */}
+            </>
           )}
         </div>
       )}
