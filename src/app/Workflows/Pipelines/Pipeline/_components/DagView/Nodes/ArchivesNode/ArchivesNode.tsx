@@ -73,7 +73,7 @@ const Archive: React.FC<{
           style={{ cursor: 'pointer' }}
           onClick={() => {
             // setModal('filelisting');
-            history.push(`/files/${arch.system_id}/`);
+            history.push(`/files/${arch.system_id}`);
           }}
         >
           <div style={{ textAlign: 'right' }}>

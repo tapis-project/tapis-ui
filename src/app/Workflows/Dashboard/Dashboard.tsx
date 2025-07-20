@@ -23,9 +23,7 @@ const Dashboard: React.FC = () => {
     }
   });
   const archives = Hooks.Archives.useListAll({ groupIds });
-  const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll({
-    groupIds,
-  });
+  const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll();
   const secrets = Hooks.Secrets.useList();
   const [page, setPage] = useState<number>(1);
   return (
