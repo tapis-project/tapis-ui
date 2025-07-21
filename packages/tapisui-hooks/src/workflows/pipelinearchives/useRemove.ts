@@ -5,25 +5,23 @@ import { useTapisConfig } from '../..';
 import QueryKeys from './queryKeys';
 import PipelineQueryKeys from '../pipelines/queryKeys';
 
-type AddArchiveHookParams = Workflows.AddPipelineArchiveRequest;
+type RemoveArchiveHookParams = Workflows.RemovePipelineArchiveRequest;
 
-const useCreate = () => {
+const useRemove = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
 
   // The useMutation react-query hook is used to call operations that make server-side changes
   // (Other hooks would be used for data retrieval)
-  //
-  // In this case, create helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Workflows.RespResourceURL, Error, AddArchiveHookParams>(
-      [QueryKeys.create, basePath, jwt],
-      (params) => API.PipelineArchives.create(params, basePath, jwt)
+    useMutation<Workflows.RespResourceURL, Error, RemoveArchiveHookParams>(
+      [QueryKeys.remove, basePath, jwt],
+      (params) => API.PipelineArchives.remove(params, basePath, jwt)
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries(PipelineQueryKeys.details);
+    queryClient.invalidateQueries([PipelineQueryKeys.details, QueryKeys.list]);
   };
 
   // Return hook object with loading states and login function
@@ -35,13 +33,13 @@ const useCreate = () => {
     error,
     reset,
     invalidate,
-    create: (
-      params: AddArchiveHookParams,
+    remove: (
+      params: RemoveArchiveHookParams,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
         Workflows.RespResourceURL,
         Error,
-        AddArchiveHookParams
+        RemoveArchiveHookParams
       >
     ) => {
       // Call mutate to trigger a single post-like API operation
@@ -50,4 +48,4 @@ const useCreate = () => {
   };
 };
 
-export default useCreate;
+export default useRemove;

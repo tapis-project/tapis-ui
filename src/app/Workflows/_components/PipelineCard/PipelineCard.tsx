@@ -1,101 +1,7 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React from 'react';
 import { Workflows } from '@tapis/tapis-typescript';
 import styles from './PipelineCard.module.scss';
-import { UnfoldMore, MoreVert } from '@mui/icons-material';
-import {
-  MenuList,
-  MenuItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-  Paper,
-} from '@mui/material';
-import {
-  Delete,
-  Edit,
-  Hub,
-  Input,
-  Output,
-  Visibility,
-} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-
-type PipelineCardMenuProps = {
-  groupId: string;
-  pipeline: Workflows.Pipeline;
-  onClickDelete?: () => void;
-};
-
-const PipelineCardMenu: React.FC<PipelineCardMenuProps> = ({
-  pipeline,
-  groupId,
-}) => {
-  const location = useLocation();
-  return (
-    <Paper
-      sx={{
-        width: 320,
-        maxWidth: '100%',
-        position: 'absolute',
-        top: 0,
-        right: 0,
-      }}
-    >
-      <MenuList dense>
-        <MenuItem
-          href={'#' + location.pathname + `/${groupId}/` + pipeline.id}
-          component="a"
-        >
-          <ListItemIcon>
-            <Visibility fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>View</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            alert('edit');
-          }}
-        >
-          <ListItemIcon>
-            <Edit fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <Hub fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Dependencies</ListItemText>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <Input fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Input</ListItemText>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <Output fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Output</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={() => {
-            alert('delete');
-          }}
-        >
-          <ListItemIcon>
-            <Delete fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
-      </MenuList>
-    </Paper>
-  );
-};
 
 type PipelineCardProps = {
   pipeline: Workflows.Pipeline;
@@ -103,7 +9,6 @@ type PipelineCardProps = {
 };
 
 const PipelineCard: React.FC<PipelineCardProps> = ({ groupId, pipeline }) => {
-  const [menuActive, setMenuActive] = useState(false);
   return (
     <div className={styles['card']}>
       <Link
@@ -112,7 +17,7 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ groupId, pipeline }) => {
       >
         <b>{pipeline.id}</b>
       </Link>
-      &nbsp;<div className={styles['card-status']}></div>
+      {/* &nbsp;<div className={styles['card-status']}></div> */}
       <Link
         to={`/workflows/pipelines/${groupId}`}
         className={`${styles['group']} ${styles['link']}`}
@@ -129,14 +34,6 @@ const PipelineCard: React.FC<PipelineCardProps> = ({ groupId, pipeline }) => {
       ) : (
         <></>
       )}
-      <UnfoldMore className={styles['expand']} />
-      <MoreVert
-        className={styles['more']}
-        onClick={() => {
-          setMenuActive(!menuActive);
-        }}
-      />
-      {menuActive && <PipelineCardMenu pipeline={pipeline} groupId={groupId} />}
     </div>
   );
 };

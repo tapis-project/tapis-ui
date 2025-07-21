@@ -28,7 +28,7 @@ const Router: React.FC = () => {
       </Route>
       <Route path={`/workflows/pipelines/:groupId/:pipelineId/runs`}>
         <>
-          <Menu tab={'runs'} />
+          {/* <Menu tab={'runs'} /> */}
           <PipelineRunsLayout />
         </>
       </Route>

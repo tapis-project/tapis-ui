@@ -22,10 +22,8 @@ const Dashboard: React.FC = () => {
       groupMapping[group.uuid!] = group;
     }
   });
-  const archives = Hooks.Archives.useListAll({ groupIds });
-  const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll({
-    groupIds,
-  });
+  const archives = Hooks.Archives.useListAll();
+  const { data: pipelines, isLoading } = Hooks.Pipelines.useListAll();
   const secrets = Hooks.Secrets.useList();
   const [page, setPage] = useState<number>(1);
   return (

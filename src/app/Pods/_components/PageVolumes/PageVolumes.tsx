@@ -117,8 +117,9 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
         case 'dashboard':
           return `Volumes:
 You can manage and create volumes here.
-Said volumes can be used in Pods as persistent storage.
+Said volumes can be used in Pods as mounted persistent storage.
 Snapshots of volumes can be managed on the snapshots page.
+ - Volume size limits are currently not enforced.
 
 Select or create a volume to get started.`;
         case 'createVolume':

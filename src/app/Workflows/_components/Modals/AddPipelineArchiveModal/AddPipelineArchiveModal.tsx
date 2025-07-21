@@ -69,7 +69,7 @@ const AddPipelineArchiveModal: React.FC<AddPipelineArchiveModalProps> = ({
   groupId,
   pipeline,
 }) => {
-  const { create, isError, error, reset, isLoading, isSuccess } =
+  const { create, isError, error, reset, isLoading, isSuccess, invalidate } =
     Hooks.PipelineArchives.useCreate();
 
   const addArchive = ({ archiveId }: { archiveId: string }) => {
@@ -81,7 +81,9 @@ const AddPipelineArchiveModal: React.FC<AddPipelineArchiveModalProps> = ({
       },
       {
         onSuccess: () => {
-          reset(), toggle();
+          invalidate();
+          reset();
+          toggle();
         },
       }
     );
