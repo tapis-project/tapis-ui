@@ -4,11 +4,9 @@ import styles from './ArchivesNode.module.scss';
 import { HiddenHandle, StandardHandle } from '../../Handles';
 import { Workflows } from '@tapis/tapis-typescript';
 import { Workflows as Hooks } from '@tapis/tapisui-hooks';
-import { ErrorOutline, Add, DeleteOutline } from '@mui/icons-material';
-import { Box, Tooltip } from '@mui/material';
-import { AddPipelineEnvVarModal } from '../../../../../../_components/Modals/AddPipelineEnvVarModal';
+import { Add, DeleteOutline } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { FaBeer } from 'react-icons/fa';
 import {
   AddPipelineArchiveModal,
   ArchiveFileListingModal,
@@ -30,8 +28,8 @@ const Archive: React.FC<{
   pipeline: Workflows.Pipeline;
   archive: Workflows.Archive;
 }> = ({ groupId, pipeline, archive }) => {
-  const { isLoading, isSuccess, isError, error, reset } =
-    Hooks.PipelineArchives.useCreate();
+  const { remove, isLoading, isSuccess, reset, invalidate } =
+    Hooks.PipelineArchives.useRemove();
   const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
   let arch = archive as Workflows.TapisSystemArchive;
@@ -57,7 +55,21 @@ const Archive: React.FC<{
       >
         <LoadingButton
           loading={isLoading}
-          onClick={() => {}}
+          onClick={() => {
+            remove(
+              {
+                groupId,
+                pipelineId: pipeline.id!,
+                reqAddPipelineArchive: { archive_id: archive.id },
+              },
+              {
+                onSuccess: () => {
+                  reset();
+                  invalidate();
+                },
+              }
+            );
+          }}
           sx={{
             color: '#666666',
             cursor: 'pointer',
@@ -164,17 +176,19 @@ const ArchivesNode: React.FC<NodeProps> = ({ id, data }) => {
           </div>
         </div>
         <QueryWrapper isLoading={isLoading} error={error}>
-          <div className={styles['io']}>
-            {archives.map((archive) => {
-              return (
-                <Archive
-                  groupId={groupId}
-                  pipeline={pipeline}
-                  archive={archive}
-                />
-              );
-            })}
-          </div>
+          {archives.length > 0 && (
+            <div className={styles['io']}>
+              {archives.map((archive) => {
+                return (
+                  <Archive
+                    groupId={groupId}
+                    pipeline={pipeline}
+                    archive={archive}
+                  />
+                );
+              })}
+            </div>
+          )}
         </QueryWrapper>
       </div>
       <HiddenHandle

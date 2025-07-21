@@ -60,8 +60,8 @@ importers:
         specifier: workspace:*
         version: link:packages/scoped-tapisui-extension
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       '@tapis/tapis-typescript-apps':
         specifier: 0.0.9
         version: 0.0.9
@@ -353,8 +353,8 @@ importers:
   packages/example-extension:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       '@tapis/tapisui-common':
         specifier: file:../tapisui-common
         version: file:packages/tapisui-common(@babel/runtime@7.27.6)(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@testing-library/dom@10.4.0)(@types/node@18.19.115)(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@18.3.1(react@18.3.1))(rollup@4.44.1)(sass@1.89.2)(vite@6.3.5(@types/node@18.19.115)(sass@1.89.2))
@@ -402,8 +402,8 @@ importers:
         specifier: ^7.7.0
         version: 7.29.7(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@mui/material@5.17.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@7.1.0(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       '@tapis/tapisui-common':
         specifier: workspace:*
         version: link:../tapisui-common
@@ -463,8 +463,8 @@ importers:
   packages/scoped-tapisui-extension:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       '@tapis/tapisui-common':
         specifier: workspace:*
         version: link:../tapisui-common
@@ -518,8 +518,8 @@ importers:
   packages/tapisui-api:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       axios:
         specifier: ^1.7.5
         version: 1.10.0
@@ -567,8 +567,8 @@ importers:
         specifier: ^26.0.1
         version: 26.0.3(rollup@4.44.1)
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       '@tapis/tapis-typescript-apps':
         specifier: 0.0.9
         version: 0.0.9
@@ -721,8 +721,8 @@ importers:
   packages/tapisui-extension-devtools:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       simple-git:
         specifier: ^3.24.0
         version: 3.28.0
@@ -740,8 +740,8 @@ importers:
   packages/tapisui-extensions-core:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       simple-git:
         specifier: ^3.24.0
         version: 3.28.0
@@ -765,8 +765,8 @@ importers:
   packages/tapisui-hooks:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.60
-        version: 0.0.60
+        specifier: ^0.0.62
+        version: 0.0.62
       '@tapis/tapisui-api':
         specifier: file:../tapisui-api
         version: link:../tapisui-api
@@ -2442,14 +2442,14 @@ packages:
   '@tapis/tapis-typescript-workflows@0.0.10':
     resolution: {integrity: sha512-RF0g+GnV0vMj0/24jyuguGBDXX7sdmT0MrKQvyaquq9wMI5OBVv3aiRC+90Ihdb+Hgr+eA+06BtbEgwxAV3CTQ==}
 
-  '@tapis/tapis-typescript-workflows@1.9.0-a1':
-    resolution: {integrity: sha512-xr8DJXlGFbobAt21sMOwyY5im9V018v55d2fnaiXQSI1HWlDBp9y6/b7X9XxnH0l7HQGFQi/TV0kH/WxFIO2Sw==}
+  '@tapis/tapis-typescript-workflows@1.9.0-a3':
+    resolution: {integrity: sha512-AIsZRNmG0TwRwL0P55l41m09t7doxKi2Mq++joILYzRd2vxHXgyRw1zV8I1sbZ/H7vH1Fb1qz4AkLYuErwwhSQ==}
 
   '@tapis/tapis-typescript@0.0.29':
     resolution: {integrity: sha512-XlnOMP1nXZSGec+u/cbQ90Syga9yENj5clStM8AFqaMUOYFzea/8CStrW/oWOyXn8mX0BWu8QKRbWCIyrYCKNA==}
 
-  '@tapis/tapis-typescript@0.0.60':
-    resolution: {integrity: sha512-BPy21UgC2h5Jel8jq1FMGCYLXfaT0SzhYTytlQejbpOSuQWtvYAwQZnj76NYxatPCEVIiJMhsYWABeEZaUbShQ==}
+  '@tapis/tapis-typescript@0.0.62':
+    resolution: {integrity: sha512-kp3JsArZaHEh27cmRLtVRZM7yBPAmgW/RqDobnxX0+wYd7HzItumAqvbM56sLBdUPwSArzFRs3U4JKU/jlyicQ==}
 
   '@tapis/tapisui-api@0.0.14':
     resolution: {integrity: sha512-EFkpzJQ8Xls/TXP9LH9Rxgrt+FG9Ct/U2XwTJpJoZ65aPfBPGn2lhBj/JbiJejVoQnU+iVdjyj3Na4LEo71rkQ==}
@@ -8261,7 +8261,7 @@ snapshots:
 
   '@tapis/tapis-typescript-workflows@0.0.10': {}
 
-  '@tapis/tapis-typescript-workflows@1.9.0-a1': {}
+  '@tapis/tapis-typescript-workflows@1.9.0-a3': {}
 
   '@tapis/tapis-typescript@0.0.29':
     dependencies:
@@ -8278,7 +8278,7 @@ snapshots:
       '@tapis/tapis-typescript-workflows': 0.0.10
       '@types/mocha': 9.1.1
 
-  '@tapis/tapis-typescript@0.0.60':
+  '@tapis/tapis-typescript@0.0.62':
     dependencies:
       '@tapis/tapis-typescript-actors': 0.0.3
       '@tapis/tapis-typescript-apps': 0.0.9
@@ -8292,7 +8292,7 @@ snapshots:
       '@tapis/tapis-typescript-streams': 0.0.4
       '@tapis/tapis-typescript-systems': 0.0.6
       '@tapis/tapis-typescript-tenants': 0.0.2
-      '@tapis/tapis-typescript-workflows': 1.9.0-a1
+      '@tapis/tapis-typescript-workflows': 1.9.0-a3
       '@types/mocha': 9.1.1
 
   '@tapis/tapisui-api@0.0.14':
@@ -8308,7 +8308,7 @@ snapshots:
 
   '@tapis/tapisui-api@file:packages/tapisui-api':
     dependencies:
-      '@tapis/tapis-typescript': 0.0.60
+      '@tapis/tapis-typescript': 0.0.62
       axios: 1.10.0
       cross-fetch: 3.2.0
       streamsaver: 2.0.6
@@ -8325,7 +8325,7 @@ snapshots:
       '@mui/lab': 5.0.0-alpha.176(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@mui/material@5.17.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/material': 5.17.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react@18.3.1))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rollup/plugin-commonjs': 26.0.3(rollup@4.44.1)
-      '@tapis/tapis-typescript': 0.0.60
+      '@tapis/tapis-typescript': 0.0.62
       '@tapis/tapis-typescript-apps': 0.0.9
       '@tapis/tapis-typescript-systems': 0.0.6
       '@tapis/tapisui-hooks': 0.0.3(@types/node@18.19.115)(react-dom@18.3.1(react@18.3.1))(sass@1.89.2)
@@ -8415,7 +8415,7 @@ snapshots:
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.115)(react-dom@18.3.1(react@18.3.1))(sass@1.89.2)':
     dependencies:
-      '@tapis/tapis-typescript': 0.0.60
+      '@tapis/tapis-typescript': 0.0.62
       '@tapis/tapisui-api': file:packages/tapisui-api
       cross-fetch: 3.2.0
       js-cookie: 3.0.5

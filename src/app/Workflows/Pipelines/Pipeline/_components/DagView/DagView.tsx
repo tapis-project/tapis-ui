@@ -11,7 +11,7 @@ import { Workflows as Hooks } from '@tapis/tapisui-hooks';
 import styles from './DagView.module.scss';
 import { DagViewHeader } from './DagViewHeader';
 import { Alert, AlertTitle, Chip, Fab, Tooltip } from '@mui/material';
-import { DataObject, Share, Add, SaveAlt } from '@mui/icons-material';
+import { DataObject, Share, Add, SaveAlt, History } from '@mui/icons-material';
 import {
   ReactFlow,
   MiniMap,
@@ -40,6 +40,7 @@ import ELK, {
 import '@xyflow/react/dist/style.css';
 import _ from 'lodash';
 import { ArchivesNode } from './Nodes/ArchivesNode';
+import { useHistory } from 'react-router-dom';
 
 const elk = new ELK();
 
@@ -161,6 +162,7 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
   const { fitView } = useReactFlow();
   const [view, setView] = useState<View>('io');
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const history = useHistory();
   // NOTE TODO Loading the pipeline data here again just to get the invalidate
   // hook. Maybe just load it here
   const { patch, isLoading, isError, error, isSuccess, reset, invalidate } =
@@ -962,6 +964,18 @@ const ELKLayoutFlow: React.FC<DagViewProps> = ({ groupId, pipeline }) => {
                   }}
                 >
                   <SaveAlt />
+                </Fab>
+              </Tooltip>
+              <Tooltip title={'Previous runs'} placement="right">
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    history.push('runs');
+                  }}
+                >
+                  <History />
                 </Fab>
               </Tooltip>
             </Panel>
