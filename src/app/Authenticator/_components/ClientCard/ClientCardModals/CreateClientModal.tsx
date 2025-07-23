@@ -36,10 +36,9 @@ const CreateClientModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       2048,
       'Description should not be longer than 2048 characters'
     ),
-    callback_url: Yup.string().max(
-      2048,
-      'Callback URL should not exceed 2048 characters'
-    ),
+    callback_url: Yup.string()
+      .max(2048, 'Callback URL should not exceed 2048 characters')
+      .matches(/^https:\/\//, 'Callack URL must start with https://'),
     display_name: Yup.string().max(
       2048,
       'Display name should not exceed 2048 characters'
@@ -65,8 +64,18 @@ const CreateClientModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     display_name,
     client_key,
   }: typeof initialValues) => {
+    const normalizedUrl =
+      callback_url && !/^https?:\/\//i.test(callback_url)
+        ? `https://${callback_url}`
+        : callback_url;
     createClient(
-      { client_id, description, callback_url, display_name, client_key },
+      {
+        client_id,
+        description,
+        callback_url: normalizedUrl,
+        display_name,
+        client_key,
+      },
       { onSuccess }
     );
   };

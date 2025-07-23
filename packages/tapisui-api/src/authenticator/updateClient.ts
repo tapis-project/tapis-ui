@@ -2,11 +2,9 @@ import { Authenticator } from '@tapis/tapis-typescript';
 import { errorDecoder, apiGenerator } from '../utils';
 
 const updateClient = (
-  clientId: string,
+  params: Authenticator.UpdateClientRequest,
   basePath: string,
-  jwt: string,
-  callback_url: string,
-  display_name: string
+  jwt: string
 ) => {
   const api: Authenticator.ClientsApi = apiGenerator<Authenticator.ClientsApi>(
     Authenticator,
@@ -15,13 +13,8 @@ const updateClient = (
     jwt
   );
 
-  const requestParameters: Authenticator.UpdateClientRequest = {
-    clientId,
-    updateClient: { callback_url, display_name },
-  };
-
   return errorDecoder<Authenticator.RespUpdateClient>(() =>
-    api.updateClient(requestParameters)
+    api.updateClient(params)
   );
 };
 
