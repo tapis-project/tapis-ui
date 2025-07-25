@@ -96,7 +96,7 @@ const CreateClientModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 <FormikInput
                   name="client_id"
                   label="Client Name"
-                  required
+                  required = {false}
                   description="System name"
                 />
                 <FormikInput
