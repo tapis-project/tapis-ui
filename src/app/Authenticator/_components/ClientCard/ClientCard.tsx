@@ -23,13 +23,16 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import DeleteClientModal from './ClientCardModals/DeleteClientModal';
+import UpdateClientModal from './ClientCardModals/UpdateClientModal';
 
 type ClientCardMenuProps = {
   toggleDeleteModal: () => void;
+  toggleUpdateModal: () => void;
 };
 
 const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
   toggleDeleteModal,
+  toggleUpdateModal,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -46,7 +49,8 @@ const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
       <MenuList dense>
         <MenuItem
           onClick={() => {
-            alert('edit');
+            toggleUpdateModal();
+            setAnchorEl(null);
           }}
         >
           <ListItemIcon>
@@ -83,17 +87,25 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
 
   return (
     <div className={styles['card']}>
-      <Link
-        className={styles['card-title']}
-        to={{
-          pathname: `/authenticator/clients/${client.client_id!}`,
-          state: { callbackUrl: client.callback_url },
-        }}
-      >
-        <b>{client.client_id!}</b>
-      </Link>
+      <div className={styles['card-title']}>
+        <Link to={`/authenticator/clients/${client.client_id!}`}>
+          <b>{client.display_name! || client.client_id}</b>
+        </Link>
+        {' | '}
+        <a
+          href={client.callback_url!}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit Site
+        </a>
+      </div>
       <p />
-      {client.description}
+      <p /> Client Id: {client.client_id}
+      <p /> Callback_url: {client.callback_url}
+      <br />
+      <p /> Description: {client.description}
+      <br />
       <MoreVert
         className={styles['more']}
         onClick={() => setMenuActive(!menuActive)}
@@ -108,11 +120,22 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
             toggleDeleteModal={() => {
               setModal('deleteclient');
             }}
+            toggleUpdateModal={() => {
+              setModal('updateclient');
+            }}
           />
         </div>
       )}
       {modal === 'deleteclient' && (
         <DeleteClientModal
+          client={client}
+          toggle={() => {
+            setModal(undefined);
+          }}
+        />
+      )}
+      {modal === 'updateclient' && (
+        <UpdateClientModal
           client={client}
           toggle={() => {
             setModal(undefined);
