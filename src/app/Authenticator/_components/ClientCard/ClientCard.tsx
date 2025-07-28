@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import DeleteClientModal from './ClientCardModals/DeleteClientModal';
-import UpdateClientModal from './ClientCardModals/UpdateClientModal'; // <-- New Import
+import UpdateClientModal from './ClientCardModals/UpdateClientModal';
 
 type ClientCardMenuProps = {
   toggleDeleteModal: () => void;
