@@ -23,16 +23,19 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import DeleteClientModal from './ClientCardModals/DeleteClientModal';
-import UpdateClientModal from './ClientCardModals/UpdateClientModal'; // <-- New Import
+import UpdateClientModal from './ClientCardModals/UpdateClientModal';
+import ClientDetailsModal from './ClientCardModals/ClientDetailsModal';
 
 type ClientCardMenuProps = {
   toggleDeleteModal: () => void;
   toggleUpdateModal: () => void;
+  toggleClientModal: () => void;
 };
 
 const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
   toggleDeleteModal,
   toggleUpdateModal,
+  toggleClientModal,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -77,6 +80,7 @@ const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
 
 type ClientCardProps = {
   client: Authenticator.Client;
+  toggleClientModal: () => void;
 };
 
 const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
@@ -88,10 +92,17 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
   return (
     <div className={styles['card']}>
       <div className={styles['card-title']}>
-        <Link to={`/authenticator/clients/${client.client_id!}`}>
-          <b>{client.display_name! || client.client_id}</b>
-        </Link>
+        <span
+          className={styles['client-name']}
+          onClick={() => {
+            setModal('listclient');
+          }}
+          style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1976d2' }}
+        >
+          {client.display_name! || client.client_id}
+        </span>
         {' | '}
+
         <a
           href={client.callback_url!}
           target="_blank"
@@ -100,10 +111,6 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           Visit Site
         </a>
       </div>
-      <p />
-      <p /> Client Id: {client.client_id}
-      <p /> Callback_url: {client.callback_url}
-      <br />
       <p /> Description: {client.description}
       <br />
       <MoreVert
@@ -123,6 +130,9 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
             toggleUpdateModal={() => {
               setModal('updateclient');
             }}
+            toggleClientModal={() => {
+              setModal('listclient');
+            }}
           />
         </div>
       )}
@@ -136,6 +146,14 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
       )}
       {modal === 'updateclient' && (
         <UpdateClientModal
+          client={client}
+          toggle={() => {
+            setModal(undefined);
+          }}
+        />
+      )}
+      {modal === 'listclient' && (
+        <ClientDetailsModal
           client={client}
           toggle={() => {
             setModal(undefined);
