@@ -26,6 +26,7 @@ import DeleteClientModal from './ClientCardModals/DeleteClientModal';
 import UpdateClientModal from './ClientCardModals/UpdateClientModal';
 import ClientDetailsModal from './ClientCardModals/ClientDetailsModal';
 
+
 type ClientCardMenuProps = {
   toggleDeleteModal: () => void;
   toggleUpdateModal: () => void;
@@ -36,6 +37,7 @@ const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
   toggleDeleteModal,
   toggleUpdateModal,
   toggleClientModal,
+
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -103,6 +105,10 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
         </span>
         {' | '}
 
+        <Link to={`/authenticator/clients/${client.client_id!}`}>
+          <b>{client.display_name! || client.client_id}</b>
+        </Link>
+        {' | '}
         <a
           href={client.callback_url!}
           target="_blank"
@@ -111,6 +117,10 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           Visit Site
         </a>
       </div>
+      <p />
+      <p /> Client Id: {client.client_id}
+      <p /> Callback_url: {client.callback_url}
+      <br />
       <p /> Description: {client.description}
       <br />
       <MoreVert
@@ -133,6 +143,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
             toggleClientModal={() => {
               setModal('listclient');
             }}
+
           />
         </div>
       )}
@@ -160,6 +171,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           }}
         />
       )}
+
     </div>
   );
 };
