@@ -32,19 +32,6 @@ const ClientDetailModal: React.FC<ClientDetailModal> = ({ toggle, client }) => {
 
   const { data, isLoading, error, isSuccess } = useListClients();
 
-  // const onSubmit = (values: {
-  //   clientId: string;
-  //   callback_url: string;
-  //   display_name: string;
-  // }) => {
-  //   ({
-  //     onSuccess: () => {
-  //       onSuccess();
-  //       toggle();
-  //     },
-  //   });
-  // };
-
   return (
     <GenericModal
       toggle={toggle}
