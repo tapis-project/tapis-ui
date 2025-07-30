@@ -39,6 +39,10 @@ const ClientDetailModal: React.FC<ClientDetailModal> = ({ toggle, client }) => {
       body={
         <div className={styles['modal-settings']}>
           <div className={styles['card-line']}>
+            <span className={styles['muted']}>Display Name: </span>
+            <span>{client.display_name}</span>
+          </div>
+          <div className={styles['card-line']}>
             <span className={styles['muted']}>Client Id: </span>
             <span>{client.client_id}</span>
           </div>

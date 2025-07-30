@@ -35,8 +35,8 @@ const ClientCardMenu: React.FC<ClientCardMenuProps> = ({
         width: 100,
         maxWidth: '100%',
         position: 'absolute',
-        top: 0,
-        right: 0,
+        top: '2px',
+        right: '5px',
       }}
     >
       <MenuList dense>
@@ -95,18 +95,53 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
         >
           {client.display_name || client.client_id}
         </Link>
-        {' | '}
-        <a href={client.callback_url} target="_blank" rel="noopener noreferrer">
-          Visit Site
-        </a>
       </div>
 
       <div className={styles['card-content']}>
-        <div>
-          <strong>Callback URL:</strong> {client.callback_url}
+        <div
+          style={{
+            fontSize: '.9rem',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          <strong>Client ID:</strong>{' '}
+          {client.client_id || 'No description provided'}
         </div>
-        <div>
-          <strong>Description:</strong> {client.description}
+
+        <div
+          style={{
+            fontSize: '.9rem',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          <strong>Callback:</strong>{' '}
+          {client.callback_url ? (
+            <a
+              href={client.callback_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {client.callback_url?.replace(/^https?:\/\//, '') ||
+                'No callback URL provided'}
+            </a>
+          ) : (
+            'No callback URL provided'
+          )}
+        </div>
+        <div
+          style={{
+            fontSize: '.9rem',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          <strong>Description:</strong>{' '}
+          {client.description || 'No description provided'}
         </div>
       </div>
 

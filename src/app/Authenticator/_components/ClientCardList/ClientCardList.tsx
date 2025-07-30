@@ -16,7 +16,7 @@ type ClientCardListProps = {
 };
 
 const ClientCardList: React.FC<ClientCardListProps> = ({
-  cardsPerPage = 6,
+  cardsPerPage = 9,
   columns = 3,
 }) => {
   const { data: clients, isLoading } = Hooks.useListClients();
