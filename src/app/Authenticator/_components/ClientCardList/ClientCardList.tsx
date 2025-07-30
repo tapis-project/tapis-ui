@@ -75,7 +75,14 @@ const ClientCardList: React.FC<ClientCardListProps> = ({
                 ) {
                   return <></>;
                 }
-                return <ClientCard client={client} />;
+                return (
+                  <ClientCard
+                    client={client}
+                    toggleClientModal={function (): void {
+                      throw new Error('Function not implemented.');
+                    }}
+                  />
+                );
               })}
           </div>
         )}
