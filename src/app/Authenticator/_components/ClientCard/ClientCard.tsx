@@ -14,6 +14,7 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '@tapis/tapis-typescript';
+
 import styles from './ClientCard.module.scss';
 import DeleteClientModal from './ClientCardModals/DeleteClientModal';
 import UpdateClientModal from './ClientCardModals/UpdateClientModal';
@@ -105,7 +106,6 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
       </div>
 
       <div className={styles['card-content']}>
-        <div><strong>Client Id:</strong> {client.client_id}</div>
         <div><strong>Callback URL:</strong> {client.callback_url}</div>
         <div><strong>Description:</strong> {client.description}</div>
       </div>
