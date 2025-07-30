@@ -7,11 +7,7 @@ import {
   Divider,
   Paper,
 } from '@mui/material';
-import {
-  Delete,
-  Edit,
-  MoreVert,
-} from '@mui/icons-material';
+import { Delete, Edit, MoreVert } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { Authenticator } from '@tapis/tapis-typescript';
 
@@ -91,23 +87,27 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
             e.preventDefault();
             setModal('listclient');
           }}
-          style={{ fontWeight: 'bold', color: '#1976d2', textDecoration: 'none' }}
+          style={{
+            fontWeight: 'bold',
+            color: '#1976d2',
+            textDecoration: 'none',
+          }}
         >
           {client.display_name || client.client_id}
         </Link>
         {' | '}
-        <a
-          href={client.callback_url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={client.callback_url} target="_blank" rel="noopener noreferrer">
           Visit Site
         </a>
       </div>
 
       <div className={styles['card-content']}>
-        <div><strong>Callback URL:</strong> {client.callback_url}</div>
-        <div><strong>Description:</strong> {client.description}</div>
+        <div>
+          <strong>Callback URL:</strong> {client.callback_url}
+        </div>
+        <div>
+          <strong>Description:</strong> {client.description}
+        </div>
       </div>
 
       <MoreVert
@@ -130,16 +130,10 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
       )}
 
       {modal === 'deleteclient' && (
-        <DeleteClientModal
-          client={client}
-          toggle={() => setModal(undefined)}
-        />
+        <DeleteClientModal client={client} toggle={() => setModal(undefined)} />
       )}
       {modal === 'updateclient' && (
-        <UpdateClientModal
-          client={client}
-          toggle={() => setModal(undefined)}
-        />
+        <UpdateClientModal client={client} toggle={() => setModal(undefined)} />
       )}
       {modal === 'listclient' && (
         <ClientDetailsModal
