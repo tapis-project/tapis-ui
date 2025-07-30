@@ -26,12 +26,11 @@ const CreateClientModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   const validationSchema = Yup.object({
     client_id: Yup.string()
       .min(1)
-      .max(80, 'System name should not be longer than 80 characters')
+      .max(80, 'Client name should not be longer than 80 characters')
       .matches(
         /^[a-zA-Z0-9_.-]+$/,
         "Only alphanumeric characters, '.', '_', '-' are allowed"
-      )
-      .required('System name is required'),
+      ),
     description: Yup.string().max(
       2048,
       'Description should not be longer than 2048 characters'
@@ -50,11 +49,11 @@ const CreateClientModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   });
 
   const initialValues = {
-    client_id: '',
-    description: '',
-    callback_url: '',
-    display_name: '',
-    client_key: '',
+    client_id: undefined,
+    description: undefined,
+    callback_url: undefined,
+    display_name: undefined,
+    client_key: undefined,
   };
 
   const onSubmit = ({
@@ -96,8 +95,8 @@ const CreateClientModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                 <FormikInput
                   name="client_id"
                   label="Client Name"
-                  required
-                  description="System name"
+                  description="Client name"
+                  required={false}
                 />
                 <FormikInput
                   name="description"
