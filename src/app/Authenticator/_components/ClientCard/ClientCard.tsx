@@ -1,10 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardHeader, CardContent } from '@mui/material';
-import { Icon } from '@tapis/tapisui-common';
-import styles from './ClientCard.module.scss';
-import { useHistory, useLocation } from 'react-router-dom';
-import { Authenticator } from '@tapis/tapis-typescript';
-import { UnfoldMore, MoreVert } from '@mui/icons-material';
+import React, { useRef, useState } from 'react';
 import {
   MenuList,
   MenuItem,
@@ -16,12 +10,11 @@ import {
 import {
   Delete,
   Edit,
-  Hub,
-  Input,
-  Output,
-  Visibility,
+  MoreVert,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { Authenticator } from '@tapis/tapis-typescript';
+import styles from './ClientCard.module.scss';
 import DeleteClientModal from './ClientCardModals/DeleteClientModal';
 import UpdateClientModal from './ClientCardModals/UpdateClientModal';
 import ClientDetailsModal from './ClientCardModals/ClientDetailsModal';
@@ -87,41 +80,41 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
   const [menuActive, setMenuActive] = useState(false);
   const menuRef = useRef(null);
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
-    <div className={styles['card']}>
+    <div className={styles.card}>
       <div className={styles['card-title']}>
-        <span
-          className={styles['client-name']}
-          onClick={() => {
+        <Link
+          to={`/authenticator/clients/${client.client_id}`}
+          onClick={(e) => {
+            e.preventDefault();
             setModal('listclient');
           }}
-          style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1976d2' }}
+          style={{ fontWeight: 'bold', color: '#1976d2', textDecoration: 'none' }}
         >
-          <Link to={`/authenticator/clients/${client.client_id!}`}>
-            <b>{client.display_name! || client.client_id}</b>
-          </Link>
-          {' | '}
-        </span>
+          {client.display_name || client.client_id}
+        </Link>
+        {' | '}
         <a
-          href={client.callback_url!}
+          href={client.callback_url}
           target="_blank"
           rel="noopener noreferrer"
         >
           Visit Site
         </a>
       </div>
-      <p />
-      <p /> Client Id: {client.client_id}
-      <p /> Callback_url: {client.callback_url}
-      <br />
-      <p /> Description: {client.description}
-      <br />
+
+      <div className={styles['card-content']}>
+        <div><strong>Client Id:</strong> {client.client_id}</div>
+        <div><strong>Callback URL:</strong> {client.callback_url}</div>
+        <div><strong>Description:</strong> {client.description}</div>
+      </div>
+
       <MoreVert
-        className={styles['more']}
+        className={styles.more}
         onClick={() => setMenuActive(!menuActive)}
       />
+
       {menuActive && (
         <div
           ref={menuRef}
@@ -129,40 +122,29 @@ const ClientCard: React.FC<ClientCardProps> = ({ client }) => {
           className={styles['menu-container']}
         >
           <ClientCardMenu
-            toggleDeleteModal={() => {
-              setModal('deleteclient');
-            }}
-            toggleUpdateModal={() => {
-              setModal('updateclient');
-            }}
-            toggleClientModal={() => {
-              setModal('listclient');
-            }}
+            toggleDeleteModal={() => setModal('deleteclient')}
+            toggleUpdateModal={() => setModal('updateclient')}
+            toggleClientModal={() => setModal('listclient')}
           />
         </div>
       )}
+
       {modal === 'deleteclient' && (
         <DeleteClientModal
           client={client}
-          toggle={() => {
-            setModal(undefined);
-          }}
+          toggle={() => setModal(undefined)}
         />
       )}
       {modal === 'updateclient' && (
         <UpdateClientModal
           client={client}
-          toggle={() => {
-            setModal(undefined);
-          }}
+          toggle={() => setModal(undefined)}
         />
       )}
       {modal === 'listclient' && (
         <ClientDetailsModal
           client={client}
-          toggle={() => {
-            setModal(undefined);
-          }}
+          toggle={() => setModal(undefined)}
         />
       )}
     </div>

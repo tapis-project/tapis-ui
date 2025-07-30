@@ -39,27 +39,27 @@ const ClientDetailModal: React.FC<ClientDetailModal> = ({ toggle, client }) => {
       body={
         <div className={styles['modal-settings']}>
           <div className={styles['card-line']}>
-            <span className={styles['muted']}>client_id: </span>
+            <span className={styles['muted']}>Client Id: </span>
             <span>{client.client_id}</span>
           </div>
           <div className={styles['card-line']}>
-            <span className={styles['muted']}>client_key: </span>
+            <span className={styles['muted']}>Client Key: </span>
             <span>{client.client_key}</span>
           </div>
           <div className={styles['card-line']}>
-            <span className={styles['muted']}>callback_url: </span>
+            <span className={styles['muted']}>Callback URL: </span>
             <span>{client.callback_url}</span>
           </div>
           <div className={styles['card-line']}>
-            <span className={styles['muted']}>description: </span>
+            <span className={styles['muted']}>Description: </span>
             <span>{client.description}</span>
           </div>
           <div className={styles['card-line']}>
-            <span className={styles['muted']}>last update: </span>
+            <span className={styles['muted']}>Last update: </span>
             <span>{client.last_update_time}</span>
           </div>
           <div className={styles['card-line']}>
-            <span className={styles['muted']}>created: </span>
+            <span className={styles['muted']}>Created: </span>
             <span>{client.create_time}</span>
           </div>
         </div>
