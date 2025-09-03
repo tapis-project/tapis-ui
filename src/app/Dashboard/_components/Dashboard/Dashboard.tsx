@@ -86,6 +86,15 @@ const Dashboard: React.FC = () => {
     limit: 1,
   });
 
+  const systemsTotal = (systems?.data as any)?.metadata?.totalCount ?? 0;
+  const systemsTotalCount = systemsTotal === -1 ? 0 : systemsTotal;
+
+  const appsTotal = (apps?.data as any)?.metadata?.totalCount ?? 0;
+  const appsTotalCount = appsTotal === -1 ? 0 : appsTotal;
+
+  const jobsTotal = (jobs?.data as any)?.metadata?.totalCount ?? 0;
+  const jobsTotalCount = jobsTotal === -1 ? 0 : jobsTotal;
+
   return (
     <div>
       <SectionHeader>
@@ -102,9 +111,7 @@ const Dashboard: React.FC = () => {
               name="Systems"
               text="View TAPIS systems"
               link="/systems"
-              counter={`${
-                (systems?.data as any)?.metadata?.totalCount
-              } systems`}
+              counter={`${systemsTotalCount} systems`}
               loading={systems?.isLoading}
             />
             <DashboardCard
@@ -112,9 +119,7 @@ const Dashboard: React.FC = () => {
               name="Files"
               text="Access files available on TAPIS systems"
               link="/files"
-              counter={`Files available on ${
-                (systems?.data as any)?.metadata?.totalCount
-              } systems`}
+              counter={`Files available on ${systemsTotalCount} systems`}
               loading={systems?.isLoading}
             />
             <DashboardCard
@@ -122,7 +127,7 @@ const Dashboard: React.FC = () => {
               name="Applications"
               text="View TAPIS applications and launch jobs"
               link="/apps"
-              counter={`${(apps?.data as any)?.metadata?.totalCount} apps`}
+              counter={`${appsTotalCount} apps`}
               loading={apps?.isLoading}
             />
             <DashboardCard
@@ -130,7 +135,7 @@ const Dashboard: React.FC = () => {
               name="Jobs"
               text="View status and details for previously launched TAPIS jobs"
               link="/jobs"
-              counter={`${(jobs?.data as any)?.metadata?.totalCount} jobs`}
+              counter={`${jobsTotalCount} jobs`}
               loading={jobs?.isLoading}
             />
             {extension !== undefined && extension.showMLHub != false && (
