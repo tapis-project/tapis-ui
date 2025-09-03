@@ -76,7 +76,7 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       .required('Version is a required field'),
     containerImage: Yup.string()
       .min(1, 'Container Image must be at least 1 character long')
-      .max(80, 'Container Image should not be longer than 80 characters')
+      .max(256, 'Container Image should not be longer than 256 characters')
       .matches(
         /^[a-zA-Z0-9_.\-/:]+$/,
         "Container Image must contain only alphanumeric characters, '.', '_', '-', '/', ':'"

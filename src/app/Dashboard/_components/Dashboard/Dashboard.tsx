@@ -75,7 +75,10 @@ const Dashboard: React.FC = () => {
     computeTotal: true,
     limit: 1000,
   });
-  const jobs = JobsHooks.useList({});
+  const jobs = JobsHooks.useList({
+    computeTotal: true,
+    limit: 50000,
+  });
   const apps = AppsHooks.useList({
     listType: Apps.ListTypeEnum.All,
     select: 'jobAttributes,version',
