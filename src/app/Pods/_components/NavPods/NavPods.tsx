@@ -108,7 +108,9 @@ const NavPods: React.FC = () => {
               groupSelectorLabel: 'status',
               primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
               secondaryItemText: ({ object }: any) =>
-                object.image ? object.image : "~" + object.template.split('@')[0],
+                object.image
+                  ? object.image
+                  : '~' + object.template.split('@')[0],
               open: [
                 'AVAILABLE',
                 'CREATING',
