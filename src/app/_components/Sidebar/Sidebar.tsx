@@ -12,7 +12,7 @@ import {
   SettingsRounded,
   Key,
   Visibility,
-  ContentCopy
+  ContentCopy,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -390,7 +390,7 @@ const Sidebar: React.FC = () => {
           <ListItemText>View JWT</ListItemText>
         </MenuItem>
         <MenuItem
-          disabled={!(claims && claims["sub"]) || !accessToken?.access_token}
+          disabled={!(claims && claims['sub']) || !accessToken?.access_token}
           onClick={handleCopyAccessToken}
         >
           <ListItemIcon>
