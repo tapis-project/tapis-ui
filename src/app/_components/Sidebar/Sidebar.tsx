@@ -12,6 +12,7 @@ import {
   SettingsRounded,
   Key,
   Visibility,
+  ContentCopy,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -145,6 +146,12 @@ const Sidebar: React.FC = () => {
   };
   const handleModal = () => {
     setModal('delete');
+  };
+
+  const handleCopyAccessToken = () => {
+    if (accessToken?.access_token) {
+      navigator.clipboard.writeText(accessToken.access_token);
+    }
   };
 
   const useCountdown = (targetTime: number) => {
@@ -383,6 +390,15 @@ const Sidebar: React.FC = () => {
           <ListItemText>View JWT</ListItemText>
         </MenuItem>
         <MenuItem
+          disabled={!(claims && claims['sub']) || !accessToken?.access_token}
+          onClick={handleCopyAccessToken}
+        >
+          <ListItemIcon>
+            <ContentCopy fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Copy Access Token</ListItemText>
+        </MenuItem>
+        <MenuItem
           onClick={() => {
             history.push('/workflows/secrets');
           }}
@@ -434,7 +450,27 @@ const Sidebar: React.FC = () => {
         }}
       >
         <DialogContent>
-          <Typography variant="h6">Access Token Object</Typography>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '8px',
+            }}
+          >
+            <Typography variant="h6">Access Token Object</Typography>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<ContentCopy />}
+                onClick={handleCopyAccessToken}
+                disabled={!domainsMatched || !accessToken?.access_token}
+              >
+                Copy Access Token
+              </Button>
+            </div>
+          </div>
           <CodeMirror
             value={
               domainsMatched
