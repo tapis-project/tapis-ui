@@ -257,7 +257,21 @@ Select or create a pod to get started.`;
 
   const codeMirrorValue = getCodeMirrorValue();
 
-  const networkingObj = (data?.result?.networking ?? {})['default'];
+  // Use derived pod data for networking if template exists, otherwise use regular pod data
+  const networkingSource = pod?.template ? dataDerived?.result : data?.result;
+  const networkingConfigs = networkingSource?.networking ?? {};
+  // Find the first networking config with protocol 'http', or fall back to 'default'
+  let networkingObj = undefined;
+  for (const [key, config] of Object.entries(networkingConfigs)) {
+    if (config?.protocol === 'http') {
+      networkingObj = config;
+      break;
+    }
+  }
+  // If no 'http' protocol found, fall back to 'default' key
+  if (!networkingObj) {
+    networkingObj = networkingConfigs['default'];
+  }
   const networkingProtocol = networkingObj?.protocol;
   var networkingUrl = (networkingObj?.url as string | undefined) ?? undefined;
   const tapisUiUriRedirect = networkingObj?.tapis_ui_uri_redirect ?? false;

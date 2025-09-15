@@ -582,9 +582,9 @@ const Sidebar: React.FC = () => {
           </ListItemIcon>
           <ListItemText>Manage Secrets</ListItemText>
         </MenuItem>
-        {((extension !== undefined && extension.allowMutiTenant) ||
+        {((extension !== undefined && extension.allowMultiTenant) ||
           extension === undefined ||
-          (extension !== undefined && extension.allowMutiTenant)) && (
+          (extension !== undefined && extension.allowMultiTenant)) && (
           <MenuItem
             onClick={() => setModal('changeTenant')}
             disabled={!(claims && claims['sub'])}

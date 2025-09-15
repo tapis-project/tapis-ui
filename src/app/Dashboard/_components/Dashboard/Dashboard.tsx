@@ -106,6 +106,66 @@ const Dashboard: React.FC = () => {
       <div className={styles.cards}>
         {accessToken ? (
           <>
+            <Card
+              className={`${styles.card} ${styles['welcome-card']} ${styles['card-wide']}`}
+              style={{
+                width: '51rem',
+              }}
+            >
+              <CardHeader>
+                <div className={styles['card-header']}>
+                  <div>
+                    <Icon
+                      name="applications"
+                      className="dashboard__card-icon"
+                    />
+                  </div>
+                  <div>Welcome to TapisUI!</div>
+                </div>
+              </CardHeader>
+              <CardBody>
+                <CardText>
+                  TapisUI is a React + TypeScript web application that provides
+                  a unified, user-friendly interface which provides validated,
+                  up-to-date, and automated access to all Tapis Services.
+                  TapisUI is designed for researchers, students, and developers
+                  who want to manage computational resources, launch jobs,
+                  deploy containers, and interface with cyberinfrastructure.
+                </CardText>
+                <div className={styles['welcome-links']}>
+                  <div>
+                    📚{' '}
+                    <a
+                      href="https://tapis.readthedocs.io/en/latest/technical/tapisui.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      TapisUI & Tapis Documentation
+                    </a>
+                  </div>
+                  <div>
+                    🔧{' '}
+                    <a
+                      href="https://tapis-project.github.io/live-docs/?service=Systems"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Live Tapis Documentation
+                    </a>
+                  </div>
+                  <div>
+                    💻{' '}
+                    <a
+                      href="https://github.com/tapis-project/tapis-ui"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub Repository
+                    </a>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
             <DashboardCard
               icon="data-files"
               name="Systems"

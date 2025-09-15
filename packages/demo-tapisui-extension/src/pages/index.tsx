@@ -12,3 +12,4 @@ export { ComponentCatalog } from './ComponentCatalog';
 export { Harvest } from './Harvest';
 export { VSCode } from './VSCode';
 export { Tejas } from './Tejas';
+export { Langflow } from './Langflow';

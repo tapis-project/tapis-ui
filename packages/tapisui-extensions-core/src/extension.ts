@@ -48,7 +48,7 @@ const defaultServiceCustomizations = {
 export class Extension {
   public mainSidebarServices = [];
   public authMethods = [];
-  public allowMutiTenant: boolean = true;
+  public allowMultiTenant: boolean = true;
   public showMLHub: boolean = true;
   public showMLEdge: boolean = true;
   public showSecondarySideBar: boolean = true;
@@ -65,7 +65,7 @@ export class Extension {
 
   setConfiguration(config: Configuration): void {
     this.config = config;
-    this.allowMutiTenant = config.allowMultiTenant;
+    this.allowMultiTenant = config.allowMultiTenant;
     this.showMLHub = config.showMLHub;
     this.showMLEdge = config.showMLEdge;
     this.showSecondarySideBar = config.showSecondarySideBar;

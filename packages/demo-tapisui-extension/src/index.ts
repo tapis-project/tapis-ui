@@ -17,10 +17,11 @@ import {
   Harvest,
   VSCode,
   Tejas,
+  Langflow,
 } from './pages';
 
 const extension = createExtension({
-  allowMultiTenant: false,
+  allowMultiTenant: true,
   authentication: {
     password: true,
     implicit: {
@@ -43,7 +44,13 @@ const extension = createExtension({
         name: 'Workbench',
         defaultOpen: true,
         mainServices: ['ml-hub', 'ml-edge', 'jupyter-lab', 'open-web-ui'],
-        secondaryServices: ['vscode', 'databases', 'tejas', 'tapisragchat'],
+        secondaryServices: [
+          'vscode',
+          'langflow',
+          'tejas',
+          'databases',
+          'tapisragchat',
+        ],
       },
       {
         name: 'Deployed Products',
@@ -200,6 +207,13 @@ extension.registerService({
   sidebarDisplayName: 'Tejas Chat',
   iconName: 'code',
   component: Tejas,
+});
+
+extension.registerService({
+  id: 'langflow',
+  sidebarDisplayName: 'Langflow',
+  iconName: 'code',
+  component: Langflow,
 });
 
 extension.registerService({
