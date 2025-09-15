@@ -64,11 +64,42 @@ const Sidebar: React.FC = () => {
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const [sectionOpenStates, setSectionOpenStates] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [moreOpenStates, setMoreOpenStates] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;
   const history = useHistory();
+
+  // Initialize section open states based on defaultOpen values
+  useEffect(() => {
+    if (extension?.betaSidebar?.enabled && extension.betaSidebar.sections) {
+      const initialStates: { [key: string]: boolean } = {};
+      extension.betaSidebar.sections.forEach((section) => {
+        initialStates[section.name] = section.defaultOpen;
+      });
+      setSectionOpenStates(initialStates);
+    }
+  }, [extension?.betaSidebar]);
+
+  const toggleSection = (sectionName: string) => {
+    setSectionOpenStates((prev) => ({
+      ...prev,
+      [sectionName]: !prev[sectionName],
+    }));
+  };
+
+  const toggleMoreMenu = (menuId: string) => {
+    setMoreOpenStates((prev) => ({
+      ...prev,
+      [menuId]: !prev[menuId],
+    }));
+  };
 
   const renderSidebarItem = (
     to: string,
@@ -269,41 +300,183 @@ const Sidebar: React.FC = () => {
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
-            {mainSidebarItems.map((item) => item)}
-            {secondarySidebarItems.length > 0 &&
-              extension !== undefined &&
-              extension.showSecondarySideBar != false && (
-                <>
-                  <div
-                    onClick={toggleSecondaryItems}
-                    style={{
-                      whiteSpace: 'nowrap',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <ListItemButton
-                      sx={{
-                        color: '#707070',
-                        pl: '1.4rem',
-                        pt: '5px',
-                        pb: '5px',
+            {extension?.betaSidebar?.enabled ? (
+              // Beta sidebar with sections
+              <>
+                {/* No Section items - always visible */}
+                {extension.betaSidebar.noSection?.mainServices?.map(
+                  (serviceId: string) => sidebarItems[serviceId]
+                )}
+                {extension.betaSidebar.noSection?.secondaryServices &&
+                  extension.betaSidebar.noSection.secondaryServices.length >
+                    0 && (
+                    <>
+                      <div
+                        onClick={() => toggleMoreMenu('noSection')}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <ListItemButton
+                          sx={{
+                            color: '#707070',
+                            pl: '1.4rem',
+                            pt: '5px',
+                            pb: '5px',
+                          }}
+                        >
+                          {moreOpenStates['noSection'] ? (
+                            <ExpandLessRounded />
+                          ) : (
+                            <ExpandMoreRounded />
+                          )}
+                          {expanded && (
+                            <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                          )}
+                        </ListItemButton>
+                      </div>
+                      <Collapse in={moreOpenStates['noSection']}>
+                        {extension.betaSidebar.noSection.secondaryServices.map(
+                          (serviceId: string) => sidebarItems[serviceId]
+                        )}
+                      </Collapse>
+                    </>
+                  )}
+
+                {/* Sectioned items */}
+                {extension.betaSidebar.sections.map((section: any) => (
+                  <div key={section.name}>
+                    <div
+                      onClick={() => toggleSection(section.name)}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        cursor: 'pointer',
+                        marginTop: '8px',
                       }}
                     >
-                      {openSecondary ? (
-                        <ExpandLessRounded />
-                      ) : (
-                        <ExpandMoreRounded />
+                      <ListItemButton
+                        sx={{
+                          color: '#505050',
+                          pl: '1.4rem',
+                          pt: '8px',
+                          pb: '8px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {sectionOpenStates[section.name] ? (
+                          <ExpandLessRounded />
+                        ) : (
+                          <ExpandMoreRounded />
+                        )}
+                        {expanded && (
+                          <ListItemText
+                            primary={section.name}
+                            sx={{
+                              pl: '.5rem',
+                              '& .MuiListItemText-primary': {
+                                fontWeight: 'bold',
+                                fontSize: '0.9rem',
+                              },
+                            }}
+                          />
+                        )}
+                      </ListItemButton>
+                    </div>
+                    <Collapse in={sectionOpenStates[section.name]}>
+                      {/* Main services in section */}
+                      {section.mainServices.map(
+                        (serviceId: string) => sidebarItems[serviceId]
                       )}
-                      {expanded && (
-                        <ListItemText primary="More" sx={{ pl: '.5rem' }} />
-                      )}
-                    </ListItemButton>
+
+                      {/* Secondary services in section */}
+                      {section.secondaryServices &&
+                        section.secondaryServices.length > 0 && (
+                          <>
+                            <div
+                              onClick={() => toggleMoreMenu(section.name)}
+                              style={{
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <ListItemButton
+                                sx={{
+                                  color: '#707070',
+                                  pl: '1.4rem',
+                                  pt: '3px',
+                                  pb: '3px',
+                                }}
+                              >
+                                {moreOpenStates[section.name] ? (
+                                  <ExpandLessRounded fontSize="small" />
+                                ) : (
+                                  <ExpandMoreRounded fontSize="small" />
+                                )}
+                                {expanded && (
+                                  <ListItemText
+                                    primary="More"
+                                    sx={{
+                                      pl: '.5rem',
+                                      '& .MuiListItemText-primary': {
+                                        fontSize: '0.8rem',
+                                      },
+                                    }}
+                                  />
+                                )}
+                              </ListItemButton>
+                            </div>
+                            <Collapse in={moreOpenStates[section.name]}>
+                              {section.secondaryServices.map(
+                                (serviceId: string) => sidebarItems[serviceId]
+                              )}
+                            </Collapse>
+                          </>
+                        )}
+                    </Collapse>
                   </div>
-                  <Collapse in={openSecondary}>
-                    {secondarySidebarItems.map((item) => item)}
-                  </Collapse>
-                </>
-              )}
+                ))}
+              </>
+            ) : (
+              // Original sidebar logic
+              <>
+                {mainSidebarItems.map((item) => item)}
+                {secondarySidebarItems.length > 0 &&
+                  extension !== undefined &&
+                  extension.showSecondarySideBar != false && (
+                    <>
+                      <div
+                        onClick={toggleSecondaryItems}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <ListItemButton
+                          sx={{
+                            color: '#707070',
+                            pl: '1.4rem',
+                            pt: '5px',
+                            pb: '5px',
+                          }}
+                        >
+                          {openSecondary ? (
+                            <ExpandLessRounded />
+                          ) : (
+                            <ExpandMoreRounded />
+                          )}
+                          {expanded && (
+                            <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                          )}
+                        </ListItemButton>
+                      </div>
+                      <Collapse in={openSecondary}>
+                        {secondarySidebarItems.map((item) => item)}
+                      </Collapse>
+                    </>
+                  )}
+              </>
+            )}
           </>
         )}
       </Navbar>

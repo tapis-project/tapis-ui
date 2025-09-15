@@ -28,6 +28,7 @@
     "@tapis/tapisui-common": "workspace:*",
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",
+    "@tapis/tapisui-extension-demo": "workspace:*",
     "@testing-library/jest-dom": "6.6.3",
     "@types/jest": "^26.0.24",
     "@types/leaflet": "^1.9.17",

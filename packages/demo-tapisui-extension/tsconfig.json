@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "declaration": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "dist",
+    "lib": ["dom", "esnext", "dom.iterable"],
+    "types": ["node"],
+    "typeRoots": ["./types", "node_modules/@types"],
+    "incremental": true,
+    "esModuleInterop": true // required or pages won't import
+    // "baseUrl": "src",
+    // "allowJs": true,
+    // // "allowSyntheticDefaultImports": true,
+    // "strict": false,
+    // "forceConsistentCasingInFileNames": true,
+    // "resolveJsonModule": true,
+    // "isolatedModules": true,
+    // "noEmit": false,
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "bundle.ts", "tasks.ts"]
+}

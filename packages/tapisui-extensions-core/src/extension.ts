@@ -20,6 +20,22 @@ type ServiceCustomizations = {
   [EnumTapisCoreService.Workflows]?: WorkflowsCustomizations | undefined;
 };
 
+type BetaSidebarSection = {
+  name: string;
+  defaultOpen: boolean;
+  mainServices: string[];
+  secondaryServices?: string[];
+};
+
+type BetaSidebarConfig = {
+  enabled: boolean;
+  sections: BetaSidebarSection[];
+  noSection?: {
+    mainServices: string[];
+    secondaryServices?: string[];
+  };
+};
+
 const defaultServiceCustomizations = {
   [EnumTapisCoreService.Workflows]: {
     dagComponent: undefined,
@@ -41,6 +57,7 @@ export class Extension {
   public serviceCustomizations: ServiceCustomizations;
   public logo: Logo;
   public icon: Icon;
+  public betaSidebar?: BetaSidebarConfig;
 
   constructor(config: Configuration) {
     this.setConfiguration(config);
@@ -57,6 +74,7 @@ export class Extension {
     this.setServiceCustomizations();
     this.logo = config.logo;
     this.icon = config.icon;
+    this.betaSidebar = config.betaSidebar;
   }
 
   private setAuthentication(): void {
@@ -149,3 +167,5 @@ export const createExtension: (config: Configuration) => Extension = (
 ) => {
   return new Extension(config);
 };
+
+export type { BetaSidebarSection, BetaSidebarConfig };

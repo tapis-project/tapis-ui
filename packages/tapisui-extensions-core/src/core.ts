@@ -39,6 +39,20 @@ type ServiceCustomizations = {
   workflows?: WorkflowsCustomizations;
 };
 
+type betaSidebar = {
+  enabled: boolean;
+  sections: Array<{
+    name: string;
+    defaultOpen: boolean;
+    mainServices: string[];
+    secondaryServices?: string[];
+  }>;
+  noSection?: {
+    mainServices: string[];
+    secondaryServices?: string[];
+  };
+};
+
 export type Configuration = {
   component?: Component;
   allowMultiTenant?: boolean;
@@ -52,4 +66,5 @@ export type Configuration = {
   logo?: Logo;
   icon?: Icon;
   serviceCustomizations?: ServiceCustomizations;
+  betaSidebar?: betaSidebar;
 };
