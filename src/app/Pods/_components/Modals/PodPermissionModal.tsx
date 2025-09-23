@@ -68,7 +68,7 @@ const PodPermissionModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       { onSuccess }
     );
     resetForm();
-    setFieldValue('podId', '');
+    setFieldValue('podId', podId);
     setTouched({
       podId: false,
       username: false,
