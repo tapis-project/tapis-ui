@@ -17,7 +17,7 @@ export const registeredExtensions: RegisteredExtensions = {
   },
   '@demo/tapisui-extension': {
     baseUrls: [
-      'https://tacc.develop.tapis.io',
+      //'https://tacc.develop.tapis.io', // development only
       'https://public.tapis.io',
       'https://public.develop.tapis.io',
     ],
