@@ -454,7 +454,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                   onKeyDown={handleSmartInputKeyDown}
                   onFocus={() => setShowSuggestions(true)}
                   onBlur={() =>
-                    setTimeout(() => setShowSuggestions(false), 300)
+                    setTimeout(() => setShowSuggestions(false), 100)
                   }
                   placeholder="/mypath/inside/of/3/directories/isnow/easier-to-reach"
                   className="form-control mb-2"
