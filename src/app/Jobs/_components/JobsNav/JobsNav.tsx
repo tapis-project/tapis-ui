@@ -6,8 +6,234 @@ import {
   QueryWrapper,
   FilterableObjectsList,
   JobStatusIcon,
+  FilterConfig,
 } from '@tapis/tapisui-common';
-import { Work, Dns, Apps } from '@mui/icons-material';
+import { Work, Dns, Apps, AccessTime } from '@mui/icons-material';
+
+// Job filter configuration
+const jobFilterConfig: FilterConfig = {
+  filterableFields: [
+    {
+      field: 'created',
+      label: 'created',
+      filterType: 'timeRange',
+      presets: [
+        {
+          id: 'created-last24h',
+          label: 'Last 24 Hours',
+          icon: <AccessTime />,
+          color: 'primary',
+          filter: {
+            id: 'preset-created-last24h',
+            field: 'created',
+            type: 'timeRange',
+            value: { range: 'last24h' },
+            label: 'created: Last 24 Hours',
+          },
+        },
+        {
+          id: 'created-last7d',
+          label: 'Last 7 Days',
+          icon: <AccessTime />,
+          color: 'primary',
+          filter: {
+            id: 'preset-created-last7d',
+            field: 'created',
+            type: 'timeRange',
+            value: { range: 'last7d' },
+            label: 'created: Last 7 Days',
+          },
+        },
+        {
+          id: 'created-last30d',
+          label: 'Last 30 Days',
+          icon: <AccessTime />,
+          color: 'primary',
+          filter: {
+            id: 'preset-created-last30d',
+            field: 'created',
+            type: 'timeRange',
+            value: { range: 'last30d' },
+            label: 'created: Last 30 Days',
+          },
+        },
+      ],
+    },
+    {
+      field: 'lastUpdated',
+      label: 'lastUpdated',
+      filterType: 'timeRange',
+      presets: [
+        {
+          id: 'lastUpdated-last24h',
+          label: 'Last 24 Hours',
+          icon: <AccessTime />,
+          color: 'primary',
+          filter: {
+            id: 'preset-lastUpdated-last24h',
+            field: 'lastUpdated',
+            type: 'timeRange',
+            value: { range: 'last24h' },
+            label: 'lastUpdated: Last 24 Hours',
+          },
+        },
+        {
+          id: 'updated-last7d',
+          label: 'Last 7 Days',
+          icon: <AccessTime />,
+          color: 'primary',
+          filter: {
+            id: 'preset-updated-last7d',
+            field: 'lastUpdated',
+            type: 'timeRange',
+            value: { range: 'last7d' },
+            label: 'lastUpdated: Last 7 Days',
+          },
+        },
+        {
+          id: 'updated-last30d',
+          label: 'Last 30 Days',
+          icon: <AccessTime />,
+          color: 'primary',
+          filter: {
+            id: 'preset-updated-last30d',
+            field: 'lastUpdated',
+            type: 'timeRange',
+            value: { range: 'last30d' },
+            label: 'lastUpdated: Last 30 Days',
+          },
+        },
+      ],
+    },
+  ],
+
+  filterFunctions: {
+    created: (objects: any[], filter: any) => {
+      const now = new Date();
+      now.setSeconds(0, 0); // minute precision
+      let startDate: Date;
+      const range = filter.value?.range;
+
+      switch (range) {
+        case 'last24h': {
+          const d = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          d.setSeconds(0, 0);
+          startDate = d;
+          break;
+        }
+        case 'last7d': {
+          const d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          d.setSeconds(0, 0);
+          startDate = d;
+          break;
+        }
+        case 'last30d': {
+          const d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          d.setSeconds(0, 0);
+          startDate = d;
+          break;
+        }
+        case 'custom': {
+          const cs: Date | undefined = filter.value?.customStart
+            ? new Date(filter.value.customStart)
+            : undefined;
+          const ce: Date | undefined = filter.value?.customEnd
+            ? new Date(filter.value.customEnd)
+            : undefined;
+          startDate = cs ? new Date(cs) : new Date(0);
+          startDate.setSeconds(0, 0);
+          // Default end to current minute if not provided
+          const endCandidate = ce ? new Date(ce) : new Date(now);
+          endCandidate.setSeconds(0, 0);
+          const endDate = endCandidate;
+
+          return objects.filter((object: any) => {
+            const fieldValue = object[filter.field];
+            if (!fieldValue) return false;
+            const objectDate = new Date(fieldValue);
+            return objectDate >= startDate && objectDate <= endDate;
+          });
+        }
+        default:
+          return objects;
+      }
+
+      // Non-custom ranges: end at current minute
+      const endDate = new Date(now);
+      endDate.setSeconds(0, 0);
+
+      return objects.filter((object: any) => {
+        const fieldValue = object[filter.field];
+        if (!fieldValue) return false;
+
+        const objectDate = new Date(fieldValue);
+        return objectDate >= startDate && objectDate <= endDate;
+      });
+    },
+    lastUpdated: (objects: any[], filter: any) => {
+      const now = new Date();
+      now.setSeconds(0, 0); // minute precision
+      let startDate: Date;
+      const range = filter.value?.range;
+
+      switch (range) {
+        case 'last24h': {
+          const d = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          d.setSeconds(0, 0);
+          startDate = d;
+          break;
+        }
+        case 'last7d': {
+          const d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          d.setSeconds(0, 0);
+          startDate = d;
+          break;
+        }
+        case 'last30d': {
+          const d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          d.setSeconds(0, 0);
+          startDate = d;
+          break;
+        }
+        case 'custom': {
+          const cs: Date | undefined = filter.value?.customStart
+            ? new Date(filter.value.customStart)
+            : undefined;
+          const ce: Date | undefined = filter.value?.customEnd
+            ? new Date(filter.value.customEnd)
+            : undefined;
+          startDate = cs ? new Date(cs) : new Date(0);
+          startDate.setSeconds(0, 0);
+          // Default end to current minute if not provided
+          const endCandidate = ce ? new Date(ce) : new Date(now);
+          endCandidate.setSeconds(0, 0);
+          const endDate = endCandidate;
+
+          return objects.filter((object: any) => {
+            const fieldValue = object[filter.field];
+            if (!fieldValue) return false;
+            const objectDate = new Date(fieldValue);
+            return objectDate >= startDate && objectDate <= endDate;
+          });
+        }
+        default:
+          return objects;
+      }
+
+      // Non-custom ranges: end at current minute
+      const endDate = new Date(now);
+      endDate.setSeconds(0, 0);
+
+      return objects.filter((object: any) => {
+        const fieldValue = object[filter.field];
+        if (!fieldValue) return false;
+
+        const objectDate = new Date(fieldValue);
+        return objectDate >= startDate && objectDate <= endDate;
+      });
+    },
+  },
+};
 
 // UTC: Year Month Day HH:MM:SS
 const formatUTCDate = (value?: string | number | Date) => {
@@ -69,7 +295,8 @@ const JobsNav: React.FC = () => {
           )}
           defaultGroupIcon={<Work />}
           orderGroupsBy="DESC"
-          filterable={false}
+          filterable={true}
+          filterConfig={jobFilterConfig}
           groupable={true}
           groups={[
             {
