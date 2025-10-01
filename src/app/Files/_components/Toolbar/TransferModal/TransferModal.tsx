@@ -200,53 +200,6 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     createTransfer({ reqTransfer: { elements: parsed } });
   }, [jsonInput, validateJson, createTransfer]);
 
-  // Generate JSON from selected files
-  const generateJsonFromFiles = useCallback(() => {
-    // Use the appropriate destination based on current mode
-    const currentDestination =
-      inputMode === 'visual'
-        ? visualDestination
-        : inputMode === 'json'
-        ? jsonDestination
-        : smartDestination;
-
-    // Check if destination is properly set
-    if (!currentDestination.systemId || !currentDestination.path) {
-      // Return a template with placeholder destination
-      const elements: Array<Files.ReqTransferElement> = selectedFiles.map(
-        (file) => ({
-          sourceURI: `tapis://${systemId}/${file.path}`.replace(/\/\//g, '/'),
-          destinationURI:
-            `tapis://DESTINATION_SYSTEM/DESTINATION_PATH/${file.name}`.replace(
-              /\/\//g,
-              '/'
-            ),
-        })
-      );
-      return JSON.stringify(elements, null, 2);
-    }
-
-    // Use actual destination if available
-    const elements: Array<Files.ReqTransferElement> = selectedFiles.map(
-      (file) => ({
-        sourceURI: `tapis://${systemId}/${file.path}`.replace(/\/\//g, '/'),
-        destinationURI:
-          `tapis://${currentDestination.systemId}/${currentDestination.path}/${file.name}`.replace(
-            /\/\//g,
-            '/'
-          ),
-      })
-    );
-    return JSON.stringify(elements, null, 2);
-  }, [
-    selectedFiles,
-    systemId,
-    inputMode,
-    visualDestination,
-    jsonDestination,
-    smartDestination,
-  ]);
-
   // Initialize smart input when switching to smart mode
   useEffect(() => {
     if (inputMode === 'smart' && !smartInputValue) {
