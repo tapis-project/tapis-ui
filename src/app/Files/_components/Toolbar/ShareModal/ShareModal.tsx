@@ -1,11 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, AlertTitle, TextField, Stack } from "@mui/material";
 import { Button } from "reactstrap";
-import {
-  GenericModal,
-  TextCopyField,
-  SubmitWrapper,
-} from "@tapis/tapisui-common";
+import { GenericModal, SubmitWrapper } from "@tapis/tapisui-common";
 import { ToolbarModalProps } from "../Toolbar";
 import { Files as Hooks } from "@tapis/tapisui-hooks";
 import { useFilesSelect } from "../../FilesContext";
@@ -27,6 +23,9 @@ const ShareModal: React.FC<ToolbarModalProps> = ({
     DEFAULT_VALID_SECONDS
   );
   const [redeemUrl, setRedeemUrl] = useState<string>("");
+  const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">(
+    "idle"
+  );
 
   const selected = selectedFiles[0];
   const isDir = selected?.type === "dir";
@@ -35,12 +34,15 @@ const ShareModal: React.FC<ToolbarModalProps> = ({
   const description = useMemo(() => {
     if (!selected) return "";
     const kind = isDir ? "folder" : "file";
-    return `You are creating a shareable link for the ${kind} "${selected.name}" at ${selected.path}.`;
+    return `You are creating a shareable link for the ${kind} "${selected.name}".`;
   }, [selected, isDir]);
 
   useEffect(() => {
     if (data?.result?.redeemUrl) {
-      setRedeemUrl(data.result.redeemUrl);
+      // Add download parameter to force download instead of display
+      const url = new URL(data.result.redeemUrl);
+      url.searchParams.set("download", "true");
+      setRedeemUrl(url.toString());
     }
   }, [data]);
 
@@ -58,7 +60,14 @@ const ShareModal: React.FC<ToolbarModalProps> = ({
       },
       {
         onSuccess: (resp) => {
-          setRedeemUrl(resp.result?.redeemUrl || "");
+          if (resp.result?.redeemUrl) {
+            // Add download parameter to force download instead of display
+            const url = new URL(resp.result.redeemUrl);
+            url.searchParams.set("download", "true");
+            setRedeemUrl(url.toString());
+          } else {
+            setRedeemUrl("");
+          }
         },
       }
     );
@@ -67,9 +76,30 @@ const ShareModal: React.FC<ToolbarModalProps> = ({
   const onClose = useCallback(() => {
     reset();
     setRedeemUrl("");
+    setCopyStatus("idle");
     unselect(selectedFiles);
     toggle();
   }, [reset, toggle, unselect, selectedFiles]);
+
+  const handleCopyToClipboard = useCallback(async () => {
+    if (!redeemUrl) {
+      setCopyStatus("error");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(redeemUrl);
+      setCopyStatus("success");
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+      setCopyStatus("error");
+    }
+
+    // Reset status after 2 seconds
+    setTimeout(() => {
+      setCopyStatus("idle");
+    }, 2000);
+  }, [redeemUrl]);
 
   return (
     <GenericModal
@@ -87,9 +117,9 @@ const ShareModal: React.FC<ToolbarModalProps> = ({
           {isMultipleSelection && (
             <Alert severity="warning" sx={{ mb: 2 }}>
               <AlertTitle>Multiple files selected</AlertTitle>
-              You have selected {selectedFiles.length} items. Only the first
-              item "{selected?.name}" will be shared. To share multiple files,
-              select them one at a time or create a folder containing all files.
+              You have selected {selectedFiles.length} items. To share multiple
+              files, select them one at a time or create a folder containing all
+              files.
             </Alert>
           )}
           <p>{description}</p>
@@ -130,10 +160,43 @@ const ShareModal: React.FC<ToolbarModalProps> = ({
               </Button>
             </SubmitWrapper>
             <div style={{ flex: 1 }}>
-              <TextCopyField
-                value={redeemUrl}
-                placeholder="Shareable link will appear here"
-              />
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <Button
+                    color={
+                      copyStatus === "success"
+                        ? "success"
+                        : copyStatus === "error"
+                        ? "danger"
+                        : "secondary"
+                    }
+                    onClick={handleCopyToClipboard}
+                    disabled={!redeemUrl}
+                    type="button"
+                    style={{
+                      minWidth: "80px",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    {copyStatus === "success"
+                      ? "✓ Copied!"
+                      : copyStatus === "error"
+                      ? "✗ Failed"
+                      : "Copy"}
+                  </Button>
+                </div>
+                <input
+                  type="text"
+                  value={redeemUrl}
+                  className="form-control"
+                  placeholder="Shareable link will appear here"
+                  readOnly
+                  style={{
+                    backgroundColor: "#f8f9fa",
+                    cursor: "text",
+                  }}
+                />
+              </div>
             </div>
           </div>
           {isSuccess && redeemUrl && (
