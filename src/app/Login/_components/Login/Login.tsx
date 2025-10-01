@@ -39,13 +39,33 @@ const Login: React.FC = () => {
   let passwordAuth = undefined;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
-    implicitAuthURL =
-      implicitAuth.authorizationPath +
-      `?client_id=${implicitAuth.clientId}&response_type=${
-        implicitAuth.responseType
-      }&redirect_uri=${encodeURIComponent(
-        implicitAuth.redirectURI
-      )}&use_iframe_redirect=${String(implicitIframe)}`;
+    if (
+      implicitAuth.authorizationPath == 'default' ||
+      implicitAuth.clientId == 'default' ||
+      implicitAuth.redirectURI == 'default'
+    ) {
+      const defaultAuthURL = basePath
+        ? basePath + '/v3/oauth2/authorize'
+        : undefined;
+      const defaultRedirectURI = basePath ? basePath + '/#/oauth2' : '';
+      const defaultResponeType = 'token';
+      const defaultClientId = pathTenantId
+        ? `tapisui-implicit-client-${pathTenantId}`
+        : undefined;
+      implicitAuthURL =
+        defaultAuthURL +
+        `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
+          defaultRedirectURI
+        )}&use_iframe_redirect=${String(implicitIframe)}`;
+    } else {
+      implicitAuthURL =
+        implicitAuth.authorizationPath +
+        `?client_id=${implicitAuth.clientId}&response_type=${
+          implicitAuth.responseType
+        }&redirect_uri=${encodeURIComponent(
+          implicitAuth.redirectURI
+        )}&use_iframe_redirect=${String(implicitIframe)}`;
+    }
     // TODO - Get localhost working with http://localhost:3000/#/oauth2
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;

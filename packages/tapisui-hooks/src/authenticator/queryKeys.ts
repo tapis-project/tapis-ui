@@ -1,4 +1,7 @@
-import { deleteClients } from '@tapis/tapisui-api/dist/authenticator';
+import {
+  deleteClients,
+  updateClient,
+} from '@tapis/tapisui-api/dist/authenticator';
 
 const QueryKeys = {
   login: 'authenticator/login',
@@ -6,6 +9,7 @@ const QueryKeys = {
   listClients: 'authenticator/listclients',
   deleteClients: 'authenticator/deleteclients',
   createClient: 'authenticator/createclient',
+  updateClient: 'authenticator/updateclient',
 };
 
 export default QueryKeys;

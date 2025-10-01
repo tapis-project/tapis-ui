@@ -15,4 +15,11 @@ export const registeredExtensions: RegisteredExtensions = {
       'https://icicleai.staging.tapis.io',
     ],
   },
+  '@demo/tapisui-extension': {
+    baseUrls: [
+      //'https://tacc.develop.tapis.io', // development only
+      'https://public.tapis.io',
+      'https://public.develop.tapis.io',
+    ],
+  },
 };

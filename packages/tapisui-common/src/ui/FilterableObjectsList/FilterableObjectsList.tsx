@@ -47,6 +47,7 @@ export type Group<T, V> = {
   field: PropsOfObjectWithValuesOfType<T, V>;
   primaryItemText: ResolvableGroupItemValue<T, string>;
   secondaryItemText?: ResolvableGroupItemValue<T, string>;
+  tertiaryItemText?: ResolvableGroupItemValue<T, string>;
   groupSelectorLabel?: string;
   groupLabel?: ResolvableGroupValue<T, string>;
   open?: Array<string>;
@@ -76,6 +77,7 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   includeAllShowDropdown?: boolean;
   includeAllPrimaryItemText?: ResolvableGroupItemValue<T, string>;
   includeAllSecondaryItemText?: ResolvableGroupItemValue<T, string>;
+  includeAllTertiaryItemText?: ResolvableGroupItemValue<T, string>;
   includeAllGroupIcon?: ResolvableGroupItemValue<T, any>;
   includeAllGroupItemIcon?: ResolvableGroupItemValue<T, any>;
   defaultField?: PropsOfObjectWithValuesOfType<T, V> | '*';
@@ -121,6 +123,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   includeAllShowDropdown = false,
   includeAllPrimaryItemText = ({ object }) => object.id ?? '',
   includeAllSecondaryItemText = ({}) => '',
+  includeAllTertiaryItemText = ({}) => '',
   includeAllGroupIcon = undefined,
   includeAllGroupItemIcon = undefined,
   defaultOnClickItem = () => {},
@@ -204,6 +207,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
         field: '*',
         primaryItemText: includeAllPrimaryItemText,
         secondaryItemText: includeAllSecondaryItemText,
+        tertiaryItemText: includeAllTertiaryItemText,
         groupLabel: includeAllGroupLabel,
         groupSelectorLabel: includeAllSelectorLabel,
         groupIcon: includeAllGroupIcon ? includeAllGroupIcon : defaultGroupIcon,
@@ -258,6 +262,52 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     }
 
     return group[prop];
+  };
+
+  // Render secondary (one line, ellipsis) plus optional tertiary on next line
+  const renderSecondary = (
+    group: { [key: string]: any | undefined },
+    fieldValue: unknown,
+    object: (typeof objects)[number]
+  ): React.ReactNode => {
+    const secondaryText = resolveItemValue(
+      group,
+      'secondaryItemText',
+      fieldValue,
+      object,
+      ''
+    );
+    const tertiaryText = resolveItemValue(
+      group,
+      'tertiaryItemText',
+      fieldValue,
+      object,
+      ''
+    );
+    const oneLineEllipsisStyle: React.CSSProperties = {
+      display: 'inline-block',
+      maxWidth: '100%',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      verticalAlign: 'bottom',
+    };
+    const SecondaryOneLine = (
+      <span style={oneLineEllipsisStyle}>{secondaryText}</span>
+    );
+    const TertiaryOneLine = (
+      <span style={oneLineEllipsisStyle}>{tertiaryText}</span>
+    );
+
+    return tertiaryText ? (
+      <>
+        {SecondaryOneLine}
+        <br />
+        {TertiaryOneLine}
+      </>
+    ) : (
+      SecondaryOneLine
+    );
   };
 
   return (
@@ -534,9 +584,8 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                                     fieldValue,
                                     object
                                   )}
-                                  secondary={resolveItemValue(
+                                  secondary={renderSecondary(
                                     group,
-                                    'secondaryItemText',
                                     fieldValue,
                                     object
                                   )}
