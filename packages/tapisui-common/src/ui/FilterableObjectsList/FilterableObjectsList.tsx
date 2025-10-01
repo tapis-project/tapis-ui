@@ -85,6 +85,10 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   filterable?: boolean;
   groupable?: boolean;
   orderable?: boolean;
+  selectedField?: string;
+  isSelectedItem?: (args: { object: T; selectedField?: string }) => boolean;
+  listItemIconStyle?: React.CSSProperties;
+  middleClickLink?: (object: T) => string | undefined;
 };
 
 export type FilterableObjectsListComponentProps<
@@ -128,6 +132,12 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   filterable = true,
   groupable = true,
   orderable = true,
+  selectedField = undefined,
+  isSelectedItem = ({ object, selectedField }) =>
+    selectedField !== undefined &&
+    (object.id === selectedField || object.pod_id === selectedField),
+  listItemIconStyle = { minWidth: '56px' },
+  middleClickLink = undefined,
 }) => {
   const open = useMemo(() => {
     let concatenatedOpen: FilterableObjectsListState['open'] =
@@ -479,17 +489,42 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                             object,
                             groupIcon
                           );
+                          const mcLink = middleClickLink
+                            ? middleClickLink(object)
+                            : undefined;
                           return (
                             <ListItem disablePadding>
                               <ListItemButton
-                                style={{ padding: '4px', paddingLeft: '16px' }}
+                                style={{
+                                  padding: '4px',
+                                  paddingLeft: '16px',
+                                  backgroundColor: isSelectedItem({
+                                    object,
+                                    selectedField,
+                                  })
+                                    ? 'rgba(157, 133, 239, 0.25)'
+                                    : undefined,
+                                  // ...other styles...
+                                }}
                                 onClick={() => {
                                   group.onClickItem
                                     ? group.onClickItem(object)
                                     : defaultOnClickItem(object);
                                 }}
+                                onMouseDown={(event) => {
+                                  if (event.button === 1) {
+                                    event.preventDefault();
+                                    if (mcLink) {
+                                      window.open(mcLink, '_blank');
+                                    }
+                                  }
+                                }}
+                                selected={isSelectedItem({
+                                  object,
+                                  selectedField,
+                                })}
                               >
-                                <ListItemIcon>
+                                <ListItemIcon style={listItemIconStyle}>
                                   {groupItemIcon ? groupItemIcon : groupIcon}
                                 </ListItemIcon>
                                 <ListItemText

@@ -14,9 +14,7 @@ const apiGenerator = <T extends unknown>(
   basePath: string,
   jwt: string | null
 ): T => {
-  const headers: any = {
-    'X-Client-Identifier': 'TapisUI',
-  };
+  const headers: any = {};
   if (jwt) {
     headers['X-Tapis-Token'] = jwt;
   }

@@ -40,6 +40,14 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     // More state like this maybe needed for other tabs to auto highlight correct tab
     if (history.location.pathname === '/pods') {
       dispatch(updateState({ activePage: 'podspage' }));
+    } else if (history.location.pathname.startsWith('/pods/templates')) {
+      dispatch(updateState({ activePage: 'templatespage' }));
+    } else if (history.location.pathname.startsWith('/pods/images')) {
+      dispatch(updateState({ activePage: 'imagespage' }));
+    } else if (history.location.pathname.startsWith('/pods/volumes')) {
+      dispatch(updateState({ activePage: 'volumespage' }));
+    } else if (history.location.pathname.startsWith('/pods/snapshots')) {
+      dispatch(updateState({ activePage: 'snapshotspage' }));
     }
   }, [history.location.pathname, dispatch]);
 
@@ -51,9 +59,11 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     if (event.button === 1) {
       // Middle click
       event.preventDefault();
-      let url = `http://localhost:3000/#/pods/${destination}`;
-      if (id) {
-        url += `/${id}`;
+      let url;
+      if (destination === 'pods') {
+        url = '/#/pods';
+      } else {
+        url = `/#/pods/${destination}`;
       }
       window.open(url, '_blank');
     }
@@ -183,6 +193,8 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
     dispatch(updateState(stateUpdates));
   };
 
+  // console.log('PodsNavigation: activePage', activePage);
+  // console.log('PodsNavigation: from', from);
   return (
     <Stack spacing={2} direction="row">
       <Button
@@ -191,6 +203,8 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
         size="small"
         onClick={() => updateStateAndNavigate('pods', from, id)}
         onAuxClick={(event) => handleMiddleClick(event, 'pods', id)}
+        //href={'/#/pods'} ## we could use href here, but it would mean clicking the button would redirect to
+        // /pods/images rather than using stored state to navigate to most recently used pod
       >
         Pods
       </Button>

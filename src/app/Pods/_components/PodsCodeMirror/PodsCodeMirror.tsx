@@ -57,15 +57,22 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
   //   rowSpacing={0.4}
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexGrow: 1,
+        overflow: 'hidden',
+      }}
+    >
       {isEditorVisible && (
         <Grid
           sx={{
             flexShrink: 1,
-            padding: '16px',
+            padding: '8px',
             minWidth: '28rem',
             width: '28rem',
-            height: '46rem',
+            height: 'calc(100vh - 170px)', //'46rem',
             maxHeight: 'calc(100vh - 170px)',
             border: '1px solid rgba(112, 112, 112, 0.25)',
             marginRight: '.8em',
@@ -79,12 +86,12 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
         container
         // flexDirection="column"
         // height="40rem"
-        maxHeight={'calc(100vh - 170px)'}
+        maxHeight={'calc(100vh - 169px)'}
         flexWrap={'nowrap'}
         height="auto"
         rowSpacing={0.4}
         // height="44rem" (this causes side by side)
-        overflow="scroll"
+        overflow="auto"
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -92,70 +99,41 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
           flexGrow: 1,
         }}
       >
-        <Grid>
-          {isEditorVisible && editValue && (
-            <CodeMirror
-              value={editValue}
-              editable={editable}
-              readOnly={!editable}
-              extensions={[json(), EditorView.lineWrapping]}
-              minHeight="1rem"
-              maxHeight="calc(100vh - 170px)"
-              minWidth="28rem"
-              theme={vscodeDarkInit({
-                settings: {
-                  caret: '#c6c6c6',
-                  fontFamily: 'monospace',
-                },
-              })}
-              style={{
-                width: '100%',
-                fontSize: 12,
-                backgroundColor: '#f5f5f5',
-                fontFamily:
-                  'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-              }}
-            />
-          )}
-        </Grid>
-
-        <Grid container sx={{ flexGrow: 1 }}>
-          <CodeMirror
-            value={value}
-            editable={false}
-            readOnly={true}
-            extensions={[json(), EditorView.lineWrapping]}
-            // height = "22rem"
-            // height="46rem" // Keep this for correct height horizontal scroll # if removed, breaks slinky view
-            // height="100%"
-            minHeight="46rem"
-            // maxWidth='20rem'
-            //height="100%"
-            maxHeight="calc(100vh - 170px)"
-            width="100%"
-            theme={vscodeDarkInit({
-              settings: {
-                caret: '#c6c6c6',
-                fontFamily: 'monospace',
-              },
-            })}
-            style={{
-              // Values in CodeMirror change based on content.
-              width: '100%',
-              height: '100%',
-              //height: 'calc(100vh - 170px)',
-              fontSize: 12,
-              backgroundColor: '#f5f5f5',
-              fontFamily:
-                'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            }}
-            ref={(view) => {
-              if (view) {
-                editorRef.current = view.view ?? null;
-              }
-            }}
-          />
-        </Grid>
+        <CodeMirror
+          value={value}
+          editable={false}
+          readOnly={true}
+          extensions={[json(), EditorView.lineWrapping]}
+          // height = "22rem"
+          // height="46rem" // Keep this for correct height horizontal scroll # if removed, breaks slinky view
+          // height="100%"
+          minHeight="46rem"
+          // maxWidth='20rem'
+          //height="100%"
+          maxHeight="calc(100vh - 170px)"
+          width="100%"
+          theme={vscodeDarkInit({
+            settings: {
+              caret: '#c6c6c6',
+              fontFamily: 'monospace',
+            },
+          })}
+          style={{
+            // Values in CodeMirror change based on content.
+            width: '100%',
+            height: '100%',
+            //height: 'calc(100vh - 170px)',
+            fontSize: 12,
+            backgroundColor: '#f5f5f5',
+            fontFamily:
+              'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+          }}
+          ref={(view) => {
+            if (view) {
+              editorRef.current = view.view ?? null;
+            }
+          }}
+        />
       </Grid>
     </Box>
   );

@@ -45,23 +45,24 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   );
 
   const { data, isLoading, isFetching, error, invalidate } =
-    Hooks.useGetSnapshot({
-      snapshotId: objId,
-    });
+    Hooks.useGetSnapshot({ snapshotId: objId }, { enabled: !!objId });
   const {
     data: filesData,
     isLoading: isFilesLoading,
     isFetching: isFileFetching,
     error: filesError,
     invalidate: invalidateFiles,
-  } = Hooks.useListSnapshotFiles({ snapshotId: objId });
+  } = Hooks.useListSnapshotFiles({ snapshotId: objId }, { enabled: !!objId });
   const {
     data: dataPerms,
     isLoading: isLoadingPerms,
     isFetching: isFetchingPerms,
     error: errorPerms,
     invalidate: invalidatePerms,
-  } = Hooks.useGetSnapshotPermissions({ snapshotId: objId });
+  } = Hooks.useGetSnapshotPermissions(
+    { snapshotId: objId },
+    { enabled: !!objId }
+  );
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';

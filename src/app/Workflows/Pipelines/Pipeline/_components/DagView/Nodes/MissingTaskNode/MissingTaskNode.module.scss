@@ -1,0 +1,86 @@
+.node {
+  border: 1px solid red;
+  border-radius: 8px 8px 8px 8px;
+  min-width: 100px;
+  background-color: #ffffff;
+  display: 'inline-block';
+  white-space: 'nowrap';
+}
+
+.header {
+  width: 100%;
+  line-height: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.io {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-top: 1px solid #666666;
+}
+
+.io-item {
+  padding: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 12px;
+  font-weight: bold;
+  color: red;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.io-item-type {
+  font-size: 12px;
+  color: #666666;
+  font-style: italic;
+  font-weight: lighter;
+  line-height: 12px;
+}
+
+.header-img {
+  height: 40px;
+  width: 40px;
+}
+
+.title {
+  padding-left: 8px;
+  color: red;
+}
+
+.body {
+  padding: 4px 8px 4px 8px;
+}
+
+.description {
+  color: #666666;
+  font-size: 12px;
+  margin: 0;
+}
+
+.footer {
+  padding: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  gap: 8px;
+  border-top: 1px solid #666666;
+}
+
+.action {
+  border: 1px solid #000000;
+  border-radius: 3px;
+  padding: 2px;
+  color: #000000;
+  cursor: pointer;
+}
+
+.action-danger {
+  border: 1px solid red;
+  border-radius: 3px;
+  padding: 2px;
+  cursor: pointer;
+}

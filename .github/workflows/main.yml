@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    tags: ['v*.*.*']
     branches: [dev, staging, test, release-**]
   pull_request:
     branches: [dev, staging, test, release-**]
@@ -9,47 +10,39 @@ on:
 
 jobs:
   Client_Side_Unit_Tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v1
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
-      # - uses: actions/cache@v1
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
-      - name: npm ci
-        run: rm -rf node_modules && rm package-lock.json && npm install
-      - name: Client Side Unit Tests
-        run: |
-          npm run test
+          cache: 'pnpm'
+      - name: install packages
+        run: pnpm install --frozen-lockfile
+      - name: run tests
+        run: pnpm run test
   #    - name: Upload coverage to Codecov
   #      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
   Client_Side_Linting:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
-      # - uses: actions/cache@v1
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
-      - name: npm ci
-        run: |
-          npm ci
+          cache: 'pnpm'
+      - name: install packages
+        run: pnpm install --frozen-lockfile
       - name: Client Side Linting
-        run: |
-          npm run lint
+        run: pnpm run lint
 
   Resolve_Image_Tag:
     runs-on: ubuntu-latest
@@ -59,13 +52,22 @@ jobs:
       - name: Extract_Branch_Name
         # Map a step output to a job output
         shell: bash
-        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "is_tag=true" >> $GITHUB_OUTPUT
+            echo "tag_name=$(echo ${GITHUB_REF#refs/tags/v})" >> $GITHUB_OUTPUT
+          else
+            echo "is_tag=false" >> $GITHUB_OUTPUT
+            echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          fi
         id: extract_branch
       - name: Check_Is_Production_Release
         id: check_is_production_release
         shell: bash
         run: |
-          if [ "${{ contains(steps.extract_branch.outputs.branch_name, 'release-') }}" = true ]; then
+          if [ "${{ steps.extract_branch.outputs.is_tag }}" = true ]; then
+            echo "is_production_release=true" >> $GITHUB_OUTPUT;
+          elif [ "${{ contains(steps.extract_branch.outputs.branch_name, 'release-') }}" = true ]; then
             echo "is_production_release=true" >> $GITHUB_OUTPUT;
           else
             echo "is_production_release=false" >> $GITHUB_OUTPUT;
@@ -78,7 +80,9 @@ jobs:
       - name: Extract_Image_Tag
         shell: bash
         run: |
-          if [ "${{ steps.check_is_production_release.outputs.is_production_release }}" == true ]; then
+          if [ "${{ steps.extract_branch.outputs.is_tag }}" == true ]; then
+            echo "image_tag=${{ steps.extract_branch.outputs.tag_name }}" >> $GITHUB_OUTPUT;
+          elif [ "${{ steps.check_is_production_release.outputs.is_production_release }}" == true ]; then
             echo "image_tag=${{ steps.extract_version.outputs.version }}" >> $GITHUB_OUTPUT;
           else
             echo "image_tag=${{ steps.extract_branch.outputs.branch_name }}" >> $GITHUB_OUTPUT;
@@ -106,6 +110,6 @@ jobs:
           if [ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" == true ]; then
             BRANCH=dev
           fi
-          docker build -f Dockerfile -t tapis/tapisui:$BRANCH .
+          docker build -f Dockerfile.nix -t tapis/tapisui:$BRANCH .
       - name: Push_All_Tags
         run: docker push --all-tags tapis/tapisui

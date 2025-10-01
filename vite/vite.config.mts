@@ -18,7 +18,9 @@ export default defineConfig({
       // 'process.env.NODE_ENV': 'production',
     },
   },
-  css: { preprocessorOptions: { scss: { charset: false } } },
+  css: {
+    preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
+  },
   optimizeDeps: {
     include: [
       '@emotion/styled',
@@ -78,9 +80,31 @@ export default defineConfig({
     },
   },
   logLevel: 'info',
+  // resolve: {
+  //   alias: {
+  //     '@tapis/tapisui-common': path.resolve(__dirname, './packages/tapisui-common/src'),
+  //   }
+  // },
   server: {
     open: true, // Opens browser
     port: 3000,
+    // watch: {
+    //   usePolling: true,
+    //   interval: 1,
+    //   followSymlinks: true,
+    //   ignored: [
+    //     '!**/packages/**',
+    //   ]
+
+    //   // Only watch dist folders for subpackages
+    //   // paths: [ ... ] // Removed because 'paths' is not a valid WatchOptions property
+    // },
+    // fs: {
+    //   // allow: [
+    //   //   '../packages/tapisui-common/dist',
+    //   //   '**packages**',
+    //   // ],
+    // },
   },
   preview: {
     open: true,

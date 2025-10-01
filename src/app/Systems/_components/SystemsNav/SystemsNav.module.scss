@@ -1,0 +1,23 @@
+// Customize the scrollbar for a specific container
+.scroll-container {
+  height: 1340px;
+  overflow: auto;
+
+  // Customize the scrollbar itself
+  &::-webkit-scrollbar {
+    width: 11px;
+    height: 200px;
+  }
+
+  // Customize the scrollbar track (the area the scrollbar slides in)
+  &::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  // Customize the scrollbar thumb
+  &::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+  }
+}

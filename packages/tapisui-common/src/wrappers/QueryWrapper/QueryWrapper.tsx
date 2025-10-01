@@ -21,7 +21,6 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({
       </div>
     );
   }
-
   if (error && error instanceof Error) {
     return (
       <div className={className}>

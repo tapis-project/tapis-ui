@@ -6,9 +6,9 @@ const getPodSecrets = (
   basePath: string,
   jwt: string
 ): Promise<Pods.PodCredentialsResponse> => {
-  const api: Pods.CredentialsApi = apiGenerator<Pods.CredentialsApi>(
+  const api: Pods.PodsApi = apiGenerator<Pods.PodsApi>(
     Pods,
-    Pods.CredentialsApi,
+    Pods.PodsApi,
     basePath,
     jwt
   );

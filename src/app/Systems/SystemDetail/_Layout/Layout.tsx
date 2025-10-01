@@ -3,6 +3,7 @@ import { PageLayout, LayoutHeader } from '@tapis/tapisui-common';
 import SystemLayoutToolbar from './SystemLayoutToolbar';
 
 const Layout: React.FC<{ systemId: string }> = ({ systemId }) => {
+  // archive - this is old layout, no longer used
   // const header = (
   //   <LayoutHeader type={'sub-header'}>
   //     Systems

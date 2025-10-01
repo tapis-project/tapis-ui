@@ -45,7 +45,8 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const { volumeTab, volumeRootTab } = useAppSelector((state) => state.pods);
 
   const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetVolume(
-    { volumeId: objId }
+    { volumeId: objId },
+    { enabled: !!objId }
   );
   const {
     data: filesData,
@@ -53,14 +54,14 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     isFetching: isFileFetching,
     error: filesError,
     invalidate: invalidateFiles,
-  } = Hooks.useListVolumeFiles({ volumeId: objId });
+  } = Hooks.useListVolumeFiles({ volumeId: objId }, { enabled: !!objId });
   const {
     data: dataPerms,
     isLoading: isLoadingPerms,
     isFetching: isFetchingPerms,
     error: errorPerms,
     invalidate: invalidatePerms,
-  } = Hooks.useGetVolumePermissions({ volumeId: objId });
+  } = Hooks.useGetVolumePermissions({ volumeId: objId }, { enabled: !!objId });
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';

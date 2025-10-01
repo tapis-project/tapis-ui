@@ -3,13 +3,13 @@ import { Button } from 'reactstrap';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './PodToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
-import CreatePodModal from './CreatePodModal';
-import DeletePodModal from './DeletePodModal';
+import DeletePodModal from '../Modals/DeletePodModal';
 import {
   StartPodModal,
   RestartPodModal,
   StopPodModal,
 } from '../PodFunctionBar';
+import { useAppDispatch, updateState } from '@redux';
 
 type ToolbarButtonProps = {
   text: string;
@@ -47,6 +47,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 const PodToolbar: React.FC = () => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { pathname } = useLocation();
+  const dispatch = useAppDispatch();
 
   const toggle = () => {
     setModal(undefined);
@@ -79,8 +80,11 @@ const PodToolbar: React.FC = () => {
           <ToolbarButton
             text="Create"
             icon="add"
-            disabled={true}
-            onClick={() => setModal('createpod')}
+            disabled={false}
+            onClick={() => {
+              window.location.href = `/#/pods`;
+              dispatch(updateState({ podRootTab: 'createPod' }));
+            }}
             aria-label="createPod"
           />
           <ToolbarButton
@@ -93,7 +97,6 @@ const PodToolbar: React.FC = () => {
           {modal === 'startpod' && <StartPodModal toggle={toggle} />}
           {modal === 'restartpod' && <RestartPodModal toggle={toggle} />}
           {modal === 'stoppod' && <StopPodModal toggle={toggle} />}
-          {modal === 'createpod' && <CreatePodModal toggle={toggle} />}
           {modal === 'deletepod' && <DeletePodModal toggle={toggle} />}
         </div>
       )}

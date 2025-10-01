@@ -156,13 +156,12 @@ const TapisSystemArchiveForm: React.FC<FormProps> = ({ onSubmit }) => {
             required={true}
             description={'A Tapis system'}
           >
-            <option disabled selected>
+            <option value="" disabled selected>
               -- select a system --
             </option>
-            ;
-            {Object.values(systems).map((system) => {
-              return <option value={system.id}>{system.id}</option>;
-            })}
+            {Object.values(systems).map((system) => (
+              <option value={system.id}>{system.id}</option>
+            ))}
           </FormikSelect>
           <FormikInput
             name="archive_dir"
