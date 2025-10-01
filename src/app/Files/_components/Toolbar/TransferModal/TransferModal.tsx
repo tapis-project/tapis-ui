@@ -456,7 +456,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                   onBlur={() =>
                     setTimeout(() => setShowSuggestions(false), 100)
                   }
-                  placeholder="/mypath/inside/of/3/directories/isnow/easier-to-reach"
+                  placeholder="/"
                   className="form-control mb-2"
                   style={{
                     resize: 'vertical',
