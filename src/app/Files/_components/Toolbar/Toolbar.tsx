@@ -1,24 +1,25 @@
-import { Files, Systems } from '@tapis/tapis-typescript';
-import React, { useState, useCallback } from 'react';
-import { Button } from 'reactstrap';
-import { Icon, QueryWrapper } from '@tapis/tapisui-common';
-import styles from './Toolbar.module.scss';
-import CreateDirModal from './CreateDirModal';
-import MoveCopyModal from './MoveCopyModal';
-import RenameModal from './RenameModal';
-import UploadModal from './UploadModal';
-import PermissionsModal from './PermissionsModal';
-import DeleteModal from './DeleteModal';
-import CreatePostitModal from './CreatePostitModal';
-import TransferModal from './TransferModal';
-import { useLocation } from 'react-router-dom';
-import { useFilesSelect } from '../FilesContext';
+import { Files, Systems } from "@tapis/tapis-typescript";
+import React, { useState, useCallback } from "react";
+import { Button } from "reactstrap";
+import { Icon, QueryWrapper } from "@tapis/tapisui-common";
+import styles from "./Toolbar.module.scss";
+import CreateDirModal from "./CreateDirModal";
+import MoveCopyModal from "./MoveCopyModal";
+import RenameModal from "./RenameModal";
+import UploadModal from "./UploadModal";
+import PermissionsModal from "./PermissionsModal";
+import DeleteModal from "./DeleteModal";
+import CreatePostitModal from "./CreatePostitModal";
+import TransferModal from "./TransferModal";
+import ShareModal from "./ShareModal";
+import { useLocation } from "react-router-dom";
+import { useFilesSelect } from "../FilesContext";
 import {
   Files as FilesHooks,
   Systems as SystemsHooks,
-} from '@tapis/tapisui-hooks';
-import { useNotifications } from 'app/_components/Notifications';
-import { Alert, AlertTitle } from '@mui/material';
+} from "@tapis/tapisui-hooks";
+import { useNotifications } from "app/_components/Notifications";
+import { Alert, AlertTitle } from "@mui/material";
 
 type ToolbarButtonProps = {
   text: string;
@@ -45,7 +46,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
       <Button
         disabled={disabled}
         onClick={onClick}
-        className={styles['toolbar-btn']}
+        className={styles["toolbar-btn"]}
         {...rest}
       >
         <Icon name={icon}></Icon>
@@ -56,15 +57,16 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 };
 
 type Op =
-  | 'view'
-  | 'download'
-  | 'upload'
-  | 'copy'
-  | 'rename'
-  | 'move'
-  | 'folder'
-  | 'delete'
-  | 'transfers';
+  | "view"
+  | "share"
+  | "download"
+  | "upload"
+  | "copy"
+  | "rename"
+  | "move"
+  | "folder"
+  | "delete"
+  | "transfers";
 
 type ToolbarProps = {
   systemId: string;
@@ -97,7 +99,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     isSuccess,
   } = SystemsHooks.useDetails({
     systemId,
-    select: 'allAttributes',
+    select: "allAttributes",
   });
 
   const system = systemData?.result ?? undefined;
@@ -135,25 +137,25 @@ const Toolbar: React.FC<ToolbarProps> = ({
     selectedFiles.forEach((file) => {
       const params: FilesHooks.DownloadStreamParams = {
         systemId,
-        path: file.path ?? '',
-        destination: file.name ?? 'tapisfile',
+        path: file.path ?? "",
+        destination: file.name ?? "tapisfile",
       };
-      const isZip = file.type === 'dir';
+      const isZip = file.type === "dir";
       if (isZip) {
         params.zip = true;
         params.destination = `${params.destination}.zip`;
-        add({ icon: 'data-files', message: `Preparing download` });
+        add({ icon: "data-files", message: `Preparing download` });
         params.onStart = (response: Response) => {
-          add({ icon: 'data-files', message: `Starting download` });
+          add({ icon: "data-files", message: `Starting download` });
         };
       }
       download(params, {
         onError: isZip
           ? () => {
               add({
-                icon: 'data-files',
+                icon: "data-files",
                 message: `Download failed`,
-                status: 'ERROR',
+                status: "ERROR",
               });
             }
           : undefined,
@@ -170,9 +172,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
       error={[error, errorPermissions]}
     >
       <div id="file-operation-toolbar">
-        {pathname !== '/files' && (
-          <div className={styles['toolbar-wrapper']}>
-            {show('view', buttons) && (
+        {pathname !== "/files" && (
+          <div className={styles["toolbar-wrapper"]}>
+            {show("share", buttons) && (
+              <ToolbarButton
+                text="Share"
+                icon="link"
+                disabled={selectedFiles.length === 0}
+                onClick={() => setModal("share")}
+                aria-label="Share link"
+              />
+            )}
+            {show("view", buttons) && (
               <ToolbarButton
                 text="View"
                 icon="file"
@@ -180,40 +191,40 @@ const Toolbar: React.FC<ToolbarProps> = ({
                   selectedFiles.length !== 1 ||
                   selectedFiles[0].type !== Files.FileTypeEnum.File
                 }
-                onClick={() => setModal('postit')}
+                onClick={() => setModal("postit")}
                 aria-label="View file"
               />
             )}
-            {show('rename', buttons) && (
+            {show("rename", buttons) && (
               <ToolbarButton
                 text="Rename"
                 icon="rename"
                 disabled={
                   selectedFiles.length !== 1 || !canModify(system, permission)
                 }
-                onClick={() => setModal('rename')}
+                onClick={() => setModal("rename")}
                 aria-label="Rename"
               />
             )}
-            {show('move', buttons) && (
+            {show("move", buttons) && (
               <ToolbarButton
                 text="Move"
                 icon="move"
                 disabled={
                   selectedFiles.length !== 1 || !canModify(system, permission)
                 }
-                onClick={() => setModal('move')}
+                onClick={() => setModal("move")}
                 aria-label="Move"
               />
             )}
-            {show('copy', buttons) && (
+            {show("copy", buttons) && (
               <ToolbarButton
                 text="Copy"
                 icon="copy"
                 disabled={
                   selectedFiles.length === 0 || !canModify(system, permission)
                 }
-                onClick={() => setModal('copy')}
+                onClick={() => setModal("copy")}
                 aria-label="Copy"
               />
             )}
@@ -225,15 +236,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
                   onClick={() => setModal('permissions')}
                 />
               */}
-            {show('transfers', buttons) && (
+            {show("transfers", buttons) && (
               <ToolbarButton
                 text="Transfers"
                 icon="globe"
                 disabled={false}
-                onClick={() => setModal('transfer')}
+                onClick={() => setModal("transfer")}
               />
             )}
-            {show('download', buttons) && (
+            {show("download", buttons) && (
               <ToolbarButton
                 text="Download"
                 icon="download"
@@ -242,45 +253,45 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 aria-label="Download"
               />
             )}
-            {show('upload', buttons) && (
+            {show("upload", buttons) && (
               <ToolbarButton
                 text="Upload"
                 icon="upload"
                 disabled={!canModify(system, permission)}
                 onClick={() => {
-                  setModal('upload');
+                  setModal("upload");
                 }}
                 aria-label="Upload"
               />
             )}
-            {show('folder', buttons) && (
+            {show("folder", buttons) && (
               <ToolbarButton
                 text="Folder"
                 icon="add"
                 disabled={!canModify(system, permission)}
-                onClick={() => setModal('createdir')}
+                onClick={() => setModal("createdir")}
                 aria-label="Add"
               />
             )}
-            {show('delete', buttons) && (
+            {show("delete", buttons) && (
               <ToolbarButton
                 text="Delete"
                 icon="trash"
                 disabled={
                   selectedFiles.length !== 1 || !canModify(system, permission)
                 }
-                onClick={() => setModal('delete')}
+                onClick={() => setModal("delete")}
                 aria-label="Delete"
               />
             )}
-            {modal === 'createdir' && (
+            {modal === "createdir" && (
               <CreateDirModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
               />
             )}
-            {modal === 'copy' && (
+            {modal === "copy" && (
               <MoveCopyModal
                 toggle={toggle}
                 systemId={systemId}
@@ -288,7 +299,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 operation={Files.MoveCopyRequestOperationEnum.Copy}
               />
             )}
-            {modal === 'move' && (
+            {modal === "move" && (
               <MoveCopyModal
                 toggle={toggle}
                 systemId={systemId}
@@ -296,43 +307,50 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 operation={Files.MoveCopyRequestOperationEnum.Move}
               />
             )}
-            {modal === 'rename' && (
+            {modal === "rename" && (
               <RenameModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
               />
             )}
-            {modal === 'transfer' && (
+            {modal === "transfer" && (
               <TransferModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
               />
             )}
-            {modal === 'upload' && (
+            {modal === "upload" && (
               <UploadModal
                 toggle={toggle}
                 path={currentPath}
                 systemId={systemId}
               />
             )}
-            {modal === 'permissions' && (
+            {modal === "permissions" && (
               <PermissionsModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
               />
             )}
-            {modal === 'delete' && (
+            {modal === "delete" && (
               <DeleteModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
               />
             )}
-            {modal === 'postit' && (
+            {modal === "postit" && (
               <CreatePostitModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === "share" && (
+              <ShareModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
