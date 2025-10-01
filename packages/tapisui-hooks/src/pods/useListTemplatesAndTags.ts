@@ -1,4 +1,4 @@
-import { useQuery, QueryObserverOptions } from 'react-query';
+import { useQuery, QueryObserverOptions, useQueryClient } from 'react-query';
 import { Pods as API } from '@tapis/tapisui-api';
 import { Pods } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '..';
@@ -8,6 +8,7 @@ const useListTemplatesAndTags = (
   params: Pods.ListTemplatesAndTagsRequest,
   options: QueryObserverOptions<any, Error> = {}
 ) => {
+  const queryClient = useQueryClient();
   const { accessToken, basePath } = useTapisConfig();
   const result = useQuery<any, Error>(
     [QueryKeys.listTemplatesAndTags, accessToken],
@@ -24,7 +25,12 @@ const useListTemplatesAndTags = (
       ...options,
     }
   );
-  return result;
+
+  const invalidate = () => {
+    queryClient.invalidateQueries([QueryKeys.listTemplatesAndTags]);
+  };
+
+  return { ...result, invalidate };
 };
 
 export default useListTemplatesAndTags;

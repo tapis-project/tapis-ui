@@ -21,13 +21,14 @@
     "@mui/x-tree-view": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@scoped/tapisui-extension": "workspace:*",
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.62",
     "@tapis/tapis-typescript-apps": "0.0.9",
     "@tapis/tapis-typescript-systems": "0.0.6",
     "@tapis/tapisui-api": "workspace:*",
     "@tapis/tapisui-common": "workspace:*",
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",
+    "@tapis/tapisui-extension-demo": "workspace:*",
     "@testing-library/jest-dom": "6.6.3",
     "@types/jest": "^26.0.24",
     "@types/leaflet": "^1.9.17",
@@ -58,6 +59,7 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^18.3.1",
     "react-dropzone": "^10.2.1",
+    "react-icons": "^5.5.0",
     "react-leaflet": "^4.2.1",
     "react-leaflet-draw": "^0.20.6",
     "react-query": "^3.19.2",
@@ -93,7 +95,8 @@
     "lint": "eslint --max-warnings=0 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write -l src packages",
     "prettier-loop": "while true; do prettier --loglevel=silent --single-quote -l src packages || (echo -e '\n#############################################\nFound something to pretty - checked every 60s'; eslint --max-warnings=0 .; echo 'eslint ran - now running prettier'; prettier --loglevel=log --single-quote --write -l src packages; echo -e '#############################################\n'); sleep 60; done",
-    "gh-pages": "pnpm build && npx gh-pages -d dist"
+    "gh-pages": "pnpm build && npx gh-pages -d dist",
+    "taskgen": "docker build -f packages/tapisui-extensions-core/Dockerfile -t tapis/tapisui-task-generator:latest . && docker run --mount type=bind,source=$(pwd),target=/tapisui -it tapis/tapisui-task-generator:latest"
   },
   "eslintConfig": {
     "extends": []
@@ -116,7 +119,7 @@
     "@jest/globals": "29.7.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.8",
-    "@tapis/tapis-typescript": "^0.0.56",
+    "@tapis/tapis-typescript": "^0.0.62",
     "@tapis/tapisui-extension-devtools": "file:./packages/tapisui-extension-devtools",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",

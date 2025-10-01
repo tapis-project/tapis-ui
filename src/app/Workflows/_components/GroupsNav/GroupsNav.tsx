@@ -10,8 +10,8 @@ type GroupsNavProps = {
 
 const GroupsNav: React.FC<GroupsNavProps> = ({ baseUrl }) => {
   const { data, isLoading, error } = Hooks.Groups.useList();
-  const result: Array<Workflows.Group> = data?.result ?? [];
-  const groups = result.sort((a, b) =>
+  const result: Array<Workflows.Group> = data?.result || [];
+  const groups = [...result].sort((a, b) =>
     a.id! > b.id! ? 1 : a.id! < b.id! ? -1 : 0
   );
 

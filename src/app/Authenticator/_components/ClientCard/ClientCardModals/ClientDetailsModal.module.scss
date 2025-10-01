@@ -1,0 +1,38 @@
+.modal-settings {
+  max-height: 38rem;
+  overflow-y: scroll;
+}
+
+.item {
+  border: 1px dotted lightgray;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 1em;
+}
+
+.array {
+  border: 1px solid gray;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.card-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+
+  svg {
+    color: #616161;
+  }
+
+  span {
+    font-size: 0.95rem;
+  }
+
+  .muted {
+    margin-left: auto;
+    color: #9e9e9e;
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+}

@@ -25,15 +25,15 @@ type AddInputModalProps = {
   toggle: () => void;
 };
 
-type InputSource = 'args' | 'env' | 'task_output' | 'secret' | 'literal';
+type InputSource = 'args' | 'env' | 'task_output' | 'secret' | 'fixed';
 
 type InputState = {
   id?: string;
-  type?: Workflows.EnumTaskIOType;
+  type?: string;
   source?: InputSource;
   taskId?: string;
   sourceKey?: string;
-  literal?: any;
+  fixed?: any;
 };
 
 const AddInputModal: React.FC<AddInputModalProps> = ({
@@ -46,7 +46,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
     type: undefined,
     source: undefined,
     sourceKey: undefined,
-    literal: undefined,
+    fixed: undefined,
   };
   const [input, setInput] = useState(initialInput);
   const {
@@ -73,22 +73,22 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
       taskOutputReqsSatisfied = false;
     }
 
-    // Check if literal requirements satisfied
-    let literalReqsSatisfied = true;
-    if (input.source === 'literal' && !input.literal) {
-      literalReqsSatisfied = false;
+    // Check if fixed requirements satisfied
+    let fixedReqsSatisfied = true;
+    if (input.source === 'fixed' && !input.fixed) {
+      fixedReqsSatisfied = false;
     }
 
-    // Check if a source key is provided for all non-literal sources
+    // Check if a source key is provided for all non-fixed sources
     let sourceKeyRequestSatisfied = true;
-    if (input.source !== 'literal' && !input.sourceKey) {
+    if (input.source !== 'fixed' && !input.sourceKey) {
       sourceKeyRequestSatisfied = false;
     }
 
     return (
       preReqsSatisfied &&
       taskOutputReqsSatisfied &&
-      literalReqsSatisfied &&
+      fixedReqsSatisfied &&
       sourceKeyRequestSatisfied
     );
   }, [input, setInput, task, taskPatch, setTaskPatch]);
@@ -179,36 +179,29 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
                 margin="dense"
                 style={{ marginBottom: '-16px' }}
               >
-                <InputLabel size="small" id="type">
-                  Type
-                </InputLabel>
-                <Select
-                  size="small"
-                  label="type"
-                  labelId="type"
+                <InputLabel htmlFor="input-type">Type</InputLabel>
+                <Input
+                  id="input-type"
                   onChange={(e) => {
                     setInput({
                       ...input,
-                      type: e.target.value as Workflows.EnumTaskIOType,
+                      type: e.target.value,
                     });
                     setTaskPatch(task, {
                       input: {
                         ...taskPatch.input,
                         [input.id!]: {
                           ...taskPatch.input![input.id!],
-                          type: e.target.value as Workflows.EnumTaskIOType,
+                          type: e.target.value as string,
                         },
                       },
                     });
                   }}
-                >
-                  {Object.values(Workflows.EnumTaskIOType).map((type) => {
-                    return <MenuItem value={type}>{type}</MenuItem>;
-                  })}
-                </Select>
+                />
               </FormControl>
               <FormHelperText>
-                The data type of this input's value
+                The data type of the output. This is entierly free form to allow
+                workflow developers to implement their own type checking.
               </FormHelperText>
             </div>
             <div className={styles['form']}>
@@ -235,9 +228,9 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
                         ...taskPatch.input,
                         [input.id!]: {
                           ...taskPatch.input![input.id!],
-                          value: e.target.value === 'literal' ? '' : undefined,
+                          value: e.target.value === 'fixed' ? '' : undefined,
                           value_from:
-                            e.target.value !== 'literal'
+                            e.target.value !== 'fixed'
                               ? { [e.target.value as string]: '' }
                               : undefined,
                         },
@@ -261,8 +254,8 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
                   >
                     secret
                   </MenuItem>
-                  <MenuItem value={'literal'}>
-                    -- provide a literal value --
+                  <MenuItem value={'fixed'}>
+                    -- provide a fixed value --
                   </MenuItem>
                 </Select>
               </FormControl>
@@ -271,96 +264,35 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
                 arguments, environment variables, or task outputs.
               </FormHelperText>
             </div>
-            {input.source === 'literal' && (
+            {input.source === 'fixed' && (
               <div className={styles['form']}>
-                {input.type === Workflows.EnumTaskIOType.String && (
-                  <>
-                    <FormControl variant="standard">
-                      <InputLabel htmlFor="value">Value</InputLabel>
-                      <Input
-                        id="value"
-                        onChange={(e) => {
-                          // Set the sourceKey
-                          setInput({
-                            ...input,
-                            literal: e.target.value,
-                          });
-                          setTaskPatch(task, {
-                            input: {
-                              ...taskPatch.input,
-                              [input.id!]: {
-                                ...taskPatch.input![input.id!],
-                                value: e.target.value,
-                              },
-                            },
-                          });
-                        }}
-                      />
-                      <FormHelperText>
-                        The string value of the input
-                      </FormHelperText>
-                    </FormControl>
-                  </>
-                )}
-                {input.type === Workflows.EnumTaskIOType.Number && (
-                  <>
-                    <FormControl variant="standard">
-                      <InputLabel htmlFor="value">Value</InputLabel>
-                      <Input
-                        id="value"
-                        type="number"
-                        onChange={(e) => {
-                          setTaskPatch(task, {
-                            input: {
-                              ...taskPatch.input,
-                              [input.id!]: {
-                                ...taskPatch.input![input.id!],
-                                value: e.target.value as unknown as number,
-                              },
-                            },
-                          });
-                        }}
-                      />
-                      <FormHelperText>
-                        The number value of the input
-                      </FormHelperText>
-                    </FormControl>
-                  </>
-                )}
-                {input.type === Workflows.EnumTaskIOType.Boolean && (
-                  <>
-                    <FormControl
-                      fullWidth
-                      margin="dense"
-                      style={{ marginBottom: '-16px' }}
-                    >
-                      <InputLabel size="small" id="value">
-                        Value
-                      </InputLabel>
-                      <Select
-                        size="small"
-                        label="Value"
-                        labelId="value"
-                        onChange={(e) => {
-                          setTaskPatch(task, {
-                            input: {
-                              ...taskPatch.input,
-                              [input.id!]: {
-                                value: e.target.value as boolean,
-                              },
-                            },
-                          });
-                        }}
-                      >
-                        <MenuItem value={'true'}>true</MenuItem>
-                        <MenuItem value={'false'}>false</MenuItem>
-                      </Select>
-                      <FormHelperText>
-                        The boolean value of the input
-                      </FormHelperText>
-                    </FormControl>
-                  </>
-                )}
+                <FormControl
+                  fullWidth
+                  margin="dense"
+                  style={{ marginBottom: '-16px' }}
+                >
+                  <InputLabel htmlFor="value">Value</InputLabel>
+                  <Input
+                    id="value"
+                    onChange={(e) => {
+                      // Set the sourceKey
+                      setInput({
+                        ...input,
+                        fixed: e.target.value,
+                      });
+                      setTaskPatch(task, {
+                        input: {
+                          ...taskPatch.input,
+                          [input.id!]: {
+                            ...taskPatch.input![input.id!],
+                            value: e.target.value,
+                          },
+                        },
+                      });
+                    }}
+                  />
+                </FormControl>
+                <FormHelperText>The fixed value of this input</FormHelperText>
               </div>
             )}
             <div className={styles['form']}>
@@ -412,7 +344,7 @@ const AddInputModal: React.FC<AddInputModalProps> = ({
                 )}
             </div>
             {input.source !== undefined &&
-              !['literal', 'secret'].includes(input.source) && (
+              !['fixed', 'secret'].includes(input.source) && (
                 <div className={styles['form']}>
                   <FormControl variant="standard">
                     <InputLabel htmlFor="value">Source key</InputLabel>

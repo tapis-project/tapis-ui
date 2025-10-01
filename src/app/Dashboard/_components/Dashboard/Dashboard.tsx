@@ -67,37 +67,121 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-  const { accessToken, claims } = useTapisConfig();
+  const { accessToken, claims, basePath } = useTapisConfig();
   const { extension } = useExtension();
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
     computeTotal: true,
-    limit: 1000,
+    limit: 1,
   });
-  const jobs = JobsHooks.useList({});
+  const jobs = JobsHooks.useList({
+    computeTotal: true,
+    limit: 1,
+  });
   const apps = AppsHooks.useList({
     listType: Apps.ListTypeEnum.All,
     select: 'jobAttributes,version',
     computeTotal: true,
+    limit: 1,
   });
+
+  const systemsTotal = (systems?.data as any)?.metadata?.totalCount ?? 0;
+  const systemsTotalCount = systemsTotal === -1 ? 0 : systemsTotal;
+
+  const appsTotal = (apps?.data as any)?.metadata?.totalCount ?? 0;
+  const appsTotalCount = appsTotal === -1 ? 0 : appsTotal;
+
+  const jobsTotal = (jobs?.data as any)?.metadata?.totalCount ?? 0;
+  const jobsTotalCount = jobsTotal === -1 ? 0 : jobsTotal;
 
   return (
     <div>
       <SectionHeader>
         <div style={{ marginLeft: '1.2rem' }}>
-          Dashboard for {claims['tapis/tenant_id']}
+          Dashboard for{' '}
+          {basePath.replace('https://', '').replace('http://', '')}
         </div>
       </SectionHeader>
       <div className={styles.cards}>
         {accessToken ? (
           <>
+            <Card
+              className={`${styles.card} ${styles['welcome-card']} ${styles['card-wide']}`}
+              style={{
+                width: '51rem',
+              }}
+            >
+              <CardHeader>
+                <div className={styles['card-header']}>
+                  <div>
+                    <Icon
+                      name="applications"
+                      className="dashboard__card-icon"
+                    />
+                  </div>
+                  <div>Welcome to TapisUI!</div>
+                </div>
+              </CardHeader>
+              <CardBody>
+                <CardText>
+                  TapisUI is a React + TypeScript web application that provides
+                  a unified, user-friendly interface which provides validated,
+                  up-to-date, and automated access to all Tapis Services.
+                  TapisUI is designed for researchers, students, and developers
+                  who want to manage computational resources, launch jobs,
+                  deploy containers, and interface with cyberinfrastructure.
+                </CardText>
+                <div className={styles['welcome-links']}>
+                  <div>
+                    📚{' '}
+                    <a
+                      href="https://tapis.readthedocs.io/en/latest/technical/tapisui.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      TapisUI & Tapis Documentation
+                    </a>
+                  </div>
+                  <div>
+                    🤖{' '}
+                    <a
+                      href={basePath + '/#/tapisragchat'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Ask about AI on Tapis
+                    </a>
+                  </div>
+                  <div>
+                    🔧{' '}
+                    <a
+                      href="https://tapis-project.github.io/live-docs/?service=Systems"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Live Tapis Documentation
+                    </a>
+                  </div>
+                  <div>
+                    💻{' '}
+                    <a
+                      href="https://github.com/tapis-project/tapis-ui"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub Repository
+                    </a>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
             <DashboardCard
               icon="data-files"
               name="Systems"
               text="View TAPIS systems"
               link="/systems"
-              counter={`${systems?.data?.result?.length} systems`}
+              counter={`${systemsTotalCount} systems`}
               loading={systems?.isLoading}
             />
             <DashboardCard
@@ -105,7 +189,7 @@ const Dashboard: React.FC = () => {
               name="Files"
               text="Access files available on TAPIS systems"
               link="/files"
-              counter={`Files available on ${systems?.data?.result?.length} systems`}
+              counter={`Files available on ${systemsTotalCount} systems`}
               loading={systems?.isLoading}
             />
             <DashboardCard
@@ -113,7 +197,7 @@ const Dashboard: React.FC = () => {
               name="Applications"
               text="View TAPIS applications and launch jobs"
               link="/apps"
-              counter={`${apps?.data?.result?.length} apps`}
+              counter={`${appsTotalCount} apps`}
               loading={apps?.isLoading}
             />
             <DashboardCard
@@ -121,7 +205,7 @@ const Dashboard: React.FC = () => {
               name="Jobs"
               text="View status and details for previously launched TAPIS jobs"
               link="/jobs"
-              counter={`${jobs?.data?.result?.length} jobs`}
+              counter={`${jobsTotalCount} jobs`}
               loading={jobs?.isLoading}
             />
             {extension !== undefined && extension.showMLHub != false && (

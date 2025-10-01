@@ -25,6 +25,7 @@ interface Analysis {
   site: string;
   advancedConfig: string;
   device: number | string;
+  mode: string | undefined;
 }
 
 interface ErrorDetail {
@@ -45,6 +46,7 @@ const initialValues: Analysis = {
   site: '',
   advancedConfig: '',
   device: '',
+  mode: '',
 };
 
 const validationSchema = Yup.object({
@@ -167,24 +169,28 @@ const datasets = [
     url: '',
     name: '15 Image',
     disabled: false,
+    type: 'image',
   },
   {
     id: 'ena',
     url: 'https://storage.googleapis.com/public-datasets-lila/ena24/ena24.zip',
     name: 'ENA',
     disabled: true,
+    type: 'image',
   },
   {
     id: 'ohio-small-animals',
     url: 'ohio-small-animals',
     name: 'Ohio Small Animals',
     disabled: true,
+    type: 'image',
   },
   {
     id: 'okavango-delta',
     url: 'okavango-delta',
     name: 'Okavango Delta',
     disabled: true,
+    type: 'image',
   },
 ];
 
@@ -205,6 +211,7 @@ const secondsToDhms = (seconds: number) => {
 const AnalysisForm: React.FC = () => {
   const [analyses, setAnalyses] = useState<Analysis[]>([initialValues]);
   const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
+  const [mode, setMode] = useState<'image' | 'video'>('image');
   const [tooltipOpen, setTooltipOpen] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -385,6 +392,10 @@ const AnalysisForm: React.FC = () => {
                     value: values.model,
                   },
                   {
+                    key: 'CT_CONTROLLER_MODE',
+                    value: mode,
+                  },
+                  {
                     key: 'CT_CONTROLLER_INPUT',
                     // HACK ctcontroller expects an empty string for the 15-image dataset,
                     // which is why we are using a ternary operator below
@@ -403,6 +414,7 @@ const AnalysisForm: React.FC = () => {
                     value: JSON.stringify(values.advancedConfig),
                   });
                 }
+
                 submit(
                   {
                     name: ML_EDGE_ANALYSIS_JOB_NAME,
@@ -583,7 +595,6 @@ const AnalysisForm: React.FC = () => {
                       </div>
                     )}
                   </div>
-
                   <div className={styles.formGroup}>
                     <label htmlFor={`dataset-${index}`}>Dataset</label>
                     <span id={`datasetHelp-${analysis.id}`}>
@@ -596,6 +607,30 @@ const AnalysisForm: React.FC = () => {
                         }}
                       />
                     </span>
+                    <Stack
+                      direction={'row'}
+                      spacing={1}
+                      style={{ marginBottom: '8px' }}
+                    >
+                      <Chip
+                        style={{ cursor: 'pointer' }}
+                        size="small"
+                        label="images"
+                        color={mode !== 'image' ? 'default' : 'primary'}
+                        onClick={() => {
+                          setMode('image');
+                        }}
+                      />
+                      <Chip
+                        style={{ cursor: 'pointer' }}
+                        size="small"
+                        label="videos"
+                        color={mode !== 'video' ? 'default' : 'primary'}
+                        onClick={() => {
+                          setMode('video');
+                        }}
+                      />
+                    </Stack>
                     <Tooltip
                       placement="top"
                       isOpen={tooltipOpen[`datasetHelp-${analysis.id}`]}
@@ -649,15 +684,17 @@ const AnalysisForm: React.FC = () => {
                         }
                       >
                         <option value="" label="Select option" />
-                        {datasets.map((dataset) => {
-                          return (
-                            <option
-                              disabled={dataset.disabled}
-                              value={dataset.id}
-                              label={dataset.name}
-                            />
-                          );
-                        })}
+                        {datasets
+                          .filter((dataset) => dataset.type == mode)
+                          .map((dataset) => {
+                            return (
+                              <option
+                                disabled={dataset.disabled}
+                                value={dataset.id}
+                                label={`${dataset.name} (${dataset.type})`}
+                              />
+                            );
+                          })}
                       </Input>
                     )}
                     {isProvidedDatasetId && (

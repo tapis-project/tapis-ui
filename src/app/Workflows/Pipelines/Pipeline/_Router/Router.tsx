@@ -28,7 +28,7 @@ const Router: React.FC = () => {
       </Route>
       <Route path={`/workflows/pipelines/:groupId/:pipelineId/runs`}>
         <>
-          <Menu tab={'runs'} />
+          {/* <Menu tab={'runs'} /> */}
           <PipelineRunsLayout />
         </>
       </Route>
@@ -42,12 +42,16 @@ const Router: React.FC = () => {
           groupId: string;
           pipelineId: string;
           tab: string;
-        }>) => (
-          <>
-            <Menu tab={tab} />
-            <Pipeline groupId={groupId} pipelineId={pipelineId} tab={tab} />
-          </>
-        )}
+        }>) => {
+          // dispatch(Workflows.updateState({ activePipelineId: pipelineId }));
+
+          return (
+            <>
+              {/* <Menu tab={tab} /> */}
+              <Pipeline groupId={groupId} pipelineId={pipelineId} tab={tab} />
+            </>
+          );
+        }}
       />
     </Switch>
   );

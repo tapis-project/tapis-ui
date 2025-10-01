@@ -6,3 +6,4 @@ export {
   useAppStore,
 } from './store';
 export { updateState, type PodsState } from './podsSlice';
+export * as Workflows from './workflowsSlice';

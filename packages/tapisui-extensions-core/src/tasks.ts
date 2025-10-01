@@ -22,26 +22,26 @@ export const tasks: Array<Workflows.Task> = [
     ],
     input: {
       TAPIS_BASE_URL: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
-          env: 'TAPIS_BASE_URL',
+          args: 'TAPIS_BASE_URL',
         },
       },
       TAPIS_USERNAME: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
-          env: 'TAPIS_USERNAME',
+          args: 'TAPIS_USERNAME',
         },
       },
       TAPIS_PASSWORD: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
-          env: 'TAPIS_PASSWORD',
+          args: 'TAPIS_PASSWORD',
         },
       },
     },
     output: {
-      TAPIS_JWT: { type: Workflows.EnumTaskIOType.String },
+      TAPIS_JWT: { type: 'string' },
     },
   },
   {
@@ -64,49 +64,49 @@ export const tasks: Array<Workflows.Task> = [
     ],
     input: {
       TAPIS_BASE_URL: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_BASE_URL',
         },
       },
       TAPIS_USERNAME: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_USERNAME',
         },
       },
       TAPIS_PASSWORD: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_PASSWORD',
         },
       },
       TAPIS_JWT: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_JWT',
         },
       },
       POD_ID: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           args: 'POD_ID',
         },
       },
       OPERATION: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value: 'START',
       },
       POLL_INTERVAL: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           args: 'POLL_INTERVAL',
         },
       },
     },
     output: {
-      POD: { type: Workflows.EnumTaskIOType.String },
-      POD_URL: { type: Workflows.EnumTaskIOType.String },
+      POD: { type: 'string' },
+      POD_URL: { type: 'string' },
     },
   },
   {
@@ -129,49 +129,49 @@ export const tasks: Array<Workflows.Task> = [
     ],
     input: {
       TAPIS_BASE_URL: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_BASE_URL',
         },
       },
       TAPIS_USERNAME: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_USERNAME',
         },
       },
       TAPIS_PASSWORD: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_PASSWORD',
         },
       },
       TAPIS_JWT: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           env: 'TAPIS_JWT',
         },
       },
       POD_ID: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           args: 'POD_ID',
         },
       },
       OPERATION: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value: 'RESTART',
       },
       POLL_INTERVAL: {
-        type: Workflows.EnumTaskIOType.String,
+        type: 'string',
         value_from: {
           args: 'POLL_INTERVAL',
         },
       },
     },
     output: {
-      POD: { type: Workflows.EnumTaskIOType.String },
-      POD_URL: { type: Workflows.EnumTaskIOType.String },
+      POD: { type: 'string' },
+      POD_URL: { type: 'string' },
     },
   },
 ];

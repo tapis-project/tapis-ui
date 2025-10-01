@@ -47,16 +47,42 @@ const useTapisConfig = () => {
     });
     await refetch();
   };
-
+  console.debug(
+    `useTapisConfig: basePath: ${basePath}, data.access_token exists:`,
+    JSON.stringify(data?.access_token ? true : false, null, 2)
+  );
   const claims: { [key: string]: any } = data?.access_token
     ? jwt_decode(data?.access_token)
     : {};
+
+  const pathTenantId = basePath
+    ? basePath.replace('https://', '').replace('http://', '').split('.')[0]
+    : undefined;
+
+  const tokenTenantId: string | undefined =
+    claims['tapis/tenant_id'] ?? undefined;
+
+  // Inline logic for domainsMatched
+  const domainsMatched =
+    basePath && tokenTenantId
+      ? basePath.toLowerCase().includes(tokenTenantId.toLowerCase() + '.')
+      : false;
+
+  if (tokenTenantId && Object.keys(claims).length > 0 && !domainsMatched) {
+    console.error(
+      `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Logging user out.`
+    );
+    setAccessToken(null);
+  }
 
   return {
     basePath,
     accessToken: data,
     setAccessToken,
     claims,
+    pathTenantId: pathTenantId ?? undefined,
+    tokenTenantId: tokenTenantId ?? "couldn't derive tenant_id",
+    domainsMatched: domainsMatched,
     username: claims['tapis/username'],
   };
 };

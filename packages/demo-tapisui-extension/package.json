@@ -1,0 +1,70 @@
+{
+  "name": "@tapis/tapisui-extension-demo",
+  "version": "0.1.0",
+  "description": "TapisUI extension configuration for demonstration",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "npm run build && npm publish --access public",
+    "bundle2": "echo 'no bundle in scoped - skipping'; exit; npx tsc src/bundle.ts --skipLibCheck",
+    "bundle": "npx tsc src/bundle.ts --skipLibCheck",
+    "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
+    "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files",
+    "watch": "npx tsc --build --watch --preserveWatchOutput"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapis-project/tapis-ui.git"
+  },
+  "keywords": [
+    "typescript",
+    "tapisui",
+    "UT",
+    "TACC",
+    "CIC"
+  ],
+  "author": "Nathan Freeman",
+  "collaborators": [
+    {
+      "name": "Christian Garcia"
+    }
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tapis-project/tapis-ui/issues"
+  },
+  "homepage": "https://github.com/tapis-project/tapis-ui#readme",
+  "dependencies": {
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.16.0",
+    "@mui/x-data-grid": "^7.7.0",
+    "@tapis/tapis-typescript": "^0.0.62",
+    "@tapis/tapisui-common": "workspace:*",
+    "@tapis/tapisui-extensions-core": "workspace:*",
+    "@tapis/tapisui-hooks": "workspace:*",
+    "copyfiles": "^2.4.1",
+    "formik": "^2.2.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^5.2.0",
+    "reactstrap": "^8.10.1",
+    "uuid": "^7.0.2",
+    "yup": "^0.32.11"
+  },
+  "peerDependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-python": "^6.1.6",
+    "@uiw/codemirror-theme-vscode": "^4.22.2",
+    "@uiw/react-codemirror": "^4.19.7",
+    "@uiw/react-textarea-code-editor": "^2.0.6"
+  },
+  "devDependencies": {
+    "@tapis/tapisui-extension-devtools": "file:../tapisui-extension-devtools",
+    "@types/node": "^18.19.33",
+    "sass": "^1.77.6",
+    "typescript": "^4.9.5"
+  }
+}

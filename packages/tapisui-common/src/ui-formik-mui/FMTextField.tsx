@@ -17,6 +17,7 @@ interface FMTextFieldProps {
   InputProps?: any;
   value?: any; // Optional value override
   onChange?: (e: React.ChangeEvent<any>) => void; // Optional custom onChange
+  variant?: 'outlined' | 'filled' | 'standard';
 }
 
 const FMTextField: React.FC<FMTextFieldProps> = ({
@@ -33,6 +34,7 @@ const FMTextField: React.FC<FMTextFieldProps> = ({
   InputProps = {},
   value,
   onChange,
+  variant = 'outlined',
 }) => {
   return (
     <TextField
@@ -56,6 +58,7 @@ const FMTextField: React.FC<FMTextFieldProps> = ({
       }
       size={size}
       InputProps={InputProps}
+      variant={variant}
     />
   );
 };

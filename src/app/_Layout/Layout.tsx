@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Router } from 'app/_Router';
 import { NotificationsProvider } from 'app/_components/Notifications';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -21,7 +21,7 @@ import {
 import { Sidebar } from 'app/_components';
 
 const Layout: React.FC = () => {
-  const { claims } = useTapisConfig();
+  const { claims, pathTenantId } = useTapisConfig();
   const { extension } = useExtension();
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
@@ -31,6 +31,15 @@ const Layout: React.FC = () => {
 
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // Set the document title dynamically based on the tenant ID
+  useEffect(() => {
+    if (pathTenantId) {
+      document.title = `Tapis - ${pathTenantId}`;
+    } else {
+      document.title = 'Tapis';
+    }
+  }, [pathTenantId]);
 
   const header = (
     <div className="tapis-ui__header">

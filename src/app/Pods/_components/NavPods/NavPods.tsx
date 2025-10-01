@@ -89,7 +89,6 @@ const NavPods: React.FC = () => {
           includeAllGroupLabel="All Pods"
           includeAllSelectorLabel="all pods"
           includeAllPrimaryItemText={({ object }: any) => object.pod_id}
-          includeAllSecondaryItemText={({ object }: any) => object.host}
           defaultGroupIcon={<Dns />}
           filterable={false}
           groupable={true}
@@ -108,7 +107,10 @@ const NavPods: React.FC = () => {
               field: 'status',
               groupSelectorLabel: 'status',
               primaryItemText: ({ object }: any) => object.pod_id, // TODO FIXME This 'any' makes me sad. Fix
-              secondaryItemText: ({ object }: any) => object.host, // TODO FIXME This 'any' makes me sad. Fix
+              secondaryItemText: ({ object }: any) =>
+                object.image
+                  ? object.image
+                  : '~' + object.template.split('@')[0],
               open: [
                 'AVAILABLE',
                 'CREATING',

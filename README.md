@@ -7,19 +7,22 @@
 
 ## Getting Started with TapisUI
 
-1. Clone TapisUI repo with `git clone https://github.com:tapis-project/tapis-ui.git`
+1. Clone TapisUI repo with `git clone https://github.com/tapis-project/tapis-ui.git`
 2. `cd` into repo root directory
-3. Run `pnpm install` to install packages for root and all sub packages
-4. Run `pnpm -r build` to build root and all sub packages
-5. Run `pnpm run start` to serve vite TapisUI instance at **http://localhost:3000**
-   1. Optionally run `pnpm run dev` which enables hot-reloading after changes in subpackages along with serving TapisUI
-6. Open the URL output by stdout to view the UI, generally **http://localhost:3000**
-7. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
+3. Run `pnpm init-project` which will:  
+   a. Create intial `.env` from `.env.template` for configuration  
+   b. Run `pnpm install` to install packages for root and all sub packages  
+   c. Run `pnpm -r build` to build root and all sub packages  
+   d1. Run `pnpm run start` to serve vite TapisUI instance at **http://localhost:3000**  
+   d2. Devs can optionally run `pnpm run dev` which enables hot-reloading after changes in subpackages along with serving TapisUI  
+4. Open the URL output by stdout to view the UI, generally **http://localhost:3000**
+5. [View the wiki](https://github.com/tapis-project/tapis-ui/wiki) for a dive into what's what in this repository.
 
 ## Development with TapisUI
 
-- `pnpm run start` starts dev vite instance with `vite.dev.config.mts` config.
-- `pnpm run dev` starts dev vite and `tsc --build` in `--watch` mode which hot-reloads subpackages
+- `pnpm run init-project` runs `install`, `build`, and `start`.
+- `pnpm run start` starts dev vite instance with `vite.dev.config.mts` config; no hot-reloads.
+- `pnpm run dev` starts dev vite and `tsc --build` in `--watch` mode which hot-reloads subpackages.
 - `pnpm run docker` will start instance like `pnpm run start`, but containerized.
 
 ### Production Builds

@@ -122,7 +122,7 @@ const JobLaunchModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
                 result: isSuccess
                   ? {
                       success: isSuccess,
-                      message: 'Successfully updated app',
+                      message: 'Successfully submitted job',
                     }
                   : undefined,
                 isLoading,

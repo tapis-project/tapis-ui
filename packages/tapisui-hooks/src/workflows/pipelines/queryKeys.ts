@@ -4,6 +4,7 @@ const QueryKeys = {
   details: 'workflows/pipelines/details',
   create: 'workflows/pipelines/create',
   run: 'workflows/pipelines/run',
+  patch: 'workflows/pipelines/patch',
 };
 
 export default QueryKeys;

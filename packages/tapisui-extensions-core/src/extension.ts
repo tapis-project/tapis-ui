@@ -20,6 +20,22 @@ type ServiceCustomizations = {
   [EnumTapisCoreService.Workflows]?: WorkflowsCustomizations | undefined;
 };
 
+type BetaSidebarSection = {
+  name: string;
+  defaultOpen: boolean;
+  mainServices: string[];
+  secondaryServices?: string[];
+};
+
+type BetaSidebarConfig = {
+  enabled: boolean;
+  sections: BetaSidebarSection[];
+  noSection?: {
+    mainServices: string[];
+    secondaryServices?: string[];
+  };
+};
+
 const defaultServiceCustomizations = {
   [EnumTapisCoreService.Workflows]: {
     dagComponent: undefined,
@@ -32,7 +48,7 @@ const defaultServiceCustomizations = {
 export class Extension {
   public mainSidebarServices = [];
   public authMethods = [];
-  public allowMutiTenant: boolean = true;
+  public allowMultiTenant: boolean = true;
   public showMLHub: boolean = true;
   public showMLEdge: boolean = true;
   public showSecondarySideBar: boolean = true;
@@ -41,6 +57,7 @@ export class Extension {
   public serviceCustomizations: ServiceCustomizations;
   public logo: Logo;
   public icon: Icon;
+  public betaSidebar?: BetaSidebarConfig;
 
   constructor(config: Configuration) {
     this.setConfiguration(config);
@@ -48,7 +65,7 @@ export class Extension {
 
   setConfiguration(config: Configuration): void {
     this.config = config;
-    this.allowMutiTenant = config.allowMultiTenant;
+    this.allowMultiTenant = config.allowMultiTenant;
     this.showMLHub = config.showMLHub;
     this.showMLEdge = config.showMLEdge;
     this.showSecondarySideBar = config.showSecondarySideBar;
@@ -57,6 +74,7 @@ export class Extension {
     this.setServiceCustomizations();
     this.logo = config.logo;
     this.icon = config.icon;
+    this.betaSidebar = config.betaSidebar;
   }
 
   private setAuthentication(): void {
@@ -149,3 +167,5 @@ export const createExtension: (config: Configuration) => Extension = (
 ) => {
   return new Extension(config);
 };
+
+export type { BetaSidebarSection, BetaSidebarConfig };

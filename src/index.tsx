@@ -10,12 +10,14 @@ import { ExtensionsProvider } from './extensions';
 import { Extension } from '@tapis/tapisui-extensions-core';
 import { extension as icicleExtension } from '@icicle/tapisui-extension';
 import { extension as scopedExtension } from '@scoped/tapisui-extension';
+import { extension as demoExtension } from '@tapis/tapisui-extension-demo';
 import { NotificationsProvider } from 'app/_components/Notifications';
 import Theme from './theme'; // Import the Theme component
 
 const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,
   '@scoped/tapisui-extension': scopedExtension,
+  '@demo/tapisui-extension': demoExtension,
 };
 
 const container = document.getElementById('react-root');

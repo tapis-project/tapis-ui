@@ -12,6 +12,7 @@ import {
   SettingsRounded,
   Key,
   Visibility,
+  ContentCopy,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -57,19 +58,48 @@ type SidebarItems = {
 };
 
 const Sidebar: React.FC = () => {
-  const { accessToken } = useTapisConfig();
+  const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
   const { extension } = useExtension();
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modal, setModal] = useState<string | undefined>(undefined);
+  const [sectionOpenStates, setSectionOpenStates] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [moreOpenStates, setMoreOpenStates] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;
   const history = useHistory();
 
-  const { claims } = useTapisConfig();
+  // Initialize section open states based on defaultOpen values
+  useEffect(() => {
+    if (extension?.betaSidebar?.enabled && extension.betaSidebar.sections) {
+      const initialStates: { [key: string]: boolean } = {};
+      extension.betaSidebar.sections.forEach((section) => {
+        initialStates[section.name] = section.defaultOpen;
+      });
+      setSectionOpenStates(initialStates);
+    }
+  }, [extension?.betaSidebar]);
+
+  const toggleSection = (sectionName: string) => {
+    setSectionOpenStates((prev) => ({
+      ...prev,
+      [sectionName]: !prev[sectionName],
+    }));
+  };
+
+  const toggleMoreMenu = (menuId: string) => {
+    setMoreOpenStates((prev) => ({
+      ...prev,
+      [menuId]: !prev[menuId],
+    }));
+  };
 
   const renderSidebarItem = (
     to: string,
@@ -147,6 +177,12 @@ const Sidebar: React.FC = () => {
   };
   const handleModal = () => {
     setModal('delete');
+  };
+
+  const handleCopyAccessToken = () => {
+    if (accessToken?.access_token) {
+      navigator.clipboard.writeText(accessToken.access_token);
+    }
   };
 
   const useCountdown = (targetTime: number) => {
@@ -264,41 +300,183 @@ const Sidebar: React.FC = () => {
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
-            {mainSidebarItems.map((item) => item)}
-            {secondarySidebarItems.length > 0 &&
-              extension !== undefined &&
-              extension.showSecondarySideBar != false && (
-                <>
-                  <div
-                    onClick={toggleSecondaryItems}
-                    style={{
-                      whiteSpace: 'nowrap',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <ListItemButton
-                      sx={{
-                        color: '#707070',
-                        pl: '1.4rem',
-                        pt: '5px',
-                        pb: '5px',
+            {extension?.betaSidebar?.enabled ? (
+              // Beta sidebar with sections
+              <>
+                {/* No Section items - always visible */}
+                {extension.betaSidebar.noSection?.mainServices?.map(
+                  (serviceId: string) => sidebarItems[serviceId]
+                )}
+                {extension.betaSidebar.noSection?.secondaryServices &&
+                  extension.betaSidebar.noSection.secondaryServices.length >
+                    0 && (
+                    <>
+                      <div
+                        onClick={() => toggleMoreMenu('noSection')}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <ListItemButton
+                          sx={{
+                            color: '#707070',
+                            pl: '1.4rem',
+                            pt: '5px',
+                            pb: '5px',
+                          }}
+                        >
+                          {moreOpenStates['noSection'] ? (
+                            <ExpandLessRounded />
+                          ) : (
+                            <ExpandMoreRounded />
+                          )}
+                          {expanded && (
+                            <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                          )}
+                        </ListItemButton>
+                      </div>
+                      <Collapse in={moreOpenStates['noSection']}>
+                        {extension.betaSidebar.noSection.secondaryServices.map(
+                          (serviceId: string) => sidebarItems[serviceId]
+                        )}
+                      </Collapse>
+                    </>
+                  )}
+
+                {/* Sectioned items */}
+                {extension.betaSidebar.sections.map((section: any) => (
+                  <div key={section.name}>
+                    <div
+                      onClick={() => toggleSection(section.name)}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        cursor: 'pointer',
+                        marginTop: '8px',
                       }}
                     >
-                      {openSecondary ? (
-                        <ExpandLessRounded />
-                      ) : (
-                        <ExpandMoreRounded />
+                      <ListItemButton
+                        sx={{
+                          color: '#505050',
+                          pl: '1.4rem',
+                          pt: '8px',
+                          pb: '8px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {sectionOpenStates[section.name] ? (
+                          <ExpandLessRounded />
+                        ) : (
+                          <ExpandMoreRounded />
+                        )}
+                        {expanded && (
+                          <ListItemText
+                            primary={section.name}
+                            sx={{
+                              pl: '.5rem',
+                              '& .MuiListItemText-primary': {
+                                fontWeight: 'bold',
+                                fontSize: '0.9rem',
+                              },
+                            }}
+                          />
+                        )}
+                      </ListItemButton>
+                    </div>
+                    <Collapse in={sectionOpenStates[section.name]}>
+                      {/* Main services in section */}
+                      {section.mainServices.map(
+                        (serviceId: string) => sidebarItems[serviceId]
                       )}
-                      {expanded && (
-                        <ListItemText primary="More" sx={{ pl: '.5rem' }} />
-                      )}
-                    </ListItemButton>
+
+                      {/* Secondary services in section */}
+                      {section.secondaryServices &&
+                        section.secondaryServices.length > 0 && (
+                          <>
+                            <div
+                              onClick={() => toggleMoreMenu(section.name)}
+                              style={{
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <ListItemButton
+                                sx={{
+                                  color: '#707070',
+                                  pl: '1.4rem',
+                                  pt: '3px',
+                                  pb: '3px',
+                                }}
+                              >
+                                {moreOpenStates[section.name] ? (
+                                  <ExpandLessRounded fontSize="small" />
+                                ) : (
+                                  <ExpandMoreRounded fontSize="small" />
+                                )}
+                                {expanded && (
+                                  <ListItemText
+                                    primary="More"
+                                    sx={{
+                                      pl: '.5rem',
+                                      '& .MuiListItemText-primary': {
+                                        fontSize: '0.8rem',
+                                      },
+                                    }}
+                                  />
+                                )}
+                              </ListItemButton>
+                            </div>
+                            <Collapse in={moreOpenStates[section.name]}>
+                              {section.secondaryServices.map(
+                                (serviceId: string) => sidebarItems[serviceId]
+                              )}
+                            </Collapse>
+                          </>
+                        )}
+                    </Collapse>
                   </div>
-                  <Collapse in={openSecondary}>
-                    {secondarySidebarItems.map((item) => item)}
-                  </Collapse>
-                </>
-              )}
+                ))}
+              </>
+            ) : (
+              // Original sidebar logic
+              <>
+                {mainSidebarItems.map((item) => item)}
+                {secondarySidebarItems.length > 0 &&
+                  extension !== undefined &&
+                  extension.showSecondarySideBar != false && (
+                    <>
+                      <div
+                        onClick={toggleSecondaryItems}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <ListItemButton
+                          sx={{
+                            color: '#707070',
+                            pl: '1.4rem',
+                            pt: '5px',
+                            pb: '5px',
+                          }}
+                        >
+                          {openSecondary ? (
+                            <ExpandLessRounded />
+                          ) : (
+                            <ExpandMoreRounded />
+                          )}
+                          {expanded && (
+                            <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                          )}
+                        </ListItemButton>
+                      </div>
+                      <Collapse in={openSecondary}>
+                        {secondarySidebarItems.map((item) => item)}
+                      </Collapse>
+                    </>
+                  )}
+              </>
+            )}
           </>
         )}
       </Navbar>
@@ -385,23 +563,36 @@ const Sidebar: React.FC = () => {
           <ListItemText>View JWT</ListItemText>
         </MenuItem>
         <MenuItem
+          disabled={!(claims && claims['sub']) || !accessToken?.access_token}
+          onClick={handleCopyAccessToken}
+        >
+          <ListItemIcon>
+            <ContentCopy fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Copy Access Token</ListItemText>
+        </MenuItem>
+        <MenuItem
           onClick={() => {
             history.push('/workflows/secrets');
           }}
+          disabled={!(claims && claims['sub'])}
         >
           <ListItemIcon>
             <Key fontSize="small" />
           </ListItemIcon>
           <ListItemText>Manage Secrets</ListItemText>
         </MenuItem>
-        {((extension !== undefined && extension.allowMutiTenant) ||
+        {((extension !== undefined && extension.allowMultiTenant) ||
           extension === undefined ||
-          (extension !== undefined && extension.allowMutiTenant)) && (
+          (extension !== undefined && extension.allowMultiTenant)) && (
           <MenuItem
             onClick={() => setModal('changeTenant')}
             disabled={!(claims && claims['sub'])}
           >
-            Change Tenant
+            <ListItemIcon>
+              <SettingsRounded fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Change Tenant</ListItemText>
           </MenuItem>
         )}
         <Divider />
@@ -410,7 +601,7 @@ const Sidebar: React.FC = () => {
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Sign out</ListItemText>
+            <ListItemText>Logout</ListItemText>
           </MenuItem>
         ) : (
           <MenuItem onClick={() => history.push('/login')}>
@@ -432,9 +623,33 @@ const Sidebar: React.FC = () => {
         }}
       >
         <DialogContent>
-          <Typography variant="h6">Access Token Object</Typography>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '8px',
+            }}
+          >
+            <Typography variant="h6">Access Token Object</Typography>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<ContentCopy />}
+                onClick={handleCopyAccessToken}
+                disabled={!domainsMatched || !accessToken?.access_token}
+              >
+                Copy Access Token
+              </Button>
+            </div>
+          </div>
           <CodeMirror
-            value={JSON.stringify(accessToken, null, 2)}
+            value={
+              domainsMatched
+                ? JSON.stringify(accessToken, null, 2)
+                : 'Access token tenant_id and current domain are out-of-sync. Please log-in again.'
+            }
             editable={false}
             readOnly={true}
             basicSetup={{
@@ -480,7 +695,11 @@ const Sidebar: React.FC = () => {
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
           />
-          <Typography variant="h6">Token Life Remaining</Typography>
+          <Typography variant="h6">Current Domain: </Typography>
+          <Typography fontSize={'1.1rem'}>
+            {basePath?.replace('https://', '').replace('http://', '')}
+          </Typography>
+          <Typography variant="h6">Token Life Remaining:</Typography>
           <CountdownDisplay expirationTime={claims['exp']} />
         </DialogContent>
         <DialogActions>
