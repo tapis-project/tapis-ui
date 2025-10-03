@@ -117,8 +117,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       bootstrap:
-        specifier: ^4.6.2
-        version: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
+        specifier: ^5.3.8
+        version: 5.3.8(@popperjs/core@2.11.8)
       codemirror:
         specifier: ^6.0.1
         version: 6.0.2
@@ -248,7 +248,7 @@ importers:
         version: 25.0.8(rollup@4.52.4)
       '@tapis/tapisui-extension-devtools':
         specifier: file:./packages/tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:packages/tapisui-extension-devtools
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@18.3.7(@types/react@18.3.25))(@types/react@18.3.25)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -415,7 +415,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.129
@@ -433,10 +433,10 @@ importers:
         version: 0.0.62
       '@tapis/tapisui-common':
         specifier: file:../tapisui-common
-        version: file:packages/tapisui-common(@babel/runtime@7.28.4)(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@types/react@18.3.25)(react@18.3.1))(@testing-library/dom@10.4.1)(@types/node@18.19.129)(@types/react-dom@18.3.7(@types/react@18.3.25))(@types/react@18.3.25)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@18.3.1(react@18.3.1))(rollup@4.52.4)(sass@1.93.2)(vite@6.3.5(@types/node@18.19.129)(sass@1.93.2))
+        version: file:packages/tapisui-common(@babel/runtime@7.28.4)(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@types/react@18.3.25)(react@18.3.1))(@popperjs/core@2.11.8)(@testing-library/dom@10.4.1)(@types/node@18.19.129)(@types/react-dom@18.3.7(@types/react@18.3.25))(@types/react@18.3.25)(react-dom@18.3.1(react@18.3.1))(rollup@4.52.4)(sass@1.93.2)(vite@6.3.5(@types/node@18.19.129)(sass@1.93.2))
       '@tapis/tapisui-extensions-core':
         specifier: file:../tapisui-extensions-core
-        version: file:packages/tapisui-extensions-core
+        version: link:../tapisui-extensions-core
       '@tapis/tapisui-hooks':
         specifier: file:../tapisui-hooks
         version: file:packages/tapisui-hooks(@types/node@18.19.129)(react-dom@18.3.1(react@18.3.1))(sass@1.93.2)
@@ -449,7 +449,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.129
@@ -525,7 +525,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.129
@@ -664,8 +664,8 @@ importers:
         specifier: ^4.3.1
         version: 4.7.0(vite@6.3.5(@types/node@20.19.19)(sass@1.93.2))
       bootstrap:
-        specifier: ^4.6.2
-        version: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
+        specifier: ^5.3.8
+        version: 5.3.8(@popperjs/core@2.11.8)
       copy-to-clipboard:
         specifier: 3.3.3
         version: 3.3.3
@@ -818,7 +818,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^16.0.0
         version: 16.18.126
@@ -839,7 +839,7 @@ importers:
         version: 0.0.62
       '@tapis/tapisui-api':
         specifier: file:../tapisui-api
-        version: file:packages/tapisui-api
+        version: link:../tapisui-api
       cross-fetch:
         specifier: ^3.1.4
         version: 3.2.0
@@ -2587,12 +2587,6 @@ packages:
   '@tapis/tapisui-common@file:packages/tapisui-common':
     resolution: {directory: packages/tapisui-common, type: directory}
 
-  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
-    resolution: {directory: packages/tapisui-extension-devtools, type: directory}
-
-  '@tapis/tapisui-extensions-core@file:packages/tapisui-extensions-core':
-    resolution: {directory: packages/tapisui-extensions-core, type: directory}
-
   '@tapis/tapisui-hooks@0.0.3':
     resolution: {integrity: sha512-oOCKt4VNCGocQ2Kr+JW//HKcojk3rW6b9r6Rs5BudQAa+djptSBSM4Ltl2jVeOSXA1VWgh6M08plwnHnbhs1GA==}
 
@@ -3299,11 +3293,10 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  bootstrap@4.6.2:
-    resolution: {integrity: sha512-51Bbp/Uxr9aTuy6ca/8FbFloBUJZLHwnhTcnjIeRn2suQWsWzcuJhGjKDB5eppVte/8oCdOL3VuwxvZDUggwGQ==}
+  bootstrap@5.3.8:
+    resolution: {integrity: sha512-HP1SZDqaLDPwsNiqRqi5NcP0SSXciX2s9E+RyqJIIqGo+vJeN5AJVM98CXmW/Wux0nQ5L7jeWUdplCEf0Ee+tg==}
     peerDependencies:
-      jquery: 1.9.1 - 3
-      popper.js: ^1.16.1
+      '@popperjs/core': ^2.11.8
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -4497,9 +4490,6 @@ packages:
       node-notifier:
         optional: true
 
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
-
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
     engines: {node: '>=14'}
@@ -4974,10 +4964,6 @@ packages:
 
   please-upgrade-node@3.2.0:
     resolution: {integrity: sha512-gQR3WpIgNIKwBMVLkpMUeR3e1/E1y42bqDQZfql+kDeXd8COYfM8PQA4X6y7a8u9Ua9FHmsrrmirW2vHs45hWg==}
-
-  popper.js@1.16.1:
-    resolution: {integrity: sha512-Wb4p1J4zyFTbM+u6WuO4XstYx4Ky9Cewe4DWrel7B0w6VVICvPwdOpotjzcf6eD8TsckVnIMNONQyPIUFOUbCQ==}
-    deprecated: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
 
   postcss-modules-extract-imports@3.1.0:
     resolution: {integrity: sha512-k3kNe0aNFQDAZGbin48pL2VNidTF0w4/eASDsxlyspobzU3wZQLOGj7L9gfRe0Jo9/4uud09DsjFNH7winGv8Q==}
@@ -7908,14 +7894,13 @@ snapshots:
       '@tapis/tapis-typescript': 0.0.62
       axios: 1.12.2
       cross-fetch: 3.2.0
-      glob: 11.0.3
       streamsaver: 2.0.6
       typescript: 5.9.3
     transitivePeerDependencies:
       - debug
       - encoding
 
-  '@tapis/tapisui-common@file:packages/tapisui-common(@babel/runtime@7.28.4)(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@types/react@18.3.25)(react@18.3.1))(@testing-library/dom@10.4.1)(@types/node@18.19.129)(@types/react-dom@18.3.7(@types/react@18.3.25))(@types/react@18.3.25)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@18.3.1(react@18.3.1))(rollup@4.52.4)(sass@1.93.2)(vite@6.3.5(@types/node@18.19.129)(sass@1.93.2))':
+  '@tapis/tapisui-common@file:packages/tapisui-common(@babel/runtime@7.28.4)(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.25)(react@18.3.1))(@types/react@18.3.25)(react@18.3.1))(@popperjs/core@2.11.8)(@testing-library/dom@10.4.1)(@types/node@18.19.129)(@types/react-dom@18.3.7(@types/react@18.3.25))(@types/react@18.3.25)(react-dom@18.3.1(react@18.3.1))(rollup@4.52.4)(sass@1.93.2)(vite@6.3.5(@types/node@18.19.129)(sass@1.93.2))':
     dependencies:
       '@codemirror/autocomplete': 6.19.0
       '@jest/globals': 30.2.0
@@ -7930,10 +7915,9 @@ snapshots:
       '@testing-library/react': 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@18.3.7(@types/react@18.3.25))(@types/react@18.3.25)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@uiw/react-textarea-code-editor': 3.1.1(@babel/runtime@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@vitejs/plugin-react': 4.7.0(vite@6.3.5(@types/node@18.19.129)(sass@1.93.2))
-      bootstrap: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
+      bootstrap: 5.3.8(@popperjs/core@2.11.8)
       copy-to-clipboard: 3.3.3
       formik: 2.4.6(react@18.3.1)
-      glob: 11.0.3
       lodash: 4.17.21
       normalize-path: 3.0.0
       prop-types: 15.8.1
@@ -7955,6 +7939,7 @@ snapshots:
       - '@emotion/react'
       - '@emotion/styled'
       - '@mui/material-pigment-css'
+      - '@popperjs/core'
       - '@testing-library/dom'
       - '@types/node'
       - '@types/react'
@@ -7963,10 +7948,8 @@ snapshots:
       - canvas
       - debug
       - encoding
-      - jquery
       - less
       - lightningcss
-      - popper.js
       - react-dom
       - react-native
       - rollup
@@ -7978,22 +7961,6 @@ snapshots:
       - terser
       - utf-8-validate
       - vite
-
-  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
-    dependencies:
-      '@tapis/tapis-typescript': 0.0.62
-      glob: 11.0.3
-      simple-git: 3.28.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@tapis/tapisui-extensions-core@file:packages/tapisui-extensions-core':
-    dependencies:
-      '@tapis/tapis-typescript': 0.0.62
-      glob: 11.0.3
-      simple-git: 3.28.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@tapis/tapisui-hooks@0.0.3(@types/node@18.19.129)(react-dom@18.3.1(react@18.3.1))(sass@1.93.2)':
     dependencies:
@@ -8032,7 +7999,6 @@ snapshots:
       '@tapis/tapis-typescript': 0.0.62
       '@tapis/tapisui-api': file:packages/tapisui-api
       cross-fetch: 3.2.0
-      glob: 11.0.3
       js-cookie: 3.0.5
       jsdom: 24.1.3
       jwt-decode: 3.1.2
@@ -8889,10 +8855,9 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1):
+  bootstrap@5.3.8(@popperjs/core@2.11.8):
     dependencies:
-      jquery: 3.7.1
-      popper.js: 1.16.1
+      '@popperjs/core': 2.11.8
 
   brace-expansion@1.1.11:
     dependencies:
@@ -10404,8 +10369,6 @@ snapshots:
       - supports-color
       - ts-node
 
-  jquery@3.7.1: {}
-
   js-cookie@3.0.5: {}
 
   js-sha3@0.8.0: {}
@@ -10877,8 +10840,6 @@ snapshots:
   please-upgrade-node@3.2.0:
     dependencies:
       semver-compare: 1.0.0
-
-  popper.js@1.16.1: {}
 
   postcss-modules-extract-imports@3.1.0(postcss@8.5.6):
     dependencies:
