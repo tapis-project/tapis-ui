@@ -1,5 +1,5 @@
 import {expect, describe, it} from '@jest/globals';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import withBuilder from './withBuilder';
 
 describe('withFragment', function () {
