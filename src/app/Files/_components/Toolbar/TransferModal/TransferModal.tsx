@@ -208,7 +208,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   useEffect(() => {
     if (inputMode === "smart" && !smartInputValue) {
       setSmartInputValue("/");
-      setShowSuggestions(true);
+      setShowSuggestions(true); // Show suggestions by default
     }
   }, [inputMode, smartInputValue]);
 
@@ -234,10 +234,13 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
         // If files are selected, populate with selected files
         const elements: Array<Files.ReqTransferElement> = selectedFiles.map(
           (file) => ({
-            sourceURI: `tapis://${systemId}/${file.path}`.replace(/\/\//g, "/"),
+            sourceURI: `tapis://${systemId}/${file.path}`.replace(
+              /(?<!:)\/\/+/g,
+              "/"
+            ),
             destinationURI:
               `tapis://DESTINATION_SYSTEM/DESTINATION_PATH/${file.name}`.replace(
-                /\/\//g,
+                /(?<!:)\/\/+/g,
                 "/"
               ),
           })
@@ -297,7 +300,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const handleSmartInputChange = useCallback(
     (value: string) => {
       setSmartInputValue(value);
-      setShowSuggestions(value.length > 0);
+      setShowSuggestions(true); // Always show suggestions when typing
 
       // Clear existing timeout
       if (navigationTimeout) {
@@ -361,7 +364,10 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   );
 
   const createTransferTab = (
-    <div className={`row h-100 ${styles.pane}`}>
+    <div
+      className={`row h-100 ${styles.pane}`}
+      onClick={() => setShowSuggestions(false)}
+    >
       {/* Left panel - only show for Visual and Smart Input modes */}
       {inputMode !== "json" && (
         <div className="col-md-6 d-flex flex-column">
@@ -468,7 +474,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
 
         {/* Smart input mode */}
         {inputMode === "smart" && (
-          <div className="p-3">
+          <div className="p-3" onClick={(e) => e.stopPropagation()}>
             <FormGroup>
               <Label for="smartInput">Smart Path Input</Label>
               <div className="position-relative">
@@ -594,15 +600,15 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
 
                 // Create transfer directly
                 const destinationURI =
-                  `tapis://${smartDestination.systemId}/${transferPath}`.replace(
-                    /\/\//g,
+                  `tapis://${smartDestination.systemId}${transferPath}`.replace(
+                    /(?<!:)\/\/+/g,
                     "/"
                   );
                 const elements: Array<Files.ReqTransferElement> =
                   selectedFiles.map((file) => ({
                     destinationURI: `${destinationURI}/${file.name}`,
                     sourceURI: `tapis://${systemId}/${file.path}`.replace(
-                      /\/\//g,
+                      /(?<!:)\/\/+/g,
                       "/"
                     ),
                   }));
@@ -686,7 +692,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                             jsonDestination.systemId
                           }/${jsonDestination.path}/${element.sourceURI
                             .split("/")
-                            .pop()}`.replace(/\/\//g, "/"),
+                            .pop()}`.replace(/(?<!:)\/\/+/g, "/"),
                         })
                       );
                       setJsonInput(JSON.stringify(updatedElements, null, 2));
