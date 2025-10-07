@@ -178,7 +178,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               <ToolbarButton
                 text="Share"
                 icon="link"
-                disabled={selectedFiles.length === 0}
+                disabled={selectedFiles.length !== 1}
                 onClick={() => setModal("share")}
                 aria-label="Share link"
               />
