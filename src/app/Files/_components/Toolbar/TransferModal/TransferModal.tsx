@@ -197,20 +197,6 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     return () => clearInterval(interval);
   }, [refetch]);
 
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (navRef.current) {
-        clearTimeout(navRef.current);
-        navRef.current = null;
-      }
-      if (unsetNavRef.current) {
-        clearTimeout(unsetNavRef.current);
-        unsetNavRef.current = null;
-      }
-    };
-  }, []);
-
   // Enhanced JSON validation
   const validateJson = useCallback((jsonString: string) => {
     try {
