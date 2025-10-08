@@ -169,7 +169,7 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     };
   }, [navigationTimeout]);
 
-  // JSON validation and submission
+  // Enhanced JSON validation
   const validateJson = useCallback((jsonString: string) => {
     try {
       const parsed = JSON.parse(jsonString);
@@ -179,11 +179,77 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       if (parsed.length === 0) {
         return "Array cannot be empty";
       }
-      for (const element of parsed) {
-        if (!element.sourceURI || !element.destinationURI) {
-          return "Each object must have sourceURI and destinationURI";
+
+      for (let i = 0; i < parsed.length; i++) {
+        const element = parsed[i];
+
+        // Check if element is an object
+        if (typeof element !== "object" || element === null) {
+          return `Element ${i + 1} must be an object`;
+        }
+
+        // Check required fields exist and are strings
+        if (!element.sourceURI || typeof element.sourceURI !== "string") {
+          return `Element ${i + 1} must have a valid sourceURI string`;
+        }
+        if (
+          !element.destinationURI ||
+          typeof element.destinationURI !== "string"
+        ) {
+          return `Element ${i + 1} must have a valid destinationURI string`;
+        }
+
+        // Trim inputs and validate URI format with capture groups
+        const tapisRe = /^tapis:\/\/([^\s/]+)\/([^\s]+)$/; // group1=systemId, group2=path
+        const src = element.sourceURI.trim();
+        const dst = element.destinationURI.trim();
+
+        const sm = src.match(tapisRe);
+        if (!sm) {
+          return `Element ${i + 1} sourceURI must be tapis://systemId/path`;
+        }
+        const dm = dst.match(tapisRe);
+        if (!dm) {
+          return `Element ${
+            i + 1
+          } destinationURI must be tapis://systemId/path`;
+        }
+
+        const srcPath = sm[2];
+        const dstPath = dm[2];
+
+        // Check for placeholders and empty paths
+        if (/DESTINATION_(SYSTEM|PATH)/.test(dst)) {
+          return `Element ${i + 1} destinationURI still has placeholders`;
+        }
+        if (srcPath === "" || dstPath === "") {
+          return `Element ${i + 1} path must be non-empty`;
+        }
+
+        // Check for identical source and destination
+        if (src === dst) {
+          return `Element ${
+            i + 1
+          } source and destination URIs cannot be identical`;
+        }
+
+        // Check for empty path segments (double slashes)
+        if (srcPath.includes("//") || dstPath.includes("//")) {
+          return `Element ${
+            i + 1
+          } contains empty path segments (double slashes)`;
         }
       }
+
+      // Check for duplicate destinations
+      const destinationURIs = parsed.map((element: any) =>
+        element.destinationURI.trim()
+      );
+      const uniqueDestinations = new Set(destinationURIs);
+      if (destinationURIs.length !== uniqueDestinations.size) {
+        return "Duplicate destination URIs found. Each transfer must have a unique destination.";
+      }
+
       return null;
     } catch (error) {
       return "Invalid JSON format";
@@ -197,12 +263,40 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       return;
     }
     setJsonError(null);
-    const parsed = JSON.parse(jsonInput);
+
+    let parsed = JSON.parse(jsonInput);
+
+    // Auto-apply destination if fields are filled but not applied
+    if (jsonDestination.systemId && jsonDestination.path) {
+      const hasPlaceholderDestinations = parsed.some(
+        (element: any) =>
+          element.destinationURI.includes("DESTINATION_SYSTEM") ||
+          element.destinationURI.includes("DESTINATION_PATH")
+      );
+
+      if (hasPlaceholderDestinations) {
+        parsed = parsed.map((element: any) => {
+          const sourceParts = element.sourceURI.split("/").filter(Boolean);
+          const basename = sourceParts[sourceParts.length - 1] ?? "";
+
+          return {
+            ...element,
+            destinationURI:
+              `tapis://${jsonDestination.systemId}/${jsonDestination.path}/${basename}`.replace(
+                /(?<!:)\/\/+/g,
+                "/"
+              ),
+          };
+        });
+        setJsonInput(JSON.stringify(parsed, null, 2));
+      }
+    }
+
     // Wrap the array in the elements structure that the API expects
     const tagName = jsonTag.trim().length > 0 ? jsonTag.trim() : undefined;
     const requestData = { reqTransfer: { elements: parsed, tag: tagName } };
     createTransfer(requestData);
-  }, [jsonInput, jsonTag, validateJson, createTransfer]);
+  }, [jsonInput, jsonTag, jsonDestination, validateJson, createTransfer]);
 
   // Initialize smart input when switching to smart mode
   useEffect(() => {
@@ -684,18 +778,34 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                   className="mb-2"
                   onClick={() => {
                     if (jsonDestination.systemId && jsonDestination.path) {
-                      const updatedJson = JSON.parse(jsonInput);
-                      const updatedElements = updatedJson.map(
-                        (element: any) => ({
-                          ...element,
-                          destinationURI: `tapis://${
-                            jsonDestination.systemId
-                          }/${jsonDestination.path}/${element.sourceURI
-                            .split("/")
-                            .pop()}`.replace(/(?<!:)\/\/+/g, "/"),
-                        })
-                      );
-                      setJsonInput(JSON.stringify(updatedElements, null, 2));
+                      try {
+                        const updatedJson = JSON.parse(jsonInput);
+                        const updatedElements = updatedJson.map(
+                          (element: any) => {
+                            // Fix: Proper basename extraction for trailing slashes
+                            const sourceParts = element.sourceURI
+                              .split("/")
+                              .filter(Boolean);
+                            const basename =
+                              sourceParts[sourceParts.length - 1] ?? "";
+
+                            return {
+                              ...element,
+                              destinationURI:
+                                `tapis://${jsonDestination.systemId}/${jsonDestination.path}/${basename}`.replace(
+                                  /(?<!:)\/\/+/g,
+                                  "/"
+                                ),
+                            };
+                          }
+                        );
+                        setJsonInput(JSON.stringify(updatedElements, null, 2));
+                        setJsonError(null); // Clear any previous errors
+                      } catch (error) {
+                        setJsonError(
+                          "Invalid JSON format. Please fix the JSON before applying destination."
+                        );
+                      }
                     }
                   }}
                   disabled={
@@ -712,6 +822,21 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                 destination URIs, or edit individual destinations in the JSON
                 below.
               </small>
+              {jsonDestination.systemId &&
+                jsonDestination.path &&
+                jsonInput.trim() && (
+                  <Alert
+                    color="warning"
+                    className="mt-2 mb-0"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    <small>
+                      <strong>Note:</strong> Destination System/Path only apply
+                      after clicking "Apply to All". The JSON below will not be
+                      automatically updated until you click the button.
+                    </small>
+                  </Alert>
+                )}
             </FormGroup>
             <FormGroup>
               <Label for="jsonTag">Transfer Tag</Label>
