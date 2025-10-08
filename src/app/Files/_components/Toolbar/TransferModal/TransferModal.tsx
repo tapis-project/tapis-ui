@@ -64,10 +64,44 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   }>({ systemId, path });
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [navigationTimeout, setNavigationTimeout] =
-    useState<NodeJS.Timeout | null>(null);
+  // Use refs for debounce/unset timers to avoid re-renders/races
+  const navRef = useRef<number | null>(null);
+  const unsetNavRef = useRef<number | null>(null);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  const [smartInputError, setSmartInputError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Smart input path validation
+  const validateSmartPath = useCallback((path: string): string | null => {
+    if (!path || path === "/") return null; // Allow root path
+
+    // Check for spaces
+    if (path.includes(" ")) {
+      return "Path cannot contain spaces";
+    }
+
+    // Check for double slashes (except tapis:// protocol)
+    if (path.includes("//")) {
+      return "Path cannot contain double slashes";
+    }
+
+    // Check for relative path segments
+    if (path.includes("./") || path.includes("../")) {
+      return "Path cannot contain relative segments (./ or ../)";
+    }
+
+    // Ensure path starts with /
+    if (!path.startsWith("/")) {
+      return "Path must start with /";
+    }
+
+    // Check for invalid characters (basic check)
+    if (!/^[\/\w\-_.]+$/.test(path)) {
+      return "Path contains invalid characters";
+    }
+
+    return null;
+  }, []);
 
   const { refetch } = Hooks.Transfers.useList({});
   const {
@@ -104,10 +138,13 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   }, [smartInputValue, smartDestination.path, path]);
 
   // File system search for suggestions
-  const { data: fileListData, isLoading: isSearching } = Hooks.useList({
-    systemId: smartDestination.systemId || systemId,
-    path: getSearchPath(),
-  });
+  const { data: fileListData, isLoading: isSearching } = Hooks.useList(
+    {
+      systemId: smartDestination.systemId || systemId,
+      path: getSearchPath(),
+    },
+    { enabled: showSuggestions && !smartInputError }
+  );
 
   // Generate suggestions based on file system data
   useEffect(() => {
@@ -118,6 +155,8 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
 
     const searchPath = getSearchPath();
     const files = fileListData.pages[0].result;
+
+    // Only show directories, never files
     let directories = files.filter(
       (file: Files.FileInfo) => file.type === Files.FileTypeEnum.Dir
     );
@@ -140,15 +179,13 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     }
 
     // Build full paths for all directories (for navigation)
-    const dirPaths = directories
-      .map((file: Files.FileInfo) => {
-        // Build the full path from search directory
-        if (searchPath === "/") {
-          return `/${file.name}`;
-        }
-        return `${searchPath}/${file.name}`.replace("//", "/");
-      })
-      .slice(0, 15); // Show more options for better navigation
+    const dirPaths = directories.map((file: Files.FileInfo) => {
+      // Build the full path from search directory
+      if (searchPath === "/") {
+        return `/${file.name}`;
+      }
+      return `${searchPath}/${file.name}`.replace("//", "/");
+    });
 
     setSuggestions(dirPaths);
   }, [fileListData, getSearchPath, smartInputValue]);
@@ -160,14 +197,19 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     return () => clearInterval(interval);
   }, [refetch]);
 
-  // Cleanup timeout on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (navigationTimeout) {
-        clearTimeout(navigationTimeout);
+      if (navRef.current) {
+        clearTimeout(navRef.current);
+        navRef.current = null;
+      }
+      if (unsetNavRef.current) {
+        clearTimeout(unsetNavRef.current);
+        unsetNavRef.current = null;
       }
     };
-  }, [navigationTimeout]);
+  }, []);
 
   // Enhanced JSON validation
   const validateJson = useCallback((jsonString: string) => {
@@ -395,23 +437,35 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
     (value: string) => {
       setSmartInputValue(value);
       setShowSuggestions(true); // Always show suggestions when typing
+      setActiveSuggestionIndex(-1); // Reset active index when typing
 
-      // Clear existing timeout
-      if (navigationTimeout) {
-        clearTimeout(navigationTimeout);
+      // Validate path
+      const validationError = validateSmartPath(value);
+      setSmartInputError(validationError);
+
+      // Clear existing debounce timeout
+      if (navRef.current) {
+        clearTimeout(navRef.current);
+        navRef.current = null;
       }
 
-      // Debounced navigation - only navigate when user stops typing
-      if (value && !isNavigating) {
-        const timeout = setTimeout(() => {
+      // Debounced navigation - only navigate when user stops typing, path is valid, and not already searching
+      if (value && !validationError && !isSearching) {
+        navRef.current = window.setTimeout(() => {
           const parentPath = getParentPath(value);
+          // Use current systemId to prevent drift
+          const currentSystemId = smartDestination.systemId || systemId;
           if (parentPath !== smartDestination.path) {
-            setIsNavigating(true);
-            onNavigate(smartDestination.systemId || systemId, parentPath);
-            setTimeout(() => setIsNavigating(false), 200);
+            onNavigate(currentSystemId, parentPath);
+            // Tie unset to this run to avoid races
+            if (unsetNavRef.current) {
+              clearTimeout(unsetNavRef.current);
+            }
+            unsetNavRef.current = window.setTimeout(() => {
+              unsetNavRef.current = null;
+            }, 200);
           }
         }, 300); // Wait 300ms after user stops typing
-        setNavigationTimeout(timeout);
       }
     },
     [
@@ -419,35 +473,97 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       smartDestination.path,
       systemId,
       onNavigate,
-      isNavigating,
-      navigationTimeout,
+      isSearching,
+      validateSmartPath,
     ]
   );
 
+  // Clear timers on unmount
+  useEffect(() => {
+    return () => {
+      if (navRef.current) {
+        clearTimeout(navRef.current);
+        navRef.current = null;
+      }
+      if (unsetNavRef.current) {
+        clearTimeout(unsetNavRef.current);
+        unsetNavRef.current = null;
+      }
+    };
+  }, []);
+
   const handleSuggestionSelect = useCallback(
     (suggestion: string) => {
-      // Automatically add '/' to show subdirectories
-      const pathWithSlash = suggestion.endsWith("/")
-        ? suggestion
-        : `${suggestion}/`;
+      // Navigate tree to selected suggestion first (without trailing slash)
+      const cleanSuggestion = suggestion.endsWith("/")
+        ? suggestion.slice(0, -1)
+        : suggestion;
+      onNavigate(smartDestination.systemId || systemId, cleanSuggestion);
+
+      // Then set input value with trailing slash for consistency
+      const pathWithSlash = `${cleanSuggestion}/`;
       setSmartInputValue(pathWithSlash);
 
-      // Navigate tree to selected suggestion
-      onNavigate(smartDestination.systemId || systemId, suggestion);
+      setActiveSuggestionIndex(-1);
     },
     [smartDestination.systemId, systemId, onNavigate]
   );
 
   const handleSmartInputKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && suggestions.length > 0) {
-        e.preventDefault();
-        handleSuggestionSelect(suggestions[0]);
-      } else if (e.key === "Escape") {
-        setShowSuggestions(false);
+      if (!showSuggestions || suggestions.length === 0) {
+        if (e.key === "Enter" && !smartInputError) {
+          // Allow Enter to submit if no suggestions and no error
+          return;
+        }
+        if (e.key === "Escape") {
+          setShowSuggestions(false);
+        }
+        return;
+      }
+
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setActiveSuggestionIndex((prev) =>
+            prev < suggestions.length - 1 ? prev + 1 : 0
+          );
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setActiveSuggestionIndex((prev) =>
+            prev > 0 ? prev - 1 : suggestions.length - 1
+          );
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (
+            activeSuggestionIndex >= 0 &&
+            activeSuggestionIndex < suggestions.length
+          ) {
+            handleSuggestionSelect(suggestions[activeSuggestionIndex]);
+          } else if (suggestions.length > 0) {
+            handleSuggestionSelect(suggestions[0]);
+          }
+          break;
+        case "Escape":
+          e.preventDefault();
+          setShowSuggestions(false);
+          setActiveSuggestionIndex(-1);
+          break;
+        default:
+          // Reset active index when typing
+          setActiveSuggestionIndex(-1);
+          break;
       }
     },
-    [suggestions, handleSuggestionSelect]
+    [
+      showSuggestions,
+      suggestions,
+      activeSuggestionIndex,
+      handleSuggestionSelect,
+      smartInputError,
+    ]
   );
 
   const onSelect = useCallback(
@@ -598,6 +714,8 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                   <div
                     className="position-absolute w-100"
                     style={{ zIndex: 1000, top: "100%" }}
+                    role="listbox"
+                    aria-label="Directory suggestions"
                   >
                     <div
                       className="list-group border rounded shadow"
@@ -613,14 +731,21 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                         // Extract just the directory name from the full path
                         const dirName =
                           suggestion.split("/").pop() || suggestion;
+                        const isActive = index === activeSuggestionIndex;
                         return (
                           <button
                             key={index}
                             type="button"
-                            className="list-group-item list-group-item-action text-left d-flex align-items-center"
+                            className={`list-group-item list-group-item-action text-left d-flex align-items-center ${
+                              isActive ? "active" : ""
+                            }`}
                             onClick={() => handleSuggestionSelect(suggestion)}
                             onMouseDown={(e) => e.preventDefault()}
+                            onMouseEnter={() => setActiveSuggestionIndex(index)}
                             style={{ fontSize: "0.9rem", padding: "8px 12px" }}
+                            role="option"
+                            aria-selected={isActive}
+                            aria-label={`Navigate to ${dirName}`}
                           >
                             <span className="me-2">📁</span>
                             <span className="flex-grow-1">{dirName}</span>
@@ -631,6 +756,15 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
                         );
                       })}
                     </div>
+                  </div>
+                )}
+                {smartInputError && (
+                  <div
+                    className="text-danger mt-1"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    <i className="fa fa-exclamation-triangle me-1"></i>
+                    {smartInputError}
                   </div>
                 )}
                 {isSearching && (
@@ -715,7 +849,9 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
               disabled={
                 isCreatingTransfer ||
                 !smartInputValue.trim() ||
-                !smartDestination?.systemId
+                !smartDestination?.systemId ||
+                !!smartInputError ||
+                selectedFiles.length === 0
               }
             >
               {isCreatingTransfer ? "Submitting..." : "Submit Transfer"}
