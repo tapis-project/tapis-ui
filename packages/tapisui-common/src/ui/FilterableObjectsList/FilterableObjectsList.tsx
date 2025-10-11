@@ -80,11 +80,11 @@ export type TimeRangeFilter = {
 };
 
 export type Filter = {
-  id: string; 
+  id: string;
   field: string; // Which field is being filtered
   type: string; // Filter type (same as filterType from config)
   value: any; // Filter value
-  label: string; 
+  label: string;
 };
 
 // Pre-defined common filters for users
@@ -106,13 +106,13 @@ export type FilterPreset = {
 export type FilterConfig = {
   filterableFields: Array<{
     field: string; // filterable fields like 'created', 'lastUpdated'
-    label: string; 
+    label: string;
     filterType: string; // 'timeRange'
     options?: Array<{ value: string; label: string }>; // For select fields
     presets?: Array<FilterPreset>; // Field-specific presets
   }>;
 
-  filterFunctions: { 
+  filterFunctions: {
     [field: string]: (objects: any[], filter: Filter) => any[];
   };
 };

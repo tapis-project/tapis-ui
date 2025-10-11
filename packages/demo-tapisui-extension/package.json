@@ -11,7 +11,7 @@
     "push": "npm run build && npm publish --access public",
     "bundle2": "echo 'no bundle in scoped - skipping'; exit; npx tsc src/bundle.ts --skipLibCheck",
     "bundle": "npx tsc src/bundle.ts --skipLibCheck",
-    "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
+    "copy-files": "cpx \"src/{ui/**/*.scss,styles/**/*,fonts/**/*,**/*.scss,index.css,**/*.css,**/*.module.css}\" dist",
     "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files",
     "watch": "npx tsc --build --watch --preserveWatchOutput"
   },
@@ -45,12 +45,11 @@
     "@tapis/tapisui-common": "workspace:*",
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",
-    "copyfiles": "^2.4.1",
     "formik": "^2.2.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^5.2.0",
-    "reactstrap": "^9.2.3",
+    "reactstrap": "^8.10.1",
     "uuid": "^7.0.2",
     "yup": "^0.32.11"
   },
@@ -64,6 +63,7 @@
   "devDependencies": {
     "@tapis/tapisui-extension-devtools": "file:../tapisui-extension-devtools",
     "@types/node": "^18.19.33",
+    "cpx2": "8.0.0",
     "sass": "^1.77.6",
     "typescript": "^5.9.3"
   }

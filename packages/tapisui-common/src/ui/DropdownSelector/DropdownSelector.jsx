@@ -21,8 +21,6 @@ const DropdownSelector = ({
 
   return (
     <BootstrapInput
-      // FAQ: This is a one-off, so it does not belong in `.eslintrc`
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       onChange={onChange}
       type="select"

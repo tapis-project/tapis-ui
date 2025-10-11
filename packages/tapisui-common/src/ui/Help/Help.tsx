@@ -50,7 +50,7 @@ const Help: React.FC<React.PropsWithChildren<HelpProps>> = ({
         >
           <Stack direction="column" sx={{ height: '100%' }}>
             {showHeader && (
-              <Grid item>
+              <Grid>
                 <Typography
                   variant="h5"
                   component="h5"
@@ -66,7 +66,7 @@ const Help: React.FC<React.PropsWithChildren<HelpProps>> = ({
                 </Typography>
               </Grid>
             )}
-            <Grid item xs>
+            <Grid sx={{ overflow: 'auto', flexGrow: 1 }}>
               {iframeUrl && iframePosition === 'top' && (
                 <iframe
                   width="100%"

@@ -55,7 +55,7 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
     >
       <div className={`${styles['searchBar']}`}>
         <FormControl variant="outlined" margin="normal">
-          <InputLabel size="normal" id="Filter by">
+          <InputLabel size="small" id="Filter by">
             Filter by
           </InputLabel>
           <Select
@@ -78,7 +78,7 @@ const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
         </FormControl>
 
         <FormControl variant="outlined" margin="normal">
-          <InputLabel size="normal" id="Filter type">
+          <InputLabel size="small" id="Filter type">
             Filter type
           </InputLabel>
           <Select
