@@ -11,6 +11,7 @@ import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import CreatePostitModal from './CreatePostitModal';
 import TransferModal from './TransferModal';
+import ShareModal from './ShareModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import {
@@ -57,6 +58,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 
 type Op =
   | 'view'
+  | 'share'
   | 'download'
   | 'upload'
   | 'copy'
@@ -172,6 +174,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <div id="file-operation-toolbar">
         {pathname !== '/files' && (
           <div className={styles['toolbar-wrapper']}>
+            {show('share', buttons) && (
+              <ToolbarButton
+                text="Share"
+                icon="link"
+                disabled={selectedFiles.length !== 1}
+                onClick={() => setModal('share')}
+                aria-label="Share link"
+              />
+            )}
             {show('view', buttons) && (
               <ToolbarButton
                 text="View"
@@ -333,6 +344,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
             )}
             {modal === 'postit' && (
               <CreatePostitModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === 'share' && (
+              <ShareModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}
