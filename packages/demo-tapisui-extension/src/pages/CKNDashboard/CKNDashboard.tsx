@@ -13,7 +13,7 @@ export const CKNDashboard: Component = () => {
     >
       <iframe
         style={{ flexGrow: 1, border: 'none' }}
-        src={`https://ckn.d2i.tacc.cloud/`}
+        src={`https://ckndashboard.pods.icicleai.tapis.io/`}
       />
     </div>
   );
