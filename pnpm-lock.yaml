@@ -41,6 +41,12 @@ importers:
       '@jest/globals':
         specifier: 30.2.0
         version: 30.2.0
+      '@mlhub/models-ts-sdk':
+        specifier: ^0.0.0
+        version: 0.0.0
+      '@mlhub/ts-sdk':
+        specifier: ^0.0.1
+        version: 0.0.1
       '@mui/icons-material':
         specifier: ^7.3.4
         version: 7.3.4(@mui/material@7.3.4(@emotion/react@11.14.0(@types/react@18.3.26)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.26)(react@18.3.1))(@types/react@18.3.26)(react@18.3.1))(@types/react@18.3.26)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.26)(react@18.3.1)
@@ -1850,6 +1856,12 @@ packages:
 
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
+
+  '@mlhub/models-ts-sdk@0.0.0':
+    resolution: {integrity: sha512-jgV9Bna739dQY9VPJQHaMYkRWNBCYQMKDthWHepCcQxaCruBMH8hzcbE5Q0i0XlzrhxcU55jZfxyNcolLjX7cQ==}
+
+  '@mlhub/ts-sdk@0.0.1':
+    resolution: {integrity: sha512-e9koLjjfovMX7adCYkgca7xdLBnO0TCkb9F74/YQOJxm17SMBhZB7yltcvvTrgTP7IZ5xh5hMFUVFh6xYwMaPg==}
 
   '@mui/core-downloads-tracker@7.3.4':
     resolution: {integrity: sha512-BIktMapG3r4iXwIhYNpvk97ZfYWTreBBQTWjQKbNbzI64+ULHfYavQEX2w99aSWHS58DvXESWIgbD9adKcUOBw==}
@@ -7421,6 +7433,13 @@ snapshots:
       '@lezer/lr': 1.4.2
 
   '@marijn/find-cluster-break@1.0.2': {}
+
+  '@mlhub/models-ts-sdk@0.0.0': {}
+
+  '@mlhub/ts-sdk@0.0.1':
+    dependencies:
+      '@mlhub/models-ts-sdk': 0.0.0
+      '@types/mocha': 9.1.1
 
   '@mui/core-downloads-tracker@7.3.4': {}
 
