@@ -37,8 +37,6 @@ const useList = (
     {
       ...options,
       enabled: !!accessToken?.access_token,
-      retry: 2,
-      retryDelay: 1000,
     }
   );
 
