@@ -6,6 +6,7 @@ import {
   RouteComponentProps,
 } from 'react-router-dom';
 import { Models } from '../../Models';
+import ModelsByPlatform from '../ModelsByPlatform';
 import ModelDetails from '../ModelDetails';
 
 const Router: React.FC = () => {
@@ -15,6 +16,17 @@ const Router: React.FC = () => {
       <Route path={`${path}`} exact>
         <Models />
       </Route>
+
+      <Route
+        path={`${path}/platform/:platform`}
+        render={({
+          match: {
+            params: { platform },
+          },
+        }: RouteComponentProps<{ platform: string }>) => {
+          return <ModelsByPlatform />;
+        }}
+      />
 
       <Route
         path={`${path}/:modelId+`}
