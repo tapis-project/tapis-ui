@@ -90,7 +90,11 @@ const PLATFORM_METADATA: Record<
 };
 
 const Dashboard: React.FC = () => {
-  const { data: platforms, isLoading, error } = Hooks.Platforms.useList();
+  const {
+    data: platforms,
+    isLoading,
+    error,
+  } = Hooks.Models.Platforms.useList();
 
   // Transform platforms data for display
   const platformInfos =
