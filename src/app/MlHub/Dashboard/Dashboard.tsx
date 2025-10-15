@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Icon } from '@tapis/tapisui-common';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Icon } from "@tapis/tapisui-common";
 import {
   Card,
   CardHeader,
@@ -10,11 +10,11 @@ import {
   CardText,
   Spinner,
   Alert,
-} from 'reactstrap';
-import { QueryWrapper } from '@tapis/tapisui-common';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
-import PlatformCard from '../_components/PlatformCard';
-import styles from './Dashboard.module.scss';
+} from "reactstrap";
+import { QueryWrapper } from "@tapis/tapisui-common";
+import { MLHub as Hooks } from "@tapis/tapisui-hooks";
+import PlatformCard from "../_components/PlatformCard";
+import styles from "./Dashboard.module.scss";
 
 type DashboardCardProps = {
   icon: string;
@@ -32,7 +32,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   return (
     <Card className={styles.card}>
       <CardHeader>
-        <div className={styles['card-header']}>
+        <div className={styles["card-header"]}>
           <div>
             <Icon name={icon} className="dashboard__card-icon" />
           </div>
@@ -43,7 +43,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
         <CardTitle tag="h5"></CardTitle>
         <CardText>{text}</CardText>
       </CardBody>
-      <CardFooter className={styles['card-footer']}>
+      <CardFooter className={styles["card-footer"]}>
         <Link to={link}>Go to {name}</Link>
         <Icon name="push-right" />
       </CardFooter>
@@ -57,35 +57,35 @@ const PLATFORM_METADATA: Record<
   { name: string; description: string; icon: string }
 > = {
   HuggingFace: {
-    name: 'Hugging Face',
+    name: "Hugging Face",
     description:
-      'Access thousands of pre-trained models from the Hugging Face Hub',
-    icon: 'simulation',
+      "Access thousands of pre-trained models from the Hugging Face Hub",
+    icon: "simulation",
   },
   Github: {
-    name: 'GitHub',
-    description: 'Browse models from GitHub repositories',
-    icon: 'code',
+    name: "GitHub",
+    description: "Browse models from GitHub repositories",
+    icon: "code",
   },
   Git: {
-    name: 'Git',
-    description: 'Access models from Git repositories',
-    icon: 'data-files',
+    name: "Git",
+    description: "Access models from Git repositories",
+    icon: "data-files",
   },
   Patra: {
-    name: 'Patra',
-    description: 'Discover models from the Patra platform',
-    icon: 'data-processing',
+    name: "Patra",
+    description: "Discover models from the Patra platform",
+    icon: "data-processing",
   },
-  'tacc-tapis': {
-    name: 'TACC Tapis',
-    description: 'Access models from TACC Tapis systems',
-    icon: 'globe',
+  "tacc-tapis": {
+    name: "TACC Tapis",
+    description: "Access models from TACC Tapis systems",
+    icon: "globe",
   },
   s3: {
-    name: 'Amazon S3',
-    description: 'Browse models stored in S3 buckets',
-    icon: 'data-files',
+    name: "Amazon S3",
+    description: "Browse models stored in S3 buckets",
+    icon: "data-files",
   },
 };
 
@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
         const metadata = PLATFORM_METADATA[platformData.name] || {
           name: platformData.name,
           description: `Discover and access machine learning models from ${platformData.name}`,
-          icon: 'data-processing',
+          icon: "data-processing",
         };
 
         return {
@@ -117,11 +117,11 @@ const Dashboard: React.FC = () => {
       .sort((a: any, b: any) => a.name.localeCompare(b.name)) || [];
 
   return (
-    <div id="dashboard" className={styles['dashboard']}>
+    <div id="dashboard" className={styles["dashboard"]}>
       {/* MLHub Services Section */}
-      <div className={styles['section']}>
-        <h2 className={styles['section-title']}>MLHub Services</h2>
-        <div id="dashboard-cards" className={styles['card-container']}>
+      <div className={styles["section"]}>
+        <h2 className={styles["section-title"]}>MLHub Services</h2>
+        <div id="dashboard-cards" className={styles["card-container"]}>
           <DashboardCard
             icon="simulation"
             name="Models Hub"
@@ -150,18 +150,18 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Platforms Section */}
-      <div className={styles['section']}>
-        <h2 className={styles['section-title']}>Available Platforms</h2>
-        <p className={styles['section-description']}>
+      <div className={styles["section"]}>
+        <h2 className={styles["section-title"]}>Available Platforms</h2>
+        <p className={styles["section-description"]}>
           Browse and discover machine learning models from various platforms
         </p>
 
         <QueryWrapper
           isLoading={isLoading}
           error={error}
-          className={styles['platforms-container']}
+          className={styles["platforms-container"]}
         >
-          <div className={styles['card-container']}>
+          <div className={styles["card-container"]}>
             {platformInfos.map((platformInfo: any) => (
               <PlatformCard
                 key={platformInfo.platform}

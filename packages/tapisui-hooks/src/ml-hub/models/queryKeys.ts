@@ -8,6 +8,7 @@ const QueryKeys = {
   listByDataset: 'ml-hub/models/listByDataset',
   listByLanguage: 'ml-hub/models/listByLanguage',
   listByLibrary: 'ml-hub/models/listByLibrary',
+  listByPlatform: 'ml-hub/models/listByPlatform',
   listByQuery: 'ml-hub/models/listByQuery',
   listByTask: 'ml-hub/models/listByTask',
   inferenceServerDetails: 'ml-hub/models/inference/inferenceServerDetails',
