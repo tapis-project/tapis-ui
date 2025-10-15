@@ -14,8 +14,18 @@ interface ModelsByPlatformParams {
 
 const ModelsByPlatform: React.FC = () => {
   const { platform } = useParams<ModelsByPlatformParams>();
+  // Map UI keys to API enum values; fallback to lowercase
+  const PLATFORM_KEY_TO_ENUM: Record<string, string> = {
+    HuggingFace: "huggingface",
+    Github: "github",
+    Git: "git",
+    Patra: "patra",
+    TaccTapis: "tacc-tapis",
+    s3: "s3",
+  };
+
   const { data, isLoading, error } = Hooks.Platforms.useListModelsByPlatform({
-    platform,
+    platform: PLATFORM_KEY_TO_ENUM[platform],
   });
   const models: Array<{ [key: string]: any }> = data?.result ?? [];
   const { path } = useRouteMatch();
