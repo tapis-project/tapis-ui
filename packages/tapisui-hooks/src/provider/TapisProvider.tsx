@@ -1,7 +1,7 @@
-import React from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Authenticator } from "@tapis/tapis-typescript";
-import TapisContext, { TapisContextType } from "../context/TapisContext";
+import React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Authenticator } from '@tapis/tapis-typescript';
+import TapisContext, { TapisContextType } from '../context/TapisContext';
 
 interface TapisProviderProps {
   token?: Authenticator.NewAccessTokenResponse;

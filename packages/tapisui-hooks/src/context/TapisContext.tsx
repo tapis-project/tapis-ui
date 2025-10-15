@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export type TapisContextType = {
   basePath: string;
@@ -6,8 +6,8 @@ export type TapisContextType = {
 };
 
 export const authContext: TapisContextType = {
-  basePath: "",
-  mlHubBasePath: "",
+  basePath: '',
+  mlHubBasePath: '',
 };
 
 const TapisContext: React.Context<TapisContextType> =
