@@ -65,7 +65,7 @@ const SystemToolbar: React.FC = () => {
             onClick={() => setModal('createsystem')}
             aria-label="createSystem"
           />
-          {modal === 'createsystem' && <CreateSystemModal toggle={toggle} />}
+          <CreateSystemModal toggle={toggle} open={modal === 'createsystem'} />
         </div>
       )}
     </div>

@@ -11,60 +11,63 @@ import ProxySettings from './ProxySettings';
 import CmdSettings from './CmdSettings';
 import TagsSettings from './TagsSettings';
 import JobSettings from './Job/JobSettings';
+import { Autocomplete, TextField } from '@mui/material';
 
 //Array that is used in the drop-down menus
 const runtimeTypes = Object.values(RuntimeTypeEnum);
 
 type AdvancedSettingsProp = {
   canExec: boolean;
+  values: Systems.ReqPostSystem;
+  onChange: (key: keyof Systems.ReqPostSystem, value: any) => void;
 };
 
-const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({ canExec }) => {
-  //used when trying to read the current value of a parameter
-  const { values } = useFormikContext();
-
+const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
+  canExec,
+  values,
+  onChange,
+}) => {
   //reading if the systemType is S3 at its current state
   const isS3 = useMemo(
-    () =>
-      (values as Partial<Systems.ReqPostSystem>).systemType ===
-      SystemTypeEnum.S3,
-    [values]
+    () => values.systemType === SystemTypeEnum.S3,
+    [values.systemType]
   );
 
-  //reading the runtimeType at its current state
-  const runtimeType = (values as Partial<Systems.ReqPostSystem>).jobRuntimes;
+  const runtimeType: RuntimeTypeEnum | null =
+    values.jobRuntimes && values.jobRuntimes.length > 0
+      ? values.jobRuntimes[0].runtimeType // <- assuming JobRuntime has a field runtimeType: RuntimeTypeEnum
+      : null;
 
   if (canExec) {
     return (
       <div>
-        <FormikSelect
-          name="jobRuntimes"
-          description="The job runtime type for the system"
-          label="Runtime Type"
-          required={false}
+        <Autocomplete
+          options={runtimeTypes}
+          getOptionLabel={(option) => {
+            return option;
+          }}
+          value={runtimeType}
+          onChange={(_, newValue) => {
+            newValue;
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Job RunTimes" variant="standard" />
+          )}
           data-testid="jobRuntimes"
-        >
-          <option disabled value="">
-            Select a job runtime
-          </option>
-          {runtimeTypes.map((values) => {
-            return <option>{values}</option>;
-          })}
-        </FormikSelect>
-        <FormikInput
+        ></Autocomplete>
+        <TextField
           name="version"
-          label={`${runtimeType} Version`}
           required={false}
-          description={`Version of ${runtimeType}`}
+          helperText={`Version of ${runtimeType}`}
           aria-label="Input"
           disabled={true}
         />
         {isS3 ? (
-          <FormikInput
+          <TextField
             name="bucketName"
             label="Bucket Name"
             required={false}
-            description={`Bucket name`}
+            helperText={`Bucket name`}
             aria-label="Input"
           />
         ) : null}

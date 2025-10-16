@@ -3,172 +3,130 @@ import styles from '../../CreateSystemModal.module.scss';
 import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
-import { LogicalQueue } from '@tapis/tapis-typescript-systems';
+import { TextField } from '@mui/material';
+import { useState } from 'react';
 
-type BatchLQFieldProps = {
+type LogicalQueue = {
+  name: string;
+  hpcQueueName: string;
+  maxJobs?: number;
+  maxJobsPerUser?: number;
+  minNodeCount?: number;
+  maxNodeCount?: number;
+  minCoresPerNode?: number;
+  maxCoresPerNode?: number;
+  minMemoryMB?: number;
+  maxMemoryMB?: number;
+  minMinutes?: number;
+  maxMinutes?: number;
+};
+
+const BatchLogicalQueuesField: React.FC<{
   item: LogicalQueue;
   index: number;
-  remove: (index: number) => Systems.ReqPostSystem | undefined;
-};
-
-const BatchLogicalQueuesField: React.FC<BatchLQFieldProps> = ({
-  item,
-  index,
-  remove,
-}) => {
-  return (
-    <>
-      <Collapse
-        open={!item}
-        title={`Batch Logical Queue`}
-        className={styles['item']}
-      >
-        <FormikInput
-          name={`batchLogicalQueues.${index}.name`}
-          label="Name"
-          required={true}
-          description={`Name`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.hpcQueueName`}
-          label="HPC Queue Name"
-          required={true}
-          description={`HPC queue name`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.maxJobs`}
-          label="Max Jobs"
-          type="number"
-          required={false}
-          description={`Maximum number of jobs`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.maxJobsPerUser`}
-          label="Max Jobs Per User"
-          type="number"
-          required={false}
-          description={`Maximum number of jobs per user`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.minNodeCount`}
-          label="Min Node Count"
-          type="number"
-          required={false}
-          description={`Minimum number of nodes`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.maxNodeCount`}
-          label="Max Node Count"
-          type="number"
-          required={false}
-          description={`Maximum number of nodes`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.minCoresPerNode`}
-          label="Min Cores Per Node"
-          type="number"
-          required={false}
-          description={`Minimum number of cores per node`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.maxCoresPerNode`}
-          label="Max Cores Per Node"
-          type="number"
-          required={false}
-          description={`Maximum number of cores per node`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.minMemoryMB`}
-          label="Min Memory MB"
-          type="number"
-          required={false}
-          description={`Minimum memory in MB`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.maxMemoryMB`}
-          label="Max Memory MB"
-          type="number"
-          required={false}
-          description={`Maximum memory in MB`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.minMinutes`}
-          label="Min Minutes"
-          type="number"
-          required={false}
-          description={`Minimum number of minutes`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`batchLogicalQueues.${index}.maxMinutes`}
-          label="Max Minutes"
-          type="number"
-          required={false}
-          description={`Maximum number of minutes`}
-          aria-label="Input"
-        />
-        <Button onClick={() => remove(index)} size="sm">
-          Remove
-        </Button>
-      </Collapse>
-    </>
-  );
-};
-
-const BatchLogicalQueuesInputs: React.FC<{
-  arrayHelpers: FieldArrayRenderProps;
-}> = ({ arrayHelpers }) => {
-  const { values } = useFormikContext();
-
-  const batchLogicalQueues =
-    (values as Partial<Systems.ReqPostSystem>)?.batchLogicalQueues ?? [];
+  remove: (index: number) => void;
+  update: (index: number, value: LogicalQueue) => void;
+}> = ({ item, index, remove, update }) => {
+  const handleChange = (key: keyof LogicalQueue, value: any) => {
+    update(index, { ...item, [key]: value });
+  };
 
   return (
     <Collapse
-      open={batchLogicalQueues.length > 0}
-      title="Batch Logical Queues"
-      note={`${batchLogicalQueues.length} items`}
-      className={styles['array']}
+      open={!item.name}
+      title={`Batch Logical Queue ${index + 1}`}
+      className={styles['item']}
     >
-      {batchLogicalQueues.map((batchLogicalQueuesInput, index) => (
-        <BatchLogicalQueuesField
-          key={`batchLogicalQueues.${index}`}
-          item={batchLogicalQueuesInput}
-          index={index}
-          remove={arrayHelpers.remove}
+      <TextField
+        fullWidth
+        size="small"
+        label="Name"
+        required
+        value={item.name || ''}
+        onChange={(e) => handleChange('name', e.target.value)}
+        helperText="Name"
+      />
+      <TextField
+        fullWidth
+        size="small"
+        label="HPC Queue Name"
+        required
+        value={item.hpcQueueName || ''}
+        onChange={(e) => handleChange('hpcQueueName', e.target.value)}
+        helperText="HPC Queue Name"
+      />
+
+      {[
+        ['maxJobs', 'Max Jobs'],
+        ['maxJobsPerUser', 'Max Jobs Per User'],
+        ['minNodeCount', 'Min Node Count'],
+        ['maxNodeCount', 'Max Node Count'],
+        ['minCoresPerNode', 'Min Cores Per Node'],
+        ['maxCoresPerNode', 'Max Cores Per Node'],
+        ['minMemoryMB', 'Min Memory MB'],
+        ['maxMemoryMB', 'Max Memory MB'],
+        ['minMinutes', 'Min Minutes'],
+        ['maxMinutes', 'Max Minutes'],
+      ].map(([key, label]) => (
+        <TextField
+          key={key}
+          fullWidth
+          size="small"
+          type="number"
+          label={label}
+          value={item[key as keyof LogicalQueue] ?? ''}
+          onChange={(e) =>
+            handleChange(key as keyof LogicalQueue, Number(e.target.value))
+          }
+          helperText={label}
         />
       ))}
-      <Button onClick={() => arrayHelpers.push({})} size="sm">
-        + Add Logical Queue
+
+      <Button onClick={() => remove(index)} size="small" variant="outlined">
+        Remove
       </Button>
     </Collapse>
   );
 };
 
-export const BatchLogicalQueuesSettings: React.FC = () => {
+const BatchLogicalQueuesSettings: React.FC = () => {
+  const [queues, setQueues] = useState<LogicalQueue[]>([]);
+
+  const addQueue = () =>
+    setQueues([
+      ...queues,
+      {
+        name: '',
+        hpcQueueName: '',
+      },
+    ]);
+
+  const removeQueue = (index: number) =>
+    setQueues(queues.filter((_, i) => i !== index));
+
+  const updateQueue = (index: number, value: LogicalQueue) =>
+    setQueues(queues.map((q, i) => (i === index ? value : q)));
+
   return (
-    <div>
-      <FieldArray
-        name="batchLogicalQueues"
-        render={(arrayHelpers) => {
-          return (
-            <>
-              <BatchLogicalQueuesInputs arrayHelpers={arrayHelpers} />
-            </>
-          );
-        }}
-      />
-    </div>
+    <Collapse
+      open={queues.length > 0}
+      title="Batch Logical Queues"
+      note={`${queues.length} item${queues.length !== 1 ? 's' : ''}`}
+      className={styles['array']}
+    >
+      {queues.map((queue, index) => (
+        <BatchLogicalQueuesField
+          key={index}
+          item={queue}
+          index={index}
+          remove={removeQueue}
+          update={updateQueue}
+        />
+      ))}
+      <Button onClick={addQueue} size="small" variant="contained">
+        + Add Logical Queue
+      </Button>
+    </Collapse>
   );
 };
 
