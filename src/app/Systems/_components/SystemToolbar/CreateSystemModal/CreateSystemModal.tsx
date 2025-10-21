@@ -476,7 +476,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
                     data-testid="defaultAuthnMethod"
                   >
                     <option disabled value="">
-                      Select a default athenication method
+                      Select a default authenication method
                     </option>
                     {authnMethods.map((values) => {
                       return <option>{values}</option>;
