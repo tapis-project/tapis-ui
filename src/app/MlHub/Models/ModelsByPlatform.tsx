@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useRouteMatch, useParams } from "react-router-dom";
 import { Models as ModelsModule } from "@tapis/tapis-typescript";
 import { MLHub as Hooks } from "@tapis/tapisui-hooks";
@@ -28,10 +28,18 @@ const ModelsByPlatform: React.FC = () => {
     Hooks.Models.Platforms.useListModelsByPlatform({
       platform: PLATFORM_KEY_TO_ENUM[platform],
     });
-  const models: Array<{ [key: string]: any }> = data?.result ?? [];
+  const models: Array<{ [key: string]: any }> = useMemo(
+    () => data?.result ?? [],
+    [data?.result]
+  );
   const { path } = useRouteMatch();
   const [filteredModels, setFilteredModels] =
     useState<Array<{ [key: string]: any }>>(models);
+
+  // Sync filteredModels with models when data loads
+  useEffect(() => {
+    setFilteredModels(models);
+  }, [models]);
 
   return (
     <QueryWrapper
@@ -64,13 +72,29 @@ const ModelsByPlatform: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredModels.length > 0 ? (
+          {isLoading ? (
+            <tr>
+              <td colSpan={5} className="text-center">
+                <div className="d-flex justify-content-center align-items-center">
+                  <div
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  Loading models...
+                </div>
+              </td>
+            </tr>
+          ) : filteredModels.length > 0 ? (
             filteredModels.map((model, index) => (
               <tr key={model.id || model._id}>
                 <td className={`${styles["model-name-column"]}`}>
                   <Icon name="simulation" />
                   <span>
-                    <Link to={`${path}/${model.id}`}>
+                    <Link
+                      to={`/ml-hub/models/platform/${platform}/${model.id}`}
+                    >
                       {model.id || "Unknown"}
                     </Link>
                   </span>
