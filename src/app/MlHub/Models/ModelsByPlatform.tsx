@@ -252,7 +252,7 @@ const ModelsByPlatform: React.FC = () => {
             ) : (
               // HuggingFace-specific columns
               <>
-                <th style={{ width: '20%' }}>Model ID</th>
+                <th style={{ width: '15%' }}>Model Name</th>
                 <th style={{ width: '10%' }}>Pipeline Tag</th>
                 <th style={{ width: '10%' }}>Library</th>
                 <th
@@ -289,7 +289,7 @@ const ModelsByPlatform: React.FC = () => {
                 >
                   Likes{renderSortIcon('likes')}
                 </th>
-                <th style={{ width: '25%' }}>Tags</th>
+                <th style={{ width: '20%' }}>Tags</th>
                 <th
                   style={{
                     width: '15%',
@@ -307,6 +307,7 @@ const ModelsByPlatform: React.FC = () => {
                 >
                   Created{renderSortIcon('createdAt')}
                 </th>
+                <th style={{ width: '10%' }}>Model ID</th>
               </>
             )}
           </tr>
@@ -407,6 +408,9 @@ const ModelsByPlatform: React.FC = () => {
                       {model.createdAt
                         ? new Date(model.createdAt).toLocaleDateString()
                         : 'N/A'}
+                    </td>
+                    <td>
+                      <code>{model._id || 'N/A'}</code>
                     </td>
                   </>
                 )}
