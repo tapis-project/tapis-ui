@@ -1,1 +1,1 @@
-export { default as Search } from './SearchBar';
+export { default as MixedPlatformSearchBar } from './MixedPlatformSearchBar';
