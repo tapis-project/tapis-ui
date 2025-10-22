@@ -4,7 +4,7 @@ export const resolveMLHubBasePath = () => {
     return '/v3';
   }
 
-  const basePath = "https://dev.develop.tapis.io";
+  const basePath = 'https://dev.develop.tapis.io';
   if (!basePath) {
     throw new Error('VITE_MLHUB_BASE_URL environment variable is not set');
   }
