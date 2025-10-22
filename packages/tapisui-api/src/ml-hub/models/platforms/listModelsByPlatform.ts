@@ -1,5 +1,5 @@
-import { Models } from '@mlhub/ts-sdk';
-import { apiGenerator, errorDecoder } from '../../utils';
+import { Models } from "@mlhub/ts-sdk";
+import { apiGenerator, errorDecoder } from "../../../utils";
 
 const listModelsByPlatform = (
   platform: string,

@@ -24,9 +24,10 @@ const ModelsByPlatform: React.FC = () => {
     s3: "s3",
   };
 
-  const { data, isLoading, error } = Hooks.Platforms.useListModelsByPlatform({
-    platform: PLATFORM_KEY_TO_ENUM[platform],
-  });
+  const { data, isLoading, error } =
+    Hooks.Models.Platforms.useListModelsByPlatform({
+      platform: PLATFORM_KEY_TO_ENUM[platform],
+    });
   const models: Array<{ [key: string]: any }> = data?.result ?? [];
   const { path } = useRouteMatch();
   const [filteredModels, setFilteredModels] =
@@ -58,30 +59,35 @@ const ModelsByPlatform: React.FC = () => {
             <th>Model ID</th>
             <th>Task</th>
             <th>Downloads</th>
-            <th>Last Modified</th>
+            <th>Likes</th>
+            <th>Created</th>
           </tr>
         </thead>
         <tbody>
           {filteredModels.length > 0 ? (
             filteredModels.map((model, index) => (
-              <tr key={model.model_id || model.id || index}>
+              <tr key={model.id || model._id}>
                 <td className={`${styles["model-name-column"]}`}>
                   <Icon name="simulation" />
                   <span>
-                    <Link to={`${path}/${model.model_id || model.id}`}>
-                      {" "}
-                      {model.model_id || model.id || "Unknown"}{" "}
+                    <Link to={`${path}/${model.id}`}>
+                      {model.id || "Unknown"}
                     </Link>
                   </span>
                 </td>
-                <td>{model.pipeline_tag || model.task || <i>None</i>}</td>
-                <td>{model.downloads || model.download_count || "N/A"}</td>
-                <td>{model.last_modified || model.updated_at || "N/A"}</td>
+                <td>{model.pipeline_tag || <i>None</i>}</td>
+                <td>{model.downloads || "N/A"}</td>
+                <td>{model.likes || "N/A"}</td>
+                <td>
+                  {model.createdAt
+                    ? new Date(model.createdAt).toLocaleDateString()
+                    : "N/A"}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="text-center">
+              <td colSpan={5} className="text-center">
                 No models found for {platform}
               </td>
             </tr>

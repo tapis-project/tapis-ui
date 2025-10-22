@@ -1,7 +1,7 @@
 import { useQuery, QueryObserverOptions } from "react-query";
 import { MLHub as API } from "@tapis/tapisui-api";
 import { Models } from "@mlhub/ts-sdk";
-import { useTapisConfig } from "../../";
+import { useTapisConfig } from "../../../";
 import QueryKeys from "./queryKeys";
 
 export interface ListModelsByPlatformParams {
@@ -21,9 +21,9 @@ const useListModelsByPlatform = (
         throw new Error("No access token available");
       }
 
-      const response = await API.Platforms.listModelsByPlatform(
+      const response = await API.Models.Platforms.listModelsByPlatform(
         params.platform,
-        mlHubBasePath,
+        mlHubBasePath + "/mlhub",
         accessToken.access_token
       );
 
