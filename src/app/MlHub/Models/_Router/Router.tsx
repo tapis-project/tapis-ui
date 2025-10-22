@@ -8,7 +8,6 @@ import {
 import { Models } from "../../Models";
 import ModelsByPlatform from "../ModelsByPlatform";
 import ModelDetails from "../ModelDetails";
-import ModelDetailsByPlatform from "../ModelDetailsByPlatform";
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -17,17 +16,6 @@ const Router: React.FC = () => {
       <Route path={`${path}`} exact>
         <Models />
       </Route>
-
-      <Route
-        path={`${path}/platform/:platform/:modelId+`}
-        render={({
-          match: {
-            params: { platform, modelId },
-          },
-        }: RouteComponentProps<{ platform: string; modelId: string }>) => {
-          return <ModelDetailsByPlatform />;
-        }}
-      />
 
       <Route
         path={`${path}/platform/:platform`}
