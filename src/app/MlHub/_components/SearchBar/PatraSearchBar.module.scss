@@ -1,0 +1,17 @@
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: var(--global-color-white, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
