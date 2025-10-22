@@ -247,6 +247,7 @@ const ModelsByPlatform: React.FC = () => {
                 <th style={{ width: '25%' }}>Name</th>
                 <th style={{ width: '20%' }}>Version</th>
                 <th style={{ width: '35%' }}>Description</th>
+                <th style={{ width: '20%' }}>Model ID</th>
               </>
             ) : (
               // HuggingFace-specific columns
@@ -339,6 +340,9 @@ const ModelsByPlatform: React.FC = () => {
                     </td>
                     <td>{model.version || 'N/A'}</td>
                     <td>{model.short_description || <i>None</i>}</td>
+                    <td>
+                      <code>{model.mc_id || model.id || 'N/A'}</code>
+                    </td>
                   </>
                 ) : (
                   // HuggingFace-specific row data
