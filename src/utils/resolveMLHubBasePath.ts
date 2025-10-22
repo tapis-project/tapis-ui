@@ -1,13 +1,13 @@
 export const resolveMLHubBasePath = () => {
+  if (import.meta.env.DEV) {
+    // local dev: use proxy to avoid CORS
+    return "/v3";
+  }
+
   const basePath = import.meta.env.VITE_MLHUB_BASE_URL;
   if (!basePath) {
-    throw new Error('VITE_MLHUB_BASE_URL environment variable is not set');
+    throw new Error("VITE_MLHUB_BASE_URL environment variable is not set");
   }
 
-  // Use /api/ml-hub proxy for localhost to avoid CORS
-  if (basePath.includes('127.0.0.1') || basePath.includes('localhost')) {
-    return '/api/ml-hub';
-  }
-
-  return basePath;
+  return basePath.endsWith("/v3") ? basePath : basePath + "/v3";
 };

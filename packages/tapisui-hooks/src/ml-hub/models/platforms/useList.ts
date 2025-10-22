@@ -1,7 +1,7 @@
-import { useQuery, QueryObserverOptions } from 'react-query';
-import { MLHub as API } from '@tapis/tapisui-api';
-import { useTapisConfig } from '../../../';
-import QueryKeys from './queryKeys';
+import { useQuery, QueryObserverOptions } from "react-query";
+import { MLHub as API } from "@tapis/tapisui-api";
+import { useTapisConfig } from "../../../";
+import QueryKeys from "./queryKeys";
 
 export interface PlatformCapabilities {
   name: string;
@@ -17,11 +17,11 @@ const useList = (
     [QueryKeys.list, accessToken],
     async () => {
       if (!accessToken?.access_token) {
-        throw new Error('No access token available');
+        throw new Error("No access token available");
       }
 
       const response = await API.Models.Platforms.list(
-        mlHubBasePath,
+        mlHubBasePath + "/mlhub",
         accessToken.access_token
       );
 
@@ -32,7 +32,7 @@ const useList = (
         }));
       }
 
-      throw new Error('No platforms found in response');
+      throw new Error("No platforms found in response");
     },
     {
       ...options,
