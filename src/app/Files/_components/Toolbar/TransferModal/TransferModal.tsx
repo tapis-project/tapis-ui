@@ -71,6 +71,10 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
   const [smartInputError, setSmartInputError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Alert visibility state
+  const [showInfoAlert, setShowInfoAlert] = useState(true);
+  const [showWarningAlert, setShowWarningAlert] = useState(true);
+
   // Smart input path validation
   const validateSmartPath = useCallback((path: string): string | null => {
     if (!path || path === '/') return null; // Allow root path
@@ -227,15 +231,22 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
           return `Element ${i + 1} must have a valid destinationURI string`;
         }
 
-        // Trim inputs and validate URI format with capture groups
+        // Trim inputs and validate URI format
         const tapisRe = /^tapis:\/\/([^\s/]+)\/([^\s]+)$/; // group1=systemId, group2=path
+        const httpRe = /^https?:\/\/[^\s]+$/; // HTTP/HTTPS URL validation
         const src = element.sourceURI.trim();
         const dst = element.destinationURI.trim();
 
-        const sm = src.match(tapisRe);
-        if (!sm) {
-          return `Element ${i + 1} sourceURI must be tapis://systemId/path`;
+        // Validate sourceURI - can be either Tapis URI or HTTP/HTTPS URL
+        const srcTapisMatch = src.match(tapisRe);
+        const srcHttpMatch = src.match(httpRe);
+        if (!srcTapisMatch && !srcHttpMatch) {
+          return `Element ${
+            i + 1
+          } sourceURI must be either tapis://systemId/path or http(s)://url`;
         }
+
+        // Validate destinationURI - must be Tapis URI
         const dm = dst.match(tapisRe);
         if (!dm) {
           return `Element ${
@@ -243,15 +254,19 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
           } destinationURI must be tapis://systemId/path`;
         }
 
-        const srcPath = sm[2];
+        const srcPath = srcTapisMatch ? srcTapisMatch[2] : '';
         const dstPath = dm[2];
 
         // Check for placeholders and empty paths
         if (/DESTINATION_(SYSTEM|PATH)/.test(dst)) {
           return `Element ${i + 1} destinationURI still has placeholders`;
         }
-        if (srcPath === '' || dstPath === '') {
-          return `Element ${i + 1} path must be non-empty`;
+        // For Tapis URIs, check that path is non-empty. For HTTP/HTTPS URLs, path validation is not applicable
+        if (srcTapisMatch && srcPath === '') {
+          return `Element ${i + 1} Tapis sourceURI path must be non-empty`;
+        }
+        if (dstPath === '') {
+          return `Element ${i + 1} destinationURI path must be non-empty`;
         }
 
         // Check for identical source and destination
@@ -261,11 +276,16 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
           } source and destination URIs cannot be identical`;
         }
 
-        // Check for empty path segments (double slashes)
-        if (srcPath.includes('//') || dstPath.includes('//')) {
+        // Check for empty path segments (double slashes) - only for Tapis URIs
+        if (srcTapisMatch && srcPath.includes('//')) {
           return `Element ${
             i + 1
-          } contains empty path segments (double slashes)`;
+          } Tapis sourceURI contains empty path segments (double slashes)`;
+        }
+        if (dstPath.includes('//')) {
+          return `Element ${
+            i + 1
+          } destinationURI contains empty path segments (double slashes)`;
         }
       }
 
@@ -377,9 +397,9 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
               'tapis://DESTINATION_SYSTEM/DESTINATION_PATH/destination-file1.txt',
           },
           {
-            sourceURI: `tapis://${systemId}/path/to/source/file2.txt`,
+            sourceURI: 'https://example.com/data/results.csv',
             destinationURI:
-              'tapis://DESTINATION_SYSTEM/DESTINATION_PATH/destination-file2.txt',
+              'tapis://DESTINATION_SYSTEM/DESTINATION_PATH/results.csv',
           },
         ];
         setJsonInput(JSON.stringify(defaultElements, null, 2));
@@ -851,14 +871,33 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
             <div className="d-flex justify-content-between align-items-center mb-2">
               <Label for="jsonInput">Transfer Request JSON</Label>
             </div>
-            <Alert color="info" className="mb-2">
-              <small>
-                <strong>Note:</strong>{' '}
-                {selectedFiles.length > 0
-                  ? 'Source URIs are auto-populated from selected files. You only need to specify the destination URIs for each file.'
-                  : 'Default example JSON is provided below. Edit the source and destination URIs as needed.'}
-              </small>
-            </Alert>
+            {showInfoAlert && (
+              <Alert
+                color="info"
+                className="mb-2"
+                toggle={() => setShowInfoAlert(false)}
+              >
+                <small>
+                  <strong>Note:</strong>{' '}
+                  {selectedFiles.length > 0
+                    ? 'Source URIs are auto-populated from selected files. You only need to specify the destination URIs for each file.'
+                    : 'Default example JSON is provided below. Edit the source and destination URIs as needed. Source URIs can be Tapis URIs (tapis://systemId/path) or HTTP/HTTPS URLs (https://example.com/file.csv).'}
+                </small>
+              </Alert>
+            )}
+            {showWarningAlert && (
+              <Alert
+                color="warning"
+                className="mb-2"
+                toggle={() => setShowWarningAlert(false)}
+              >
+                <small>
+                  <strong>HTTP/HTTPS Limitations:</strong> When using HTTP/HTTPS
+                  URLs as sourceURI, only single files can be transferred (no
+                  directories).
+                </small>
+              </Alert>
+            )}
 
             {/* Destination input */}
             <FormGroup>
