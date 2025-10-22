@@ -118,6 +118,17 @@
   gap: 0.5rem;
 }
 
+.clickable-model-name {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: #0056b3;
+  }
+}
+
 .model-info {
   display: flex;
   align-items: center;

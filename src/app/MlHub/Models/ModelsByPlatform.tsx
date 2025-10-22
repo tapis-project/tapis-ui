@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Models as ModelsModule } from '@tapis/tapis-typescript';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { Icon } from '@tapis/tapisui-common';
@@ -335,7 +335,12 @@ const ModelsByPlatform: React.FC = () => {
                   // Patra-specific row data
                   <>
                     <td className={`${styles['model-name-column']}`}>
-                      <span>{model.name || 'Unknown'}</span>
+                      <Link
+                        to={`/ml-hub/models/platform/${platform}/${model.mc_id}`}
+                        className={`${styles['clickable-model-name']}`}
+                      >
+                        {model.name || 'Unknown'}
+                      </Link>
                     </td>
                     <td>{model.version || 'N/A'}</td>
                     <td>{model.short_description || <i>None</i>}</td>
@@ -344,7 +349,14 @@ const ModelsByPlatform: React.FC = () => {
                   // HuggingFace-specific row data
                   <>
                     <td className={`${styles['model-name-column']}`}>
-                      <span>{model.id || model.modelId || 'Unknown'}</span>
+                      <Link
+                        to={`/ml-hub/models/platform/${platform}/${
+                          model._id || model.modelId
+                        }`}
+                        className={`${styles['clickable-model-name']}`}
+                      >
+                        {model.id || model.modelId || 'Unknown'}
+                      </Link>
                     </td>
                     <td>{model.pipeline_tag || <i>None</i>}</td>
                     <td>{model.library_name || <i>None</i>}</td>

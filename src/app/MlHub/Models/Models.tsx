@@ -109,9 +109,9 @@ const Models: React.FC = () => {
 
           if (platformName === 'Patra') {
             normalizedModel = {
-              id: model.mc_id || model.id || model.model_id || model._id,
+              id: model.mc_id,
               platform: platformName,
-              displayName: model.name || model.mc_id || model.id,
+              displayName: model.name || model.mc_id,
               category: model.short_description,
               version: model.version,
               downloads: model.downloads || 'N/A',
@@ -123,7 +123,7 @@ const Models: React.FC = () => {
           } else {
             // HuggingFace
             normalizedModel = {
-              id: model.id || model.model_id || model._id,
+              id: model._id,
               platform: platformName,
               displayName: model.id,
               category: model.pipeline_tag,
@@ -313,9 +313,12 @@ const Models: React.FC = () => {
                 <tr key={`${model.platform}-${model.id}`}>
                   <td className={styles['model-name-column']}>
                     <div className={styles['model-info']}>
-                      {/* <Link to={`${path}/${model.id}`}> */}
-                      {model.displayName}
-                      {/* </Link> */}
+                      <Link
+                        to={`/ml-hub/models/platform/${model.platform}/${model.id}`}
+                        className={styles['clickable-model-name']}
+                      >
+                        {model.displayName}
+                      </Link>
                       {model.platform === 'Patra' && model.version && (
                         <span className={styles['version-badge']}>
                           {model.version}
