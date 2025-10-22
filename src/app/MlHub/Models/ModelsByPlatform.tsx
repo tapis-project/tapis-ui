@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useRouteMatch, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Models as ModelsModule } from "@tapis/tapis-typescript";
 import { MLHub as Hooks } from "@tapis/tapisui-hooks";
 import { Icon } from "@tapis/tapisui-common";
 import { QueryWrapper } from "@tapis/tapisui-common";
-import { Table, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { Table } from "reactstrap";
 import styles from "./Models.module.scss";
 import SearchBar from "../_components/SearchBar/SearchBar";
 
@@ -32,7 +32,6 @@ const ModelsByPlatform: React.FC = () => {
     () => data?.result ?? [],
     [data?.result]
   );
-  const { path } = useRouteMatch();
   const [filteredModels, setFilteredModels] =
     useState<Array<{ [key: string]: any }>>(models);
 
@@ -47,19 +46,6 @@ const ModelsByPlatform: React.FC = () => {
       error={error}
       className={styles["models-table"]}
     >
-      <div className="mb-3">
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <Link to="/ml-hub">ML Hub</Link>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <Link to="/ml-hub/models">Models</Link>
-          </BreadcrumbItem>
-          <BreadcrumbItem active>{platform}</BreadcrumbItem>
-        </Breadcrumb>
-        <h2>Models on {platform}</h2>
-      </div>
-
       <SearchBar models={models} onFilter={setFilteredModels} />
       <Table responsive striped>
         <thead>
@@ -91,13 +77,7 @@ const ModelsByPlatform: React.FC = () => {
               <tr key={model.id || model._id}>
                 <td className={`${styles["model-name-column"]}`}>
                   <Icon name="simulation" />
-                  <span>
-                    <Link
-                      to={`/ml-hub/models/platform/${platform}/${model.id}`}
-                    >
-                      {model.id || "Unknown"}
-                    </Link>
-                  </span>
+                  <span>{model.id || "Unknown"}</span>
                 </td>
                 <td>{model.pipeline_tag || <i>None</i>}</td>
                 <td>{model.downloads || "N/A"}</td>

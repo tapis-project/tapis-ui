@@ -1,119 +1,107 @@
-import React, { useState } from 'react';
-import { Button, Form } from 'reactstrap';
+import React, { useState, useEffect, useMemo } from "react";
+import { Button } from "reactstrap";
 import {
   InputLabel,
   TextField,
   Select,
   MenuItem,
   FormControl,
-} from '@mui/material';
-import { Models } from '@tapis/tapis-typescript';
-import styles from './SearchBar.module.scss';
+} from "@mui/material";
+import styles from "./SearchBar.module.scss";
 
 type SearchProps = {
-  models: Array<Models.ModelShortInfo>;
-  onFilter: (filteredModels: Array<Models.ModelShortInfo>) => void;
+  models: Array<{ [key: string]: any }>;
+  onFilter: (filteredModels: Array<{ [key: string]: any }>) => void;
 };
 
 const SearchBar: React.FC<SearchProps> = ({ models, onFilter }) => {
-  const [currentFilterBy, setCurrentFilterBy] = useState<string>('');
-  const [currentFilter, setCurrentFilter] =
-    useState<keyof Models.ModelShortInfo>('author');
-  const [currentFilterType, setFilterType] = useState<string>('includes');
+  const [idSearch, setIdSearch] = useState<string>("");
+  const [selectedTask, setSelectedTask] = useState<string>("");
 
-  const handleFilterByChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentFilterBy(event.target.value);
-  };
-
-  const matchBothDropdownsToSearch = () => {
-    const searchValue = currentFilterBy.toLowerCase();
-    const filtered = models.filter((model) => {
-      const valueToMatch = model[currentFilter]?.toString().toLowerCase();
-      if (!valueToMatch) return false;
-
-      switch (currentFilterType) {
-        case 'includes':
-          return valueToMatch.includes(searchValue);
-        case 'startsWith':
-          return valueToMatch.startsWith(searchValue);
-        case 'endsWith':
-          return valueToMatch.endsWith(searchValue);
-        default:
-          return false;
+  // Extract unique tasks from models
+  const availableTasks = useMemo(() => {
+    const tasks = new Set<string>();
+    models.forEach((model) => {
+      if (model.pipeline_tag) {
+        tasks.add(model.pipeline_tag);
       }
+    });
+    return Array.from(tasks).sort();
+  }, [models]);
+
+  // Apply filters whenever inputs change
+  useEffect(() => {
+    const filtered = models.filter((model) => {
+      // Filter by ID (contains search)
+      if (idSearch) {
+        const modelId = model.id?.toString().toLowerCase() || "";
+        if (!modelId.includes(idSearch.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // Filter by Task
+      if (selectedTask) {
+        if (model.pipeline_tag !== selectedTask) {
+          return false;
+        }
+      }
+
+      return true;
     });
 
     onFilter(filtered);
+  }, [idSearch, selectedTask, models, onFilter]);
+
+  const handleClear = () => {
+    setIdSearch("");
+    setSelectedTask("");
   };
 
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        matchBothDropdownsToSearch();
-      }}
-    >
-      <div className={`${styles['searchBar']}`}>
-        <FormControl variant="outlined" margin="normal">
-          <InputLabel size="small" id="Filter by">
-            Filter by
-          </InputLabel>
-          <Select
-            label="Filter by"
-            labelId="Filter by"
-            size="small"
-            name="FilterBy"
-            value={currentFilter}
-            onChange={(e) =>
-              setCurrentFilter(
-                e.target.value.toLowerCase() as keyof Models.ModelShortInfo
-              )
-            }
-          >
-            <MenuItem value="author">Author</MenuItem>
-            <MenuItem value="model_id">ID</MenuItem>
-            <MenuItem value="library_name">Library</MenuItem>
-            <MenuItem value="pipeline_tag">Task</MenuItem>
-          </Select>
-        </FormControl>
+    <div className={`${styles["searchBar"]} mb-3`}>
+      <TextField
+        label="ID"
+        name="idSearch"
+        placeholder="Search by ID (contains)"
+        value={idSearch}
+        onChange={(e) => setIdSearch(e.target.value)}
+        size="small"
+        margin="normal"
+        sx={{ minWidth: 250 }}
+      />
 
-        <FormControl variant="outlined" margin="normal">
-          <InputLabel size="small" id="Filter type">
-            Filter type
-          </InputLabel>
-          <Select
-            label="Filter type"
-            labelId="Filter type"
-            size="small"
-            name="FilterType"
-            value={currentFilterType}
-            onChange={(event) => {
-              setFilterType(event.target.value as string);
-            }}
-          >
-            <MenuItem value="includes">Contains</MenuItem>
-            <MenuItem value="startsWith">Starts With</MenuItem>
-            <MenuItem value="endsWith">Ends With</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          label="Search"
-          name="search"
-          placeholder={`Search by ${
-            currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)
-          }`}
-          value={currentFilterBy}
-          onChange={handleFilterByChange}
+      <FormControl variant="outlined" margin="normal" sx={{ minWidth: 250 }}>
+        <InputLabel size="small" id="task-label">
+          Task
+        </InputLabel>
+        <Select
+          label="Task"
+          labelId="task-label"
           size="small"
-          margin="normal"
-        />
-        <FormControl variant="outlined" margin="normal">
-          <Button variant="outline-success" type="submit" size="small">
-            Search
-          </Button>
-        </FormControl>
+          name="task"
+          value={selectedTask}
+          onChange={(e) => setSelectedTask(e.target.value as string)}
+        >
+          {availableTasks.map((task) => (
+            <MenuItem key={task} value={task}>
+              {task}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <div className={styles["button-container"]}>
+        <Button
+          color="secondary"
+          size="sm"
+          onClick={handleClear}
+          disabled={!idSearch && !selectedTask}
+        >
+          Clear Filters
+        </Button>
       </div>
-    </Form>
+    </div>
   );
 };
 
