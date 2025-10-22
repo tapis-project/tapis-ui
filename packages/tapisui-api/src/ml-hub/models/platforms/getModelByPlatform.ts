@@ -1,8 +1,9 @@
 import { Models } from '@mlhub/ts-sdk';
 import { apiGenerator, errorDecoder } from '../../../utils';
 
-const listModelsByPlatform = (
+const getModelByPlatform = (
   platform: string,
+  modelId: string,
   basePath: string,
   jwt: string
 ) => {
@@ -12,11 +13,12 @@ const listModelsByPlatform = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.ListModelsByPlatformResponse>(() =>
-    api.listModelsByPlatform({
+  return errorDecoder<Models.GetModelByPlatformResponse>(() =>
+    api.getModelByPlatform({
       platform: platform as Models.Platform,
+      modelId: modelId,
     })
   );
 };
 
-export default listModelsByPlatform;
+export default getModelByPlatform;
