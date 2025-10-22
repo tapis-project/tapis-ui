@@ -1,36 +1,41 @@
-import React, { useState, useMemo } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { useQueries } from 'react-query';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { MLHub as API } from '@tapis/tapisui-api';
-import { Icon } from '@tapis/tapisui-common';
-import { QueryWrapper } from '@tapis/tapisui-common';
-import { Table, Badge } from 'reactstrap';
+import { Icon, QueryWrapper } from '@tapis/tapisui-common';
+import { Table, Badge, Card, CardBody } from 'reactstrap';
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { Button } from 'reactstrap';
 import styles from './Models.module.scss';
-import MixedPlatformSearchBar from '../_components/SearchBar/MixedPlatformSearchBar';
 
 interface AggregatedModel {
   id: string;
   platform: string;
-  pipeline_tag?: string;
+  displayName: string;
+  category?: string;
+  version?: string;
   downloads?: number | string;
   likes?: number | string;
   createdAt?: string;
   last_modified?: string;
-  name?: string;
-  version?: string;
-  short_description?: string;
   [key: string]: any;
 }
 
 const Models: React.FC = () => {
+  const history = useHistory();
   const { path } = useRouteMatch();
   const { accessToken, mlHubBasePath } = useTapisConfig();
 
-  // Search filter states
-  const [idSearch, setIdSearch] = useState<string>('');
-  const [selectedPipelineTag, setSelectedPipelineTag] = useState<string>('');
-  const [descriptionSearch, setDescriptionSearch] = useState<string>('');
+  // Search and filter states
+  const [searchText, setSearchText] = useState<string>('');
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('');
 
   // Fetch all platforms
   const {
@@ -47,11 +52,11 @@ const Models: React.FC = () => {
       p.capabilities?.includes('ListModels')
     );
 
-    // Sort platforms to show HuggingFace first
+    // Sort platforms to always show HuggingFace first
     return filtered.sort((a: any, b: any) => {
       if (a.name === 'HuggingFace') return -1;
       if (b.name === 'HuggingFace') return 1;
-      return 0;
+      return a.name.localeCompare(b.name);
     });
   }, [platformsData]);
 
@@ -100,35 +105,34 @@ const Models: React.FC = () => {
           : [];
 
         platformModels.forEach((model: any) => {
-          // Normalize different platform data structures
           let normalizedModel: AggregatedModel;
 
           if (platformName === 'Patra') {
-            // Patra model structure
             normalizedModel = {
               id: model.mc_id || model.id || model.model_id || model._id,
-              name: model.name,
               platform: platformName,
-              pipeline_tag: model.short_description || model.pipeline_tag,
+              displayName: model.name || model.mc_id || model.id,
+              category: model.short_description,
+              version: model.version,
               downloads: model.downloads || 'N/A',
               likes: model.likes || 'N/A',
               createdAt: model.createdAt || model.last_modified,
               last_modified: model.last_modified,
-              version: model.version,
-              short_description: model.short_description,
-              ...model, // Include all original fields
+              ...model,
             };
           } else {
-            // HuggingFace platform
+            // HuggingFace
             normalizedModel = {
               id: model.id || model.model_id || model._id,
               platform: platformName,
-              pipeline_tag: model.pipeline_tag,
+              displayName: model.id,
+              category: model.pipeline_tag,
               downloads: model.downloads,
               likes: model.likes,
               createdAt: model.createdAt,
               last_modified: model.last_modified,
-              ...model, // Include all original fields
+              library_name: model.library_name,
+              ...model,
             };
           }
 
@@ -140,195 +144,224 @@ const Models: React.FC = () => {
     return models;
   }, [platformQueries]);
 
-  // Apply filters to aggregated models
+  // Get platform statistics
+  const platformStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    aggregatedModels.forEach((model) => {
+      stats[model.platform] = (stats[model.platform] || 0) + 1;
+    });
+    return stats;
+  }, [aggregatedModels]);
+
+  // Apply filters
   const filteredModels = useMemo(() => {
     return aggregatedModels.filter((model) => {
-      // Platform-specific filtering
-      if (model.platform === 'Patra') {
-        // Patra-specific filters
-        if (idSearch) {
-          // Search in name for Patra
-          const name = model.name?.toLowerCase() || '';
-          if (!name.includes(idSearch.toLowerCase())) {
-            return false;
-          }
-        }
+      // Platform filter
+      if (selectedPlatform && model.platform !== selectedPlatform) {
+        return false;
+      }
 
-        if (descriptionSearch) {
-          // Search in short_description for Patra
-          const description = model.short_description?.toLowerCase() || '';
-          if (!description.includes(descriptionSearch.toLowerCase())) {
-            return false;
-          }
-        }
+      // Text search
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        const displayName = model.displayName?.toLowerCase() || '';
+        const category = model.category?.toLowerCase() || '';
+        const library = model.library_name?.toLowerCase() || '';
 
-        if (selectedPipelineTag) {
-          // Filter by short_description for Patra
-          if (model.short_description !== selectedPipelineTag) {
-            return false;
-          }
-        }
-      } else {
-        // HuggingFace platform
-        if (idSearch) {
-          const modelId = model.id?.toString().toLowerCase() || '';
-          if (!modelId.includes(idSearch.toLowerCase())) {
-            return false;
-          }
-        }
-
-        if (selectedPipelineTag) {
-          // Filter by pipeline_tag for HuggingFace
-          if (model.pipeline_tag !== selectedPipelineTag) {
-            return false;
-          }
+        if (
+          !displayName.includes(searchLower) &&
+          !category.includes(searchLower) &&
+          !library.includes(searchLower)
+        ) {
+          return false;
         }
       }
 
       return true;
     });
-  }, [aggregatedModels, idSearch, selectedPipelineTag]);
+  }, [aggregatedModels, searchText, selectedPlatform]);
 
-  // Extract unique pipeline tags for MixedPlatformSearchBar
-  const availablePipelineTags = useMemo(() => {
-    const pipelineTags = new Set<string>();
+  // Get available platforms for filter
+  const availablePlatforms = useMemo(() => {
+    const platforms = new Set<string>();
     aggregatedModels.forEach((model) => {
-      // For Patra, use short_description; for HuggingFace, use pipeline_tag
-      const pipelineTagValue =
-        model.platform === 'Patra'
-          ? model.short_description
-          : model.pipeline_tag;
-
-      if (pipelineTagValue) {
-        pipelineTags.add(pipelineTagValue);
+      if (model.platform) {
+        platforms.add(model.platform);
       }
     });
-    return Array.from(pipelineTags).sort();
+    return ['', ...Array.from(platforms).sort()];
   }, [aggregatedModels]);
 
-  // Determine if we have mixed platforms to show appropriate labels
-  const hasPatraModels = aggregatedModels.some(
-    (model) => model.platform === 'Patra'
-  );
-  const hasHuggingFaceModels = aggregatedModels.some(
-    (model) => model.platform === 'HuggingFace'
-  );
-  const isMixedPlatforms = hasPatraModels && hasHuggingFaceModels;
-
-  // Check if any platform is still loading
   const isLoading =
     platformsLoading || platformQueries.some((q) => q.isLoading);
-
-  // Combine errors
   const error = (platformsError ||
     platformQueries.find((q) => q.error)?.error ||
     null) as Error | null;
 
   const handleClearFilters = () => {
-    setIdSearch('');
-    setSelectedPipelineTag('');
-    setDescriptionSearch('');
+    setSearchText('');
+    setSelectedPlatform('');
+  };
+
+  const handleViewPlatform = (platform: string) => {
+    history.push(`${path}/platform/${platform}`);
   };
 
   return (
-    <QueryWrapper
-      isLoading={isLoading}
-      error={error}
-      className={styles['models-table']}
-    >
-      <MixedPlatformSearchBar
-        idSearch={idSearch}
-        setIdSearch={setIdSearch}
-        selectedPipelineTag={selectedPipelineTag}
-        setSelectedPipelineTag={setSelectedPipelineTag}
-        availablePipelineTags={availablePipelineTags}
-        onClear={handleClearFilters}
-        hasPatraModels={hasPatraModels}
-        hasHuggingFaceModels={hasHuggingFaceModels}
-        descriptionSearch={descriptionSearch}
-        setDescriptionSearch={setDescriptionSearch}
-      />
-      <Table responsive striped>
-        <thead>
-          <tr>
-            <th>
-              {isMixedPlatforms
-                ? 'Model'
-                : hasPatraModels
-                ? 'Name'
-                : 'Model ID'}
-            </th>
-            <th>Platform</th>
-            <th>
-              {isMixedPlatforms
-                ? 'Category'
-                : hasPatraModels
-                ? 'Description'
-                : 'Pipeline Tag'}
-            </th>
-            <th>Downloads</th>
-            <th>Likes</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td colSpan={6} className="text-center">
-                <div className="d-flex justify-content-center align-items-center">
-                  <div
-                    className="spinner-border spinner-border-sm me-2"
-                    role="status"
-                  >
-                    <span className="visually-hidden">Loading...</span>
+    <div className={styles['models-container']}>
+      <div className={styles['page-header']}>
+        <h2>Models</h2>
+        <p className="text-muted">
+          Browse and search models from all platforms
+        </p>
+      </div>
+
+      {/* Platform Quick Links */}
+      {!isLoading && platformsWithListModel.length > 0 && (
+        <div className={styles['platform-links']}>
+          {platformsWithListModel.map((platform: any) => {
+            const count = platformStats[platform.name] || 0;
+            return (
+              <Card
+                key={platform.name}
+                className={styles['platform-link-card']}
+                onClick={() => handleViewPlatform(platform.name)}
+              >
+                <CardBody className={styles['platform-link-body']}>
+                  <div className={styles['platform-link-content']}>
+                    <div className={styles['platform-link-info']}>
+                      <Icon name="simulation" />
+                      <span className={styles['platform-link-name']}>
+                        {platform.name}
+                      </span>
+                    </div>
+                    <Badge
+                      color={
+                        platform.name === 'HuggingFace' ? 'primary' : 'info'
+                      }
+                      className={styles['platform-link-badge']}
+                    >
+                      {count} {count === 1 ? 'model' : 'models'}
+                    </Badge>
                   </div>
-                  Loading models from all platforms...
-                </div>
-              </td>
+                  <div className={styles['platform-link-arrow']}>→</div>
+                </CardBody>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Search and Filter Bar */}
+      <div className={styles['search-bar']}>
+        <TextField
+          label="Search Models"
+          name="search"
+          placeholder="Search by name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          size="small"
+          margin="normal"
+          sx={{ minWidth: 350 }}
+        />
+
+        <FormControl variant="outlined" margin="normal" sx={{ minWidth: 200 }}>
+          <InputLabel size="small" id="platform-filter-label">
+            Platform
+          </InputLabel>
+          <Select
+            label="Platform"
+            labelId="platform-filter-label"
+            size="small"
+            name="platform"
+            value={selectedPlatform}
+            onChange={(e) => setSelectedPlatform(e.target.value as string)}
+          >
+            {availablePlatforms.map((platform) => (
+              <MenuItem key={platform || 'all'} value={platform}>
+                {platform || 'All Platforms'}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <div className={styles['button-container']}>
+          <Button
+            color="secondary"
+            size="sm"
+            onClick={handleClearFilters}
+            disabled={!searchText && !selectedPlatform}
+            // style={{ display: "flex", alignItems: "center" }}
+          >
+            Clear Filters
+          </Button>
+        </div>
+      </div>
+
+      {/* Models Table */}
+      <QueryWrapper isLoading={isLoading} error={error}>
+        <Table responsive striped className={styles['models-table']}>
+          <thead>
+            <tr>
+              <th style={{ width: '50%' }}>Model Name</th>
+              <th style={{ width: '30%' }}>Platform</th>
             </tr>
-          ) : filteredModels.length > 0 ? (
-            filteredModels.map((model, index) => (
-              <tr key={`${model.platform}-${model.id}-${index}`}>
-                <td className={`${styles['model-name-column']}`}>
-                  <Icon name="simulation" />
-                  <span>
-                    <Link to={`${path}/${model.id}`}>
-                      {model.platform === 'Patra'
-                        ? model.name || model.id
-                        : model.id || 'Unknown'}
-                    </Link>
-                  </span>
-                  {model.platform === 'Patra' && model.version && (
-                    <div className="text-muted small">v{model.version}</div>
-                  )}
-                </td>
-                <td>
-                  <Badge color="info">{model.platform}</Badge>
-                </td>
-                <td>
-                  {model.platform === 'Patra'
-                    ? model.short_description || <i>None</i>
-                    : model.pipeline_tag || <i>None</i>}
-                </td>
-                <td>{model.downloads || 'N/A'}</td>
-                <td>{model.likes || 'N/A'}</td>
-                <td>
-                  {model.createdAt
-                    ? new Date(model.createdAt).toLocaleDateString()
-                    : model.last_modified || 'N/A'}
+          </thead>
+          <tbody>
+            {filteredModels.length > 0 ? (
+              filteredModels.map((model, index) => (
+                <tr key={`${model.platform}-${model.id}`}>
+                  <td className={styles['model-name-column']}>
+                    <div className={styles['model-info']}>
+                      {/* <Link to={`${path}/${model.id}`}> */}
+                      {model.displayName}
+                      {/* </Link> */}
+                      {model.platform === 'Patra' && model.version && (
+                        <span className={styles['version-badge']}>
+                          {model.version}
+                        </span>
+                      )}
+                      {model.platform === 'HuggingFace' &&
+                        model.library_name && (
+                          <span className={styles['library-badge']}>
+                            {model.library_name}
+                          </span>
+                        )}
+                      {model.platform === 'HuggingFace' &&
+                        model.pipeline_tag && (
+                          <span className={styles['library-badge']}>
+                            {model.pipeline_tag}
+                          </span>
+                        )}
+                    </div>
+                  </td>
+                  <td>
+                    <Badge
+                      color={
+                        model.platform === 'HuggingFace' ? 'primary' : 'info'
+                      }
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleViewPlatform(model.platform)}
+                      title={`View all ${model.platform} models`}
+                    >
+                      {model.platform}
+                    </Badge>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={2} className="text-center">
+                  {isLoading
+                    ? 'Loading models...'
+                    : 'No models found matching your criteria'}
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6} className="text-center">
-                No models found across any platform
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
-    </QueryWrapper>
+            )}
+          </tbody>
+        </Table>
+      </QueryWrapper>
+    </div>
   );
 };
 

@@ -6,7 +6,8 @@ import { Icon } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table, Badge } from 'reactstrap';
 import styles from './Models.module.scss';
-import MixedPlatformSearchBar from '../_components/SearchBar/MixedPlatformSearchBar';
+import HuggingFaceSearchBar from '../_components/SearchBar/HuggingFaceSearchBar';
+import PatraSearchBar from '../_components/SearchBar/PatraSearchBar';
 
 interface ModelsByPlatformParams {
   platform: string;
@@ -18,8 +19,18 @@ const ModelsByPlatform: React.FC = () => {
   // Search filter states
   const [idSearch, setIdSearch] = useState<string>('');
   const [selectedPipelineTag, setSelectedPipelineTag] = useState<string>('');
-  const [descriptionSearch, setDescriptionSearch] = useState<string>('');
   const [expandedTags, setExpandedTags] = useState<Set<string>>(new Set());
+
+  // HuggingFace-specific states
+  const [selectedLibrary, setSelectedLibrary] = useState<string>('');
+  const [tagSearch, setTagSearch] = useState<string>('');
+
+  // Patra-specific states
+  const [patraSearchText, setPatraSearchText] = useState<string>('');
+
+  // Sorting states for HuggingFace
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   // Map UI keys to API enum values; fallback to lowercase
   const PLATFORM_KEY_TO_ENUM: Record<string, string> = {
@@ -41,38 +52,100 @@ const ModelsByPlatform: React.FC = () => {
     [data?.result]
   );
 
-  // Apply filters to models
+  // Apply filters and sorting to models
   const filteredModels = useMemo(() => {
-    return models.filter((model) => {
-      // Filter by ID (contains search)
-      if (idSearch) {
-        const modelId = model.id?.toString().toLowerCase() || '';
-        if (!modelId.includes(idSearch.toLowerCase())) {
-          return false;
-        }
-      }
+    let filtered = models.filter((model) => {
+      if (platform === 'Patra') {
+        // Patra-specific filters
+        if (patraSearchText) {
+          const name = model.name?.toLowerCase() || '';
+          const description = model.short_description?.toLowerCase() || '';
+          const searchLower = patraSearchText.toLowerCase();
 
-      // Filter by Description (for Patra)
-      if (descriptionSearch) {
-        const description = model.short_description?.toLowerCase() || '';
-        if (!description.includes(descriptionSearch.toLowerCase())) {
-          return false;
+          // Keep if either name or description contains the search text
+          if (
+            !name.includes(searchLower) &&
+            !description.includes(searchLower)
+          ) {
+            return false;
+          }
         }
-      }
+      } else {
+        // HuggingFace-specific filters
+        if (idSearch) {
+          const modelId = model.id?.toString().toLowerCase() || '';
+          if (!modelId.includes(idSearch.toLowerCase())) {
+            return false;
+          }
+        }
 
-      // Filter by Pipeline Tag
-      if (selectedPipelineTag) {
-        const pipelineTag = model.pipeline_tag;
-        if (pipelineTag !== selectedPipelineTag) {
-          return false;
+        if (selectedPipelineTag) {
+          const pipelineTag = model.pipeline_tag;
+          if (pipelineTag !== selectedPipelineTag) {
+            return false;
+          }
+        }
+
+        if (selectedLibrary) {
+          const library = model.library_name;
+          if (library !== selectedLibrary) {
+            return false;
+          }
+        }
+
+        if (tagSearch) {
+          const tags = model.tags || [];
+          const hasMatchingTag = tags.some((tag: string) =>
+            tag.toLowerCase().includes(tagSearch.toLowerCase())
+          );
+          if (!hasMatchingTag) {
+            return false;
+          }
         }
       }
 
       return true;
     });
-  }, [models, idSearch, selectedPipelineTag]);
 
-  // Extract unique pipeline tags for MixedPlatformSearchBar
+    // Apply sorting for HuggingFace
+    if (platform === 'HuggingFace' && sortColumn) {
+      filtered = [...filtered].sort((a, b) => {
+        let aValue: any;
+        let bValue: any;
+
+        if (sortColumn === 'downloads') {
+          aValue = a.downloads ?? 0;
+          bValue = b.downloads ?? 0;
+        } else if (sortColumn === 'likes') {
+          aValue = a.likes ?? 0;
+          bValue = b.likes ?? 0;
+        } else if (sortColumn === 'createdAt') {
+          aValue = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          bValue = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        }
+
+        if (sortDirection === 'asc') {
+          return aValue - bValue;
+        } else {
+          return bValue - aValue;
+        }
+      });
+    }
+
+    return filtered;
+  }, [
+    models,
+    platform,
+    idSearch,
+    selectedPipelineTag,
+    selectedLibrary,
+    tagSearch,
+    patraSearchText,
+    sortColumn,
+    sortDirection,
+  ]);
+
+  // Extract unique pipeline tags for HuggingFace
   const availablePipelineTags = useMemo(() => {
     const pipelineTags = new Set<string>();
     models.forEach((model) => {
@@ -83,10 +156,23 @@ const ModelsByPlatform: React.FC = () => {
     return Array.from(pipelineTags).sort();
   }, [models]);
 
+  // Extract unique libraries for HuggingFace
+  const availableLibraries = useMemo(() => {
+    const libraries = new Set<string>();
+    models.forEach((model) => {
+      if (model.library_name) {
+        libraries.add(model.library_name);
+      }
+    });
+    return Array.from(libraries).sort();
+  }, [models]);
+
   const handleClearFilters = () => {
     setIdSearch('');
     setSelectedPipelineTag('');
-    setDescriptionSearch('');
+    setSelectedLibrary('');
+    setTagSearch('');
+    setPatraSearchText('');
   };
 
   const toggleTagExpansion = (modelId: string) => {
@@ -101,24 +187,57 @@ const ModelsByPlatform: React.FC = () => {
     });
   };
 
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      // Cycle through: desc -> asc -> no sort
+      if (sortDirection === 'desc') {
+        setSortDirection('asc');
+      } else {
+        // Remove sorting
+        setSortColumn(null);
+      }
+    } else {
+      // Set new column with descending as default
+      setSortColumn(column);
+      setSortDirection('desc');
+    }
+  };
+
+  const renderSortIcon = (column: string) => {
+    if (sortColumn !== column) {
+      // Show a subtle indicator that column is sortable
+      return <span style={{ color: '#888', fontSize: '1em' }}> ⇅</span>;
+    }
+    return sortDirection === 'asc' ? ' ↑' : ' ↓';
+  };
+
   return (
     <QueryWrapper
       isLoading={isLoading}
       error={error}
       className={styles['models-table']}
     >
-      <MixedPlatformSearchBar
-        idSearch={idSearch}
-        setIdSearch={setIdSearch}
-        selectedPipelineTag={selectedPipelineTag}
-        setSelectedPipelineTag={setSelectedPipelineTag}
-        availablePipelineTags={availablePipelineTags}
-        onClear={handleClearFilters}
-        hasPatraModels={platform === 'Patra'}
-        hasHuggingFaceModels={platform === 'HuggingFace'}
-        descriptionSearch={descriptionSearch}
-        setDescriptionSearch={setDescriptionSearch}
-      />
+      {platform === 'Patra' ? (
+        <PatraSearchBar
+          searchText={patraSearchText}
+          setSearchText={setPatraSearchText}
+          onClear={handleClearFilters}
+        />
+      ) : (
+        <HuggingFaceSearchBar
+          idSearch={idSearch}
+          setIdSearch={setIdSearch}
+          selectedPipelineTag={selectedPipelineTag}
+          setSelectedPipelineTag={setSelectedPipelineTag}
+          selectedLibrary={selectedLibrary}
+          setSelectedLibrary={setSelectedLibrary}
+          tagSearch={tagSearch}
+          setTagSearch={setTagSearch}
+          availablePipelineTags={availablePipelineTags}
+          availableLibraries={availableLibraries}
+          onClear={handleClearFilters}
+        />
+      )}
       <Table responsive striped style={{ tableLayout: 'fixed', width: '100%' }}>
         <thead>
           <tr>
@@ -128,7 +247,6 @@ const ModelsByPlatform: React.FC = () => {
                 <th style={{ width: '25%' }}>Name</th>
                 <th style={{ width: '20%' }}>Version</th>
                 <th style={{ width: '35%' }}>Description</th>
-                <th style={{ width: '20%' }}>Model ID</th>
               </>
             ) : (
               // HuggingFace-specific columns
@@ -136,10 +254,58 @@ const ModelsByPlatform: React.FC = () => {
                 <th style={{ width: '20%' }}>Model ID</th>
                 <th style={{ width: '10%' }}>Pipeline Tag</th>
                 <th style={{ width: '10%' }}>Library</th>
-                <th style={{ width: '10%' }}>Downloads</th>
-                <th style={{ width: '10%' }}>Likes</th>
+                <th
+                  style={{
+                    width: '10%',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    transition: 'background-color 0.2s, color 0.2s',
+                  }}
+                  onClick={() => handleSort('downloads')}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f0f0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '';
+                  }}
+                >
+                  Downloads{renderSortIcon('downloads')}
+                </th>
+                <th
+                  style={{
+                    width: '10%',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    transition: 'background-color 0.2s, color 0.2s',
+                  }}
+                  onClick={() => handleSort('likes')}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f0f0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '';
+                  }}
+                >
+                  Likes{renderSortIcon('likes')}
+                </th>
                 <th style={{ width: '25%' }}>Tags</th>
-                <th style={{ width: '15%' }}>Created</th>
+                <th
+                  style={{
+                    width: '15%',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    transition: 'background-color 0.2s, color 0.2s',
+                  }}
+                  onClick={() => handleSort('createdAt')}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0f0f0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '';
+                  }}
+                >
+                  Created{renderSortIcon('createdAt')}
+                </th>
               </>
             )}
           </tr>
@@ -169,20 +335,15 @@ const ModelsByPlatform: React.FC = () => {
                   // Patra-specific row data
                   <>
                     <td className={`${styles['model-name-column']}`}>
-                      <Icon name="simulation" />
                       <span>{model.name || 'Unknown'}</span>
                     </td>
                     <td>{model.version || 'N/A'}</td>
                     <td>{model.short_description || <i>None</i>}</td>
-                    <td>
-                      <code>{model.mc_id || model.id || 'N/A'}</code>
-                    </td>
                   </>
                 ) : (
                   // HuggingFace-specific row data
                   <>
                     <td className={`${styles['model-name-column']}`}>
-                      <Icon name="simulation" />
                       <span>{model.id || model.modelId || 'Unknown'}</span>
                     </td>
                     <td>{model.pipeline_tag || <i>None</i>}</td>
