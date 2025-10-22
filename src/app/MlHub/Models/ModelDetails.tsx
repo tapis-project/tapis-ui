@@ -1,5 +1,6 @@
 import React from 'react';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { MLHub as API } from '@tapis/tapisui-api';
 import { QueryWrapper, JSONDisplay, Icon } from '@tapis/tapisui-common';
 import { Card, CardBody, CardHeader, Badge, Row, Col } from 'reactstrap';
 import styles from './ModelDetails.module.scss';
@@ -9,21 +10,13 @@ type ModelDetailsProps = {
   platform?: string;
 };
 
-// Map UI keys to API enum values
-const PLATFORM_KEY_TO_ENUM: Record<string, string> = {
-  HuggingFace: 'huggingface',
-  Github: 'github',
-  Git: 'git',
-  Patra: 'patra',
-  TaccTapis: 'tacc-tapis',
-  s3: 's3',
-};
-
 const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId, platform }) => {
+  const platformKey =
+    API.Models.Platforms.PLATFORM_KEY_TO_ENUM[platform || ''] || platform || '';
   const { data, isLoading, error } =
     Hooks.Models.Platforms.useGetModelByPlatform(
       {
-        platform: PLATFORM_KEY_TO_ENUM[platform || ''] || platform || '',
+        platform: platformKey,
         modelId,
       },
       { enabled: !!platform && !!modelId }
@@ -138,10 +131,7 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId, platform }) => {
               <CardBody className="p-4">
                 <Row>
                   <Col md={6}>
-                    <DetailField
-                      label="Model ID"
-                      value={model.mc_id || model._id}
-                    />
+                    <DetailField label="Model ID" value={model.mc_id} />
                     <DetailField label="Name" value={model.name} />
                     <DetailField label="Author" value={model.author} />
                     <DetailField

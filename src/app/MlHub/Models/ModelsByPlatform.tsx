@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Models as ModelsModule } from '@tapis/tapis-typescript';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { MLHub as API } from '@tapis/tapisui-api';
 import { Icon } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { Table, Badge } from 'reactstrap';
@@ -32,19 +33,9 @@ const ModelsByPlatform: React.FC = () => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  // Map UI keys to API enum values; fallback to lowercase
-  const PLATFORM_KEY_TO_ENUM: Record<string, string> = {
-    HuggingFace: 'huggingface',
-    Github: 'github',
-    Git: 'git',
-    Patra: 'patra',
-    TaccTapis: 'tacc-tapis',
-    s3: 's3',
-  };
-
   const { data, isLoading, error } =
     Hooks.Models.Platforms.useListModelsByPlatform({
-      platform: PLATFORM_KEY_TO_ENUM[platform],
+      platform: API.Models.Platforms.PLATFORM_KEY_TO_ENUM[platform],
     });
 
   const models: Array<{ [key: string]: any }> = useMemo(
@@ -350,9 +341,7 @@ const ModelsByPlatform: React.FC = () => {
                   <>
                     <td className={`${styles['model-name-column']}`}>
                       <Link
-                        to={`/ml-hub/models/platform/${platform}/${
-                          model._id || model.modelId
-                        }`}
+                        to={`/ml-hub/models/platform/${platform}/${model.id}`}
                         className={`${styles['clickable-model-name']}`}
                       >
                         {model.id || model.modelId || 'Unknown'}
@@ -366,8 +355,7 @@ const ModelsByPlatform: React.FC = () => {
                       {model.tags && model.tags.length > 0 ? (
                         <div className="d-flex flex-wrap gap-1">
                           {(() => {
-                            const modelId =
-                              model.id || model.modelId || model._id;
+                            const modelId = model.id || model._id;
                             const isExpanded = expandedTags.has(modelId);
                             const tagsToShow = isExpanded
                               ? model.tags
