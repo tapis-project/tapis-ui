@@ -144,16 +144,6 @@ const Dashboard: React.FC = () => {
                     </a>
                   </div>
                   <div>
-                    🤖{' '}
-                    <a
-                      href={basePath + '/#/tapisragchat'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Ask about AI on Tapis
-                    </a>
-                  </div>
-                  <div>
                     🔧{' '}
                     <a
                       href="https://tapis-project.github.io/live-docs/?service=Systems"
