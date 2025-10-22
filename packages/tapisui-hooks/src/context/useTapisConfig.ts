@@ -6,7 +6,7 @@ import jwt_decode from 'jwt-decode';
 import TapisContext from './TapisContext';
 
 const useTapisConfig = () => {
-  const { basePath } = useContext(TapisContext);
+  const { basePath, mlHubBasePath } = useContext(TapisContext);
 
   const getAccessToken = ():
     | Authenticator.NewAccessTokenResponse
@@ -120,6 +120,7 @@ const useTapisConfig = () => {
 
   return {
     basePath,
+    mlHubBasePath,
     accessToken: data,
     setAccessToken,
     claims,
