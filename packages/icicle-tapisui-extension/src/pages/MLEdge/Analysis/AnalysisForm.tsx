@@ -440,6 +440,9 @@ const AnalysisForm: React.FC = () => {
                     onSuccess: () => {
                       resetForm();
                     },
+                    onError: (e) => {
+                      console.log(e);
+                    },
                   }
                 );
               }}
@@ -929,11 +932,8 @@ const AnalysisForm: React.FC = () => {
 
               // TODO Use useMemo for this function
               let filteredModels = models.filter((m) => {
-                console.log({ uuid: job.uuid });
                 return m.modelId === notes.model;
               });
-
-              console.log({ filteredModels });
 
               let modelName =
                 filteredModels.length >= 1 && filteredModels[0] !== undefined
