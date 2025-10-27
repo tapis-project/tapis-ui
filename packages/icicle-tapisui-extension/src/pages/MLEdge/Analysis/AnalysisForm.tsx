@@ -410,7 +410,7 @@ const AnalysisForm: React.FC = () => {
                     value:
                       values.dataset === '15-image' ||
                       values.dataset === 'example'
-                        ? ''
+                        ? 'example'
                         : values.dataset,
                   },
                   {
