@@ -123,43 +123,68 @@ const models = [
     name: 'MegaDetector v5 (FT Kudu)',
     description: undefined,
     disabled: true,
+    config: {
+      use_ultralytics: false,
+    },
   },
   {
     modelId: '41d3ed40-b836-4a62-b3fb-67cee79f33d9-model',
     name: 'MegaDetector v5a',
     description: 'Microsoft Megadetector trained on dataset A',
     disabled: false,
+    config: {
+      use_ultralytics: false,
+    },
   },
   {
     modelId: '4108ed9d-968e-4cfe-9f18-0324e5399a97-model',
     name: 'MegaDetector v5b',
     description: 'Microsoft Megadetector trained on dataset B',
     disabled: false,
+    config: {},
   },
   {
     modelId: '665e7c60-7244-470d-8e33-a232d5f2a390-model',
-    name: 'MegaDetector 5-optimized',
+    name: 'MegaDetector v5-optimized',
     description:
       'Version of the MS Megadetector base model optimized for throughput',
     disabled: false,
+    config: {
+      use_ultralytics: false,
+    },
   },
   {
     modelId: '04867339-530b-44b7-b66e-5f7a52ce4d90-model',
     name: 'MegaDetector v5c',
     description: undefined,
     disabled: true,
+    config: {
+      use_ultralytics: false,
+    },
   },
   {
     modelId: 'megadetectorv5-ft-ena',
     name: 'MegaDetector v5 (FT ENA)',
     description: undefined,
     disabled: true,
+    config: {
+      use_ultralytics: false,
+    },
   },
   {
     modelId: 'bioclip',
     name: 'BioClip',
     description: undefined,
     disabled: true,
+    config: {},
+  },
+  {
+    modelId:
+      '9103066540bd614ee580637971ff79ef385b8a9d19c3c99160acf8cc83da0952-model',
+    name: 'MegaDetector v6b-yolov9c',
+    description: undefined,
+    disabled: false,
+    config: {},
   },
 ];
 
@@ -374,7 +399,10 @@ const AnalysisForm: React.FC = () => {
               validationSchema={validationSchema}
               onSubmit={(values, { resetForm }) => {
                 const dataset = datasets.filter(
-                  (dataset) => dataset.id == values.dataset
+                  (d) => d.id == values.dataset
+                )[0];
+                const model = models.filter(
+                  (m) => m.modelId == values.model
                 )[0];
                 const device = devices.filter((d) => d.id == values.device)[0];
                 const envVariables = [
@@ -420,10 +448,16 @@ const AnalysisForm: React.FC = () => {
                 ];
 
                 // Add advnacedConfig to the envVariables to if defined
-                if (values.advancedConfig) {
+                if (values.advancedConfig || model.config !== undefined) {
+                  let modelConfig = model.config || {};
+                  let advancedConfig = values.advancedConfig || {};
+
                   envVariables.push({
                     key: 'CT_CONTROLLER_ADVANCED_APP_VARS',
-                    value: JSON.stringify(values.advancedConfig),
+                    value: JSON.stringify({
+                      ...modelConfig,
+                      ...advancedConfig,
+                    }),
                   });
                 }
 
