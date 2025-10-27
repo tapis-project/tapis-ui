@@ -88,6 +88,13 @@ export default defineConfig({
   server: {
     open: true, // Opens browser
     port: 3000,
+    proxy: {
+      '/v3': {
+        target: 'https://dev.develop.tapis.io',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
     // watch: {
     //   usePolling: true,
     //   interval: 1,
