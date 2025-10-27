@@ -194,7 +194,7 @@ const datasets = [
   },
   {
     id: 'example',
-    url: 'example',
+    url: '',
     name: 'Example',
     disabled: false,
     type: 'video',
@@ -406,7 +406,12 @@ const AnalysisForm: React.FC = () => {
                     key: 'CT_CONTROLLER_INPUT',
                     // HACK ctcontroller expects an empty string for the 15-image dataset,
                     // which is why we are using a ternary operator below
-                    value: values.dataset === '15-image' ? '' : values.dataset,
+                    // HACK the default value for the default video dataset should be an empty string also
+                    value:
+                      values.dataset === '15-image' ||
+                      values.dataset === 'example'
+                        ? ''
+                        : values.dataset,
                   },
                   {
                     key: 'CT_CONTROLLER_NUM_NODES',
