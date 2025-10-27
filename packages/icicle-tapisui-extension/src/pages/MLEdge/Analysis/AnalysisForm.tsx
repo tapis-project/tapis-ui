@@ -687,6 +687,7 @@ const AnalysisForm: React.FC = () => {
                         }
                       >
                         <option value="" label="Select option" />
+                        <option value="example" label="Example video" />
                         {datasets
                           .filter((dataset) => dataset.type == mode)
                           .map((dataset) => {
