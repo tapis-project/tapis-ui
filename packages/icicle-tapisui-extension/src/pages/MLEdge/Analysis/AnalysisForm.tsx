@@ -192,6 +192,13 @@ const datasets = [
     disabled: true,
     type: 'image',
   },
+  {
+    id: 'example',
+    url: 'example',
+    name: 'Example',
+    disabled: false,
+    type: 'video',
+  },
 ];
 
 const secondsToDhms = (seconds: number) => {
@@ -687,7 +694,6 @@ const AnalysisForm: React.FC = () => {
                         }
                       >
                         <option value="" label="Select option" />
-                        <option value="example" label="Example video" />
                         {datasets
                           .filter((dataset) => dataset.type == mode)
                           .map((dataset) => {
