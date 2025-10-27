@@ -921,14 +921,7 @@ const AnalysisForm: React.FC = () => {
                 Math.floor(Date.now() / 1000) -
                 Math.floor(new Date(job.created!).getTime() / 1000);
 
-              let notes: any = {};
-              if (job.notes !== undefined && typeof job.notes === 'string') {
-                try {
-                  notes = JSON.parse(job.notes);
-                } catch (_) {
-                  notes = job.notes;
-                }
-              }
+              let notes: any = job.notes;
 
               // TODO Use useMemo for this function
               let filteredModels = models.filter((m) => {
