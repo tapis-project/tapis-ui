@@ -42,24 +42,25 @@ import {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
-} from './ui';
-import { type FilterConfig } from './ui/FilterableObjectsList/FilterableObjectsList';
+  ChatDrawer,
+} from "./ui";
+import { type FilterConfig } from "./ui/FilterableObjectsList/FilterableObjectsList";
 import {
   QueryWrapper,
   SubmitWrapper,
   Wizard,
   Navbar,
   NavItem,
-} from './wrappers';
-import { FieldWrapperFormik } from './ui-formik';
-import { FMTextField, FMSelect } from './ui-formik-mui';
+} from "./wrappers";
+import { FieldWrapperFormik } from "./ui-formik";
+import { FMTextField, FMSelect } from "./ui-formik-mui";
 import {
   FormikInput,
   FormikSelect,
   FormikCheck,
   FormikTapisFile,
   FormikTapisFileInput,
-} from './ui-formik/FieldWrapperFormik/fields';
+} from "./ui-formik/FieldWrapperFormik/fields";
 import {
   FileListing,
   FileListingTable,
@@ -88,18 +89,18 @@ import {
   FileInputArrays,
   FileInputs,
   SchedulerOptions,
-} from './components';
+} from "./components";
 import {
   SystemProvider,
   SystemContext,
   useSystem,
   type SystemContextType,
-} from './context';
+} from "./context";
 import {
   type PropsOfObjectWithValuesOfType,
   type OrderBy,
   filterObjects,
-} from './utils/filterObject';
+} from "./utils/filterObject";
 
 export {
   // Generic UI
@@ -144,6 +145,7 @@ export {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
+  ChatDrawer,
   type FilterConfig,
   // Wrappers
   QueryWrapper,
