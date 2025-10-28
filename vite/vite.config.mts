@@ -88,10 +88,6 @@ export default defineConfig({
   server: {
     open: true, // Opens browser
     port: 3000,
-<<<<<<< HEAD
-    },
-=======
->>>>>>> 0f254bbb (remove vite setup)
     // watch: {
     //   usePolling: true,
     //   interval: 1,
