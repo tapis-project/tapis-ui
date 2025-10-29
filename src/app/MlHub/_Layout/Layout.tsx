@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Router } from "../_Router";
-import { PageLayout, LayoutBody, ChatDrawer } from "@tapis/tapisui-common";
-import { Menu } from "../_components";
-import { useTapisConfig } from "@tapis/tapisui-hooks";
-import { ModelSelectionAgent, type ChatTurn } from "../services/agents";
+import React, { useState } from 'react';
+import { Router } from '../_Router';
+import { PageLayout, LayoutBody, ChatDrawer } from '@tapis/tapisui-common';
+import { Menu } from '../_components';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { ModelSelectionAgent, type ChatTurn } from '../services/agents';
 
 const Layout: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<
-    { id: string; role: "user" | "assistant" | "system"; content: string }[]
+    { id: string; role: 'user' | 'assistant' | 'system'; content: string }[]
   >([]);
   const [isSending, setIsSending] = useState(false);
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
@@ -17,7 +17,7 @@ const Layout: React.FC = () => {
     const now = Date.now();
     const userTurn: ChatTurn = {
       id: `${now}-user`,
-      role: "user",
+      role: 'user',
       content: text,
     };
     const nextHistory: ChatTurn[] = [...messages, userTurn];
@@ -25,11 +25,11 @@ const Layout: React.FC = () => {
     setIsSending(true);
     try {
       const result = await ModelSelectionAgent.respond(nextHistory, {
-        section: "ml-hub",
-        basePath: basePath || "",
+        section: 'ml-hub',
+        basePath: basePath || '',
         mlHubBasePath,
-        jwt: accessToken?.access_token ?? "",
-        openAIApiKey: "YOUR_OPENAI_API_KEY",
+        jwt: accessToken?.access_token ?? '',
+        openAIApiKey: 'YOUR_OPENAI_API_KEY',
       });
       if (result.messages && result.messages.length > 0) {
         setMessages((prev) => [...prev, ...result.messages]);

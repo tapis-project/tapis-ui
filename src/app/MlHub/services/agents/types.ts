@@ -1,12 +1,12 @@
 export type ChatTurn = {
   id: string;
-  role: "user" | "assistant" | "system";
+  role: 'user' | 'assistant' | 'system';
   content: string;
   meta?: any;
 };
 
 export type AgentContext = {
-  section: "ml-hub" | "jobs" | "files";
+  section: 'ml-hub' | 'jobs' | 'files';
   basePath: string;
   mlHubBasePath?: string;
   jwt: string;
