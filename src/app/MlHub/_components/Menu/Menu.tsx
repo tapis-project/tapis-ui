@@ -31,9 +31,9 @@ const Menu: React.FC = () => {
             </Link>
           </NavItem>
           <NavItem className={styles['nav-item']}>
-            <Link to="/ml-hub/ingest">
+            <Link to="/ml-hub/ingestions">
               <Button>
-                <Icon name="upload"></Icon> Ingestion
+                <Icon name="upload"></Icon> Ingestions
               </Button>
             </Link>
           </NavItem>

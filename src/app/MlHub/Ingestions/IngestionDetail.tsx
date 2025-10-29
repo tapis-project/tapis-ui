@@ -150,7 +150,7 @@ const IngestionDetail: React.FC<Props> = ({ ingestionId }) => {
         >
           <Button
             color="secondary"
-            onClick={() => history.push('/ml-hub/ingest')}
+            onClick={() => history.push('/ml-hub/ingestions')}
           >
             ← Back to Ingestion
           </Button>

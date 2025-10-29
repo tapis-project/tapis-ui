@@ -22,7 +22,7 @@ const Router: React.FC = () => {
         <DatasetsLayout />
       </Route>
 
-      <Route path={`${path}/ingest`} exact>
+      <Route path={`${path}/ingestions`} exact>
         <IngestModel />
       </Route>
 
