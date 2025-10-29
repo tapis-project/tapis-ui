@@ -1,2 +1,2 @@
-export { default as getModelIngestion } from './get';
+export { default as getModelIngestion } from './getModelIngestion';
 export { default as ingestModelByPlatform } from './ingestModelByPlatform';
