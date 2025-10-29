@@ -12,7 +12,7 @@ const useGetModelIngestion = (
   return useQuery<Models.GetModelIngestionResponse, Error>(
     ['mlhub-ingestions-get', ingestionId, accessToken?.access_token],
     () =>
-      (API.Models.Ingestions as any).getModelIngestion(
+      API.Models.Ingestions.getModelIngestion(
         ingestionId,
         mlHubBasePath + '/mlhub',
         accessToken?.access_token || ''

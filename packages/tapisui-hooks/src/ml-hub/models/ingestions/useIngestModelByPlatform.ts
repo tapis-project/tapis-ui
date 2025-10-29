@@ -18,7 +18,7 @@ const useIngestModelByPlatform = () => {
     useMutation<Models.IngestModelArtifactResponse, Error, Variables>(
       ['mlhub-platforms-ingest', mlHubBasePath, accessToken?.access_token],
       (vars) =>
-        (API.Models.Ingestions as any).ingestModelByPlatform(
+        API.Models.Ingestions.ingestModelByPlatform(
           {
             platform: vars.platform,
             modelId: vars.modelId,
