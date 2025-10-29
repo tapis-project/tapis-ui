@@ -7,7 +7,11 @@ export type IngestParams = {
   ingestArtifactRequest: Models.IngestArtifactRequest;
 };
 
-const ingestModel = (params: IngestParams, basePath: string, jwt: string) => {
+const ingestModelByPlatform = (
+  params: IngestParams,
+  basePath: string,
+  jwt: string
+) => {
   const api: Models.PlatformsApi = apiGenerator<Models.PlatformsApi>(
     Models,
     Models.PlatformsApi,
@@ -23,4 +27,4 @@ const ingestModel = (params: IngestParams, basePath: string, jwt: string) => {
   );
 };
 
-export default ingestModel;
+export default ingestModelByPlatform;

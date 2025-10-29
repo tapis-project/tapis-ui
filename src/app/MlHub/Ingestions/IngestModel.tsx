@@ -9,8 +9,8 @@ const IngestModel: React.FC = () => {
   const [platform, setPlatform] = useState<string>('HuggingFace');
   const [modelId, setModelId] = useState<string>('');
   const { ingestModel, isLoading, error } = (
-    Hooks.Models.Platforms as any
-  ).useIngestModel();
+    Hooks.Models.Ingestions as any
+  ).useIngestModelByPlatform();
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();

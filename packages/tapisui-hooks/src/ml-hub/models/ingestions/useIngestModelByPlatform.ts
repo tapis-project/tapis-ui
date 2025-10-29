@@ -11,14 +11,14 @@ type Variables = {
 
 const defaultBody: Models.IngestArtifactRequest = {} as any;
 
-const useIngestModel = () => {
+const useIngestModelByPlatform = () => {
   const { accessToken, mlHubBasePath } = useTapisConfig();
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Models.IngestModelArtifactResponse, Error, Variables>(
       ['mlhub-platforms-ingest', mlHubBasePath, accessToken?.access_token],
       (vars) =>
-        (API.Models.Platforms as any).ingestModel(
+        (API.Models.Ingestions as any).ingestModelByPlatform(
           {
             platform: vars.platform,
             modelId: vars.modelId,
@@ -47,4 +47,4 @@ const useIngestModel = () => {
   };
 };
 
-export default useIngestModel;
+export default useIngestModelByPlatform;

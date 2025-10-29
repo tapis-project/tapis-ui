@@ -1,6 +1,6 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
 import { MLHub as API } from '@tapis/tapisui-api';
-import { useTapisConfig } from '../..';
+import { useTapisConfig } from '../../..';
 import { Models } from '@mlhub/ts-sdk';
 
 const useGet = (
@@ -12,7 +12,7 @@ const useGet = (
   return useQuery<Models.GetModelIngestionResponse, Error>(
     ['mlhub-ingestions-get', ingestionId, accessToken?.access_token],
     () =>
-      API.Ingestions.get(
+      (API.Models.Ingestions as any).getModelIngestion(
         ingestionId,
         mlHubBasePath + '/mlhub',
         accessToken?.access_token || ''
