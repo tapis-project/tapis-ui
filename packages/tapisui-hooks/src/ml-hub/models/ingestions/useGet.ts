@@ -1,7 +1,7 @@
-import { useQuery, QueryObserverOptions } from "react-query";
-import { MLHub as API } from "@tapis/tapisui-api";
-import { useTapisConfig } from "../..";
-import { Models } from "@mlhub/ts-sdk";
+import { useQuery, QueryObserverOptions } from 'react-query';
+import { MLHub as API } from '@tapis/tapisui-api';
+import { useTapisConfig } from '../..';
+import { Models } from '@mlhub/ts-sdk';
 
 const useGet = (
   ingestionId: string,
@@ -10,18 +10,18 @@ const useGet = (
   const { accessToken, mlHubBasePath } = useTapisConfig();
 
   return useQuery<Models.GetModelIngestionResponse, Error>(
-    ["mlhub-ingestions-get", ingestionId, accessToken?.access_token],
+    ['mlhub-ingestions-get', ingestionId, accessToken?.access_token],
     () =>
       API.Ingestions.get(
         ingestionId,
-        mlHubBasePath + "/mlhub",
-        accessToken?.access_token || ""
+        mlHubBasePath + '/mlhub',
+        accessToken?.access_token || ''
       ),
     {
       enabled: !!accessToken?.access_token && !!ingestionId,
       refetchInterval: (data) => {
         const status = data?.result?.status;
-        const isTerminal = status === "Finished" || status === "Failed";
+        const isTerminal = status === 'Finished' || status === 'Failed';
         return isTerminal ? false : 3000;
       },
       ...options,

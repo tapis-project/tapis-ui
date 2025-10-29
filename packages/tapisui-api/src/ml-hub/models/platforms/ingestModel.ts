@@ -1,5 +1,5 @@
-import { Models } from "@mlhub/ts-sdk";
-import { apiGenerator, errorDecoder } from "../../../utils";
+import { Models } from '@mlhub/ts-sdk';
+import { apiGenerator, errorDecoder } from '../../../utils';
 
 export type IngestParams = {
   platform: Models.Platform;
@@ -7,7 +7,7 @@ export type IngestParams = {
   ingestArtifactRequest: Models.IngestArtifactRequest;
 };
 
-const ingest = (params: IngestParams, basePath: string, jwt: string) => {
+const ingestModel = (params: IngestParams, basePath: string, jwt: string) => {
   const api: Models.PlatformsApi = apiGenerator<Models.PlatformsApi>(
     Models,
     Models.PlatformsApi,
@@ -23,4 +23,4 @@ const ingest = (params: IngestParams, basePath: string, jwt: string) => {
   );
 };
 
-export default ingest;
+export default ingestModel;

@@ -1,14 +1,14 @@
-import React from "react";
-import { QueryWrapper } from "@tapis/tapisui-common";
-import { MLHub as Hooks } from "@tapis/tapisui-hooks";
-import { Card, CardBody } from "reactstrap";
+import React from 'react';
+import { QueryWrapper } from '@tapis/tapisui-common';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { Card, CardBody } from 'reactstrap';
 
 type Props = { ingestionId: string };
 
 const IngestionDetail: React.FC<Props> = ({ ingestionId }) => {
-  const { data, isLoading, error } = (Hooks as any).MLHub.Ingestions.useGet(
-    ingestionId
-  );
+  const { data, isLoading, error } = (
+    Hooks as any
+  ).Models.Ingestions.useGetModelIngestion(ingestionId);
   const ingestion = data?.result;
   const status = ingestion?.status as string | undefined;
 
@@ -16,7 +16,7 @@ const IngestionDetail: React.FC<Props> = ({ ingestionId }) => {
     <QueryWrapper isLoading={isLoading} error={error}>
       <Card>
         <CardBody>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <h4 style={{ margin: 0 }}>Ingestion {ingestionId}</h4>
             {status && <span>{status}</span>}
           </div>

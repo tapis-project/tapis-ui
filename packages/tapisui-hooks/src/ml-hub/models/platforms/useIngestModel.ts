@@ -1,7 +1,7 @@
-import { useMutation, MutateOptions } from "react-query";
-import { MLHub as API } from "@tapis/tapisui-api";
-import { useTapisConfig } from "../../..";
-import { Models } from "@mlhub/ts-sdk";
+import { useMutation, MutateOptions } from 'react-query';
+import { MLHub as API } from '@tapis/tapisui-api';
+import { useTapisConfig } from '../../..';
+import { Models } from '@mlhub/ts-sdk';
 
 type Variables = {
   platform: Models.Platform;
@@ -11,21 +11,21 @@ type Variables = {
 
 const defaultBody: Models.IngestArtifactRequest = {} as any;
 
-const useIngest = () => {
+const useIngestModel = () => {
   const { accessToken, mlHubBasePath } = useTapisConfig();
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Models.IngestModelArtifactResponse, Error, Variables>(
-      ["mlhub-platforms-ingest", mlHubBasePath, accessToken?.access_token],
+      ['mlhub-platforms-ingest', mlHubBasePath, accessToken?.access_token],
       (vars) =>
-        (API.Models.Platforms as any).ingest(
+        (API.Models.Platforms as any).ingestModel(
           {
             platform: vars.platform,
             modelId: vars.modelId,
             ingestArtifactRequest: vars.ingestArtifactRequest || defaultBody,
           },
-          mlHubBasePath + "/mlhub",
-          accessToken?.access_token || ""
+          mlHubBasePath + '/mlhub',
+          accessToken?.access_token || ''
         )
     );
 
@@ -47,4 +47,4 @@ const useIngest = () => {
   };
 };
 
-export default useIngest;
+export default useIngestModel;

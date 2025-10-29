@@ -1,18 +1,20 @@
-import React, { useState } from "react";
-import { Card, CardBody, Button, Input, Label, FormGroup } from "reactstrap";
-import { useHistory } from "react-router-dom";
-import { MLHub as Hooks } from "@tapis/tapisui-hooks";
-import { Models } from "@mlhub/ts-sdk";
+import React, { useState } from 'react';
+import { Card, CardBody, Button, Input, Label, FormGroup } from 'reactstrap';
+import { useHistory } from 'react-router-dom';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { Models } from '@mlhub/ts-sdk';
 
 const IngestModel: React.FC = () => {
   const history = useHistory();
-  const [platform, setPlatform] = useState<string>("HuggingFace");
-  const [modelId, setModelId] = useState<string>("");
-  const { ingest, isLoading, error } = Hooks.Models.Platforms.useIngest();
+  const [platform, setPlatform] = useState<string>('HuggingFace');
+  const [modelId, setModelId] = useState<string>('');
+  const { ingestModel, isLoading, error } = (
+    Hooks.Models.Platforms as any
+  ).useIngestModel();
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    ingest(
+    ingestModel(
       {
         platform: platform as Models.Platform,
         modelId,
@@ -50,14 +52,14 @@ const IngestModel: React.FC = () => {
             />
           </FormGroup>
           {error && (
-            <div style={{ color: "red", marginBottom: 8 }}>{error.message}</div>
+            <div style={{ color: 'red', marginBottom: 8 }}>{error.message}</div>
           )}
           <Button
             type="submit"
             color="primary"
             disabled={isLoading || !modelId}
           >
-            {isLoading ? "Starting..." : "Ingest"}
+            {isLoading ? 'Starting...' : 'Ingest'}
           </Button>
         </form>
       </CardBody>
