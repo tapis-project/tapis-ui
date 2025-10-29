@@ -2,20 +2,41 @@ import React, { useState } from "react";
 import { Router } from "../_Router";
 import { PageLayout, LayoutBody, ChatDrawer } from "@tapis/tapisui-common";
 import { Menu } from "../_components";
+import { useTapisConfig } from "@tapis/tapisui-hooks";
+import { ModelSelectionAgent, type ChatTurn } from "../services/agents";
 
 const Layout: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<
     { id: string; role: "user" | "assistant" | "system"; content: string }[]
   >([]);
+  const [isSending, setIsSending] = useState(false);
+  const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
 
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string) => {
     const now = Date.now();
-    setMessages((prev) => [
-      ...prev,
-      { id: `${now}-user`, role: "user", content: text },
-      { id: `${now + 1}-assistant`, role: "assistant", content: "test" },
-    ]);
+    const userTurn: ChatTurn = {
+      id: `${now}-user`,
+      role: "user",
+      content: text,
+    };
+    const nextHistory: ChatTurn[] = [...messages, userTurn];
+    setMessages(nextHistory);
+    setIsSending(true);
+    try {
+      const result = await ModelSelectionAgent.respond(nextHistory, {
+        section: "ml-hub",
+        basePath: basePath || "",
+        mlHubBasePath,
+        jwt: accessToken?.access_token ?? "",
+        openAIApiKey: "YOUR_OPENAI_API_KEY",
+      });
+      if (result.messages && result.messages.length > 0) {
+        setMessages((prev) => [...prev, ...result.messages]);
+      }
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const header = (
@@ -39,6 +60,7 @@ const Layout: React.FC = () => {
         title="Model Chat"
         messages={messages}
         onSend={handleSend}
+        isSending={isSending}
       />
     </>
   );
