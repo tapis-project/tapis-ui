@@ -62,6 +62,7 @@
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
     "markdown-to-jsx": "^7.4.7",
+    "openai": "^6.7.0",
     "prop-types": "^15.7.2",
     "react": "^18.3.1",
     "react-copy-to-clipboard": "^5.0.2",
