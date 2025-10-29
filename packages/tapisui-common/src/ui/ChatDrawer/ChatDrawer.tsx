@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from 'react';
 import {
   Drawer,
   Box,
@@ -7,13 +7,13 @@ import {
   IconButton,
   Button,
   Divider,
-} from "@mui/material";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import CloseIcon from "@mui/icons-material/Close";
+} from '@mui/material';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import CloseIcon from '@mui/icons-material/Close';
 
 export type ChatMessage = {
   id: string;
-  role: "user" | "assistant" | "system";
+  role: 'user' | 'assistant' | 'system';
   content: string;
 };
 
@@ -29,28 +29,28 @@ export type ChatDrawerProps = {
   footerExtras?: React.ReactNode;
 };
 
-const roleToBg = (role: ChatMessage["role"]): string => {
-  if (role === "user") return "#e8f0fe";
-  if (role === "assistant") return "#f1f8e9";
-  return "#f5f5f5";
+const roleToBg = (role: ChatMessage['role']): string => {
+  if (role === 'user') return '#e8f0fe';
+  if (role === 'assistant') return '#f1f8e9';
+  return '#f5f5f5';
 };
 
-const roleToAlign = (role: ChatMessage["role"]): "flex-end" | "flex-start" => {
-  return role === "user" ? "flex-end" : "flex-start";
+const roleToAlign = (role: ChatMessage['role']): 'flex-end' | 'flex-start' => {
+  return role === 'user' ? 'flex-end' : 'flex-start';
 };
 
 const ChatDrawer: React.FC<ChatDrawerProps> = ({
   open,
   onClose,
-  title = "Model Chat",
-  width = "36vw",
+  title = 'Model Chat',
+  width = '36vw',
   messages,
   onSend,
   isSending = false,
   headerExtras,
   footerExtras,
 }) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
     const text = inputValue.trim();
     if (!text) return;
     onSend(text);
-    setInputValue("");
+    setInputValue('');
   };
 
   return (
@@ -71,9 +71,9 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
       <Box
         sx={{
           width,
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
         }}
         role="presentation"
       >
@@ -91,10 +91,10 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
           ref={scrollRef}
           sx={{
             flex: 1,
-            overflowY: "auto",
+            overflowY: 'auto',
             p: 2,
-            display: "flex",
-            flexDirection: "column",
+            display: 'flex',
+            flexDirection: 'column',
             gap: 1.25,
           }}
         >
@@ -106,30 +106,30 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
             messages.map((m) => (
               <Box
                 key={m.id}
-                sx={{ display: "flex", justifyContent: roleToAlign(m.role) }}
+                sx={{ display: 'flex', justifyContent: roleToAlign(m.role) }}
               >
                 <Box
                   sx={{
-                    maxWidth: "80%",
+                    maxWidth: '80%',
                     px: 1.25,
                     py: 1,
                     borderRadius: 1.5,
                     bgcolor: roleToBg(m.role),
-                    border: "1px solid #e0e0e0",
+                    border: '1px solid #e0e0e0',
                   }}
                 >
                   <Typography
                     variant="caption"
-                    sx={{ display: "block", color: "text.secondary", mb: 0.5 }}
+                    sx={{ display: 'block', color: 'text.secondary', mb: 0.5 }}
                   >
                     {m.role}
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                      overflowWrap: "anywhere",
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
                     }}
                   >
                     {m.content}
@@ -144,8 +144,8 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
           sx={{
             p: 1.5,
             pt: 1,
-            display: "flex",
-            flexDirection: "column",
+            display: 'flex',
+            flexDirection: 'column',
             gap: 1,
           }}
         >
@@ -160,29 +160,29 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
                 setInputValue(e.target.value)
               }
               onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleSend();
                 }
               }}
               style={{
-                width: "100%",
-                resize: "none",
-                padding: "8px 12px",
-                fontSize: "0.875rem",
+                width: '100%',
+                resize: 'none',
+                padding: '8px 12px',
+                fontSize: '0.875rem',
                 lineHeight: 1.5,
                 borderRadius: 4,
-                border: "1px solid rgba(0,0,0,0.23)",
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-                overflowWrap: "anywhere",
-                fontFamily: "inherit",
+                border: '1px solid rgba(0,0,0,0.23)',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowWrap: 'anywhere',
+                fontFamily: 'inherit',
               }}
             />
             <Button
               variant="contained"
               onClick={handleSend}
-              disabled={isSending || inputValue.trim() === ""}
+              disabled={isSending || inputValue.trim() === ''}
             >
               Send
             </Button>

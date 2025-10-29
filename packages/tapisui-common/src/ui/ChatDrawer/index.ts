@@ -1,2 +1,2 @@
-export { default as ChatDrawer } from "./ChatDrawer";
-export type { ChatDrawerProps, ChatMessage } from "./ChatDrawer";
+export { default as ChatDrawer } from './ChatDrawer';
+export type { ChatDrawerProps, ChatMessage } from './ChatDrawer';

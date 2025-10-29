@@ -1,5 +1,5 @@
-import { Agent, AgentContext, AgentResult, ChatTurn } from "./types";
-import { MLHub as API } from "@tapis/tapisui-api";
+import { Agent, AgentContext, AgentResult, ChatTurn } from './types';
+import { MLHub as API } from '@tapis/tapisui-api';
 
 type ModelLite = {
   id?: string;
@@ -15,7 +15,7 @@ type ModelLite = {
 };
 
 function normalizeModelId(m: ModelLite): string {
-  return (m.id || m.mc_id || "").toString();
+  return (m.id || m.mc_id || '').toString();
 }
 
 function rankModels(requirements: string, models: ModelLite[]): ModelLite[] {
@@ -39,7 +39,7 @@ async function fetchModels(
 ) {
   const { result } = await API.Models.Platforms.listModelsByPlatform(
     platform as any,
-    mlHubBasePath + "/mlhub" || "",
+    mlHubBasePath + '/mlhub' || '',
     jwt
   );
   return (result || []) as ModelLite[];
@@ -47,11 +47,11 @@ async function fetchModels(
 
 function buildLLMSystemPrompt(): string {
   return (
-    "You are a Model Selection Assistant for the Tapis MLHub. " +
-    "You will receive: (1) user requirements and (2) a list of available models from Tapis. " +
-    "Choose the most relevant models ONLY from the provided list; do not invent models. " +
-    "Prioritize exact task/pipeline_tag match, then library compatibility, then tag overlap, then popularity and recency. " +
-    "Return a strict JSON object with shape: " +
+    'You are a Model Selection Assistant for the Tapis MLHub. ' +
+    'You will receive: (1) user requirements and (2) a list of available models from Tapis. ' +
+    'Choose the most relevant models ONLY from the provided list; do not invent models. ' +
+    'Prioritize exact task/pipeline_tag match, then library compatibility, then tag overlap, then popularity and recency. ' +
+    'Return a strict JSON object with shape: ' +
     '{"recommendations":[{"id":string,"rationale":string}],"notes":string}.'
   );
 }
@@ -75,7 +75,7 @@ function buildLLMUserPrompt(
     `User requirements (free text):\n${requirements}\n\n` +
     `Platform: ${platform}\n\n` +
     `Available models (JSON array):\n${JSON.stringify(compact)}\n\n` +
-    "Respond ONLY with the JSON object."
+    'Respond ONLY with the JSON object.'
   );
 }
 
@@ -85,18 +85,18 @@ async function callOpenAI(
   userPrompt: string
 ): Promise<string> {
   try {
-    const mod = await import("openai");
+    const mod = await import('openai');
     const OpenAI = (mod as any).default || (mod as any);
     const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
     const completion = await client.chat.completions.create({
-      model: "gpt-4o",
+      model: 'gpt-4o',
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
       ],
       temperature: 0.2,
     });
-    const content: string = completion?.choices?.[0]?.message?.content ?? "";
+    const content: string = completion?.choices?.[0]?.message?.content ?? '';
     return content;
   } catch (e) {
     throw new Error(`OpenAI error: ${e}`);
@@ -104,21 +104,21 @@ async function callOpenAI(
 }
 
 export const ModelSelectionAgent: Agent = {
-  id: "model-selection",
-  name: "Model Selection Agent",
-  description: "Recommends models based on user requirements",
+  id: 'model-selection',
+  name: 'Model Selection Agent',
+  description: 'Recommends models based on user requirements',
   respond: async (
     history: ChatTurn[],
     context: AgentContext
   ): Promise<AgentResult> => {
-    const lastUser = [...history].reverse().find((t) => t.role === "user");
-    const userText = lastUser?.content || "";
+    const lastUser = [...history].reverse().find((t) => t.role === 'user');
+    const userText = lastUser?.content || '';
 
     // Expect platform embedded in the user text for MVP, e.g., "platform: HuggingFace"
     const platformMatch = userText.match(/platform\s*:\s*([\w-]+)/i);
     const platform = platformMatch
       ? platformMatch[1].toLowerCase()
-      : "huggingface";
+      : 'huggingface';
 
     const models = await fetchModels(
       platform,
@@ -132,21 +132,21 @@ export const ModelSelectionAgent: Agent = {
         messages: [
           {
             id: `${Date.now()}-assistant`,
-            role: "assistant",
-            content: "failed",
+            role: 'assistant',
+            content: 'failed',
           },
         ],
       };
     }
 
     let selected: ModelLite[] = [];
-    let llmRaw: string = "";
+    let llmRaw: string = '';
     let parsedOk = false;
     try {
       const sys = buildLLMSystemPrompt();
       const usr = buildLLMUserPrompt(userText, platform, models);
       const content = await callOpenAI(context.openAIApiKey, sys, usr);
-      llmRaw = content || "";
+      llmRaw = content || '';
       const parsed = JSON.parse(content);
       if (parsed && Array.isArray(parsed.recommendations)) {
         parsedOk = parsed.recommendations.length > 0;
@@ -162,8 +162,8 @@ export const ModelSelectionAgent: Agent = {
     const messagesOut: ChatTurn[] = [];
     messagesOut.push({
       id: `${Date.now()}-assistant-raw`,
-      role: "assistant",
-      content: llmRaw || "",
+      role: 'assistant',
+      content: llmRaw || '',
     });
 
     if (!selected || selected.length === 0) {
@@ -189,9 +189,9 @@ export const ModelSelectionAgent: Agent = {
 
     const lines = finalModels.map((m, i) => {
       const id = normalizeModelId(m);
-      const name = m.name || id || "Unknown";
-      const tag = m.pipeline_tag || "n/a";
-      const lib = m.library_name || "n/a";
+      const name = m.name || id || 'Unknown';
+      const tag = m.pipeline_tag || 'n/a';
+      const lib = m.library_name || 'n/a';
       return `${i + 1}. ${name} (id: ${id}, pipeline: ${tag}, lib: ${lib})`;
     });
 
