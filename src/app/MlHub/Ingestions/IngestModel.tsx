@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Card,
   CardBody,
+  CardHeader,
   Button,
   Input,
   Label,
@@ -11,6 +12,8 @@ import {
   Col,
   Collapse,
   Tooltip,
+  Badge,
+  Spinner,
 } from 'reactstrap';
 import { HelpOutline } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
@@ -65,9 +68,8 @@ const IngestModel: React.FC = () => {
   const [webhookUrl, setWebhookUrl] = useState<string>('');
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
-  const { ingestModel, isLoading, error } = (
-    Hooks.Models.Ingestions as any
-  ).useIngestModelByPlatform();
+  const { ingest, isLoading, error } =
+    Hooks.Models.Ingestions.useIngestModelByPlatform();
 
   // Fetch all ingestions
   const {
@@ -111,7 +113,7 @@ const IngestModel: React.FC = () => {
       ingestArtifactRequest.webhook_url = webhookUrl;
     }
 
-    ingestModel(
+    ingest(
       {
         platform: platform as Models.Platform,
         modelId,
@@ -138,13 +140,17 @@ const IngestModel: React.FC = () => {
   const isRemoteBaseUrlRequired = platform === 'git';
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Model Ingestion</h2>
+    <div className="p-3 p-md-4">
+      <h2 className="mb-3">Model Ingestion</h2>
 
       {/* Ingestion Form */}
-      <Card style={{ marginBottom: '30px' }}>
+      <Card className="mb-4">
+        <CardHeader tag="h5">Ingest External Model</CardHeader>
         <CardBody>
-          <h4>Ingest External Model</h4>
+          <p className="text-muted mb-4">
+            Ingest a model artifact from supported platforms. Required fields
+            are marked with *. Use Advanced Options for fine-grained control.
+          </p>
           <form onSubmit={onSubmit}>
             <Row>
               <Col md={6}>
@@ -158,6 +164,7 @@ const IngestModel: React.FC = () => {
                     type="select"
                     value={platform}
                     onChange={(e) => setPlatform(e.target.value)}
+                    disabled={isLoading}
                   >
                     <option value="huggingface">Hugging Face</option>
                     <option value="github">GitHub</option>
@@ -181,6 +188,7 @@ const IngestModel: React.FC = () => {
                   <Input
                     value={modelId}
                     onChange={(e) => setModelId(e.target.value)}
+                    disabled={isLoading}
                     placeholder={
                       platform === 'huggingface'
                         ? 'e.g. bert-base-uncased'
@@ -206,6 +214,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
+                      disabled={isLoading}
                       placeholder="e.g. main, master"
                     />
                   </FormGroup>
@@ -225,6 +234,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={remoteBaseUrl}
                       onChange={(e) => setRemoteBaseUrl(e.target.value)}
+                      disabled={isLoading}
                       placeholder="e.g. https://gitlab.com"
                     />
                   </FormGroup>
@@ -239,6 +249,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
+                      disabled={isLoading}
                       placeholder="e.g. main, master"
                     />
                   </FormGroup>
@@ -258,6 +269,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
+                      disabled={isLoading}
                       placeholder="e.g. main, master"
                     />
                   </FormGroup>
@@ -272,7 +284,7 @@ const IngestModel: React.FC = () => {
                   type="button"
                   color="link"
                   onClick={() => setShowAdvanced(!showAdvanced)}
-                  style={{ padding: 0, textDecoration: 'none' }}
+                  className="px-0 text-decoration-none"
                 >
                   {showAdvanced ? '▼' : '▶'} Advanced Options (Optional)
                 </Button>
@@ -292,6 +304,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={includePaths}
                       onChange={(e) => setIncludePaths(e.target.value)}
+                      disabled={isLoading}
                       placeholder="src/, models/, config.json (comma-separated)"
                     />
                   </FormGroup>
@@ -306,6 +319,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={excludePaths}
                       onChange={(e) => setExcludePaths(e.target.value)}
+                      disabled={isLoading}
                       placeholder="tests/, .git/, *.log (comma-separated)"
                     />
                   </FormGroup>
@@ -323,6 +337,7 @@ const IngestModel: React.FC = () => {
                     <Input
                       value={webhookUrl}
                       onChange={(e) => setWebhookUrl(e.target.value)}
+                      disabled={isLoading}
                       placeholder="e.g. https://your-webhook.com/endpoint"
                     />
                   </FormGroup>
@@ -330,11 +345,7 @@ const IngestModel: React.FC = () => {
               </Row>
             </Collapse>
 
-            {error && (
-              <div style={{ color: 'red', marginBottom: 8 }}>
-                {error.message}
-              </div>
-            )}
+            {error && <div className="text-danger mb-2">{error.message}</div>}
             <Button
               type="submit"
               color="primary"
@@ -345,7 +356,13 @@ const IngestModel: React.FC = () => {
                 (isRemoteBaseUrlRequired && !remoteBaseUrl)
               }
             >
-              {isLoading ? 'Starting...' : 'Ingest'}
+              {isLoading ? (
+                <>
+                  <Spinner size="sm" className="me-2" /> Starting...
+                </>
+              ) : (
+                'Ingest'
+              )}
             </Button>
           </form>
         </CardBody>
@@ -353,16 +370,19 @@ const IngestModel: React.FC = () => {
 
       {/* Ingestions List */}
       <Card>
+        <CardHeader tag="h5">Ingestion History</CardHeader>
         <CardBody>
-          <h4>Ingestion History</h4>
+          <p className="text-muted mb-3">
+            Click a row to view ingestion details.
+          </p>
           <QueryWrapper isLoading={isLoadingIngestions} error={ingestionsError}>
             {ingestions.length === 0 ? (
               <p>No ingestions found.</p>
             ) : (
-              <Table striped>
+              <Table striped responsive hover bordered size="sm">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>Ingestion ID</th>
                     <th>Platform</th>
                     <th>Model ID</th>
                     <th>Status</th>
@@ -374,33 +394,24 @@ const IngestModel: React.FC = () => {
                   {ingestions.map((ingestion: any) => (
                     <tr
                       key={ingestion.id}
-                      style={{ cursor: 'pointer' }}
+                      className="cursor-pointer"
                       onClick={() => handleIngestionClick(ingestion.id)}
                     >
                       <td>{ingestion.id}</td>
                       <td>{ingestion.platform}</td>
                       <td>{ingestion.model_id}</td>
                       <td>
-                        <span
-                          style={{
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            backgroundColor:
-                              ingestion.status === 'Finished'
-                                ? '#d4edda'
-                                : ingestion.status === 'Failed'
-                                ? '#f8d7da'
-                                : '#fff3cd',
-                            color:
-                              ingestion.status === 'Finished'
-                                ? '#155724'
-                                : ingestion.status === 'Failed'
-                                ? '#721c24'
-                                : '#856404',
-                          }}
+                        <Badge
+                          color={
+                            ingestion.status === 'Finished'
+                              ? 'success'
+                              : ingestion.status === 'Failed'
+                              ? 'danger'
+                              : 'warning'
+                          }
                         >
                           {ingestion.status}
-                        </span>
+                        </Badge>
                       </td>
                       <td>{ingestion.created_at}</td>
                       <td>{ingestion.last_modified}</td>
