@@ -11,13 +11,50 @@ import {
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 
+// MOCK DATA - Remove when server is ready
+const MOCK_PUBLICATIONS: any = {
+  'pub-001': {
+    id: 'pub-001',
+    artifact_id: 'artifact-abc123',
+    target_platform: 'HuggingFace',
+    status: 'Published',
+    attempts: 1,
+    created_at: '2024-11-01T10:30:00Z',
+    last_modified: '2024-11-01T11:15:00Z',
+    last_message: 'Successfully published model to HuggingFace Hub',
+  },
+  'pub-002': {
+    id: 'pub-002',
+    artifact_id: 'artifact-def456',
+    target_platform: 'Github',
+    status: 'Publishing',
+    attempts: 2,
+    created_at: '2024-11-03T14:20:00Z',
+    last_modified: '2024-11-05T09:45:00Z',
+    last_message: 'Upload in progress... 75% complete',
+  },
+  'pub-003': {
+    id: 'pub-003',
+    artifact_id: 'artifact-ghi789',
+    target_platform: 'Patra',
+    status: 'Failed',
+    attempts: 3,
+    created_at: '2024-10-28T08:00:00Z',
+    last_modified: '2024-10-28T10:30:00Z',
+    last_message: 'Error: Authentication failed. Please check credentials.',
+  },
+};
+
 type Props = { publicationId: string };
 
 const PublicationDetail: React.FC<Props> = ({ publicationId }) => {
   const history = useHistory();
   const { data, isLoading, error } =
     Hooks.Models.Publications.useGetModelPublication(publicationId);
-  const publication = data?.result;
+
+  // MOCK DATA - Use mock data instead of API response
+  const publication =
+    MOCK_PUBLICATIONS[publicationId] || MOCK_PUBLICATIONS['pub-001']; // Replace with: data?.result;
   const status = publication?.status as string | undefined;
 
   const getStatusColor = (status: string) => {

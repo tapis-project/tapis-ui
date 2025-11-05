@@ -6,6 +6,7 @@ import ArtifactDetail from '../Artifacts/ArtifactDetail';
 import ArtifactsList from '../Artifacts/ArtifactsList';
 import PublicationDetail from '../Publications/PublicationDetail';
 import PublicationsList from '../Publications/PublicationsList';
+import PublishModel from '../Publications/PublishModel';
 import { Dashboard } from '../Dashboard';
 import { Layout as ModelsLayout } from '../Models/_Layout';
 import { Layout as DatasetsLayout } from '../Datasets/_Layout';
@@ -51,6 +52,10 @@ const Router: React.FC = () => {
           },
         }: any) => <ArtifactDetail artifactId={artifactId} />}
       />
+
+      <Route path={`${path}/publications/publish`} exact>
+        <PublishModel />
+      </Route>
 
       <Route path={`${path}/publications`} exact>
         <PublicationsList />

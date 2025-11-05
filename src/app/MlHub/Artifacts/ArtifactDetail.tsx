@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, CardHeader, Table, Alert, Button } from 'reactstrap';
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Table,
+  Alert,
+  Button,
+  FormGroup,
+  Label,
+  Input,
+  Badge,
+} from 'reactstrap';
 import { LoadingButton } from '@mui/lab';
 import { useHistory } from 'react-router-dom';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
@@ -18,7 +29,59 @@ const ArtifactDetail: React.FC<Props> = ({ artifactId }) => {
     error: saveError,
   } = (Hooks as any).Models.Artifacts.useCreateModelMetadata();
 
+  // Publication hooks
+  const [targetPlatform, setTargetPlatform] = useState<string>('HuggingFace');
+  const {
+    publish,
+    isLoading: isPublishing,
+    error: publishError,
+    isSuccess: publishSuccess,
+    reset: resetPublish,
+  } = Hooks.Models.Publications.usePublishModelArtifact();
+
+  const {
+    data: publicationsData,
+    isLoading: isLoadingPublications,
+    refetch: refetchPublications,
+  } = Hooks.Models.Publications.useListPublicationsForArtifact(artifactId);
+
   const artifact = data?.result as any;
+  const publications = publicationsData?.result || [];
+
+  const handlePublish = () => {
+    publish(
+      {
+        artifactId,
+        publishArtifactRequest: {
+          target_platform: targetPlatform,
+        },
+      },
+      {
+        onSuccess: (resp: any) => {
+          refetchPublications();
+          setTimeout(() => resetPublish(), 3000);
+        },
+      }
+    );
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Published':
+      case 'Completed':
+      case 'Success':
+        return 'success';
+      case 'Failed':
+      case 'Error':
+        return 'danger';
+      case 'Publishing':
+      case 'InProgress':
+      case 'Pending':
+        return 'warning';
+      default:
+        return 'secondary';
+    }
+  };
 
   const templateMetadata: any = {
     // General Info
@@ -178,6 +241,100 @@ const ArtifactDetail: React.FC<Props> = ({ artifactId }) => {
             <Alert color="danger" className="mt-2 mb-0">
               {(saveError as any).message}
             </Alert>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Publish Model Section */}
+      <Card style={{ marginBottom: '20px' }}>
+        <CardHeader tag="h5">Publish Model</CardHeader>
+        <CardBody>
+          <p className="text-muted mb-3">
+            Publish this artifact to an external platform.
+          </p>
+
+          <FormGroup>
+            <Label for="targetPlatform">Target Platform</Label>
+            <Input
+              type="select"
+              id="targetPlatform"
+              value={targetPlatform}
+              onChange={(e) => setTargetPlatform(e.target.value)}
+              disabled={isPublishing}
+              style={{ maxWidth: '300px' }}
+            >
+              <option value="HuggingFace">Hugging Face</option>
+              <option value="Github">GitHub</option>
+              <option value="Patra">Patra</option>
+              <option value="s3">Amazon S3</option>
+              <option value="tacc-tapis">TACC Tapis</option>
+            </Input>
+          </FormGroup>
+
+          {publishError && (
+            <Alert color="danger" className="mt-2 mb-2">
+              {(publishError as any).message}
+            </Alert>
+          )}
+
+          {publishSuccess && (
+            <Alert color="success" className="mt-2 mb-2">
+              Publication initiated successfully!
+            </Alert>
+          )}
+
+          <Button
+            color="primary"
+            onClick={handlePublish}
+            disabled={isPublishing}
+            className="me-2"
+          >
+            {isPublishing ? 'Publishing...' : 'Publish to Platform'}
+          </Button>
+
+          {/* Publications for this artifact */}
+          {publications.length > 0 && (
+            <div className="mt-4">
+              <h6>Publications for this Artifact</h6>
+              <QueryWrapper isLoading={isLoadingPublications} error={null}>
+                <Table striped size="sm" className="mt-2">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Platform</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {publications.map((pub: any) => (
+                      <tr key={pub.id}>
+                        <td>{pub.id}</td>
+                        <td>{pub.target_platform}</td>
+                        <td>
+                          <Badge color={getStatusColor(pub.status)}>
+                            {pub.status}
+                          </Badge>
+                        </td>
+                        <td>{new Date(pub.created_at).toLocaleDateString()}</td>
+                        <td>
+                          <Button
+                            size="sm"
+                            color="link"
+                            onClick={() =>
+                              history.push(`/ml-hub/publications/${pub.id}`)
+                            }
+                          >
+                            View
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </QueryWrapper>
+            </div>
           )}
         </CardBody>
       </Card>
