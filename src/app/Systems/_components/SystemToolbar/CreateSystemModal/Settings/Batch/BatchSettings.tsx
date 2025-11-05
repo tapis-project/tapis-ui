@@ -21,7 +21,6 @@ import {
 const schedulerTypes = Object.values(SchedulerTypeEnum);
 
 const BatchSettings: React.FC = () => {
-  // Local state replacing Formik
   const [systemType, setSystemType] = useState<SystemTypeEnum>(
     SystemTypeEnum.Linux
   );
@@ -46,8 +45,6 @@ const BatchSettings: React.FC = () => {
             }
             label="Can Run Batch"
           />
-          <FormHelperText>Decides if the system can run batch</FormHelperText>
-
           {canRunBatch && (
             <div>
               <Select

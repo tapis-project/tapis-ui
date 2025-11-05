@@ -18,7 +18,7 @@ const runtimeTypes = Object.values(RuntimeTypeEnum);
 
 type AdvancedSettingsProp = {
   canExec: boolean;
-  values: Systems.ReqPostSystem;
+  values: Partial<Systems.ReqPostSystem>;
   onChange: (key: keyof Systems.ReqPostSystem, value: any) => void;
 };
 
@@ -35,33 +35,12 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
 
   const runtimeType: RuntimeTypeEnum | null =
     values.jobRuntimes && values.jobRuntimes.length > 0
-      ? values.jobRuntimes[0].runtimeType // <- assuming JobRuntime has a field runtimeType: RuntimeTypeEnum
+      ? values.jobRuntimes[0].runtimeType
       : null;
 
   if (canExec) {
     return (
       <div>
-        <Autocomplete
-          options={runtimeTypes}
-          getOptionLabel={(option) => {
-            return option;
-          }}
-          value={runtimeType}
-          onChange={(_, newValue) => {
-            newValue;
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Job RunTimes" variant="standard" />
-          )}
-          data-testid="jobRuntimes"
-        ></Autocomplete>
-        <TextField
-          name="version"
-          required={false}
-          helperText={`Version of ${runtimeType}`}
-          aria-label="Input"
-          disabled={true}
-        />
         {isS3 ? (
           <TextField
             name="bucketName"
@@ -72,7 +51,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProp> = ({
           />
         ) : null}
         <JobSettings />
-        <BatchSettings />
+        {/* <BatchSettings /> */}
         <ProxySettings />
         <CmdSettings />
         <TagsSettings />
