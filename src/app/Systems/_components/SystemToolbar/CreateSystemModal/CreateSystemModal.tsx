@@ -322,7 +322,7 @@ const SystemBatchStep: React.FC = () => {
                 size="small"
                 margin="dense"
                 label="Batch Scheduler Profile"
-                value={state.batchSchedulerProfile ?? ''}
+                value={state.batchSchedulerProfile}
                 onChange={(e) =>
                   updateState({ batchSchedulerProfile: e.target.value })
                 }
@@ -335,11 +335,9 @@ const SystemBatchStep: React.FC = () => {
                 size="small"
                 margin="dense"
                 label="Batch Default Logical Queue"
-                value={state.batchDefaultLogicalQueue ?? ''}
+                value={state.batchDefaultLogicalQueue}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  updateState({ batchDefaultLogicalQueue: val || undefined });
-                  if (val) ensureDefaultInQueues(val);
+                  updateState({ batchDefaultLogicalQueue: e.target.value });
                 }}
                 helperText="Batch default logical queue (must match one logical queue name)"
                 style={{ marginTop: '16px' }}
@@ -559,7 +557,7 @@ const CreateSystemModal: React.FC<{
     try {
       const finalState = { ...finalStateRaw } as any;
 
-      ['batchSchedulerProfile', 'batchDefaultLogicalQueue'].forEach((k) => {
+      ['batchDefaultLogicalQueue'].forEach((k) => {
         if (finalState[k] === '') finalState[k] = undefined;
       });
 
