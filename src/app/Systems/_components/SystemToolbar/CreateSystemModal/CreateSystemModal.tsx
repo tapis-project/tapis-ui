@@ -272,14 +272,6 @@ const SystemBatchStep: React.FC = () => {
   const updateQueue = (idx: number, value: LogicalQueue) =>
     setQueues(queues.map((q, i) => (i === idx ? value : q)));
 
-  const ensureDefaultInQueues = (defaultName?: string) => {
-    if (!defaultName) return;
-    const exists = queues.some((q) => q.name === defaultName);
-    if (!exists) {
-      setQueues([...queues, { name: defaultName, hpcQueueName: defaultName }]);
-    }
-  };
-
   return (
     <div>
       {isLinux && (
