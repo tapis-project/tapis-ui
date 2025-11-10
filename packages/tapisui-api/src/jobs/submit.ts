@@ -12,9 +12,10 @@ const submit = (
     basePath,
     jwt
   );
-  return errorDecoder<Jobs.RespSubmitJob>(() =>
-    api.submitJob({ reqSubmitJob: request })
-  );
+  return errorDecoder<Jobs.RespSubmitJob>(() => {
+    console.log({ request });
+    return api.submitJob({ reqSubmitJob: request });
+  });
 };
 
 export default submit;

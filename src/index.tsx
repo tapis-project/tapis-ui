@@ -5,6 +5,7 @@ import App from 'app';
 import { TapisProvider } from '@tapis/tapisui-hooks';
 import 'styles/index.css';
 import { resolveBasePath } from 'utils/resolveBasePath';
+import { resolveMLHubBasePath } from 'utils/resolveMLHubBasePath';
 import reportWebVitals from './reportWebVitals';
 import { ExtensionsProvider } from './extensions';
 import { Extension } from '@tapis/tapisui-extensions-core';
@@ -26,7 +27,10 @@ const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <ExtensionsProvider extensions={initializedExtensions}>
-      <TapisProvider basePath={resolveBasePath()}>
+      <TapisProvider
+        basePath={resolveBasePath()}
+        mlHubBasePath={resolveMLHubBasePath()}
+      >
         <Theme>
           <NotificationsProvider>
             <Router>

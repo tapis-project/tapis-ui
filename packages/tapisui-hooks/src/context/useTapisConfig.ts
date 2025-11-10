@@ -6,7 +6,7 @@ import jwt_decode from 'jwt-decode';
 import TapisContext from './TapisContext';
 
 const useTapisConfig = () => {
-  const { basePath } = useContext(TapisContext);
+  const { basePath, mlHubBasePath } = useContext(TapisContext);
 
   const getAccessToken = ():
     | Authenticator.NewAccessTokenResponse
@@ -59,6 +59,49 @@ const useTapisConfig = () => {
     ? basePath.replace('https://', '').replace('http://', '').split('.')[0]
     : undefined;
 
+  // Parse the site information from basePath
+  const pathSiteId = (() => {
+    if (!basePath) return undefined;
+
+    const domain = basePath.replace('https://', '').replace('http://', '');
+    const parts = domain.split('.');
+
+    // If we have at least 3 parts (e.g., tacc.develop.tapis.io)
+    if (parts.length >= 3) {
+      // Check if second part is a known site identifier
+      const secondPart = parts[1];
+
+      // List of known site identifiers that indicate non-prod environments
+      const knownSites = ['develop', 'staging', 'test', 'dev', 'stage'];
+
+      if (knownSites.includes(secondPart.toLowerCase())) {
+        return secondPart;
+      }
+
+      // If it's not a known site but we have more than 3 parts,
+      // it might be a custom domain like tacc.myown.site.com
+      if (parts.length > 3) {
+        // Join all parts except the tenant as the site
+        return parts.slice(1).join('.');
+      }
+    }
+
+    // For cases like tacc.tapis.io or test.tapis.io
+    if (parts.length === 3) {
+      const baseDomain = parts.slice(1).join('.'); // e.g., "tapis.io"
+
+      // If it's the main tapis.io domain, it's prod (no site identifier needed)
+      if (baseDomain === 'tapis.io') {
+        return undefined; // prod environment
+      } else {
+        // Custom domain like myown.site.com
+        return baseDomain;
+      }
+    }
+
+    return undefined;
+  })();
+
   const tokenTenantId: string | undefined =
     claims['tapis/tenant_id'] ?? undefined;
 
@@ -77,10 +120,12 @@ const useTapisConfig = () => {
 
   return {
     basePath,
+    mlHubBasePath,
     accessToken: data,
     setAccessToken,
     claims,
     pathTenantId: pathTenantId ?? undefined,
+    pathSiteId,
     tokenTenantId: tokenTenantId ?? "couldn't derive tenant_id",
     domainsMatched: domainsMatched,
     username: claims['tapis/username'],

@@ -1,0 +1,135 @@
+.card {
+  width: 25em;
+  margin-right: 1em;
+  margin-bottom: 1em;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border: 1px solid #e0e0e0;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #e3f2fd;
+  border-radius: 50%;
+  color: #1976d2;
+}
+
+.platform-icon {
+  font-size: 1.25rem;
+}
+
+.platform-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-description {
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  min-height: 3rem;
+}
+
+.capabilities-section {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.capabilities-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.capabilities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.capability-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #e3f2fd !important;
+  color: #1976d2 !important;
+  border: 1px solid #bbdefb;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    background-color: #1976d2 !important;
+    color: #ffffff !important;
+    border-color: #1976d2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(25, 118, 210, 0.2);
+  }
+}
+
+.model-count {
+  margin-bottom: 0.5rem;
+}
+
+.model-badge {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.platform-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    color: #0056b3;
+    text-decoration: none;
+  }
+}
+
+.arrow-icon {
+  color: #007bff;
+  font-size: 0.875rem;
+}

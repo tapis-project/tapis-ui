@@ -10,3 +10,4 @@ export { default as listByQuery } from './listByQuery';
 export { default as listByTask } from './listByTask';
 export { default as modelCardDetails } from './modelCardDetails';
 export * as Inference from './inference';
+export * as Platforms from './platforms';

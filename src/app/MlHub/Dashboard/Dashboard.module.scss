@@ -1,3 +1,24 @@
+.dashboard {
+  padding: 1em;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.section-description {
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
 .card-container {
   margin-top: 8px;
   display: flex;
@@ -27,6 +48,11 @@
   justify-content: space-between;
 }
 
-.dashboard {
-  padding-left: 1em;
+.platforms-container {
+  margin-top: 1rem;
+}
+
+.no-platforms-alert {
+  margin-top: 1rem;
+  text-align: center;
 }

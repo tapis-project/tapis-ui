@@ -10,7 +10,7 @@
     "bundle": "echo 'no bundle in scoped - skipping'; exit; npx tsc src/bundle.ts --skipLibCheck",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "npm run build && npm publish --access public",
-    "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
+    "copy-files": "cpx \"src/{ui/**/*.scss,styles/**/*,fonts/**/*,**/*.scss,index.css,**/*.css,**/*.module.css}\" dist",
     "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files",
     "watch": "npx tsc --build --watch --preserveWatchOutput"
   },
@@ -26,7 +26,6 @@
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",
     "@types/leaflet": "^1.9.17",
-    "copyfiles": "^2.4.1",
     "leaflet": "^1.9.4",
     "leaflet-canvas-markers": "^1.0.7",
     "leaflet-draw": "^1.0.4",
@@ -38,7 +37,8 @@
   "devDependencies": {
     "@types/leaflet.markercluster": "^1.5.5",
     "@types/node": "^18.19.33",
+    "cpx2": "8.0.0",
     "sass": "^1.77.6",
-    "typescript": "^4.9.5"
+    "typescript": "^5.9.3"
   }
 }

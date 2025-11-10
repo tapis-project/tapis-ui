@@ -3,7 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { Box } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
 import { EditorView } from '@codemirror/view';
 
 interface PodsCodeMirrorProps {

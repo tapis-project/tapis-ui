@@ -70,6 +70,30 @@ export default defineConfig({
     cssCodeSplit: true,
     rollupOptions: {
       external: ['packages'],
+      output: {
+        // Optimize chunk splitting
+        manualChunks: {
+          // Core React libraries
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // UI libraries
+          'mui-vendor': ['@mui/material', '@mui/icons-material', '@mui/lab', '@mui/x-data-grid', '@mui/x-tree-view'],
+          // Tapis core libraries
+          'tapis-vendor': ['@tapis/tapis-typescript', '@tapis/tapis-typescript-apps', '@tapis/tapis-typescript-systems'],
+          // Large utility libraries
+          'utils-vendor': ['lodash', 'date-fns', 'formik', 'yup'],
+          // Code editor libraries (heavy)
+          'editor-vendor': ['@codemirror/lang-json', '@codemirror/lang-python', '@uiw/react-codemirror', 'codemirror'],
+          // Visualization libraries
+          'viz-vendor': ['@xyflow/react', 'reactflow', 'leaflet', 'react-leaflet'],
+        },
+        // Optimize chunk file naming
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId
+            ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '')
+            : 'chunk';
+          return `assets/${facadeModuleId}-[hash].js`;
+        },
+      },
       // plugins: [
       //   visualizer({
       //     template: "treemap", // sunburst, treemap(default), network, raw-data, list

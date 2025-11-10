@@ -5,13 +5,13 @@ import { TapisProvider } from '@tapis/tapisui-hooks';
 export default function renderComponent(component: any, history: any = null) {
   if (history) {
     return render(
-      <TapisProvider basePath="tapis.test">
+      <TapisProvider basePath="tapis.test" mlHubBasePath="mlhub.test">
         <Router history={history}>{component}</Router>
       </TapisProvider>
     );
   }
   return render(
-    <TapisProvider basePath="tapis.test">
+    <TapisProvider basePath="tapis.test" mlHubBasePath="mlhub.test">
       <BrowserRouter>{component}</BrowserRouter>
     </TapisProvider>
   );

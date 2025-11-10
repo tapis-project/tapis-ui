@@ -9,7 +9,7 @@
     "clean": "rm -rf dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "npm run build && npm publish --access public",
-    "copy-files": "copyfiles -u 1 \"src/styles/**/*\" \"src/fonts/**/*\" \"src/**/*.scss\" \"src/index.css\" \"src/**/*.css\" \"src/**/*.module.css\" dist/",
+    "copy-files": "cpx \"src/{ui/**/*.scss,styles/**/*,fonts/**/*,**/*.scss,index.css,**/*.css,**/*.module.css}\" dist",
     "build": "npm run clean && npx tsc --build ./tsconfig.json && npm run copy-files",
     "watch": "npx tsc --build --watch --preserveWatchOutput"
   },
@@ -21,16 +21,16 @@
   "license": "MIT",
   "dependencies": {
     "@tapis/tapis-typescript": "^0.0.62",
-    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-common": "file:../tapisui-common",
+    "@tapis/tapisui-extensions-core": "file:../tapisui-extensions-core",
     "@tapis/tapisui-hooks": "file:../tapisui-hooks",
-    "copyfiles": "^2.4.1",
     "react": "^18.3.1"
   },
   "devDependencies": {
-    "@types/node": "^18.19.33",
-    "typescript": "^4.9.5",
     "@tapis/tapisui-extension-devtools": "file:../tapisui-extension-devtools",
-    "sass": "^1.77.6"
+    "@types/node": "^18.19.33",
+    "cpx2": "8.0.0",
+    "sass": "^1.77.6",
+    "typescript": "^5.9.3"
   }
 }
