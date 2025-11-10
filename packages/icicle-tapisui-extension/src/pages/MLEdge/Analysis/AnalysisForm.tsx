@@ -26,6 +26,7 @@ interface Analysis {
   advancedConfig: string;
   device: number | string;
   mode: string | undefined;
+  version: string | undefined;
 }
 
 interface ErrorDetail {
@@ -47,6 +48,7 @@ const initialValues: Analysis = {
   advancedConfig: '',
   device: '',
   mode: '',
+  version: '0.6.0',
 };
 
 const validationSchema = Yup.object({
@@ -65,6 +67,8 @@ const validationSchema = Yup.object({
       then: Yup.string().required('Device for CHAMELEON is required'),
     }),
 });
+
+const ct_controller_versions = ['latest', '0.3.3', '0.4.0', '0.5.0', '0.6.0'];
 
 const devices = [
   {
@@ -406,6 +410,10 @@ const AnalysisForm: React.FC = () => {
                 )[0];
                 const device = devices.filter((d) => d.id == values.device)[0];
                 const envVariables = [
+                  {
+                    key: 'CT_CONTROLLER_CT_VERSION',
+                    value: '',
+                  },
                   {
                     key: 'CT_CONTROLLER_TARGET_SITE',
                     value: values.site,
@@ -835,6 +843,7 @@ const AnalysisForm: React.FC = () => {
                       </div>
                     )}
                   </div>
+
                   {values.site && (
                     <div className={styles.formGroup}>
                       <label htmlFor={`device-${index}`}>Devices</label>
@@ -917,6 +926,61 @@ const AnalysisForm: React.FC = () => {
                       onBlur={handleBlur}
                       value={values.advancedConfig}
                     />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor={`version-${index}`}>Version</label>
+                    <span id={`versionHelp-${analysis.id}`}>
+                      <HelpOutline
+                        fontSize="small"
+                        style={{
+                          cursor: 'help',
+                          marginLeft: '4px',
+                          marginBottom: '2px',
+                        }}
+                      />
+                    </span>
+                    <Tooltip
+                      placement="top"
+                      isOpen={tooltipOpen[`versionHelp-${analysis.id}`]}
+                      target={`versionHelp-${analysis.id}`}
+                      toggle={() => toggleTooltip(`versionHelp-${analysis.id}`)}
+                    >
+                      Version
+                    </Tooltip>
+                    <Input
+                      type="select"
+                      id={`version-${index}`}
+                      name="version"
+                      onChange={(e) =>
+                        handleChangeAnalysis(
+                          index,
+                          'version',
+                          e.target.value,
+                          setFieldValue,
+                          setFieldTouched
+                        )
+                      }
+                      onBlur={handleBlur}
+                      value={values.version}
+                      className={
+                        !values.version && touched.version ? 'is-invalid' : ''
+                      }
+                    >
+                      {ct_controller_versions.map((v) => {
+                        return (
+                          <option
+                            selected={v === '0.6.0'}
+                            value={v}
+                            label={v === 'latest' ? 'pre-release' : v}
+                          />
+                        );
+                      })}
+                    </Input>
+                    {!values.site && touched.site && (
+                      <div className="invalid-feedback">
+                        {errors.site || 'Site is required'}
+                      </div>
+                    )}
                   </div>
                   <Button type="submit" color="primary">
                     Analyze
