@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/extend-expect';
 import { MutationFunction } from '@tapis/tapisui-hooks';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { act } from '@testing-library/react';
 import useFileOperations from './useFileOperations';
 

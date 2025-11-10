@@ -67,7 +67,6 @@ function FileInputDropZone({
   }
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <div {...getRootProps()} className="dropzone-area">
       <input {...getInputProps()} />
       {!showFileList && (

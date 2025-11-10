@@ -1,7 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { renderHook } from '@testing-library/react-hooks';
-import { act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { fileInfo } from 'fixtures/files.fixtures';
 import useFilesSelect from './useFilesSelect';
 

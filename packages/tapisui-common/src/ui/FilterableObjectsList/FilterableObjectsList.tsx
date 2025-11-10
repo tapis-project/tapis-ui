@@ -18,13 +18,21 @@ import {
   FormControl,
   InputLabel,
   Select,
+  TextField,
+  Chip,
+  Stack,
+  Box,
+  Typography,
 } from '@mui/material';
+
 import {
   ExpandMore,
   ExpandLess,
   FilterAlt,
   SortByAlpha,
   Category,
+  AccessTime,
+  Clear,
 } from '@mui/icons-material';
 
 export type ResolvableGroupItemValue<T, R> =
@@ -60,6 +68,55 @@ export type Group<T, V> = {
 
 type FilterScope = 'filter' | 'group' | 'order';
 
+//TODO: Add more filter types
+export type FilterType = 'timeRange';
+
+export type TimeRangeFilter = {
+  type: 'timeRange';
+  field: string;
+  range: 'last24h' | 'last7d' | 'last30d' | 'custom';
+  customStart?: Date;
+  customEnd?: Date;
+};
+
+export type Filter = {
+  id: string;
+  field: string; // Which field is being filtered
+  type: string; // Filter type (same as filterType from config)
+  value: any; // Filter value
+  label: string;
+};
+
+// Pre-defined common filters for users
+export type FilterPreset = {
+  id: string;
+  label: string;
+  icon?: React.ReactElement;
+  filter: Filter;
+  color?:
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'error'
+    | 'info'
+    | 'success'
+    | 'warning';
+};
+
+export type FilterConfig = {
+  filterableFields: Array<{
+    field: string; // filterable fields like 'created', 'lastUpdated'
+    label: string;
+    filterType: string; // 'timeRange'
+    options?: Array<{ value: string; label: string }>; // For select fields
+    presets?: Array<FilterPreset>; // Field-specific presets
+  }>;
+
+  filterFunctions: {
+    [field: string]: (objects: any[], filter: Filter) => any[];
+  };
+};
+
 export type FilterableObjectsListProps<T, V = string | undefined> = {
   objects: Array<T>;
   groups: Array<Group<T, V>>;
@@ -91,6 +148,9 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   isSelectedItem?: (args: { object: T; selectedField?: string }) => boolean;
   listItemIconStyle?: React.CSSProperties;
   middleClickLink?: (object: T) => string | undefined;
+  filterConfig?: FilterConfig;
+  defaultFilters?: Array<Filter>;
+  onFiltersChange?: (filters: Array<Filter>) => void;
 };
 
 export type FilterableObjectsListComponentProps<
@@ -104,6 +164,9 @@ type FilterableObjectsListState = {
   groupBy?: string;
   orderBy?: OrderBy;
   filterScope?: FilterScope;
+  activeFilters?: Array<Filter>;
+  currentFilterType?: FilterType;
+  selectedField?: string; // Currently selected field for filtering
 };
 
 const FilterableObjectsList: FilterableObjectsListComponentProps<{
@@ -141,6 +204,9 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     (object.id === selectedField || object.pod_id === selectedField),
   listItemIconStyle = { minWidth: '56px' },
   middleClickLink = undefined,
+  filterConfig = undefined,
+  defaultFilters = [],
+  onFiltersChange = undefined,
 }) => {
   const open = useMemo(() => {
     let concatenatedOpen: FilterableObjectsListState['open'] =
@@ -165,18 +231,52 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     groupBy: defaultField ? defaultField : includeAll ? '*' : undefined,
     filterScope: defaultFilterScope,
     orderBy: orderGroupsBy,
+    ...(filterable && {
+      activeFilters: defaultFilters,
+      currentFilterType: 'timeRange',
+    }),
   });
+
+  const [currentFilterValue, setCurrentFilterValue] = useState<string>('');
+  // State to show duplicate filter feedback
+  const [showDuplicateMessage, setShowDuplicateMessage] =
+    useState<boolean>(false);
+  // State for custom date range inputs
+  const [customStartDate, setCustomStartDate] = useState<string>('');
+  const [customEndDate, setCustomEndDate] = useState<string>('');
+
+  // Validation function for custom date range
+  const isCustomDateRangeValid = (): boolean => {
+    if (!customStartDate) return false;
+
+    // If only start date is provided, it's valid (end defaults to now)
+    if (!customEndDate) return true;
+
+    // If both dates are provided, check that start is before end
+    const startDate = new Date(customStartDate);
+    const endDate = new Date(customEndDate);
+    return startDate <= endDate;
+  };
 
   useEffect(() => {
     const modifiedState: FilterableObjectsListState = {
       ...state,
       groupedObjects: {},
     };
+
+    // Start with all objects
+    let filteredObjects = objects;
+
+    // Apply advanced filters only if filterable is true
+    if (filterable && state.activeFilters) {
+      filteredObjects = applyFilters(filteredObjects, state.activeFilters);
+    }
+
     for (let group of groups) {
       modifiedState.groupedObjects = {
         ...modifiedState.groupedObjects,
         [group.field as unknown as string]: filterObjects(
-          objects,
+          filteredObjects,
           group.field,
           state.orderBy
         ),
@@ -184,11 +284,11 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     }
 
     if (includeAll) {
-      modifiedState.groupedObjects['*'] = [['*', objects]];
+      modifiedState.groupedObjects['*'] = [['*', filteredObjects]];
     }
 
     setState(modifiedState);
-  }, [state.orderBy, objects, groups]);
+  }, [state.orderBy, state.activeFilters, objects, groups, filterable]);
 
   const toggleDropdown = (field: string, fieldValue: string) => {
     const target = `${field}:${fieldValue}`;
@@ -198,6 +298,158 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
     }
 
     setState({ ...state, open: [...state.open, target] });
+  };
+
+  // Apply all active filters using config-driven approach
+  const applyFilters = (
+    objects: Array<any>,
+    filters: Array<Filter>
+  ): Array<any> => {
+    if (!filterConfig) return objects;
+
+    return filters.reduce((filteredObjects, filter) => {
+      const filterFunction = filterConfig.filterFunctions[filter.field];
+
+      if (filterFunction) {
+        return filterFunction(filteredObjects, filter);
+      }
+
+      return filteredObjects;
+    }, objects);
+  };
+
+  // Add a filter
+  const addFilter = (filter: Filter) => {
+    if (!filterable || !state.activeFilters) return;
+
+    // Check if this exact filter already exists
+    const isDuplicate = state.activeFilters.some((existingFilter) => {
+      if (existingFilter.type !== filter.type) return false;
+
+      // For timeRange filters, check if field and range match
+      if (filter.type === 'timeRange' && existingFilter.type === 'timeRange') {
+        const filterRange = filter.value?.range;
+        const existingRange = existingFilter.value?.range;
+
+        // For custom ranges, also compare customStart and customEnd dates
+        if (filterRange === 'custom' && existingRange === 'custom') {
+          return (
+            existingFilter.field === filter.field &&
+            existingFilter.value?.customStart === filter.value?.customStart &&
+            existingFilter.value?.customEnd === filter.value?.customEnd
+          );
+        }
+        // For non-custom ranges, just compare field and range
+        return (
+          existingFilter.field === filter.field && existingRange === filterRange
+        );
+      }
+
+      return false;
+    });
+
+    // Only add if it's not a duplicate
+    if (!isDuplicate) {
+      const newFilters = [...state.activeFilters, filter];
+      setState({ ...state, activeFilters: newFilters });
+      onFiltersChange?.(newFilters);
+    } else {
+      // Show duplicate message briefly
+      setShowDuplicateMessage(true);
+      setTimeout(() => setShowDuplicateMessage(false), 2000);
+    }
+  };
+
+  // Remove a filter
+  const removeFilter = (filterIndex: number) => {
+    if (!filterable || !state.activeFilters) return;
+    const newFilters = state.activeFilters.filter(
+      (_, index) => index !== filterIndex
+    );
+    setState({ ...state, activeFilters: newFilters });
+    setCurrentFilterValue('');
+    onFiltersChange?.(newFilters);
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    if (!filterable) return;
+    setState({ ...state, activeFilters: [] });
+    setCurrentFilterValue('');
+    onFiltersChange?.([]);
+  };
+
+  // Apply a filter preset
+  const applyFilterPreset = (preset: FilterPreset) => {
+    if (!filterable) return;
+    addFilter(preset.filter);
+  };
+
+  // Get a human-readable label for a filter
+  const getFilterLabel = (filter: Filter): string => {
+    // Use the label from the filter if available
+    if (filter.label) {
+      return filter.label;
+    }
+
+    // Fallback to generating label from filter data
+    switch (filter.type) {
+      case 'timeRange':
+        const rangeLabels = {
+          last24h: 'Last 24 Hours',
+          last7d: 'Last 7 Days',
+          last30d: 'Last 30 Days',
+          custom: 'Custom Range',
+        };
+
+        const fieldLabel = getFieldLabel(filter.field);
+        const range = filter.value?.range;
+
+        // For custom ranges, show the actual date range with minute precision
+        if (range === 'custom') {
+          const formatDateTime = (date: Date) => {
+            return date.toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          };
+
+          const startDate = filter.value?.customStart
+            ? formatDateTime(filter.value.customStart)
+            : 'Unknown';
+          const endDate = filter.value?.customEnd
+            ? formatDateTime(filter.value.customEnd)
+            : formatDateTime(new Date());
+
+          return `${fieldLabel}: ${startDate} - ${endDate}`;
+        }
+
+        return `${fieldLabel}: ${
+          rangeLabels[range as keyof typeof rangeLabels] || 'Unknown Range'
+        }`;
+      default:
+        return `${getFieldLabel(filter.field)}: ${filter.value || 'Unknown'}`;
+    }
+  };
+
+  // Helper functions for field-specific data
+  const getFieldPresets = (field: string): Array<FilterPreset> => {
+    const fieldConfig = filterConfig?.filterableFields.find(
+      (f) => f.field === field
+    );
+    return fieldConfig?.presets || [];
+  };
+
+  const getFieldConfig = (field: string) => {
+    return filterConfig?.filterableFields.find((f) => f.field === field);
+  };
+
+  const getFieldLabel = (field: string): string => {
+    const fieldConfig = getFieldConfig(field);
+    return fieldConfig?.label || field;
   };
 
   let allGroups = [...groups];
@@ -457,6 +709,281 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   })}
                 </Select>
               </FormControl>
+            </div>
+          </>
+        )}
+        {filterable && state.filterScope === 'filter' && (
+          <>
+            <Divider />
+            <div
+              style={{
+                padding: '12px',
+                width: '100%',
+              }}
+            >
+              {/* Active Filters */}
+              {state.activeFilters && state.activeFilters.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      mb: 1,
+                    }}
+                  >
+                    <Typography variant="subtitle2">
+                      Active Filters ({state.activeFilters?.length || 0})
+                    </Typography>
+                    <Button
+                      size="small"
+                      startIcon={<Clear />}
+                      onClick={clearAllFilters}
+                      color="error"
+                    >
+                      Clear All
+                    </Button>
+                  </Box>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    {state.activeFilters?.map((filter, index) => (
+                      <Chip
+                        key={index}
+                        label={getFilterLabel(filter)}
+                        onDelete={() => removeFilter(index)}
+                        color="primary"
+                        size="small"
+                        variant="filled"
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+
+              {showDuplicateMessage && (
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="warning.main">
+                    This filter is already active
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Step 1: Field Selection */}
+              <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                <InputLabel>Filter by Field</InputLabel>
+                <Select
+                  value={state.selectedField || ''}
+                  label="Filter by Field"
+                  onChange={(e) => {
+                    setState({ ...state, selectedField: e.target.value });
+                    setCurrentFilterValue('');
+                    setCustomStartDate('');
+                    setCustomEndDate('');
+                  }}
+                >
+                  <MenuItem value="">Select a field to filter...</MenuItem>
+                  {filterConfig?.filterableFields.map((field) => (
+                    <MenuItem key={field.field} value={field.field}>
+                      {field.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Step 2: Field-Specific Presets */}
+              {state.selectedField &&
+                getFieldPresets(state.selectedField).length > 0 && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                      Quick Filters for {getFieldLabel(state.selectedField)}
+                    </Typography>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      flexWrap="wrap"
+                      useFlexGap
+                    >
+                      {getFieldPresets(state.selectedField).map((preset) => (
+                        <Chip
+                          key={preset.id}
+                          label={preset.label}
+                          icon={preset.icon}
+                          color={preset.color || 'default'}
+                          size="small"
+                          onClick={() => applyFilterPreset(preset)}
+                          variant="outlined"
+                        />
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+
+              {/* Step 3: Custom Filter Input for TimeRange */}
+              {state.selectedField &&
+                getFieldConfig(state.selectedField)?.filterType ===
+                  'timeRange' && (
+                  <Box>
+                    <FormControl fullWidth size="small" sx={{ mb: 1 }}>
+                      <InputLabel>Add Time Range Filter</InputLabel>
+                      <Select
+                        value={currentFilterValue}
+                        label="Add Time Range Filter"
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value && value.startsWith('timeRange:')) {
+                            const range = value.split(
+                              ':'
+                            )[1] as TimeRangeFilter['range'];
+
+                            if (range === 'custom') {
+                              setCurrentFilterValue(value);
+                            } else {
+                              // For predefined ranges, add the filter immediately
+                              addFilter({
+                                id: `filter-${Date.now()}`,
+                                field: state.selectedField!,
+                                type: 'timeRange',
+                                value: { range },
+                                label: `${getFieldLabel(
+                                  state.selectedField!
+                                )}: ${
+                                  range === 'last24h'
+                                    ? 'Last 24 Hours'
+                                    : range === 'last7d'
+                                    ? 'Last 7 Days'
+                                    : 'Last 30 Days'
+                                }`,
+                              });
+                              setCurrentFilterValue('');
+                            }
+                          }
+                        }}
+                      >
+                        <MenuItem value="">Select a time range...</MenuItem>
+                        <ListSubheader>Time Range</ListSubheader>
+                        <MenuItem value="timeRange:last24h">
+                          Last 24 Hours
+                        </MenuItem>
+                        <MenuItem value="timeRange:last7d">
+                          Last 7 Days
+                        </MenuItem>
+                        <MenuItem value="timeRange:last30d">
+                          Last 30 Days
+                        </MenuItem>
+                        <MenuItem value="timeRange:custom">
+                          Custom Range
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+
+                    {/* Custom Date Range Inputs */}
+                    {currentFilterValue === 'timeRange:custom' && (
+                      <Box sx={{ mt: 2 }}>
+                        <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+                          <TextField
+                            label="Start Time"
+                            type="datetime-local"
+                            value={customStartDate}
+                            onChange={(e) => setCustomStartDate(e.target.value)}
+                            size="small"
+                            fullWidth
+                            error={Boolean(
+                              customStartDate &&
+                                customEndDate &&
+                                !isCustomDateRangeValid()
+                            )}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                          />
+                          <TextField
+                            label="End Time"
+                            type="datetime-local"
+                            value={customEndDate}
+                            onChange={(e) => setCustomEndDate(e.target.value)}
+                            size="small"
+                            fullWidth
+                            error={Boolean(
+                              customStartDate &&
+                                customEndDate &&
+                                !isCustomDateRangeValid()
+                            )}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                          />
+                        </Stack>
+                        {/* Validation Error Message */}
+                        {customStartDate &&
+                          customEndDate &&
+                          !isCustomDateRangeValid() && (
+                            <Typography
+                              variant="caption"
+                              color="error"
+                              sx={{ mb: 1, display: 'block' }}
+                            >
+                              Start date must be earlier than end date
+                            </Typography>
+                          )}
+                        {/* Helper text when only start date is provided */}
+                        {customStartDate && !customEndDate && (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ mb: 1, display: 'block' }}
+                          >
+                            End date will default to current time
+                          </Typography>
+                        )}
+                        <Stack direction="row" spacing={1}>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={() => {
+                              if (isCustomDateRangeValid()) {
+                                const startDate = new Date(customStartDate);
+                                const endDate = customEndDate
+                                  ? new Date(customEndDate)
+                                  : new Date();
+
+                                addFilter({
+                                  id: `filter-${Date.now()}`,
+                                  field: state.selectedField!,
+                                  type: 'timeRange',
+                                  value: {
+                                    range: 'custom',
+                                    customStart: startDate,
+                                    customEnd: endDate,
+                                  },
+                                  label: `${getFieldLabel(
+                                    state.selectedField!
+                                  )}: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`,
+                                });
+                                // Reset the form
+                                setCurrentFilterValue('');
+                                setCustomStartDate('');
+                                setCustomEndDate('');
+                              }
+                            }}
+                            disabled={!isCustomDateRangeValid()}
+                          >
+                            Apply Filter
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => {
+                              setCurrentFilterValue('');
+                              setCustomStartDate('');
+                              setCustomEndDate('');
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </Stack>
+                      </Box>
+                    )}
+                  </Box>
+                )}
             </div>
           </>
         )}

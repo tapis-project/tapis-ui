@@ -68,7 +68,7 @@
             - nix develop .#menu: runs 'menu version' in nix shell
             - nix flake show: to view flake outputs
             - pnpm run: list all pnpm scripts in root package.json
-            - pnpm -r build | list | audit | outdated: cool commands, run pnpm for more info
+            - pnpm -r build | list | audit | outdated | why: cool commands, run pnpm for more info
           "
         '';
         

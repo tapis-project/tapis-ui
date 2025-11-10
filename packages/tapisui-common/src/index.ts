@@ -43,6 +43,7 @@ import {
   Tabs,
   FilterableObjectsList,
 } from './ui';
+import { type FilterConfig } from './ui/FilterableObjectsList/FilterableObjectsList';
 import {
   QueryWrapper,
   SubmitWrapper,
@@ -143,6 +144,7 @@ export {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
+  type FilterConfig,
   // Wrappers
   QueryWrapper,
   SubmitWrapper,

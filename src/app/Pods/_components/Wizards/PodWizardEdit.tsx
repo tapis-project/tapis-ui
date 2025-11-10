@@ -16,7 +16,6 @@ import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
 import { useFormik, FormikProvider, FieldArray } from 'formik';
 import styles from './Common/Wizard.module.scss';
-import { env } from 'process';
 import { useAppDispatch, useAppSelector, updateState } from '@redux';
 import {
   CommandSection,
@@ -174,7 +173,7 @@ const PodWizardEdit: React.FC<{
     enableReinitialize: true,
   });
 
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {

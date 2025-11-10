@@ -21,7 +21,7 @@ import {
 import { Sidebar } from 'app/_components';
 
 const Layout: React.FC = () => {
-  const { claims, pathTenantId } = useTapisConfig();
+  const { claims, pathTenantId, pathSiteId } = useTapisConfig();
   const { extension } = useExtension();
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
@@ -34,7 +34,9 @@ const Layout: React.FC = () => {
 
   // Set the document title dynamically based on the tenant ID
   useEffect(() => {
-    if (pathTenantId) {
+    if (pathTenantId && pathSiteId) {
+      document.title = `Tapis - ${pathTenantId}.${pathSiteId}`;
+    } else if (pathTenantId) {
       document.title = `Tapis - ${pathTenantId}`;
     } else {
       document.title = 'Tapis';

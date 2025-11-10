@@ -265,7 +265,7 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
   });
 
   // Debounced Redux sync for createPodData (for output/preview)
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {

@@ -727,6 +727,25 @@ const Sidebar: React.FC = () => {
                     window.location.href = tenant.base_url + '/';
                     setModal(undefined);
                   }}
+                  onAuxClick={(event) => {
+                    // Handle middle-click (button 1) to open in new tab
+                    if (event.button === 1) {
+                      event.preventDefault();
+                      window.open(tenant.base_url + '/', '_blank');
+                      setModal(undefined);
+                    }
+                  }}
+                  component="a"
+                  href={tenant.base_url + '/'}
+                  sx={{
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    '&:hover': {
+                      textDecoration: 'none',
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                    },
+                  }}
                 >
                   {tenant.tenant_id}
                 </MenuItem>
