@@ -166,7 +166,7 @@ const Dashboard: React.FC = () => {
               <PlatformCard
                 key={platformInfo.platform}
                 platform={platformInfo}
-                link={`/ml-hub/platforms/${platformInfo.platform}`}
+                link={`/ml-hub/models/platform/${platformInfo.platform}`}
               />
             ))}
           </div>
