@@ -135,6 +135,12 @@ const Dashboard: React.FC = () => {
             link="/ml-hub/datasets"
           />
           <DashboardCard
+            icon="upload"
+            name="Model Ingestion"
+            text="Ingest models from external platforms"
+            link="/ml-hub/ingest"
+          />
+          <DashboardCard
             icon="multiple-coversation"
             name="Inference Server"
             text="View available inference server for ML models"
