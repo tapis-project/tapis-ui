@@ -26,15 +26,13 @@ interface PlatformCardProps {
 const PlatformCard: React.FC<PlatformCardProps> = ({ platform, link }) => {
   return (
     <Card className={styles.card}>
-      <CardHeader>
-        <div className={styles['card-header']}>
-          <div className={styles['icon-container']}>
-            <Icon name={platform.icon} className={styles['platform-icon']} />
-          </div>
-          <div className={styles['platform-name']}>{platform.name}</div>
+      <CardHeader className={styles['card-header']}>
+        <div className={styles['icon-container']}>
+          <Icon name={platform.icon} className={styles['platform-icon']} />
         </div>
+        <div className={styles['platform-name']}>{platform.name}</div>
       </CardHeader>
-      <CardBody>
+      <CardBody className={styles['card-body']}>
         <CardTitle tag="h5" className={styles['card-title']}>
           {platform.name}
         </CardTitle>
