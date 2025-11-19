@@ -7,7 +7,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { Button, Chip } from '@mui/material';
+import { Button, Chip, CircularProgress } from '@mui/material';
 import { JSONDisplay } from '@tapis/tapisui-common';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
@@ -18,12 +18,94 @@ import {
   localModels,
   modelDeploymentReadiness,
   StrategyReadiness,
+  DeploymentStrategy,
 } from './localModels.data';
 
 type ActiveModalState = {
   modelName: string;
   strategyId: string;
 } | null;
+
+type StrategyButtonProps = {
+  strategyId: string;
+  strategyMeta: DeploymentStrategy;
+  modelName: string;
+  strategyReadiness: StrategyReadiness | undefined;
+  onOpenModal: (modelName: string, strategyId: string) => void;
+};
+
+const StrategyButton: React.FC<StrategyButtonProps> = ({
+  strategyId,
+  strategyMeta,
+  modelName,
+  strategyReadiness,
+  onOpenModal,
+}) => {
+  const credentialQuery = SystemsHooks.useCheckCredential(
+    {
+      systemId: strategyMeta.systemId ?? '',
+    },
+    {
+      enabled: !!strategyMeta.systemId,
+      retry: 0,
+    }
+  );
+
+  const credentialReady = useMemo(() => {
+    if (!strategyMeta.systemId) {
+      return true; // No credentials required
+    }
+    if (credentialQuery.isLoading) {
+      return null; // Still checking - return null to indicate loading state
+    }
+    if (credentialQuery.error) {
+      return false; // Credentials missing
+    }
+    return credentialQuery.data?.status?.toLowerCase() === 'success';
+  }, [
+    credentialQuery.data,
+    credentialQuery.error,
+    credentialQuery.isLoading,
+    strategyMeta.systemId,
+  ]);
+
+  const allocationReady = useMemo(() => {
+    if (!strategyReadiness) {
+      return true; // No allocation info, assume ready
+    }
+    if (!strategyReadiness.requiresAllocation) {
+      return true; // Allocation not required
+    }
+    return strategyReadiness.hasAllocation;
+  }, [strategyReadiness]);
+
+  const isCheckingCredentials = credentialReady === null;
+  const allReady = credentialReady === true && allocationReady;
+
+  return (
+    <Button
+      key={strategyId}
+      variant="outlined"
+      size="small"
+      color={
+        isCheckingCredentials
+          ? 'inherit'
+          : allReady
+          ? 'success'
+          : 'warning'
+      }
+      onClick={() => onOpenModal(modelName, strategyId)}
+      disabled={isCheckingCredentials}
+      startIcon={
+        isCheckingCredentials ? (
+          <CircularProgress size={12} sx={{ color: 'inherit' }} />
+        ) : undefined
+      }
+    >
+      {strategyMeta.name}
+    </Button>
+  );
+};
 
 const LocalModels: React.FC = () => {
   const [searchText, setSearchText] = useState('');
@@ -274,23 +356,15 @@ const LocalModels: React.FC = () => {
                           }
                           const strategyReadiness: StrategyReadiness | undefined =
                             modelDeploymentReadiness[model.name]?.[strategyId];
-                          const ready = strategyReadiness
-                            ? strategyReadiness.requiresAllocation
-                              ? strategyReadiness.hasAllocation
-                              : true
-                            : false;
                           return (
-                            <Button
+                            <StrategyButton
                               key={strategyId}
-                              variant="outlined"
-                              size="small"
-                              color={ready ? 'success' : 'warning'}
-                              onClick={() =>
-                                openModal(model.name, strategyId)
-                              }
-                            >
-                              {strategyMeta.name}
-                            </Button>
+                              strategyId={strategyId}
+                              strategyMeta={strategyMeta}
+                              modelName={model.name}
+                              strategyReadiness={strategyReadiness}
+                              onOpenModal={openModal}
+                            />
                           );
                         })}
                       </div>
