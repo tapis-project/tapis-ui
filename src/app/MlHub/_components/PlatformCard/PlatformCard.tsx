@@ -21,9 +21,14 @@ interface PlatformCardProps {
     capabilities: string[];
   };
   link: string;
+  isExternal?: boolean;
 }
 
-const PlatformCard: React.FC<PlatformCardProps> = ({ platform, link }) => {
+const PlatformCard: React.FC<PlatformCardProps> = ({
+  platform,
+  link,
+  isExternal = false,
+}) => {
   return (
     <Card className={styles.card}>
       <CardHeader className={styles['card-header']}>
@@ -58,9 +63,20 @@ const PlatformCard: React.FC<PlatformCardProps> = ({ platform, link }) => {
         </div>
       </CardBody>
       <CardFooter className={styles['card-footer']}>
-        <Link to={link} className={styles['platform-link']}>
-          Browse {platform.name}
-        </Link>
+        {isExternal ? (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles['platform-link']}
+          >
+            Browse {platform.name}
+          </a>
+        ) : (
+          <Link to={link} className={styles['platform-link']}>
+            Browse {platform.name}
+          </Link>
+        )}
         <Icon name="push-right" className={styles['arrow-icon']} />
       </CardFooter>
     </Card>

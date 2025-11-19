@@ -144,13 +144,32 @@ const Dashboard: React.FC = () => {
           className={styles['platforms-container']}
         >
           <div className={styles['card-container']}>
-            {platformInfos.map((platformInfo: any) => (
-              <PlatformCard
-                key={platformInfo.platform}
-                platform={platformInfo}
-                link={`/ml-hub/models/platform/${platformInfo.platform}`}
-              />
-            ))}
+            {platformInfos.map((platformInfo: any) => {
+              // Determine link and whether it's external based on platform
+              let link: string;
+              let isExternal = false;
+
+              if (platformInfo.platform === 'Github') {
+                link = 'https://github.com';
+                isExternal = true;
+              } else if (platformInfo.platform === 'Git') {
+                // TODO: Update with desired Git link
+                link = 'https://git-scm.com';
+                isExternal = true;
+              } else {
+                link = `/ml-hub/models/platform/${platformInfo.platform}`;
+                isExternal = false;
+              }
+
+              return (
+                <PlatformCard
+                  key={platformInfo.platform}
+                  platform={platformInfo}
+                  link={link}
+                  isExternal={isExternal}
+                />
+              );
+            })}
           </div>
         </QueryWrapper>
       </div>
