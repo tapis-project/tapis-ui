@@ -110,9 +110,7 @@
   gap: 1.5rem;
 }
 
-// Ensure PlatformCard aligns nicely
-:global {
-  .card {
-    height: 100%;
-  }
+// Scope height rule strictly to cards within the card-container
+.card-container :global(.card) {
+  height: 100%;
 }
