@@ -87,13 +87,15 @@ const Dashboard: React.FC = () => {
               <Icon name="search-folder" className={styles['btn-icon']} />
               Browse All Models
             </Link>
-            <Link to="/ml-hub/chatbot" className={styles['hero-btn']}>
+            <span
+              className={`${styles['hero-btn']} ${styles['hero-btn-disabled']}`}
+            >
               <Icon
                 name="multiple-coversation"
                 className={styles['btn-icon']}
               />
               Discover with Chatbot
-            </Link>
+            </span>
           </div>
         </div>
       </div>

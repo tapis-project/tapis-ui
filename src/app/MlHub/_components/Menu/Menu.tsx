@@ -15,33 +15,51 @@ const Menu: React.FC = () => {
   };
 
   const menuItems = [
-    { path: '/ml-hub', label: 'Dashboard', icon: 'dashboard' },
-    { path: '/ml-hub/models', label: 'Models', icon: 'simulation' },
+    { path: '/ml-hub', label: 'Dashboard', icon: 'dashboard', disabled: false },
+    {
+      path: '/ml-hub/models',
+      label: 'Models',
+      icon: 'simulation',
+      disabled: false,
+    },
     {
       path: '/ml-hub/chatbot',
       label: 'Chatbot',
       icon: 'multiple-coversation',
+      disabled: true,
     },
   ];
 
   return (
     <div className={styles['menu-container']}>
       <nav className={styles['menu-nav']}>
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={styles['menu-link']}
-            activeClassName={styles['active']}
-            isActive={() => isActive(item.path)}
-            exact={item.path === '/ml-hub'}
-          >
-            <span className={styles['icon-wrapper']}>
-              <Icon name={item.icon} />
+        {menuItems.map((item) =>
+          item.disabled ? (
+            <span
+              key={item.path}
+              className={`${styles['menu-link']} ${styles['disabled']}`}
+            >
+              <span className={styles['icon-wrapper']}>
+                <Icon name={item.icon} />
+              </span>
+              <span className={styles['label']}>{item.label}</span>
             </span>
-            <span className={styles['label']}>{item.label}</span>
-          </NavLink>
-        ))}
+          ) : (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={styles['menu-link']}
+              activeClassName={styles['active']}
+              isActive={() => isActive(item.path)}
+              exact={item.path === '/ml-hub'}
+            >
+              <span className={styles['icon-wrapper']}>
+                <Icon name={item.icon} />
+              </span>
+              <span className={styles['label']}>{item.label}</span>
+            </NavLink>
+          )
+        )}
       </nav>
     </div>
   );

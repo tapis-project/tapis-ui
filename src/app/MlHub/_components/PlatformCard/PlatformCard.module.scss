@@ -3,7 +3,7 @@
   margin-bottom: 0;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   border: 1px solid #eee; // Back to a simple border
-  border-radius: 8px;     // Standard radius
+  border-radius: 8px; // Standard radius
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -48,7 +48,7 @@
 }
 
 .card-title {
-  display: none; 
+  display: none;
 }
 
 .card-body {

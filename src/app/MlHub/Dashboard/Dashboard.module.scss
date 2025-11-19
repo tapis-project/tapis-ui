@@ -61,6 +61,19 @@
     transform: translateY(0);
     box-shadow: none;
   }
+
+  &.hero-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #6c757d;
+
+    &:hover {
+      background-color: #6c757d;
+      transform: none;
+      box-shadow: none;
+    }
+  }
 }
 
 .btn-icon {
@@ -105,7 +118,7 @@
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
   color: var(--global-color-primary, #007bff);
-  
+
   // Handle Icon component rendering
   :global(.tapis-icon) {
     width: 48px;
