@@ -83,9 +83,16 @@ const Dashboard: React.FC = () => {
             from various platforms.
           </p>
           <div className={styles['hero-actions']}>
-            <Link to="/ml-hub/models" className="btn btn-primary btn-lg">
+            <Link to="/ml-hub/models" className={styles['hero-btn']}>
               <Icon name="search-folder" className={styles['btn-icon']} />
               Browse All Models
+            </Link>
+            <Link to="/ml-hub/chatbot" className={styles['hero-btn']}>
+              <Icon
+                name="multiple-coversation"
+                className={styles['btn-icon']}
+              />
+              Discover with Chatbot
             </Link>
           </div>
         </div>
@@ -99,7 +106,8 @@ const Dashboard: React.FC = () => {
           </div>
           <h3>1. Discover</h3>
           <p>
-            Browse our extensive catalog of models from connected platforms.
+            Browse our extensive catalog or use our AI Chatbot to find the right
+            models for your task.
           </p>
         </div>
         <div className={styles['step-card']}>
@@ -117,9 +125,7 @@ const Dashboard: React.FC = () => {
             <Icon name="data-processing" />
           </div>
           <h3>3. Deploy</h3>
-          <p>
-            Easily deploy models to Tapis systems.
-          </p>
+          <p>Easily deploy models to Tapis systems.</p>
         </div>
       </div>
 
