@@ -119,6 +119,14 @@ const devices = [
     site: 'CHI@TACC',
     disabled: false,
   },
+  {
+    id: 7,
+    name: 'Rasberry Pi',
+    type: 'RasberryPi',
+    gpu: false,
+    site: 'TACC',
+    disabled: false,
+  },
 ];
 
 const models = [
