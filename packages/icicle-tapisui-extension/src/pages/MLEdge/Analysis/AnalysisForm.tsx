@@ -121,8 +121,8 @@ const devices = [
   },
   {
     id: 7,
-    name: 'Rasberry Pi',
-    type: 'RasberryPi',
+    name: 'Raspberry Pi',
+    type: 'RaspberryPi',
     gpu: false,
     site: 'TACC',
     disabled: false,
