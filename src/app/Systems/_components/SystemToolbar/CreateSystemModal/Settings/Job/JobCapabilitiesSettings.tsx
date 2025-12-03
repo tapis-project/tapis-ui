@@ -4,131 +4,148 @@ import styles from '../../CreateSystemModal.module.scss';
 import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
-import {
-  Capability,
-  CategoryEnum,
-  DatatypeEnum,
-} from '@tapis/tapis-typescript-systems';
+import { CategoryEnum, DatatypeEnum } from '@tapis/tapis-typescript-systems';
+import { Select, MenuItem, FormHelperText, TextField } from '@mui/material';
+import { useState } from 'react';
 
 const categories = Object.values(CategoryEnum);
 const datatypes = Object.values(DatatypeEnum);
 
-type JobCapabilitiesFieldProps = {
+type Capability = {
+  category: string;
+  name: string;
+  datatype: string;
+  precedence?: number;
+  value?: string;
+};
+
+const JobCapabilitiesField: React.FC<{
   item: Capability;
   index: number;
-  remove: (index: number) => Systems.ReqPostSystem | undefined;
-};
-
-const JobCapabilitiesField: React.FC<JobCapabilitiesFieldProps> = ({
-  item,
-  index,
-  remove,
-}) => {
-  return (
-    <>
-      <Collapse
-        open={!item}
-        title={`Job Capability`}
-        className={styles['item']}
-      >
-        <FormikSelect
-          name={`jobCapabilities.${index}.category`}
-          description="Category"
-          label="Category"
-          required={true}
-          data-testid="category"
-        >
-          <option value={''}>Select a category</option>
-          {categories.map((values) => {
-            return <option>{values}</option>;
-          })}
-        </FormikSelect>
-        <FormikInput
-          name={`jobCapabilities.${index}.name`}
-          label="Name"
-          required={true}
-          description={`Name`}
-          aria-label="Input"
-        />
-        <FormikSelect
-          name={`jobCapabilities.${index}.datatype`}
-          description="Datatype"
-          label="Datatype"
-          required={true}
-          data-testid="datatype"
-        >
-          <option value={''}>Select a datatype</option>
-          {datatypes.map((values) => {
-            return <option>{values}</option>;
-          })}
-        </FormikSelect>
-        <FormikInput
-          name={`jobCapabilities.${index}.precedence`}
-          label="Precedence"
-          type="number"
-          required={false}
-          description={`Precedence`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`jobCapabilities.${index}.value`}
-          label="Value"
-          required={false}
-          description={`Value`}
-          aria-label="Input"
-        />
-        <Button onClick={() => remove(index)} size="sm">
-          Remove
-        </Button>
-      </Collapse>
-    </>
-  );
-};
-
-const JobCapabilitiesInputs: React.FC<{
-  arrayHelpers: FieldArrayRenderProps;
-}> = ({ arrayHelpers }) => {
-  const { values } = useFormikContext();
-
-  const jobCapabilities =
-    (values as Partial<Systems.ReqPostSystem>)?.jobCapabilities ?? [];
-
+  remove: (index: number) => void;
+  update: (index: number, value: Capability) => void;
+}> = ({ item, index, remove, update }) => {
   return (
     <Collapse
-      open={jobCapabilities.length > 0}
-      title="Job Capabilities"
-      note={`${jobCapabilities.length} items`}
-      className={styles['array']}
+      open={!item.category && !item.name && !item.datatype}
+      title={`Job Capability ${index + 1}`}
+      className={styles['item']}
     >
-      {jobCapabilities.map((jobCapabilitiesInput, index) => (
-        <JobCapabilitiesField
-          key={`jobCapabilities.${index}`}
-          item={jobCapabilitiesInput}
-          index={index}
-          remove={arrayHelpers.remove}
-        />
-      ))}
-      <Button onClick={() => arrayHelpers.push({})} size="sm">
-        + Add Job Capability
+      <Select
+        fullWidth
+        value={item.category || ''}
+        onChange={(e) => update(index, { ...item, category: e.target.value })}
+      >
+        <MenuItem value="">Select a category</MenuItem>
+        {categories.map((c) => (
+          <MenuItem key={c} value={c}>
+            {c}
+          </MenuItem>
+        ))}
+      </Select>
+      <FormHelperText>Category</FormHelperText>
+
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Name"
+        required
+        value={item.name || ''}
+        onChange={(e) => update(index, { ...item, name: e.target.value })}
+        helperText="Name"
+        FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+      />
+
+      <Select
+        fullWidth
+        value={item.datatype || ''}
+        onChange={(e) => update(index, { ...item, datatype: e.target.value })}
+      >
+        <MenuItem value="">Select a datatype</MenuItem>
+        {datatypes.map((d) => (
+          <MenuItem key={d} value={d}>
+            {d}
+          </MenuItem>
+        ))}
+      </Select>
+      <FormHelperText>Datatype</FormHelperText>
+
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Precedence"
+        type="number"
+        value={item.precedence ?? ''}
+        onChange={(e) =>
+          update(index, { ...item, precedence: Number(e.target.value) })
+        }
+        helperText="Precedence"
+        FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+      />
+
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Value"
+        value={item.value || ''}
+        onChange={(e) => update(index, { ...item, value: e.target.value })}
+        helperText="Value"
+        FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+      />
+
+      <Button onClick={() => remove(index)} size="small" variant="outlined">
+        Remove
       </Button>
     </Collapse>
   );
 };
 
-export const JobCapabilitiesSettings: React.FC = () => {
+const JobCapabilitiesSettings: React.FC = () => {
+  const [capabilities, setCapabilities] = useState<Capability[]>([]);
+
+  const addCapability = () =>
+    setCapabilities([
+      ...capabilities,
+      {
+        category: '',
+        name: '',
+        datatype: '',
+        precedence: undefined,
+        value: '',
+      },
+    ]);
+
+  const removeCapability = (index: number) =>
+    setCapabilities(capabilities.filter((_, i) => i !== index));
+
+  const updateCapability = (index: number, value: Capability) =>
+    setCapabilities(capabilities.map((c, i) => (i === index ? value : c)));
+
   return (
-    <div>
-      <FieldArray
-        name="jobCapabilities"
-        render={(arrayHelpers) => {
-          return (
-            <>
-              <JobCapabilitiesInputs arrayHelpers={arrayHelpers} />
-            </>
-          );
-        }}
-      />
-    </div>
+    <Collapse
+      open={capabilities.length > 0}
+      title="Job Capabilities"
+      note={`${capabilities.length} item${
+        capabilities.length !== 1 ? 's' : ''
+      }`}
+      className={styles['array']}
+    >
+      {capabilities.map((capability, index) => (
+        <JobCapabilitiesField
+          key={index}
+          item={capability}
+          index={index}
+          remove={removeCapability}
+          update={updateCapability}
+        />
+      ))}
+      <Button onClick={addCapability} size="small" variant="contained">
+        + Add Job Capability
+      </Button>
+    </Collapse>
   );
 };
 

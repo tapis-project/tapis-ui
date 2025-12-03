@@ -1,47 +1,63 @@
 import { FormikInput, Collapse } from '@tapis/tapisui-common';
 import { FormikCheck } from '@tapis/tapisui-common';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Systems } from '@tapis/tapis-typescript';
-import { useFormikContext } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import styles from '../CreateSystemModal.module.scss';
+import {
+  Checkbox,
+  FormControlLabel,
+  FormHelperText,
+  TextField,
+} from '@mui/material';
 
 const ProxySettings: React.FC = () => {
-  //used when trying to read the current value of a parameter
-  const { values } = useFormikContext();
-
-  //reading the useProxy at its current state
-  const useProxy = useMemo(
-    () => (values as Partial<Systems.ReqPostSystem>).useProxy,
-    [values]
-  );
+  const [useProxy, setUseProxy] = useState(false);
+  const [proxyHost, setProxyHost] = useState('');
+  const [proxyPort, setProxyPort] = useState('');
 
   return (
     <Collapse title="Proxy Settings" className={styles['array']}>
-      <FormikCheck
-        name="useProxy"
-        required={false}
-        label="Use Proxy"
-        description={'Decides if the system can use proxy'}
-      />
-      {useProxy ? (
-        <div>
-          <FormikInput
-            name="proxyHost"
-            label="Proxy Host"
-            required={false}
-            description={`Host of the proxy`}
-            aria-label="Input"
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={useProxy}
+            onChange={(e) => setUseProxy(e.target.checked)}
+            color="primary"
           />
-          <FormikInput
-            name="proxyPort"
+        }
+        label="Use Proxy"
+      />
+      <FormHelperText>Decides if the system can use proxy</FormHelperText>
+
+      {useProxy && (
+        <div>
+          <TextField
+            fullWidth
+            size="small"
+            margin="dense"
+            label="Proxy Host"
+            value={proxyHost}
+            onChange={(e) => setProxyHost(e.target.value)}
+            helperText="Host of the proxy"
+            FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+            style={{ marginTop: '16px' }}
+          />
+
+          <TextField
+            fullWidth
+            size="small"
+            margin="dense"
             label="Proxy Port"
             type="number"
-            required={false}
-            description={`Port of the proxy`}
-            aria-label="Input"
+            value={proxyPort}
+            onChange={(e) => setProxyPort(e.target.value)}
+            helperText="Port of the proxy"
+            FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+            style={{ marginTop: '16px' }}
           />
         </div>
-      ) : null}
+      )}
     </Collapse>
   );
 };
