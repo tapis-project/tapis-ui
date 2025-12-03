@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
                 name="multiple-coversation"
                 className={styles['btn-icon']}
               />
-              Discover with Chatbot
+              Discover with AI
             </span>
           </div>
         </div>
