@@ -420,7 +420,7 @@ const AnalysisForm: React.FC = () => {
                 const envVariables = [
                   {
                     key: 'CT_CONTROLLER_CT_VERSION',
-                    value: '',
+                    value: values.version,
                   },
                   {
                     key: 'CT_CONTROLLER_TARGET_SITE',
@@ -476,6 +476,8 @@ const AnalysisForm: React.FC = () => {
                     }),
                   });
                 }
+
+                console.log({ envVariables });
 
                 submit(
                   {
