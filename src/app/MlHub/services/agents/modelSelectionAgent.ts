@@ -104,7 +104,7 @@ async function callLiteLLM(
   }
 
   try {
-    const response = await fetch(`${endpoint}/chat/completions`, {
+    const response = await fetch(`${endpoint}/v1/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -163,30 +163,6 @@ async function callLiteLLM(
   }
 }
 
-async function callOpenAI(
-  apiKey: string,
-  systemPrompt: string,
-  userPrompt: string
-): Promise<string> {
-  try {
-    const mod = await import('openai');
-    const OpenAI = (mod as any).default || (mod as any);
-    const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-    const completion = await client.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature: 0.2,
-    });
-    const content: string = completion?.choices?.[0]?.message?.content ?? '';
-    return content;
-  } catch (e) {
-    throw new Error(`OpenAI error: ${e}`);
-  }
-}
-
 export const ModelSelectionAgent: Agent = {
   id: 'model-selection',
   name: 'Model Selection Agent',
@@ -215,18 +191,16 @@ export const ModelSelectionAgent: Agent = {
       process.env.NODE_ENV === 'development'
         ? '/api/litellm'
         : 'https://litellm.pods.tacc.develop.tapis.io';
-    const hasLiteLLMConfig = true; // Always use LiteLLM for now
-    const hasOpenAIConfig =
-      context.openAIApiKey && context.openAIApiKey.trim().length > 0;
+    const hasLiteLLMConfig = true; // Always use LiteLLM
 
-    if (!hasLiteLLMConfig && !hasOpenAIConfig) {
+    if (!hasLiteLLMConfig) {
       return {
         messages: [
           {
             id: `${Date.now()}-assistant`,
             role: 'assistant',
             content:
-              'LLM configuration error: Please configure either LiteLLM endpoint or OpenAI API key.',
+              'LLM configuration error: Please configure LiteLLM endpoint.',
           },
         ],
       };
@@ -237,18 +211,8 @@ export const ModelSelectionAgent: Agent = {
       const sys = buildLLMSystemPrompt();
       const usr = buildLLMUserPrompt(userText, platform, models);
 
-      if (hasLiteLLMConfig) {
-        const content = await callLiteLLM(
-          litellmEndpoint,
-          sys,
-          usr,
-          context.jwt
-        );
-        llmRaw = content || '';
-      } else if (hasOpenAIConfig) {
-        const content = await callOpenAI(context.openAIApiKey!, sys, usr);
-        llmRaw = content || '';
-      }
+      const content = await callLiteLLM(litellmEndpoint, sys, usr, context.jwt);
+      llmRaw = content || '';
     } catch (e) {
       const message =
         e instanceof Error
@@ -256,8 +220,7 @@ export const ModelSelectionAgent: Agent = {
           : typeof e === 'string'
           ? e
           : JSON.stringify(e);
-      const provider = hasLiteLLMConfig ? 'LiteLLM' : 'OpenAI';
-      llmRaw = `${provider} error: ${message}`;
+      llmRaw = `LiteLLM error: ${message}`;
     }
 
     const messagesOut: ChatTurn[] = [

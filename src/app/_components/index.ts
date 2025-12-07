@@ -6,3 +6,4 @@ export {
 } from './MUIStepper';
 export { FloatingChatButton } from './FloatingChatButton';
 export { ChatSelector } from './ChatSelector';
+export { ChatPanel } from './ChatPanel';
