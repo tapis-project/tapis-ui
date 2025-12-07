@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@tapis/tapisui-common';
 import { Spinner, Alert, Button } from 'reactstrap';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { ChatContext } from 'app/_context/chat';
 import PlatformCard from '../_components/PlatformCard';
 import styles from './Dashboard.module.scss';
 
@@ -46,6 +47,7 @@ const PLATFORM_METADATA: Record<
 };
 
 const Dashboard: React.FC = () => {
+  const chatContextValue = useContext(ChatContext);
   const {
     data: platforms,
     isLoading,
@@ -87,15 +89,16 @@ const Dashboard: React.FC = () => {
               <Icon name="search-folder" className={styles['btn-icon']} />
               Browse All Models
             </Link>
-            <span
-              className={`${styles['hero-btn']} ${styles['hero-btn-disabled']}`}
+            <button
+              className={styles['hero-btn']}
+              onClick={() => chatContextValue?.toggleChat()}
             >
               <Icon
                 name="multiple-coversation"
                 className={styles['btn-icon']}
               />
               Discover with AI
-            </span>
+            </button>
           </div>
         </div>
       </div>

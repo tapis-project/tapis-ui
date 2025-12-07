@@ -8,7 +8,7 @@ const FloatingChatButton: React.FC = () => {
   const chatContextValue = useContext(ChatContext);
 
   return (
-    <Tooltip title="Open Chat" placement="left">
+    <Tooltip title="Open Chatbot" placement="left">
       <Fab
         color="primary"
         aria-label="chat"
