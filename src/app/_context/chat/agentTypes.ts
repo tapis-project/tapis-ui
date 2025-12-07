@@ -10,10 +10,6 @@ export type AgentContext = {
   basePath: string;
   mlHubBasePath?: string;
   jwt: string;
-<<<<<<< HEAD
-=======
-  openAIApiKey?: string;
->>>>>>> d365b704 (Add chat infrastructure and context system)
   ragPODSEndpoint?: string;
 };
 
