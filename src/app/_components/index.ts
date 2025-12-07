@@ -4,3 +4,5 @@ export {
   useStepperState,
   type MUIStepperState,
 } from './MUIStepper';
+export { FloatingChatButton } from './FloatingChatButton';
+export { ChatSelector } from './ChatSelector';
