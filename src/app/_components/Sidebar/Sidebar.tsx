@@ -52,6 +52,7 @@ import {
   Breadcrumbs,
   breadcrumbsFromPathname,
 } from '@tapis/tapisui-common';
+import { FloatingChatButton } from 'app/_components';
 
 type SidebarItems = {
   [key: string]: any;
@@ -480,6 +481,9 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
+      <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
+        <FloatingChatButton />
+      </div>
       <Chip
         variant="outlined"
         style={{
