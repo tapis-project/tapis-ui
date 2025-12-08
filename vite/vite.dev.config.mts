@@ -85,6 +85,20 @@ export default defineConfig({
   server: {
     open: true, // Opens browser
     port: 3000,
+    proxy: {
+      '/api/rag': {
+        target: 'https://rag.pods.tacc.tapis.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/rag/, ''),
+        secure: true,
+      },
+      '/api/litellm': {
+        target: 'https://litellm.pods.tacc.develop.tapis.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/litellm/, ''),
+        secure: true,
+      },
+    },
   },
   preview: {
     open: true,
