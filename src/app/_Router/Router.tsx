@@ -1,20 +1,25 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { ProtectedRoute } from '@tapis/tapisui-common';
 import { Authenticator as Auth, useTapisConfig } from '@tapis/tapisui-hooks';
 
-import Apps from '../Apps';
+// Keep critical/landing components as regular imports
 import Login from '../Login';
 import Dashboard from '../Dashboard';
-import Jobs from '../Jobs';
-import Systems from '../Systems';
-import Pods from '../Pods';
-import Files from '../Files';
-import Workflows from '../Workflows';
-import MlHub from '../MlHub';
 import OAuth2 from '../OAuth2';
-import Authenticator from '../Authenticator';
-import UIPatterns from '../UIPatterns';
+import RouteLoader from '../_components/RouteLoader';
+
+// Lazy load heavy feature components
+const Apps = lazy(() => import('../Apps'));
+const Jobs = lazy(() => import('../Jobs'));
+const Systems = lazy(() => import('../Systems'));
+const Pods = lazy(() => import('../Pods'));
+const Files = lazy(() => import('../Files'));
+const Workflows = lazy(() => import('../Workflows'));
+const MlHub = lazy(() => import('../MlHub'));
+const Authenticator = lazy(() => import('../Authenticator'));
+const UIPatterns = lazy(() => import('../UIPatterns'));
+
 import { useExtension } from 'extensions';
 
 const Router: React.FC = () => {
@@ -41,31 +46,47 @@ const Router: React.FC = () => {
         <OAuth2 />
       </Route>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/systems">
-        <Systems />
+        <Suspense fallback={<RouteLoader />}>
+          <Systems />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/apps">
-        <Apps />
+        <Suspense fallback={<RouteLoader />}>
+          <Apps />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/jobs">
-        <Jobs />
+        <Suspense fallback={<RouteLoader />}>
+          <Jobs />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/files">
-        <Files />
+        <Suspense fallback={<RouteLoader />}>
+          <Files />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/workflows">
-        <Workflows />
+        <Suspense fallback={<RouteLoader />}>
+          <Workflows />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/ml-hub">
-        <MlHub />
+        <Suspense fallback={<RouteLoader />}>
+          <MlHub />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">
-        <Pods />
+        <Suspense fallback={<RouteLoader />}>
+          <Pods />
+        </Suspense>
       </ProtectedRoute>
       <ProtectedRoute
         accessToken={accessToken?.access_token}
         path="/authenticator"
       >
-        <Authenticator />
+        <Suspense fallback={<RouteLoader />}>
+          <Authenticator />
+        </Suspense>
       </ProtectedRoute>
       {extension &&
         Object.entries(extension.serviceMap).map(([_, service]) => {

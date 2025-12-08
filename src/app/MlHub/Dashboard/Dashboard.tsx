@@ -1,55 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@tapis/tapisui-common';
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
-  CardFooter,
-  CardText,
-  Spinner,
-  Alert,
-} from 'reactstrap';
+import { Spinner, Alert, Button } from 'reactstrap';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import PlatformCard from '../_components/PlatformCard';
 import styles from './Dashboard.module.scss';
-
-type DashboardCardProps = {
-  icon: string;
-  link: string;
-  name: string;
-  text: string;
-};
-
-const DashboardCard: React.FC<DashboardCardProps> = ({
-  icon,
-  link,
-  name,
-  text,
-}) => {
-  return (
-    <Card className={styles.card}>
-      <CardHeader>
-        <div className={styles['card-header']}>
-          <div>
-            <Icon name={icon} className="dashboard__card-icon" />
-          </div>
-          <div>{name}</div>
-        </div>
-      </CardHeader>
-      <CardBody>
-        <CardTitle tag="h5"></CardTitle>
-        <CardText>{text}</CardText>
-      </CardBody>
-      <CardFooter className={styles['card-footer']}>
-        <Link to={link}>Go to {name}</Link>
-        <Icon name="push-right" />
-      </CardFooter>
-    </Card>
-  );
-};
 
 // Platform metadata mapping for display information
 const PLATFORM_METADATA: Record<
@@ -118,48 +74,68 @@ const Dashboard: React.FC = () => {
 
   return (
     <div id="dashboard" className={styles['dashboard']}>
-      {/* MLHub Services Section */}
-      <div className={styles['section']}>
-        <h2 className={styles['section-title']}>MLHub Services</h2>
-        <div id="dashboard-cards" className={styles['card-container']}>
-          <DashboardCard
-            icon="simulation"
-            name="Models Hub"
-            text="View available ML models"
-            link="/ml-hub/models"
-          />
-          <DashboardCard
-            icon="search-folder"
-            name="Datasets Hub"
-            text="View available Datasets"
-            link="/ml-hub/datasets"
-          />
-          <DashboardCard
-            icon="upload"
-            name="Model Ingestion"
-            text="Ingest models from external platforms"
-            link="/ml-hub/ingest"
-          />
-          <DashboardCard
-            icon="multiple-coversation"
-            name="Inference Server"
-            text="View available inference server for ML models"
-            link="/ml-hub/inference"
-          />
-          <DashboardCard
-            icon="data-processing"
-            name="Training Engine"
-            text="View ML model training jobs"
-            link="/ml-hub/training"
-          />
+      {/* Hero Section */}
+      <div className={styles['hero-section']}>
+        <div className={styles['hero-content']}>
+          <h1>Find and Deploy Machine Learning Models</h1>
+          <p className={styles['hero-text']}>
+            Access a unified interface to discover, manage, and deploy models
+            from various platforms.
+          </p>
+          <div className={styles['hero-actions']}>
+            <Link to="/ml-hub/models" className={styles['hero-btn']}>
+              <Icon name="search-folder" className={styles['btn-icon']} />
+              Browse All Models
+            </Link>
+            <span
+              className={`${styles['hero-btn']} ${styles['hero-btn-disabled']}`}
+            >
+              <Icon
+                name="multiple-coversation"
+                className={styles['btn-icon']}
+              />
+              Discover with AI
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* How it Works / Hints Section */}
+      <div className={styles['steps-section']}>
+        <div className={styles['step-card']}>
+          <div className={styles['step-icon']}>
+            <Icon name="search-folder" />
+          </div>
+          <h3>1. Discover</h3>
+          <p>
+            Browse our extensive catalog or use our AI Chatbot to find the right
+            models for your task.
+          </p>
+        </div>
+        <div className={styles['step-card']}>
+          <div className={styles['step-icon']}>
+            <Icon name="simulation" />
+          </div>
+          <h3>2. Select</h3>
+          <p>
+            View model details, versions, and capabilities to find the perfect
+            match for your needs.
+          </p>
+        </div>
+        <div className={styles['step-card']}>
+          <div className={styles['step-icon']}>
+            <Icon name="data-processing" />
+          </div>
+          <h3>3. Deploy</h3>
+          <p>Easily deploy models to Tapis systems.</p>
         </div>
       </div>
 
       {/* Platforms Section */}
       <div className={styles['section']}>
-        <h2 className={styles['section-title']}>Available Platforms</h2>
+        <h2 className={styles['section-title']}>Connected Platforms</h2>
         <p className={styles['section-description']}>
-          Browse and discover machine learning models from various platforms
+          Explore models available from these providers
         </p>
 
         <QueryWrapper
@@ -168,13 +144,32 @@ const Dashboard: React.FC = () => {
           className={styles['platforms-container']}
         >
           <div className={styles['card-container']}>
-            {platformInfos.map((platformInfo: any) => (
-              <PlatformCard
-                key={platformInfo.platform}
-                platform={platformInfo}
-                link={`/ml-hub/platforms/${platformInfo.platform}`}
-              />
-            ))}
+            {platformInfos.map((platformInfo: any) => {
+              // Determine link and whether it's external based on platform
+              let link: string;
+              let isExternal = false;
+
+              if (platformInfo.platform === 'Github') {
+                link = 'https://github.com';
+                isExternal = true;
+              } else if (platformInfo.platform === 'Git') {
+                // TODO: Update with desired Git link
+                link = 'https://git-scm.com';
+                isExternal = true;
+              } else {
+                link = `/ml-hub/models/platform/${platformInfo.platform}`;
+                isExternal = false;
+              }
+
+              return (
+                <PlatformCard
+                  key={platformInfo.platform}
+                  platform={platformInfo}
+                  link={link}
+                  isExternal={isExternal}
+                />
+              );
+            })}
           </div>
         </QueryWrapper>
       </div>
