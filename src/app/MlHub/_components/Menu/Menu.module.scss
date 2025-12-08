@@ -1,3 +1,66 @@
-.nav-item {
-  margin-right: 16px;
+.menu-container {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0;
+  padding: 0 2rem;
+}
+
+.menu-nav {
+  display: flex;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem;
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--global-color-primary, #007bff);
+    text-decoration: none;
+  }
+
+  &.active {
+    color: var(--global-color-primary, #007bff);
+    border-bottom-color: var(--global-color-primary, #007bff);
+    font-weight: 600;
+
+    .icon-wrapper {
+      color: var(--global-color-primary, #007bff);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+
+    &:hover {
+      color: #666;
+      text-decoration: none;
+    }
+  }
+}
+
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  color: #888;
+  transition: color 0.2s ease;
+}
+
+// Ensure icons size correctly
+:global(.tapis-icon) {
+  width: 1.2em;
+  height: 1.2em;
 }

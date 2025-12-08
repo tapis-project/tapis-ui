@@ -158,7 +158,8 @@ const IngestionDetail: React.FC<Props> = ({ ingestionId }) => {
             <Button
               color="primary"
               onClick={() => {
-                history.push(`/ml-hub/artifacts/${ingestion.artifact_id}`);
+                // Placeholder for artifact view functionality
+                console.log('View artifact:', ingestion.artifact_id);
               }}
             >
               View Artifact

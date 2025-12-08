@@ -13,4 +13,3 @@ export { default as useModelCardDetails } from './useModelCardDetails';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
 export * as Ingestions from './ingestions';
-export * as Artifacts from './artifacts';

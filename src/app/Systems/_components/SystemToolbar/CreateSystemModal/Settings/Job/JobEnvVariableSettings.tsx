@@ -4,98 +4,93 @@ import { Systems } from '@tapis/tapis-typescript';
 import { Button } from 'reactstrap';
 import { FieldArray, useFormikContext, FieldArrayRenderProps } from 'formik';
 import { KeyValuePair } from '@tapis/tapis-typescript-systems';
+import { TextField } from '@mui/material';
+import { useState } from 'react';
 
-type JobEnvVariablesFieldProps = {
+const JobEnvVariablesField: React.FC<{
   item: KeyValuePair;
   index: number;
-  remove: (index: number) => Systems.ReqPostSystem | undefined;
-};
-
-const JobEnvVariablesField: React.FC<JobEnvVariablesFieldProps> = ({
-  item,
-  index,
-  remove,
-}) => {
-  return (
-    <>
-      <Collapse
-        open={!item}
-        title={`Job Environment Variable`}
-        className={styles['item']}
-      >
-        <FormikInput
-          name={`jobEnvVariables.${index}.key`}
-          label="Key"
-          required={true}
-          description={`Key`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`jobEnvVariables.${index}.value`}
-          label="Value"
-          required={false}
-          description={`Value`}
-          aria-label="Input"
-        />
-        <FormikInput
-          name={`jobEnvVariables.${index}.description`}
-          label="Description"
-          required={false}
-          description={`Description`}
-          aria-label="Input"
-        />
-        <Button onClick={() => remove(index)} size="sm">
-          Remove
-        </Button>
-      </Collapse>
-    </>
-  );
-};
-
-const JobEnvVariablesInputs: React.FC<{
-  arrayHelpers: FieldArrayRenderProps;
-}> = ({ arrayHelpers }) => {
-  const { values } = useFormikContext();
-
-  const jobEnvVariables =
-    (values as Partial<Systems.ReqPostSystem>)?.jobEnvVariables ?? [];
-
+  remove: (index: number) => void;
+  update: (index: number, value: KeyValuePair) => void;
+}> = ({ item, index, remove, update }) => {
   return (
     <Collapse
-      open={jobEnvVariables.length > 0}
-      title="Job Environment Variables"
-      note={`${jobEnvVariables.length} items`}
-      className={styles['array']}
+      open={!item.key && !item.value && !item.description}
+      title={`Job Environment Variable ${index + 1}`}
+      className={styles['item']}
     >
-      {jobEnvVariables.map((jobEnvVariablesInput, index) => (
-        <JobEnvVariablesField
-          key={`jobEnvVariables.${index}`}
-          item={jobEnvVariablesInput}
-          index={index}
-          remove={arrayHelpers.remove}
-        />
-      ))}
-      <Button onClick={() => arrayHelpers.push({})} size="sm">
-        + Add Job Environment Variable
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Key"
+        required
+        value={item.key}
+        onChange={(e) => update(index, { ...item, key: e.target.value })}
+        helperText="Key"
+        FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Value"
+        value={item.value || ''}
+        onChange={(e) => update(index, { ...item, value: e.target.value })}
+        helperText="Value"
+        FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Description"
+        value={item.description || ''}
+        onChange={(e) =>
+          update(index, { ...item, description: e.target.value })
+        }
+        helperText="Description"
+        FormHelperTextProps={{ sx: { m: 0, marginTop: '4px' } }}
+      />
+      <Button onClick={() => remove(index)} size="small" variant="outlined">
+        Remove
       </Button>
     </Collapse>
   );
 };
 
-export const JobEnvVariablesSettings: React.FC = () => {
+const JobEnvVariablesSettings: React.FC = () => {
+  const [variables, setVariables] = useState<KeyValuePair[]>([]);
+
+  const addVariable = () =>
+    setVariables([...variables, { key: '', value: '', description: '' }]);
+
+  const removeVariable = (index: number) =>
+    setVariables(variables.filter((_, i) => i !== index));
+
+  const updateVariable = (index: number, value: KeyValuePair) =>
+    setVariables(variables.map((v, i) => (i === index ? value : v)));
+
   return (
-    <div>
-      <FieldArray
-        name="jobEnvVariables"
-        render={(arrayHelpers) => {
-          return (
-            <>
-              <JobEnvVariablesInputs arrayHelpers={arrayHelpers} />
-            </>
-          );
-        }}
-      />
-    </div>
+    <Collapse
+      open={variables.length > 0}
+      title="Job Environment Variables"
+      note={`${variables.length} item${variables.length !== 1 ? 's' : ''}`}
+      className={styles['array']}
+    >
+      {variables.map((variable, index) => (
+        <JobEnvVariablesField
+          key={index}
+          item={variable}
+          index={index}
+          remove={removeVariable}
+          update={updateVariable}
+        />
+      ))}
+      <Button onClick={addVariable} size="small" variant="contained">
+        + Add Job Environment Variable
+      </Button>
+    </Collapse>
   );
 };
 
