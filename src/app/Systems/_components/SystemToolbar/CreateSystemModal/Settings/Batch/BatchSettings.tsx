@@ -6,75 +6,93 @@ import {
   SystemTypeEnum,
 } from '@tapis/tapis-typescript-systems';
 import styles from '../../CreateSystemModal.module.scss';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Systems } from '@tapis/tapis-typescript';
 import BatchLogicalQueuesSettings from './BatchLogicalQueuesSettings';
+import {
+  FormControlLabel,
+  Checkbox,
+  FormHelperText,
+  Select,
+  MenuItem,
+  TextField,
+} from '@mui/material';
 
-//Array that is used in the drop-down menus
 const schedulerTypes = Object.values(SchedulerTypeEnum);
 
 const BatchSettings: React.FC = () => {
-  //used when trying to read the current value of a parameter
-  const { values } = useFormikContext();
+  const [systemType, setSystemType] = useState<SystemTypeEnum>(
+    SystemTypeEnum.Linux
+  );
+  const [canRunBatch, setCanRunBatch] = useState(false);
+  const [batchScheduler, setBatchScheduler] = useState('');
+  const [batchSchedulerProfile, setBatchSchedulerProfile] = useState('');
+  const [batchDefaultLogicalQueue, setBatchDefaultLogicalQueue] = useState('');
 
-  //reading the canRunBatch at its current state
-  const canRunBatch = useMemo(
-    () => (values as Partial<Systems.ReqPostSystem>).canRunBatch,
-    [values]
-  );
-  //reading if the systemType is Linux at its current state
-  const isLinux = useMemo(
-    () =>
-      (values as Partial<Systems.ReqPostSystem>).systemType ===
-      SystemTypeEnum.Linux,
-    [values]
-  );
+  const isLinux = systemType === SystemTypeEnum.Linux;
 
   return (
     <div>
-      {isLinux ? (
+      {isLinux && (
         <Collapse title="Batch Settings" className={styles['array']}>
-          <FormikCheck
-            name="canRunBatch"
-            required={false}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={canRunBatch}
+                onChange={(e) => setCanRunBatch(e.target.checked)}
+                color="primary"
+              />
+            }
             label="Can Run Batch"
-            description={'Decides if the system can run batch'}
           />
-          {canRunBatch ? (
+          {canRunBatch && (
             <div>
-              <FormikSelect
-                name="batchScheduler"
-                description="Batch scheduler for the system"
-                label="Batch Scheduler"
-                required={false}
-                data-testid="batchScheduler"
+              <Select
+                fullWidth
+                size="small"
+                margin="dense"
+                displayEmpty
+                value={batchScheduler}
+                onChange={(e) => setBatchScheduler(e.target.value as string)}
               >
-                <option disabled value="">
+                <MenuItem disabled value="">
                   Select a batch scheduler
-                </option>
-                {schedulerTypes.map((values) => {
-                  return <option>{values}</option>;
-                })}
-              </FormikSelect>
-              <FormikInput
-                name="batchSchedulerProfile"
+                </MenuItem>
+                {schedulerTypes.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>Batch scheduler for the system</FormHelperText>
+
+              <TextField
+                fullWidth
+                size="small"
+                margin="dense"
                 label="Batch Scheduler Profile"
-                required={false}
-                description={`Batch scheduler profile`}
-                aria-label="Input"
+                value={batchSchedulerProfile}
+                onChange={(e) => setBatchSchedulerProfile(e.target.value)}
+                helperText="Batch scheduler profile"
+                style={{ marginTop: '16px' }}
               />
-              <FormikInput
-                name="batchDefaultLogicalQueue"
+
+              <TextField
+                fullWidth
+                size="small"
+                margin="dense"
                 label="Batch Default Logical Queue"
-                required={false}
-                description={`Batch default logical queue`}
-                aria-label="Input"
+                value={batchDefaultLogicalQueue}
+                onChange={(e) => setBatchDefaultLogicalQueue(e.target.value)}
+                helperText="Batch default logical queue"
+                style={{ marginTop: '16px' }}
               />
+
               <BatchLogicalQueuesSettings />
             </div>
-          ) : null}
+          )}
         </Collapse>
-      ) : null}
+      )}
     </div>
   );
 };

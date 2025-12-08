@@ -1,515 +1,701 @@
-import { Button, Input, FormGroup, Label } from 'reactstrap';
-import { GenericModal } from '@tapis/tapisui-common';
-import { SubmitWrapper } from '@tapis/tapisui-common';
-import { ToolbarModalProps } from '../SystemToolbar';
-import { Form, Formik } from 'formik';
-import { FormikInput } from '@tapis/tapisui-common';
-import { FormikSelect, FormikCheck } from '@tapis/tapisui-common';
-import { useEffect, useCallback, useState } from 'react';
-import styles from './CreateSystemModal.module.scss';
-import * as Yup from 'yup';
+import React, { useState } from 'react';
+import { Systems } from '@tapis/tapis-typescript';
 import {
-  SystemTypeEnum,
-  AuthnEnum,
-  RuntimeTypeEnum,
-  SchedulerTypeEnum,
-  LogicalQueue,
-  Capability,
-  KeyValuePair,
-  ReqPostSystem,
-} from '@tapis/tapis-typescript-systems';
-import { useQueryClient } from 'react-query';
-import { Systems as Hooks } from '@tapis/tapisui-hooks';
-import AdvancedSettings from './Settings/AdvancedSettings';
-/* eslint-disable no-template-curly-in-string */
-import { ErrorMessage } from 'formik';
-import { LoadingButton } from '@mui/lab';
-import { JSONEditor } from '@tapis/tapisui-common';
-import {
+  TextField,
+  FormControl,
+  FormHelperText,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Autocomplete,
+  FormControlLabel,
+  Checkbox,
+  MenuItem,
+  Select,
+  Button,
+  Box,
 } from '@mui/material';
-
+import { LoadingButton } from '@mui/lab';
+import { Collapse, JSONEditor } from '@tapis/tapisui-common';
+import * as Yup from 'yup';
+import AdvancedSettings from './Settings/AdvancedSettings';
+import styles from './CreateSystemModal.module.scss';
 import {
-  RuntimeEnum,
-  RuntimeOptionEnum,
-  JobTypeEnum,
-} from '@tapis/tapis-typescript-apps';
+  ReqPostSystem,
+  RuntimeTypeEnum,
+  SystemTypeEnum,
+  AuthnEnum,
+  SchedulerTypeEnum,
+} from '@tapis/tapis-typescript-systems';
+import { MUIStepper, useStepperState } from 'app/_components/MUIStepper';
+import { Systems as Hooks } from '@tapis/tapisui-hooks';
+import { State } from 'app/_components/MUIStepper/MUIStepper';
+import BatchSettings from './Settings/Batch/BatchSettings';
+import BatchLogicalQueuesSettings from './Settings/Batch/BatchLogicalQueuesSettings';
 
-import {
-  AppArgSpec,
-  ParameterSetArchiveFilter,
-  ParameterSetLogConfig,
-  AppFileInput,
-  AppFileInputArray,
-} from '@tapis/tapis-typescript-apps';
+type LogicalQueue = {
+  name: string;
+  hpcQueueName: string;
+  maxJobs?: number;
+  maxJobsPerUser?: number;
+  minNodeCount?: number;
+  maxNodeCount?: number;
+  minCoresPerNode?: number;
+  maxCoresPerNode?: number;
+  minMemoryMB?: number;
+  maxMemoryMB?: number;
+  minMinutes?: number;
+  maxMinutes?: number;
+};
 
-//Arrays that are used in the drop-down menus
-const systemTypes = Object.values(SystemTypeEnum);
-const authnMethods = Object.values(AuthnEnum);
+const SystemDetailStep: React.FC = () => {
+  const { state, updateState } = useStepperState();
+  return (
+    <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="System Id"
+        required
+        defaultValue={state.id}
+        helperText={'Choose a unique name for this system'}
+        FormHelperTextProps={{
+          sx: { m: 0, marginTop: '4px' },
+        }}
+        onChange={(e) => {
+          updateState({ id: e.target.value });
+        }}
+        style={{ marginTop: '16px' }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Description"
+        defaultValue={state.description}
+        helperText={'Description'}
+        FormHelperTextProps={{
+          sx: { m: 0, marginTop: '4px' },
+        }}
+        onChange={(e) => {
+          updateState({ description: e.target.value });
+        }}
+        style={{ marginTop: '16px' }}
+      />
+    </FormControl>
+  );
+};
 
-const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
-  //Allows the system list to update without the user having to refresh the page
-  const queryClient = useQueryClient();
-  const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
-  }, [queryClient]);
+const SystemHostStep: React.FC = () => {
+  const { state, updateState } = useStepperState();
+  const types = Object.values(Systems.SystemTypeEnum).map((r) => r);
+  const authns = Object.values(Systems.AuthnEnum).map((r) => r);
+  return (
+    <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Host"
+        required
+        defaultValue={state.host}
+        helperText={'Host of the system'}
+        FormHelperTextProps={{
+          sx: { m: 0, marginTop: '4px' },
+        }}
+        onChange={(e) => {
+          updateState({ host: e.target.value });
+        }}
+        style={{ marginTop: '16px' }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Root Directory"
+        required
+        defaultValue={state.rootDir}
+        helperText={'/'}
+        FormHelperTextProps={{
+          sx: { m: 0, marginTop: '4px' },
+        }}
+        onChange={(e) => {
+          updateState({ rootDir: e.target.value });
+        }}
+        style={{ marginTop: '16px' }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        margin="dense"
+        label="Effective User Id"
+        defaultValue={state.effectiveUserId}
+        helperText={'Effective user id'}
+        FormHelperTextProps={{
+          sx: { m: 0, marginTop: '4px' },
+        }}
+        onChange={(e) => {
+          updateState({ effectiveUserId: e.target.value });
+        }}
+        style={{ marginTop: '16px' }}
+      />
 
-  const { makeNewSystem, isLoading, error, isSuccess, reset } =
-    Hooks.useMakeNewSystem();
+      <Autocomplete
+        options={types}
+        getOptionLabel={(option: SystemTypeEnum) => option}
+        defaultValue={state.systemType ?? SystemTypeEnum.Linux}
+        id="system-type-select"
+        disableClearable
+        onChange={(_, value) => {
+          if (value !== null) {
+            updateState({ systemType: value });
+          }
+        }}
+        renderInput={(params) => (
+          <TextField {...params} label="System Type" variant="standard" />
+        )}
+      />
+      <FormHelperText> System Type </FormHelperText>
 
-  useEffect(() => {
-    reset();
-  }, [reset]);
+      <Autocomplete
+        options={authns}
+        getOptionLabel={(option: AuthnEnum): string => option}
+        id="authn-method-select"
+        disableClearable
+        defaultValue={state.defaultAuthnMethod ?? AuthnEnum.Password}
+        onChange={(_, value) => {
+          if (value !== null) {
+            updateState({ defaultAuthnMethod: value });
+          }
+        }}
+        renderInput={(params) => (
+          <TextField {...params} label="Authn Method" variant="standard" />
+        )}
+      />
+      <FormHelperText> Default Authentication Method </FormHelperText>
 
-  // used for the canExec checkbox
-  const [exec, setExec] = useState(true);
-  const [simplified, setSimplified] = useState(false);
-  const [withJson, setWithJson] = useState(false);
-  const onChange = useCallback(() => {
-    setSimplified(!simplified);
-  }, [setSimplified, simplified]);
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={!!state.canExec}
+            onChange={(e) => {
+              const value = e.target.checked;
+              updateState({ canExec: value });
+            }}
+          />
+        }
+        label="Can Exec"
+      />
+      <FormHelperText>Enable execution</FormHelperText>
 
-  const validationSchema = Yup.object({
-    id: Yup.string()
-      .min(1)
-      .max(80, 'System id should not be longer than 80 characters')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      )
-      .required('System id is a required field'),
-    description: Yup.string().max(
-      2048,
-      'Description schould not be longer than 2048 characters'
-    ),
-    host: Yup.string()
-      .min(1)
-      .max(256, 'Host name should not be longer than 256 characters')
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Must contain only alphanumeric characters and the following: '.', '_', '-'"
-      )
-      .required('Host name is a required field'),
-    rootDir: Yup.string()
-      .min(1)
-      .max(4096, 'Root Directory should not be longer than 4096 characters'),
-    jobWorkingDir: Yup.string()
-      .min(1)
-      .max(
-        4096,
-        'Job Working Directory should not be longer than 4096 characters'
-      ),
-    effectiveUserId: Yup.string().max(
-      60,
-      'Effective User ID should not be longer than 60 characters'
-    ),
-    batchSchedulerProfile: Yup.string().max(
-      80,
-      'Batch Scheduler Profile should not be longer than 80 characters'
-    ),
-    batchDefaultLogicalQueue: Yup.string().max(
-      128,
-      'Batch Default Logical Queue should not be longer than 128 characters'
-    ),
-    proxyHost: Yup.string().max(
-      256,
-      'Proxy Host should not be longer than 256 characters'
-    ),
-    mpiCmd: Yup.string().max(
-      126,
-      'mpiCmd should not be longer than 126 characters'
-    ),
-  });
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={!!state.canRunBatch}
+            onChange={(e) => {
+              const value = e.target.checked;
+              updateState({ canRunBatch: value });
+            }}
+          />
+        }
+        label="Can Run Batch"
+      />
+      <FormHelperText>Run Batch</FormHelperText>
+    </FormControl>
+  );
+};
 
-  const initialValues = {
-    sysname: '',
-    description: undefined,
-    systemType: SystemTypeEnum.Linux,
-    host: 'stampede2.tacc.utexas.edu',
-    defaultAuthnMethod: AuthnEnum.Password,
-    canExec: true,
-    rootDir: '/',
-    jobRuntimes: RuntimeTypeEnum.Singularity,
-    version: undefined,
-    effectiveUserId: undefined, //default =  ${apiUserId}
-    bucketName: undefined,
+const SystemRunTimeStep: React.FC<{
+  values: Partial<Systems.ReqPostSystem>;
+}> = ({ values }) => {
+  const { state, updateState } = useStepperState();
+  const runtimeTypes = Object.values(RuntimeTypeEnum);
 
-    //batch
-    canRunBatch: true,
-    batchScheduler: SchedulerTypeEnum.Slurm,
-    batchSchedulerProfile: 'tacc',
-    batchDefaultLogicalQueue: 'tapisNormal',
+  const runtimeType: RuntimeTypeEnum | null =
+    values.jobRuntimes && values.jobRuntimes.length > 0
+      ? (values.jobRuntimes[0].runtimeType as RuntimeTypeEnum)
+      : null;
 
-    batchLogicalQueues: [
-      {
-        name: 'tapisNormal',
-        hpcQueueName: 'normal',
-        maxJobs: 50,
-        maxJobsPerUser: 10,
-        minNodeCount: 1,
-        maxNodeCount: 16,
-        minCoresPerNode: 1,
-        maxCoresPerNode: 68,
-        minMemoryMB: 1,
-        maxMemoryMB: 16384,
-        minMinutes: 1,
-        maxMinutes: 60,
-      },
-    ],
+  return (
+    <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
+      {state.canExec && state.canRunBatch ? (
+        <Autocomplete
+          options={runtimeTypes}
+          getOptionLabel={(option) => option}
+          value={runtimeType}
+          onChange={(_, newValue) => {
+            if (!newValue) {
+              updateState({ jobRuntimes: [] });
+              return;
+            }
+            updateState({ jobRuntimes: [{ runtimeType: newValue }] });
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Job RunTime" variant="standard" />
+          )}
+          data-testid="jobRuntimes"
+        />
+      ) : (
+        <div style={{ opacity: 0.7 }}>RunTime Unavailable</div>
+      )}
+    </FormControl>
+  );
+};
 
-    //proxy
-    useProxy: false,
-    proxyHost: undefined,
-    proxyPort: 0,
+const SystemBatchStep: React.FC = () => {
+  const { state, updateState } = useStepperState();
+  const schedulerTypes = Object.values(SchedulerTypeEnum);
+  const isLinux =
+    (state.systemType ?? SystemTypeEnum.Linux) === SystemTypeEnum.Linux;
 
-    //cmd
-    enableCmdPrefix: false,
-    mpiCmd: undefined,
+  const queues: LogicalQueue[] =
+    (state.batchLogicalQueues as LogicalQueue[]) ?? [];
 
-    jobWorkingDir: 'HOST_EVAL($SCRATCH)',
-    jobMaxJobs: undefined,
-    jobMaxJobsPerUser: undefined,
-    jobCapabilities: [],
-    jobEnvVariables: [],
-
-    tags: [],
+  const setQueues = (newQueues: LogicalQueue[]) => {
+    updateState({ batchLogicalQueues: newQueues });
   };
 
-  const onSubmit = ({
-    sysname,
-    description,
-    systemType,
-    host,
-    defaultAuthnMethod,
-    canExec,
-    rootDir,
-    jobWorkingDir,
-    jobRuntimes,
-    version,
-    effectiveUserId,
-    bucketName,
-
-    //batch
-    canRunBatch,
-    batchScheduler,
-    batchSchedulerProfile,
-    batchDefaultLogicalQueue,
-    batchLogicalQueues,
-
-    //proxy
-    useProxy,
-    proxyHost,
-    proxyPort,
-
-    //cmd
-    enableCmdPrefix,
-    mpiCmd,
-
-    jobMaxJobs,
-    jobMaxJobsPerUser,
-    jobCapabilities,
-    jobEnvVariables,
-
-    tags,
-  }: {
-    sysname: string;
-    description: string | undefined;
-    systemType: SystemTypeEnum;
-    host: string;
-    defaultAuthnMethod: AuthnEnum;
-    canExec: boolean;
-    rootDir: string;
-    jobWorkingDir: string;
-    jobRuntimes: RuntimeTypeEnum;
-    version: string | undefined;
-    effectiveUserId: string | undefined;
-    bucketName: string | undefined;
-
-    //batch
-    canRunBatch: boolean;
-    batchScheduler: SchedulerTypeEnum;
-    batchSchedulerProfile: string;
-    batchDefaultLogicalQueue: string;
-    batchLogicalQueues: Array<LogicalQueue>;
-
-    //proxy
-    useProxy: boolean;
-    proxyHost: string | undefined;
-    proxyPort: number;
-
-    //cmd
-    enableCmdPrefix: boolean;
-    mpiCmd: string | undefined;
-
-    jobMaxJobs: number | undefined;
-    jobMaxJobsPerUser: number | undefined;
-    jobCapabilities: Array<Capability>;
-    jobEnvVariables: Array<KeyValuePair>;
-
-    tags: Array<string> | undefined;
-  }) => {
-    //Converting the string into a boolean value
-    const jobRuntimesArray = [{ runtimeType: jobRuntimes, version }];
-
-    makeNewSystem(
+  const addQueue = () =>
+    setQueues([
+      ...queues,
       {
-        id: sysname,
-        description,
-        systemType,
-        host,
-        defaultAuthnMethod,
-        canExec,
-        rootDir,
-        jobWorkingDir,
-        jobRuntimes: jobRuntimesArray,
-        effectiveUserId,
-        bucketName,
-
-        //batch
-        canRunBatch,
-        batchScheduler,
-        batchSchedulerProfile,
-        batchDefaultLogicalQueue,
-        batchLogicalQueues,
-
-        //proxy
-        useProxy,
-        proxyHost,
-        proxyPort,
-
-        //cmd
-        // enableCmdPrefix,
-        // mpiCmd,
-
-        jobMaxJobs,
-        jobMaxJobsPerUser,
-        jobCapabilities,
-        jobEnvVariables,
-
-        tags,
+        name: '',
+        hpcQueueName: '',
       },
-      true,
-      { onSuccess }
-    );
+    ]);
+
+  const removeQueue = (idx: number) =>
+    setQueues(queues.filter((_, i) => i !== idx));
+
+  const updateQueue = (idx: number, value: LogicalQueue) =>
+    setQueues(queues.map((q, i) => (i === idx ? value : q)));
+
+  return (
+    <div>
+      {isLinux && (
+        <Collapse title="Batch Settings" className={styles['array']}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!state.canRunBatch}
+                onChange={(e) => updateState({ canRunBatch: e.target.checked })}
+                color="primary"
+              />
+            }
+            label="Can Run Batch"
+          />
+          {state.canRunBatch && (
+            <div>
+              <Select
+                fullWidth
+                size="small"
+                margin="dense"
+                displayEmpty
+                value={state.batchScheduler ?? ''}
+                onChange={(e) =>
+                  updateState({ batchScheduler: e.target.value as string })
+                }
+              >
+                <MenuItem disabled value="">
+                  Select a batch scheduler
+                </MenuItem>
+                {schedulerTypes.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>Batch scheduler for the system</FormHelperText>
+
+              <TextField
+                fullWidth
+                size="small"
+                margin="dense"
+                label="Batch Scheduler Profile"
+                value={state.batchSchedulerProfile}
+                onChange={(e) =>
+                  updateState({ batchSchedulerProfile: e.target.value })
+                }
+                helperText="Batch scheduler profile (leave blank to unset)"
+                style={{ marginTop: '16px' }}
+              />
+
+              <TextField
+                fullWidth
+                size="small"
+                margin="dense"
+                label="Batch Default Logical Queue"
+                value={state.batchDefaultLogicalQueue}
+                onChange={(e) => {
+                  updateState({ batchDefaultLogicalQueue: e.target.value });
+                }}
+                helperText="Batch default logical queue (must match one logical queue name)"
+                style={{ marginTop: '16px' }}
+              />
+
+              <Collapse
+                open={queues.length > 0}
+                title="Batch Logical Queues"
+                note={`${queues.length} item${queues.length !== 1 ? 's' : ''}`}
+                className={styles['array']}
+              >
+                {queues.map((queue, idx) => (
+                  <Collapse
+                    key={idx}
+                    open={true}
+                    title={`Batch Logical Queue ${idx + 1}`}
+                    className={styles['item']}
+                  >
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Name"
+                      required
+                      value={queue.name || ''}
+                      onChange={(e) =>
+                        updateQueue(idx, { ...queue, name: e.target.value })
+                      }
+                      helperText="Name (used as logical queue identifier)"
+                      style={{ marginBottom: '8px' }}
+                    />
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="HPC Queue Name"
+                      required
+                      value={queue.hpcQueueName || ''}
+                      onChange={(e) =>
+                        updateQueue(idx, {
+                          ...queue,
+                          hpcQueueName: e.target.value,
+                        })
+                      }
+                      helperText="HPC Queue Name (actual scheduler queue)"
+                      style={{ marginBottom: '8px' }}
+                    />
+
+                    {[
+                      ['maxJobs', 'Max Jobs'],
+                      ['maxJobsPerUser', 'Max Jobs Per User'],
+                      ['minNodeCount', 'Min Node Count'],
+                      ['maxNodeCount', 'Max Node Count'],
+                      ['minCoresPerNode', 'Min Cores Per Node'],
+                      ['maxCoresPerNode', 'Max Cores Per Node'],
+                      ['minMemoryMB', 'Min Memory MB'],
+                      ['maxMemoryMB', 'Max Memory MB'],
+                      ['minMinutes', 'Min Minutes'],
+                      ['maxMinutes', 'Max Minutes'],
+                    ].map(([key, label]) => (
+                      <TextField
+                        key={key}
+                        fullWidth
+                        size="small"
+                        type="number"
+                        label={label}
+                        value={(queue as any)[key as keyof LogicalQueue] ?? ''}
+                        onChange={(e) =>
+                          updateQueue(idx, {
+                            ...queue,
+                            [key]:
+                              e.target.value === ''
+                                ? undefined
+                                : Number(e.target.value),
+                          } as LogicalQueue)
+                        }
+                        helperText={label}
+                        style={{ marginBottom: '8px' }}
+                      />
+                    ))}
+
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        onClick={() => removeQueue(idx)}
+                        size="small"
+                        variant="outlined"
+                      >
+                        Remove
+                      </Button>
+
+                      <Button
+                        onClick={() =>
+                          updateQueue(idx, {
+                            ...queue,
+                            name: queue.name || `queue-${idx + 1}`,
+                          })
+                        }
+                        size="small"
+                        variant="contained"
+                      >
+                        Save
+                      </Button>
+                    </Box>
+                  </Collapse>
+                ))}
+
+                <Button
+                  onClick={addQueue}
+                  size="small"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                >
+                  + Add Logical Queue
+                </Button>
+              </Collapse>
+            </div>
+          )}
+        </Collapse>
+      )}
+    </div>
+  );
+};
+
+const MiscellaneousStep: React.FC = () => {
+  const { state } = useStepperState();
+  const advancedSetting = Object.values(AdvancedSettings);
+
+  return (
+    <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
+      {state.canExec ? (
+        <Autocomplete
+          options={advancedSetting}
+          getOptionLabel={(option) => option}
+          value={advancedSetting as any}
+          onChange={(_, newValue) => {
+            /* noop for now */
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Miscellaeous" variant="standard" />
+          )}
+          data-testid="Miscellaneous"
+        />
+      ) : (
+        <div style={{ opacity: 0.7 }}> Miscellaneous Unavailable </div>
+      )}
+    </FormControl>
+  );
+};
+
+const validationSchema = Yup.object({
+  id: Yup.string()
+    .min(1)
+    .max(80)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed"
+    )
+    .required(),
+  description: Yup.string().max(2048),
+  host: Yup.string().min(1).max(256).required(),
+  rootDir: Yup.string().max(4096),
+  effectiveUserId: Yup.string().max(60),
+});
+
+const initialState: Partial<ReqPostSystem> = {
+  id: undefined,
+  description: undefined,
+  systemType: SystemTypeEnum.Linux,
+  host: 'stampede2.tacc.utexas.edu',
+  rootDir: '/',
+  defaultAuthnMethod: AuthnEnum.Password,
+  canExec: true,
+  jobRuntimes: [{ runtimeType: RuntimeTypeEnum.Singularity }],
+  effectiveUserId: undefined,
+  canRunBatch: true,
+  batchScheduler: SchedulerTypeEnum.Slurm,
+  batchSchedulerProfile: 'tacc',
+  batchDefaultLogicalQueue: undefined,
+  batchLogicalQueues: [],
+  useProxy: false,
+  proxyHost: undefined,
+  proxyPort: 0,
+  enableCmdPrefix: false,
+  mpiCmd: undefined,
+  jobWorkingDir: 'HOST_EVAL($SCRATCH)',
+  jobMaxJobs: undefined,
+  jobMaxJobsPerUser: undefined,
+  jobCapabilities: [],
+  jobEnvVariables: [],
+  tags: [],
+};
+
+const CreateSystemModal: React.FC<{
+  open: boolean;
+  toggle: () => void;
+  onCreate?: (system: ReqPostSystem) => void;
+  systemTypes?: SystemTypeEnum[];
+  authnMethods?: AuthnEnum[];
+}> = ({
+  open,
+  toggle,
+  onCreate,
+  systemTypes = Object.values(SystemTypeEnum),
+  authnMethods = Object.values(AuthnEnum),
+}) => {
+  const [state, setState] = useState<Partial<ReqPostSystem>>(initialState);
+  const [withJson, setWithJson] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleChange = (key: keyof ReqPostSystem, value: any) => {
+    setState((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const { makeNewSystem } = Hooks.useMakeNewSystem();
+
+  const handleSubmit = async (finalStateRaw: ReqPostSystem) => {
+    try {
+      const finalState = { ...finalStateRaw } as any;
+
+      ['batchDefaultLogicalQueue'].forEach((k) => {
+        if (finalState[k] === '') finalState[k] = undefined;
+      });
+
+      const jobRuntimesArray =
+        (finalState.jobRuntimes || []).map((r: any) => ({
+          runtimeType: r.runtimeType,
+          version: r.version,
+        })) || [];
+
+      finalState.jobRuntimes = jobRuntimesArray;
+
+      validationSchema.validateSync(finalState, { abortEarly: false });
+
+      setIsSubmitting(true);
+      setSubmitError(null);
+
+      await makeNewSystem(finalState);
+      onCreate?.(finalState);
+
+      setSubmitSuccess(true);
+      setIsSubmitting(false);
+      toggle();
+    } catch (e) {
+      if (e instanceof Yup.ValidationError) {
+        setSubmitError(e.errors.join('\n'));
+      } else {
+        setSubmitError((e as any)?.message ?? 'Unknown error');
+      }
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Dialog
-      open={true}
-      onClose={toggle}
-      aria-labelledby="Create System"
-      aria-describedby="A modal for creating a system"
-      maxWidth={false} // disables the default maxWidth constraints
-      fullWidth={false} // prevents auto-stretching to 100%
-      PaperProps={{
-        style: { width: 'auto' }, // optional, helps content dictate width
+      fullWidth
+      open={open}
+      onClose={() => {
+        toggle();
       }}
+      aria-labelledby="Create System"
+      maxWidth="md"
     >
-      <DialogTitle
-        id="dialog-title"
-        style={{ display: 'flex', justifyContent: 'space-between' }}
-      >
+      <DialogTitle style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>Create System</div>
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
           <LoadingButton
-            onClick={() => {
-              setWithJson(false);
-            }}
+            onClick={() => setWithJson(false)}
             variant={!withJson ? 'contained' : 'outlined'}
-            color="info"
             size="small"
           >
-            form
+            Form
           </LoadingButton>
-
           <LoadingButton
-            onClick={() => {
-              setWithJson(true);
-            }}
+            onClick={() => setWithJson(true)}
             variant={withJson ? 'contained' : 'outlined'}
-            color="info"
             size="small"
           >
-            json editor
+            JSON Editor
           </LoadingButton>
         </div>
       </DialogTitle>
 
       <DialogContent>
         {withJson ? (
-          <JSONEditor
-            style={{ width: '60vw', marginTop: '8px' }}
+          <JSONEditor<Partial<ReqPostSystem>>
+            obj={state}
             renderNewlinesInError
-            obj={{
-              id: '',
-              description: '',
-              systemType: SystemTypeEnum.Linux,
-              host: 'stampede2.tacc.utexas.edu',
-              rootDir: '/',
-              defaultAuthnMethod: AuthnEnum.Password,
-              canExec: true,
-            }}
             actions={[
               {
-                color: !isSuccess ? 'error' : 'info',
-                name: !isSuccess ? 'cancel' : 'continue',
-                actionFn: toggle,
+                name: 'Cancel',
+                color: 'error',
+                actionFn: () => toggle(),
               },
               {
-                name: 'create system',
+                name: 'Create System',
                 disableOnError: true,
-                disableOnUndefined: true,
-                disableOnIsLoading: true,
-                disableOnSuccess: true,
-                error:
-                  error !== null
-                    ? {
-                        title: 'Error',
-                        message: error.message,
-                      }
-                    : undefined,
-                result: isSuccess
-                  ? {
-                      success: isSuccess,
-                      message: 'Successfully created system',
-                    }
-                  : undefined,
-                isLoading,
-                isSuccess,
-                validator: (obj: ReqPostSystem | undefined) => {
-                  let success: boolean = false;
-                  let message: string = '';
-                  try {
-                    validationSchema.validateSync(obj, { abortEarly: false });
-                    success = true;
-                  } catch (e) {
-                    (e as Yup.ValidationError).errors.map(
-                      (msg, i) => (message = message + `#${i + 1}: ${msg}\n`)
-                    );
-                  }
-
-                  return {
-                    success,
-                    message,
-                  };
-                },
-                actionFn: (obj: ReqPostSystem | undefined) => {
-                  if (obj !== undefined) {
-                    makeNewSystem(obj, true, { onSuccess });
-                  }
+                isLoading: isSubmitting,
+                isSuccess: submitSuccess,
+                actionFn: (obj) => {
+                  if (!obj) return;
+                  handleSubmit(obj as ReqPostSystem);
                 },
               },
             ]}
-            onCloseError={() => {
-              reset();
-            }}
-            onCloseSuccess={() => {
-              reset();
-            }}
           />
         ) : (
           <div className={styles['modal-settings']}>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={onSubmit}
-            >
-              {(formikProps) => (
-                <Form id="newapp-form">
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="field-error"
-                  />
-                  <FormikInput
-                    name="id"
-                    label="System ID"
-                    required={true}
-                    description={`System ID`}
-                    aria-label="Input"
-                  />
-                  <FormikInput
-                    name="description"
-                    label="Description"
-                    required={false}
-                    description={`System description`}
-                    aria-label="Input"
-                  />
-                  <FormikSelect
-                    name="systemType"
-                    description="The system type"
-                    label="System Type"
-                    required={true}
-                    data-testid="systemType"
-                  >
-                    <option disabled value={''}>
-                      Select a system type
-                    </option>
-                    {systemTypes.map((values) => {
-                      return <option>{values}</option>;
-                    })}
-                  </FormikSelect>
-                  <FormikInput
-                    name="host"
-                    label="Host"
-                    required={true}
-                    description={`Host of the system`}
-                    aria-label="Input"
-                  />
+            <MUIStepper
+              initialState={state as State}
+              backDisabled={submitSuccess}
+              nextDisabled={!!submitError || isSubmitting || submitSuccess}
+              nextIsLoading={isSubmitting}
+              steps={[
+                {
+                  label: 'Details',
+                  element: <SystemDetailStep />,
+                  nextCondition: (state) => state.id !== undefined,
+                },
+                {
+                  label: 'Host',
+                  element: <SystemHostStep />,
+                  nextCondition: (state) => state.host !== undefined,
+                },
+                {
+                  label: 'Runtime',
+                  element:
+                    state.canRunBatch && state.canExec ? (
+                      <SystemRunTimeStep values={state} />
+                    ) : (
+                      <div> Runtime Unavailable </div>
+                    ),
+                  nextCondition: (state) => state.systemType !== undefined,
+                },
+                {
+                  label: 'Miscellaneous',
+                  element: state.canExec ? (
+                    <AdvancedSettings
+                      canExec={!!state.canExec}
+                      values={state}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <div style={{ padding: '1rem', opacity: 0.7 }}>
+                      Unavailable
+                    </div>
+                  ),
+                },
+                {
+                  label: 'Batch',
+                  element:
+                    state.canRunBatch && state.canExec ? (
+                      <SystemBatchStep />
+                    ) : (
+                      <div> Batch Unvailable</div>
+                    ),
+                },
+              ]}
+              finishButtonText="Create System"
+              onClickFinish={(finalState: State) =>
+                handleSubmit(finalState as ReqPostSystem)
+              }
+            />
 
-                  <FormikInput
-                    name="rootDir"
-                    label="Root Directory"
-                    required={false}
-                    description={`Root directory`}
-                    aria-label="Input"
-                  />
-
-                  <FormikSelect
-                    name="defaultAuthnMethod"
-                    description="Authentication method for the system"
-                    label="Default Authentication Method"
-                    required={true}
-                    data-testid="defaultAuthnMethod"
-                  >
-                    <option disabled value="">
-                      Select a default authenication method
-                    </option>
-                    {authnMethods.map((values) => {
-                      return <option>{values}</option>;
-                    })}
-                  </FormikSelect>
-
-                  <FormikInput
-                    name="effectiveUserId"
-                    label="Effective User ID"
-                    required={false}
-                    description={`Effective user id`}
-                    aria-label="Input"
-                  />
-
-                  <FormikCheck
-                    name="canExec"
-                    required={true}
-                    label="Can Execute"
-                    description={'Enables system execution'}
-                    type="checkbox"
-                    checked={exec}
-                    onClick={(e) => {
-                      setExec(!exec);
-                    }}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const newValue = e.target.checked;
-                      setExec(newValue); // Update local state `exec`
-                    }}
-                  />
-                  <AdvancedSettings canExec={exec} />
-                </Form>
-              )}
-            </Formik>
+            {submitError && (
+              <FormHelperText error>{submitError}</FormHelperText>
+            )}
           </div>
         )}
       </DialogContent>
@@ -517,16 +703,7 @@ const CreateSystemModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       {!withJson && (
         <DialogActions>
           <LoadingButton onClick={toggle}>
-            {isSuccess ? 'Continue' : 'Cancel'}
-          </LoadingButton>
-          <LoadingButton
-            onClick={toggle}
-            disabled={isSuccess}
-            loading={isLoading}
-            variant="outlined"
-            autoFocus
-          >
-            Create System
+            {submitSuccess ? 'Continue' : 'Cancel'}
           </LoadingButton>
         </DialogActions>
       )}
