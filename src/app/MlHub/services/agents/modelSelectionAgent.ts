@@ -190,7 +190,7 @@ export const ModelSelectionAgent: Agent = {
     const litellmEndpoint =
       process.env.NODE_ENV === 'development'
         ? '/api/litellm'
-        : 'https://litellm.pods.tacc.develop.tapis.io';
+        : 'https://litellm.pods.tacc.tapis.io';
     const hasLiteLLMConfig = true; // Always use LiteLLM
 
     if (!hasLiteLLMConfig) {

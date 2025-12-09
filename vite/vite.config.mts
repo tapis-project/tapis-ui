@@ -120,7 +120,7 @@ export default defineConfig({
         secure: true,
       },
       '/api/litellm': {
-        target: 'https://litellm.pods.tacc.develop.tapis.io',
+        target: 'https://litellm.pods.tacc.tapis.io',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/litellm/, ''),
         secure: true,
