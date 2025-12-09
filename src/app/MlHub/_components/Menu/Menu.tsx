@@ -22,12 +22,6 @@ const Menu: React.FC = () => {
       icon: 'simulation',
       disabled: false,
     },
-    {
-      path: '/ml-hub/chatbot',
-      label: 'Chatbot',
-      icon: 'multiple-coversation',
-      disabled: true,
-    },
   ];
 
   return (
