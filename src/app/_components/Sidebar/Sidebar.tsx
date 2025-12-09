@@ -1,5 +1,5 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
@@ -13,6 +13,7 @@ import {
   Key,
   Visibility,
   ContentCopy,
+  ChatBubbleOutline,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -52,6 +53,8 @@ import {
   Breadcrumbs,
   breadcrumbsFromPathname,
 } from '@tapis/tapisui-common';
+import { FloatingChatButton } from 'app/_components';
+import { ChatContext } from 'app/_context/chat';
 
 type SidebarItems = {
   [key: string]: any;
@@ -60,6 +63,7 @@ type SidebarItems = {
 const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
   const { extension } = useExtension();
+  const chatContextValue = useContext(ChatContext);
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -480,6 +484,54 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
+      <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
+        <FloatingChatButton />
+      </div>
+      <Chip
+        variant="outlined"
+        style={{
+          borderRadius: '8px',
+        }}
+        label={
+          !expanded ? (
+            <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                fontSize: 12,
+                lineHeight: 1.2,
+                overflow: 'hidden',
+              }}
+            >
+              <div>
+                <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+              </div>
+              {expanded && (
+                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                  Chatbot
+                </div>
+              )}
+            </div>
+          )
+        }
+        onClick={() => chatContextValue?.toggleChat()}
+        sx={{
+          height: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '.6rem',
+          marginBottom: '.4rem',
+          color: '#707070',
+          '& .MuiChip-label': {
+            display: 'flex',
+            whiteSpace: 'normal',
+          },
+        }}
+      />
       <Chip
         variant="outlined"
         style={{

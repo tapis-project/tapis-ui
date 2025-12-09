@@ -477,8 +477,6 @@ const AnalysisForm: React.FC = () => {
                   });
                 }
 
-                console.log({ envVariables });
-
                 submit(
                   {
                     name: ML_EDGE_ANALYSIS_JOB_NAME,
