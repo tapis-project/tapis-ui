@@ -216,218 +216,226 @@ const ModelsByPlatform: React.FC = () => {
               {error instanceof Error ? error.message : 'Unknown error'}
             </Alert>
           )}
-      {platform === 'Patra' ? (
-        <PatraSearchBar
-          searchText={patraSearchText}
-          setSearchText={setPatraSearchText}
-          onClear={handleClearFilters}
-        />
-      ) : (
-        <HuggingFaceSearchBar
-          idSearch={idSearch}
-          setIdSearch={setIdSearch}
-          selectedPipelineTag={selectedPipelineTag}
-          setSelectedPipelineTag={setSelectedPipelineTag}
-          selectedLibrary={selectedLibrary}
-          setSelectedLibrary={setSelectedLibrary}
-          tagSearch={tagSearch}
-          setTagSearch={setTagSearch}
-          availablePipelineTags={availablePipelineTags}
-          availableLibraries={availableLibraries}
-          onClear={handleClearFilters}
-        />
-      )}
-      <Table responsive striped style={{ tableLayout: 'fixed', width: '100%' }}>
-        <thead>
-          <tr>
-            {platform === 'Patra' ? (
-              // Patra-specific columns
-              <>
-                <th style={{ width: '25%' }}>Name</th>
-                <th style={{ width: '20%' }}>Version</th>
-                <th style={{ width: '35%' }}>Description</th>
-              </>
-            ) : (
-              // HuggingFace-specific columns
-              <>
-                <th style={{ width: '20%' }}>Model ID</th>
-                <th style={{ width: '10%' }}>Pipeline Tag</th>
-                <th style={{ width: '10%' }}>Library</th>
-                <th
-                  style={{
-                    width: '10%',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    transition: 'background-color 0.2s, color 0.2s',
-                  }}
-                  onClick={() => handleSort('downloads')}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f0f0f0';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '';
-                  }}
-                >
-                  Downloads{renderSortIcon('downloads')}
-                </th>
-                <th
-                  style={{
-                    width: '10%',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    transition: 'background-color 0.2s, color 0.2s',
-                  }}
-                  onClick={() => handleSort('likes')}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f0f0f0';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '';
-                  }}
-                >
-                  Likes{renderSortIcon('likes')}
-                </th>
-                <th style={{ width: '25%' }}>Tags</th>
-                <th
-                  style={{
-                    width: '15%',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    transition: 'background-color 0.2s, color 0.2s',
-                  }}
-                  onClick={() => handleSort('createdAt')}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f0f0f0';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '';
-                  }}
-                >
-                  Created{renderSortIcon('createdAt')}
-                </th>
-              </>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td
-                colSpan={platform === 'Patra' ? 4 : 7}
-                className="text-center"
-              >
-                <div className="d-flex justify-content-center align-items-center">
-                  <div
-                    className="spinner-border spinner-border-sm me-2"
-                    role="status"
-                  >
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                  Loading models...
-                </div>
-              </td>
-            </tr>
-          ) : filteredModels.length > 0 ? (
-            filteredModels.map((model, index) => (
-              <tr key={model.mc_id || model.id || model._id}>
+          {platform === 'Patra' ? (
+            <PatraSearchBar
+              searchText={patraSearchText}
+              setSearchText={setPatraSearchText}
+              onClear={handleClearFilters}
+            />
+          ) : (
+            <HuggingFaceSearchBar
+              idSearch={idSearch}
+              setIdSearch={setIdSearch}
+              selectedPipelineTag={selectedPipelineTag}
+              setSelectedPipelineTag={setSelectedPipelineTag}
+              selectedLibrary={selectedLibrary}
+              setSelectedLibrary={setSelectedLibrary}
+              tagSearch={tagSearch}
+              setTagSearch={setTagSearch}
+              availablePipelineTags={availablePipelineTags}
+              availableLibraries={availableLibraries}
+              onClear={handleClearFilters}
+            />
+          )}
+          <Table
+            responsive
+            striped
+            style={{ tableLayout: 'fixed', width: '100%' }}
+          >
+            <thead>
+              <tr>
                 {platform === 'Patra' ? (
-                  // Patra-specific row data
+                  // Patra-specific columns
                   <>
-                    <td className={`${styles['model-name-column']}`}>
-                      <Link
-                        to={`/ml-hub/models/platform/${platform}/${model.mc_id}`}
-                        className={`${styles['clickable-model-name']}`}
-                      >
-                        {model.name || 'Unknown'}
-                      </Link>
-                    </td>
-                    <td>{model.version || 'N/A'}</td>
-                    <td>{model.short_description || <i>None</i>}</td>
+                    <th style={{ width: '25%' }}>Name</th>
+                    <th style={{ width: '20%' }}>Version</th>
+                    <th style={{ width: '35%' }}>Description</th>
                   </>
                 ) : (
-                  // HuggingFace-specific row data
+                  // HuggingFace-specific columns
                   <>
-                    <td className={`${styles['model-name-column']}`}>
-                      <Link
-                        to={`/ml-hub/models/platform/${platform}/${model.id}`}
-                        className={`${styles['clickable-model-name']}`}
-                      >
-                        {model.id || model.modelId || 'Unknown'}
-                      </Link>
-                    </td>
-                    <td>{model.pipeline_tag || <i>None</i>}</td>
-                    <td>{model.library_name || <i>None</i>}</td>
-                    <td>{model.downloads?.toLocaleString() || 'N/A'}</td>
-                    <td>{model.likes?.toLocaleString() || 'N/A'}</td>
-                    <td>
-                      {model.tags && model.tags.length > 0 ? (
-                        <div className="d-flex flex-wrap gap-1">
-                          {(() => {
-                            const modelId = model.id || model._id;
-                            const isExpanded = expandedTags.has(modelId);
-                            const tagsToShow = isExpanded
-                              ? model.tags
-                              : model.tags.slice(0, 3);
-
-                            return (
-                              <>
-                                {tagsToShow.map((tag: string, idx: number) => (
-                                  <Badge
-                                    key={idx}
-                                    className="me-1 mb-1"
-                                    style={{
-                                      backgroundColor: '#e3f2fd',
-                                      color: '#1976d2',
-                                      border: '1px solid #bbdefb',
-                                      fontSize: '0.75rem',
-                                      padding: '0.25rem 0.5rem',
-                                      borderRadius: '0.25rem',
-                                    }}
-                                  >
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {model.tags.length > 3 && (
-                                  <Badge
-                                    color="light"
-                                    className="text-dark mb-1"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => toggleTagExpansion(modelId)}
-                                  >
-                                    {isExpanded
-                                      ? 'Show less'
-                                      : `+${model.tags.length - 3} more`}
-                                  </Badge>
-                                )}
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : (
-                        <i>None</i>
-                      )}
-                    </td>
-                    <td>
-                      {model.createdAt
-                        ? new Date(model.createdAt).toLocaleDateString()
-                        : 'N/A'}
-                    </td>
+                    <th style={{ width: '20%' }}>Model ID</th>
+                    <th style={{ width: '10%' }}>Pipeline Tag</th>
+                    <th style={{ width: '10%' }}>Library</th>
+                    <th
+                      style={{
+                        width: '10%',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'background-color 0.2s, color 0.2s',
+                      }}
+                      onClick={() => handleSort('downloads')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f0f0f0';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '';
+                      }}
+                    >
+                      Downloads{renderSortIcon('downloads')}
+                    </th>
+                    <th
+                      style={{
+                        width: '10%',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'background-color 0.2s, color 0.2s',
+                      }}
+                      onClick={() => handleSort('likes')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f0f0f0';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '';
+                      }}
+                    >
+                      Likes{renderSortIcon('likes')}
+                    </th>
+                    <th style={{ width: '25%' }}>Tags</th>
+                    <th
+                      style={{
+                        width: '15%',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'background-color 0.2s, color 0.2s',
+                      }}
+                      onClick={() => handleSort('createdAt')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f0f0f0';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '';
+                      }}
+                    >
+                      Created{renderSortIcon('createdAt')}
+                    </th>
                   </>
                 )}
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={platform === 'Patra' ? 4 : 7}
-                className="text-center"
-              >
-                No models found for {platform}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan={platform === 'Patra' ? 4 : 7}
+                    className="text-center"
+                  >
+                    <div className="d-flex justify-content-center align-items-center">
+                      <div
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                      Loading models...
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredModels.length > 0 ? (
+                filteredModels.map((model, index) => (
+                  <tr key={model.mc_id || model.id || model._id}>
+                    {platform === 'Patra' ? (
+                      // Patra-specific row data
+                      <>
+                        <td className={`${styles['model-name-column']}`}>
+                          <Link
+                            to={`/ml-hub/models/platform/${platform}/${model.mc_id}`}
+                            className={`${styles['clickable-model-name']}`}
+                          >
+                            {model.name || 'Unknown'}
+                          </Link>
+                        </td>
+                        <td>{model.version || 'N/A'}</td>
+                        <td>{model.short_description || <i>None</i>}</td>
+                      </>
+                    ) : (
+                      // HuggingFace-specific row data
+                      <>
+                        <td className={`${styles['model-name-column']}`}>
+                          <Link
+                            to={`/ml-hub/models/platform/${platform}/${model.id}`}
+                            className={`${styles['clickable-model-name']}`}
+                          >
+                            {model.id || model.modelId || 'Unknown'}
+                          </Link>
+                        </td>
+                        <td>{model.pipeline_tag || <i>None</i>}</td>
+                        <td>{model.library_name || <i>None</i>}</td>
+                        <td>{model.downloads?.toLocaleString() || 'N/A'}</td>
+                        <td>{model.likes?.toLocaleString() || 'N/A'}</td>
+                        <td>
+                          {model.tags && model.tags.length > 0 ? (
+                            <div className="d-flex flex-wrap gap-1">
+                              {(() => {
+                                const modelId = model.id || model._id;
+                                const isExpanded = expandedTags.has(modelId);
+                                const tagsToShow = isExpanded
+                                  ? model.tags
+                                  : model.tags.slice(0, 3);
+
+                                return (
+                                  <>
+                                    {tagsToShow.map(
+                                      (tag: string, idx: number) => (
+                                        <Badge
+                                          key={idx}
+                                          className="me-1 mb-1"
+                                          style={{
+                                            backgroundColor: '#e3f2fd',
+                                            color: '#1976d2',
+                                            border: '1px solid #bbdefb',
+                                            fontSize: '0.75rem',
+                                            padding: '0.25rem 0.5rem',
+                                            borderRadius: '0.25rem',
+                                          }}
+                                        >
+                                          {tag}
+                                        </Badge>
+                                      )
+                                    )}
+                                    {model.tags.length > 3 && (
+                                      <Badge
+                                        color="light"
+                                        className="text-dark mb-1"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() =>
+                                          toggleTagExpansion(modelId)
+                                        }
+                                      >
+                                        {isExpanded
+                                          ? 'Show less'
+                                          : `+${model.tags.length - 3} more`}
+                                      </Badge>
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </div>
+                          ) : (
+                            <i>None</i>
+                          )}
+                        </td>
+                        <td>
+                          {model.createdAt
+                            ? new Date(model.createdAt).toLocaleDateString()
+                            : 'N/A'}
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={platform === 'Patra' ? 4 : 7}
+                    className="text-center"
+                  >
+                    No models found for {platform}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
         </>
       )}
     </div>
