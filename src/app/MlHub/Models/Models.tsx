@@ -4,7 +4,7 @@ import { useQueries } from 'react-query';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { MLHub as API } from '@tapis/tapisui-api';
 import { Icon, QueryWrapper } from '@tapis/tapisui-common';
-import { Table, Badge, Card, CardBody } from 'reactstrap';
+import { Table, Badge, Card, CardBody, Alert } from 'reactstrap';
 import {
   TextField,
   FormControl,
@@ -185,9 +185,23 @@ const Models: React.FC = () => {
 
   const isLoading =
     platformsLoading || platformQueries.some((q) => q.isLoading);
-  const error = (platformsError ||
-    platformQueries.find((q) => q.error)?.error ||
-    null) as Error | null;
+  
+  // Collect errors from failed platform queries
+  const platformErrors = useMemo(() => {
+    const errors: Array<{ platform: string; error: Error }> = [];
+    platformQueries.forEach((query, index) => {
+      if (query.error && platformsWithListModel[index]) {
+        errors.push({
+          platform: platformsWithListModel[index].name,
+          error: query.error as Error,
+        });
+      }
+    });
+    return errors;
+  }, [platformQueries, platformsWithListModel]);
+  
+  // Only treat platforms list error as blocking error
+  const blockingError = platformsError as Error | null;
 
   const handleClearFilters = () => {
     setSearchText('');
@@ -289,8 +303,19 @@ const Models: React.FC = () => {
         </div>
       </div>
 
+      {/* Platform Error Warnings */}
+      {platformErrors.length > 0 && (
+        <Alert color="warning" className="mb-3">
+          <strong>Warning:</strong> Failed to load models from{' '}
+          {platformErrors.map((e) => e.platform).join(', ')}.
+          {platformErrors.length === 1 && platformErrors[0].error && (
+            <> {platformErrors[0].error.message}</>
+          )}
+        </Alert>
+      )}
+
       {/* Models Table */}
-      <QueryWrapper isLoading={isLoading} error={error}>
+      <QueryWrapper isLoading={isLoading} error={blockingError}>
         <Table responsive striped className={styles['models-table']}>
           <thead>
             <tr>

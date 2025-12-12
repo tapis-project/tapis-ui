@@ -5,7 +5,7 @@ import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { MLHub as API } from '@tapis/tapisui-api';
 import { Icon } from '@tapis/tapisui-common';
 import { QueryWrapper } from '@tapis/tapisui-common';
-import { Table, Badge } from 'reactstrap';
+import { Table, Badge, Alert } from 'reactstrap';
 import styles from './Models.module.scss';
 import HuggingFaceSearchBar from '../_components/SearchBar/HuggingFaceSearchBar';
 import PatraSearchBar from '../_components/SearchBar/PatraSearchBar';
@@ -203,11 +203,19 @@ const ModelsByPlatform: React.FC = () => {
   };
 
   return (
-    <QueryWrapper
-      isLoading={isLoading}
-      error={error}
-      className={styles['models-table']}
-    >
+    <div className={styles['models-table']}>
+      {isLoading ? (
+        <QueryWrapper isLoading={isLoading} error={null}>
+          <div />
+        </QueryWrapper>
+      ) : (
+        <>
+          {error && (
+            <Alert color="warning" className="mb-3">
+              <strong>Warning:</strong> Failed to load models from {platform}.{' '}
+              {error instanceof Error ? error.message : 'Unknown error'}
+            </Alert>
+          )}
       {platform === 'Patra' ? (
         <PatraSearchBar
           searchText={patraSearchText}
@@ -420,7 +428,9 @@ const ModelsByPlatform: React.FC = () => {
           )}
         </tbody>
       </Table>
-    </QueryWrapper>
+        </>
+      )}
+    </div>
   );
 };
 
