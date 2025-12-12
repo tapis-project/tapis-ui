@@ -34,6 +34,10 @@ import type { ChatTurn } from 'app/_context/chat/agentTypes';
 import 'app/MlHub/_context/registerMlHubChat';
 import 'app/Systems/_context/registerSystemsChat';
 import 'app/Files/_context/registerFilesChat';
+import 'app/Apps/_context/registerAppsChat';
+import 'app/Jobs/_context/registerJobsChat';
+import 'app/Workflows/_context/registerWorkflowsChat';
+import 'app/Pods/_context/registerPodsChat';
 
 const LayoutContent: React.FC = () => {
   const { claims, pathTenantId, pathSiteId } = useTapisConfig();
