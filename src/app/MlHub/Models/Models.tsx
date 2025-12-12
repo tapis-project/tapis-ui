@@ -185,6 +185,7 @@ const Models: React.FC = () => {
 
   const isLoading =
     platformsLoading || platformQueries.some((q) => q.isLoading);
+  
   // Collect errors from failed platform queries
   const platformErrors = useMemo(() => {
     const errors: Array<{ platform: string; error: Error }> = [];
@@ -198,6 +199,7 @@ const Models: React.FC = () => {
     });
     return errors;
   }, [platformQueries, platformsWithListModel]);
+  
   // Only treat platforms list error as blocking error
   const blockingError = platformsError as Error | null;
 
