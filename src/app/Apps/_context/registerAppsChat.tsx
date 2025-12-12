@@ -42,25 +42,23 @@ const AppsQAEmptyState = (onSend: (text: string) => void) => (
           Try these example prompts:
         </Typography>
         <Stack spacing={1} alignItems="center">
-          {[
-            'How do I create an app?',
-            'What are containerized apps?',
-            'How do I share an app?',
-          ].map((prompt) => (
-            <Chip
-              key={prompt}
-              label={prompt}
-              onClick={() => onSend(prompt)}
-              sx={{
-                cursor: 'pointer',
-                maxWidth: '100%',
-                '&:hover': {
-                  bgcolor: 'action.hover',
-                },
-              }}
-              size="small"
-            />
-          ))}
+          {['How do I create an app?', 'How do I share an app?'].map(
+            (prompt) => (
+              <Chip
+                key={prompt}
+                label={prompt}
+                onClick={() => onSend(prompt)}
+                sx={{
+                  cursor: 'pointer',
+                  maxWidth: '100%',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                }}
+                size="small"
+              />
+            )
+          )}
         </Stack>
       </Box>
 
