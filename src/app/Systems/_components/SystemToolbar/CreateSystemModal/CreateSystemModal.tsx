@@ -33,6 +33,7 @@ import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { State } from 'app/_components/MUIStepper/MUIStepper';
 import BatchSettings from './Settings/Batch/BatchSettings';
 import BatchLogicalQueuesSettings from './Settings/Batch/BatchLogicalQueuesSettings';
+import { useQueryClient } from 'react-query';
 
 type LogicalQueue = {
   name: string;
@@ -98,10 +99,9 @@ const SystemHostStep: React.FC = () => {
         fullWidth
         size="small"
         margin="dense"
-        label="Host"
+        label=" System Host"
         required
         defaultValue={state.host}
-        helperText={'Host of the system'}
         FormHelperTextProps={{
           sx: { m: 0, marginTop: '4px' },
         }}
@@ -117,7 +117,7 @@ const SystemHostStep: React.FC = () => {
         label="Root Directory"
         required
         defaultValue={state.rootDir}
-        helperText={'/'}
+        helperText={'Default /'}
         FormHelperTextProps={{
           sx: { m: 0, marginTop: '4px' },
         }}
@@ -132,7 +132,6 @@ const SystemHostStep: React.FC = () => {
         margin="dense"
         label="Effective User Id"
         defaultValue={state.effectiveUserId}
-        helperText={'Effective user id'}
         FormHelperTextProps={{
           sx: { m: 0, marginTop: '4px' },
         }}
@@ -157,7 +156,6 @@ const SystemHostStep: React.FC = () => {
           <TextField {...params} label="System Type" variant="standard" />
         )}
       />
-      <FormHelperText> System Type </FormHelperText>
 
       <Autocomplete
         options={authns}
@@ -174,22 +172,6 @@ const SystemHostStep: React.FC = () => {
           <TextField {...params} label="Authn Method" variant="standard" />
         )}
       />
-      <FormHelperText> Default Authentication Method </FormHelperText>
-
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={!!state.canExec}
-            onChange={(e) => {
-              const value = e.target.checked;
-              updateState({ canExec: value });
-            }}
-          />
-        }
-        label="Can Exec"
-      />
-      <FormHelperText>Enable execution</FormHelperText>
-
       <FormControlLabel
         control={
           <Checkbox
@@ -240,6 +222,19 @@ const SystemRunTimeStep: React.FC<{
       ) : (
         <div style={{ opacity: 0.7 }}>RunTime Unavailable</div>
       )}
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={!!state.canExec}
+            onChange={(e) => {
+              const value = e.target.checked;
+              updateState({ canExec: value });
+            }}
+          />
+        }
+        label="Can Exec"
+      />
+      <FormHelperText>Enable execution</FormHelperText>
     </FormControl>
   );
 };
@@ -276,16 +271,6 @@ const SystemBatchStep: React.FC = () => {
     <div>
       {isLinux && (
         <Collapse title="Batch Settings" className={styles['array']}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={!!state.canRunBatch}
-                onChange={(e) => updateState({ canRunBatch: e.target.checked })}
-                color="primary"
-              />
-            }
-            label="Can Run Batch"
-          />
           {state.canRunBatch && (
             <div>
               <Select
@@ -483,13 +468,30 @@ const validationSchema = Yup.object({
     .max(80)
     .matches(
       /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed"
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
     )
     .required(),
   description: Yup.string().max(2048),
-  host: Yup.string().min(1).max(256).required(),
-  rootDir: Yup.string().max(4096),
-  effectiveUserId: Yup.string().max(60),
+  host: Yup.string()
+    .min(1)
+    .max(256)
+    .required()
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  rootDir: Yup.string()
+    .max(4096)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  effectiveUserId: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
 });
 
 const initialState: Partial<ReqPostSystem> = {
@@ -540,8 +542,16 @@ const CreateSystemModal: React.FC<{
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleChange = (key: keyof ReqPostSystem, value: any) => {
+    setSubmitError(null);
+    setSubmitSuccess(false);
     setState((prev) => ({ ...prev, [key]: value }));
   };
+
+  const queryClient = useQueryClient();
+
+  const submissionSuccess = React.useCallback(() => {
+    queryClient.invalidateQueries(Hooks.queryKeys.list);
+  }, [queryClient]);
 
   const { makeNewSystem } = Hooks.useMakeNewSystem();
 
@@ -569,6 +579,7 @@ const CreateSystemModal: React.FC<{
       await makeNewSystem(finalState);
       onCreate?.(finalState);
 
+      submissionSuccess();
       setSubmitSuccess(true);
       setIsSubmitting(false);
       toggle();
@@ -640,13 +651,14 @@ const CreateSystemModal: React.FC<{
             <MUIStepper
               initialState={state as State}
               backDisabled={submitSuccess}
-              nextDisabled={!!submitError || isSubmitting || submitSuccess}
+              nextDisabled={isSubmitting || submitSuccess}
               nextIsLoading={isSubmitting}
               steps={[
                 {
                   label: 'Details',
                   element: <SystemDetailStep />,
-                  nextCondition: (state) => state.id !== undefined,
+                  nextCondition: (state) =>
+                    state.id !== undefined && state.id !== Yup.ValidationError,
                 },
                 {
                   label: 'Host',
@@ -712,3 +724,6 @@ const CreateSystemModal: React.FC<{
 };
 
 export default CreateSystemModal;
+function useCallback(arg0: () => void, arg1: Promise<void>) {
+  throw new Error('Function not implemented.');
+}
