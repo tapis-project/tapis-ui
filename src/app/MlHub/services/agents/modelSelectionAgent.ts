@@ -44,7 +44,7 @@ async function fetchModels(
 ) {
   const { result } = await API.Models.Platforms.listModelsByPlatform(
     platform as any,
-    mlHubBasePath + '/mlhub' || '',
+    mlHubBasePath || '',
     jwt
   );
   return (result || []) as ModelLite[];

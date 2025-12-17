@@ -21,7 +21,7 @@
     "@icicle/tapisui-extension": "workspace:*",
     "@jest/globals": "30.2.0",
     "@mlhub/models-ts-sdk": "^0.0.0",
-    "@mlhub/ts-sdk": "^0.0.1",
+    "@mlhub/ts-sdk": "0.0.8",
     "@mui/icons-material": "^7.3.4",
     "@mui/lab": "7.0.1-beta.18",
     "@mui/material": "^7.3.4",

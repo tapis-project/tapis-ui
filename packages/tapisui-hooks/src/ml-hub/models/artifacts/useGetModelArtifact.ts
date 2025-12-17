@@ -14,7 +14,7 @@ const useGetModelArtifact = (
     () =>
       API.Models.Artifacts.getModelArtifact(
         artifactId,
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken?.access_token || ''
       ),
     {
