@@ -1016,6 +1016,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                             textDecoration: 'none',
                           },
                         },
+                        '& h1, & h2, & h3, & h4, & h5, & h6': {
+                          fontSize: '1.25rem !important',
+                          fontWeight: 600,
+                          marginTop: '0.5em',
+                          marginBottom: '0.5em',
+                          '&:first-of-type': {
+                            marginTop: 0,
+                          },
+                        },
                       }}
                     >
                       <Markdown
@@ -1033,6 +1042,48 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                               props: {
                                 variant: 'body2',
                                 component: 'p',
+                              },
+                            },
+                            h1: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h1',
+                              },
+                            },
+                            h2: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h2',
+                              },
+                            },
+                            h3: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h3',
+                              },
+                            },
+                            h4: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h4',
+                              },
+                            },
+                            h5: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h5',
+                              },
+                            },
+                            h6: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h6',
                               },
                             },
                           },

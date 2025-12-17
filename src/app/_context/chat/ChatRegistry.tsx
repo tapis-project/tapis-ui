@@ -35,7 +35,18 @@ export const getChatIdForRoute = (pathname: string): string => {
   if (pathname.startsWith('/files')) {
     return 'file-qa';
   }
-  // Add more route mappings as needed
+  if (pathname.startsWith('/apps')) {
+    return 'app-qa';
+  }
+  if (pathname.startsWith('/jobs')) {
+    return 'job-qa';
+  }
+  if (pathname.startsWith('/workflows')) {
+    return 'workflow-qa';
+  }
+  if (pathname.startsWith('/pods')) {
+    return 'pod-qa';
+  }
 
   // Default to model selection for now
   return getDefaultChatId();
