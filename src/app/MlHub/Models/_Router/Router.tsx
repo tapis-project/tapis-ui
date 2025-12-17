@@ -5,7 +5,7 @@ import {
   Switch,
   RouteComponentProps,
 } from 'react-router-dom';
-import { Models } from '../../Models';
+import { Models, LocalModels } from '../../Models';
 import ModelsByPlatform from '../ModelsByPlatform';
 import ModelDetails from '../ModelDetails';
 
@@ -15,6 +15,10 @@ const Router: React.FC = () => {
     <Switch>
       <Route path={`${path}`} exact>
         <Models />
+      </Route>
+
+      <Route path={`${path}/local`} exact>
+        <LocalModels />
       </Route>
 
       <Route

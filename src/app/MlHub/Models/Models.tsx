@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { Button } from 'reactstrap';
 import styles from './Models.module.scss';
+import { localModels } from './LocalModels/localModels.data';
 
 interface AggregatedModel {
   id: string;
@@ -216,6 +217,12 @@ const Models: React.FC = () => {
     history.push(`${path}/platform/${platform}`);
   };
 
+  const handleViewLocalModels = () => {
+    history.push(`${path}/local`);
+  };
+
+  const localModelCount = localModels.length;
+
   return (
     <div className={styles['models-container']}>
       <div className={styles['page-header']}>
@@ -362,6 +369,30 @@ const Models: React.FC = () => {
               </Card>
             );
           })}
+          {localModelCount > 0 && (
+            <Card
+              className={styles['platform-link-card']}
+              onClick={handleViewLocalModels}
+            >
+              <CardBody className={styles['platform-link-body']}>
+                <div className={styles['platform-link-content']}>
+                  <div className={styles['platform-link-info']}>
+                    <Icon name="data-processing" />
+                    <span className={styles['platform-link-name']}>
+                      Local Models
+                    </span>
+                  </div>
+                  <Badge
+                    color="success"
+                    className={styles['platform-link-badge']}
+                  >
+                    {localModelCount} curated
+                  </Badge>
+                </div>
+                <div className={styles['platform-link-arrow']}>→</div>
+              </CardBody>
+            </Card>
+          )}
         </div>
       )}
 
