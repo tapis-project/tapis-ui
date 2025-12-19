@@ -1,3 +1,5 @@
+import { Models } from '@mlhub/ts-sdk';
+
 export type RuleOperator =
   | 'Eq'
   | 'Neq'
@@ -32,80 +34,6 @@ export type StrategyReadiness = {
   requiresAllocation: boolean;
   hasAllocation: boolean;
   allocationSteps: string[];
-};
-
-export type LocalModelMetadata = {
-  name: string;
-  author: string;
-  model_type: string[];
-  frameworks: string[];
-  image: string;
-  keywords: string[] | null;
-  annotations: {
-    $upstream: {
-      platform: string;
-      author: string;
-      name: string;
-      model_id: string;
-      url: string;
-      likes: string | number;
-      downloads: string | number;
-      trendingScore?: string | number;
-      visibility: 'private' | 'public';
-    };
-    $internal: {
-      metadata_created_at: string;
-      ingested: boolean;
-      deployment_strat: string[];
-    };
-  };
-  multi_modal: boolean;
-  model_inputs: Array<{
-    data_type: string;
-    shape: number[];
-  }>;
-  model_outputs: Array<{
-    data_type: string;
-    shape: number[];
-  }>;
-  task_types: string[];
-  inference_precision: string;
-  inference_hardware: {
-    cpus: number;
-    memory_gb: number;
-    disk_gb: number | null;
-    accelerators: string[];
-    architectures: string | null;
-  };
-  inference_software_dependencies: string[];
-  inference_max_energy_consumption_watts: number;
-  inference_max_latency_ms: number;
-  inference_min_throughput: number;
-  inference_max_compute_utilization_percentage: number;
-  inference_max_memory_usage_mb: number;
-  inference_distributed: boolean;
-  training_time: number;
-  training_precision: string;
-  training_hardware: {
-    cpus: number;
-    memory_gb: number;
-    disk_gb: number | null;
-    accelerators: string[];
-    architectures: string | null;
-  };
-  pretraining_datasets: string[];
-  finetuning_datasets: string[];
-  edge_optimized: boolean;
-  quantization_aware: boolean;
-  supports_quantization: boolean;
-  pretrained: boolean;
-  pruned: boolean;
-  slimmed: boolean;
-  training_distributed: boolean;
-  training_max_energy_consumption_watts: number;
-  regulatory: string[];
-  license: string;
-  bias_evaluation_score: number;
 };
 
 const createStrategyId = (label: string) =>
@@ -180,31 +108,31 @@ const buildModel = ({
   author,
   name,
   keywords,
-  frameworks,
+  libraries,
   taskTypes,
   license,
   multiModal,
-  modelTypes,
+  modelType,
   deploymentStrategies,
 }: {
   modelId: string;
   author: string;
   name: string;
   keywords: string[];
-  frameworks: string[];
-  taskTypes: string[];
+  libraries: string[];
+  taskTypes: Models.Task[];
   license: string;
   multiModal: boolean;
-  modelTypes: string[];
+  modelType: string;
   deploymentStrategies: string[];
-}): LocalModelMetadata => {
+}): Models.ModelMetadata => {
   const [, shortName = name] = name.split('/');
   const normalizedId = modelId.replace(':', '/');
   return {
     name,
     author,
-    model_type: modelTypes,
-    frameworks,
+    model_type: modelType,
+    libraries,
     image: '',
     keywords,
     annotations: {
@@ -279,48 +207,54 @@ const buildModel = ({
   };
 };
 
-export const localModels: LocalModelMetadata[] = [
-  buildModel({
-    modelId: 'hf.deepstart/vision-transformer',
-    author: 'hf.deepstart',
-    name: 'hf.deepstart.vision-transformer',
-    keywords: ['vision', 'classification', 'license:MIT'],
-    frameworks: ['transformers', 'litserve'],
-    taskTypes: ['ImageClassification'],
-    license: 'MIT',
-    multiModal: false,
-    modelTypes: ['vision-transformer'],
-    deploymentStrategies: [createStrategyId('Stampede3'), createStrategyId('Pods')],
-  }),
-  buildModel({
-    modelId: 'hf.luminae/audio-gen',
-    author: 'hf.luminae',
-    name: 'hf.luminae.audio-gen',
-    keywords: ['audio', 'generation', 'license:Apache-2.0'],
-    frameworks: ['transformers', 'ollama'],
-    taskTypes: ['AudioGeneration', 'TextToSpeech'],
-    license: 'Apache-2.0',
-    multiModal: true,
-    modelTypes: ['audio-generation'],
-    deploymentStrategies: [
-      createStrategyId('Frontera'),
-      createStrategyId('Vista'),
-      createStrategyId('Pods'),
-    ],
-  }),
-  buildModel({
-    modelId: 'hf.logicstream/multi-modal-mamba',
-    author: 'hf.logicstream',
-    name: 'hf.logicstream.multi-modal-mamba',
-    keywords: ['mamba', 'multi-modal', 'license:BSD-3-Clause'],
-    frameworks: ['transformers', 'llamacpp'],
-    taskTypes: ['MultiModalReasoning', 'ImageCaptioning'],
-    license: 'BSD-3-Clause',
-    multiModal: true,
-    modelTypes: ['mamba', 'multi-modal'],
-    deploymentStrategies: [createStrategyId('LoneStar6'), createStrategyId('Pods')],
-  }),
-];
+// export const nativeModels: Models.ModelMetadata[] = [
+//   buildModel({
+//     modelId: 'hf.deepstart/vision-transformer',
+//     author: 'hf.deepstart',
+//     name: 'hf.deepstart.vision-transformer',
+//     keywords: ['vision', 'classification', 'license:MIT'],
+//     libraries: ['transformers', 'litserve'],
+//     taskTypes: ['ImageClassification'],
+//     license: 'MIT',
+//     multiModal: false,
+//     modelTypes: ['vision-transformer'],
+//     deploymentStrategies: [
+//       createStrategyId('Stampede3'),
+//       createStrategyId('Pods'),
+//     ],
+//   }),
+//   buildModel({
+//     modelId: 'hf.luminae/audio-gen',
+//     author: 'hf.luminae',
+//     name: 'hf.luminae.audio-gen',
+//     keywords: ['audio', 'generation', 'license:Apache-2.0'],
+//     libraries: ['transformers', 'ollama'],
+//     taskTypes: ['AudioGeneration', 'TextToSpeech'],
+//     license: 'Apache-2.0',
+//     multiModal: true,
+//     modelTypes: ['audio-generation'],
+//     deploymentStrategies: [
+//       createStrategyId('Frontera'),
+//       createStrategyId('Vista'),
+//       createStrategyId('Pods'),
+//     ],
+//   }),
+//   buildModel({
+//     modelId: 'hf.logicstream/multi-modal-mamba',
+//     author: 'hf.logicstream',
+//     name: 'hf.logicstream.multi-modal-mamba',
+//     keywords: ['mamba', 'multi-modal', 'license:BSD-3-Clause'],
+//     libraries: ['transformers', 'llamacpp'],
+//     taskTypes: ['MultiModalReasoning', 'ImageCaptioning'],
+//     license: 'BSD-3-Clause',
+//     multiModal: true,
+//     modelTypes: ['mamba', 'multi-modal'],
+//     deploymentStrategies: [
+//       createStrategyId('LoneStar6'),
+//       createStrategyId('Pods'),
+//     ],
+//   }),
+// ];
 
 export const modelDeploymentReadiness: Record<
   string,
@@ -388,4 +322,3 @@ export const modelDeploymentReadiness: Record<
     },
   },
 };
-

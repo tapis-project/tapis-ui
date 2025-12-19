@@ -1,7 +1,8 @@
-.local-models-container {
+.native-models-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding: 16px;
 }
 
 .header {
@@ -28,9 +29,7 @@
 
 .table-container {
   background: #fff;
-  border-radius: 0.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  padding: 1rem;
 
   table {
     margin-bottom: 0;
@@ -168,4 +167,3 @@
   background: #fdfdfd;
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
 }
-

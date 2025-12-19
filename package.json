@@ -102,7 +102,7 @@
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
     "lint": "eslint --max-warnings=13 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write -l src packages",
-    "prettier-loop": "while true; do prettier --loglevel=silent --single-quote -l src packages || (echo -e '\n#############################################\nFound something to pretty - checked every 60s'; eslint --max-warnings=0 .; echo 'eslint ran - now running prettier'; prettier --loglevel=log --single-quote --write -l src packages; echo -e '#############################################\n'); sleep 60; done",
+    "prettier-loop": "while true; do prettier --loglevel=silent --single-quote -l src packages || (echo -e '\n#############################################\nFound something to pretty - checked every 60s'; eslint --max-warnings=1000 .; echo 'eslint ran - now running prettier'; prettier --loglevel=log --single-quote --write -l src packages; echo -e '#############################################\n'); sleep 60; done",
     "gh-pages": "pnpm build && npx gh-pages -d dist",
     "taskgen": "docker build -f packages/tapisui-extensions-core/Dockerfile -t tapis/tapisui-task-generator:latest . && docker run --mount type=bind,source=$(pwd),target=/tapisui -it tapis/tapisui-task-generator:latest"
   },

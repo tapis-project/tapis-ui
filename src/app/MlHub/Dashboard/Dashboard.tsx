@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@tapis/tapisui-common';
-import { Spinner, Alert, Button } from 'reactstrap';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ChatContext } from 'app/_context/chat';
@@ -21,17 +20,17 @@ const PLATFORM_METADATA: Record<
   },
   Github: {
     name: 'GitHub',
-    description: 'Browse models from GitHub repositories',
+    description: 'Ingest models from GitHub repositories',
     icon: 'code',
   },
   Git: {
     name: 'Git',
-    description: 'Access models from Git repositories',
+    description: 'Ingest models from private Git repositories',
     icon: 'data-files',
   },
   Patra: {
     name: 'Patra',
-    description: 'Discover models from the Patra platform',
+    description: 'Discover models on the Patra platform',
     icon: 'data-processing',
   },
   'tacc-tapis': {
@@ -79,7 +78,7 @@ const Dashboard: React.FC = () => {
       {/* Hero Section */}
       <div className={styles['hero-section']}>
         <div className={styles['hero-content']}>
-          <h1>Find and Deploy Machine Learning Models</h1>
+          <h1>AI-enabled Model Discovery and Deployment</h1>
           <p className={styles['hero-text']}>
             Access a unified interface to discover, manage, and deploy models
             from various platforms.
@@ -87,7 +86,7 @@ const Dashboard: React.FC = () => {
           <div className={styles['hero-actions']}>
             <Link to="/ml-hub/models" className={styles['hero-btn']}>
               <Icon name="search-folder" className={styles['btn-icon']} />
-              Browse All Models
+              Search Models
             </Link>
             <button
               className={styles['hero-btn']}
@@ -99,6 +98,10 @@ const Dashboard: React.FC = () => {
               />
               Discover with AI
             </button>
+            <Link to="/ml-hub/platforms" className={styles['hero-btn']}>
+              <Icon name="search-folder" className={styles['btn-icon']} />
+              Explore platforms
+            </Link>
           </div>
         </div>
       </div>

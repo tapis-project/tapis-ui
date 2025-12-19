@@ -2,20 +2,24 @@ import React, { useMemo, useState } from 'react';
 import { Badge, Button } from 'reactstrap';
 import { Chip, CircularProgress } from '@mui/material';
 import { PsychologyAlt, ListAlt, Security } from '@mui/icons-material';
-import { GenericModal, AuthModal, GlobusAuthModal } from '@tapis/tapisui-common';
+import {
+  GenericModal,
+  AuthModal,
+  GlobusAuthModal,
+} from '@tapis/tapisui-common';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
-import styles from './LocalModels.module.scss';
+import styles from './NativeModels.module.scss';
 import {
   DeploymentStrategy,
-  LocalModelMetadata,
+  NativeModelMetadata,
   StrategyReadiness,
-} from './localModels.data';
+} from './nativeModels.data';
 
 type DeploymentStrategyModalProps = {
   open: boolean;
   onClose: () => void;
-  model: LocalModelMetadata;
+  model: NativeModelMetadata;
   strategy: DeploymentStrategy;
   readiness?: StrategyReadiness;
 };
@@ -27,9 +31,9 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
   strategy,
   readiness,
 }) => {
-  const [credentialModal, setCredentialModal] = useState<'auth' | 'globus' | null>(
-    null
-  );
+  const [credentialModal, setCredentialModal] = useState<
+    'auth' | 'globus' | null
+  >(null);
   const credentialQuery = SystemsHooks.useCheckCredential(
     {
       systemId: strategy.systemId ?? '',
@@ -39,23 +43,24 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
       retry: 0,
     }
   );
-  const {
-    data: systemDetails,
-    isLoading: systemDetailsLoading,
-  } = SystemsHooks.useDetails(
-    {
-      systemId: strategy.systemId ?? '',
-      select: 'allAttributes',
-    },
-    {
-      enabled: !!strategy.systemId && open,
-    }
-  );
+  const { data: systemDetails, isLoading: systemDetailsLoading } =
+    SystemsHooks.useDetails(
+      {
+        systemId: strategy.systemId ?? '',
+        select: 'allAttributes',
+      },
+      {
+        enabled: !!strategy.systemId && open,
+      }
+    );
   const system = systemDetails?.result;
 
   const credentialStatus = useMemo(() => {
     if (!strategy.systemId) {
-      return { status: 'notRequired', message: 'No host credentials required.' };
+      return {
+        status: 'notRequired',
+        message: 'No host credentials required.',
+      };
     }
     if (credentialQuery.isLoading) {
       return { status: 'loading', message: 'Checking credentials…' };
@@ -74,7 +79,12 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
       status: 'missing',
       message: 'Credentials could not be verified.',
     };
-  }, [credentialQuery.data, credentialQuery.error, credentialQuery.isLoading, strategy.systemId]);
+  }, [
+    credentialQuery.data,
+    credentialQuery.error,
+    credentialQuery.isLoading,
+    strategy.systemId,
+  ]);
 
   const allocationStatus = (() => {
     if (!readiness) {
@@ -125,8 +135,7 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
     ));
   };
 
-  const credentialActionDisabled =
-    systemDetailsLoading || !strategy.systemId;
+  const credentialActionDisabled = systemDetailsLoading || !strategy.systemId;
 
   const handleManageCredentials = () => {
     if (systemDetailsLoading) return;
@@ -161,8 +170,8 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
       status: allocationStatus,
       message:
         allocationStatus === 'ready' || allocationStatus === 'notRequired'
-        ? 'Allocation confirmed for this strategy.'
-        : 'An active allocation is required before deployment.',
+          ? 'Allocation confirmed for this strategy.'
+          : 'An active allocation is required before deployment.',
       instructions: allocationInstructions,
       actionLabel:
         allocationStatus === 'missing' ? 'Request allocation' : undefined,
@@ -238,9 +247,7 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
                       : 'warning'
                   }
                   icon={
-                    card.loading ? (
-                      <CircularProgress size={12} />
-                    ) : undefined
+                    card.loading ? <CircularProgress size={12} /> : undefined
                   }
                 />
               </div>
@@ -309,4 +316,3 @@ const DeploymentStrategyModal: React.FC<DeploymentStrategyModalProps> = ({
 };
 
 export default DeploymentStrategyModal;
-

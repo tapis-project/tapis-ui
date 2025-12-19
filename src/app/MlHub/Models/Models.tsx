@@ -1,13 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { Models as MLHubModels } from '@mlhub/ts-sdk';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { useQueries } from 'react-query';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { MLHub as API } from '@tapis/tapisui-api';
 import { Icon, QueryWrapper } from '@tapis/tapisui-common';
 import { Table, Badge, Card, CardBody } from 'reactstrap';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { Autocomplete, Chip, FormHelperText } from '@mui/material';
 import {
   TextField,
   FormControl,
@@ -17,7 +14,6 @@ import {
 } from '@mui/material';
 import { Button } from 'reactstrap';
 import styles from './Models.module.scss';
-import { localModels } from './LocalModels/localModels.data';
 
 interface AggregatedModel {
   id: string;
@@ -40,21 +36,6 @@ const Models: React.FC = () => {
   // Search and filter states
   const [searchText, setSearchText] = useState<string>('');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('');
-  const {
-    data,
-    isLoading: discoveryIsLoading,
-    isSuccess,
-  } = Hooks.Models.useDiscoverModels({
-    discoveryCriteria: {
-      criteria: [
-        {
-          task_types: [MLHubModels.Task.TextGeneration],
-        },
-      ],
-    },
-  });
-
-  const nativeModels = data?.result ?? [];
 
   // Fetch all platforms
   const {
@@ -217,118 +198,12 @@ const Models: React.FC = () => {
     history.push(`${path}/platform/${platform}`);
   };
 
-  const handleViewLocalModels = () => {
-    history.push(`${path}/local`);
+  const handleViewNativeModels = () => {
+    history.push(`${path}/native`);
   };
-
-  const localModelCount = localModels.length;
 
   return (
     <div className={styles['models-container']}>
-      <div className={styles['page-header']}>
-        <h2>Models</h2>
-        <p className="text-muted">Browse models on MLHub</p>
-      </div>
-      {isSuccess && (
-        <div>
-          <div style={{ display: 'flex', gap: '16px', flexDirection: 'row' }}>
-            <FormControl fullWidth margin="dense">
-              <Autocomplete
-                options={Object.keys(MLHubModels.Task)}
-                // getOptionLabel={(archive: Workflows.Archive) => archive.id}
-                defaultValue={MLHubModels.Task.TextGeneration}
-                id="archive-autocomplete"
-                disableClearable
-                onChange={(_, value) => {}}
-                renderInput={(params) => (
-                  <TextField {...params} label="Task" variant="standard" />
-                )}
-              />
-              <FormHelperText sx={{ m: 0, marginTop: '4px' }}>
-                Find model by capability
-              </FormHelperText>
-            </FormControl>
-
-            <FormControl fullWidth margin="dense">
-              <Autocomplete
-                options={Object.keys(MLHubModels.Task)}
-                // getOptionLabel={(archive: Workflows.Archive) => archive.id}
-                defaultValue={MLHubModels.Task.TextGeneration}
-                id="archive-autocomplete"
-                disableClearable
-                onChange={(_, value) => {}}
-                renderInput={(params) => (
-                  <TextField {...params} label="Task" variant="standard" />
-                )}
-              />
-              <FormHelperText sx={{ m: 0, marginTop: '4px' }}>
-                Find model by capability
-              </FormHelperText>
-            </FormControl>
-          </div>
-          <DataGrid
-            getRowHeight={() => 'auto'}
-            rows={nativeModels.map((m) => {
-              return {
-                id: `${m.author}/${m.name}`,
-                taskTypes: m.task_types,
-                libraries: m.libraries,
-                license: m.license,
-                // keywords: m.keywords,
-              };
-            })}
-            sx={{
-              [`& .${gridClasses.cell}`]: {
-                py: 1,
-              },
-              '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
-                borderRight: '1px solid #f0f0f0',
-              },
-            }}
-            columns={[
-              { field: 'id', headerName: 'Model Name', width: 400 },
-              {
-                field: 'taskTypes',
-                headerName: 'Task Types',
-                width: 200,
-                hideSortIcons: true,
-                sortable: false,
-              },
-              {
-                field: 'libraries',
-                headerName: 'Libraries',
-                width: 200,
-                hideSortIcons: false,
-                disableColumnMenu: false,
-                sortable: true,
-              },
-              {
-                field: 'license',
-                headerName: 'License',
-                width: 200,
-                disableColumnMenu: true,
-              },
-              // {
-              //   field: 'keywords',
-              //   headerName: 'Tags',
-              //   width: 200,
-              //   disableColumnMenu: true,
-              // },
-            ]}
-            autosizeOptions={{
-              includeOutliers: false,
-            }}
-            rowSelection={false}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 10 },
-              },
-            }}
-            pageSizeOptions={[5, 10]}
-          />
-        </div>
-      )}
-
       <div className={styles['page-header']}>
         <h2>External Models</h2>
         <p className="text-muted">
@@ -369,30 +244,6 @@ const Models: React.FC = () => {
               </Card>
             );
           })}
-          {localModelCount > 0 && (
-            <Card
-              className={styles['platform-link-card']}
-              onClick={handleViewLocalModels}
-            >
-              <CardBody className={styles['platform-link-body']}>
-                <div className={styles['platform-link-content']}>
-                  <div className={styles['platform-link-info']}>
-                    <Icon name="data-processing" />
-                    <span className={styles['platform-link-name']}>
-                      Local Models
-                    </span>
-                  </div>
-                  <Badge
-                    color="success"
-                    className={styles['platform-link-badge']}
-                  >
-                    {localModelCount} curated
-                  </Badge>
-                </div>
-                <div className={styles['platform-link-arrow']}>→</div>
-              </CardBody>
-            </Card>
-          )}
         </div>
       )}
 

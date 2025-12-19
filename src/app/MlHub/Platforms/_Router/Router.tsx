@@ -6,8 +6,8 @@ import {
   RouteComponentProps,
 } from 'react-router-dom';
 import { Models } from '../../Models';
-import ModelsByPlatform from '../ModelsByPlatform';
-import ModelDetails from '../ModelDetails';
+import ModelsByPlatform from '../../Models/ModelsByPlatform';
+import ModelDetails from '../../Models/ModelDetails';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -18,7 +18,7 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/platform/:platform/:modelId*`}
+        path={`${path}/platforms/:platform/models/:modelId*`}
         render={({
           match: {
             params: { platform, modelId },
@@ -29,7 +29,7 @@ const Router: React.FC = () => {
         }}
       />
 
-      <Route path={`${path}/platform/:platform`}>
+      <Route path={`${path}/platforms/:platform/models`}>
         <ModelsByPlatform />
       </Route>
     </Switch>
