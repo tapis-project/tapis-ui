@@ -15,6 +15,8 @@ export type RuleDefinition = {
   value: string | number | boolean;
 };
 
+export type NativeModelMetadata = Models.ModelMetadata;
+
 export type RuleSetDefinition = {
   name: string;
   rules: RuleDefinition[];

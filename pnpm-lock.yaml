@@ -42,8 +42,8 @@ importers:
         specifier: 30.2.0
         version: 30.2.0
       '@mlhub/models-ts-sdk':
-        specifier: ^0.0.0
-        version: 0.0.0
+        specifier: ^0.0.8
+        version: 0.0.8
       '@mlhub/ts-sdk':
         specifier: 0.0.8
         version: 0.0.8
@@ -1862,9 +1862,6 @@ packages:
 
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
-
-  '@mlhub/models-ts-sdk@0.0.0':
-    resolution: {integrity: sha512-jgV9Bna739dQY9VPJQHaMYkRWNBCYQMKDthWHepCcQxaCruBMH8hzcbE5Q0i0XlzrhxcU55jZfxyNcolLjX7cQ==}
 
   '@mlhub/models-ts-sdk@0.0.8':
     resolution: {integrity: sha512-ORZ4Yjw5xdxqu9MVqdpMXmFGnNIV3DioZfY/SzpcFBGyR1Rv5w2J11H01SsJkwIk7am5CdWUQguoXq4pa8JaEA==}
@@ -7442,8 +7439,6 @@ snapshots:
       '@lezer/lr': 1.4.2
 
   '@marijn/find-cluster-break@1.0.2': {}
-
-  '@mlhub/models-ts-sdk@0.0.0': {}
 
   '@mlhub/models-ts-sdk@0.0.8': {}
 
