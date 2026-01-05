@@ -50,8 +50,54 @@ type LogicalQueue = {
   maxMinutes?: number;
 };
 
+const validationSchema = Yup.object({
+  id: Yup.string()
+    .min(1)
+    .max(80)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    )
+    .required(),
+  description: Yup.string().max(2048),
+  host: Yup.string()
+    .min(1)
+    .max(256)
+    .required()
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  rootDir: Yup.string()
+    .max(4096)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  effectiveUserId: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+});
+
 const SystemDetailStep: React.FC = () => {
   const { state, updateState } = useStepperState();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = (value: string) => {
+    try {
+      validationSchema.validateSyncAt('id', { id: value });
+      setErrors((e) => ({ ...e, id: '' }));
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors((e) => ({ ...e, id: err.message }));
+      }
+      return false;
+    }
+  };
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
       <TextField
@@ -61,13 +107,16 @@ const SystemDetailStep: React.FC = () => {
         label="System Id"
         required
         defaultValue={state.id}
-        helperText={'Choose a unique name for this system'}
+        helperText={errors.id || 'Choose a unique name for this system'}
         FormHelperTextProps={{
           sx: { m: 0, marginTop: '4px' },
         }}
         onChange={(e) => {
-          updateState({ id: e.target.value });
+          const value = e.target.value;
+          updateState({ id: value });
+          validate(value);
         }}
+        error={!!errors.id}
         style={{ marginTop: '16px' }}
       />
       <TextField
@@ -93,6 +142,20 @@ const SystemHostStep: React.FC = () => {
   const { state, updateState } = useStepperState();
   const types = Object.values(Systems.SystemTypeEnum).map((r) => r);
   const authns = Object.values(Systems.AuthnEnum).map((r) => r);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const validate = (value: string, field: string) => {
+    try {
+      validationSchema.validateSyncAt(field, { [field]: value });
+      setErrors((e) => ({ ...e, field: '' }));
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors((e) => ({ ...e, [field]: err.message }));
+        return false;
+      }
+    }
+  };
+
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
       <TextField
@@ -106,9 +169,12 @@ const SystemHostStep: React.FC = () => {
           sx: { m: 0, marginTop: '4px' },
         }}
         onChange={(e) => {
-          updateState({ host: e.target.value });
+          const value = e.target.value;
+          updateState({ host: value });
+          validate(value, '');
         }}
         style={{ marginTop: '16px' }}
+        error={!!errors.host}
       />
       <TextField
         fullWidth
@@ -122,9 +188,12 @@ const SystemHostStep: React.FC = () => {
           sx: { m: 0, marginTop: '4px' },
         }}
         onChange={(e) => {
-          updateState({ rootDir: e.target.value });
+          const value = e.target.value;
+          updateState({ rootDir: value });
+          validate(value, '');
         }}
         style={{ marginTop: '16px' }}
+        error={!!errors.rootDir}
       />
       <TextField
         fullWidth
@@ -136,9 +205,12 @@ const SystemHostStep: React.FC = () => {
           sx: { m: 0, marginTop: '4px' },
         }}
         onChange={(e) => {
-          updateState({ effectiveUserId: e.target.value });
+          const value = e.target.value;
+          updateState({ effectiveUserId: value });
+          validate(value, '');
         }}
         style={{ marginTop: '16px' }}
+        error={!!errors.effectiveUserId}
       />
 
       <Autocomplete
@@ -447,9 +519,7 @@ const MiscellaneousStep: React.FC = () => {
           options={advancedSetting}
           getOptionLabel={(option) => option}
           value={advancedSetting as any}
-          onChange={(_, newValue) => {
-            /* noop for now */
-          }}
+          onChange={(_, newValue) => {}}
           renderInput={(params) => (
             <TextField {...params} label="Miscellaeous" variant="standard" />
           )}
@@ -461,38 +531,6 @@ const MiscellaneousStep: React.FC = () => {
     </FormControl>
   );
 };
-
-const validationSchema = Yup.object({
-  id: Yup.string()
-    .min(1)
-    .max(80)
-    .matches(
-      /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed for id"
-    )
-    .required(),
-  description: Yup.string().max(2048),
-  host: Yup.string()
-    .min(1)
-    .max(256)
-    .required()
-    .matches(
-      /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed for id"
-    ),
-  rootDir: Yup.string()
-    .max(4096)
-    .matches(
-      /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed for id"
-    ),
-  effectiveUserId: Yup.string()
-    .max(60)
-    .matches(
-      /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed for id"
-    ),
-});
 
 const initialState: Partial<ReqPostSystem> = {
   id: undefined,
@@ -520,6 +558,15 @@ const initialState: Partial<ReqPostSystem> = {
   jobCapabilities: [],
   jobEnvVariables: [],
   tags: [],
+};
+
+type SystemWizardState = Partial<ReqPostSystem> & {
+  _valid?: {
+    details?: boolean;
+    host?: boolean;
+    runtime?: boolean;
+    batch?: boolean;
+  };
 };
 
 const CreateSystemModal: React.FC<{
@@ -657,8 +704,16 @@ const CreateSystemModal: React.FC<{
                 {
                   label: 'Details',
                   element: <SystemDetailStep />,
-                  nextCondition: (state) =>
-                    state.id !== undefined && state.id !== Yup.ValidationError,
+                  nextCondition: (state) => {
+                    let idIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('id', { id: state.id });
+                    } catch (_) {
+                      idIsValid = false;
+                    }
+
+                    return state.id !== undefined && idIsValid;
+                  },
                 },
                 {
                   label: 'Host',
@@ -724,6 +779,3 @@ const CreateSystemModal: React.FC<{
 };
 
 export default CreateSystemModal;
-function useCallback(arg0: () => void, arg1: Promise<void>) {
-  throw new Error('Function not implemented.');
-}
