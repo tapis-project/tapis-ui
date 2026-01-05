@@ -24,7 +24,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": "src",
-    "types": ["vite/client"]
+    "types": ["vite/client", "node"]
     // "useDefineForClassFields": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,

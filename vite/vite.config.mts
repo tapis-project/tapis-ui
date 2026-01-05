@@ -113,9 +113,16 @@ export default defineConfig({
     open: true, // Opens browser
     port: 3000,
     proxy: {
-      '/v3': {
-        target: 'https://dev.develop.tapis.io',
+      '/api/rag': {
+        target: 'https://rag.pods.tacc.tapis.io',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/rag/, ''),
+        secure: true,
+      },
+      '/api/litellm': {
+        target: 'https://litellm.pods.tacc.tapis.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/litellm/, ''),
         secure: true,
       },
     },

@@ -1,68 +1,365 @@
-import React, { useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
-import { Models as ModelsModule } from '@tapis/tapis-typescript';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
-import { Icon } from '@tapis/tapisui-common';
-import { QueryWrapper } from '@tapis/tapisui-common';
-import { Table } from 'reactstrap';
+import React, { useMemo, useState } from 'react';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { useQueries } from 'react-query';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import { MLHub as API } from '@tapis/tapisui-api';
+import { Icon, QueryWrapper } from '@tapis/tapisui-common';
+import { Table, Badge, Card, CardBody } from 'reactstrap';
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { Button } from 'reactstrap';
 import styles from './Models.module.scss';
-import SearchBar from '../_components/SearchBar/SearchBar';
+
+interface AggregatedModel {
+  id: string;
+  platform: string;
+  displayName: string;
+  category?: string;
+  version?: string;
+  downloads?: number | string;
+  likes?: number | string;
+  createdAt?: string;
+  last_modified?: string;
+  [key: string]: any;
+}
 
 const Models: React.FC = () => {
-  const { data, isLoading, error } = Hooks.Models.useList();
-  const models: ModelsModule.RespModelsObject['result'] = data?.result ?? {};
+  const history = useHistory();
   const { path } = useRouteMatch();
-  const [filteredModels, setFilteredModels] = useState<
-    Array<ModelsModule.ModelShortInfo>
-  >(Object.entries(models).map(([_, model]) => model));
+  const { accessToken, mlHubBasePath } = useTapisConfig();
+
+  // Search and filter states
+  const [searchText, setSearchText] = useState<string>('');
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('');
+
+  // Fetch all platforms
+  const {
+    data: platformsData,
+    isLoading: platformsLoading,
+    error: platformsError,
+  } = Hooks.Models.Platforms.useList();
+
+  // Filter platforms with list_model capability
+  const platformsWithListModel = useMemo(() => {
+    if (!platformsData) return [];
+
+    const filtered = platformsData.filter((p: any) =>
+      p.capabilities?.includes('ListModels')
+    );
+
+    // Sort platforms to always show HuggingFace first
+    return filtered.sort((a: any, b: any) => {
+      if (a.name === 'HuggingFace') return -1;
+      if (b.name === 'HuggingFace') return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [platformsData]);
+
+  // Fetch models from each platform using useQueries
+  const platformQueries = useQueries(
+    platformsWithListModel.map((platform: any) => {
+      const platformKey =
+        API.Models.Platforms.PLATFORM_KEY_TO_ENUM[platform.name] ||
+        platform.name.toLowerCase();
+      return {
+        queryKey: ['listModelsByPlatform', platformKey, accessToken],
+        queryFn: async () => {
+          if (!accessToken?.access_token) {
+            throw new Error('No access token available');
+          }
+          const response = await API.Models.Platforms.listModelsByPlatform(
+            platformKey,
+            mlHubBasePath,
+            accessToken.access_token
+          );
+          return { ...response, platformName: platform.name };
+        },
+        enabled: !!accessToken?.access_token && !!platformKey,
+      };
+    })
+  );
+
+  // Aggregate all models from all platforms
+  const aggregatedModels = useMemo(() => {
+    const models: AggregatedModel[] = [];
+
+    platformQueries.forEach((query) => {
+      if (query.data?.result) {
+        const platformName = (query.data as any).platformName || 'Unknown';
+        const platformModels = Array.isArray(query.data.result)
+          ? query.data.result
+          : [];
+
+        platformModels.forEach((model: any) => {
+          let normalizedModel: AggregatedModel;
+
+          if (platformName === 'Patra') {
+            normalizedModel = {
+              id: model.mc_id,
+              platform: platformName,
+              displayName: model.name || model.mc_id,
+              category: model.short_description,
+              version: model.version,
+              downloads: model.downloads || 'N/A',
+              likes: model.likes || 'N/A',
+              createdAt: model.createdAt || model.last_modified,
+              last_modified: model.last_modified,
+              ...model,
+            };
+          } else {
+            // HuggingFace
+            normalizedModel = {
+              id: model.id,
+              platform: platformName,
+              displayName: model.id,
+              category: model.pipeline_tag,
+              downloads: model.downloads,
+              likes: model.likes,
+              createdAt: model.createdAt,
+              last_modified: model.last_modified,
+              library_name: model.library_name,
+              ...model,
+            };
+          }
+
+          models.push(normalizedModel);
+        });
+      }
+    });
+
+    return models;
+  }, [platformQueries]);
+
+  // Get platform statistics
+  const platformStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    aggregatedModels.forEach((model) => {
+      stats[model.platform] = (stats[model.platform] || 0) + 1;
+    });
+    return stats;
+  }, [aggregatedModels]);
+
+  // Apply filters
+  const filteredModels = useMemo(() => {
+    return aggregatedModels.filter((model) => {
+      // Platform filter
+      if (selectedPlatform && model.platform !== selectedPlatform) {
+        return false;
+      }
+
+      // Text search
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        const displayName = model.displayName?.toLowerCase() || '';
+        const category = model.category?.toLowerCase() || '';
+        const library = model.library_name?.toLowerCase() || '';
+
+        if (
+          !displayName.includes(searchLower) &&
+          !category.includes(searchLower) &&
+          !library.includes(searchLower)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [aggregatedModels, searchText, selectedPlatform]);
+
+  // Get available platforms for filter
+  const availablePlatforms = useMemo(() => {
+    const platforms = new Set<string>();
+    aggregatedModels.forEach((model) => {
+      if (model.platform) {
+        platforms.add(model.platform);
+      }
+    });
+    return ['', ...Array.from(platforms).sort()];
+  }, [aggregatedModels]);
+
+  const isLoading =
+    platformsLoading || platformQueries.some((q) => q.isLoading);
+  const error = (platformsError ||
+    platformQueries.find((q) => q.error)?.error ||
+    null) as Error | null;
+
+  const handleClearFilters = () => {
+    setSearchText('');
+    setSelectedPlatform('');
+  };
+
+  const handleViewPlatform = (platform: string) => {
+    history.push(`${path}/platform/${platform}`);
+  };
+
+  const handleViewNativeModels = () => {
+    history.push(`${path}/native`);
+  };
 
   return (
-    <QueryWrapper
-      isLoading={isLoading}
-      error={error}
-      className={styles['models-table']}
-    >
-      <SearchBar
-        models={Object.entries(models).map(([_, model]) => model)}
-        onFilter={setFilteredModels}
-      />
-      <Table responsive striped>
-        <thead>
-          <tr>
-            <th>Model ID</th>
-            <th>Task</th>
-            <th>Downloads</th>
-            <th>Last Modified</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredModels.length > 0 ? (
-            filteredModels.map((model) => (
-              <tr key={model.model_id}>
-                <td className={`${styles['model-name-column']}`}>
-                  <Icon name="simulation" />
-                  <span>
-                    <Link to={`${path}/${model.model_id}`}>
-                      {' '}
-                      {model.model_id}{' '}
-                    </Link>
-                  </span>
-                </td>
-                <td>{model.pipeline_tag ? model.pipeline_tag : <i>None</i>}</td>
-                <td>{model.downloads}</td>
-                <td>{model.last_modified}</td>
-              </tr>
-            ))
-          ) : (
+    <div className={styles['models-container']}>
+      <div className={styles['page-header']}>
+        <h2>External Models</h2>
+        <p className="text-muted">
+          Browse and search models from all platforms
+        </p>
+      </div>
+
+      {/* Platform Quick Links */}
+      {!isLoading && platformsWithListModel.length > 0 && (
+        <div className={styles['platform-links']}>
+          {platformsWithListModel.map((platform: any) => {
+            const count = platformStats[platform.name] || 0;
+            return (
+              <Card
+                key={platform.name}
+                className={styles['platform-link-card']}
+                onClick={() => handleViewPlatform(platform.name)}
+              >
+                <CardBody className={styles['platform-link-body']}>
+                  <div className={styles['platform-link-content']}>
+                    <div className={styles['platform-link-info']}>
+                      <Icon name="simulation" />
+                      <span className={styles['platform-link-name']}>
+                        {platform.name}
+                      </span>
+                    </div>
+                    <Badge
+                      color={
+                        platform.name === 'HuggingFace' ? 'primary' : 'info'
+                      }
+                      className={styles['platform-link-badge']}
+                    >
+                      {count} {count === 1 ? 'model' : 'models'}
+                    </Badge>
+                  </div>
+                  <div className={styles['platform-link-arrow']}>→</div>
+                </CardBody>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Search and Filter Bar */}
+      <div className={styles['search-bar']}>
+        <TextField
+          label="Search Models"
+          name="search"
+          placeholder="Search by name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          size="small"
+          margin="normal"
+          sx={{ minWidth: 350 }}
+        />
+
+        <FormControl variant="outlined" margin="normal" sx={{ minWidth: 200 }}>
+          <InputLabel size="small" id="platform-filter-label">
+            Platform
+          </InputLabel>
+          <Select
+            label="Platform"
+            labelId="platform-filter-label"
+            size="small"
+            name="platform"
+            value={selectedPlatform}
+            onChange={(e) => setSelectedPlatform(e.target.value as string)}
+          >
+            {availablePlatforms.map((platform) => (
+              <MenuItem key={platform || 'all'} value={platform}>
+                {platform || 'All Platforms'}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <div className={styles['button-container']}>
+          <Button
+            color="secondary"
+            size="sm"
+            onClick={handleClearFilters}
+            disabled={!searchText && !selectedPlatform}
+            // style={{ display: "flex", alignItems: "center" }}
+          >
+            Clear Filters
+          </Button>
+        </div>
+      </div>
+
+      {/* Models Table */}
+      <QueryWrapper isLoading={isLoading} error={error}>
+        <Table responsive striped className={styles['models-table']}>
+          <thead>
             <tr>
-              <td colSpan={4} className="text-center">
-                No models found
-              </td>
+              <th style={{ width: '50%' }}>Model Name</th>
+              <th style={{ width: '30%' }}>Platform</th>
             </tr>
-          )}
-        </tbody>
-      </Table>
-    </QueryWrapper>
+          </thead>
+          <tbody>
+            {filteredModels.length > 0 ? (
+              filteredModels.map((model, index) => (
+                <tr key={`${model.platform}-${model.id}`}>
+                  <td className={styles['model-name-column']}>
+                    <div className={styles['model-info']}>
+                      <Link
+                        to={`/ml-hub/models/platform/${model.platform}/${model.id}`}
+                        className={styles['clickable-model-name']}
+                      >
+                        {model.displayName}
+                      </Link>
+                      {model.platform === 'Patra' && model.version && (
+                        <span className={styles['version-badge']}>
+                          {model.version}
+                        </span>
+                      )}
+                      {model.platform === 'HuggingFace' &&
+                        model.library_name && (
+                          <span className={styles['library-badge']}>
+                            {model.library_name}
+                          </span>
+                        )}
+                      {model.platform === 'HuggingFace' &&
+                        model.pipeline_tag && (
+                          <span className={styles['library-badge']}>
+                            {model.pipeline_tag}
+                          </span>
+                        )}
+                    </div>
+                  </td>
+                  <td>
+                    <Badge
+                      color={
+                        model.platform === 'HuggingFace' ? 'primary' : 'info'
+                      }
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleViewPlatform(model.platform)}
+                      title={`View all ${model.platform} models`}
+                    >
+                      {model.platform}
+                    </Badge>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={2} className="text-center">
+                  {isLoading
+                    ? 'Loading models...'
+                    : 'No models found matching your criteria'}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </QueryWrapper>
+    </div>
   );
 };
 

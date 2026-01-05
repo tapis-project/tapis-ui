@@ -12,6 +12,24 @@ https://tapis.readthedocs.io/en/latest/index.html
 You may also reference live-docs based on the OpenAPI v3 specification here:
 https://tapis-project.github.io/live-docs
 
+## 25Q4.0 - 2025 Q4
+New Release
+
+### New features:
+
+- UI now outputs chunked, just in time components for speed/size
+- Beginnings of new MLHub pages
+- Added initial welcome message to some tenants
+- Work on authentication automation
+- Updated all packages to get rid of deprecation/warnings
+- Added share button in file browser
+- Added copy button to JWT + menu
+
+### Bug fixes:
+
+- Fixes for some workflows
+- Fixes for ML Workbench
+
 ## 1.9.0 - 2024-09-13:
 
 ### New features:

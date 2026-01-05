@@ -13,6 +13,8 @@ const useList = (
 ) => {
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
 
+  console.log({ mlHubBasePath });
+
   const result = useQuery<PlatformCapabilities[], Error>(
     [QueryKeys.list, accessToken],
     async () => {
@@ -21,7 +23,7 @@ const useList = (
       }
 
       const response = await API.Models.Platforms.list(
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken.access_token
       );
 

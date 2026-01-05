@@ -1,4 +1,5 @@
 export { default as list } from './list';
+export { default as discover } from './discover';
 export { default as details } from './details';
 export { default as inferenceServerDetails } from './inference/inferenceServerDetails';
 export { default as listDownloadLinks } from './listDownloadLinks';
@@ -11,3 +12,5 @@ export { default as listByTask } from './listByTask';
 export { default as modelCardDetails } from './modelCardDetails';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
+export * as Ingestions from './ingestions';
+export * as Artifacts from './artifacts';

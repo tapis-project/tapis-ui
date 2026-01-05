@@ -1,4 +1,5 @@
 export { default as useList } from './useList';
+export { default as useDiscoverModels } from './useDiscoverModels';
 export { default as useDetails } from './useDetails';
 export { default as useDownloadLinks } from './useListDownloadLinks';
 export { default as useListByAuthor } from './useListByAuthor';
@@ -12,3 +13,5 @@ export { default as queryKeys } from './queryKeys';
 export { default as useModelCardDetails } from './useModelCardDetails';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
+export * as Ingestions from './ingestions';
+export * as Artifacts from './artifacts';

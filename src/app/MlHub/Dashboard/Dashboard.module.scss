@@ -1,9 +1,133 @@
 .dashboard {
-  padding: 1em;
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  padding: 4rem 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+}
+
+.hero-text {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--global-color-primary, #007bff);
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 6px; // Standard bootstrap-like radius
+  font-weight: 500;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  min-width: 200px;
+
+  &:hover {
+    background-color: #0056b3; // Darker shade for hover
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    text-decoration: none;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &.hero-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #6c757d;
+
+    &:hover {
+      background-color: #6c757d;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.btn-icon {
+  margin-right: 0.75rem;
+  font-size: 1.1em;
+}
+
+.steps-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.step-card {
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  p {
+    color: #666;
+    line-height: 1.5;
+  }
+}
+
+.step-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--global-color-primary, #007bff);
+
+  // Handle Icon component rendering
+  :global(.tapis-icon) {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .section-title {
@@ -15,44 +139,21 @@
 
 .section-description {
   color: #666;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-size: 1rem;
-}
-
-.card-container {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card {
-  width: 25em;
-  margin-right: 1em;
-  margin-bottom: 1em;
-}
-
-.card-header {
-  display: flex;
-  justify-content: baseline;
-
-  div {
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-direction: column;
-  }
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
 }
 
 .platforms-container {
   margin-top: 1rem;
 }
 
-.no-platforms-alert {
-  margin-top: 1rem;
-  text-align: center;
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+// Scope height rule strictly to cards within the card-container
+.card-container :global(.card) {
+  height: 100%;
 }

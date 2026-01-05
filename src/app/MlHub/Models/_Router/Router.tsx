@@ -6,6 +6,7 @@ import {
   RouteComponentProps,
 } from 'react-router-dom';
 import { Models } from '../../Models';
+import ModelsByPlatform from '../ModelsByPlatform';
 import ModelDetails from '../ModelDetails';
 
 const Router: React.FC = () => {
@@ -17,15 +18,20 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/:modelId+`}
+        path={`${path}/platform/:platform/:modelId*`}
         render={({
           match: {
-            params: { modelId },
+            params: { platform, modelId },
           },
-        }: RouteComponentProps<{ modelId: string }>) => {
-          return <ModelDetails modelId={modelId} />;
+        }: RouteComponentProps<{ platform: string; modelId?: string }>) => {
+          console.log({ platform, modelId });
+          return <ModelDetails platform={platform} modelId={modelId!} />;
         }}
       />
+
+      <Route path={`${path}/platform/:platform`}>
+        <ModelsByPlatform />
+      </Route>
     </Switch>
   );
 };

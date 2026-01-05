@@ -1,52 +1,61 @@
 import React from 'react';
-import { Navbar, Nav, NavItem, Collapse, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './Menu.module.scss';
 
 const Menu: React.FC = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  // Helper to check if a link is active
+  const isActive = (path: string) => {
+    if (path === '/ml-hub' && currentPath === '/ml-hub') return true;
+    if (path !== '/ml-hub' && currentPath.startsWith(path)) return true;
+    return false;
+  };
+
+  const menuItems = [
+    { path: '/ml-hub', label: 'Dashboard', icon: 'dashboard', disabled: false },
+    {
+      path: '/ml-hub/models',
+      label: 'Models',
+      icon: 'simulation',
+      disabled: false,
+    },
+  ];
+
   return (
-    <Navbar color="light" light expand={true}>
-      <Collapse isOpen={true} navbar>
-        <Nav className="me-auto" navbar>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/ml-hub">
-              <Button>
-                <Icon name="dashboard"></Icon> Dashboard
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/ml-hub/models">
-              <Button>
-                <Icon name="simulation"></Icon> Models
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/ml-hub/datasets">
-              <Button>
-                <Icon name="search-folder"></Icon> Datasets
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/ml-hub/inference">
-              <Button>
-                <Icon name="multiple-coversation"></Icon> Inference
-              </Button>
-            </Link>
-          </NavItem>
-          <NavItem className={styles['nav-item']}>
-            <Link to="/ml-hub/training">
-              <Button>
-                <Icon name="data-processing"></Icon> Training
-              </Button>
-            </Link>
-          </NavItem>
-        </Nav>
-      </Collapse>
-    </Navbar>
+    <div className={styles['menu-container']}>
+      <nav className={styles['menu-nav']}>
+        {menuItems.map((item) =>
+          item.disabled ? (
+            <span
+              key={item.path}
+              className={`${styles['menu-link']} ${styles['disabled']}`}
+            >
+              <span className={styles['icon-wrapper']}>
+                <Icon name={item.icon} />
+              </span>
+              <span className={styles['label']}>{item.label}</span>
+            </span>
+          ) : (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={styles['menu-link']}
+              activeClassName={styles['active']}
+              isActive={() => isActive(item.path)}
+              exact={item.path === '/ml-hub'}
+            >
+              <span className={styles['icon-wrapper']}>
+                <Icon name={item.icon} />
+              </span>
+              <span className={styles['label']}>{item.label}</span>
+            </NavLink>
+          )
+        )}
+      </nav>
+    </div>
   );
 };
 
