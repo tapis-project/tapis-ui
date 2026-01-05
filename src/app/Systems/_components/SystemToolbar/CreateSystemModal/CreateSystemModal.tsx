@@ -138,79 +138,86 @@ const SystemDetailStep: React.FC = () => {
   );
 };
 
+type HostValidator = {
+  host: string;
+  rootDir: string;
+  effectiveUserId: string;
+};
+
 const SystemHostStep: React.FC = () => {
   const { state, updateState } = useStepperState();
   const types = Object.values(Systems.SystemTypeEnum).map((r) => r);
   const authns = Object.values(Systems.AuthnEnum).map((r) => r);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const validate = (value: string, field: string) => {
-    try {
-      validationSchema.validateSyncAt(field, { [field]: value });
-      setErrors((e) => ({ ...e, field: '' }));
-      return true;
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        setErrors((e) => ({ ...e, [field]: err.message }));
-        return false;
+  const [errors, setErrors] = useState<Record<keyof HostValidator, string>>({
+    host: '',
+    rootDir: '',
+    effectiveUserId: '',
+  });
+  const fields: (keyof HostValidator)[] = [
+    'host',
+    'rootDir',
+    'effectiveUserId',
+  ];
+  const validate = (values: HostValidator) => {
+    for (const field of fields)
+      try {
+        validationSchema.validateSyncAt(field, values);
+        setErrors((e) => ({ ...e, [field]: '' }));
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          setErrors((e) => ({ ...e, [field]: err.message }));
+          return false;
+        }
       }
-    }
+    return true;
   };
 
+  const handleChange =
+    (field: keyof HostValidator) =>
+    (e: any) => {
+      const value = e.target.value;
+
+      const fullState: HostValidator = {
+        host: field === 'host' ? value : state.host ?? '',
+        rootDir: field === 'rootDir' ? value : state.rootDir ?? '',
+        effectiveUserId:
+          field === 'effectiveUserId' ? value : state.effectiveUserId ?? '',
+      };
+
+      updateState({ [field]: value });
+      validate(fullState);
+    };
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
       <TextField
-        fullWidth
-        size="small"
-        margin="dense"
-        label=" System Host"
-        required
-        defaultValue={state.host}
-        FormHelperTextProps={{
-          sx: { m: 0, marginTop: '4px' },
-        }}
-        onChange={(e) => {
-          const value = e.target.value;
-          updateState({ host: value });
-          validate(value, '');
-        }}
-        style={{ marginTop: '16px' }}
+        label="System Host"
+        value={state.host ?? ''}
+        onChange={handleChange('host')}
         error={!!errors.host}
-      />
-      <TextField
+        helperText={errors.host}
         fullWidth
         size="small"
         margin="dense"
+      />
+      <TextField
         label="Root Directory"
-        required
-        defaultValue={state.rootDir}
-        helperText={'Default /'}
-        FormHelperTextProps={{
-          sx: { m: 0, marginTop: '4px' },
-        }}
-        onChange={(e) => {
-          const value = e.target.value;
-          updateState({ rootDir: value });
-          validate(value, '');
-        }}
-        style={{ marginTop: '16px' }}
+        value={state.rootDir ?? ''}
+        onChange={handleChange('rootDir')}
         error={!!errors.rootDir}
-      />
-      <TextField
+        helperText={errors.rootDir || 'Default /'}
         fullWidth
         size="small"
         margin="dense"
+      />
+      <TextField
         label="Effective User Id"
-        defaultValue={state.effectiveUserId}
-        FormHelperTextProps={{
-          sx: { m: 0, marginTop: '4px' },
-        }}
-        onChange={(e) => {
-          const value = e.target.value;
-          updateState({ effectiveUserId: value });
-          validate(value, '');
-        }}
-        style={{ marginTop: '16px' }}
+        value={state.effectiveUserId ?? ''}
+        onChange={handleChange('effectiveUserId')}
         error={!!errors.effectiveUserId}
+        helperText={errors.effectiveUserId}
+        fullWidth
+        size="small"
+        margin="dense"
       />
 
       <Autocomplete
@@ -560,15 +567,6 @@ const initialState: Partial<ReqPostSystem> = {
   tags: [],
 };
 
-type SystemWizardState = Partial<ReqPostSystem> & {
-  _valid?: {
-    details?: boolean;
-    host?: boolean;
-    runtime?: boolean;
-    batch?: boolean;
-  };
-};
-
 const CreateSystemModal: React.FC<{
   open: boolean;
   toggle: () => void;
@@ -718,7 +716,42 @@ const CreateSystemModal: React.FC<{
                 {
                   label: 'Host',
                   element: <SystemHostStep />,
-                  nextCondition: (state) => state.host !== undefined,
+                  nextCondition: (state) => {
+                    let hostIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('host', {
+                        host: state.host,
+                      });
+                    } catch (_) {
+                      hostIsValid = false;
+                    }
+
+                    let rootDirIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('rootDir', {
+                        rootDir: state.rootDir,
+                      });
+                    } catch (_) {
+                      rootDirIsValid = false;
+                    }
+
+                    let effUserIdIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('effectiveUserId', {
+                        effectiveUserId: state.effectiveUserId,
+                      });
+                    } catch (_) {
+                      effUserIdIsValid = false;
+                    }
+                    return (
+                      state.host !== undefined &&
+                      hostIsValid &&
+                      state.rootDir !== undefined &&
+                      rootDirIsValid &&
+                      state.effectiveUserId !== undefined &&
+                      effUserIdIsValid
+                    );
+                  },
                 },
                 {
                   label: 'Runtime',
