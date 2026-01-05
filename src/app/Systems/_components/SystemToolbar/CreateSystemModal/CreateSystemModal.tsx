@@ -172,21 +172,19 @@ const SystemHostStep: React.FC = () => {
     return true;
   };
 
-  const handleChange =
-    (field: keyof HostValidator) =>
-    (e: any) => {
-      const value = e.target.value;
+  const handleChange = (field: keyof HostValidator) => (e: any) => {
+    const value = e.target.value;
 
-      const fullState: HostValidator = {
-        host: field === 'host' ? value : state.host ?? '',
-        rootDir: field === 'rootDir' ? value : state.rootDir ?? '',
-        effectiveUserId:
-          field === 'effectiveUserId' ? value : state.effectiveUserId ?? '',
-      };
-
-      updateState({ [field]: value });
-      validate(fullState);
+    const fullState: HostValidator = {
+      host: field === 'host' ? value : state.host ?? '',
+      rootDir: field === 'rootDir' ? value : state.rootDir ?? '',
+      effectiveUserId:
+        field === 'effectiveUserId' ? value : state.effectiveUserId ?? '',
     };
+
+    updateState({ [field]: value });
+    validate(fullState);
+  };
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
       <TextField
