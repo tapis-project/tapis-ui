@@ -1,30 +1,27 @@
 import { Models } from '@mlhub/ts-sdk';
 
-export type RuleOperator =
-  | 'Eq'
-  | 'Neq'
-  | 'Gt'
-  | 'Gte'
-  | 'Lt'
-  | 'Lte'
-  | 'Contains';
+export type Operator = 'Eq' | 'Neq' | 'Gt' | 'Gte' | 'Lt' | 'Lte' | 'Contains';
 
-export type RuleDefinition = {
+export type Rule = {
   field: string;
-  operator: RuleOperator;
+  operator: Operator;
   value: string | number | boolean;
 };
 
-export type RuleSetDefinition = {
+export type RuleSet = {
   name: string;
-  rules: RuleDefinition[];
+  rules: Rule[];
+};
+
+export type ClientDeploymentStrategy = {
+  client: string;
+  strategies: Array<DeploymentStrategy>;
 };
 
 export type DeploymentStrategy = {
-  id: string;
   name: string;
   description: string;
-  ruleSets?: RuleSetDefinition[];
+  ruleSets?: RuleSet[];
   useRuleSets: string[];
   useParameterSet: 'Jobs' | 'Pods';
   systemId?: string;
@@ -39,69 +36,69 @@ export type StrategyReadiness = {
 const createStrategyId = (label: string) =>
   label.toLowerCase().replace(/\s+/g, '-');
 
-const strategyList: DeploymentStrategy[] = [
-  {
-    id: createStrategyId('Stampede3'),
-    name: 'Stampede3',
-    description:
-      'Deploys the model as a Slurm batch job on the Stampede3 HPC system at TACC.',
-    ruleSets: [
-      {
-        name: 'IsNotNotDeepseek',
-        rules: [
-          {
-            field: 'author',
-            operator: 'Neq',
-            value: 'hf.deepseek',
-          },
-        ],
-      },
-    ],
-    useRuleSets: ['TransformerCompatibleOnHPC'],
-    useParameterSet: 'Jobs',
-    systemId: 'stampede3-tapis',
-  },
-  {
-    id: createStrategyId('Frontera'),
-    name: 'Frontera',
-    description:
-      'Deploys the model as a Slurm batch job on the Frontera HPC system at TACC.',
-    useRuleSets: ['TransformerCompatibleOnHPC'],
-    useParameterSet: 'Jobs',
-    systemId: 'frontera-tapis',
-  },
-  {
-    id: createStrategyId('LoneStar6'),
-    name: 'LoneStar6',
-    description:
-      'Deploys the model as a Slurm batch job on the LoneStar6 HPC system at TACC.',
-    useRuleSets: ['TransformerCompatibleOnHPC'],
-    useParameterSet: 'Jobs',
-    systemId: 'mingyu-test-linux',
-  },
-  {
-    id: createStrategyId('Vista'),
-    name: 'Vista',
-    description:
-      'Deploys the model as a Slurm batch job on the Vista HPC system at TACC.',
-    useRuleSets: ['TransformerCompatibleOnHPC'],
-    useParameterSet: 'Jobs',
-    systemId: 'vista-tapis',
-  },
-  {
-    id: createStrategyId('Pods'),
-    name: 'Pods',
-    description: 'Deploys the model as an HTTP inference server using Pods.',
-    useRuleSets: ['TransformerCompatibleOnPods'],
-    useParameterSet: 'Pods',
-  },
-];
+// const strategyList: DeploymentStrategy[] = [
+//   {
+//     id: createStrategyId('Stampede3'),
+//     name: 'Stampede3',
+//     description:
+//       'Deploys the model as a Slurm batch job on the Stampede3 HPC system at TACC.',
+//     ruleSets: [
+//       {
+//         name: 'IsNotNotDeepseek',
+//         rules: [
+//           {
+//             field: 'author',
+//             operator: 'Neq',
+//             value: 'hf.deepseek',
+//           },
+//         ],
+//       },
+//     ],
+//     useRuleSets: ['TransformerCompatibleOnHPC'],
+//     useParameterSet: 'Jobs',
+//     systemId: 'stampede3-tapis',
+//   },
+//   {
+//     id: createStrategyId('Frontera'),
+//     name: 'Frontera',
+//     description:
+//       'Deploys the model as a Slurm batch job on the Frontera HPC system at TACC.',
+//     useRuleSets: ['TransformerCompatibleOnHPC'],
+//     useParameterSet: 'Jobs',
+//     systemId: 'frontera-tapis',
+//   },
+//   {
+//     id: createStrategyId('LoneStar6'),
+//     name: 'LoneStar6',
+//     description:
+//       'Deploys the model as a Slurm batch job on the LoneStar6 HPC system at TACC.',
+//     useRuleSets: ['TransformerCompatibleOnHPC'],
+//     useParameterSet: 'Jobs',
+//     systemId: 'mingyu-test-linux',
+//   },
+//   {
+//     id: createStrategyId('Vista'),
+//     name: 'Vista',
+//     description:
+//       'Deploys the model as a Slurm batch job on the Vista HPC system at TACC.',
+//     useRuleSets: ['TransformerCompatibleOnHPC'],
+//     useParameterSet: 'Jobs',
+//     systemId: 'vista-tapis',
+//   },
+//   {
+//     id: createStrategyId('Pods'),
+//     name: 'Pods',
+//     description: 'Deploys the model as an HTTP inference server using Pods.',
+//     useRuleSets: ['TransformerCompatibleOnPods'],
+//     useParameterSet: 'Pods',
+//   },
+// ];
 
-export const deploymentStrategyCatalog: Record<string, DeploymentStrategy> =
-  strategyList.reduce((catalog, strategy) => {
-    catalog[strategy.id] = strategy;
-    return catalog;
-  }, {} as Record<string, DeploymentStrategy>);
+// export const deploymentStrategyCatalog: Record<string, DeploymentStrategy> =
+//   strategyList.reduce((catalog, strategy) => {
+//     catalog[strategy.id] = strategy;
+//     return catalog;
+//   }, {} as Record<string, DeploymentStrategy>);
 
 const buildModel = ({
   modelId,
