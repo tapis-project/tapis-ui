@@ -444,6 +444,10 @@ const AnalysisForm: React.FC = () => {
                   },
                   {
                     key: 'CT_CONTROLLER_MODE',
+                    value: 'simulation',
+                  },
+                  {
+                    key: 'CT_CONTROLLER_INPUT_DATASET_TYPE',
                     value: mode,
                   },
                   {
