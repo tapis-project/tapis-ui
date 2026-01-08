@@ -13,10 +13,11 @@ import { Systems } from '@tapis/tapis-typescript';
 import styles from './NativeModels.module.scss';
 import DeploymentStrategyModal from './DeploymentStrategyModal';
 import {
-  deploymentStrategyCatalog,
+  // deploymentStrategyCatalog,
   modelDeploymentReadiness,
   StrategyReadiness,
   DeploymentStrategy,
+  ClientDeploymentStrategy,
 } from './nativeModels.data';
 import { Models } from '@mlhub/ts-sdk';
 import { LoadingButton } from '@mui/lab';
@@ -28,78 +29,81 @@ type ActiveModalState = {
 } | null;
 
 type StrategyButtonProps = {
-  strategyId: string;
-  strategyMeta: DeploymentStrategy;
-  modelName: string;
-  strategyReadiness: StrategyReadiness | undefined;
-  onOpenModal: (modelName: string, strategyId: string) => void;
+  client: string;
+  strategy: DeploymentStrategy;
+  // modelName: string;
+  // strategyReadiness: StrategyReadiness | undefined;
+  // onOpenModal: (modelName: string, strategyId: string) => void;
 };
 
 const StrategyButton: React.FC<StrategyButtonProps> = ({
-  strategyId,
-  strategyMeta,
-  modelName,
-  strategyReadiness,
-  onOpenModal,
+  client,
+  strategy,
+  // strategyId,
+  // strategyMeta,
+  // modelName,
+  // strategyReadiness,
+  // onOpenModal,
 }) => {
-  const credentialQuery = SystemsHooks.useCheckCredential(
-    {
-      systemId: strategyMeta.systemId ?? '',
-    },
-    {
-      enabled: !!strategyMeta.systemId,
-      retry: 0,
-    }
-  );
+  // const credentialQuery = SystemsHooks.useCheckCredential(
+  //   {
+  //     systemId: strategyMeta.systemId ?? '',
+  //   },
+  //   {
+  //     enabled: !!strategyMeta.systemId,
+  //     retry: 0,
+  //   }
+  // );
 
-  const credentialReady = useMemo(() => {
-    if (!strategyMeta.systemId) {
-      return true; // No credentials required
-    }
-    if (credentialQuery.isLoading) {
-      return null; // Still checking - return null to indicate loading state
-    }
-    if (credentialQuery.error) {
-      return false; // Credentials missing
-    }
-    return credentialQuery.data?.status?.toLowerCase() === 'success';
-  }, [
-    credentialQuery.data,
-    credentialQuery.error,
-    credentialQuery.isLoading,
-    strategyMeta.systemId,
-  ]);
+  // const credentialReady = useMemo(() => {
+  //   if (!strategyMeta.systemId) {
+  //     return true; // No credentials required
+  //   }
+  //   if (credentialQuery.isLoading) {
+  //     return null; // Still checking - return null to indicate loading state
+  //   }
+  //   if (credentialQuery.error) {
+  //     return false; // Credentials missing
+  //   }
+  //   return credentialQuery.data?.status?.toLowerCase() === 'success';
+  // }, [
+  //   credentialQuery.data,
+  //   credentialQuery.error,
+  //   credentialQuery.isLoading,
+  //   strategyMeta.systemId,
+  // ]);
 
-  const allocationReady = useMemo(() => {
-    if (!strategyReadiness) {
-      return true; // No allocation info, assume ready
-    }
-    if (!strategyReadiness.requiresAllocation) {
-      return true; // Allocation not required
-    }
-    return strategyReadiness.hasAllocation;
-  }, [strategyReadiness]);
+  // const allocationReady = useMemo(() => {
+  //   if (!strategyReadiness) {
+  //     return true; // No allocation info, assume ready
+  //   }
+  //   if (!strategyReadiness.requiresAllocation) {
+  //     return true; // Allocation not required
+  //   }
+  //   return strategyReadiness.hasAllocation;
+  // }, [strategyReadiness]);
 
-  const isCheckingCredentials = credentialReady === null;
-  const allReady = credentialReady === true && allocationReady;
+  // const isCheckingCredentials = credentialReady === null;
+  // const allReady = credentialReady === true && allocationReady;
 
   return (
     <Button
-      key={strategyId}
+      key={`${client}-${strategy.name}`}
       variant="outlined"
       size="small"
-      color={
-        isCheckingCredentials ? 'inherit' : allReady ? 'success' : 'warning'
-      }
-      onClick={() => onOpenModal(modelName, strategyId)}
-      disabled={isCheckingCredentials}
-      startIcon={
-        isCheckingCredentials ? (
-          <CircularProgress size={12} sx={{ color: 'inherit' }} />
-        ) : undefined
-      }
+      color="success"
+      // color={
+      //   isCheckingCredentials ? 'inherit' : allReady ? 'success' : 'warning'
+      // }
+      // onClick={() => onOpenModal(modelName, strategyId)}
+      // disabled={isCheckingCredentials}
+      // startIcon={
+      //   isCheckingCredentials ? (
+      //     <CircularProgress size={12} sx={{ color: 'inherit' }} />
+      //   ) : undefined
+      // }
     >
-      {strategyMeta.name}
+      {client}: {strategy.name}
     </Button>
   );
 };
@@ -165,14 +169,14 @@ const NativeModels: React.FC<NativeModelsProps> = ({
 
   const closeModal = () => setActiveModal(null);
 
-  const getSelected = () => {
-    if (!activeModal) return {};
-    const model = models.find((m) => m.name === activeModal.modelName);
-    const strategy = deploymentStrategyCatalog[activeModal.strategyId];
-    const readiness =
-      modelDeploymentReadiness[activeModal.modelName]?.[activeModal.strategyId];
-    return { model, strategy, readiness };
-  };
+  // const getSelected = () => {
+  //   if (!activeModal) return {};
+  //   const model = models.find((m) => m.name === activeModal.modelName);
+  //   const strategy = deploymentStrategyCatalog[activeModal.strategyId];
+  //   const readiness =
+  //     modelDeploymentReadiness[activeModal.modelName]?.[activeModal.strategyId];
+  //   return { model, strategy, readiness };
+  // };
 
   const filterModels = useCallback(() => {
     let filteredModels = models.filter((m) => {
@@ -206,7 +210,8 @@ const NativeModels: React.FC<NativeModelsProps> = ({
 
   const filteredModels = filterModels();
 
-  const { model: selectedModel, strategy, readiness } = getSelected();
+  // const { model: selectedModel, strategy, readiness } = getSelected();
+
   return (
     <div>
       <div
@@ -294,7 +299,8 @@ const NativeModels: React.FC<NativeModelsProps> = ({
             ) : (
               filteredModels.map((model) => {
                 const keywords = model.keywords ?? [];
-                // const strategies = model.annotations.$internal.deployment_strat;
+                const deploymentStrategies: Array<ClientDeploymentStrategy> =
+                  model.annotations['deployment_strategies'];
                 const displayName = model.name;
 
                 return (
@@ -350,29 +356,38 @@ const NativeModels: React.FC<NativeModelsProps> = ({
                       </td>
                       <td>
                         <div className={styles['strategy-buttons']}>
-                          {/* {strategies.map((strategyId) => {
-                            const strategyMeta =
-                              deploymentStrategyCatalog[strategyId];
-                            if (!strategyMeta) {
-                              return null;
-                            }
-                            const strategyReadiness:
-                              | StrategyReadiness
-                              | undefined =
-                              modelDeploymentReadiness[model.name!]?.[
-                                strategyId
-                              ];
-                            return (
-                              <StrategyButton
-                                key={strategyId}
-                                strategyId={strategyId}
-                                strategyMeta={strategyMeta}
-                                modelName={model.name!}
-                                strategyReadiness={strategyReadiness}
-                                onOpenModal={openModal}
-                              />
-                            );
-                          })} */}
+                          {deploymentStrategies.map((strategy) => {
+                            return strategy.strategies.map((s) => {
+                              return (
+                                <StrategyButton
+                                  client={strategy.client}
+                                  strategy={s}
+                                />
+                              );
+                            });
+
+                            // const strategyMeta =
+                            //   deploymentStrategyCatalog[strategyId];
+                            // if (!strategyMeta) {
+                            //   return null;
+                            // }
+                            // const strategyReadiness:
+                            //   | StrategyReadiness
+                            //   | undefined =
+                            //   modelDeploymentReadiness[model.name!]?.[
+                            //     strategyId
+                            //   ];
+                            // return (
+                            //   <StrategyButton
+                            //     key={strategyId}
+                            //     strategyId={strategyId}
+                            //     strategyMeta={strategyMeta}
+                            //     modelName={model.name!}
+                            //     strategyReadiness={strategyReadiness}
+                            //     onOpenModal={openModal}
+                            //   />
+                            // );
+                          })}
                         </div>
                       </td>
                       <td>
@@ -406,7 +421,7 @@ const NativeModels: React.FC<NativeModelsProps> = ({
         </Table>
       </div>
 
-      {selectedModel && strategy && (
+      {/* {selectedModel && strategy && (
         <DeploymentStrategyModal
           open={!!activeModal}
           onClose={closeModal}
@@ -414,7 +429,7 @@ const NativeModels: React.FC<NativeModelsProps> = ({
           strategy={strategy}
           readiness={readiness}
         />
-      )}
+      )} */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import {
   TextField,
   FormControl,
@@ -25,9 +25,11 @@ type DiscoverModelsResponseMetadata = {
 type FilterState = {
   libraries: Array<string>;
   task_types: Array<Models.Task>;
+  limit: number;
 };
 
 const initialFilterState: FilterState = {
+  limit: 50,
   libraries: [],
   task_types: [],
 };
@@ -136,6 +138,11 @@ const NativeModelsSearch: React.FC = () => {
 
   return (
     <div className={styles['native-models-search-container']}>
+      <Alert severity="warning">
+        <AlertTitle>Model Discovery Beta</AlertTitle>
+        Model discovery funtionality is available, however the deployment
+        strategies listed in some table entries is purely for demonstration
+      </Alert>
       <div>
         <SectionHeader>
           Discover Models
@@ -168,26 +175,53 @@ const NativeModelsSearch: React.FC = () => {
                 )}
               />
             </FormControl>
+            <FormControl sx={{ minWidth: 75 }} size="small">
+              <InputLabel id="models-limit">Limit</InputLabel>
+              <Select
+                labelId="models-limit"
+                id="models-limit-select"
+                label="Limit"
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    limit: parseInt(e.target.value as string),
+                  })
+                }
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+                <MenuItem value={500}>500</MenuItem>
+              </Select>
+            </FormControl>
             <Button
               startIcon={<Search />}
               color="inherit"
               onClick={() => {
+                let libraries = filters.libraries.filter(
+                  (l) => l !== null && l !== undefined
+                );
+
+                let taskTypes = filters.task_types.filter(
+                  (t) => t !== null && t !== undefined
+                );
+
+                let criterion: Models.DiscoveryCriterion = {};
+                if (libraries.length > 0) {
+                  criterion['libraries'] = libraries;
+                }
+
+                if (taskTypes.length > 0) {
+                  criterion['task_types'] = taskTypes;
+                }
+
                 dispatch({ type: 'clear' });
                 discover(
                   {
-                    limit: 100,
+                    limit: filters.limit,
                     includeCount: true,
                     discoveryCriteria: {
-                      criteria: [
-                        {
-                          libraries: filters.libraries.filter(
-                            (l) => l !== null && l !== undefined
-                          ),
-                          task_types: filters.task_types.filter(
-                            (t) => t !== null && t !== undefined
-                          ),
-                        },
-                      ],
+                      criteria: [criterion],
                     },
                   },
                   {
@@ -214,22 +248,29 @@ const NativeModelsSearch: React.FC = () => {
             state.prevCursor === undefined && state.currentCursor === undefined
               ? undefined
               : () => {
+                  let libraries = filters.libraries.filter(
+                    (l) => l !== null && l !== undefined
+                  );
+
+                  let taskTypes = filters.task_types.filter(
+                    (t) => t !== null && t !== undefined
+                  );
+
+                  let criterion: Models.DiscoveryCriterion = {};
+                  if (libraries.length > 0) {
+                    criterion['libraries'] = libraries;
+                  }
+
+                  if (taskTypes.length > 0) {
+                    criterion['task_types'] = taskTypes;
+                  }
                   discover(
                     {
-                      limit: 100,
+                      limit: filters.limit,
                       includeCount: true,
                       cursor: state.prevCursor,
                       discoveryCriteria: {
-                        criteria: [
-                          {
-                            libraries: filters.libraries.filter(
-                              (l) => l !== null && l !== undefined
-                            ),
-                            task_types: filters.task_types.filter(
-                              (t) => t !== null && t !== undefined
-                            ),
-                          },
-                        ],
+                        criteria: [criterion],
                       },
                     },
                     {
@@ -242,22 +283,31 @@ const NativeModelsSearch: React.FC = () => {
             state.cursors.length < 0 || state.nextCursor === undefined
               ? undefined
               : () => {
+                  let libraries = filters.libraries.filter(
+                    (l) => l !== null && l !== undefined
+                  );
+
+                  let taskTypes = filters.task_types.filter(
+                    (t) => t !== null && t !== undefined
+                  );
+
+                  let criterion: Models.DiscoveryCriterion = {};
+
+                  if (libraries.length > 0) {
+                    criterion['libraries'] = libraries;
+                  }
+
+                  if (taskTypes.length > 0) {
+                    criterion['task_types'] = taskTypes;
+                  }
+
                   discover(
                     {
-                      limit: 100,
+                      limit: filters.limit,
                       includeCount: true,
                       cursor: state.cursors.at(-1),
                       discoveryCriteria: {
-                        criteria: [
-                          {
-                            libraries: filters.libraries.filter(
-                              (l) => l !== null && l !== undefined
-                            ),
-                            task_types: filters.task_types.filter(
-                              (t) => t !== null && t !== undefined
-                            ),
-                          },
-                        ],
+                        criteria: [criterion],
                       },
                     },
                     {
