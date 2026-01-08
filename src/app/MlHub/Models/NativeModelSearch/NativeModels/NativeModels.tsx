@@ -11,7 +11,7 @@ import { JSONDisplay } from '@tapis/tapisui-common';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import styles from './NativeModels.module.scss';
-import DeploymentStrategyModal from './DeploymentStrategyModal';
+// import DeploymentStrategyModal from './DeploymentStrategyModal';
 import {
   // deploymentStrategyCatalog,
   modelDeploymentReadiness,
