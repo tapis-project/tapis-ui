@@ -87,7 +87,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api/rag': {
-        target: 'https://rag.pods.tacc.tapis.io',
+        target: 'https://tapisagent.pods.tacc.tapis.io',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/rag/, ''),
         secure: true,
