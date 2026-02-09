@@ -5,7 +5,7 @@ import { useTapisConfig } from '..';
 import QueryKeys from './queryKeys';
 
 const useGetPodDerived = (
-  params: Pods.GetPodRequest,
+  params: Pods.GetDerivedPodRequest,
   options: QueryObserverOptions<Pods.PodResponse, Error> = {}
 ) => {
   const queryClient = useQueryClient(); // Get the queryClient instance

@@ -334,21 +334,23 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
   ///////////////////
   type VolumeMountsType = {
     id: string;
-    type: PodProtocolEnum;
+    type: PodVolumeEnum;
     mount_path: string;
     sub_path: string;
   };
 
   type volumeMountsTransformFn = (volumes: Array<VolumeMountsType>) => {
-    [key: string]: object;
+    [key: string]: { type: string; mount_path: string; sub_path: string };
   };
 
   const volume_mountsArrayToInputObject: volumeMountsTransformFn = (
     volumes
   ) => {
-    const formatted_volumes: { [key: string]: object } = {};
+    const formatted_volumes: {
+      [key: string]: { type: string; mount_path: string; sub_path: string };
+    } = {};
     volumes.forEach((volume) => {
-      formatted_volumes[volume.id] = {
+      formatted_volumes[volume.mount_path] = {
         type: volume.type,
         mount_path: volume.mount_path,
         sub_path: volume.sub_path,
@@ -411,7 +413,7 @@ const CreatePodModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
         ? networkingArrayToInputObject(networking)
         : undefined,
       volume_mounts: volume_mounts
-        ? volume_mountsArrayToInputObject(volume_mounts)
+        ? (volume_mountsArrayToInputObject(volume_mounts) as any)
         : undefined,
       resources: resources ? resources : undefined,
     };

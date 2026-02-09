@@ -110,6 +110,7 @@ const PodWizardEdit: React.FC<{
         );
       }
     ),
+    template_overrides: Yup.object().nullable(),
     resources: Yup.object({
       cpu_request: Yup.string()
         .min(0)
@@ -210,6 +211,7 @@ const PodWizardEdit: React.FC<{
     time_to_stop_instance: '',
     environment_variables: {},
     volume_mounts: {},
+    template_overrides: {},
     networking: {},
     resources: {
       cpu_request: '',

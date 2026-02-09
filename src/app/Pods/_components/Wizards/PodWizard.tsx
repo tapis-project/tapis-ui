@@ -91,6 +91,7 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
     time_to_stop_instance: '',
     environment_variables: {},
     volume_mounts: {},
+    template_overrides: {},
     networking: {},
     resources: {
       cpu_request: '',
@@ -171,6 +172,7 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
         );
       }
     ),
+    template_overrides: Yup.object().nullable(),
     resources: Yup.object({
       cpu_request: Yup.string()
         .min(0)
@@ -314,6 +316,7 @@ const PodWizard: React.FC<{ onChange?: (values: any) => void }> = ({
     time_to_stop_instance: '',
     environment_variables: {},
     volume_mounts: {},
+    template_overrides: {},
     networking: {},
     resources: {
       cpu_request: '',

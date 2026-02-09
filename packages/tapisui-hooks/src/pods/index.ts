@@ -32,6 +32,8 @@ export { default as useGetPodDerived } from './useGetPodDerived';
 export { default as useListSnapshots } from './useListSnapshots';
 export { default as useStopPod } from './useStopPod';
 export { default as useCreateTemplateTag } from './useCreateTemplateTag';
+export { default as useDeleteTemplate } from './useDeleteTemplate';
+export { default as useDeleteTemplateTag } from './useDeleteTemplateTag';
 export { default as useDeleteVolumePermission } from './useDeleteVolumePermission';
 export { default as useGetSnapshot } from './useGetSnapshot';
 export { default as useListTemplates } from './useListTemplates';
