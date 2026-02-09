@@ -3,7 +3,6 @@ import { apiGenerator, errorDecoder } from '../utils';
 
 interface DeleteTemplateParams {
   templateId: string;
-  force?: boolean;
 }
 
 const deleteTemplate = (
@@ -20,7 +19,6 @@ const deleteTemplate = (
   return errorDecoder<any>(() =>
     api.deleteTemplate({
       templateId: params.templateId,
-      force: params.force,
     })
   );
 };
