@@ -12,8 +12,25 @@ import {
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
+import { EditorView } from '@codemirror/view';
 import { decode } from 'base-64';
-import { Stack, Button, Tooltip } from '@mui/material';
+import {
+  Stack,
+  Button,
+  Tooltip,
+  Checkbox,
+  FormControlLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Box,
+  IconButton,
+  Tab,
+  Tabs as MuiTabs,
+} from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import {
   CopyButton,
   TooltipModal,
@@ -55,7 +72,12 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     setDetailsDropdownOpen,
     setLogsDropdownOpen,
     templateNavExpandedItems,
+    derivedResolveSecrets,
   } = useAppSelector((state) => state.pods);
+
+  // State for config content modal
+  const [configModalOpen, setConfigModalOpen] = useState(false);
+  const [activeConfigTab, setActiveConfigTab] = useState(0);
   const history = useHistory();
 
   // Add missing refs for dropdown anchors
@@ -63,7 +85,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const logsAnchorRef = React.useRef<HTMLDivElement>(null);
 
   const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod(
-    { podId: objId },
+    { podId: objId ?? '' },
     { enabled: !!objId }
   );
   const {
@@ -93,7 +115,25 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     isFetching: isFetchingDerived,
     error: errorDerived,
     invalidate: invalidateDerived,
-  } = Hooks.useGetPodDerived({ podId: objId }, { enabled: !!objId });
+  } = Hooks.useGetPodDerived(
+    {
+      podId: objId ?? '',
+      resolveSecrets: derivedResolveSecrets,
+      includeConfigs: false,
+    },
+    { enabled: !!objId }
+  );
+
+  // Separate call for config contents (used in View Configs modal)
+  const { data: dataDerivedConfigs, isFetching: isFetchingDerivedConfigs } =
+    Hooks.useGetPodDerived(
+      {
+        podId: objId ?? '',
+        resolveSecrets: derivedResolveSecrets,
+        includeConfigs: true,
+      },
+      { enabled: !!objId && configModalOpen }
+    );
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
@@ -124,6 +164,48 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   };
 
   const loadingText = PodsLoadingText();
+
+  // Helper function to extract config_content entries from volume_mounts
+  const getConfigContents = (
+    data: any
+  ): Array<{
+    mountPath: string;
+    content: string;
+    permissions?: string;
+    updateMode?: string;
+  }> => {
+    if (!data?.volume_mounts) return [];
+
+    const configs: Array<{
+      mountPath: string;
+      content: string;
+      permissions?: string;
+      updateMode?: string;
+    }> = [];
+
+    Object.entries(data.volume_mounts).forEach(
+      ([mountPath, mount]: [string, any]) => {
+        if (mount?.config_content) {
+          configs.push({
+            mountPath,
+            content: mount.config_content
+              .replace(/\\n/g, '\n')
+              .replace(/\\t/g, '\t'),
+            permissions: mount.config_permissions,
+            updateMode: mount.config_update_mode,
+          });
+        }
+      }
+    );
+
+    return configs;
+  };
+
+  const podDerivedConfigs: Pods.PodResponseModel | undefined =
+    dataDerivedConfigs?.result;
+  const configContents = podDerivedConfigs
+    ? getConfigContents(podDerivedConfigs)
+    : [];
 
   const tooltipConfigs: {
     [key: string]: { tooltipTitle: string; tooltipText: string };
@@ -793,6 +875,40 @@ Select or create a pod to get started.`;
         )}
       </ButtonGroup>
     </React.Fragment>,
+    // Derived options - only show when derived tab is selected
+    podDetailTab === 'derived' &&
+      (podTab === 'details' || podTab === 'edit') && (
+        <React.Fragment key="derived-options">
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={derivedResolveSecrets ?? false}
+                onChange={(e) => {
+                  dispatch(
+                    updateState({ derivedResolveSecrets: e.target.checked })
+                  );
+                  invalidateDerived();
+                }}
+              />
+            }
+            label="Resolve Secrets"
+            sx={{
+              ml: 1,
+              '& .MuiFormControlLabel-label': { fontSize: '0.875rem' },
+            }}
+          />
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setConfigModalOpen(true)}
+            sx={{ ml: 1, height: '32px' }}
+          >
+            View Configs
+            {configContents.length > 0 ? ` (${configContents.length})` : ''}
+          </Button>
+        </React.Fragment>
+      ),
   ];
 
   const detailsRightButtons = [
@@ -944,6 +1060,148 @@ Select or create a pod to get started.`;
           <div>{renderTooltipModal()}</div>
           {/* modals */}
           {modal === 'podPermissions' && <PodPermissionModal toggle={toggle} />}
+          {/* Config Content Modal */}
+          <Dialog
+            open={configModalOpen}
+            onClose={() => setConfigModalOpen(false)}
+            maxWidth={false}
+            PaperProps={{
+              sx: {
+                width: '80vw',
+                height: '80vh',
+                maxWidth: '80vw',
+                maxHeight: '80vh',
+              },
+            }}
+          >
+            <DialogTitle
+              sx={{
+                m: 0,
+                p: 0,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  p: 2,
+                  pb: 1,
+                }}
+              >
+                <span>Config Contents</span>
+                <IconButton
+                  aria-label="close"
+                  onClick={() => setConfigModalOpen(false)}
+                  sx={{ color: (theme) => theme.palette.grey[500] }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              {configContents.length > 0 && (
+                <MuiTabs
+                  value={activeConfigTab}
+                  onChange={(_, newValue) => setActiveConfigTab(newValue)}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
+                >
+                  {configContents.map((config, index) => (
+                    <Tab
+                      key={index}
+                      label={config.mountPath}
+                      sx={{ textTransform: 'none', minWidth: 'auto' }}
+                    />
+                  ))}
+                </MuiTabs>
+              )}
+            </DialogTitle>
+            <DialogContent
+              sx={{ p: 0, display: 'flex', flexDirection: 'column' }}
+            >
+              {configContents.length > 0 && configContents[activeConfigTab] && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                    p: 2,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                  >
+                    {configContents[activeConfigTab].mountPath}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      mb: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {configContents[activeConfigTab].permissions &&
+                        `Permissions: ${configContents[activeConfigTab].permissions}`}
+                      {configContents[activeConfigTab].permissions &&
+                        configContents[activeConfigTab].updateMode &&
+                        ' | '}
+                      {configContents[activeConfigTab].updateMode &&
+                        `Update Mode: ${configContents[activeConfigTab].updateMode}`}
+                    </Typography>
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        navigator.clipboard.writeText(
+                          configContents[activeConfigTab].content
+                        )
+                      }
+                    >
+                      Copy
+                    </Button>
+                  </Box>
+                  <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                    <CodeMirror
+                      value={configContents[activeConfigTab].content}
+                      editable={false}
+                      readOnly={true}
+                      extensions={[json(), EditorView.lineWrapping]}
+                      height="100%"
+                      theme={vscodeDarkInit({
+                        settings: {
+                          caret: '#c6c6c6',
+                          fontFamily: 'monospace',
+                        },
+                      })}
+                      style={{
+                        height: '100%',
+                        fontSize: 12,
+                        fontFamily:
+                          'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                      }}
+                    />
+                  </Box>
+                </Box>
+              )}
+              {configContents.length === 0 && (
+                <Box sx={{ p: 2 }}>
+                  <Typography color="text.secondary">
+                    No config contents found.
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConfigModalOpen(false)}>Close</Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     </div>

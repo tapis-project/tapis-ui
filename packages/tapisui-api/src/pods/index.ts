@@ -8,6 +8,8 @@ export { default as deletePodPermission } from './deletePodPermission';
 export { default as deletePod } from './deletePod';
 export { default as deleteSnapshotPermission } from './deleteSnapshotPermission';
 export { default as deleteSnapshot } from './deleteSnapshot';
+export { default as deleteTemplate } from './deleteTemplate';
+export { default as deleteTemplateTag } from './deleteTemplateTag';
 export { default as deleteVolumePermission } from './deleteVolumePermission';
 export { default as deleteVolume } from './deleteVolume';
 export { default as getImage } from './getImage';
