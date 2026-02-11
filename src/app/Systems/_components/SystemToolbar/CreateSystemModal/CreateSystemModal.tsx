@@ -664,7 +664,7 @@ const CreateSystemModal: React.FC<{
                   nextCondition: (state) => state.systemType !== undefined,
                 },
                 {
-                  label: 'Miscellaneous',
+                  label: 'Miscellaneouss',
                   element: state.canExec ? (
                     <AdvancedSettings
                       canExec={!!state.canExec}
