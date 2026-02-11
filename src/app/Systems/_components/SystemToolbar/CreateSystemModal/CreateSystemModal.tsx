@@ -678,7 +678,7 @@ const CreateSystemModal: React.FC<{
                 actionFn: () => toggle(),
               },
               {
-                name: 'Create System',
+                name: 'Create Systems',
                 disableOnError: true,
                 isLoading: isSubmitting,
                 isSuccess: submitSuccess,
