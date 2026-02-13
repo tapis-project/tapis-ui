@@ -39,7 +39,7 @@ async function callRAGPODS(
         'X-Tapis-Token': actualToken,
       },
       body: JSON.stringify({
-        question,
+        message: question,
         model,
       }),
     });
