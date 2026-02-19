@@ -29,6 +29,8 @@ import {
   IconButton,
   Tab,
   Tabs as MuiTabs,
+  Paper,
+  Chip,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import {
@@ -46,7 +48,6 @@ import { SectionMessage } from '@tapis/tapisui-common';
 import {
   ClickAwayListener,
   Grow,
-  Paper,
   Popper,
   MenuItem,
   MenuList,
@@ -109,6 +110,8 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     error: errorPerms,
     invalidate: invalidatePerms,
   } = Hooks.useGetPodPermissions({ podId: objId }, { enabled: !!objId });
+  const { deletePod: deletePodPermission, isLoading: isDeletingPodPermission } =
+    Hooks.useDeletePodPermission();
   const {
     data: dataDerived,
     isLoading: isLoadingDerived,
@@ -161,6 +164,19 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
     setModal(undefined);
+  };
+
+  // Handle delete permission for a single user
+  const handleDeletePodPermission = (user: string) => {
+    if (!objId) return;
+    deletePodPermission(
+      { podId: objId, user },
+      {
+        onSuccess: () => {
+          invalidatePerms();
+        },
+      }
+    );
   };
 
   const loadingText = PodsLoadingText();
@@ -1036,6 +1052,83 @@ Select or create a pod to get started.`;
             ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
             : renderTabBar(detailsLeftButtons, detailsRightButtons)}
           <div className={styles['container']}>
+            {/* Permissions chips when viewing perms */}
+            {podTab === 'perms' && objId !== undefined && (
+              <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                {isFetchingPerms ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Loading permissions...
+                  </Typography>
+                ) : errorPerms ? (
+                  <Typography variant="body2" color="error">
+                    Error loading permissions
+                  </Typography>
+                ) : podPerms && typeof podPerms === 'object' ? (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 1,
+                      alignItems: 'center',
+                    }}
+                  >
+                    {(() => {
+                      const permsData = podPerms.permissions ?? podPerms;
+                      const entries: [string, string][] = Array.isArray(
+                        permsData
+                      )
+                        ? permsData.map((entry: string) => {
+                            const parts = entry.split(':');
+                            return [parts[0], parts.slice(1).join(':')] as [
+                              string,
+                              string
+                            ];
+                          })
+                        : Object.entries(permsData);
+                      if (entries.length === 0) {
+                        return (
+                          <Typography variant="body2" color="text.secondary">
+                            No permissions set
+                          </Typography>
+                        );
+                      }
+                      return entries.map(([user, level]) => (
+                        <Chip
+                          key={user}
+                          label={`${user}:${level}`}
+                          size="small"
+                          variant="outlined"
+                          onDelete={() => handleDeletePodPermission(user)}
+                          disabled={isDeletingPodPermission}
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontSize: '0.8rem',
+                            borderRadius: 1,
+                            ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                              ? {
+                                  borderColor: '#9c27b0',
+                                  color: '#9c27b0',
+                                  '& .MuiChip-deleteIcon': { color: '#9c27b0' },
+                                }
+                              : level === 'USER'
+                              ? {
+                                  borderColor: '#9e9e9e',
+                                  color: '#9e9e9e',
+                                  '& .MuiChip-deleteIcon': { color: '#9e9e9e' },
+                                }
+                              : {}),
+                          }}
+                        />
+                      ));
+                    })()}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No permissions data available
+                  </Typography>
+                )}
+              </Box>
+            )}
             <PodsCodeMirror
               editValue={
                 podTab === 'edit' ? JSON.stringify(createPodData, null, 2) : ''
