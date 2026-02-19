@@ -23,6 +23,9 @@ const QueryKeys = {
   deleteTemplate: 'pods/deleteTemplate',
   listTemplates: 'pods/listTemplates',
   listTemplatesAndTags: 'pods/listTemplatesAndTags',
+  getTemplatePermissions: 'pods/getTemplatePermissions',
+  setTemplatePermission: 'pods/setTemplatePermission',
+  deleteTemplatePermission: 'pods/deleteTemplatePermission',
 
   // Images
   getImage: 'pods/getImage',

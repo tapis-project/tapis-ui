@@ -33,11 +33,13 @@ import {
   FormControlLabel,
   Checkbox,
   Tooltip,
+  IconButton,
 } from '@mui/material';
 import { ExpandMoreRounded } from '@mui/icons-material';
 import styles from '../Pages.module.scss';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { LoadingButton } from '@mui/lab';
-import { RefreshRounded } from '@mui/icons-material';
+import { RefreshRounded, WarningAmber } from '@mui/icons-material';
 import {
   NavTemplates,
   PodsNavigation,
@@ -46,6 +48,7 @@ import {
 import {
   DeleteTemplateTagModal,
   DeleteTemplateModal,
+  TemplatePermissionModal,
 } from 'app/Pods/_components/Modals';
 import PodsLoadingText from '../PodsLoadingText';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
@@ -182,11 +185,27 @@ const PageTemplates: React.FC<{
     reset: resetUpdateTemplate,
   } = Hooks.useUpdateTemplate(objId || '');
 
+  // Template permissions hooks
+  const {
+    data: dataPerms,
+    isLoading: isLoadingPerms,
+    isFetching: isFetchingPerms,
+    error: errorPerms,
+    invalidate: invalidatePerms,
+  } = Hooks.useGetTemplatePermissions(
+    { templateId: objId ?? '' },
+    { enabled: !!objId }
+  );
+  const { deleteTemplatePermission, isLoading: isDeletingPermission } =
+    Hooks.useDeleteTemplatePermission();
+
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
   const templateTags: any | undefined = dataTags?.result;
   const templatesAndTags: any | undefined = dataTemplatesAndTags?.result;
+  const templatePerms: Pods.TemplatePermissionsResponse | undefined =
+    dataPerms?.result as Pods.TemplatePermissionsResponse | undefined;
 
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
@@ -213,6 +232,14 @@ const PageTemplates: React.FC<{
   // Add state for edit mode
   const [isEditingTemplate, setIsEditingTemplate] = useState(false);
   const [editedTemplateData, setEditedTemplateData] = useState<any>(null);
+
+  // JSON validation state for create forms
+  const [templateJsonError, setTemplateJsonError] = useState<string | null>(
+    null
+  );
+  const [templateTagJsonError, setTemplateTagJsonError] = useState<
+    string | null
+  >(null);
 
   const {
     activeTemplate,
@@ -251,6 +278,11 @@ const PageTemplates: React.FC<{
       tooltipTitle: 'Secrets',
       tooltipText:
         'Secrets are variables that you can reference via $SECRET_KEY. WIP',
+    },
+    perms: {
+      tooltipTitle: 'Permissions',
+      tooltipText:
+        'Permissions are the access control list for this Template. There are 3 levels: READ, USER, and ADMIN.',
     },
   };
 
@@ -335,6 +367,12 @@ Select or create a template to get started.`;
               ? JSON.stringify(matchingTag, null, 2)
               : `No matching tag found for tagID: ${tagId}. Looking for tag@timestamp`;
           }
+        case 'perms':
+          return errorPerms
+            ? `error: ${errorPerms}`
+            : isFetchingPerms
+            ? loadingText
+            : JSON.stringify(templatePerms, null, 2);
       }
     }
     return `Error: Unrecognized template value. Tell admin.
@@ -472,7 +510,58 @@ templateNavExpandedItems: ${templateNavExpandedItems}
         });
       }
     }
+
+    // Add Perms button when viewing a template
+    if (objId) {
+      baseButtons.push({
+        id: 'perms',
+        label: 'Perms',
+        tabValue: 'perms',
+      });
+    }
+
+    // Add Copy Template button when viewing template details
+    if (objId && templateTab === 'details' && pod) {
+      baseButtons.push({
+        id: 'copyTemplate',
+        label: 'Create Template From Existing',
+        customOnClick: () => handleCopyTemplate(),
+      });
+    }
     return baseButtons;
+  };
+
+  // Handle delete permission for a single user
+  const handleDeletePermission = (user: string) => {
+    if (!objId) return;
+    deleteTemplatePermission(
+      { templateId: objId, user },
+      {
+        onSuccess: () => {
+          invalidatePerms();
+        },
+      }
+    );
+  };
+
+  // Handle copy/clone template
+  const handleCopyTemplate = () => {
+    if (!pod) return;
+    const templateCopy = { ...pod };
+    // Remove fields that shouldn't be copied
+    delete templateCopy.creation_ts;
+    delete templateCopy.update_ts;
+    delete templateCopy.tenant_id;
+    delete templateCopy.site_id;
+    // Prefix template_id to indicate it's a copy
+    templateCopy.template_id = `${pod.template_id}-copy`;
+    dispatch(
+      updateState({
+        templateRootTab: 'createTemplate',
+        createTemplateData: templateCopy,
+      })
+    );
+    history.push('/pods/templates');
   };
 
   const renderTabBar = (
@@ -489,38 +578,73 @@ templateNavExpandedItems: ${templateNavExpandedItems}
     >
       <Stack spacing={2} direction="row">
         {leftButtons.map(
-          ({ id, label, tabValue, customOnClick, icon, disabled }) => (
-            <LoadingButton
-              sx={{ minWidth: '10px' }}
-              loading={
-                (id === 'refresh' && isFetching) ||
-                (id === 'saveTemplate' && isUpdatingTemplate)
-              }
-              key={id}
-              variant="outlined"
-              disabled={disabled}
-              color={
-                templateTab === tabValue || templateRootTab === tabValue
-                  ? 'secondary'
-                  : 'primary'
-              }
-              size="small"
-              onClick={() => {
-                invalidate();
-                if (customOnClick) {
-                  customOnClick();
-                } else if (tabValue) {
-                  if (objId === undefined) {
-                    dispatch(updateState({ templateRootTab: tabValue }));
-                  } else {
-                    dispatch(updateState({ templateTab: tabValue }));
-                  }
+          ({ id, label, tabValue, customOnClick, icon, disabled }) => {
+            // Special rendering for perms button with + add button
+            if (id === 'perms') {
+              return (
+                <ButtonGroup key={id} variant="outlined" size="small">
+                  <LoadingButton
+                    sx={{ minWidth: '60px' }}
+                    variant="outlined"
+                    color={templateTab === 'perms' ? 'secondary' : 'primary'}
+                    size="small"
+                    onClick={() => {
+                      invalidate();
+                      dispatch(updateState({ templateTab: 'perms' }));
+                    }}
+                  >
+                    Perms
+                  </LoadingButton>
+                  {templateTab === 'perms' && (
+                    <Button
+                      onClick={() => setModal('templatePermissions')}
+                      color="primary"
+                      sx={{
+                        fontSize: '14px',
+                        minWidth: '28px !important',
+                        width: '28px',
+                      }}
+                      variant="outlined"
+                    >
+                      +
+                    </Button>
+                  )}
+                </ButtonGroup>
+              );
+            }
+            return (
+              <LoadingButton
+                sx={{ minWidth: '10px' }}
+                loading={
+                  (id === 'refresh' && isFetching) ||
+                  (id === 'saveTemplate' && isUpdatingTemplate)
                 }
-              }}
-            >
-              {icon || label}
-            </LoadingButton>
-          )
+                key={id}
+                variant="outlined"
+                disabled={disabled}
+                color={
+                  templateTab === tabValue || templateRootTab === tabValue
+                    ? 'secondary'
+                    : 'primary'
+                }
+                size="small"
+                onClick={() => {
+                  invalidate();
+                  if (customOnClick) {
+                    customOnClick();
+                  } else if (tabValue) {
+                    if (objId === undefined) {
+                      dispatch(updateState({ templateRootTab: tabValue }));
+                    } else {
+                      dispatch(updateState({ templateTab: tabValue }));
+                    }
+                  }
+                }}
+              >
+                {icon || label}
+              </LoadingButton>
+            );
+          }
         )}
       </Stack>
 
@@ -614,15 +738,17 @@ templateNavExpandedItems: ${templateNavExpandedItems}
   const handleTemplateJsonChange = (v: string) => {
     try {
       dispatch(updateState({ createTemplateData: JSON.parse(v) }));
-    } catch (e) {
-      // Optionally handle JSON parse error
+      setTemplateJsonError(null);
+    } catch (e: any) {
+      setTemplateJsonError(e.message || 'Invalid JSON');
     }
   };
   const handleTemplateTagJsonChange = (v: string) => {
     try {
       dispatch(updateState({ createTemplateTagData: JSON.parse(v) }));
-    } catch (e) {
-      // Optionally handle JSON parse error
+      setTemplateTagJsonError(null);
+    } catch (e: any) {
+      setTemplateTagJsonError(e.message || 'Invalid JSON');
     }
   };
 
@@ -760,9 +886,26 @@ templateNavExpandedItems: ${templateNavExpandedItems}
           style={{
             display: 'flex',
             justifyContent: 'flex-end',
+            alignItems: 'center',
             marginBottom: '8px',
           }}
         >
+          {templateJsonError && (
+            <Tooltip
+              title={`Invalid JSON: ${templateJsonError}`}
+              arrow
+              placement="left"
+            >
+              <WarningAmber
+                sx={{
+                  color: '#ed6c02',
+                  fontSize: '1.4rem',
+                  cursor: 'help',
+                  mr: 1,
+                }}
+              />
+            </Tooltip>
+          )}
           <SubmitWrapper
             isLoading={isCreatingTemplate}
             error={createTemplateError}
@@ -779,7 +922,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
               size="small"
               loading={isCreatingTemplate}
               onClick={handleSubmitTemplate}
-              disabled={!createTemplateData}
+              disabled={!createTemplateData || !!templateJsonError}
             >
               Submit Template
             </LoadingButton>
@@ -845,6 +988,22 @@ templateNavExpandedItems: ${templateNavExpandedItems}
               },
             }}
           />
+          {templateTagJsonError && (
+            <Tooltip
+              title={`Invalid JSON: ${templateTagJsonError}`}
+              arrow
+              placement="left"
+            >
+              <WarningAmber
+                sx={{
+                  color: '#ed6c02',
+                  fontSize: '1.4rem',
+                  cursor: 'help',
+                  mr: 1,
+                }}
+              />
+            </Tooltip>
+          )}
           <SubmitWrapper
             isLoading={isCreatingTemplateTag}
             error={createTemplateTagError}
@@ -861,7 +1020,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
               size="small"
               loading={isCreatingTemplateTag}
               onClick={handleSubmitTemplateTag}
-              disabled={!createTemplateTagData}
+              disabled={!createTemplateTagData || !!templateTagJsonError}
             >
               Submit Template Tag
             </LoadingButton>
@@ -1752,6 +1911,89 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                 objId !== undefined &&
                 renderTemplateInfoBox()}
 
+              {/* Render permissions chips when perms tab is active */}
+              {templateTab === 'perms' && objId !== undefined && (
+                <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                  {isFetchingPerms ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Loading permissions...
+                    </Typography>
+                  ) : errorPerms ? (
+                    <Typography variant="body2" color="error">
+                      Error loading permissions: {errorPerms.message}
+                    </Typography>
+                  ) : templatePerms && typeof templatePerms === 'object' ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {(() => {
+                        const permsData =
+                          templatePerms.permissions ?? templatePerms;
+                        const entries: [string, string][] = Array.isArray(
+                          permsData
+                        )
+                          ? permsData.map((entry: string) => {
+                              const parts = entry.split(':');
+                              return [parts[0], parts.slice(1).join(':')] as [
+                                string,
+                                string
+                              ];
+                            })
+                          : Object.entries(permsData);
+                        if (entries.length === 0) {
+                          return (
+                            <Typography variant="body2" color="text.secondary">
+                              No permissions set
+                            </Typography>
+                          );
+                        }
+                        return entries.map(([user, level]) => (
+                          <Chip
+                            key={user}
+                            label={`${user}:${level}`}
+                            size="small"
+                            variant="outlined"
+                            onDelete={() => handleDeletePermission(user)}
+                            disabled={isDeletingPermission}
+                            sx={{
+                              fontFamily: 'monospace',
+                              fontSize: '0.8rem',
+                              borderRadius: 1,
+                              ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                                ? {
+                                    borderColor: '#9c27b0',
+                                    color: '#9c27b0',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9c27b0',
+                                    },
+                                  }
+                                : level === 'USER'
+                                ? {
+                                    borderColor: '#9e9e9e',
+                                    color: '#9e9e9e',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9e9e9e',
+                                    },
+                                  }
+                                : {}),
+                            }}
+                          />
+                        ));
+                      })()}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No permissions data available
+                    </Typography>
+                  )}
+                </Box>
+              )}
+
               {/* Render create template/tag editors if on those tabs */}
               {templateRootTab === 'createTemplate' && objId === undefined
                 ? renderCreateTemplate()
@@ -1809,6 +2051,11 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             dependentPods={deleteTemplateInfo.dependentPods}
             dependentTags={deleteTemplateInfo.dependentTags}
           />
+        )}
+
+        {/* Template Permission Modal */}
+        {modal === 'templatePermissions' && objId && (
+          <TemplatePermissionModal toggle={toggle} templateId={objId} />
         )}
       </div>
     </div>
