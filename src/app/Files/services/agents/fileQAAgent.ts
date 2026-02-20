@@ -115,7 +115,7 @@ export const FileQAAgent: Agent = {
       context.ragPODSEndpoint ||
       (process.env.NODE_ENV === 'development'
         ? '/api/rag/chat'
-        : 'https://rag.pods.tacc.tapis.io/chat');
+        : 'https://tapisagent.pods.tacc.tapis.io/chat');
 
     if (!ragPODSEndpoint) {
       return {
