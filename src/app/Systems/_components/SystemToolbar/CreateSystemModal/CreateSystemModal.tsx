@@ -71,7 +71,7 @@ const validationSchema = Yup.object({
   rootDir: Yup.string()
     .max(4096)
     .matches(
-      /^[a-zA-Z0-9_.-]+$/,
+      /^[a-zA-Z0-9_.-/]+$/,
       "Only alphanumeric characters '.', '_', '-' allowed for id"
     ),
   effectiveUserId: Yup.string()
@@ -80,6 +80,19 @@ const validationSchema = Yup.object({
       /^[a-zA-Z0-9_.-]+$/,
       "Only alphanumeric characters '.', '_', '-' allowed for id"
     ),
+  batchLogicalQueuesSettings: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_.-/]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  batchSchedulerProfile: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_.-/]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    )
+    .required(),
 });
 
 const SystemDetailStep: React.FC = () => {
@@ -194,6 +207,7 @@ const SystemHostStep: React.FC = () => {
         error={!!errors.host}
         helperText={errors.host}
         fullWidth
+        required
         size="small"
         margin="dense"
       />
@@ -214,6 +228,7 @@ const SystemHostStep: React.FC = () => {
         error={!!errors.effectiveUserId}
         helperText={errors.effectiveUserId}
         fullWidth
+        required
         size="small"
         margin="dense"
       />
@@ -316,9 +331,14 @@ const SystemRunTimeStep: React.FC<{
   );
 };
 
+type BatchValidator = {
+  batchSchedulerProfile: string;
+};
+
 const SystemBatchStep: React.FC = () => {
   const { state, updateState } = useStepperState();
   const schedulerTypes = Object.values(SchedulerTypeEnum);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const isLinux =
     (state.systemType ?? SystemTypeEnum.Linux) === SystemTypeEnum.Linux;
 
@@ -343,6 +363,35 @@ const SystemBatchStep: React.FC = () => {
 
   const updateQueue = (idx: number, value: LogicalQueue) =>
     setQueues(queues.map((q, i) => (i === idx ? value : q)));
+
+  const validateBatchSchedulerProfile = (value: string) => {
+    try {
+      validationSchema.validateSyncAt('batchSchedulerProfile', {
+        batchSchedulerProfile: value,
+      });
+      setErrors((e) => ({ ...e, batchSchedulerProfile: '' }));
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors((e) => ({ ...e, batchSchedulerProfile: err.message }));
+      }
+      return false;
+    }
+  };
+
+  const handleChange = (field: keyof BatchValidator) => (e: any) => {
+    const value = e.target.value;
+
+    const fullState: BatchValidator = {
+      batchSchedulerProfile:
+        field === 'batchSchedulerProfile'
+          ? value
+          : state.batchSchedulerProfile ?? '',
+    };
+
+    updateState({ [field]: value });
+    validateBatchSchedulerProfile(value);
+  };
 
   return (
     <div>
@@ -376,11 +425,17 @@ const SystemBatchStep: React.FC = () => {
                 size="small"
                 margin="dense"
                 label="Batch Scheduler Profile"
-                value={state.batchSchedulerProfile}
-                onChange={(e) =>
-                  updateState({ batchSchedulerProfile: e.target.value })
+                required
+                value={state.batchSchedulerProfile ?? ''}
+                error={!!errors.batchSchedulerProfile}
+                helperText={
+                  errors.batchSchedulerProfile || 'Batch scheduler profile'
                 }
-                helperText="Batch scheduler profile (leave blank to unset)"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  updateState({ batchSchedulerProfile: value });
+                  validateBatchSchedulerProfile(value);
+                }}
                 style={{ marginTop: '16px' }}
               />
 
@@ -402,6 +457,7 @@ const SystemBatchStep: React.FC = () => {
                 title="Batch Logical Queues"
                 note={`${queues.length} item${queues.length !== 1 ? 's' : ''}`}
                 className={styles['array']}
+                requiredText=""
               >
                 {queues.map((queue, idx) => (
                   <Collapse
@@ -480,7 +536,7 @@ const SystemBatchStep: React.FC = () => {
                         Remove
                       </Button>
 
-                      <Button
+                      {/* <Button
                         onClick={() =>
                           updateQueue(idx, {
                             ...queue,
@@ -491,7 +547,7 @@ const SystemBatchStep: React.FC = () => {
                         variant="contained"
                       >
                         Save
-                      </Button>
+                      </Button> */}
                     </Box>
                   </Collapse>
                 ))}
@@ -583,6 +639,7 @@ const CreateSystemModal: React.FC<{
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ batchSchedulerProfile?: string }>({});
 
   const handleChange = (key: keyof ReqPostSystem, value: any) => {
     setSubmitError(null);
@@ -678,7 +735,7 @@ const CreateSystemModal: React.FC<{
                 actionFn: () => toggle(),
               },
               {
-                name: 'Create Systems',
+                name: 'Create System',
                 disableOnError: true,
                 isLoading: isSubmitting,
                 isSuccess: submitSuccess,
@@ -696,6 +753,9 @@ const CreateSystemModal: React.FC<{
               backDisabled={submitSuccess}
               nextDisabled={isSubmitting || submitSuccess}
               nextIsLoading={isSubmitting}
+              onStateChange={(newState: State) => {
+                setState(newState as Partial<ReqPostSystem>);
+              }}
               steps={[
                 {
                   label: 'Details',
@@ -783,6 +843,20 @@ const CreateSystemModal: React.FC<{
                     ) : (
                       <div> Batch Unvailable</div>
                     ),
+                  nextCondition: (state) => {
+                    let batchSchedulerProfileIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('batchSchedulerProfile', {
+                        batchSchedulerProfile: state.batchSchedulerProfile,
+                      });
+                    } catch (_) {
+                      batchSchedulerProfileIsValid = false;
+                    }
+                    return (
+                      state.batchSchedulerProfile !== undefined &&
+                      batchSchedulerProfileIsValid
+                    );
+                  },
                 },
               ]}
               finishButtonText="Create System"

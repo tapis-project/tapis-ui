@@ -19,6 +19,7 @@ interface MUIStepperProps {
   backDisabled?: boolean;
   nextIsLoading?: boolean;
   nextDisabled?: boolean;
+  onStateChange?: (state: State) => void;
 }
 
 const MUIStepper = ({
