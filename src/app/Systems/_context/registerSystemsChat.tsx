@@ -1,29 +1,29 @@
 /**
  * Registration file for Systems chat agent
  */
-import React from 'react';
-import { Box, Stack, Typography, Chip } from '@mui/material';
-import { registerChat } from 'app/_context/chat';
-import { SystemQAAgent } from '../services/agents/systemQAAgent';
+import React from "react";
+import { Box, Stack, Typography, Chip } from "@mui/material";
+import { registerChat } from "app/_context/chat";
+import { SystemQAAgent } from "../services/agents/systemQAAgent";
 
 // Empty state for Systems QA Chat
 const SystemsQAEmptyState = (onSend: (text: string) => void) => (
   <Box
     sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100%',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
       gap: 3,
       px: 2,
-      textAlign: 'center',
+      textAlign: "center",
     }}
   >
-    <Box sx={{ maxWidth: '400px' }}>
+    <Box sx={{ maxWidth: "400px" }}>
       <Typography
         variant="h6"
-        sx={{ mb: 1, fontWeight: 600, color: 'text.primary' }}
+        sx={{ mb: 1, fontWeight: 600, color: "text.primary" }}
       >
         Welcome to Systems Assistant
       </Typography>
@@ -37,27 +37,27 @@ const SystemsQAEmptyState = (onSend: (text: string) => void) => (
         <Typography
           variant="caption"
           color="text.secondary"
-          sx={{ display: 'block', mb: 1.5, fontWeight: 500 }}
+          sx={{ display: "block", mb: 1.5, fontWeight: 500 }}
         >
           Try these example prompts:
         </Typography>
         <Stack spacing={1} alignItems="center">
-          {['How do I create a system?', 'Explain system authentication'].map(
+          {["How do I create a system?", "Explain system authentication"].map(
             (prompt) => (
               <Chip
                 key={prompt}
                 label={prompt}
                 onClick={() => onSend(prompt)}
                 sx={{
-                  cursor: 'pointer',
-                  maxWidth: '100%',
-                  '&:hover': {
-                    bgcolor: 'action.hover',
+                  cursor: "pointer",
+                  maxWidth: "100%",
+                  "&:hover": {
+                    bgcolor: "action.hover",
                   },
                 }}
                 size="small"
               />
-            )
+            ),
           )}
         </Stack>
       </Box>
@@ -65,19 +65,19 @@ const SystemsQAEmptyState = (onSend: (text: string) => void) => (
       <Box
         sx={{
           p: 2,
-          bgcolor: 'action.hover',
+          bgcolor: "action.hover",
           borderRadius: 1,
-          textAlign: 'left',
+          textAlign: "left",
         }}
       >
         <Typography
           variant="caption"
-          sx={{ display: 'block', mb: 1, fontWeight: 600 }}
+          sx={{ display: "block", mb: 1, fontWeight: 600 }}
         >
           💡 Tips:
         </Typography>
         <Typography variant="caption" color="text.secondary" component="div">
-          <ul style={{ margin: 0, paddingLeft: '20px' }}>
+          <ul style={{ margin: 0, paddingLeft: "20px" }}>
             <li>Ask about system types and capabilities</li>
             <li>Get help with system configuration</li>
             <li>Learn about authentication methods</li>
@@ -90,23 +90,23 @@ const SystemsQAEmptyState = (onSend: (text: string) => void) => (
 
 // Register the Systems QA Chat
 registerChat({
-  id: 'system-qa',
-  title: 'Systems Assistant',
+  id: "system-qa",
+  title: "Systems Assistant",
   agent: SystemQAAgent,
-  storageKey: 'systems-qa-chat-messages',
+  storageKey: "systems-qa-chat-messages",
   emptyStateContent: SystemsQAEmptyState,
   examplePrompts: [
-    'How do I create a system?',
-    'Explain system authentication',
+    "How do I create a system?",
+    "Explain system authentication",
   ],
   getAgentContext: (baseContext) => ({
-    section: 'files', // Systems typically use 'files' section
-    basePath: baseContext.basePath || '',
+    section: "files", // Systems typically use 'files' section
+    basePath: baseContext.basePath || "",
     mlHubBasePath: baseContext.mlHubBasePath,
-    jwt: baseContext.accessToken?.access_token || '',
+    jwt: baseContext.accessToken?.access_token || "",
     ragPODSEndpoint:
-      process.env.NODE_ENV === 'development'
-        ? '/api/rag/chat'
-        : 'https://rag.pods.tacc.tapis.io/chat',
+      process.env.NODE_ENV === "development"
+        ? "/api/rag/chat"
+        : "https://tapisagent.pods.tacc.tapis.io/chat",
   }),
 });
