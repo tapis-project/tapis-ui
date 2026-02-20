@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Box, Stepper, Step, StepLabel, Button } from '@mui/material';
 import { default as StepperStateProvider } from './StepperStateProvider';
 import { LoadingButton } from '@mui/lab';
+import { useEffect } from 'react';
 
 export type State = Record<any, any>;
 
@@ -30,18 +31,29 @@ const MUIStepper = ({
   backDisabled = false,
   nextIsLoading = false,
   nextDisabled = false,
+  onStateChange,
 }: MUIStepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState<State>(initialState);
 
+  useEffect(() => {
+    setState(initialState);
+  }, [initialState]);
+
   const updateState = useCallback(
-    (newState: State) => {
-      setState({
-        ...state,
-        ...newState,
+    (newState: Partial<State>) => {
+      setState((prev) => {
+        const mergedState = {
+          ...prev,
+          ...newState,
+        };
+
+        onStateChange?.(mergedState);
+
+        return mergedState;
       });
     },
-    [state, setState, activeStep, setActiveStep]
+    [onStateChange]
   );
 
   const handleNext = () => {
