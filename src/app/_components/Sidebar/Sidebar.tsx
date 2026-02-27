@@ -555,12 +555,47 @@ const Sidebar: React.FC = () => {
                 <SettingsRounded sx={{ width: 24, height: 24 }} />
               </div>
               {claims['tapis/username'] ? (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {claims['tapis/username']}
-                  <br />@{claims['sub'].split('@')[1]}
+                <div
+                  style={{
+                    marginLeft: '.4rem',
+                    maxWidth: '9rem',
+                    overflow: 'hidden',
+                    fontSize: 12,
+                    lineHeight: 1.2,
+                  }}
+                  title={
+                    claims['tapis/username'] + '@' + claims['sub'].split('@')[1]
+                  }
+                >
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {claims['tapis/username']}
+                  </div>
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    @{claims['sub'].split('@')[1]}
+                  </div>
                 </div>
               ) : (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                <div
+                  style={{
+                    marginLeft: '.4rem',
+                    maxWidth: '9rem',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
                   {'Logged Out'}
                 </div>
               )}
@@ -591,15 +626,16 @@ const Sidebar: React.FC = () => {
         onClose={handleClose}
         onClick={handleClose}
         PaperProps={{
-          style: {
-            maxHeight: 48 * 4.5,
-          },
           elevation: 0,
           sx: {
-            overflow: 'visible',
+            maxHeight: 'calc(100vh - 100px)',
+            overflow: 'auto',
             filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.52))',
             mt: 0.5,
             ml: 1.2,
+            '& .MuiMenuItem-root': {
+              minHeight: 'auto',
+            },
           },
         }}
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -784,7 +820,6 @@ const Sidebar: React.FC = () => {
                     if (event.button === 1) {
                       event.preventDefault();
                       window.open(tenant.base_url + '/', '_blank');
-                      setModal(undefined);
                     }
                   }}
                   component="a"

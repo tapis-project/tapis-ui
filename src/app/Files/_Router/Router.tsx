@@ -24,7 +24,7 @@ const Router: React.FC = () => {
       <Route path={`${path}`} exact>
         <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
           <SectionMessage type="info">
-            Select a system from the list.
+            Select a system from the list or create a system.
           </SectionMessage>
         </div>
       </Route>

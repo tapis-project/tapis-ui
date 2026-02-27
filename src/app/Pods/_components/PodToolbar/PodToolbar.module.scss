@@ -3,6 +3,8 @@
   margin: 0;
   //margin-top: 0.5em;
   display: flex !important;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .toolbar-btn {
@@ -13,6 +15,8 @@
   border-radius: 0 !important;
   background-color: #f4f4f4 !important;
   color: #333333 !important;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .toolbar-btn:disabled {
