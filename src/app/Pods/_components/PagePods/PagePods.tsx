@@ -402,6 +402,7 @@ Select or create a pod to get started.`;
       size="small"
       color={podRootTab === 'dashboard' ? 'secondary' : 'primary'}
       onClick={() => dispatch(updateState({ podRootTab: 'dashboard' }))}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Dashboard
     </Button>,
@@ -412,6 +413,7 @@ Select or create a pod to get started.`;
         size="small"
         color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
         onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
+        sx={{ whiteSpace: 'nowrap' }}
       >
         Create Pod
       </Button>
@@ -444,7 +446,7 @@ Select or create a pod to get started.`;
             );
           }}
           color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
         >
           form
@@ -456,7 +458,7 @@ Select or create a pod to get started.`;
             );
           }}
           color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
         >
           json
@@ -470,6 +472,7 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       onClick={() => setModal('tooltip')}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Help
     </Button>,
@@ -479,7 +482,7 @@ Select or create a pod to get started.`;
   const detailsLeftButtons = [
     <LoadingButton
       key="refresh"
-      sx={{ minWidth: '10px' }}
+      sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
       loading={isFetching || isFetchingLogs || isFetchingSecrets}
       variant="outlined"
       color="primary"
@@ -523,7 +526,7 @@ Select or create a pod to get started.`;
         onClick={() => {
           dispatch(updateState({ podTab: 'edit' }));
         }}
-        sx={{ minWidth: '60px', height: '32px' }}
+        sx={{ minWidth: '60px', height: '32px', whiteSpace: 'nowrap' }}
       >
         Edit
       </Button>
@@ -554,7 +557,7 @@ Select or create a pod to get started.`;
             dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
           }}
           color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
         >
           form
@@ -564,7 +567,7 @@ Select or create a pod to get started.`;
             dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
           }}
           color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
         >
           json
@@ -575,7 +578,7 @@ Select or create a pod to get started.`;
     <React.Fragment key="details-split">
       <ButtonGroup variant="outlined" size="small" ref={detailsAnchorRef}>
         <LoadingButton
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant="outlined"
           color={
             podTab === 'edit' || podTab === 'derived' || podTab === 'details'
@@ -736,7 +739,7 @@ Select or create a pod to get started.`;
     <React.Fragment key="logs-split">
       <ButtonGroup variant="outlined" size="small" ref={logsAnchorRef}>
         <LoadingButton
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant="outlined"
           color={
             (podTab === 'logs' || podTab === 'actionlogs') &&
@@ -857,13 +860,14 @@ Select or create a pod to get started.`;
         invalidate();
         dispatch(updateState({ podTab: 'secrets' }));
       }}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Secrets
     </Button>,
     <React.Fragment key="perms-split">
       <ButtonGroup variant="outlined" size="small">
         <LoadingButton
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant="outlined"
           color={podTab === 'perms' ? 'secondary' : 'primary'}
           onClick={() => {
@@ -918,7 +922,7 @@ Select or create a pod to get started.`;
             variant="outlined"
             size="small"
             onClick={() => setConfigModalOpen(true)}
-            sx={{ ml: 1, height: '32px' }}
+            sx={{ ml: 1, height: '32px', whiteSpace: 'nowrap' }}
           >
             View Configs
             {configContents.length > 0 ? ` (${configContents.length})` : ''}
@@ -952,6 +956,7 @@ Select or create a pod to get started.`;
             href={networkingUrl ? `https://${networkingUrl}` : undefined}
             target="_blank"
             rel="noopener noreferrer"
+            sx={{ whiteSpace: 'nowrap' }}
           >
             Link
           </Button>
@@ -973,6 +978,7 @@ Select or create a pod to get started.`;
         href={networkingUrl ? `https://${networkingUrl}` : undefined}
         target="_blank"
         rel="noopener noreferrer"
+        sx={{ whiteSpace: 'nowrap' }}
       >
         Link
       </Button>
@@ -982,6 +988,7 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       onClick={() => setModal('tooltip')}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Help
     </Button>,
@@ -990,6 +997,7 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       onClick={() => navigator.clipboard.writeText(getCodeMirrorValue() ?? '')}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Copy
     </Button>,
@@ -1037,15 +1045,23 @@ Select or create a pod to get started.`;
         <PodsNavigation from="pods" id={objId} />
         <PodToolbar />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          overflow: 'auto',
+          minHeight: 0,
+        }}
+      >
+        <div style={{ flexShrink: 0 }} className={` ${styles['nav']} `}>
           <NavPods />
         </div>
         <div
           style={{
             margin: '1rem',
             flex: 1,
-            overflow: 'hidden',
+            overflow: 'auto',
+            minWidth: 1200,
           }}
         >
           {objId === undefined
