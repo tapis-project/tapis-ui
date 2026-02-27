@@ -15,6 +15,7 @@ import {
   AlertTitle,
   Input,
 } from '@mui/material';
+import { useQueryClient } from 'react-query';
 
 type ModalProps = {
   open: boolean;
@@ -76,6 +77,7 @@ const AuthModal: React.FC<ModalProps> = ({
   const [input, setInput] = useState(initialInput);
   const { create, isLoading, isError, isSuccess, error, reset, invalidate } =
     Hooks.useCreateCredential();
+  const queryClient = useQueryClient();
 
   const buildReqUpdateCredential = (
     defaultAuthnMethod: Systems.AuthnEnum,
@@ -360,6 +362,7 @@ const AuthModal: React.FC<ModalProps> = ({
                 {
                   onSuccess: () => {
                     invalidate();
+                    queryClient.invalidateQueries('files/list');
                     setInput(initialInput);
                   },
                 }
