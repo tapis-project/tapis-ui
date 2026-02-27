@@ -1028,14 +1028,29 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                         (group.showDropdown ||
                           group.showDropdown === undefined) && (
                           <ListSubheader
-                            style={{ cursor: 'pointer', userSelect: 'none' }}
+                            style={{
+                              cursor: 'pointer',
+                              userSelect: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              overflow: 'hidden',
+                            }}
                             onClick={() => {
                               toggleDropdown(field, fieldValue);
                             }}
                           >
                             {groupIcon}
                             <Tooltip title={tooltip} placement="left">
-                              <span style={{ marginLeft: '32px' }}>
+                              <span
+                                style={{
+                                  marginLeft: '32px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  flex: '1 1 auto',
+                                  minWidth: 0,
+                                }}
+                              >
                                 <>
                                   {label.length <= 17
                                     ? label
@@ -1043,11 +1058,21 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                                 </>
                               </span>
                             </Tooltip>
-                            <span style={{ marginLeft: '8px' }}>
+                            <span
+                              style={{
+                                marginLeft: '8px',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
                               ({objects.length})
                             </span>
                             <span
-                              style={{ marginLeft: '8px', cursor: 'pointer' }}
+                              style={{
+                                marginLeft: '8px',
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                              }}
                             >
                               {isOpen ? <ExpandMore /> : <ExpandLess />}
                             </span>
