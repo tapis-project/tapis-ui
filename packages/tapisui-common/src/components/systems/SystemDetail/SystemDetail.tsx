@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Systems as SystemsHooks,
   Files as FilesHooks,
@@ -7,6 +7,7 @@ import {
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
 import { QueryWrapper } from '../../../wrappers';
+import { useQueryClient } from 'react-query';
 import styles from './SystemDetail.module.scss';
 import {
   Public,
@@ -37,10 +38,14 @@ import {
   AccountTree,
   Share,
   Update,
+  Home,
+  ArrowDropDown,
 } from '@mui/icons-material';
 import {
   Button,
+  ButtonGroup,
   Chip,
+  CircularProgress,
   Divider,
   Alert,
   AlertTitle,
@@ -51,6 +56,10 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  Popper,
+  Grow,
+  Paper,
+  ClickAwayListener,
 } from '@mui/material';
 import { useHistory, Link } from 'react-router-dom';
 import {
@@ -66,6 +75,7 @@ import {
   DisableSystemModal,
   EnableSystemModal,
   UpdateSystemModal,
+  RemoveCredentialModal,
 } from '../Modals';
 
 const AuthButton: React.FC<{
@@ -85,9 +95,200 @@ const AuthButton: React.FC<{
   );
 };
 
-const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
-  system,
-}) => {
+const TmsKeysAuthButton: React.FC<{
+  systemId: string;
+}> = ({ systemId }) => {
+  const { create, isLoading, isSuccess, isError, error, invalidate } =
+    SystemsHooks.useCreateCredential();
+  const queryClient = useQueryClient();
+
+  const handleClick = () => {
+    create(
+      {
+        systemId,
+        reqUpdateCredential: {},
+        createTmsKeys: true,
+      },
+      {
+        onSuccess: () => {
+          invalidate();
+          queryClient.invalidateQueries('files/list');
+        },
+      }
+    );
+  };
+
+  if (isSuccess) {
+    return (
+      <Alert severity="success" sx={{ mt: 1 }}>
+        Authorization successful. Standby while authentication is checked.
+      </Alert>
+    );
+  }
+
+  return (
+    <div>
+      <Button
+        size="small"
+        variant="text"
+        onClick={handleClick}
+        disabled={isLoading}
+        startIcon={isLoading ? <CircularProgress size={16} /> : <Login />}
+      >
+        {isLoading ? 'Authorizing...' : 'Authenticate with TMS keys'}
+      </Button>
+      {isError && error && (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {error.message || 'Failed to create TMS keys credential.'}
+        </Alert>
+      )}
+    </div>
+  );
+};
+
+const envVarOptions = [
+  { label: 'Go to $HOME', envVar: 'HOME' },
+  { label: 'Go to $WORK', envVar: 'WORK' },
+  { label: 'Go to $SCRATCH', envVar: 'SCRATCH' },
+];
+
+const HostEvalButton: React.FC<{
+  systemId: string;
+  isAuthenticated: boolean;
+}> = ({ systemId, isAuthenticated }) => {
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [triggered, setTriggered] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const history = useHistory();
+
+  const selected = envVarOptions[selectedIndex];
+
+  const { data, isLoading, isError, error, refetch } = SystemsHooks.useHostEval(
+    { systemId, envVarName: selected.envVar },
+    {
+      enabled: false,
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const path = data?.result?.name;
+
+  // When data arrives after a triggered request, show "going to..." then redirect
+  React.useEffect(() => {
+    if (triggered && path && !redirecting && !isError) {
+      setRedirecting(true);
+      timerRef.current = setTimeout(() => {
+        history.push(`/files/${systemId}${path}`);
+      }, 1400);
+    }
+  }, [triggered, path, redirecting, isError, history, systemId]);
+
+  // Cancel redirect on error
+  React.useEffect(() => {
+    if (isError && timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+      setRedirecting(false);
+    }
+  }, [isError]);
+
+  // Cleanup timer on unmount only
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const handleClick = () => {
+    setTriggered(true);
+    setRedirecting(false);
+    refetch();
+  };
+
+  const handleMenuItemClick = (index: number) => {
+    setSelectedIndex(index);
+    setTriggered(false);
+    setRedirecting(false);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <ButtonGroup
+        variant="text"
+        size="small"
+        ref={anchorRef}
+        disabled={!isAuthenticated}
+      >
+        <Button
+          onClick={handleClick}
+          disabled={isLoading || redirecting}
+          startIcon={isLoading ? <CircularProgress size={16} /> : <Home />}
+        >
+          {isLoading
+            ? 'Resolving...'
+            : redirecting && path
+            ? `Going to ${path} ...`
+            : selected.label}
+        </Button>
+        <Button
+          onClick={() => setOpen((prev) => !prev)}
+          aria-label="select environment variable"
+          disabled={isLoading || redirecting}
+        >
+          <ArrowDropDown />
+        </Button>
+      </ButtonGroup>
+      <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        transition
+        disablePortal
+        sx={{ zIndex: 1 }}
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === 'bottom' ? 'center top' : 'center bottom',
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={() => setOpen(false)}>
+                <MenuList autoFocusItem>
+                  {envVarOptions.map((option, index) => (
+                    <MenuItem
+                      key={option.envVar}
+                      selected={index === selectedIndex}
+                      onClick={() => handleMenuItemClick(index)}
+                    >
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+      {isError && error && triggered && (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {error.message || `Failed to resolve $${selected.envVar}`}
+        </Alert>
+      )}
+    </>
+  );
+};
+
+const SystemSettingsMenu: React.FC<{
+  system: Systems.TapisSystem;
+  isAuthenticated: boolean;
+}> = ({ system, isAuthenticated }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
@@ -135,6 +336,21 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
               <Add fontSize="small" />
             </ListItemIcon>
             <ListItemText>Create child system</ListItemText>
+          </MenuItem>
+          <MenuItem
+            disabled={
+              !isAuthenticated ||
+              (system.owner !== username && !system.isDynamicEffectiveUser)
+            }
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('removecredential');
+            }}
+          >
+            <ListItemIcon>
+              <Lock fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Remove credentials</ListItemText>
           </MenuItem>
           <MenuItem
             disabled={system.owner !== username}
@@ -355,6 +571,13 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
           setModal(undefined);
         }}
       />
+      <RemoveCredentialModal
+        systemId={system.id!}
+        open={modal === 'removecredential'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
     </span>
   );
 };
@@ -407,7 +630,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           </div>
           <div></div>
           <div>
-            <SystemSettingsMenu system={system} />
+            <SystemSettingsMenu system={system} isAuthenticated={!!data} />
           </div>
         </div>
         {!system.enabled && (
@@ -448,15 +671,19 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             <AlertTitle>Unauthenticated</AlertTitle>
             You must provide credentials for this host before you can perform
             file operations and run jobs with this system.
-            <AuthButton
-              toggle={() => {
-                setModal(
-                  system.systemType === Systems.SystemTypeEnum.Globus
-                    ? 'globusauth'
-                    : 'auth'
-                );
-              }}
-            />
+            {system.defaultAuthnMethod === Systems.AuthnEnum.TmsKeys ? (
+              <TmsKeysAuthButton systemId={system.id!} />
+            ) : (
+              <AuthButton
+                toggle={() => {
+                  setModal(
+                    system.systemType === Systems.SystemTypeEnum.Globus
+                      ? 'globusauth'
+                      : 'auth'
+                  );
+                }}
+              />
+            )}
           </Alert>
         )}
         <Divider />
@@ -548,6 +775,14 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             >
               View Files
             </Button>
+            {system.systemType === Systems.SystemTypeEnum.Linux &&
+              system.isDynamicEffectiveUser &&
+              (!system.rootDir || system.rootDir === '/') && (
+                <HostEvalButton
+                  systemId={system.id!}
+                  isAuthenticated={!!data}
+                />
+              )}
           </div>
           <div></div>
           <div></div>
@@ -679,13 +914,15 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           setModal(undefined);
         }}
       />
-      <GlobusAuthModal
-        systemId={system.id!}
-        open={modal === 'globusauth'}
-        toggle={() => {
-          setModal(undefined);
-        }}
-      />
+      {modal === 'globusauth' && (
+        <GlobusAuthModal
+          systemId={system.id!}
+          open={true}
+          toggle={() => {
+            setModal(undefined);
+          }}
+        />
+      )}
     </div>
   );
 };
