@@ -767,8 +767,8 @@ const CreateSystemModal: React.FC<{
         ) : (
           <div className={styles['modal-settings']}>
             <MUIStepper
-              key={resetKey}
-              initialState={initialState as State}
+              key={`${resetKey}-${withJson}`}
+              initialState={state as State}
               backDisabled={submitSuccess}
               nextDisabled={isSubmitting || submitSuccess}
               nextIsLoading={isSubmitting}
