@@ -37,14 +37,16 @@ const RemoveCredentialModal: React.FC<{
           // because a refetch could still succeed temporarily for TMS_KEYS
           // systems where credential revocation is not instant.
           const queryCache = queryClient.getQueryCache();
-          queryCache.findAll({
-            predicate: (query) => {
-              const key = query.queryKey;
-              return Array.isArray(key) && key[0] === 'files/list';
-            },
-          }).forEach((query) => {
-            queryClient.setQueryData(query.queryKey, undefined);
-          });
+          queryCache
+            .findAll({
+              predicate: (query) => {
+                const key = query.queryKey;
+                return Array.isArray(key) && key[0] === 'files/list';
+              },
+            })
+            .forEach((query) => {
+              queryClient.setQueryData(query.queryKey, undefined);
+            });
         },
       }
     );
