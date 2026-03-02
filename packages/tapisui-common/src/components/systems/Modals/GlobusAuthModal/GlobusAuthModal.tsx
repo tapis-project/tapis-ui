@@ -37,6 +37,7 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
         systemId,
       },
       {
+        enabled: open,
         refetchOnWindowFocus: false,
       }
     );

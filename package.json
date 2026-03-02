@@ -6,8 +6,7 @@
   "packageManager": "pnpm@10.11.0",
   "pnpm": {
     "overrides": {
-      "glob": "^9.0.0",
-      "@tapis/tapis-typescript-pods": "^0.0.11"
+      "glob": "^9.0.0"
     }
   },
   "dependencies": {
@@ -30,10 +29,7 @@
     "@mui/x-tree-view": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@scoped/tapisui-extension": "workspace:*",
-    "@tapis/tapis-typescript": "^0.0.62",
-    "@tapis/tapis-typescript-apps": "0.0.9",
-    "@tapis/tapis-typescript-systems": "0.0.6",
-    "@tapis/tapis-typescript-pods": "0.0.11",
+    "@tapis/tapis-typescript": "^0.0.64",
     "@tapis/tapisui-api": "workspace:*",
     "@tapis/tapisui-common": "workspace:*",
     "@tapis/tapisui-extension-demo": "workspace:*",
@@ -134,7 +130,10 @@
     "@jest/globals": "30.2.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.8",
-    "@tapis/tapis-typescript": "^0.0.62",
+    "@tapis/tapis-typescript": "^0.0.64",
+    "@tapis/tapis-typescript-apps": "0.0.9",
+    "@tapis/tapis-typescript-systems": "0.0.7",
+    "@tapis/tapis-typescript-pods": "0.0.12",
     "@tapis/tapisui-extension-devtools": "file:./packages/tapisui-extension-devtools",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^14.2.1",
