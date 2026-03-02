@@ -191,8 +191,7 @@ const models = [
     config: {},
   },
   {
-    modelId:
-      '9103066540bd614ee580637971ff79ef385b8a9d19c3c99160acf8cc83da0952-model',
+    modelId: '2983330b-28a4-4fb5-816d-aee0e421cb72-model',
     name: 'MegaDetector v6b-yolov9c',
     description: undefined,
     disabled: false,

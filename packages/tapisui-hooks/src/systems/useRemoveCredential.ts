@@ -4,28 +4,21 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 
-type CreateUserCredentialHookParams = {
+type RemoveUserCredentialHookParams = {
   systemId: string;
   userName?: string;
-  reqUpdateCredential: Systems.ReqUpdateCredential;
-  createTmsKeys?: boolean;
-  skipCredentialCheck?: boolean;
 };
 
-const useCreateCredential = () => {
+const useRemoveCredential = () => {
   const { basePath, accessToken, claims } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
 
-  // The useMutation react-query hook is used to call operations that make server-side changes
-  // (Other hooks would be used for data retrieval)
-  //
-  // In this case, create helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, CreateUserCredentialHookParams>(
-      [QueryKeys.createUserCredential, basePath, jwt],
+    useMutation<Systems.RespBasic, Error, RemoveUserCredentialHookParams>(
+      [QueryKeys.removeUserCredential, basePath, jwt],
       (params) =>
-        API.createUserCredential(
+        API.removeUserCredential(
           {
             ...params,
             userName: params.userName
@@ -41,7 +34,6 @@ const useCreateCredential = () => {
     queryClient.invalidateQueries([QueryKeys.list, QueryKeys.details]);
   };
 
-  // Return hook object with loading states and login function
   return {
     isLoading,
     isError,
@@ -50,19 +42,17 @@ const useCreateCredential = () => {
     error,
     reset,
     invalidate,
-    create: (
-      params: CreateUserCredentialHookParams,
-      // react-query options to allow callbacks such as onSuccess
+    remove: (
+      params: RemoveUserCredentialHookParams,
       options?: MutateOptions<
         Systems.RespBasic,
         Error,
-        CreateUserCredentialHookParams
+        RemoveUserCredentialHookParams
       >
     ) => {
-      // Call mutate to trigger a single post-like API operation
       return mutate(params, options);
     },
   };
 };
 
-export default useCreateCredential;
+export default useRemoveCredential;

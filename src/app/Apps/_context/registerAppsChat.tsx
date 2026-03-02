@@ -103,11 +103,10 @@ registerChat({
   getAgentContext: (baseContext) => ({
     section: 'apps',
     basePath: baseContext.basePath || '',
-    mlHubBasePath: baseContext.mlHubBasePath,
     jwt: baseContext.accessToken?.access_token || '',
     ragPODSEndpoint:
       process.env.NODE_ENV === 'development'
         ? '/api/rag/chat'
-        : 'https://rag.pods.tacc.tapis.io/chat',
+        : 'https://tapisagent.pods.tacc.tapis.io/chat',
   }),
 });

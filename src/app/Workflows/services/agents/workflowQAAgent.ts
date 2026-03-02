@@ -38,7 +38,7 @@ async function callRAGPODS(
         'X-Tapis-Token': actualToken,
       },
       body: JSON.stringify({
-        question,
+        message: question,
         model,
       }),
     });
@@ -114,7 +114,7 @@ export const WorkflowQAAgent: Agent = {
       context.ragPODSEndpoint ||
       (process.env.NODE_ENV === 'development'
         ? '/api/rag/chat'
-        : 'https://rag.pods.tacc.tapis.io/chat');
+        : 'https://tapisagent.pods.tacc.tapis.io/chat');
 
     if (!ragPODSEndpoint) {
       return {

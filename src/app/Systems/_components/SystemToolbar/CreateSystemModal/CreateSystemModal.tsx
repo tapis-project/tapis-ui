@@ -72,13 +72,13 @@ const validationSchema = Yup.object({
     .max(4096)
     .matches(
       /^[a-zA-Z0-9_.-/]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed for id"
+      "Only alphanumeric characters '.', '/' '_', '-' allowed for id"
     ),
   effectiveUserId: Yup.string()
     .max(60)
     .matches(
-      /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed for id"
+      /^[a-zA-Z0-9_${}@.-]+$/,
+      "Only alphanumeric characters '$', '{', '}', '@', '.', '_', '-' allowed for id"
     ),
   batchLogicalQueuesSettings: Yup.string()
     .max(60)
