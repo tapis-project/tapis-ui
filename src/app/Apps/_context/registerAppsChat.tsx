@@ -103,7 +103,6 @@ registerChat({
   getAgentContext: (baseContext) => ({
     section: 'apps',
     basePath: baseContext.basePath || '',
-    mlHubBasePath: baseContext.mlHubBasePath,
     jwt: baseContext.accessToken?.access_token || '',
     ragPODSEndpoint:
       process.env.NODE_ENV === 'development'
