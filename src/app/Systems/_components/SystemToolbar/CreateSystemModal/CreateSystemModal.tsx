@@ -29,7 +29,7 @@ import {
   SchedulerTypeEnum,
 } from '@tapis/tapis-typescript-systems';
 import { MUIStepper, useStepperState } from 'app/_components/MUIStepper';
-import { Systems as Hooks } from '@tapis/tapisui-hooks';
+import { Systems as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { State } from 'app/_components/MUIStepper/MUIStepper';
 import BatchSettings from './Settings/Batch/BatchSettings';
 import BatchLogicalQueuesSettings from './Settings/Batch/BatchLogicalQueuesSettings';
@@ -649,11 +649,14 @@ const CreateSystemModal: React.FC<{
 
   const queryClient = useQueryClient();
 
-  const submissionSuccess = React.useCallback(() => {
-    queryClient.invalidateQueries(Hooks.queryKeys.list);
-  }, [queryClient]);
+  const { createSystem } = Hooks.useCreateSystem();
+  const { accessToken } = useTapisConfig();
 
-  const { makeNewSystem } = Hooks.useMakeNewSystem();
+  console.log('queryKeys list: ', Hooks.queryKeys.list);
+
+  const submissionSuccess = React.useCallback(() => {
+    queryClient.invalidateQueries([Hooks.queryKeys.list]);
+  }, [queryClient]);
 
   const handleSubmit = async (finalStateRaw: ReqPostSystem) => {
     try {
@@ -676,11 +679,13 @@ const CreateSystemModal: React.FC<{
       setIsSubmitting(true);
       setSubmitError(null);
 
-      await makeNewSystem(finalState);
+      await createSystem(finalState);
       onCreate?.(finalState);
 
-      submissionSuccess();
+      await submissionSuccess();
       setSubmitSuccess(true);
+
+      setState(initialState);
       setIsSubmitting(false);
       toggle();
     } catch (e) {
@@ -692,6 +697,19 @@ const CreateSystemModal: React.FC<{
       setIsSubmitting(false);
     }
   };
+
+  const [resetKey, setResetKey] = useState(0);
+
+  React.useEffect(() => {
+    if (open) {
+      setResetKey((k) => k + 1);
+      setState(initialState);
+      setSubmitSuccess(false);
+      setSubmitError(null);
+      setIsSubmitting(false);
+      setWithJson(false);
+    }
+  }, [open]);
 
   return (
     <Dialog
@@ -749,7 +767,8 @@ const CreateSystemModal: React.FC<{
         ) : (
           <div className={styles['modal-settings']}>
             <MUIStepper
-              initialState={state as State}
+              key={resetKey}
+              initialState={initialState as State}
               backDisabled={submitSuccess}
               nextDisabled={isSubmitting || submitSuccess}
               nextIsLoading={isSubmitting}
@@ -874,6 +893,7 @@ const CreateSystemModal: React.FC<{
 
       {!withJson && (
         <DialogActions>
+          {/* {submitSuccess} */}
           <LoadingButton onClick={toggle}>
             {submitSuccess ? 'Continue' : 'Cancel'}
           </LoadingButton>
