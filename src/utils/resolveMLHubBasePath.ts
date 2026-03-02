@@ -1,11 +1,9 @@
-export const resolveMLHubBasePath = () => {
-  // TODO: remove this once we have a proper environment variable
-  const basePath = 'https://tacc.tapis.io/v3/mlhub';
-  // const basePath = 'http://localhost:56875';
-  return basePath;
-  if (!basePath) {
-    throw new Error('VITE_MLHUB_BASE_URL environment variable is not set');
-  }
+import { resolveBasePath } from './resolveBasePath';
 
-  return basePath.endsWith('/v3') ? basePath : basePath + '/v3';
+export const resolveMLHubBasePath = () => {
+  let basePath = import.meta.env.VITE_MLHUB_BASE_URL;
+  if (!basePath) {
+    basePath = resolveBasePath();
+  }
+  return basePath;
 };
