@@ -138,7 +138,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Platforms Section */}
-      <div className={styles['section']}>
+      {/* <div className={styles['section']}>
         <h2 className={styles['section-title']}>Connected Platforms</h2>
         <p className={styles['section-description']}>
           Explore models available from these providers
@@ -178,7 +178,7 @@ const Dashboard: React.FC = () => {
             })}
           </div>
         </QueryWrapper>
-      </div>
+      </div> */}
     </div>
   );
 };
