@@ -10,3 +10,6 @@ export { CKNDashboard } from './CKNDashboard';
 export { CatalogAnalytics } from './CatalogAnalytics';
 export { ComponentCatalog } from './ComponentCatalog';
 export { Harvest } from './Harvest';
+export { FoodFlowPortal } from './FoodFlowPortal';
+export { FEAST } from './FEAST';
+export { FoodSecuritySandbox } from './FoodSecuritySandbox';

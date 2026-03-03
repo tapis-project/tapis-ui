@@ -15,6 +15,9 @@ import {
   DigitalAgOpenPASS,
   ComponentCatalog,
   Harvest,
+  FoodFlowPortal,
+  FEAST,
+  FoodSecuritySandbox,
 } from './pages';
 
 const extension = createExtension({
@@ -38,6 +41,9 @@ const extension = createExtension({
     'jupyter-lab',
     'analytics',
     'training-catalog',
+    'food-flow-portal',
+    'feast',
+    'food-security-sandbox',
     'component-catalog',
     'ckn-dashboard',
     'openpass',
@@ -109,6 +115,27 @@ extension.registerService({
   sidebarDisplayName: 'Training Catalog',
   iconName: 'globe',
   component: TrainingCatalog,
+});
+
+extension.registerService({
+  id: 'food-flow-portal',
+  sidebarDisplayName: 'Food Flow Portal',
+  iconName: 'globe',
+  component: FoodFlowPortal,
+});
+
+extension.registerService({
+  id: 'feast',
+  sidebarDisplayName: 'FEAST',
+  iconName: 'globe',
+  component: FEAST,
+});
+
+extension.registerService({
+  id: 'food-security-sandbox',
+  sidebarDisplayName: 'Food Security Sandbox',
+  iconName: 'globe',
+  component: FoodSecuritySandbox,
 });
 
 extension.registerService({
