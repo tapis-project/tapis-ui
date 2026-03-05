@@ -197,7 +197,6 @@ const AppInputArrayField: React.FC<AppInputArrayFieldProps> = ({
       {!isRequired && (
         <Button
           onClick={() => {
-            console.log('Remove index', index);
             remove(index);
           }}
           size="sm"
