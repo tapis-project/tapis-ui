@@ -54,8 +54,6 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
 
   const result = data?.result || undefined;
 
-  console.log({ result });
-
   return (
     <Dialog
       open={open}
