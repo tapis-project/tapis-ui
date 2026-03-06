@@ -561,6 +561,75 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     minHeightValue,
   ]);
 
+  // Ensure the panel stays within the viewport on window resize
+  // and when it is (re)opened after a resize.
+  const ensurePanelVisible = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Keep some padding from the edges so the close button is always reachable
+    const horizontalPadding = 16;
+    const verticalPaddingTop = 8;
+
+    // Never let the panel be taller/wider than the available viewport
+    const maxAllowedHeight = Math.max(
+      minHeightValue,
+      viewportHeight - TOP_PADDING - BOTTOM_PADDING
+    );
+    const nextHeight = Math.min(panelHeight, maxAllowedHeight);
+
+    const maxAllowedWidth = Math.max(
+      280,
+      viewportWidth - horizontalPadding * 2
+    );
+    const nextWidth = Math.min(panelWidth, maxAllowedWidth);
+
+    const maxLeft = Math.max(
+      horizontalPadding,
+      viewportWidth - nextWidth - horizontalPadding
+    );
+    const nextLeft = Math.min(Math.max(horizontalPadding, panelLeft), maxLeft);
+
+    const maxTop = Math.max(
+      verticalPaddingTop,
+      viewportHeight - nextHeight - BOTTOM_PADDING
+    );
+    const nextTop = Math.min(Math.max(verticalPaddingTop, panelTop), maxTop);
+
+    setPanelWidth(nextWidth);
+    setPanelLeft(nextLeft);
+    setPanelTop(nextTop);
+    setPanelHeight(nextHeight);
+  }, [panelWidth, panelHeight, panelLeft, panelTop, minHeightValue]);
+
+  // Reposition when the window is resized while the chat is open
+  useEffect(() => {
+    if (!open) return;
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      ensurePanelVisible();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Run once on mount/open to correct any off-screen state
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [open, ensurePanelVisible]);
+
+  // Also ensure the panel is visible whenever it transitions from closed to open,
+  // even if the window size changed while it was closed.
+  useEffect(() => {
+    if (!open) return;
+    ensurePanelVisible();
+  }, [open, ensurePanelVisible]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -691,6 +760,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           minHeight: minHeightValue,
           maxHeight: maxHeightValue,
           width: effectiveWidth,
+          maxWidth: 'calc(100vw - 32px)',
           display: 'flex',
           flexDirection: 'column',
           zIndex: 1300,
