@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
 import Cookies from 'js-cookie';
 import { Authenticator } from '@tapis/tapis-typescript';
@@ -51,9 +51,22 @@ const useTapisConfig = () => {
     `useTapisConfig: basePath: ${basePath}, data.access_token exists:`,
     JSON.stringify(data?.access_token ? true : false, null, 2)
   );
-  const claims: { [key: string]: any } = data?.access_token
-    ? jwt_decode(data?.access_token)
-    : {};
+
+  // Safely decode JWT — garbage tokens won't crash the app
+  let claims: { [key: string]: any } = {};
+  let jwtDecodeFailed = false;
+  try {
+    claims = data?.access_token ? jwt_decode(data.access_token) : {};
+  } catch (e) {
+    console.error('Failed to decode access token JWT:', e);
+    jwtDecodeFailed = true;
+  }
+
+  // Check if the JWT has expired based on the `exp` claim (seconds since epoch)
+  const isTokenExpired = (() => {
+    if (!claims.exp) return false;
+    return Date.now() >= claims.exp * 1000;
+  })();
 
   const pathTenantId = basePath
     ? basePath.replace('https://', '').replace('http://', '').split('.')[0]
@@ -111,17 +124,48 @@ const useTapisConfig = () => {
       ? basePath.toLowerCase().includes(tokenTenantId.toLowerCase() + '.')
       : false;
 
-  if (tokenTenantId && Object.keys(claims).length > 0 && !domainsMatched) {
-    console.error(
-      `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Logging user out.`
-    );
-    setAccessToken(null);
-  }
+  // Use a ref to avoid re-triggering the effect when setAccessToken identity changes
+  const setAccessTokenRef = useRef(setAccessToken);
+  setAccessTokenRef.current = setAccessToken;
+
+  // Handle invalid tokens in a useEffect (not during render) to avoid React render-loop
+  useEffect(() => {
+    if (!data?.access_token) return;
+
+    // Undecodable JWT (garbage token) — clear it immediately
+    if (jwtDecodeFailed) {
+      console.warn('Access token is not a valid JWT. Clearing token.');
+      setAccessTokenRef.current(null);
+      return;
+    }
+
+    // Expired JWT — clear it and force re-login
+    if (isTokenExpired) {
+      console.warn('Access token has expired (JWT exp claim). Logging out.');
+      setAccessTokenRef.current(null);
+      return;
+    }
+
+    // Tenant mismatch — token is for a different tenant than the current basePath
+    if (tokenTenantId && Object.keys(claims).length > 0 && !domainsMatched) {
+      console.error(
+        `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Logging user out.`
+      );
+      setAccessTokenRef.current(null);
+    }
+  }, [
+    data?.access_token,
+    isTokenExpired,
+    jwtDecodeFailed,
+    tokenTenantId,
+    domainsMatched,
+    basePath,
+  ]);
 
   return {
     basePath,
     mlHubBasePath,
-    accessToken: data,
+    accessToken: isTokenExpired || jwtDecodeFailed ? undefined : data,
     setAccessToken,
     claims,
     pathTenantId: pathTenantId ?? undefined,
