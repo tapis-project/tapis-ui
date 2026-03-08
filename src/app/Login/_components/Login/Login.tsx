@@ -18,9 +18,6 @@ const Login: React.FC = () => {
     useTapisConfig();
   const navigate = useHistory();
   const { extension } = useExtension();
-  const [activeAuthMethod, setActiveAuthMethod] = useState<
-    undefined | 'implicit' | 'password'
-  >(undefined);
   const [implicitError, setImplicitError] = useState<string | undefined>(
     undefined
   );
@@ -96,6 +93,16 @@ const Login: React.FC = () => {
         : true; // always password auth for now
   }
 
+  // Compute initial auth method synchronously so first render doesn't flash buttons
+  const [activeAuthMethod, setActiveAuthMethod] = useState<
+    undefined | 'implicit' | 'password'
+  >(() => {
+    if (implicitAuthURL && passwordAuth) return undefined; // show choice
+    if (implicitAuthURL) return 'implicit';
+    if (passwordAuth) return 'password';
+    return undefined;
+  });
+
   const onSubmit = ({
     username,
     password,
@@ -121,6 +128,11 @@ const Login: React.FC = () => {
     } else if (implicitAuthURL) {
       // Only implicit auth available
       setActiveAuthMethod('implicit');
+      // If redirect-based (not iframe), skip the Login page entirely
+      if (!implicitIframe) {
+        window.location.replace(implicitAuthURL);
+        return;
+      }
     } else if (passwordAuth) {
       // Only password auth available
       setActiveAuthMethod('password');
@@ -203,10 +215,15 @@ const Login: React.FC = () => {
           // You may want to check event.origin for security
           if (event.data && event.data.type === 'tapis-auth-success') {
             if (event.data.access_token && event.data.access_token !== 'None') {
+              const expiresIn = event.data.expires_in || 14400;
+              const expiresAt =
+                event.data.expires_at && event.data.expires_at !== 't'
+                  ? event.data.expires_at
+                  : new Date(Date.now() + expiresIn * 1000).toISOString();
               setAccessToken({
                 access_token: event.data.access_token,
-                expires_at: event.data.expires_at || 't',
-                expires_in: event.data.expires_in || 14400,
+                expires_at: expiresAt,
+                expires_in: expiresIn,
               });
               // Redirect to home page or wherever appropriate
               navigate.push(`/`);
@@ -226,6 +243,16 @@ const Login: React.FC = () => {
       }
     }
   }, [activeAuthMethod, implicitIframe, implicitAuthURL]);
+
+  // If implicit-only redirect (not iframe), show a simple redirecting message
+  // while the browser navigates to the OAuth2 provider
+  if (activeAuthMethod === 'implicit' && !implicitIframe && !passwordAuth) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <p>Redirecting to your institution's login...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
