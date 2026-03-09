@@ -7,7 +7,6 @@ import {
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
 import { QueryWrapper } from '../../../wrappers';
-import { useQueryClient } from 'react-query';
 import styles from './SystemDetail.module.scss';
 import {
   Public,
@@ -97,10 +96,10 @@ const AuthButton: React.FC<{
 
 const TmsKeysAuthButton: React.FC<{
   systemId: string;
-}> = ({ systemId }) => {
+  setAuthenticated: () => void;
+}> = ({ systemId, setAuthenticated }) => {
   const { create, isLoading, isSuccess, isError, error, invalidate } =
     SystemsHooks.useCreateCredential();
-  const queryClient = useQueryClient();
 
   const handleClick = () => {
     create(
@@ -112,7 +111,7 @@ const TmsKeysAuthButton: React.FC<{
       {
         onSuccess: () => {
           invalidate();
-          queryClient.invalidateQueries('files/list');
+          setAuthenticated();
         },
       }
     );
@@ -203,7 +202,7 @@ const HostEvalButton: React.FC<{
     };
   }, []);
 
-  const handleClick = () => {
+  const handleHostVarButtonClick = () => {
     setTriggered(true);
     setRedirecting(false);
     refetch();
@@ -225,7 +224,7 @@ const HostEvalButton: React.FC<{
         disabled={!isAuthenticated}
       >
         <Button
-          onClick={handleClick}
+          onClick={handleHostVarButtonClick}
           disabled={isLoading || redirecting}
           startIcon={isLoading ? <CircularProgress size={16} /> : <Home />}
         >
@@ -588,16 +587,19 @@ type SystemCardProps = {
 
 const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
   const [showJSON, setShowJSON] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const history = useHistory();
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const { data, isLoading } = FilesHooks.useList(
+  const { isLoading } = FilesHooks.useList(
     {
       systemId: system.id!,
       path: '/',
     },
     {
-      retry: 0,
-      refetchOnWindowFocus: false,
+      retry: 1,
+      onSuccess: (data) => {
+        setAuthenticated(true);
+      },
     }
   );
 
@@ -630,7 +632,10 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           </div>
           <div></div>
           <div>
-            <SystemSettingsMenu system={system} isAuthenticated={!!data} />
+            <SystemSettingsMenu
+              system={system}
+              isAuthenticated={authenticated}
+            />
           </div>
         </div>
         {!system.enabled && (
@@ -663,16 +668,21 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <div className={styles['card-line']}>
           <p className={styles['muted']}>Authenticated</p>
           {isLoading && <i>Checking credentials...</i>}
-          {!isLoading && !data && <Close color="error" />}
-          {!isLoading && data && <Check color="success" />}
+          {!isLoading && !authenticated && <Close color="error" />}
+          {!isLoading && authenticated && <Check color="success" />}
         </div>
-        {!isLoading && !data && (
+        {!isLoading && !authenticated && (
           <Alert severity="warning">
             <AlertTitle>Unauthenticated</AlertTitle>
             You must provide credentials for this host before you can perform
             file operations and run jobs with this system.
             {system.defaultAuthnMethod === Systems.AuthnEnum.TmsKeys ? (
-              <TmsKeysAuthButton systemId={system.id!} />
+              <TmsKeysAuthButton
+                systemId={system.id!}
+                setAuthenticated={() => {
+                  setAuthenticated(true);
+                }}
+              />
             ) : (
               <AuthButton
                 toggle={() => {
@@ -767,7 +777,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           <div className={styles['flex']}>
             <Button
               size="small"
-              disabled={!data}
+              disabled={!authenticated}
               onClick={() => {
                 history.push(`/files/${system.id}`);
               }}
@@ -780,7 +790,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
               (!system.rootDir || system.rootDir === '/') && (
                 <HostEvalButton
                   systemId={system.id!}
-                  isAuthenticated={!!data}
+                  isAuthenticated={authenticated}
                 />
               )}
           </div>
@@ -932,6 +942,7 @@ const SystemDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
     systemId,
     select: 'allAttributes',
   });
+
   const system: Systems.TapisSystem | undefined = data?.result;
   return (
     <QueryWrapper isLoading={isLoading} error={error}>

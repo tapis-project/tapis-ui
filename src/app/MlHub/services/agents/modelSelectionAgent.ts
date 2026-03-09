@@ -55,9 +55,18 @@ function buildLLMSystemPrompt(): string {
     'You are a Model Selection Assistant for the Tapis MLHub. ' +
     'You will receive: (1) user requirements and (2) a list of available models from Tapis. ' +
     'Choose the most relevant models ONLY from the provided list; do not invent models. ' +
-    'Prioritize exact task/pipeline_tag match, then library compatibility, then tag overlap, then popularity and recency. ' +
-    'Return a strict JSON object with shape: ' +
-    '{"recommendations":[{"id":string,"rationale":string}],"notes":string}.'
+    'Prioritize exact task/pipeline_tag match, then library compatibility, then tag overlap, then popularity and recency.\n\n' +
+    'Response format:\n' +
+    '1. Start with a brief plain-text summary (1-3 sentences) of what you found.\n' +
+    '2. Then include your recommendations as a fenced JSON code block using triple backticks with the json language tag, like:\n' +
+    '```json\n{"recommendations":[{"id":"...","rationale":"..."}],"notes":"..."}\n```\n' +
+    '3. Optionally add a short closing note after the JSON block.\n\n' +
+    'The JSON object MUST have the shape: {"recommendations":[{"id":string,"rationale":string}],"notes":string}.\n\n' +
+    'Formatting: Your responses are displayed in a chat panel with limited width. ' +
+    'Keep lines in code blocks, JSON, and examples to roughly 80 characters or fewer. ' +
+    'Pretty-print the JSON with 2-space indentation so it is easy to read. ' +
+    'This is around 80-100 chars a line, attempt to keep concise with that in mind. ' +
+    'For prose, write naturally but prefer shorter paragraphs and concise sentences.'
   );
 }
 
@@ -84,7 +93,7 @@ function buildLLMUserPrompt(
     `Available models (first ${
       compact.length
     } as JSON array):\n${JSON.stringify(compact)}\n\n` +
-    'Respond ONLY with the JSON object.'
+    'Respond with a brief summary, then the JSON recommendations in a fenced ```json code block, as described in your instructions.'
   );
 }
 

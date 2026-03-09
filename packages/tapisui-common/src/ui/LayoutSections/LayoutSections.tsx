@@ -23,7 +23,9 @@ export const LayoutBody: React.FC<
 > = ({ children, constrain }) => {
   return (
     <div className={`${styles.body} ${constrain ? styles.constrain : ''}`}>
-      <div className={styles.detail}>{children}</div>
+      <div className={styles.detail} style={{ minWidth: '360px' }}>
+        {children}
+      </div>
     </div>
   );
 };

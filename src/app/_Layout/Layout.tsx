@@ -210,7 +210,7 @@ const LayoutContent: React.FC = () => {
         <PageLayout
           left={<Sidebar />}
           right={
-            <div style={{ height: '100vh' }}>
+            <div style={{ height: '100%' }}>
               <div>{crumbs && crumbs.length == 0 ? null : header}</div>
               <div className="body">
                 <Router />
@@ -236,7 +236,7 @@ const LayoutContent: React.FC = () => {
               : chatConfig.emptyStateContent
           }
           resizable
-          initialWidth={520}
+          initialWidth={580}
           minWidth={360}
           maxWidth={960}
           enableExport

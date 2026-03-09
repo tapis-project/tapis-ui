@@ -262,9 +262,7 @@ const JobsNav: React.FC = () => {
     <QueryWrapper isLoading={isLoading} error={error}>
       <div
         style={{
-          height: 'calc(100vh - 105px)', // Make the nav take full viewport height - shouldn't be calculated, but haven't figured out perfect solution for entire app yet
           minWidth: '100%',
-          overflowY: 'auto', // Enable vertical scrolling only for this div
         }}
       >
         <FilterableObjectsList

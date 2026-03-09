@@ -215,10 +215,7 @@ const Sidebar: React.FC = () => {
     );
   };
   return (
-    <div
-      className={styles.root}
-      style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}
-    >
+    <div className={styles.root} style={{ position: 'relative' }}>
       <div
         style={{
           display: 'flex',
@@ -227,6 +224,7 @@ const Sidebar: React.FC = () => {
           alignItems: 'center', // vertical
           marginTop: '.6rem',
           marginBottom: '.6rem',
+          flexShrink: 0,
           // marginRight: '0.2rem',
         }}
       >
@@ -489,140 +487,144 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
-      <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
-        <FloatingChatButton />
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
+          <FloatingChatButton />
+        </div>
+        <Chip
+          variant="outlined"
+          style={{
+            borderRadius: '8px',
+          }}
+          label={
+            !expanded ? (
+              <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div>
+                  <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+                </div>
+                {expanded && (
+                  <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                    Chatbot
+                  </div>
+                )}
+              </div>
+            )
+          }
+          onClick={() => chatContextValue?.toggleChat()}
+          sx={{
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '.6rem',
+            marginBottom: '.4rem',
+            color: '#707070',
+            '& .MuiChip-label': {
+              display: 'flex',
+              whiteSpace: 'normal',
+            },
+          }}
+        />
+        <Chip
+          variant="outlined"
+          style={{
+            borderRadius: '8px',
+          }}
+          label={
+            !expanded ? (
+              <SettingsRounded sx={{ width: 24, height: 24 }} />
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div>
+                  <SettingsRounded sx={{ width: 24, height: 24 }} />
+                </div>
+                {claims['tapis/username'] ? (
+                  <div
+                    style={{
+                      marginLeft: '.4rem',
+                      maxWidth: '9rem',
+                      overflow: 'hidden',
+                      fontSize: 12,
+                      lineHeight: 1.2,
+                    }}
+                    title={
+                      claims['tapis/username'] +
+                      '@' +
+                      claims['sub'].split('@')[1]
+                    }
+                  >
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {claims['tapis/username']}
+                    </div>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      @{claims['sub'].split('@')[1]}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      marginLeft: '.4rem',
+                      maxWidth: '9rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {'Logged Out'}
+                  </div>
+                )}
+              </div>
+            )
+          }
+          onClick={handleClick} // Move the click handler here to make the entire div clickable
+          sx={{
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '.6rem',
+            color: '#707070',
+            //minWidth: '0rem',
+            //width: '2rem',
+            '& .MuiChip-label': {
+              display: 'flex',
+              whiteSpace: 'normal',
+            },
+          }}
+        />
       </div>
-      <Chip
-        variant="outlined"
-        style={{
-          borderRadius: '8px',
-        }}
-        label={
-          !expanded ? (
-            <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                fontSize: 12,
-                lineHeight: 1.2,
-                overflow: 'hidden',
-              }}
-            >
-              <div>
-                <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-              </div>
-              {expanded && (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  Chatbot
-                </div>
-              )}
-            </div>
-          )
-        }
-        onClick={() => chatContextValue?.toggleChat()}
-        sx={{
-          height: '2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '.6rem',
-          marginBottom: '.4rem',
-          color: '#707070',
-          '& .MuiChip-label': {
-            display: 'flex',
-            whiteSpace: 'normal',
-          },
-        }}
-      />
-      <Chip
-        variant="outlined"
-        style={{
-          borderRadius: '8px',
-        }}
-        label={
-          !expanded ? (
-            <SettingsRounded sx={{ width: 24, height: 24 }} />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                fontSize: 12,
-                lineHeight: 1.2,
-                overflow: 'hidden',
-              }}
-            >
-              <div>
-                <SettingsRounded sx={{ width: 24, height: 24 }} />
-              </div>
-              {claims['tapis/username'] ? (
-                <div
-                  style={{
-                    marginLeft: '.4rem',
-                    maxWidth: '9rem',
-                    overflow: 'hidden',
-                    fontSize: 12,
-                    lineHeight: 1.2,
-                  }}
-                  title={
-                    claims['tapis/username'] + '@' + claims['sub'].split('@')[1]
-                  }
-                >
-                  <div
-                    style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {claims['tapis/username']}
-                  </div>
-                  <div
-                    style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    @{claims['sub'].split('@')[1]}
-                  </div>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    marginLeft: '.4rem',
-                    maxWidth: '9rem',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {'Logged Out'}
-                </div>
-              )}
-            </div>
-          )
-        }
-        onClick={handleClick} // Move the click handler here to make the entire div clickable
-        sx={{
-          height: '2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '.6rem',
-          color: '#707070',
-          //minWidth: '0rem',
-          //width: '2rem',
-          '& .MuiChip-label': {
-            display: 'flex',
-            whiteSpace: 'normal',
-          },
-        }}
-      />
 
       <Menu
         anchorEl={anchorEl}

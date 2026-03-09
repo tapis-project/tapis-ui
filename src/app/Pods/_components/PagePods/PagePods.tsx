@@ -1061,7 +1061,7 @@ Select or create a pod to get started.`;
             margin: '1rem',
             flex: 1,
             overflow: 'auto',
-            minWidth: 1200,
+            minWidth: 320,
           }}
         >
           {objId === undefined

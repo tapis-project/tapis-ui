@@ -98,10 +98,10 @@ const Dashboard: React.FC = () => {
               />
               Discover with AI
             </button>
-            <Link to="/ml-hub/platforms" className={styles['hero-btn']}>
+            {/* <Link to="/ml-hub/platforms" className={styles['hero-btn']}>
               <Icon name="search-folder" className={styles['btn-icon']} />
               Explore platforms
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

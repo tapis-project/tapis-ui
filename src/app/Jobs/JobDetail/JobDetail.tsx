@@ -251,7 +251,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
       </div>
       {job &&
         job.status! &&
-        jobTerminalStatuses.includes(job?.status!) &&
+        // jobTerminalStatuses.includes(job?.status!) &&
         renderJobOutput()}
     </QueryWrapper>
   );
