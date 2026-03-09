@@ -53,7 +53,7 @@ const initialState: PodsState = {
   activePage: 'podspage',
   podTab: 'details',
   podRootTab: 'dashboard',
-  podEditTab: 'form',
+  podEditTab: 'json',
   podDetailTab: 'derived',
   podLogTab: 'logs',
   imageTab: 'details',

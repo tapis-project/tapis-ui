@@ -232,13 +232,21 @@ Select or create a volume to get started.`;
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        flexWrap: 'nowrap',
+        flexShrink: 0,
       }}
     >
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+      >
         {leftButtons.map(
           ({ id, label, tabValue, customOnClick, icon, disabled }) => (
             <LoadingButton
-              sx={{ minWidth: '10px' }}
+              sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
               loading={id === 'refresh' && isFetching}
               key={id}
               variant="outlined"
@@ -267,7 +275,11 @@ Select or create a volume to get started.`;
           )
         )}
       </Stack>
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+      >
         {volumeTab === 'perms' && (
           <Button
             key="permissions"
@@ -292,6 +304,7 @@ Select or create a volume to get started.`;
                 : 'primary'
             }
             size="small"
+            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => {
               if (customOnClick) {
                 customOnClick();
@@ -312,7 +325,7 @@ Select or create a volume to get started.`;
   );
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -323,6 +336,7 @@ Select or create a volume to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
+          flexShrink: 0,
           overflow: 'auto',
         }}
       >
@@ -360,19 +374,40 @@ Select or create a volume to get started.`;
           </Button>
         </Stack>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flex: 1,
+          overflow: 'hidden',
+          minHeight: 0,
+        }}
+      >
+        <div
+          style={{ flexShrink: 0, overflowY: 'auto' }}
+          className={` ${styles['nav']} `}
+        >
           <NavVolumes />
         </div>
         <div
           style={{
             margin: '1rem',
             flex: 1,
-            overflow: 'auto',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
-          <div className={styles['container']}>
+          <div
+            className={styles['container']}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             <PodsCodeMirror
               editValue={
                 volumeTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
