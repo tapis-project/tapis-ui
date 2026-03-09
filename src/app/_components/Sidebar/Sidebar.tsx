@@ -361,24 +361,24 @@ const Sidebar: React.FC = () => {
                           pt: '8px',
                           pb: '8px',
                           fontWeight: 'bold',
+                          justifyContent: 'space-between',
                         }}
                       >
-                        {sectionOpenStates[section.name] ? (
-                          <ExpandLessRounded />
-                        ) : (
-                          <ExpandMoreRounded />
-                        )}
                         {expanded && (
                           <ListItemText
                             primary={section.name}
                             sx={{
-                              pl: '.5rem',
                               '& .MuiListItemText-primary': {
                                 fontWeight: 'bold',
                                 fontSize: '0.9rem',
                               },
                             }}
                           />
+                        )}
+                        {sectionOpenStates[section.name] ? (
+                          <ExpandLessRounded />
+                        ) : (
+                          <ExpandMoreRounded />
                         )}
                       </ListItemButton>
                     </div>

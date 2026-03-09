@@ -21,7 +21,11 @@ const NavSnapshots: React.FC = () => {
     );
   }
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div style={{ paddingLeft: '16px', paddingTop: '16px' }}>
+        Error: {error.message}
+      </div>
+    );
   }
 
   return (

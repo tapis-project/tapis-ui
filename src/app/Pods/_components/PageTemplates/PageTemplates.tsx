@@ -574,9 +574,17 @@ templateNavExpandedItems: ${templateNavExpandedItems}
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        flexWrap: 'nowrap',
+        flexShrink: 0,
       }}
     >
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+      >
         {leftButtons.map(
           ({ id, label, tabValue, customOnClick, icon, disabled }) => {
             // Special rendering for perms button with + add button
@@ -584,7 +592,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
               return (
                 <ButtonGroup key={id} variant="outlined" size="small">
                   <LoadingButton
-                    sx={{ minWidth: '60px' }}
+                    sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
                     variant="outlined"
                     color={templateTab === 'perms' ? 'secondary' : 'primary'}
                     size="small"
@@ -614,7 +622,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             }
             return (
               <LoadingButton
-                sx={{ minWidth: '10px' }}
+                sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
                 loading={
                   (id === 'refresh' && isFetching) ||
                   (id === 'saveTemplate' && isUpdatingTemplate)
@@ -648,7 +656,11 @@ templateNavExpandedItems: ${templateNavExpandedItems}
         )}
       </Stack>
 
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+      >
         {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
           <Button
             key={id}
@@ -659,6 +671,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                 : 'primary'
             }
             size="small"
+            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => {
               if (customOnClick) {
                 customOnClick();
@@ -1812,7 +1825,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -1823,13 +1836,25 @@ templateNavExpandedItems: ${templateNavExpandedItems}
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
+          flexShrink: 0,
           overflow: 'auto',
         }}
       >
         <PodsNavigation from="templates" id={objId} id2={tagId} />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flex: 1,
+          overflow: 'hidden',
+          minHeight: 0,
+        }}
+      >
+        <div
+          style={{ flexShrink: 0, overflowY: 'auto' }}
+          className={` ${styles['nav']} `}
+        >
           <NavTemplates />
         </div>
         <div
@@ -1837,7 +1862,9 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             margin: '1rem',
             minWidth: '200px',
             flex: 1,
-            overflow: 'auto',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {renderTabBar(
@@ -1849,7 +1876,16 @@ templateNavExpandedItems: ${templateNavExpandedItems}
           {objId &&
             (templateTab === 'detailsTag' || templateTab === 'details') && (
               <Box
-                sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 2 }}
+                sx={{
+                  mb: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  flexWrap: 'nowrap',
+                  overflowX: 'auto',
+                  overflowY: 'hidden',
+                  flexShrink: 0,
+                }}
               >
                 <FormControlLabel
                   control={
@@ -1857,13 +1893,15 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                       checked={includeDependencies}
                       onChange={(e) => setIncludeDependencies(e.target.checked)}
                       size="small"
+                      sx={{ py: 0 }}
                     />
                   }
                   label={
-                    <Typography variant="body2">
-                      Include Dependencies (show pods using this template)
+                    <Typography variant="body2" noWrap>
+                      Dependencies
                     </Typography>
                   }
+                  sx={{ flexShrink: 0 }}
                 />
                 <FormControlLabel
                   control={
@@ -1871,18 +1909,28 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                       checked={includeConfigs}
                       onChange={(e) => setIncludeConfigs(e.target.checked)}
                       size="small"
+                      sx={{ py: 0 }}
                     />
                   }
                   label={
-                    <Typography variant="body2">
-                      View Configs (show config content in volume mounts)
+                    <Typography variant="body2" noWrap>
+                      View Configs
                     </Typography>
                   }
+                  sx={{ flexShrink: 0 }}
                 />
               </Box>
             )}
 
-          <div className={styles['container']}>
+          <div
+            className={styles['container']}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             <div>
               {/* Show update status when editing template */}
               {isEditingTemplate && templateTab === 'details' && objId && (

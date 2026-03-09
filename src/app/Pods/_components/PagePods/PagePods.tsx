@@ -412,7 +412,9 @@ Select or create a pod to get started.`;
         variant="outlined"
         size="small"
         color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
-        onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
+        onClick={() =>
+          dispatch(updateState({ podRootTab: 'createPod', podEditTab: 'json' }))
+        }
         sx={{ whiteSpace: 'nowrap' }}
       >
         Create Pod
@@ -442,18 +444,6 @@ Select or create a pod to get started.`;
         <Button
           onClick={() => {
             dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
-            );
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
-        >
-          form
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(
               updateState({ podRootTab: 'createPod', podEditTab: 'json' })
             );
           }}
@@ -462,6 +452,18 @@ Select or create a pod to get started.`;
           variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
         >
           json
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
+            );
+          }}
+          color={podEditTab === 'form' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+        >
+          form
         </Button>
       </ButtonGroup>
     ),
@@ -524,7 +526,7 @@ Select or create a pod to get started.`;
         color="primary"
         size="small"
         onClick={() => {
-          dispatch(updateState({ podTab: 'edit' }));
+          dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
         }}
         sx={{ minWidth: '60px', height: '32px', whiteSpace: 'nowrap' }}
       >
@@ -554,16 +556,6 @@ Select or create a pod to get started.`;
         </Button>
         <Button
           onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
-        >
-          form
-        </Button>
-        <Button
-          onClick={() => {
             dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
           }}
           color={podEditTab === 'json' ? 'secondary' : 'primary'}
@@ -571,6 +563,16 @@ Select or create a pod to get started.`;
           variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
         >
           json
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
+          }}
+          color={podEditTab === 'form' ? 'secondary' : 'primary'}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+        >
+          form
         </Button>
       </ButtonGroup>
     ),
@@ -910,11 +912,13 @@ Select or create a pod to get started.`;
                   );
                   invalidateDerived();
                 }}
+                sx={{ py: 0 }}
               />
             }
             label="Resolve Secrets"
             sx={{
               ml: 1,
+              height: '32px',
               '& .MuiFormControlLabel-label': { fontSize: '0.875rem' },
             }}
           />
@@ -1015,12 +1019,24 @@ Select or create a pod to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          flexWrap: 'nowrap',
+          flexShrink: 0,
         }}
       >
-        <Stack spacing={2} direction="row">
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+        >
           {leftButtons.map((btn, idx) => btn)}
         </Stack>
-        <Stack spacing={2} direction="row">
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+        >
           {rightButtons.map((btn, idx) => btn)}
         </Stack>
       </div>
@@ -1028,7 +1044,7 @@ Select or create a pod to get started.`;
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -1039,6 +1055,7 @@ Select or create a pod to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
+          flexShrink: 0,
           overflow: 'auto',
         }}
       >
@@ -1049,25 +1066,39 @@ Select or create a pod to get started.`;
         style={{
           display: 'flex',
           flexDirection: 'row',
-          overflow: 'auto',
+          flex: 1,
+          overflow: 'hidden',
           minHeight: 0,
         }}
       >
-        <div style={{ flexShrink: 0 }} className={` ${styles['nav']} `}>
+        <div
+          style={{ flexShrink: 0, overflowY: 'auto' }}
+          className={` ${styles['nav']} `}
+        >
           <NavPods />
         </div>
         <div
           style={{
             margin: '1rem',
             flex: 1,
-            overflow: 'auto',
-            minWidth: 320,
+            overflow: 'hidden',
+            minWidth: 352,
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {objId === undefined
             ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
             : renderTabBar(detailsLeftButtons, detailsRightButtons)}
-          <div className={styles['container']}>
+          <div
+            className={styles['container']}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             {/* Permissions chips when viewing perms */}
             {podTab === 'perms' && objId !== undefined && (
               <Box sx={{ px: 1, py: 1, mb: 1 }}>
