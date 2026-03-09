@@ -57,7 +57,10 @@ function buildLLMSystemPrompt(): string {
     'Choose the most relevant models ONLY from the provided list; do not invent models. ' +
     'Prioritize exact task/pipeline_tag match, then library compatibility, then tag overlap, then popularity and recency. ' +
     'Return a strict JSON object with shape: ' +
-    '{"recommendations":[{"id":string,"rationale":string}],"notes":string}.'
+    '{"recommendations":[{"id":string,"rationale":string}],"notes":string}.\n\n' +
+    'Formatting: Your responses are displayed in a chat panel with limited width. ' +
+    'Keep lines in code blocks, JSON, and examples to roughly 80 characters or fewer. ' +
+    'For prose, write naturally but prefer shorter paragraphs and concise sentences.'
   );
 }
 

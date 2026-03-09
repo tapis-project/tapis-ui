@@ -21,15 +21,30 @@ const ChatSelector: React.FC = () => {
   };
 
   return (
-    <FormControl size="small" sx={{ minWidth: 180 }}>
+    <FormControl size="small" variant="standard" sx={{ minWidth: 0 }}>
       <Select
         value={activeChatId}
         onChange={handleChange}
         displayEmpty
+        disableUnderline
         sx={{
-          fontSize: '0.875rem',
+          fontSize: '1rem',
+          fontWeight: 700,
+          color: 'primary.main',
+          bgcolor: 'primary.50',
+          borderRadius: 1,
+          px: 1,
           '& .MuiSelect-select': {
-            py: 0.75,
+            py: 0.5,
+            pr: '28px !important',
+            pl: 0.5,
+          },
+          '& .MuiSelect-icon': {
+            color: 'primary.main',
+            right: 4,
+          },
+          '&:hover': {
+            bgcolor: 'primary.100',
           },
         }}
       >
