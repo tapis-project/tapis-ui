@@ -1044,7 +1044,7 @@ Select or create a pod to get started.`;
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div>
       <div
         style={{
           paddingTop: '.4rem',
@@ -1055,7 +1055,6 @@ Select or create a pod to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
-          flexShrink: 0,
           overflow: 'auto',
         }}
       >
@@ -1066,39 +1065,25 @@ Select or create a pod to get started.`;
         style={{
           display: 'flex',
           flexDirection: 'row',
-          flex: 1,
-          overflow: 'hidden',
+          overflow: 'auto',
           minHeight: 0,
         }}
       >
-        <div
-          style={{ flexShrink: 0, overflowY: 'auto' }}
-          className={` ${styles['nav']} `}
-        >
+        <div style={{ flexShrink: 0 }} className={` ${styles['nav']} `}>
           <NavPods />
         </div>
         <div
           style={{
             margin: '1rem',
             flex: 1,
-            overflow: 'hidden',
+            overflow: 'auto',
             minWidth: 352,
-            display: 'flex',
-            flexDirection: 'column',
           }}
         >
           {objId === undefined
             ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
             : renderTabBar(detailsLeftButtons, detailsRightButtons)}
-          <div
-            className={styles['container']}
-            style={{
-              flex: 1,
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
+          <div className={styles['container']}>
             {/* Permissions chips when viewing perms */}
             {podTab === 'perms' && objId !== undefined && (
               <Box sx={{ px: 1, py: 1, mb: 1 }}>

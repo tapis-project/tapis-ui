@@ -1825,7 +1825,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div>
       <div
         style={{
           paddingTop: '.4rem',
@@ -1836,25 +1836,13 @@ templateNavExpandedItems: ${templateNavExpandedItems}
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
-          flexShrink: 0,
           overflow: 'auto',
         }}
       >
         <PodsNavigation from="templates" id={objId} id2={tagId} />
       </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          flex: 1,
-          overflow: 'hidden',
-          minHeight: 0,
-        }}
-      >
-        <div
-          style={{ flexShrink: 0, overflowY: 'auto' }}
-          className={` ${styles['nav']} `}
-        >
+      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
+        <div style={{}} className={` ${styles['nav']} `}>
           <NavTemplates />
         </div>
         <div
@@ -1862,9 +1850,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             margin: '1rem',
             minWidth: '200px',
             flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
+            overflow: 'auto',
           }}
         >
           {renderTabBar(
@@ -1880,10 +1866,8 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                   mb: 1,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
-                  flexWrap: 'nowrap',
-                  overflowX: 'auto',
-                  overflowY: 'hidden',
+                  gap: 2,
+                  flexWrap: 'wrap',
                   flexShrink: 0,
                 }}
               >
@@ -1898,10 +1882,10 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                   }
                   label={
                     <Typography variant="body2" noWrap>
-                      Dependencies
+                      Include Dependencies
                     </Typography>
                   }
-                  sx={{ flexShrink: 0 }}
+                  sx={{ mr: 0 }}
                 />
                 <FormControlLabel
                   control={
@@ -1917,20 +1901,12 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                       View Configs
                     </Typography>
                   }
-                  sx={{ flexShrink: 0 }}
+                  sx={{ mr: 0 }}
                 />
               </Box>
             )}
 
-          <div
-            className={styles['container']}
-            style={{
-              flex: 1,
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
+          <div className={styles['container']}>
             <div>
               {/* Show update status when editing template */}
               {isEditingTemplate && templateTab === 'details' && objId && (

@@ -325,7 +325,7 @@ Select or create a volume to get started.`;
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div>
       <div
         style={{
           paddingTop: '.4rem',
@@ -336,7 +336,6 @@ Select or create a volume to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
-          flexShrink: 0,
           overflow: 'auto',
         }}
       >
@@ -374,40 +373,19 @@ Select or create a volume to get started.`;
           </Button>
         </Stack>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          flex: 1,
-          overflow: 'hidden',
-          minHeight: 0,
-        }}
-      >
-        <div
-          style={{ flexShrink: 0, overflowY: 'auto' }}
-          className={` ${styles['nav']} `}
-        >
+      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
+        <div style={{}} className={` ${styles['nav']} `}>
           <NavVolumes />
         </div>
         <div
           style={{
             margin: '1rem',
             flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
+            overflow: 'auto',
           }}
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
-          <div
-            className={styles['container']}
-            style={{
-              flex: 1,
-              minHeight: 0,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
+          <div className={styles['container']}>
             <PodsCodeMirror
               editValue={
                 volumeTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
