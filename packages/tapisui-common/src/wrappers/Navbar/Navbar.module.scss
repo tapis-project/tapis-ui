@@ -6,7 +6,9 @@ $core-portal-color-primary: #9d85ef;
   list-style: none;
   flex-direction: column;
   flex: 1;
-  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .nav-link {

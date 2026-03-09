@@ -33,7 +33,8 @@
   flex-shrink: 0;
   min-width: 13rem;
   max-width: 18rem;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .secondaryText {
   font-size: 0.8rem;

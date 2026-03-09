@@ -37,7 +37,16 @@ const Router: React.FC = () => {
           },
         }: RouteComponentProps<{ systemId: string; systemPath?: string }>) => {
           return (
-            <div style={{ margin: '.5rem' }}>
+            <div
+              style={{
+                margin: '.5rem',
+                flex: 1,
+                minHeight: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
               <FileListing
                 systemId={systemId}
                 path={systemPath ?? '/'}

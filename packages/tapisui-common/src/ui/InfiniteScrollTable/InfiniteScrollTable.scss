@@ -6,14 +6,18 @@
   position: relative;
   align-items: stretch;
   width: 100%;
-  overflow: scroll;
-  max-height: inherit; /* inherit max-height from parent wrapper */
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   font-size: 0.78em;
 
   thead {
     user-select: none;
     color: var(--global-color-primary--x-dark);
     border-bottom: 1px solid #707070;
+    flex-shrink: 0;
 
     .-sort-asc,
     .sort-desc {
@@ -28,7 +32,9 @@
   }
 
   tbody {
-    overflow-y: scroll;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
     tr:not([class='-status']) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
@@ -133,5 +139,4 @@ Styleguide Objects.FixedHeaderTable
   display: block;
   overflow: auto;
   width: 100%;
-  max-height: inherit; /* inherit max-height from InfiniteScrollTable */
 }
