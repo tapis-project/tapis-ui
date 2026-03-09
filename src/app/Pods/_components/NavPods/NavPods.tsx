@@ -74,8 +74,6 @@ const NavPods: React.FC = () => {
         style={{
           //borderBottom: '1px solid #CCCCCC',
           borderRight: '1px solid #CCCCCC',
-          height: 'calc(100vh - 140px)', // Make the nav take full viewport height
-          overflowY: 'auto', // Enable vertical scrolling only for this div
         }}
         //className={styles['scroll-container']}
       >

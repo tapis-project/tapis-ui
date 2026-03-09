@@ -5,26 +5,23 @@ import {
   PageLayout,
   LayoutBody,
   LayoutNavWrapper,
-  SectionHeader,
+  LayoutHeader,
 } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
-import styles from './Layout.module.scss';
 import { JobsHelp } from 'app/_components/Help';
 
 const Layout: React.FC = () => {
   const header = (
-    <SectionHeader>
-      <span className={`${styles['Jobs']}`}>
-        <span>
-          <Link to="/jobs" style={{ color: '#444444' }}>
-            Jobs
-          </Link>
-        </span>
-        <span className={`${styles['Jobs-Help']}`}>
+    <LayoutHeader>
+      <span>
+        <Link to="/jobs" style={{ color: '#444444', textDecoration: 'none' }}>
+          Jobs
+        </Link>
+        <span style={{ marginLeft: '16px' }}>
           <JobsHelp />
         </span>
       </span>
-    </SectionHeader>
+    </LayoutHeader>
   );
 
   const sidebar = (
