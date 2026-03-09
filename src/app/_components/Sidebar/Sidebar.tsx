@@ -19,7 +19,6 @@ import { LoadingButton as Button } from '@mui/lab';
 import {
   Menu,
   Collapse,
-  List,
   ListItemButton,
   ListItemText,
   ListItemIcon,
@@ -41,18 +40,7 @@ import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { Tenants as Hooks } from '@tapis/tapisui-hooks';
 import { Link, useHistory } from 'react-router-dom';
 
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import {
-  QueryWrapper,
-  PageLayout,
-  Breadcrumbs,
-  breadcrumbsFromPathname,
-} from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { FloatingChatButton } from 'app/_components';
 import { ChatContext } from 'app/_context/chat';
 
@@ -62,11 +50,11 @@ type SidebarItems = {
 
 const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
-  const { extension } = useExtension();
+  const { extension, extensionName } = useExtension();
   const chatContextValue = useContext(ChatContext);
+  const isIcicleExtension = extensionName === '@icicle/tapisui-extension';
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [sectionOpenStates, setSectionOpenStates] = useState<{
     [key: string]: boolean;
@@ -298,6 +286,9 @@ const Sidebar: React.FC = () => {
       />
 
       <Navbar>
+        {isIcicleExtension &&
+          accessToken &&
+          renderSidebarItem('/home', 'globe', 'Portal Home(beta)')}
         {renderSidebarItem('/', 'dashboard', 'Dashboard')}
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
@@ -306,9 +297,12 @@ const Sidebar: React.FC = () => {
               // Beta sidebar with sections
               <>
                 {/* No Section items - always visible */}
-                {extension.betaSidebar.noSection?.mainServices?.map(
-                  (serviceId: string) => sidebarItems[serviceId]
-                )}
+                {extension.betaSidebar.noSection?.mainServices
+                  ?.filter(
+                    (serviceId: string) =>
+                      !(isIcicleExtension && serviceId === 'home')
+                  )
+                  .map((serviceId: string) => sidebarItems[serviceId])}
                 {extension.betaSidebar.noSection?.secondaryServices &&
                   extension.betaSidebar.noSection.secondaryServices.length >
                     0 && (
@@ -339,9 +333,12 @@ const Sidebar: React.FC = () => {
                         </ListItemButton>
                       </div>
                       <Collapse in={moreOpenStates['noSection']}>
-                        {extension.betaSidebar.noSection.secondaryServices.map(
-                          (serviceId: string) => sidebarItems[serviceId]
-                        )}
+                        {extension.betaSidebar.noSection.secondaryServices
+                          .filter(
+                            (serviceId: string) =>
+                              !(isIcicleExtension && serviceId === 'home')
+                          )
+                          .map((serviceId: string) => sidebarItems[serviceId])}
                       </Collapse>
                     </>
                   )}
@@ -387,9 +384,12 @@ const Sidebar: React.FC = () => {
                     </div>
                     <Collapse in={sectionOpenStates[section.name]}>
                       {/* Main services in section */}
-                      {section.mainServices.map(
-                        (serviceId: string) => sidebarItems[serviceId]
-                      )}
+                      {section.mainServices
+                        .filter(
+                          (serviceId: string) =>
+                            !(isIcicleExtension && serviceId === 'home')
+                        )
+                        .map((serviceId: string) => sidebarItems[serviceId])}
 
                       {/* Secondary services in section */}
                       {section.secondaryServices &&
@@ -429,9 +429,14 @@ const Sidebar: React.FC = () => {
                               </ListItemButton>
                             </div>
                             <Collapse in={moreOpenStates[section.name]}>
-                              {section.secondaryServices.map(
-                                (serviceId: string) => sidebarItems[serviceId]
-                              )}
+                              {section.secondaryServices
+                                .filter(
+                                  (serviceId: string) =>
+                                    !(isIcicleExtension && serviceId === 'home')
+                                )
+                                .map(
+                                  (serviceId: string) => sidebarItems[serviceId]
+                                )}
                             </Collapse>
                           </>
                         )}

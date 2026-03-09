@@ -146,7 +146,7 @@ export class Extension {
 
     const registeredService: RegisteredService = {
       ...service,
-      route: `/${service.id}`,
+      route: service.route || `/${service.id}`,
     };
 
     this.serviceMap[service.id] = registeredService;

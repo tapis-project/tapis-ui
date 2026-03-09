@@ -18,6 +18,13 @@ import {
   FoodFlowPortal,
   FEAST,
   FoodSecuritySandbox,
+  PortalHome,
+  DomainAgnosticAI,
+  DomainAgnosticCI,
+  DomainSpecificServices,
+  DigitalAgAaaS,
+  AnimalEcologyAaaS,
+  FoodLogisticsAaaS,
 } from './pages';
 
 const extension = createExtension({
@@ -41,6 +48,13 @@ const extension = createExtension({
     'jupyter-lab',
     'analytics',
     'training-catalog',
+    'home',
+    'domain-agnostic-ai',
+    'domain-agnostic-ci',
+    'domain-specific-services',
+    'digital-ag-aaas',
+    'animal-ecology-aaas',
+    'food-logistics-aaas',
     'food-flow-portal',
     'feast',
     'food-security-sandbox',
@@ -55,6 +69,40 @@ const extension = createExtension({
     //'data-labeler',
     //'smart-scheduler',
   ],
+  betaSidebar: {
+    enabled: true,
+    sections: [],
+    noSection: {
+      mainServices: ['home'],
+      secondaryServices: [
+        'workflows',
+        'pods',
+        'ml-hub',
+        'ml-edge',
+        'open-web-ui',
+        'jupyter-lab',
+        'analytics',
+        'training-catalog',
+        'domain-agnostic-ai',
+        'domain-agnostic-ci',
+        'domain-specific-services',
+        'digital-ag-aaas',
+        'animal-ecology-aaas',
+        'food-logistics-aaas',
+        'food-flow-portal',
+        'feast',
+        'food-security-sandbox',
+        'component-catalog',
+        'ckn-dashboard',
+        'openpass',
+        'systems',
+        'jobs',
+        'files',
+        'apps',
+        'harvest',
+      ],
+    },
+  },
   authMethods: ['implicit', 'password'],
   logo: {
     filePath: './logo_icicle.png',
@@ -75,6 +123,55 @@ const extension = createExtension({
 });
 
 // Order of registration determines sidebar order!!
+extension.registerService({
+  id: 'home',
+  sidebarDisplayName: 'Portal Home (beta)',
+  iconName: 'globe',
+  component: PortalHome,
+});
+
+extension.registerService({
+  id: 'domain-agnostic-ai',
+  sidebarDisplayName: 'ICICLE-AIaaS',
+  iconName: 'globe',
+  component: DomainAgnosticAI,
+});
+
+extension.registerService({
+  id: 'domain-agnostic-ci',
+  sidebarDisplayName: 'ICICLE-CIaaS',
+  iconName: 'globe',
+  component: DomainAgnosticCI,
+});
+
+extension.registerService({
+  id: 'domain-specific-services',
+  sidebarDisplayName: 'ICICLE-DOaaS',
+  iconName: 'globe',
+  component: DomainSpecificServices,
+});
+
+extension.registerService({
+  id: 'digital-ag-aaas',
+  sidebarDisplayName: 'ICICLE-DAaaS',
+  iconName: 'globe',
+  component: DigitalAgAaaS,
+});
+
+extension.registerService({
+  id: 'animal-ecology-aaas',
+  sidebarDisplayName: 'ICICLE-AEaaS',
+  iconName: 'globe',
+  component: AnimalEcologyAaaS,
+});
+
+extension.registerService({
+  id: 'food-logistics-aaas',
+  sidebarDisplayName: 'ICICLE-FLSaaS',
+  iconName: 'globe',
+  component: FoodLogisticsAaaS,
+});
+
 extension.registerService({
   id: 'ml-edge',
   sidebarDisplayName: 'ML Edge',
