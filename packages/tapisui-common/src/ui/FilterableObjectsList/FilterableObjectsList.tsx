@@ -563,7 +563,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   };
 
   return (
-    <div style={{ maxHeight: '100%', minHeight: '100%', overflowY: 'auto' }}>
+    <div style={{ maxHeight: '100%', minHeight: '100%', minWidth: '200px' }}>
       {title && (
         <>
           <List
@@ -604,6 +604,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   onClick={() => {
                     setState({ ...state, filterScope: 'filter' });
                   }}
+                  sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
                   Filter
                 </Button>
@@ -618,6 +619,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   onClick={() => {
                     setState({ ...state, filterScope: 'group' });
                   }}
+                  sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
                   Group
                 </Button>
@@ -632,6 +634,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   onClick={() => {
                     setState({ ...state, filterScope: 'order' });
                   }}
+                  sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
                   Order
                 </Button>
@@ -1147,7 +1150,15 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                           );
                         })
                       ) : (
-                        <i style={{ padding: '16px' }}>No objects found</i>
+                        <i
+                          style={{
+                            padding: '16px',
+                            display: 'block',
+                            paddingTop: '8px',
+                          }}
+                        >
+                          No objects found
+                        </i>
                       )}
                     </List>
                   );
