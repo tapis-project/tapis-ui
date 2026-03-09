@@ -11,7 +11,17 @@
 
 .constrain {
   max-height: 100%;
+  height: 100%;
   overflow: hidden;
+  flex-direction: column;
+
+  .detail {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
 }
 
 .nav {

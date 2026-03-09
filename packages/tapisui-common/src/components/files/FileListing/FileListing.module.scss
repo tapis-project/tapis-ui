@@ -1,12 +1,7 @@
 .file-list,
 .file-list-select {
-  overflow-y: hidden;
-  max-height: inherit;
   td > a {
     width: initial;
-  }
-  tbody {
-    height: inherit;
   }
 }
 
