@@ -236,7 +236,7 @@ const LayoutContent: React.FC = () => {
               : chatConfig.emptyStateContent
           }
           resizable
-          initialWidth={520}
+          initialWidth={580}
           minWidth={360}
           maxWidth={960}
           enableExport
