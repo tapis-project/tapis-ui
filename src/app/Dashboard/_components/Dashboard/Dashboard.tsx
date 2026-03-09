@@ -69,7 +69,10 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 const Dashboard: React.FC = () => {
   const { accessToken, claims, basePath, setAccessToken } = useTapisConfig();
   const navigate = useHistory();
-  const { extension } = useExtension();
+  // TODO All tenant-specific functionality must be refactored into their respective
+  // extenstions
+  const { extension, extensionName } = useExtension();
+  const isIcicle = extensionName === '@icicle/tapisui-extension';
 
   // Hidden dev token input — revealed by long-pressing "TAPIS" for 3s
   const isDevHost =
