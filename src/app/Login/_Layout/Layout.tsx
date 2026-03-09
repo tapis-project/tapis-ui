@@ -4,14 +4,19 @@ import { Location } from 'history';
 import { Login as TapisLogin } from '../_components';
 import { SectionHeader, PageLayout } from '@tapis/tapisui-common';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useExtension } from 'extensions';
 
 const Layout: React.FC = () => {
   const { accessToken, basePath } = useTapisConfig();
+  const { extensionName } = useExtension();
   let location = useLocation<{ from: Location }>();
   let { from } = location.state || { from: { pathname: '/' } };
-
   if (accessToken?.access_token) {
-    return <Redirect to={from} />;
+    return (
+      <Redirect
+        to={extensionName === '@icicle/tapisui-extension' ? '/home' : from}
+      />
+    );
   }
 
   const body = (
