@@ -289,7 +289,11 @@ const Sidebar: React.FC = () => {
         {isIcicleExtension &&
           accessToken &&
           renderSidebarItem('/home', 'globe', 'Portal Home(beta)')}
-        {renderSidebarItem('/', 'dashboard', 'Dashboard')}
+        {renderSidebarItem(
+          extensionName === '@icicle/tapisui-extension' ? '/dashboard' : '/',
+          'dashboard',
+          'Dashboard'
+        )}
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
