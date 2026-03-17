@@ -7,6 +7,7 @@ import * as Pods from './pods';
 import * as Systems from './systems';
 import * as Tenants from './tenants';
 import * as Workflows from './workflows';
+export { registerModuleHeaders } from './utils';
 
 export {
   Apps,
