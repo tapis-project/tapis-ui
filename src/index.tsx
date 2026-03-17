@@ -14,6 +14,15 @@ import { extension as scopedExtension } from '@scoped/tapisui-extension';
 import { extension as demoExtension } from '@tapis/tapisui-extension-demo';
 import { NotificationsProvider } from 'app/_components/Notifications';
 import Theme from './theme'; // Import the Theme component
+import { registerModuleHeaders } from '@tapis/tapisui-api';
+import { Pods as PodsModule } from '@tapis/tapis-typescript';
+import { getPodsAdminMode } from 'utils/podsAdminMode';
+
+// Register Pods admin header provider — injects X-Pods-Admin: true
+// on every Pods API call when admin mode is active.
+registerModuleHeaders(PodsModule, () =>
+  getPodsAdminMode() ? { 'X-Pods-Admin': 'true' } : {}
+);
 
 const initializedExtensions: { [key: string]: Extension } = {
   '@icicle/tapisui-extension': icicleExtension,

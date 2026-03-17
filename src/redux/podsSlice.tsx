@@ -36,6 +36,9 @@ export interface PodsState {
   setDetailsDropdownOpen?: boolean;
   setLogsDropdownOpen?: boolean;
 
+  // Pods admin mode — opt-in per-request via X-Pods-Admin header
+  podsAdminMode: boolean;
+
   // Derived pod options
   derivedResolveSecrets?: boolean;
 
@@ -69,6 +72,8 @@ const initialState: PodsState = {
   templateNavSelectedItems: '',
   setDetailsDropdownOpen: false,
   setLogsDropdownOpen: false,
+  // Pods admin mode
+  podsAdminMode: false,
   // Derived pod options
   derivedResolveSecrets: false,
   // Persisted pod creation data

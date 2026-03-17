@@ -1,6 +1,12 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useSyncExternalStore,
+} from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useQueryClient } from 'react-query';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
@@ -14,6 +20,7 @@ import {
   Visibility,
   ContentCopy,
   ChatBubbleOutline,
+  AdminPanelSettings,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -31,6 +38,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Switch,
 } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { EditorView } from 'codemirror';
@@ -43,6 +51,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { FloatingChatButton } from 'app/_components';
 import { ChatContext } from 'app/_context/chat';
+import {
+  getPodsAdminMode,
+  setPodsAdminMode,
+  subscribePodsAdminMode,
+} from 'utils/podsAdminMode';
 
 type SidebarItems = {
   [key: string]: any;
@@ -52,6 +65,11 @@ const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
   const { extension, extensionName } = useExtension();
   const chatContextValue = useContext(ChatContext);
+  const queryClient = useQueryClient();
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
   const isIcicleExtension = extensionName === '@icicle/tapisui-extension';
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
@@ -665,6 +683,32 @@ const Sidebar: React.FC = () => {
             <ContentCopy fontSize="small" />
           </ListItemIcon>
           <ListItemText>Copy Access Token</ListItemText>
+        </MenuItem>
+        <MenuItem
+          disabled={!(claims && claims['sub'])}
+          onClick={(e) => {
+            e.stopPropagation();
+            setPodsAdminMode(!podsAdminMode);
+            queryClient.invalidateQueries({
+              predicate: (q) =>
+                typeof q.queryKey[0] === 'string' &&
+                q.queryKey[0].startsWith('pods/'),
+            });
+          }}
+        >
+          <ListItemIcon>
+            <AdminPanelSettings
+              fontSize="small"
+              color={podsAdminMode ? 'warning' : 'inherit'}
+            />
+          </ListItemIcon>
+          <ListItemText>Pods Admin</ListItemText>
+          <Switch
+            size="small"
+            checked={podsAdminMode}
+            color="warning"
+            sx={{ ml: 1 }}
+          />
         </MenuItem>
         <MenuItem
           onClick={() => {
