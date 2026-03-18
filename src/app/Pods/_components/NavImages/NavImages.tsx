@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useSyncExternalStore } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import PodsLoadingText from '../PodsLoadingText';
+import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
 
 const NavImages: React.FC = () => {
   const { url } = useRouteMatch();
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
   // Get a pods listing with default request params
   const { data, isLoading, error } = Hooks.useListImages();
   const definitions: Array<Pods.ImageResponseModel> = data?.result ?? [];
   const loadingText = PodsLoadingText();
+
+  // Extract admin context from metadata when admin mode is active
+  const adminContext = (data as any)?.metadata?.admin_context;
+  const userAccessibleImages: Set<string> | undefined =
+    podsAdminMode && adminContext?.user_accessible_images
+      ? new Set<string>(adminContext.user_accessible_images)
+      : undefined;
 
   if (isLoading) {
     return (
@@ -40,6 +52,12 @@ const NavImages: React.FC = () => {
               to={`/pods/images/${image.image}`}
               icon="image"
               key={image.image}
+              accentLeft={
+                userAccessibleImages
+                  ? !userAccessibleImages.has(image.image)
+                  : false
+              }
+              accentLeftColor="#F69723"
             >
               {`${image.image}`}
             </NavItem>
