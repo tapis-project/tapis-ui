@@ -25,7 +25,7 @@ export const NavItem: React.FC<
   longPressMs = 3000,
 }) => {
   const accentStyle: React.CSSProperties = accentLeft
-    ? { borderLeft: `.4rem solid ${accentLeftColor ?? '#F69723'}` }
+    ? { boxShadow: `inset 0.2rem 0 0 0 ${accentLeftColor ?? '#F69723'}` }
     : {};
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
