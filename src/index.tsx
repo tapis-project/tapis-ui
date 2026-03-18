@@ -20,8 +20,10 @@ import { getPodsAdminMode } from 'utils/podsAdminMode';
 
 // Register Pods admin header provider — injects X-Pods-Admin: true
 // on every Pods API call when admin mode is active.
-registerModuleHeaders(PodsModule, () =>
-  getPodsAdminMode() ? { 'X-Pods-Admin': 'true' } : {}
+registerModuleHeaders(
+  PodsModule,
+  (): Record<string, string> =>
+    getPodsAdminMode() ? { 'X-Pods-Admin': 'true' } : {}
 );
 
 const initializedExtensions: { [key: string]: Extension } = {
