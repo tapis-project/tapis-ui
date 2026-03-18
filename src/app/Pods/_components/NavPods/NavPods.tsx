@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 import {
   useHistory,
@@ -20,16 +20,28 @@ import {
   Lock,
   LockOpen,
 } from '@mui/icons-material';
+import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
 
 const NavPods: React.FC = () => {
   const { url } = useRouteMatch();
   const history = useHistory();
 
   const params = useParams<{ podId?: string }>();
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
 
   const { data, isLoading, error } = Hooks.useListPods();
   const definitions: Array<Pods.PodResponseModel> = data?.result ?? [];
   const loadingText = PodsLoadingText();
+
+  // Extract admin context from metadata when admin mode is active
+  const adminContext = (data as any)?.metadata?.admin_context;
+  const userAccessibleIds: Set<string> | undefined =
+    podsAdminMode && adminContext?.user_accessible_ids
+      ? new Set<string>(adminContext.user_accessible_ids)
+      : undefined;
 
   if (isLoading) {
     return (
@@ -103,6 +115,14 @@ const NavPods: React.FC = () => {
           listItemIconStyle={{ minWidth: '42px' }}
           middleClickLink={(object: any) =>
             object.pod_id ? `/#/pods/${object.pod_id}` : undefined
+          }
+          itemStyle={
+            userAccessibleIds
+              ? (object: any) =>
+                  !userAccessibleIds.has(object.pod_id)
+                    ? { boxShadow: 'inset 0.2rem 0 0 0 #F69723' }
+                    : undefined
+              : undefined
           }
           groups={[
             {

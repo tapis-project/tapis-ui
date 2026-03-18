@@ -20,7 +20,6 @@ import {
   Visibility,
   ContentCopy,
   ChatBubbleOutline,
-  AdminPanelSettings,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -38,7 +37,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Switch,
 } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { EditorView } from 'codemirror';
@@ -114,10 +112,17 @@ const Sidebar: React.FC = () => {
   const renderSidebarItem = (
     to: string,
     icon: string | undefined,
-    text: string
+    text: string,
+    accent?: { accentLeft?: boolean; accentLeftColor?: string }
   ) => {
     return (
-      <NavItem to={to} icon={icon} key={uuidv4()}>
+      <NavItem
+        to={to}
+        icon={icon}
+        key={uuidv4()}
+        accentLeft={accent?.accentLeft}
+        accentLeftColor={accent?.accentLeftColor}
+      >
         {expanded ? text : ''}
       </NavItem>
     );
@@ -130,7 +135,26 @@ const Sidebar: React.FC = () => {
     apps: renderSidebarItem('/apps', 'applications', 'Apps'),
     jobs: renderSidebarItem('/jobs', 'jobs', 'Jobs'),
     workflows: renderSidebarItem('/workflows', 'publications', 'Workflows'),
-    pods: renderSidebarItem('/pods', 'visualization', 'Pods'),
+    pods: (
+      <NavItem
+        to="/pods"
+        icon="visualization"
+        key="pods-nav"
+        accentLeft={podsAdminMode}
+        accentLeftColor="#F69723"
+        onLongPress={() => {
+          setPodsAdminMode(!podsAdminMode);
+          queryClient.invalidateQueries({
+            predicate: (q) =>
+              typeof q.queryKey[0] === 'string' &&
+              q.queryKey[0].startsWith('pods/'),
+          });
+        }}
+        longPressMs={1200}
+      >
+        {expanded ? 'Pods' : ''}
+      </NavItem>
+    ),
     'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
   };
@@ -683,32 +707,6 @@ const Sidebar: React.FC = () => {
             <ContentCopy fontSize="small" />
           </ListItemIcon>
           <ListItemText>Copy Access Token</ListItemText>
-        </MenuItem>
-        <MenuItem
-          disabled={!(claims && claims['sub'])}
-          onClick={(e) => {
-            e.stopPropagation();
-            setPodsAdminMode(!podsAdminMode);
-            queryClient.invalidateQueries({
-              predicate: (q) =>
-                typeof q.queryKey[0] === 'string' &&
-                q.queryKey[0].startsWith('pods/'),
-            });
-          }}
-        >
-          <ListItemIcon>
-            <AdminPanelSettings
-              fontSize="small"
-              color={podsAdminMode ? 'warning' : 'inherit'}
-            />
-          </ListItemIcon>
-          <ListItemText>Pods Admin</ListItemText>
-          <Switch
-            size="small"
-            checked={podsAdminMode}
-            color="warning"
-            sx={{ ml: 1 }}
-          />
         </MenuItem>
         <MenuItem
           onClick={() => {
