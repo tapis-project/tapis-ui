@@ -13,5 +13,6 @@ export { default as VolumeWizardEdit } from './Wizards/VolumeWizardEdit';
 export { default as SnapshotWizard } from './Wizards/SnapshotWizard';
 export { default as SnapshotWizardEdit } from './Wizards/SnapshotWizardEdit';
 export { default as ImageWizard } from './Wizards/ImageWizard';
+export { default as ImageWizardEdit } from './Wizards/ImageWizardEdit';
 export { default as PodWizard } from './Wizards/PodWizard';
 export { default as PodWizardEdit } from './Wizards/PodWizardEdit';

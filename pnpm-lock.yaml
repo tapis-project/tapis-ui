@@ -6,6 +6,7 @@ settings:
 
 overrides:
   glob: ^9.0.0
+  '@codemirror/state': 6.6.0
 
 importers:
 
@@ -266,7 +267,7 @@ importers:
         version: 0.0.7
       '@tapis/tapisui-extension-devtools':
         specifier: file:./packages/tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:packages/tapisui-extension-devtools
       '@testing-library/react':
         specifier: ^14.2.1
         version: 14.3.1(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -433,7 +434,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.130
@@ -457,7 +458,7 @@ importers:
         version: file:packages/tapisui-common(@babel/runtime@7.29.2)(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@18.3.1(react@18.3.1))(rollup@4.59.0)(vite@6.3.5(@types/node@18.19.130)(sass@1.98.0))
       '@tapis/tapisui-extensions-core':
         specifier: file:../tapisui-extensions-core
-        version: file:packages/tapisui-extensions-core
+        version: link:../tapisui-extensions-core
       '@tapis/tapisui-hooks':
         specifier: file:../tapisui-hooks
         version: file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)
@@ -467,7 +468,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.130
@@ -543,7 +544,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.130
@@ -845,7 +846,7 @@ importers:
     devDependencies:
       '@tapis/tapisui-extension-devtools':
         specifier: file:../tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:../tapisui-extension-devtools
       '@types/node':
         specifier: ^16.0.0
         version: 16.18.126
@@ -869,7 +870,7 @@ importers:
         version: 0.0.65
       '@tapis/tapisui-api':
         specifier: file:../tapisui-api
-        version: file:packages/tapisui-api
+        version: link:../tapisui-api
       cross-fetch:
         specifier: ^3.1.4
         version: 3.2.0
@@ -1291,9 +1292,6 @@ packages:
 
   '@codemirror/search@6.5.11':
     resolution: {integrity: sha512-KmWepDE6jUdL6n8cAAqIpRmLPBZ5ZKnicE8oGU/s3QrAVID+0VhLFrzUucVKHG5035/BSykhExDL/Xm7dHthiA==}
-
-  '@codemirror/state@6.5.2':
-    resolution: {integrity: sha512-FVqsPqtPWKVVL3dPSxy8wEF/ymIEuVzF1PK3VbUgrxXpJUSHQWWZz4JMToquRxnkw+36LTamCZG2iua2Ptq0fA==}
 
   '@codemirror/state@6.6.0':
     resolution: {integrity: sha512-4nbvra5R5EtiCzr9BTHiTLc+MLXK2QGiAVYMyi8PkQd3SR+6ixar/Q/01Fa21TBIDOZXgeWV4WppsQolSreAPQ==}
@@ -2774,9 +2772,6 @@ packages:
   '@tapis/tapis-typescript-notifications@0.0.1':
     resolution: {integrity: sha512-hCzEx0N0AHSOK6bzyaqoKURQv8DzXFXnt5KDHrWyflj/4S7T2/0zu+ruxj3n0ATvZuZnvKBJH/0rAowLCscc5g==}
 
-  '@tapis/tapis-typescript-pods@0.0.12':
-    resolution: {integrity: sha512-hNoUmJaIUToq2qMvXNJ89A9/qpVTqKiITy1gRQHQZmJVeWf9zzBexp39IH2If0NegvzKz+uDk3hqv2gqxc7W2Q==}
-
   '@tapis/tapis-typescript-pods@0.0.13':
     resolution: {integrity: sha512-puqE3A2lOSl2qg9qRvbQUjmbIm7ZSrI9egskFXnPU9pppGMJRtMeGJ4NRDoaULkc/397r6Rza0kuTPaclQnAnw==}
 
@@ -2792,9 +2787,6 @@ packages:
   '@tapis/tapis-typescript-workflows@1.9.0-a3':
     resolution: {integrity: sha512-AIsZRNmG0TwRwL0P55l41m09t7doxKi2Mq++joILYzRd2vxHXgyRw1zV8I1sbZ/H7vH1Fb1qz4AkLYuErwwhSQ==}
 
-  '@tapis/tapis-typescript@0.0.64':
-    resolution: {integrity: sha512-XlJE7spHDU1B8EL5iQeDibwVwYJv/fYCfNM/wfR5cdsn049ZWRBMfCXmolcMlt5JHiPiHxTHOj3TB21Q2zJpGg==}
-
   '@tapis/tapis-typescript@0.0.65':
     resolution: {integrity: sha512-ek9bQshmI+/7RG8/KXR2KUttIHMQuoEqlWiPqo1scpzkOKEuLqkzcFAD8EwyynSM7/3fCSMD8IS+BVVwETXrYQ==}
 
@@ -2803,12 +2795,6 @@ packages:
 
   '@tapis/tapisui-common@file:packages/tapisui-common':
     resolution: {directory: packages/tapisui-common, type: directory}
-
-  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
-    resolution: {directory: packages/tapisui-extension-devtools, type: directory}
-
-  '@tapis/tapisui-extensions-core@file:packages/tapisui-extensions-core':
-    resolution: {directory: packages/tapisui-extensions-core, type: directory}
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks':
     resolution: {directory: packages/tapisui-hooks, type: directory}
@@ -3237,7 +3223,7 @@ packages:
       '@codemirror/language': '>=6.0.0'
       '@codemirror/lint': '>=6.0.0'
       '@codemirror/search': '>=6.0.0'
-      '@codemirror/state': '>=6.0.0'
+      '@codemirror/state': 6.6.0
       '@codemirror/view': '>=6.0.0'
 
   '@uiw/codemirror-theme-vscode@4.25.8':
@@ -3247,14 +3233,14 @@ packages:
     resolution: {integrity: sha512-U6ZSO9A+nsN8zvNddtwhxxpi33J9okb4Li9HdhAItApKjYM22IgC8XSpGfs+ABGfsp1u6NhDSfBR9vAh3oTWXg==}
     peerDependencies:
       '@codemirror/language': '>=6.0.0'
-      '@codemirror/state': '>=6.0.0'
+      '@codemirror/state': 6.6.0
       '@codemirror/view': '>=6.0.0'
 
   '@uiw/react-codemirror@4.25.8':
     resolution: {integrity: sha512-A0aLOuJZm2yJ+U9GlMFwxwFciztjd5LhcAG4SMqFxdD58wH+sCQXuY4UU5J2hqgS390qAlShtUgREvJPUonbuQ==}
     peerDependencies:
       '@babel/runtime': '>=7.11.0'
-      '@codemirror/state': '>=6.0.0'
+      '@codemirror/state': 6.6.0
       '@codemirror/theme-one-dark': '>=6.0.0'
       '@codemirror/view': '>=6.0.0'
       codemirror: '>=6.0.0'
@@ -7370,14 +7356,14 @@ snapshots:
   '@codemirror/autocomplete@6.18.6':
     dependencies:
       '@codemirror/language': 6.12.2
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@codemirror/view': 6.40.0
       '@lezer/common': 1.2.3
 
   '@codemirror/autocomplete@6.20.1':
     dependencies:
       '@codemirror/language': 6.12.2
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@codemirror/view': 6.40.0
       '@lezer/common': 1.2.3
 
@@ -7397,13 +7383,13 @@ snapshots:
     dependencies:
       '@codemirror/autocomplete': 6.18.6
       '@codemirror/language': 6.12.2
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@lezer/common': 1.2.3
       '@lezer/python': 1.1.18
 
   '@codemirror/language@6.12.2':
     dependencies:
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@codemirror/view': 6.40.0
       '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.1
@@ -7412,19 +7398,15 @@ snapshots:
 
   '@codemirror/lint@6.9.5':
     dependencies:
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@codemirror/view': 6.40.0
       crelt: 1.0.6
 
   '@codemirror/search@6.5.11':
     dependencies:
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@codemirror/view': 6.40.0
       crelt: 1.0.6
-
-  '@codemirror/state@6.5.2':
-    dependencies:
-      '@marijn/find-cluster-break': 1.0.2
 
   '@codemirror/state@6.6.0':
     dependencies:
@@ -8872,8 +8854,6 @@ snapshots:
 
   '@tapis/tapis-typescript-notifications@0.0.1': {}
 
-  '@tapis/tapis-typescript-pods@0.0.12': {}
-
   '@tapis/tapis-typescript-pods@0.0.13': {}
 
   '@tapis/tapis-typescript-streams@0.0.4': {}
@@ -8883,23 +8863,6 @@ snapshots:
   '@tapis/tapis-typescript-tenants@0.0.2': {}
 
   '@tapis/tapis-typescript-workflows@1.9.0-a3': {}
-
-  '@tapis/tapis-typescript@0.0.64':
-    dependencies:
-      '@tapis/tapis-typescript-actors': 0.0.3
-      '@tapis/tapis-typescript-apps': 0.0.9
-      '@tapis/tapis-typescript-authenticator': 1.8.4
-      '@tapis/tapis-typescript-files': 0.0.4
-      '@tapis/tapis-typescript-jobs': 0.0.6
-      '@tapis/tapis-typescript-mlhub-datasets': 0.0.1
-      '@tapis/tapis-typescript-mlhub-models': 0.0.2
-      '@tapis/tapis-typescript-notifications': 0.0.1
-      '@tapis/tapis-typescript-pods': 0.0.12
-      '@tapis/tapis-typescript-streams': 0.0.4
-      '@tapis/tapis-typescript-systems': 0.0.7
-      '@tapis/tapis-typescript-tenants': 0.0.2
-      '@tapis/tapis-typescript-workflows': 1.9.0-a3
-      '@types/mocha': 9.1.1
 
   '@tapis/tapis-typescript@0.0.65':
     dependencies:
@@ -8921,7 +8884,7 @@ snapshots:
   '@tapis/tapisui-api@file:packages/tapisui-api':
     dependencies:
       '@mlhub/ts-sdk': 0.0.8
-      '@tapis/tapis-typescript': 0.0.64
+      '@tapis/tapis-typescript': 0.0.65
       axios: 1.13.6
       cross-fetch: 3.2.0
       streamsaver: 2.0.6
@@ -8938,7 +8901,7 @@ snapshots:
       '@mui/lab': 7.0.1-beta.18(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@mui/material@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/material': 7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rollup/plugin-commonjs': 26.0.3(rollup@4.59.0)
-      '@tapis/tapis-typescript': 0.0.64
+      '@tapis/tapis-typescript': 0.0.65
       '@tapis/tapisui-hooks': link:packages/tapisui-hooks
       '@testing-library/react': 14.2.1(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@uiw/react-textarea-code-editor': 3.1.1(@babel/runtime@7.29.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -8976,24 +8939,10 @@ snapshots:
       - supports-color
       - vite
 
-  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
-    dependencies:
-      '@tapis/tapis-typescript': 0.0.64
-      simple-git: 3.33.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@tapis/tapisui-extensions-core@file:packages/tapisui-extensions-core':
-    dependencies:
-      '@tapis/tapis-typescript': 0.0.64
-      simple-git: 3.33.0
-    transitivePeerDependencies:
-      - supports-color
-
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)':
     dependencies:
       '@mlhub/ts-sdk': 0.0.8
-      '@tapis/tapis-typescript': 0.0.64
+      '@tapis/tapis-typescript': 0.0.65
       '@tapis/tapisui-api': file:packages/tapisui-api
       cross-fetch: 3.2.0
       js-cookie: 3.0.5
@@ -10200,7 +10149,7 @@ snapshots:
       '@codemirror/language': 6.12.2
       '@codemirror/lint': 6.9.5
       '@codemirror/search': 6.5.11
-      '@codemirror/state': 6.5.2
+      '@codemirror/state': 6.6.0
       '@codemirror/view': 6.40.0
 
   collect-v8-coverage@1.0.3: {}

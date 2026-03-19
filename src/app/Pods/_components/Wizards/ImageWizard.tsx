@@ -89,7 +89,7 @@ const ImageWizard: React.FC<ImageWizardProps> = ({
           sx={{ mb: '.75rem' }}
           form="create-image-form"
           color="primary"
-          disabled={true} //{isLoading || Object.keys(formik.values).length === 0}
+          disabled={isLoading || Object.keys(formik.values).length === 0}
           aria-label="Submit"
           type="submit"
           variant="outlined"

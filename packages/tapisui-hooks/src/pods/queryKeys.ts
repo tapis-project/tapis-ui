@@ -30,6 +30,8 @@ const QueryKeys = {
   // Images
   getImage: 'pods/getImage',
   createImage: 'pods/createImage',
+  updateImage: 'pods/updateImage',
+  deleteImage: 'pods/deleteImage',
   listImages: 'pods/listImages',
 
   // Snapshots

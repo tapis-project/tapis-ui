@@ -6,7 +6,8 @@
   "packageManager": "pnpm@10.11.0",
   "pnpm": {
     "overrides": {
-      "glob": "^9.0.0"
+      "glob": "^9.0.0",
+      "@codemirror/state": "6.6.0"
     }
   },
   "dependencies": {
