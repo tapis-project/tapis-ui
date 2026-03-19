@@ -1,4 +1,5 @@
 export { default as DeleteVolumeModal } from './DeleteVolumeModal';
+export { default as DeleteImageModal } from './DeleteImageModal';
 export { default as DeleteSnapshotModal } from './DeleteSnapshotModal';
 export { default as DeleteTemplateModal } from './DeleteTemplateModal';
 export { default as DeleteTemplateTagModal } from './DeleteTemplateTagModal';

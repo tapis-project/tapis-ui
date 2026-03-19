@@ -22,6 +22,21 @@ export default defineConfig({
   css: {
     preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
   },
+  resolve: {
+    dedupe: [
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codemirror/language',
+      '@codemirror/lint',
+      '@codemirror/autocomplete',
+      '@codemirror/commands',
+      '@codemirror/search',
+      '@codemirror/lang-json',
+      '@codemirror/lang-python',
+      'codemirror',
+      '@uiw/react-codemirror',
+    ],
+  },
   optimizeDeps: {
     include: [
       '@emotion/styled',
