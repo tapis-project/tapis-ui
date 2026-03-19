@@ -412,9 +412,7 @@ Select or create a pod to get started.`;
         variant="outlined"
         size="small"
         color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
-        onClick={() =>
-          dispatch(updateState({ podRootTab: 'createPod', podEditTab: 'json' }))
-        }
+        onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
         sx={{ whiteSpace: 'nowrap' }}
       >
         Create Pod
@@ -442,28 +440,11 @@ Select or create a pod to get started.`;
           x
         </Button>
         <Button
-          onClick={() => {
-            dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'json' })
-            );
-          }}
-          color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
+          color="secondary"
+          sx={{ minWidth: '80px', whiteSpace: 'nowrap' }}
+          variant="outlined"
         >
-          json
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
-            );
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
-        >
-          form
+          Create Pod
         </Button>
       </ButtonGroup>
     ),
@@ -526,7 +507,7 @@ Select or create a pod to get started.`;
         color="primary"
         size="small"
         onClick={() => {
-          dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
+          dispatch(updateState({ podTab: 'edit' }));
         }}
         sx={{ minWidth: '60px', height: '32px', whiteSpace: 'nowrap' }}
       >
@@ -555,24 +536,11 @@ Select or create a pod to get started.`;
           x
         </Button>
         <Button
-          onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
-          }}
-          color={podEditTab === 'json' ? 'secondary' : 'primary'}
+          color="secondary"
           sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
+          variant="outlined"
         >
-          json
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
-        >
-          form
+          Edit
         </Button>
       </ButtonGroup>
     ),
@@ -1161,26 +1129,19 @@ Select or create a pod to get started.`;
                 )}
               </Box>
             )}
-            <PodsCodeMirror
-              editValue={
-                podTab === 'edit' ? JSON.stringify(createPodData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (podTab === 'edit' && objId !== undefined) ||
-                (podRootTab === 'createPod' && objId === undefined)
-              }
-              editPanel={
-                podTab === 'edit' && objId !== undefined ? (
-                  <PodWizardEdit pod={pod} />
-                ) : (
-                  <PodWizard />
-                )
-              }
-              //scrollToBottom should be true if podTab == 'log' or 'actionlogs'
-              scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
-            />
+            {podTab === 'edit' && objId !== undefined ? (
+              <PodWizardEdit pod={pod} />
+            ) : podRootTab === 'createPod' && objId === undefined ? (
+              <PodWizard />
+            ) : (
+              <PodsCodeMirror
+                editValue=""
+                value={codeMirrorValue?.toString() ?? ''}
+                isVisible={true}
+                isEditorVisible={false}
+                scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
+              />
+            )}
           </div>
           <div>{renderTooltipModal()}</div>
           {/* modals */}

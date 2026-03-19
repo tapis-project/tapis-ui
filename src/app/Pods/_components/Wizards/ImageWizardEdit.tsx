@@ -1,24 +1,22 @@
-import React, { useEffect, useCallback } from 'react';
-import { Button } from '@mui/material';
+import React, { useCallback } from 'react';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import { SubmitWrapper, FMTextField, JSONEditor } from '@tapis/tapisui-common';
+import { FMTextField } from '@tapis/tapisui-common';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
-import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
-import { useFormik, FormikProvider } from 'formik';
-import styles from './Common/Wizard.module.scss';
+import ResourceEditor from './Common/ResourceEditor';
+import { DiffResult } from './Common/computeDiff';
+
+const validationSchema = Yup.object({
+  description: Yup.string()
+    .min(1)
+    .max(2048, 'Description should not be longer than 2048 characters'),
+  tenants: Yup.string(),
+});
+
+const READ_ONLY_FIELDS = ['image'];
 
 const ImageWizardEdit: React.FC<{ image: any }> = ({ image }) => {
   const imageId = image?.image;
-
-  const initialValues: any = {};
-
-  const validationSchema = Yup.object({
-    description: Yup.string()
-      .min(1)
-      .max(2048, 'Description should not be longer than 2048 characters'),
-    tenants: Yup.string(),
-  });
 
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
@@ -29,76 +27,62 @@ const ImageWizardEdit: React.FC<{ image: any }> = ({ image }) => {
   const { updateImage, isLoading, error, isSuccess, reset } =
     Hooks.useUpdateImage(imageId);
 
-  const onSubmit = (values: any, { setSubmitting }: any) => {
-    const updateFields: any = {};
-    Object.entries(values).forEach(([key, val]) => {
-      if (
-        val === undefined ||
-        val === null ||
-        (typeof val === 'string' && val.trim() === '')
-      ) {
-        return;
-      }
-      updateFields[key] = val;
-    });
-    updateImage({ imageId, updateImage: updateFields }, { onSuccess });
-    setSubmitting(false);
-  };
+  const handleSubmit = useCallback(
+    (
+      prunedValues: Record<string, any>,
+      _fullValues: Record<string, any>,
+      _diff: DiffResult
+    ) => {
+      const payload = { ...prunedValues };
+      delete payload.image;
+      updateImage({ imageId, updateImage: payload }, { onSuccess });
+    },
+    [imageId, updateImage, onSuccess]
+  );
 
-  const formik = useFormik({
-    initialValues,
-    validationSchema,
-    onSubmit,
-    enableReinitialize: true,
-  });
+  const formContent = useCallback(
+    (formik: any) => (
+      <>
+        <FMTextField
+          formik={formik}
+          name="image"
+          label="Image"
+          description="Image identifier"
+          disabled
+        />
+        <FMTextField
+          formik={formik}
+          name="description"
+          label="Description"
+          multiline={true}
+          description="Description of this image"
+        />
+        <FMTextField
+          formik={formik}
+          name="tenants"
+          label="Tenants"
+          description="Tenants allowed to use this image"
+        />
+      </>
+    ),
+    []
+  );
 
   return (
-    <div>
-      <JSONEditor
-        style={{
-          width: '100%',
-          fontSize: 12,
-          lineHeight: 1,
-        }}
-        renderNewlinesInError
-        obj={formik.values}
-        actions={[
-          {
-            name: 'Update Image',
-            disableOnError: true,
-            disableOnUndefined: true,
-            disableOnIsLoading: true,
-            disableOnSuccess: true,
-            error:
-              error !== null
-                ? {
-                    title: 'Error',
-                    message: error.message,
-                  }
-                : undefined,
-            result: isSuccess
-              ? {
-                  success: isSuccess,
-                  message: 'Successfully updated image',
-                }
-              : undefined,
-            isLoading,
-            isSuccess,
-            actionFn: (obj: any) => {
-              if (obj !== undefined) {
-                updateImage({ imageId, updateImage: obj }, { onSuccess });
-              }
-            },
-          },
-        ]}
-        onCloseError={() => {
-          reset();
-        }}
-        onCloseSuccess={() => {
-          reset();
-        }}
-      />
-    </div>
+    <ResourceEditor
+      currentValues={image || {}}
+      formContent={formContent}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+      readOnlyFields={READ_ONLY_FIELDS}
+      isLoading={isLoading}
+      error={error}
+      isSuccess={isSuccess}
+      reset={reset}
+      successMessage="Image updated successfully"
+      submitLabel="Update Image"
+      mode="edit"
+    />
   );
 };
 

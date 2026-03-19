@@ -347,32 +347,21 @@ Select an image to get started.`;
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
           <div className={styles['container']}>
-            <PodsCodeMirror
-              editValue={
-                imageTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (imageTab === 'edit' && objId !== undefined) ||
-                (imageRootTab === 'createImage' && objId === undefined)
-              }
-              //   <ImageWizardEdit
-              //   sharedData={sharedData}
-              //   setSharedData={setSharedData}
-              // />
-
-              editPanel={
-                imageTab === 'edit' && objId !== undefined ? (
-                  <ImageWizardEdit image={pod} />
-                ) : (
-                  <ImageWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                )
-              }
-            />
+            {imageTab === 'edit' && objId !== undefined ? (
+              <ImageWizardEdit image={pod} />
+            ) : imageRootTab === 'createImage' && objId === undefined ? (
+              <ImageWizard
+                sharedData={sharedData}
+                setSharedData={setSharedData}
+              />
+            ) : (
+              <PodsCodeMirror
+                editValue=""
+                value={codeMirrorValue?.toString() ?? ''}
+                isVisible={true}
+                isEditorVisible={false}
+              />
+            )}
           </div>
         </div>
         <div>{renderTooltipModal()}</div>
