@@ -104,11 +104,12 @@ const paneHeaderSx = {
 
 const splitPaneSx = {
   outer: {
-    flexGrow: 1,
+    flex: 1,
+    minHeight: 0,
     display: 'flex',
     flexDirection: 'row',
-    height: 'calc(100vh - 220px)',
-    maxHeight: 'calc(100vh - 220px)',
+    height: '100%',
+    maxHeight: '100%',
     border: '1px solid rgba(112, 112, 112, 0.25)',
   },
   left: {
@@ -435,6 +436,8 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        flex: 1,
+        minHeight: 0,
         height: '100%',
       }}
     >

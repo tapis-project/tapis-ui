@@ -837,6 +837,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
         podRootTab: 'createPod',
         podEditTab: 'form',
         createPodData: {
+          pod_id: '<set your pod id here>',
           template: tagObj.template_id + ':' + tagObj.tag_timestamp,
         },
       })
@@ -1123,6 +1124,8 @@ templateNavExpandedItems: ${templateNavExpandedItems}
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'flex-start',
+              flexWrap: 'wrap',
+              gap: 1,
               mb: 1,
             }}
           >
@@ -1499,11 +1502,13 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
+                  flexWrap: 'wrap',
+                  gap: 2,
                   mb: 2,
                 }}
               >
                 {/* Left side - Template Tag info */}
-                <Box sx={{ flex: 1 }}>
+                <Box sx={{ flex: '1 1 22rem', minWidth: '20rem' }}>
                   <Typography
                     variant="caption"
                     sx={{ fontWeight: 'bold', display: 'block', mb: 0.5 }}
@@ -1546,9 +1551,19 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                     flexDirection: 'column',
                     alignItems: 'flex-end',
                     gap: 1,
+                    flex: '1 1 20rem',
+                    minWidth: '18rem',
                   }}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      flexWrap: 'wrap',
+                      justifyContent: 'flex-end',
+                    }}
+                  >
                     <Paper
                       elevation={0}
                       sx={{
@@ -1778,7 +1793,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
   };
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -1794,173 +1809,176 @@ templateNavExpandedItems: ${templateNavExpandedItems}
       >
         <PodsNavigation from="templates" id={objId} id2={tagId} />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div className={styles['content-row']}>
+        <div className={` ${styles['nav']} `}>
           <NavTemplates />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            minWidth: '200px',
-            flex: 1,
-            overflow: 'auto',
-          }}
-        >
-          {renderTabBar(
-            objId === undefined ? getTabBarButtons() : getLeftButtons(),
-            rightButtons
-          )}
-
-          {/* View Configs checkbox - show when viewing template details or tags */}
-          {objId &&
-            (templateTab === 'detailsTag' || templateTab === 'details') && (
-              <Box
-                sx={{
-                  mb: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  flexWrap: 'wrap',
-                  flexShrink: 0,
-                }}
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={includeConfigs}
-                      onChange={(e) => setIncludeConfigs(e.target.checked)}
-                      size="small"
-                      sx={{ py: 0 }}
-                    />
-                  }
-                  label={
-                    <Typography variant="body2" noWrap>
-                      View Configs
-                    </Typography>
-                  }
-                  sx={{ mr: 0 }}
-                />
-              </Box>
+        <div className={styles['right-pane']} style={{ minWidth: '200px' }}>
+          <div className={styles['work-toolbar']}>
+            {renderTabBar(
+              objId === undefined ? getTabBarButtons() : getLeftButtons(),
+              rightButtons
             )}
+          </div>
 
-          <div className={styles['container']}>
-            <div>
-              {/* Render template info box for details and detailsTag tabs */}
-              {(templateTab === 'details' || templateTab === 'detailsTag') &&
-                objId !== undefined &&
-                renderTemplateInfoBox()}
-
-              {/* Render permissions chips when perms tab is active */}
-              {templateTab === 'perms' && objId !== undefined && (
-                <Box sx={{ px: 1, py: 1, mb: 1 }}>
-                  {isFetchingPerms ? (
-                    <Typography variant="body2" color="text.secondary">
-                      Loading permissions...
-                    </Typography>
-                  ) : errorPerms ? (
-                    <Typography variant="body2" color="error">
-                      Error loading permissions: {errorPerms.message}
-                    </Typography>
-                  ) : templatePerms && typeof templatePerms === 'object' ? (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      {(() => {
-                        const permsData =
-                          templatePerms.permissions ?? templatePerms;
-                        const entries: [string, string][] = Array.isArray(
-                          permsData
-                        )
-                          ? permsData.map((entry: string) => {
-                              const parts = entry.split(':');
-                              return [parts[0], parts.slice(1).join(':')] as [
-                                string,
-                                string
-                              ];
-                            })
-                          : Object.entries(permsData);
-                        if (entries.length === 0) {
-                          return (
-                            <Typography variant="body2" color="text.secondary">
-                              No permissions set
-                            </Typography>
-                          );
-                        }
-                        return entries.map(([user, level]) => (
-                          <Chip
-                            key={user}
-                            label={`${user}:${level}`}
-                            size="small"
-                            variant="outlined"
-                            onDelete={() => handleDeletePermission(user)}
-                            disabled={isDeletingPermission}
-                            sx={{
-                              fontFamily: 'monospace',
-                              fontSize: '0.8rem',
-                              borderRadius: 1,
-                              ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
-                                ? {
-                                    borderColor: '#9c27b0',
-                                    color: '#9c27b0',
-                                    '& .MuiChip-deleteIcon': {
-                                      color: '#9c27b0',
-                                    },
-                                  }
-                                : level === 'USER'
-                                ? {
-                                    borderColor: '#9e9e9e',
-                                    color: '#9e9e9e',
-                                    '& .MuiChip-deleteIcon': {
-                                      color: '#9e9e9e',
-                                    },
-                                  }
-                                : {}),
-                            }}
-                          />
-                        ));
-                      })()}
-                    </Box>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No permissions data available
-                    </Typography>
-                  )}
+          <div className={styles['work-content']}>
+            {/* View Configs checkbox - show when viewing template details or tags */}
+            {objId &&
+              (templateTab === 'detailsTag' || templateTab === 'details') && (
+                <Box
+                  sx={{
+                    mb: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    flexWrap: 'wrap',
+                    flexShrink: 0,
+                  }}
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={includeConfigs}
+                        onChange={(e) => setIncludeConfigs(e.target.checked)}
+                        size="small"
+                        sx={{ py: 0 }}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" noWrap>
+                        View Configs
+                      </Typography>
+                    }
+                    sx={{ mr: 0 }}
+                  />
                 </Box>
               )}
 
-              {/* Render create template/tag editors if on those tabs */}
-              {templateRootTab === 'createTemplate' && objId === undefined
-                ? renderCreateTemplate()
-                : templateRootTab === 'createTemplateTag' && objId === undefined
-                ? renderCreateTemplateTag()
-                : null}
-              {/* Edit panel using ResourceEditor */}
-              {templateTab === 'edit' && objId !== undefined ? (
-                <TemplateWizardEdit key={objId} template={pod} />
-              ) : (
-                /* Default code mirror for other views */
-                !(
-                  templateRootTab === 'createTemplate' && objId === undefined
-                ) &&
-                !(
-                  templateRootTab === 'createTemplateTag' && objId === undefined
-                ) && (
-                  <PodsCodeMirror
-                    value={codeMirrorValue?.toString() ?? ''}
-                    isVisible={true}
-                    editable={false}
-                    isEditorVisible={
-                      templateRootTab === 'createTemplate' &&
-                      objId === undefined
-                    }
-                  />
-                )
-              )}
+            <div className={styles['container']}>
+              <div>
+                {/* Render template info box for details and detailsTag tabs */}
+                {(templateTab === 'details' || templateTab === 'detailsTag') &&
+                  objId !== undefined &&
+                  renderTemplateInfoBox()}
+
+                {/* Render permissions chips when perms tab is active */}
+                {templateTab === 'perms' && objId !== undefined && (
+                  <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                    {isFetchingPerms ? (
+                      <Typography variant="body2" color="text.secondary">
+                        Loading permissions...
+                      </Typography>
+                    ) : errorPerms ? (
+                      <Typography variant="body2" color="error">
+                        Error loading permissions: {errorPerms.message}
+                      </Typography>
+                    ) : templatePerms && typeof templatePerms === 'object' ? (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: 1,
+                          alignItems: 'center',
+                        }}
+                      >
+                        {(() => {
+                          const permsData =
+                            templatePerms.permissions ?? templatePerms;
+                          const entries: [string, string][] = Array.isArray(
+                            permsData
+                          )
+                            ? permsData.map((entry: string) => {
+                                const parts = entry.split(':');
+                                return [parts[0], parts.slice(1).join(':')] as [
+                                  string,
+                                  string
+                                ];
+                              })
+                            : Object.entries(permsData);
+                          if (entries.length === 0) {
+                            return (
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                No permissions set
+                              </Typography>
+                            );
+                          }
+                          return entries.map(([user, level]) => (
+                            <Chip
+                              key={user}
+                              label={`${user}:${level}`}
+                              size="small"
+                              variant="outlined"
+                              onDelete={() => handleDeletePermission(user)}
+                              disabled={isDeletingPermission}
+                              sx={{
+                                fontFamily: 'monospace',
+                                fontSize: '0.8rem',
+                                borderRadius: 1,
+                                ...(level === 'ADMIN' ||
+                                level === 'APPROVEDADMIN'
+                                  ? {
+                                      borderColor: '#9c27b0',
+                                      color: '#9c27b0',
+                                      '& .MuiChip-deleteIcon': {
+                                        color: '#9c27b0',
+                                      },
+                                    }
+                                  : level === 'USER'
+                                  ? {
+                                      borderColor: '#9e9e9e',
+                                      color: '#9e9e9e',
+                                      '& .MuiChip-deleteIcon': {
+                                        color: '#9e9e9e',
+                                      },
+                                    }
+                                  : {}),
+                              }}
+                            />
+                          ));
+                        })()}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No permissions data available
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+
+                {/* Render create template/tag editors if on those tabs */}
+                {templateRootTab === 'createTemplate' && objId === undefined
+                  ? renderCreateTemplate()
+                  : templateRootTab === 'createTemplateTag' &&
+                    objId === undefined
+                  ? renderCreateTemplateTag()
+                  : null}
+                {/* Edit panel using ResourceEditor */}
+                {templateTab === 'edit' && objId !== undefined ? (
+                  <TemplateWizardEdit key={objId} template={pod} />
+                ) : (
+                  /* Default code mirror for other views */
+                  !(
+                    templateRootTab === 'createTemplate' && objId === undefined
+                  ) &&
+                  !(
+                    templateRootTab === 'createTemplateTag' &&
+                    objId === undefined
+                  ) && (
+                    <PodsCodeMirror
+                      value={codeMirrorValue?.toString() ?? ''}
+                      isVisible={true}
+                      editable={false}
+                      isEditorVisible={
+                        templateRootTab === 'createTemplate' &&
+                        objId === undefined
+                      }
+                    />
+                  )
+                )}
+              </div>
             </div>
           </div>
         </div>

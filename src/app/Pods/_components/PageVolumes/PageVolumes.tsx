@@ -401,7 +401,7 @@ Select or create a volume to get started.`;
   );
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -449,111 +449,113 @@ Select or create a volume to get started.`;
           </Button>
         </Stack>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div className={styles['content-row']}>
+        <div className={` ${styles['nav']} `}>
           <NavVolumes />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            flex: 1,
-            overflow: 'auto',
-          }}
-        >
-          {renderTabBar(getTabBarButtons(), rightButtons)}
-          <div className={styles['container']}>
-            {/* Permissions chips when viewing perms */}
-            {volumeTab === 'perms' && objId !== undefined && (
-              <Box sx={{ px: 1, py: 1, mb: 1 }}>
-                {isFetchingPerms ? (
-                  <Typography variant="body2" color="text.secondary">
-                    Loading permissions...
-                  </Typography>
-                ) : errorPerms ? (
-                  <Typography variant="body2" color="error">
-                    Error loading permissions
-                  </Typography>
-                ) : podPerms && typeof podPerms === 'object' ? (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 1,
-                      alignItems: 'center',
-                    }}
-                  >
-                    {(() => {
-                      const permsData = podPerms.permissions ?? podPerms;
-                      const entries: [string, string][] = Array.isArray(
-                        permsData
-                      )
-                        ? permsData.map((entry: string) => {
-                            const parts = entry.split(':');
-                            return [parts[0], parts.slice(1).join(':')] as [
-                              string,
-                              string
-                            ];
-                          })
-                        : Object.entries(permsData);
-                      if (entries.length === 0) {
-                        return (
-                          <Typography variant="body2" color="text.secondary">
-                            No permissions set
-                          </Typography>
-                        );
-                      }
-                      return entries.map(([user, level]) => (
-                        <Chip
-                          key={user}
-                          label={`${user}:${level}`}
-                          size="small"
-                          variant="outlined"
-                          onDelete={() => handleDeleteVolumePermission(user)}
-                          disabled={isDeletingVolumePermission}
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontSize: '0.8rem',
-                            borderRadius: 1,
-                            ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
-                              ? {
-                                  borderColor: '#9c27b0',
-                                  color: '#9c27b0',
-                                  '& .MuiChip-deleteIcon': { color: '#9c27b0' },
-                                }
-                              : level === 'USER'
-                              ? {
-                                  borderColor: '#9e9e9e',
-                                  color: '#9e9e9e',
-                                  '& .MuiChip-deleteIcon': { color: '#9e9e9e' },
-                                }
-                              : {}),
-                          }}
-                        />
-                      ));
-                    })()}
-                  </Box>
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No permissions data available
-                  </Typography>
-                )}
-              </Box>
-            )}
-            {volumeTab === 'edit' && objId !== undefined ? (
-              <VolumeWizardEdit key={objId} volume={pod} />
-            ) : volumeRootTab === 'createVolume' && objId === undefined ? (
-              <VolumeWizard
-                sharedData={sharedData}
-                setSharedData={setSharedData}
-              />
-            ) : (
-              <PodsCodeMirror
-                editValue=""
-                value={codeMirrorValue?.toString() ?? ''}
-                isVisible={true}
-                isEditorVisible={false}
-              />
-            )}
+        <div className={styles['right-pane']}>
+          <div className={styles['work-toolbar']}>
+            {renderTabBar(getTabBarButtons(), rightButtons)}
+          </div>
+          <div className={styles['work-content']}>
+            <div className={styles['container']}>
+              {/* Permissions chips when viewing perms */}
+              {volumeTab === 'perms' && objId !== undefined && (
+                <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                  {isFetchingPerms ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Loading permissions...
+                    </Typography>
+                  ) : errorPerms ? (
+                    <Typography variant="body2" color="error">
+                      Error loading permissions
+                    </Typography>
+                  ) : podPerms && typeof podPerms === 'object' ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {(() => {
+                        const permsData = podPerms.permissions ?? podPerms;
+                        const entries: [string, string][] = Array.isArray(
+                          permsData
+                        )
+                          ? permsData.map((entry: string) => {
+                              const parts = entry.split(':');
+                              return [parts[0], parts.slice(1).join(':')] as [
+                                string,
+                                string
+                              ];
+                            })
+                          : Object.entries(permsData);
+                        if (entries.length === 0) {
+                          return (
+                            <Typography variant="body2" color="text.secondary">
+                              No permissions set
+                            </Typography>
+                          );
+                        }
+                        return entries.map(([user, level]) => (
+                          <Chip
+                            key={user}
+                            label={`${user}:${level}`}
+                            size="small"
+                            variant="outlined"
+                            onDelete={() => handleDeleteVolumePermission(user)}
+                            disabled={isDeletingVolumePermission}
+                            sx={{
+                              fontFamily: 'monospace',
+                              fontSize: '0.8rem',
+                              borderRadius: 1,
+                              ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                                ? {
+                                    borderColor: '#9c27b0',
+                                    color: '#9c27b0',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9c27b0',
+                                    },
+                                  }
+                                : level === 'USER'
+                                ? {
+                                    borderColor: '#9e9e9e',
+                                    color: '#9e9e9e',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9e9e9e',
+                                    },
+                                  }
+                                : {}),
+                            }}
+                          />
+                        ));
+                      })()}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No permissions data available
+                    </Typography>
+                  )}
+                </Box>
+              )}
+              {volumeTab === 'edit' && objId !== undefined ? (
+                <VolumeWizardEdit key={objId} volume={pod} />
+              ) : volumeRootTab === 'createVolume' && objId === undefined ? (
+                <VolumeWizard
+                  sharedData={sharedData}
+                  setSharedData={setSharedData}
+                />
+              ) : (
+                <PodsCodeMirror
+                  editValue=""
+                  value={codeMirrorValue?.toString() ?? ''}
+                  isVisible={true}
+                  isEditorVisible={false}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div>{renderTooltipModal()}</div>

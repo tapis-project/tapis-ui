@@ -317,7 +317,7 @@ Select an image to get started.`;
   );
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -369,34 +369,32 @@ Select an image to get started.`;
           )}
         </Stack>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div className={styles['content-row']}>
+        <div className={` ${styles['nav']} `}>
           <NavImages />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            flex: 1,
-            overflow: 'auto',
-          }}
-        >
-          {renderTabBar(getTabBarButtons(), rightButtons)}
-          <div className={styles['container']}>
-            {imageTab === 'edit' && objId !== undefined ? (
-              <ImageWizardEdit key={objId} image={pod} />
-            ) : imageRootTab === 'createImage' && objId === undefined ? (
-              <ImageWizard
-                sharedData={sharedData}
-                setSharedData={setSharedData}
-              />
-            ) : (
-              <PodsCodeMirror
-                editValue=""
-                value={codeMirrorValue?.toString() ?? ''}
-                isVisible={true}
-                isEditorVisible={false}
-              />
-            )}
+        <div className={styles['right-pane']}>
+          <div className={styles['work-toolbar']}>
+            {renderTabBar(getTabBarButtons(), rightButtons)}
+          </div>
+          <div className={styles['work-content']}>
+            <div className={styles['container']}>
+              {imageTab === 'edit' && objId !== undefined ? (
+                <ImageWizardEdit key={objId} image={pod} />
+              ) : imageRootTab === 'createImage' && objId === undefined ? (
+                <ImageWizard
+                  sharedData={sharedData}
+                  setSharedData={setSharedData}
+                />
+              ) : (
+                <PodsCodeMirror
+                  editValue=""
+                  value={codeMirrorValue?.toString() ?? ''}
+                  isVisible={true}
+                  isEditorVisible={false}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div>{renderTooltipModal()}</div>
