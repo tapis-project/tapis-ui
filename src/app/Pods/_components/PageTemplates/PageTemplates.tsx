@@ -44,6 +44,7 @@ import {
   NavTemplates,
   PodsNavigation,
   PodsCodeMirror,
+  TemplateWizardEdit,
 } from 'app/Pods/_components';
 import {
   DeleteTemplateTagModal,
@@ -175,16 +176,6 @@ const PageTemplates: React.FC<{
     reset: resetCreateTemplateTag,
   } = Hooks.useCreateTemplateTag();
 
-  // Add update template hook
-  const {
-    updateTemplate,
-    isLoading: isUpdatingTemplate,
-    isError: isUpdateTemplateError,
-    isSuccess: isUpdateTemplateSuccess,
-    error: updateTemplateError,
-    reset: resetUpdateTemplate,
-  } = Hooks.useUpdateTemplate(objId || '');
-
   // Template permissions hooks
   const {
     data: dataPerms,
@@ -228,10 +219,6 @@ const PageTemplates: React.FC<{
     dependentPods: string[];
     dependentTags: string[];
   } | null>(null);
-
-  // Add state for edit mode
-  const [isEditingTemplate, setIsEditingTemplate] = useState(false);
-  const [editedTemplateData, setEditedTemplateData] = useState<any>(null);
 
   // JSON validation state for create forms
   const [templateJsonError, setTemplateJsonError] = useState<string | null>(
@@ -332,9 +319,6 @@ Select or create a template to get started.`;
     } else {
       switch (templateTab) {
         case 'details':
-          if (isEditingTemplate && editedTemplateData) {
-            return JSON.stringify(editedTemplateData, null, 2);
-          }
           return error
             ? `error: ${error.message || error}`
             : isLoading
@@ -455,26 +439,13 @@ templateNavExpandedItems: ${templateNavExpandedItems}
       },
     ];
 
-    // Add Edit/Save/Cancel buttons when viewing template details
-    if (objId && templateTab === 'details' && pod) {
-      if (isEditingTemplate) {
-        baseButtons.push({
-          id: 'saveTemplate',
-          label: 'Save',
-          customOnClick: () => handleSaveTemplate(),
-        });
-        baseButtons.push({
-          id: 'cancelEdit',
-          label: 'Cancel',
-          customOnClick: () => handleCancelEdit(),
-        });
-      } else {
-        baseButtons.push({
-          id: 'editTemplate',
-          label: 'Edit',
-          customOnClick: () => handleEditTemplate(),
-        });
-      }
+    // Add Edit tab button when viewing an existing template
+    if (objId && pod) {
+      baseButtons.push({
+        id: 'edit',
+        label: 'Edit',
+        tabValue: 'edit',
+      });
     }
 
     // Only show Create New Tag and Create Pod From Tag if on detailsTag view and a matching tag exists
@@ -587,6 +558,40 @@ templateNavExpandedItems: ${templateNavExpandedItems}
       >
         {leftButtons.map(
           ({ id, label, tabValue, customOnClick, icon, disabled }) => {
+            // Special rendering for edit button with x close button
+            if (id === 'edit' && templateTab === 'edit') {
+              return (
+                <ButtonGroup
+                  key="edit-group"
+                  variant="outlined"
+                  size="small"
+                  sx={{ height: '32px' }}
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(updateState({ templateTab: 'details' }));
+                    }}
+                    color="error"
+                    sx={{
+                      minWidth: '28px !important',
+                      width: '28px',
+                      p: 0,
+                      borderRight: '1px solid rgba(0,0,0,0.12)',
+                    }}
+                    variant="outlined"
+                  >
+                    x
+                  </Button>
+                  <Button
+                    color="secondary"
+                    sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                    variant="outlined"
+                  >
+                    Edit
+                  </Button>
+                </ButtonGroup>
+              );
+            }
             // Special rendering for perms button with + add button
             if (id === 'perms') {
               return (
@@ -623,10 +628,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             return (
               <LoadingButton
                 sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
-                loading={
-                  (id === 'refresh' && isFetching) ||
-                  (id === 'saveTemplate' && isUpdatingTemplate)
-                }
+                loading={id === 'refresh' && isFetching}
                 key={id}
                 variant="outlined"
                 disabled={disabled}
@@ -709,16 +711,6 @@ templateNavExpandedItems: ${templateNavExpandedItems}
       );
     }
   }, [templateRootTab, objId, createTemplateData, dispatch]);
-
-  // Reset update state on success
-  useEffect(() => {
-    if (isUpdateTemplateSuccess) {
-      const timer = setTimeout(() => {
-        resetUpdateTemplate();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isUpdateTemplateSuccess, resetUpdateTemplate]);
 
   // Sync templateTab based on URL tagId - when navigating to a tag URL, set detailsTag tab
   useEffect(() => {
@@ -845,50 +837,6 @@ templateNavExpandedItems: ${templateNavExpandedItems}
       })
     );
     history.push('/pods');
-  };
-
-  // Handler for editing template
-  const handleEditTemplate = () => {
-    setIsEditingTemplate(true);
-    setEditedTemplateData(pod);
-  };
-
-  // Handler for saving template updates
-  const handleSaveTemplate = () => {
-    if (editedTemplateData && objId) {
-      updateTemplate(
-        {
-          templateId: objId,
-          updateTemplate: editedTemplateData,
-        },
-        {
-          onSuccess: () => {
-            console.log('Template updated successfully');
-            setIsEditingTemplate(false);
-            invalidate();
-            invalidateTemplatesAndTags();
-          },
-          onError: (error) => {
-            console.error('Error updating template:', error);
-          },
-        }
-      );
-    }
-  };
-
-  // Handler for canceling template edit
-  const handleCancelEdit = () => {
-    setIsEditingTemplate(false);
-    setEditedTemplateData(null);
-  };
-
-  // Handler for template JSON changes during edit
-  const handleEditTemplateJsonChange = (v: string) => {
-    try {
-      setEditedTemplateData(JSON.parse(v));
-    } catch (e) {
-      // Optionally handle JSON parse error
-    }
   };
 
   // Add createTemplate and createTemplateTag pages using PodsCodeMirror for preview
@@ -1908,28 +1856,6 @@ templateNavExpandedItems: ${templateNavExpandedItems}
 
           <div className={styles['container']}>
             <div>
-              {/* Show update status when editing template */}
-              {isEditingTemplate && templateTab === 'details' && objId && (
-                <div style={{ marginBottom: '8px' }}>
-                  {isUpdateTemplateSuccess && (
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'success.main', mb: 1 }}
-                    >
-                      Template updated successfully!
-                    </Typography>
-                  )}
-                  {isUpdateTemplateError && updateTemplateError && (
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'error.main', mb: 1 }}
-                    >
-                      Error updating template: {updateTemplateError.message}
-                    </Typography>
-                  )}
-                </div>
-              )}
-
               {/* Render template info box for details and detailsTag tabs */}
               {(templateTab === 'details' || templateTab === 'detailsTag') &&
                 objId !== undefined &&
@@ -2024,26 +1950,28 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                 : templateRootTab === 'createTemplateTag' && objId === undefined
                 ? renderCreateTemplateTag()
                 : null}
-              {/* Default code mirror for other views */}
-              {!(templateRootTab === 'createTemplate' && objId === undefined) &&
+              {/* Edit panel using ResourceEditor */}
+              {templateTab === 'edit' && objId !== undefined ? (
+                <TemplateWizardEdit key={objId} template={pod} />
+              ) : (
+                /* Default code mirror for other views */
+                !(
+                  templateRootTab === 'createTemplate' && objId === undefined
+                ) &&
                 !(
                   templateRootTab === 'createTemplateTag' && objId === undefined
                 ) && (
                   <PodsCodeMirror
                     value={codeMirrorValue?.toString() ?? ''}
                     isVisible={true}
-                    editable={isEditingTemplate && templateTab === 'details'}
-                    onChange={
-                      isEditingTemplate && templateTab === 'details'
-                        ? handleEditTemplateJsonChange
-                        : undefined
-                    }
+                    editable={false}
                     isEditorVisible={
                       templateRootTab === 'createTemplate' &&
                       objId === undefined
                     }
                   />
-                )}
+                )
+              )}
             </div>
           </div>
         </div>

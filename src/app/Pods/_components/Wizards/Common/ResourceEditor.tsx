@@ -17,8 +17,13 @@ import {
   Tooltip,
   Typography,
   Badge,
+  Menu,
+  MenuItem,
+  ListItemText,
 } from '@mui/material';
 import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
   ErrorOutline as ErrorIcon,
   CheckCircleOutline as SuccessIcon,
 } from '@mui/icons-material';
@@ -26,13 +31,21 @@ import { LoadingButton } from '@mui/lab';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import { EditorView, ViewPlugin, Decoration } from '@codemirror/view';
+import { EditorView } from '@codemirror/view';
 import { useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 import { computeDiff, pruneForSubmission, DiffResult } from './computeDiff';
+import { makeDiffHighlightPlugin } from './diffHighlight';
 import { updateState } from '@redux';
 
 export type ResourceEditorMode = 'edit' | 'create';
+
+export interface FieldTemplate {
+  label: string;
+  field: string;
+  defaultValue: any;
+  description?: string;
+}
 
 export interface ResourceEditorProps {
   currentValues: Record<string, any>;
@@ -54,6 +67,7 @@ export interface ResourceEditorProps {
   reduxDraftKey?: string;
   dispatch?: any;
   existingDraft?: Record<string, any>;
+  fieldTemplates?: FieldTemplate[];
 }
 
 type LeftTab = 'form' | 'json';
@@ -69,83 +83,54 @@ const cmStyle = {
     'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
 };
 
-/**
- * Compute which 1-indexed line numbers differ between two strings.
- * Normalizes valid JSON before comparing so that whitespace / formatting
- * changes alone never produce false-positive highlights.
- */
-function computeLineDiffs(
-  leftStr: string,
-  rightStr: string
-): { leftLines: Set<number>; rightLines: Set<number> } {
-  let normLeft = leftStr;
-  let normRight = rightStr;
-  try {
-    normLeft = JSON.stringify(JSON.parse(leftStr), null, 2);
-  } catch {
-    /* not valid JSON — use raw text */
-  }
-  try {
-    normRight = JSON.stringify(JSON.parse(rightStr), null, 2);
-  } catch {
-    /* not valid JSON — use raw text */
-  }
-  const leftArr = normLeft.split('\n');
-  const rightArr = normRight.split('\n');
-  const maxLen = Math.max(leftArr.length, rightArr.length);
-  const leftLines = new Set<number>();
-  const rightLines = new Set<number>();
-  for (let i = 0; i < maxLen; i++) {
-    if ((leftArr[i] ?? '') !== (rightArr[i] ?? '')) {
-      if (i < leftArr.length) leftLines.add(i + 1);
-      if (i < rightArr.length) rightLines.add(i + 1);
-    }
-  }
-  return { leftLines, rightLines };
-}
+const DIFF_GREEN = {
+  line: 'rgba(46, 125, 50, 0.18)',
+  word: 'rgba(46, 160, 50, 0.45)',
+};
+const DIFF_RED = {
+  line: 'rgba(198, 40, 40, 0.18)',
+  word: 'rgba(220, 50, 50, 0.45)',
+};
 
-/**
- * CodeMirror ViewPlugin that highlights lines differing from a comparison string.
- * `getComparisonStr` returns the other side's text; `side` picks which
- * set of changed lines to highlight.
- */
-function makeDiffHighlightPlugin(
-  getComparisonStr: () => string,
-  bgColor: string,
-  side: 'left' | 'right'
-) {
-  const mark = Decoration.line({
-    attributes: { style: `background-color: ${bgColor}` },
-  });
-  return ViewPlugin.fromClass(
-    class {
-      decorations: any;
-      constructor(view: EditorView) {
-        this.decorations = this.build(view);
-      }
-      update(u: any) {
-        this.decorations = this.build(u.view);
-      }
-      build(view: EditorView) {
-        const doc = view.state.doc;
-        const thisStr = doc.toString();
-        const otherStr = getComparisonStr();
-        const { leftLines, rightLines } = computeLineDiffs(
-          side === 'left' ? thisStr : otherStr,
-          side === 'left' ? otherStr : thisStr
-        );
-        const lines = side === 'left' ? leftLines : rightLines;
-        const ranges: any[] = [];
-        for (let i = 1; i <= doc.lines; i++) {
-          if (lines.has(i)) {
-            ranges.push(mark.range(doc.line(i).from));
-          }
-        }
-        return Decoration.set(ranges);
-      }
-    },
-    { decorations: (v: any) => v.decorations }
-  );
+const paneHeaderSx = {
+  px: 1,
+  py: 0.5,
+  borderBottom: '1px solid rgba(112,112,112,0.25)',
+  color: '#b0b0b0',
+  fontWeight: 600,
+  letterSpacing: 0.5,
+  fontSize: '0.75rem',
+} as const;
+
+const splitPaneSx = {
+  outer: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    height: 'calc(100vh - 220px)',
+    maxHeight: 'calc(100vh - 220px)',
+    border: '1px solid rgba(112, 112, 112, 0.25)',
+  },
+  left: {
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    borderRight: '1px solid rgba(112,112,112,0.25)',
+  },
+  right: {
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+} as const;
+
+/** Check if a formik value counts as "populated" (non-empty). */
+function isFieldPopulated(val: any): boolean {
+  if (val === undefined || val === null || val === '') return false;
+  if (Array.isArray(val) && val.length === 0) return false;
+  if (typeof val === 'object' && val !== null && Object.keys(val).length === 0)
+    return false;
+  return true;
 }
 
 const ResourceEditor: React.FC<ResourceEditorProps> = ({
@@ -164,10 +149,14 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
   reduxDraftKey,
   dispatch,
   existingDraft,
+  fieldTemplates = [],
 }) => {
   const [leftTab, setLeftTab] = useState<LeftTab>('form');
   const [jsonError, setJsonError] = useState<string | undefined>(undefined);
   const [errorsOpen, setErrorsOpen] = useState(false);
+  const [addFieldAnchor, setAddFieldAnchor] = useState<null | HTMLElement>(
+    null
+  );
 
   // --- initial values ---
   const initialValues = useMemo(() => {
@@ -256,7 +245,8 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
     () =>
       makeDiffHighlightPlugin(
         () => origJsonStr,
-        'rgba(46, 125, 50, 0.25)',
+        DIFF_GREEN.line,
+        DIFF_GREEN.word,
         'left'
       ),
     [origJsonStr]
@@ -265,7 +255,8 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
     () =>
       makeDiffHighlightPlugin(
         () => jsonTextRef.current,
-        'rgba(198, 40, 40, 0.25)',
+        DIFF_RED.line,
+        DIFF_RED.word,
         'right'
       ),
     []
@@ -273,11 +264,12 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
   const formRightHighlightExt = useMemo(
     () =>
       makeDiffHighlightPlugin(
-        () => formikJsonRef.current,
-        'rgba(198, 40, 40, 0.25)',
-        'right'
+        () => origJsonStr,
+        DIFF_GREEN.line,
+        DIFF_GREEN.word,
+        'left'
       ),
-    []
+    [origJsonStr]
   );
   const leftJsonExts = useMemo(
     () => [json(), EditorView.lineWrapping, leftHighlightExt],
@@ -303,10 +295,27 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
   }, [jsonText, leftTab, formikJsonStr]);
 
   // --- Redux draft persistence ---
+  // Debounced persistence so NavPods can check for unsaved edits
+  // without slowing down every keystroke / form field change.
   const formikValuesRef = useRef(formik.values);
   formikValuesRef.current = formik.values;
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (reduxDraftKey && dispatch) {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+      draftTimerRef.current = setTimeout(() => {
+        dispatch(updateState({ [reduxDraftKey]: formikValuesRef.current }));
+      }, 500);
+    }
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values, reduxDraftKey, dispatch]);
+  // Also flush on unmount
   useEffect(() => {
     return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
       if (reduxDraftKey && dispatch) {
         dispatch(updateState({ [reduxDraftKey]: formikValuesRef.current }));
       }
@@ -385,9 +394,40 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
     (jsonError ? 1 : 0) +
     (formErrors ? Object.keys(formik.errors).length : 0);
 
-  const tabs: { id: LeftTab; label: string; show: boolean }[] = [
-    { id: 'form', label: 'Form', show: true },
-    { id: 'json', label: 'JSON', show: true },
+  const handleAddField = useCallback(
+    (ft: FieldTemplate) => {
+      formik.setFieldValue(ft.field, ft.defaultValue);
+      if (leftTab === 'json') {
+        const updated = { ...formik.values, [ft.field]: ft.defaultValue };
+        const str = JSON.stringify(updated, null, 2);
+        setJsonText(str);
+        jsonTextRef.current = str;
+      }
+      setAddFieldAnchor(null);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [leftTab]
+  );
+
+  const handleRevertField = useCallback(
+    (ft: FieldTemplate, e: React.MouseEvent) => {
+      e.stopPropagation();
+      formik.setFieldValue(ft.field, undefined);
+      if (leftTab === 'json') {
+        const updated = { ...formik.values };
+        delete updated[ft.field];
+        const str = JSON.stringify(updated, null, 2);
+        setJsonText(str);
+        jsonTextRef.current = str;
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [leftTab]
+  );
+
+  const tabs: { id: LeftTab; label: string }[] = [
+    { id: 'form', label: 'Form' },
+    { id: 'json', label: 'JSON' },
   ];
 
   return (
@@ -408,11 +448,10 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
           gap: 1,
         }}
       >
-        {/* Left: tabs */}
-        <ButtonGroup variant="outlined" size="small" sx={{ height: '32px' }}>
-          {tabs
-            .filter((t) => t.show)
-            .map((t) => (
+        {/* Left: tabs + add field */}
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <ButtonGroup variant="outlined" size="small" sx={{ height: '32px' }}>
+            {tabs.map((t) => (
               <Button
                 key={t.id}
                 onClick={() => setLeftTab(t.id)}
@@ -435,7 +474,83 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
                 )}
               </Button>
             ))}
-        </ButtonGroup>
+          </ButtonGroup>
+          {fieldTemplates.length > 0 && (
+            <>
+              <Tooltip title="Add a field with default values">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={(e) => setAddFieldAnchor(e.currentTarget)}
+                  sx={{
+                    height: '32px',
+                    minWidth: 'unset',
+                    px: 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                  startIcon={<AddIcon fontSize="small" />}
+                >
+                  Field
+                </Button>
+              </Tooltip>
+              <Menu
+                anchorEl={addFieldAnchor}
+                open={Boolean(addFieldAnchor)}
+                onClose={() => setAddFieldAnchor(null)}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      maxHeight: 560,
+                      minWidth: 200,
+                    },
+                  },
+                }}
+              >
+                {fieldTemplates.map((ft) => {
+                  const hasValue = isFieldPopulated(formik.values[ft.field]);
+                  return (
+                    <MenuItem
+                      key={ft.field}
+                      onClick={() => !hasValue && handleAddField(ft)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        ...(hasValue && { opacity: 0.5 }),
+                      }}
+                    >
+                      <ListItemText
+                        primary={ft.label}
+                        secondary={hasValue ? 'Currently set' : ft.description}
+                        primaryTypographyProps={{ variant: 'body2' }}
+                        secondaryTypographyProps={{
+                          variant: 'caption',
+                          sx: { fontSize: '0.7rem' },
+                        }}
+                      />
+                      {hasValue && (
+                        <Tooltip title="Revert field">
+                          <IconButton
+                            size="small"
+                            edge="end"
+                            onClick={(e) => handleRevertField(ft, e)}
+                            sx={{
+                              ml: 1,
+                              color: 'rgba(211, 47, 47, 0.5)',
+                              '&:hover': { color: '#d32f2f' },
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </MenuItem>
+                  );
+                })}
+              </Menu>
+            </>
+          )}
+        </Stack>
 
         {/* Right: actions */}
         <Stack spacing={0.5} direction="row" alignItems="center">
@@ -576,38 +691,10 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
 
       {/* Content area */}
       {leftTab === 'form' && (
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'row',
-            height: 'calc(100vh - 220px)',
-            maxHeight: 'calc(100vh - 220px)',
-            border: '1px solid rgba(112, 112, 112, 0.25)',
-          }}
-        >
+        <Box sx={splitPaneSx.outer}>
           {/* Left: Form pane */}
-          <Box
-            sx={{
-              width: '50%',
-              display: 'flex',
-              flexDirection: 'column',
-              borderRight: '1px solid rgba(112,112,112,0.25)',
-            }}
-          >
-            <Typography
-              variant="caption"
-              component="div"
-              sx={{
-                px: 1,
-                py: 0.5,
-                borderBottom: '1px solid rgba(112,112,112,0.25)',
-                color: '#b0b0b0',
-                fontWeight: 600,
-                letterSpacing: 0.5,
-                fontSize: '0.75rem',
-              }}
-            >
+          <Box sx={splitPaneSx.left}>
+            <Typography variant="caption" component="div" sx={paneHeaderSx}>
               User Edit Pane
             </Typography>
             <Box sx={{ flexGrow: 1, overflow: 'auto', padding: '8px' }}>
@@ -618,32 +705,14 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
               </FormikProvider>
             </Box>
           </Box>
-          {/* Right: Server values */}
-          <Box
-            sx={{
-              width: '50%',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Typography
-              variant="caption"
-              component="div"
-              sx={{
-                px: 1,
-                py: 0.5,
-                borderBottom: '1px solid rgba(112,112,112,0.25)',
-                color: '#b0b0b0',
-                fontWeight: 600,
-                letterSpacing: 0.5,
-                fontSize: '0.75rem',
-              }}
-            >
-              Server Side
+          {/* Right: New changes (user edits as JSON, green diff highlights) */}
+          <Box sx={splitPaneSx.right}>
+            <Typography variant="caption" component="div" sx={paneHeaderSx}>
+              New Changes
             </Typography>
             <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
               <CodeMirror
-                value={origJsonStr}
+                value={formikJsonStr}
                 editable={false}
                 readOnly={true}
                 extensions={formRightExts}
@@ -661,45 +730,14 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
       )}
 
       {leftTab === 'json' && (
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflow: 'auto',
-            height: 'calc(100vh - 220px)',
-            maxHeight: 'calc(100vh - 220px)',
-            border: '1px solid rgba(112, 112, 112, 0.25)',
-          }}
-        >
+        <Box sx={{ ...splitPaneSx.outer, overflow: 'auto' }}>
           {/* Single scroll container with both editors side-by-side */}
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              minHeight: '100%',
-            }}
+            sx={{ display: 'flex', flexDirection: 'row', minHeight: '100%' }}
           >
             {/* Left: editable JSON — green diff highlights */}
-            <Box
-              sx={{
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                borderRight: '1px solid rgba(112,112,112,0.25)',
-              }}
-            >
-              <Typography
-                variant="caption"
-                component="div"
-                sx={{
-                  px: 1,
-                  py: 0.5,
-                  borderBottom: '1px solid rgba(112,112,112,0.25)',
-                  color: '#b0b0b0',
-                  fontWeight: 600,
-                  letterSpacing: 0.5,
-                  fontSize: '0.75rem',
-                }}
-              >
+            <Box sx={splitPaneSx.left}>
+              <Typography variant="caption" component="div" sx={paneHeaderSx}>
                 User Edit Pane
               </Typography>
               <CodeMirror
@@ -714,26 +752,8 @@ const ResourceEditor: React.FC<ResourceEditorProps> = ({
             </Box>
 
             {/* Right: server values — red diff highlights */}
-            <Box
-              sx={{
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Typography
-                variant="caption"
-                component="div"
-                sx={{
-                  px: 1,
-                  py: 0.5,
-                  borderBottom: '1px solid rgba(112,112,112,0.25)',
-                  color: '#b0b0b0',
-                  fontWeight: 600,
-                  letterSpacing: 0.5,
-                  fontSize: '0.75rem',
-                }}
-              >
+            <Box sx={splitPaneSx.right}>
+              <Typography variant="caption" component="div" sx={paneHeaderSx}>
                 Server Side
               </Typography>
               <CodeMirror
