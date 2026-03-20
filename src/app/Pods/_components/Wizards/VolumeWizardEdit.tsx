@@ -1,135 +1,106 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { Button } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import React, { useCallback } from 'react';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
-import {
-  GenericModal,
-  SubmitWrapper,
-  FMTextField,
-} from '@tapis/tapisui-common';
+import { FMTextField } from '@tapis/tapisui-common';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
-import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
-import { useFormik, FormikProvider } from 'formik';
-import styles from './Common/Wizard.module.scss';
+import ResourceEditor from './Common/ResourceEditor';
+import { DiffResult } from './Common/computeDiff';
+import type { FieldTemplate } from './Common/ResourceEditor';
 
-export type VolumeWizardProps = {
-  sharedData: any;
-  setSharedData: any;
-};
+const validationSchema = Yup.object({
+  description: Yup.string()
+    .min(1)
+    .max(2048, 'Description should not be longer than 2048 characters'),
+  size_limit: Yup.number().min(1).max(20000),
+});
 
-const VolumeWizard: React.FC<VolumeWizardProps> = ({
-  sharedData,
-  setSharedData,
-}) => {
+const READ_ONLY_FIELDS = ['volume_id'];
+
+const FIELD_TEMPLATES: FieldTemplate[] = [
+  {
+    label: 'Description',
+    field: 'description',
+    defaultValue: '',
+    description: 'Text description of this volume',
+  },
+  {
+    label: 'Size Limit',
+    field: 'size_limit',
+    defaultValue: 1024,
+    description: 'Limit on volume size in megabytes (MB)',
+  },
+];
+
+const VolumeWizardEdit: React.FC<{ volume: any }> = ({ volume }) => {
+  const objId = volume?.volume_id;
+
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.getVolume);
+    queryClient.invalidateQueries(Hooks.queryKeys.listVolumes);
   }, [queryClient]);
-
-  const objId = useLocation().pathname.split('/')[3];
-
-  const initialValues: any = {
-    description: '',
-    size_limit: '',
-  };
 
   const { updateVolume, isLoading, error, isSuccess, reset } =
     Hooks.useUpdateVolume(objId);
 
-  useEffect(() => {
-    reset();
-  }, [reset]);
+  const handleSubmit = useCallback(
+    (
+      prunedValues: Record<string, any>,
+      _fullValues: Record<string, any>,
+      _diff: DiffResult
+    ) => {
+      const payload = { ...prunedValues };
+      delete payload.volume_id;
+      updateVolume({ volumeId: objId, updateVolume: payload }, { onSuccess });
+    },
+    [objId, updateVolume, onSuccess]
+  );
 
-  const validationSchema = Yup.object({
-    description: Yup.string()
-      .min(1)
-      .max(2048, 'Description should not be longer than 2048 characters'),
-    size_limit: Yup.number().min(1).max(20000),
-  });
-
-  const onSubmit = ({ volume_id = '', description, size_limit }: any) => {
-    const updatedVolume = {
-      volume_id,
-      description,
-      size_limit,
-    };
-
-    updateVolume(
-      { volumeId: objId, updateVolume: updatedVolume },
-      { onSuccess }
-    );
-  };
-
-  const formik = useFormik({
-    initialValues,
-    validationSchema,
-    onSubmit,
-  });
-
-  useEffect(() => {
-    setSharedData(formik.values);
-  }, [formik.values, setSharedData]);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === 'Enter') {
-        formik.handleSubmit();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [formik]);
+  const formContent = useCallback(
+    (formik: any) => (
+      <>
+        <FMTextField
+          formik={formik}
+          name="volume_id"
+          label="Volume ID"
+          description="ID for this volume, unique per-tenant"
+          disabled
+        />
+        <FMTextField
+          formik={formik}
+          name="description"
+          label="Description"
+          multiline={true}
+          description="Description of this volume for future reference"
+        />
+        <FMTextField
+          formik={formik}
+          name="size_limit"
+          label="Size Limit"
+          description="Limit on the size of the volume in megabytes (MB)"
+        />
+      </>
+    ),
+    []
+  );
 
   return (
-    <div>
-      <SubmitWrapper
-        className={styles['modal-footer']}
-        isLoading={isLoading}
-        error={error}
-        success={isSuccess ? `Volume updated.` : ''}
-        reverse={true}
-      >
-        <Button
-          sx={{ mb: '.75rem' }}
-          form="edit-volume-form"
-          color="primary"
-          disabled={
-            isLoading ||
-            !formik.isValid ||
-            Object.keys(formik.values).length === 0
-          }
-          aria-label="Submit"
-          type="submit"
-          variant="outlined"
-        >
-          Edit Volume
-        </Button>
-      </SubmitWrapper>
-
-      <FormikProvider value={formik}>
-        <form id="edit-volume-form" onSubmit={formik.handleSubmit}>
-          <AutoPruneEmptyFields validationSchema={validationSchema} />
-          <FMTextField
-            formik={formik}
-            name="description"
-            label="Description"
-            multiline={true}
-            description="Description of this volume for future reference"
-          />
-          <FMTextField
-            formik={formik}
-            name="size_limit"
-            label="Size Limit"
-            description="Limit on the size of the volume in megabytes (MB)"
-          />
-        </form>
-      </FormikProvider>
-    </div>
+    <ResourceEditor
+      currentValues={volume || {}}
+      formContent={formContent}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+      readOnlyFields={READ_ONLY_FIELDS}
+      isLoading={isLoading}
+      error={error}
+      isSuccess={isSuccess}
+      reset={reset}
+      successMessage="Volume updated successfully"
+      submitLabel="Update Volume"
+      mode="edit"
+      fieldTemplates={FIELD_TEMPLATES}
+    />
   );
 };
 
-export default VolumeWizard;
+export default VolumeWizardEdit;

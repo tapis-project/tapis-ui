@@ -21,12 +21,15 @@ import {
   LockOpen,
 } from '@mui/icons-material';
 import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
+import { computeDiff, buildChangeSummary } from '../Wizards/Common/computeDiff';
 
 const NavPods: React.FC = () => {
   const { url } = useRouteMatch();
   const history = useHistory();
+  const dispatch = useAppDispatch();
 
   const params = useParams<{ podId?: string }>();
+  const { podTab, updatePodData } = useAppSelector((state) => state.pods);
   const podsAdminMode = useSyncExternalStore(
     subscribePodsAdminMode,
     getPodsAdminMode
@@ -97,7 +100,52 @@ const NavPods: React.FC = () => {
           objects={systems}
           defaultField={'status'}
           defaultOnClickItem={(system: any) => {
-            history.push(`/pods/${system.pod_id!}`);
+            const targetId = system.pod_id!;
+            // If already viewing this pod, no-op
+            if (targetId === params.podId) return;
+
+            // If in edit mode, guard navigation
+            if (podTab === 'edit' && params.podId) {
+              // Compute actual diff to determine if there are real changes
+              const currentPod = definitions.find(
+                (p) => p.pod_id === params.podId
+              );
+              const hasDraft =
+                updatePodData &&
+                typeof updatePodData === 'object' &&
+                Object.keys(updatePodData).length > 0;
+              const changes =
+                hasDraft && currentPod
+                  ? computeDiff(currentPod, updatePodData)
+                  : null;
+              const hasRealChanges = changes?.hasChanges === true;
+
+              if (hasRealChanges) {
+                const summary = buildChangeSummary(changes);
+                let changeList = '';
+                if (summary.length > 0) {
+                  changeList =
+                    '\n\nUnsaved changes:\n' +
+                    summary
+                      .map((s) => `  • ${s.field} (${s.type}): ${s.detail}`)
+                      .join('\n');
+                }
+
+                const confirmed = window.confirm(
+                  `You have unsaved changes. Discard and switch pods?${changeList}`
+                );
+                if (!confirmed) return;
+              }
+              // Exit edit mode and clear draft before navigating
+              dispatch(
+                updateState({
+                  podTab: 'details',
+                  updatePodData: undefined,
+                })
+              );
+            }
+
+            history.push(`/pods/${targetId}`);
           }}
           includeAll={true}
           includeAllGroupLabel="All Pods"

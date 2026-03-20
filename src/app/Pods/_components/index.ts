@@ -16,4 +16,5 @@ export { default as ImageWizard } from './Wizards/ImageWizard';
 export { default as ImageWizardEdit } from './Wizards/ImageWizardEdit';
 export { default as PodWizard } from './Wizards/PodWizard';
 export { default as PodWizardEdit } from './Wizards/PodWizardEdit';
+export { default as TemplateWizardEdit } from './Wizards/TemplateWizardEdit';
 export { default as ResourceEditor } from './Wizards/Common/ResourceEditor';

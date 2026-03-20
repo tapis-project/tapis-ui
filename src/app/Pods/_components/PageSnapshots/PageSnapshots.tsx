@@ -23,7 +23,7 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from '../Pages.module.scss';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded } from '@mui/icons-material';
 import { SectionMessage } from '@tapis/tapisui-common';
@@ -250,35 +250,70 @@ Select or create a snapshot to get started.`;
         sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
       >
         {leftButtons.map(
-          ({ id, label, tabValue, customOnClick, icon, disabled }) => (
-            <LoadingButton
-              sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
-              loading={id === 'refresh' && isFetching}
-              key={id}
-              variant="outlined"
-              disabled={disabled}
-              color={
-                snapshotTab === tabValue || snapshotRootTab === tabValue
-                  ? 'secondary'
-                  : 'primary'
-              }
-              size="small"
-              onClick={() => {
-                invalidate();
-                if (customOnClick) {
-                  customOnClick();
-                } else if (tabValue) {
-                  if (objId === undefined) {
-                    dispatch(updateState({ snapshotRootTab: tabValue }));
-                  } else {
-                    dispatch(updateState({ snapshotTab: tabValue }));
-                  }
+          ({ id, label, tabValue, customOnClick, icon, disabled }) => {
+            if (id === 'edit' && snapshotTab === 'edit') {
+              return (
+                <ButtonGroup
+                  key="edit-group"
+                  variant="outlined"
+                  size="small"
+                  sx={{ height: '32px' }}
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(updateState({ snapshotTab: 'details' }));
+                    }}
+                    color="error"
+                    sx={{
+                      minWidth: '28px !important',
+                      width: '28px',
+                      p: 0,
+                      borderRight: '1px solid rgba(0,0,0,0.12)',
+                    }}
+                    variant="outlined"
+                  >
+                    x
+                  </Button>
+                  <Button
+                    color="secondary"
+                    sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                    variant="outlined"
+                  >
+                    Edit
+                  </Button>
+                </ButtonGroup>
+              );
+            }
+            return (
+              <LoadingButton
+                sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
+                loading={id === 'refresh' && isFetching}
+                key={id}
+                variant="outlined"
+                disabled={disabled}
+                color={
+                  snapshotTab === tabValue || snapshotRootTab === tabValue
+                    ? 'secondary'
+                    : 'primary'
                 }
-              }}
-            >
-              {icon || label}
-            </LoadingButton>
-          )
+                size="small"
+                onClick={() => {
+                  invalidate();
+                  if (customOnClick) {
+                    customOnClick();
+                  } else if (tabValue) {
+                    if (objId === undefined) {
+                      dispatch(updateState({ snapshotRootTab: tabValue }));
+                    } else {
+                      dispatch(updateState({ snapshotTab: tabValue }));
+                    }
+                  }
+                }}
+              >
+                {icon || label}
+              </LoadingButton>
+            );
+          }
         )}
       </Stack>
       <Stack
@@ -393,32 +428,21 @@ Select or create a snapshot to get started.`;
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
           <div className={styles['container']}>
-            <PodsCodeMirror
-              editValue={
-                snapshotTab === 'edit'
-                  ? JSON.stringify(sharedData, null, 2)
-                  : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (snapshotTab === 'edit' && objId !== undefined) ||
-                (snapshotRootTab === 'createSnapshot' && objId === undefined)
-              }
-              editPanel={
-                snapshotTab === 'edit' && objId !== undefined ? (
-                  <SnapshotWizardEdit
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                ) : (
-                  <SnapshotWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                )
-              }
-            />
+            {snapshotTab === 'edit' && objId !== undefined ? (
+              <SnapshotWizardEdit key={objId} snapshot={pod} />
+            ) : snapshotRootTab === 'createSnapshot' && objId === undefined ? (
+              <SnapshotWizard
+                sharedData={sharedData}
+                setSharedData={setSharedData}
+              />
+            ) : (
+              <PodsCodeMirror
+                editValue=""
+                value={codeMirrorValue?.toString() ?? ''}
+                isVisible={true}
+                isEditorVisible={false}
+              />
+            )}
           </div>
         </div>
         <div>{renderTooltipModal()}</div>

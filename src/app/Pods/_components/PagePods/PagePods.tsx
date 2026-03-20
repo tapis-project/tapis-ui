@@ -1130,7 +1130,7 @@ Select or create a pod to get started.`;
               </Box>
             )}
             {podTab === 'edit' && objId !== undefined ? (
-              <PodWizardEdit pod={pod} />
+              <PodWizardEdit key={objId} pod={pod} />
             ) : podRootTab === 'createPod' && objId === undefined ? (
               <PodWizard />
             ) : (

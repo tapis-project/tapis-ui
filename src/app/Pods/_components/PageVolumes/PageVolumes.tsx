@@ -23,7 +23,7 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from '../Pages.module.scss';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded } from '@mui/icons-material';
 import { SectionMessage } from '@tapis/tapisui-common';
@@ -244,35 +244,70 @@ Select or create a volume to get started.`;
         sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
       >
         {leftButtons.map(
-          ({ id, label, tabValue, customOnClick, icon, disabled }) => (
-            <LoadingButton
-              sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
-              loading={id === 'refresh' && isFetching}
-              key={id}
-              variant="outlined"
-              disabled={disabled}
-              color={
-                volumeTab === tabValue || volumeRootTab === tabValue
-                  ? 'secondary'
-                  : 'primary'
-              }
-              size="small"
-              onClick={() => {
-                invalidate();
-                if (customOnClick) {
-                  customOnClick();
-                } else if (tabValue) {
-                  if (objId === undefined) {
-                    dispatch(updateState({ volumeRootTab: tabValue }));
-                  } else {
-                    dispatch(updateState({ volumeTab: tabValue }));
-                  }
+          ({ id, label, tabValue, customOnClick, icon, disabled }) => {
+            if (id === 'edit' && volumeTab === 'edit') {
+              return (
+                <ButtonGroup
+                  key="edit-group"
+                  variant="outlined"
+                  size="small"
+                  sx={{ height: '32px' }}
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(updateState({ volumeTab: 'details' }));
+                    }}
+                    color="error"
+                    sx={{
+                      minWidth: '28px !important',
+                      width: '28px',
+                      p: 0,
+                      borderRight: '1px solid rgba(0,0,0,0.12)',
+                    }}
+                    variant="outlined"
+                  >
+                    x
+                  </Button>
+                  <Button
+                    color="secondary"
+                    sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                    variant="outlined"
+                  >
+                    Edit
+                  </Button>
+                </ButtonGroup>
+              );
+            }
+            return (
+              <LoadingButton
+                sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
+                loading={id === 'refresh' && isFetching}
+                key={id}
+                variant="outlined"
+                disabled={disabled}
+                color={
+                  volumeTab === tabValue || volumeRootTab === tabValue
+                    ? 'secondary'
+                    : 'primary'
                 }
-              }}
-            >
-              {icon || label}
-            </LoadingButton>
-          )
+                size="small"
+                onClick={() => {
+                  invalidate();
+                  if (customOnClick) {
+                    customOnClick();
+                  } else if (tabValue) {
+                    if (objId === undefined) {
+                      dispatch(updateState({ volumeRootTab: tabValue }));
+                    } else {
+                      dispatch(updateState({ volumeTab: tabValue }));
+                    }
+                  }
+                }}
+              >
+                {icon || label}
+              </LoadingButton>
+            );
+          }
         )}
       </Stack>
       <Stack
@@ -386,30 +421,21 @@ Select or create a volume to get started.`;
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
           <div className={styles['container']}>
-            <PodsCodeMirror
-              editValue={
-                volumeTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (volumeTab === 'edit' && objId !== undefined) ||
-                (volumeRootTab === 'createVolume' && objId === undefined)
-              }
-              editPanel={
-                volumeTab === 'edit' && objId !== undefined ? (
-                  <VolumeWizardEdit
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                ) : (
-                  <VolumeWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                )
-              }
-            />
+            {volumeTab === 'edit' && objId !== undefined ? (
+              <VolumeWizardEdit key={objId} volume={pod} />
+            ) : volumeRootTab === 'createVolume' && objId === undefined ? (
+              <VolumeWizard
+                sharedData={sharedData}
+                setSharedData={setSharedData}
+              />
+            ) : (
+              <PodsCodeMirror
+                editValue=""
+                value={codeMirrorValue?.toString() ?? ''}
+                isVisible={true}
+                isEditorVisible={false}
+              />
+            )}
           </div>
         </div>
         <div>{renderTooltipModal()}</div>

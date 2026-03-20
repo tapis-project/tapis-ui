@@ -85,6 +85,15 @@ const NavTemplates: React.FC = () => {
       : undefined;
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
+    // Guard: if in edit mode, confirm before navigating away
+    if (templateTab === 'edit') {
+      const confirmed = window.confirm(
+        'You have unsaved changes in the editor. Discard and switch templates?'
+      );
+      if (!confirmed) return;
+      dispatch(updateState({ templateTab: 'details' }));
+    }
+
     var tabState = 'details';
     // Use '::' as delimiter to avoid conflicts with hyphens in template IDs or tag names
     const parts = itemId.split('::');
