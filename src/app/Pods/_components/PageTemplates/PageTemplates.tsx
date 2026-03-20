@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
@@ -52,6 +52,7 @@ import {
   TemplatePermissionModal,
 } from 'app/Pods/_components/Modals';
 import PodsLoadingText from '../PodsLoadingText';
+import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 import { template } from 'lodash';
 import ReactMarkdown from 'react-markdown';
@@ -114,8 +115,12 @@ const PageTemplates: React.FC<{
   const dispatch = useAppDispatch();
   const history = useHistory();
 
-  // State for include_dependencies toggle
-  const [includeDependencies, setIncludeDependencies] = useState(false);
+  // Include dependencies automatically when in admin mode
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
+  const includeDependencies = podsAdminMode;
 
   // State for include_configs toggle (default to false for viewing)
   const [includeConfigs, setIncludeConfigs] = useState(false);
@@ -1806,7 +1811,7 @@ templateNavExpandedItems: ${templateNavExpandedItems}
             rightButtons
           )}
 
-          {/* Include Dependencies and View Configs checkboxes - show when viewing template details or tags */}
+          {/* View Configs checkbox - show when viewing template details or tags */}
           {objId &&
             (templateTab === 'detailsTag' || templateTab === 'details') && (
               <Box
@@ -1819,22 +1824,6 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                   flexShrink: 0,
                 }}
               >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={includeDependencies}
-                      onChange={(e) => setIncludeDependencies(e.target.checked)}
-                      size="small"
-                      sx={{ py: 0 }}
-                    />
-                  }
-                  label={
-                    <Typography variant="body2" noWrap>
-                      Include Dependencies
-                    </Typography>
-                  }
-                  sx={{ mr: 0 }}
-                />
                 <FormControlLabel
                   control={
                     <Checkbox

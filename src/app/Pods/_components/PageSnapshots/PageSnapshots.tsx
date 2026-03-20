@@ -13,7 +13,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { decode } from 'base-64';
-import { Stack } from '@mui/material';
+import { Stack, Chip, Box, Typography } from '@mui/material';
 import {
   CopyButton,
   TooltipModal,
@@ -67,12 +67,29 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
-  const podPerms: Pods.VolumePermissionsResponse | undefined =
-    dataPerms?.result as Pods.VolumePermissionsResponse | undefined;
+  const podPerms: Pods.SnapshotPermissionsResponse | undefined =
+    dataPerms?.result as Pods.SnapshotPermissionsResponse | undefined;
+
+  const {
+    deleteSnapshot: deleteSnapshotPermission,
+    isLoading: isDeletingSnapshotPermission,
+  } = Hooks.useDeleteSnapshotPermission();
 
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
     setModal(undefined);
+  };
+
+  const handleDeleteSnapshotPermission = (user: string) => {
+    if (!objId) return;
+    deleteSnapshotPermission(
+      { snapshotId: objId, user },
+      {
+        onSuccess: () => {
+          invalidatePerms();
+        },
+      }
+    );
   };
 
   const loadingText = PodsLoadingText();
@@ -152,9 +169,9 @@ Select or create a snapshot to get started.`;
             ? loadingText
             : JSON.stringify(filesData, null, 2);
         case 'perms':
-          return error
-            ? `error: ${error}`
-            : isFetching
+          return errorPerms
+            ? `error: ${errorPerms}`
+            : isFetchingPerms
             ? loadingText
             : JSON.stringify(podPerms, null, 2);
 
@@ -284,6 +301,41 @@ Select or create a snapshot to get started.`;
                 </ButtonGroup>
               );
             }
+            if (id === 'perms') {
+              return (
+                <React.Fragment key="perms-split">
+                  <ButtonGroup variant="outlined" size="small">
+                    <LoadingButton
+                      sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                      variant="outlined"
+                      color={snapshotTab === 'perms' ? 'secondary' : 'primary'}
+                      onClick={() => {
+                        invalidatePerms();
+                        dispatch(updateState({ snapshotTab: 'perms' }));
+                      }}
+                    >
+                      Perms
+                    </LoadingButton>
+                    {snapshotTab === 'perms' && (
+                      <Button
+                        onClick={() => {
+                          setModal('podPermissions');
+                        }}
+                        color="primary"
+                        sx={{
+                          fontSize: '14px',
+                          minWidth: '28px !important',
+                          width: '28px',
+                        }}
+                        variant="outlined"
+                      >
+                        +
+                      </Button>
+                    )}
+                  </ButtonGroup>
+                </React.Fragment>
+              );
+            }
             return (
               <LoadingButton
                 sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
@@ -321,21 +373,6 @@ Select or create a snapshot to get started.`;
         direction="row"
         sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
       >
-        {snapshotTab === 'perms' && (
-          <Button
-            key="permissions"
-            sx={{ minWidth: '10px' }}
-            variant="outlined"
-            color="primary"
-            size="small"
-            onClick={() => {
-              setModal('podPermissions');
-            }}
-          >
-            +
-          </Button>
-        )}
-
         {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
           <Button
             key={id}
@@ -428,6 +465,83 @@ Select or create a snapshot to get started.`;
         >
           {renderTabBar(getTabBarButtons(), rightButtons)}
           <div className={styles['container']}>
+            {/* Permissions chips when viewing perms */}
+            {snapshotTab === 'perms' && objId !== undefined && (
+              <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                {isFetchingPerms ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Loading permissions...
+                  </Typography>
+                ) : errorPerms ? (
+                  <Typography variant="body2" color="error">
+                    Error loading permissions
+                  </Typography>
+                ) : podPerms && typeof podPerms === 'object' ? (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 1,
+                      alignItems: 'center',
+                    }}
+                  >
+                    {(() => {
+                      const permsData = podPerms.permissions ?? podPerms;
+                      const entries: [string, string][] = Array.isArray(
+                        permsData
+                      )
+                        ? permsData.map((entry: string) => {
+                            const parts = entry.split(':');
+                            return [parts[0], parts.slice(1).join(':')] as [
+                              string,
+                              string
+                            ];
+                          })
+                        : Object.entries(permsData);
+                      if (entries.length === 0) {
+                        return (
+                          <Typography variant="body2" color="text.secondary">
+                            No permissions set
+                          </Typography>
+                        );
+                      }
+                      return entries.map(([user, level]) => (
+                        <Chip
+                          key={user}
+                          label={`${user}:${level}`}
+                          size="small"
+                          variant="outlined"
+                          onDelete={() => handleDeleteSnapshotPermission(user)}
+                          disabled={isDeletingSnapshotPermission}
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontSize: '0.8rem',
+                            borderRadius: 1,
+                            ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                              ? {
+                                  borderColor: '#9c27b0',
+                                  color: '#9c27b0',
+                                  '& .MuiChip-deleteIcon': { color: '#9c27b0' },
+                                }
+                              : level === 'USER'
+                              ? {
+                                  borderColor: '#9e9e9e',
+                                  color: '#9e9e9e',
+                                  '& .MuiChip-deleteIcon': { color: '#9e9e9e' },
+                                }
+                              : {}),
+                          }}
+                        />
+                      ));
+                    })()}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No permissions data available
+                  </Typography>
+                )}
+              </Box>
+            )}
             {snapshotTab === 'edit' && objId !== undefined ? (
               <SnapshotWizardEdit key={objId} snapshot={pod} />
             ) : snapshotRootTab === 'createSnapshot' && objId === undefined ? (
