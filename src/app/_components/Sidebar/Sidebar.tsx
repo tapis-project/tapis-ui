@@ -84,6 +84,24 @@ const Sidebar: React.FC = () => {
   const tenants = result;
   const history = useHistory();
 
+  const valueBlockStyle = {
+    display: 'inline-block',
+    width: 'fit-content',
+    maxWidth: '100%',
+    marginTop: '0rem',
+    marginBottom: '0rem',
+    padding: '0.65rem 0.8rem',
+    borderRadius: '8px',
+    backgroundColor: '#f5f7fa',
+    border: '1px solid #d7dee7',
+    fontFamily:
+      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+    fontSize: '0.95rem',
+    lineHeight: 1.3,
+    color: '#1f2933',
+    wordBreak: 'break-word' as const,
+  };
+
   // Initialize section open states based on defaultOpen values
   useEffect(() => {
     if (extension?.betaSidebar?.enabled && extension.betaSidebar.sections) {
@@ -832,12 +850,14 @@ const Sidebar: React.FC = () => {
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
           />
-          <Typography variant="h6">Current Domain: </Typography>
-          <Typography fontSize={'1.1rem'}>
+          <Typography variant="h6">Current Domain:</Typography>
+          <Typography component="div" sx={valueBlockStyle}>
             {basePath?.replace('https://', '').replace('http://', '')}
           </Typography>
           <Typography variant="h6">Token Life Remaining:</Typography>
-          <CountdownDisplay expirationTime={claims['exp']} />
+          <Typography component="div" sx={valueBlockStyle}>
+            <CountdownDisplay expirationTime={claims['exp']} />
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setModal(undefined)}>Close</Button>
