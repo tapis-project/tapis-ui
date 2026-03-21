@@ -28,8 +28,8 @@
     ]
   },
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.64",
     "@mlhub/ts-sdk": "0.0.8",
+    "@tapis/tapis-typescript": "^0.0.65",
     "axios": "^1.7.5",
     "cross-fetch": "^3.1.4",
     "streamsaver": "^2.0.5",
