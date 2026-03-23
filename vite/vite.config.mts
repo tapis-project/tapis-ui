@@ -43,13 +43,23 @@ export default defineConfig({
       '@mui/system',
       '@mui/icons-material',
       '@mui/lab',
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codemirror/language',
+      '@codemirror/lint',
+      '@codemirror/autocomplete',
+      '@codemirror/commands',
+      '@codemirror/search',
+      '@codemirror/lang-json',
+      '@codemirror/lang-python',
+      'codemirror',
+      '@uiw/react-codemirror',
     ],
   },
   plugins: [
     react(),
     commonjs({
       include: [
-        /node_modules\/@uiw\/react-codemirror/, // Ensure CommonJS transformation for node_modules
         /node_modules\/react-table/, // Include react-table for CommonJS transformation
         /node_modules\/react/,
         /node_modules\/react-dom/,

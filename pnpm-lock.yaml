@@ -15,6 +15,12 @@ importers:
       '@babel/runtime':
         specifier: ^7.25.0
         version: 7.29.2
+      '@codemirror/autocomplete':
+        specifier: ^6.0.0
+        version: 6.20.1
+      '@codemirror/commands':
+        specifier: ^6.0.0
+        version: 6.8.1
       '@codemirror/lang-json':
         specifier: ^6.0.1
         version: 6.0.2
@@ -27,6 +33,12 @@ importers:
       '@codemirror/lint':
         specifier: ^6.8.5
         version: 6.9.5
+      '@codemirror/search':
+        specifier: ^6.0.0
+        version: 6.5.11
+      '@codemirror/state':
+        specifier: 6.6.0
+        version: 6.6.0
       '@codemirror/view':
         specifier: ^6.36.8
         version: 6.40.0
@@ -1268,9 +1280,6 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
-
-  '@codemirror/autocomplete@6.18.6':
-    resolution: {integrity: sha512-PHHBXFomUs5DF+9tCOM/UoW6XQ4R44lLNNhRaW9PKPTU0D7lIjRg3ElxaJnTwsl/oHiR93WSXDBrekhoUGCPtg==}
 
   '@codemirror/autocomplete@6.20.1':
     resolution: {integrity: sha512-1cvg3Vz1dSSToCNlJfRA2WSI4ht3K+WplO0UMOgmUYPivCyy2oueZY6Lx7M9wThm7SDUBViRmuT+OG/i8+ON9A==}
@@ -7353,13 +7362,6 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@codemirror/autocomplete@6.18.6':
-    dependencies:
-      '@codemirror/language': 6.12.2
-      '@codemirror/state': 6.6.0
-      '@codemirror/view': 6.40.0
-      '@lezer/common': 1.2.3
-
   '@codemirror/autocomplete@6.20.1':
     dependencies:
       '@codemirror/language': 6.12.2
@@ -7381,7 +7383,7 @@ snapshots:
 
   '@codemirror/lang-python@6.2.1':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
+      '@codemirror/autocomplete': 6.20.1
       '@codemirror/language': 6.12.2
       '@codemirror/state': 6.6.0
       '@lezer/common': 1.2.3
@@ -10144,7 +10146,7 @@ snapshots:
 
   codemirror@6.0.2:
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
+      '@codemirror/autocomplete': 6.20.1
       '@codemirror/commands': 6.8.1
       '@codemirror/language': 6.12.2
       '@codemirror/lint': 6.9.5
