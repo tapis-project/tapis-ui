@@ -12,8 +12,34 @@ https://tapis.readthedocs.io/en/latest/index.html
 You may also reference live-docs based on the OpenAPI v3 specification here:
 https://tapis-project.github.io/live-docs
 
-## 25Q4.0 - 2025 Q4
-New Release
+
+## 26Q1.0
+
+### New features:
+
+- ChatPanel and advanced features
+- Added features for tutorials
+- View system output before job end
+- New advanced pods edit mode
+- New advanced pods admin mode
+- Pods diff viewer and resource adder
+- TMS Auth flow
+- Revert system credential button
+- Goto hostEval button
+
+### Bug fixes:
+
+- Incread upload time + limit
+- Fixes for workflows
+- Fixes for ML Workbench
+- Fixes for Pods
+- Fixes for Chat Panel urls + reactivity
+- Fixes for styling before tutorial
+- Fixes for responsive design on all pages
+- Fixes for tutorial ease
+
+
+## 25Q4.0
 
 ### New features:
 

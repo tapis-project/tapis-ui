@@ -1,6 +1,12 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useSyncExternalStore,
+} from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useQueryClient } from 'react-query';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
@@ -43,6 +49,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { FloatingChatButton } from 'app/_components';
 import { ChatContext } from 'app/_context/chat';
+import {
+  getPodsAdminMode,
+  setPodsAdminMode,
+  subscribePodsAdminMode,
+} from 'utils/podsAdminMode';
 
 type SidebarItems = {
   [key: string]: any;
@@ -52,6 +63,11 @@ const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
   const { extension, extensionName } = useExtension();
   const chatContextValue = useContext(ChatContext);
+  const queryClient = useQueryClient();
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
   const isIcicleExtension = extensionName === '@icicle/tapisui-extension';
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
@@ -67,6 +83,24 @@ const Sidebar: React.FC = () => {
   const result = data?.result ?? [];
   const tenants = result;
   const history = useHistory();
+
+  const valueBlockStyle = {
+    display: 'inline-block',
+    width: 'fit-content',
+    maxWidth: '100%',
+    marginTop: '0rem',
+    marginBottom: '0rem',
+    padding: '0.65rem 0.8rem',
+    borderRadius: '8px',
+    backgroundColor: '#f5f7fa',
+    border: '1px solid #d7dee7',
+    fontFamily:
+      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+    fontSize: '0.95rem',
+    lineHeight: 1.3,
+    color: '#1f2933',
+    wordBreak: 'break-word' as const,
+  };
 
   // Initialize section open states based on defaultOpen values
   useEffect(() => {
@@ -96,10 +130,17 @@ const Sidebar: React.FC = () => {
   const renderSidebarItem = (
     to: string,
     icon: string | undefined,
-    text: string
+    text: string,
+    accent?: { accentLeft?: boolean; accentLeftColor?: string }
   ) => {
     return (
-      <NavItem to={to} icon={icon} key={uuidv4()}>
+      <NavItem
+        to={to}
+        icon={icon}
+        key={uuidv4()}
+        accentLeft={accent?.accentLeft}
+        accentLeftColor={accent?.accentLeftColor}
+      >
         {expanded ? text : ''}
       </NavItem>
     );
@@ -112,7 +153,26 @@ const Sidebar: React.FC = () => {
     apps: renderSidebarItem('/apps', 'applications', 'Apps'),
     jobs: renderSidebarItem('/jobs', 'jobs', 'Jobs'),
     workflows: renderSidebarItem('/workflows', 'publications', 'Workflows'),
-    pods: renderSidebarItem('/pods', 'visualization', 'Pods'),
+    pods: (
+      <NavItem
+        to="/pods"
+        icon="visualization"
+        key="pods-nav"
+        accentLeft={podsAdminMode}
+        accentLeftColor="#F69723"
+        onLongPress={() => {
+          setPodsAdminMode(!podsAdminMode);
+          queryClient.invalidateQueries({
+            predicate: (q) =>
+              typeof q.queryKey[0] === 'string' &&
+              q.queryKey[0].startsWith('pods/'),
+          });
+        }}
+        longPressMs={1200}
+      >
+        {expanded ? 'Pods' : ''}
+      </NavItem>
+    ),
     'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
   };
@@ -361,24 +421,24 @@ const Sidebar: React.FC = () => {
                           pt: '8px',
                           pb: '8px',
                           fontWeight: 'bold',
+                          justifyContent: 'space-between',
                         }}
                       >
-                        {sectionOpenStates[section.name] ? (
-                          <ExpandLessRounded />
-                        ) : (
-                          <ExpandMoreRounded />
-                        )}
                         {expanded && (
                           <ListItemText
                             primary={section.name}
                             sx={{
-                              pl: '.5rem',
                               '& .MuiListItemText-primary': {
                                 fontWeight: 'bold',
                                 fontSize: '0.9rem',
                               },
                             }}
                           />
+                        )}
+                        {sectionOpenStates[section.name] ? (
+                          <ExpandLessRounded />
+                        ) : (
+                          <ExpandMoreRounded />
                         )}
                       </ListItemButton>
                     </div>
@@ -790,12 +850,14 @@ const Sidebar: React.FC = () => {
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
           />
-          <Typography variant="h6">Current Domain: </Typography>
-          <Typography fontSize={'1.1rem'}>
+          <Typography variant="h6">Current Domain:</Typography>
+          <Typography component="div" sx={valueBlockStyle}>
             {basePath?.replace('https://', '').replace('http://', '')}
           </Typography>
           <Typography variant="h6">Token Life Remaining:</Typography>
-          <CountdownDisplay expirationTime={claims['exp']} />
+          <Typography component="div" sx={valueBlockStyle}>
+            <CountdownDisplay expirationTime={claims['exp']} />
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setModal(undefined)}>Close</Button>
