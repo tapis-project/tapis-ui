@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 import {
   useHistory,
@@ -20,16 +20,31 @@ import {
   Lock,
   LockOpen,
 } from '@mui/icons-material';
+import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
+import { computeDiff, buildChangeSummary } from '../Wizards/Common/computeDiff';
 
 const NavPods: React.FC = () => {
   const { url } = useRouteMatch();
   const history = useHistory();
+  const dispatch = useAppDispatch();
 
   const params = useParams<{ podId?: string }>();
+  const { podTab, updatePodData } = useAppSelector((state) => state.pods);
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
 
   const { data, isLoading, error } = Hooks.useListPods();
   const definitions: Array<Pods.PodResponseModel> = data?.result ?? [];
   const loadingText = PodsLoadingText();
+
+  // Extract admin context from metadata when admin mode is active
+  const adminContext = (data as any)?.metadata?.admin_context;
+  const userAccessibleIds: Set<string> | undefined =
+    podsAdminMode && adminContext?.user_accessible_ids
+      ? new Set<string>(adminContext.user_accessible_ids)
+      : undefined;
 
   if (isLoading) {
     return (
@@ -41,7 +56,11 @@ const NavPods: React.FC = () => {
     );
   }
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div style={{ paddingLeft: '16px', paddingTop: '16px' }}>
+        Error: {error.message}
+      </div>
+    );
   }
 
   // return (
@@ -81,7 +100,52 @@ const NavPods: React.FC = () => {
           objects={systems}
           defaultField={'status'}
           defaultOnClickItem={(system: any) => {
-            history.push(`/pods/${system.pod_id!}`);
+            const targetId = system.pod_id!;
+            // If already viewing this pod, no-op
+            if (targetId === params.podId) return;
+
+            // If in edit mode, guard navigation
+            if (podTab === 'edit' && params.podId) {
+              // Compute actual diff to determine if there are real changes
+              const currentPod = definitions.find(
+                (p) => p.pod_id === params.podId
+              );
+              const hasDraft =
+                updatePodData &&
+                typeof updatePodData === 'object' &&
+                Object.keys(updatePodData).length > 0;
+              const changes =
+                hasDraft && currentPod
+                  ? computeDiff(currentPod, updatePodData)
+                  : null;
+              const hasRealChanges = changes?.hasChanges === true;
+
+              if (hasRealChanges) {
+                const summary = buildChangeSummary(changes);
+                let changeList = '';
+                if (summary.length > 0) {
+                  changeList =
+                    '\n\nUnsaved changes:\n' +
+                    summary
+                      .map((s) => `  • ${s.field} (${s.type}): ${s.detail}`)
+                      .join('\n');
+                }
+
+                const confirmed = window.confirm(
+                  `You have unsaved changes. Discard and switch pods?${changeList}`
+                );
+                if (!confirmed) return;
+              }
+              // Exit edit mode and clear draft before navigating
+              dispatch(
+                updateState({
+                  podTab: 'details',
+                  updatePodData: undefined,
+                })
+              );
+            }
+
+            history.push(`/pods/${targetId}`);
           }}
           includeAll={true}
           includeAllGroupLabel="All Pods"
@@ -99,6 +163,14 @@ const NavPods: React.FC = () => {
           listItemIconStyle={{ minWidth: '42px' }}
           middleClickLink={(object: any) =>
             object.pod_id ? `/#/pods/${object.pod_id}` : undefined
+          }
+          itemStyle={
+            userAccessibleIds
+              ? (object: any) =>
+                  !userAccessibleIds.has(object.pod_id)
+                    ? { boxShadow: 'inset 0.2rem 0 0 0 #F69723' }
+                    : undefined
+              : undefined
           }
           groups={[
             {

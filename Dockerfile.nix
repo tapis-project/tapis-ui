@@ -11,6 +11,7 @@ COPY \
   --exclude=./.vscode \
   --exclude=./__pycache__ \
   --exclude=./__mocks__ \
+  --exclude=./.jj \
   --exclude=./.github \
   --exclude=./build \
   --exclude=./deploy \

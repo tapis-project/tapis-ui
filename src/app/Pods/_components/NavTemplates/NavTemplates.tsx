@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSyncExternalStore } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useRouteMatch } from 'react-router-dom';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
@@ -18,6 +19,7 @@ import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import { format } from 'date-fns';
 import styles from '../Pages.module.scss';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
+import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
 
 interface CustomTreeItemProps extends TreeItemProps {
   isLeaf?: boolean;
@@ -61,6 +63,10 @@ function EndIcon(
 
 const NavTemplates: React.FC = () => {
   const { url } = useRouteMatch();
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
   const { data, isLoading, error } = Hooks.useListTemplatesAndTags({
     full: true,
   });
@@ -71,7 +77,23 @@ const NavTemplates: React.FC = () => {
   const { templateNavExpandedItems, templateNavSelectedItems, templateTab } =
     useAppSelector((state) => state.pods);
 
+  // Extract admin context from metadata when admin mode is active
+  const adminContext = (data as any)?.metadata?.admin_context;
+  const userAccessibleIds: Set<string> | undefined =
+    podsAdminMode && adminContext?.user_accessible_ids
+      ? new Set<string>(adminContext.user_accessible_ids)
+      : undefined;
+
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
+    // Guard: if in edit mode, confirm before navigating away
+    if (templateTab === 'edit') {
+      const confirmed = window.confirm(
+        'You have unsaved changes in the editor. Discard and switch templates?'
+      );
+      if (!confirmed) return;
+      dispatch(updateState({ templateTab: 'details' }));
+    }
+
     var tabState = 'details';
     // Use '::' as delimiter to avoid conflicts with hyphens in template IDs or tag names
     const parts = itemId.split('::');
@@ -122,7 +144,11 @@ const NavTemplates: React.FC = () => {
     );
   }
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div style={{ paddingLeft: '16px', paddingTop: '16px' }}>
+        Error: {error.message}
+      </div>
+    );
   }
 
   const formatTimeAgo = (timestamp: string) => {
@@ -190,8 +216,19 @@ const NavTemplates: React.FC = () => {
       </CustomTreeItem>
     ));
 
+    const isAdminOnly = userAccessibleIds
+      ? !userAccessibleIds.has(templateId)
+      : false;
+
     return (
-      <CustomTreeItem key={templateId} itemId={templateId} label={templateId}>
+      <CustomTreeItem
+        key={templateId}
+        itemId={templateId}
+        label={templateId}
+        sx={
+          isAdminOnly ? { boxShadow: 'inset 0.2rem 0 0 0 #F69723' } : undefined
+        }
+      >
         {children}
       </CustomTreeItem>
     );

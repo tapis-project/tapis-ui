@@ -13,6 +13,7 @@ export { default as useListImages } from './useListImages';
 export { default as useListVolumes } from './useListVolumes';
 export { default as useUpdateVolume } from './useUpdateVolume';
 export { default as useCreateImage } from './useCreateImage';
+export { default as useDeleteImage } from './useDeleteImage';
 export { default as useDeletePod } from './useDeletePod';
 export { default as useGetPodPermissions } from './useGetPodPermissions';
 export { default as useGetVolumePermissions } from './useGetVolumePermissions';
@@ -46,6 +47,7 @@ export { default as useGetTemplatePermissions } from './useGetTemplatePermission
 export { default as useSetTemplatePermission } from './useSetTemplatePermission';
 export { default as useListTemplateTags } from './useListTemplateTags';
 export { default as useListTemplatesAndTags } from './useListTemplatesAndTags';
+export { default as useUpdateImage } from './useUpdateImage';
 export { default as useUpdateSnapshot } from './useUpdateSnapshot';
 export { default as useSavePodAsTag } from './useSavePodAsTag';
 export { default as queryKeys } from './queryKeys';

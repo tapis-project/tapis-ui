@@ -42,7 +42,7 @@ const extension = createExtension({
     sections: [
       {
         name: 'Core Services',
-        defaultOpen: false,
+        defaultOpen: true,
         mainServices: ['systems', 'apps', 'jobs', 'files', 'workflows', 'pods'],
         secondaryServices: [],
       },

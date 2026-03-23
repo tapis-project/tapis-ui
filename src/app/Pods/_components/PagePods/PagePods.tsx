@@ -440,28 +440,11 @@ Select or create a pod to get started.`;
           x
         </Button>
         <Button
-          onClick={() => {
-            dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
-            );
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+          color="secondary"
+          sx={{ minWidth: '80px', whiteSpace: 'nowrap' }}
+          variant="outlined"
         >
-          form
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'json' })
-            );
-          }}
-          color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
-        >
-          json
+          Create Pod
         </Button>
       </ButtonGroup>
     ),
@@ -553,24 +536,11 @@ Select or create a pod to get started.`;
           x
         </Button>
         <Button
-          onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
+          color="secondary"
           sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+          variant="outlined"
         >
-          form
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
-          }}
-          color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
-          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
-        >
-          json
+          Edit
         </Button>
       </ButtonGroup>
     ),
@@ -910,11 +880,13 @@ Select or create a pod to get started.`;
                   );
                   invalidateDerived();
                 }}
+                sx={{ py: 0 }}
               />
             }
             label="Resolve Secrets"
             sx={{
               ml: 1,
+              height: '32px',
               '& .MuiFormControlLabel-label': { fontSize: '0.875rem' },
             }}
           />
@@ -1015,12 +987,24 @@ Select or create a pod to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          flexWrap: 'nowrap',
+          flexShrink: 0,
         }}
       >
-        <Stack spacing={2} direction="row">
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+        >
           {leftButtons.map((btn, idx) => btn)}
         </Stack>
-        <Stack spacing={2} direction="row">
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+        >
           {rightButtons.map((btn, idx) => btn)}
         </Stack>
       </div>
@@ -1028,7 +1012,7 @@ Select or create a pod to get started.`;
   };
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -1045,126 +1029,113 @@ Select or create a pod to get started.`;
         <PodsNavigation from="pods" id={objId} />
         <PodToolbar />
       </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          overflow: 'auto',
-          minHeight: 0,
-        }}
-      >
+      <div className={styles['content-row']}>
         <div style={{ flexShrink: 0 }} className={` ${styles['nav']} `}>
           <NavPods />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            flex: 1,
-            overflow: 'auto',
-            minWidth: 320,
-          }}
-        >
-          {objId === undefined
-            ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
-            : renderTabBar(detailsLeftButtons, detailsRightButtons)}
-          <div className={styles['container']}>
-            {/* Permissions chips when viewing perms */}
-            {podTab === 'perms' && objId !== undefined && (
-              <Box sx={{ px: 1, py: 1, mb: 1 }}>
-                {isFetchingPerms ? (
-                  <Typography variant="body2" color="text.secondary">
-                    Loading permissions...
-                  </Typography>
-                ) : errorPerms ? (
-                  <Typography variant="body2" color="error">
-                    Error loading permissions
-                  </Typography>
-                ) : podPerms && typeof podPerms === 'object' ? (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 1,
-                      alignItems: 'center',
-                    }}
-                  >
-                    {(() => {
-                      const permsData = podPerms.permissions ?? podPerms;
-                      const entries: [string, string][] = Array.isArray(
-                        permsData
-                      )
-                        ? permsData.map((entry: string) => {
-                            const parts = entry.split(':');
-                            return [parts[0], parts.slice(1).join(':')] as [
-                              string,
-                              string
-                            ];
-                          })
-                        : Object.entries(permsData);
-                      if (entries.length === 0) {
-                        return (
-                          <Typography variant="body2" color="text.secondary">
-                            No permissions set
-                          </Typography>
-                        );
-                      }
-                      return entries.map(([user, level]) => (
-                        <Chip
-                          key={user}
-                          label={`${user}:${level}`}
-                          size="small"
-                          variant="outlined"
-                          onDelete={() => handleDeletePodPermission(user)}
-                          disabled={isDeletingPodPermission}
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontSize: '0.8rem',
-                            borderRadius: 1,
-                            ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
-                              ? {
-                                  borderColor: '#9c27b0',
-                                  color: '#9c27b0',
-                                  '& .MuiChip-deleteIcon': { color: '#9c27b0' },
-                                }
-                              : level === 'USER'
-                              ? {
-                                  borderColor: '#9e9e9e',
-                                  color: '#9e9e9e',
-                                  '& .MuiChip-deleteIcon': { color: '#9e9e9e' },
-                                }
-                              : {}),
-                          }}
-                        />
-                      ));
-                    })()}
-                  </Box>
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No permissions data available
-                  </Typography>
-                )}
-              </Box>
-            )}
-            <PodsCodeMirror
-              editValue={
-                podTab === 'edit' ? JSON.stringify(createPodData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (podTab === 'edit' && objId !== undefined) ||
-                (podRootTab === 'createPod' && objId === undefined)
-              }
-              editPanel={
-                podTab === 'edit' && objId !== undefined ? (
-                  <PodWizardEdit pod={pod} />
-                ) : (
-                  <PodWizard />
-                )
-              }
-              //scrollToBottom should be true if podTab == 'log' or 'actionlogs'
-              scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
-            />
+        <div className={styles['right-pane']} style={{ minWidth: 352 }}>
+          <div className={styles['work-toolbar']}>
+            {objId === undefined
+              ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
+              : renderTabBar(detailsLeftButtons, detailsRightButtons)}
+          </div>
+          <div className={styles['work-content']}>
+            <div className={styles['container']}>
+              {/* Permissions chips when viewing perms */}
+              {podTab === 'perms' && objId !== undefined && (
+                <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                  {isFetchingPerms ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Loading permissions...
+                    </Typography>
+                  ) : errorPerms ? (
+                    <Typography variant="body2" color="error">
+                      Error loading permissions
+                    </Typography>
+                  ) : podPerms && typeof podPerms === 'object' ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {(() => {
+                        const permsData = podPerms.permissions ?? podPerms;
+                        const entries: [string, string][] = Array.isArray(
+                          permsData
+                        )
+                          ? permsData.map((entry: string) => {
+                              const parts = entry.split(':');
+                              return [parts[0], parts.slice(1).join(':')] as [
+                                string,
+                                string
+                              ];
+                            })
+                          : Object.entries(permsData);
+                        if (entries.length === 0) {
+                          return (
+                            <Typography variant="body2" color="text.secondary">
+                              No permissions set
+                            </Typography>
+                          );
+                        }
+                        return entries.map(([user, level]) => (
+                          <Chip
+                            key={user}
+                            label={`${user}:${level}`}
+                            size="small"
+                            variant="outlined"
+                            onDelete={() => handleDeletePodPermission(user)}
+                            disabled={isDeletingPodPermission}
+                            sx={{
+                              fontFamily: 'monospace',
+                              fontSize: '0.8rem',
+                              borderRadius: 1,
+                              ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                                ? {
+                                    borderColor: '#9c27b0',
+                                    color: '#9c27b0',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9c27b0',
+                                    },
+                                  }
+                                : level === 'USER'
+                                ? {
+                                    borderColor: '#9e9e9e',
+                                    color: '#9e9e9e',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9e9e9e',
+                                    },
+                                  }
+                                : {}),
+                            }}
+                          />
+                        ));
+                      })()}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No permissions data available
+                    </Typography>
+                  )}
+                </Box>
+              )}
+              {podTab === 'edit' && objId !== undefined ? (
+                <PodWizardEdit key={objId} pod={pod} />
+              ) : podRootTab === 'createPod' && objId === undefined ? (
+                <PodWizard />
+              ) : (
+                <PodsCodeMirror
+                  editValue=""
+                  value={codeMirrorValue?.toString() ?? ''}
+                  isVisible={true}
+                  isEditorVisible={false}
+                  scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
+                />
+              )}
+            </div>
           </div>
           <div>{renderTooltipModal()}</div>
           {/* modals */}

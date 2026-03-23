@@ -151,6 +151,7 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   filterConfig?: FilterConfig;
   defaultFilters?: Array<Filter>;
   onFiltersChange?: (filters: Array<Filter>) => void;
+  itemStyle?: (object: T) => React.CSSProperties | undefined;
 };
 
 export type FilterableObjectsListComponentProps<
@@ -207,6 +208,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   filterConfig = undefined,
   defaultFilters = [],
   onFiltersChange = undefined,
+  itemStyle = undefined,
 }) => {
   const open = useMemo(() => {
     let concatenatedOpen: FilterableObjectsListState['open'] =
@@ -1109,6 +1111,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                                   })
                                     ? 'rgba(157, 133, 239, 0.25)'
                                     : undefined,
+                                  ...(itemStyle ? itemStyle(object) : {}),
                                   // ...other styles...
                                 }}
                                 onClick={() => {

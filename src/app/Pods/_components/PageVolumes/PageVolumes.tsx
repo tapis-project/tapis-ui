@@ -13,7 +13,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { decode } from 'base-64';
-import { Stack } from '@mui/material';
+import { Stack, Chip, Box, Typography } from '@mui/material';
 import {
   CopyButton,
   TooltipModal,
@@ -23,7 +23,7 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from '../Pages.module.scss';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded } from '@mui/icons-material';
 import { SectionMessage } from '@tapis/tapisui-common';
@@ -63,6 +63,11 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     invalidate: invalidatePerms,
   } = Hooks.useGetVolumePermissions({ volumeId: objId }, { enabled: !!objId });
 
+  const {
+    deleteVolume: deleteVolumePermission,
+    isLoading: isDeletingVolumePermission,
+  } = Hooks.useDeleteVolumePermission();
+
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
@@ -72,6 +77,18 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const toggle = () => {
     setModal(undefined);
+  };
+
+  const handleDeleteVolumePermission = (user: string) => {
+    if (!objId) return;
+    deleteVolumePermission(
+      { volumeId: objId, user },
+      {
+        onSuccess: () => {
+          invalidatePerms();
+        },
+      }
+    );
   };
 
   const loadingText = PodsLoadingText();
@@ -148,9 +165,9 @@ Select or create a volume to get started.`;
             ? loadingText
             : JSON.stringify(filesData, null, 2);
         case 'perms':
-          return error
-            ? `error: ${error}`
-            : isFetching
+          return errorPerms
+            ? `error: ${errorPerms}`
+            : isFetchingPerms
             ? loadingText
             : JSON.stringify(podPerms, null, 2);
         default:
@@ -194,6 +211,9 @@ Select or create a volume to get started.`;
     { id: 'perms', label: 'Perms', tabValue: 'perms' },
   ];
 
+  // Track if perms tab ButtonGroup already rendered (to skip default rendering)
+  const permsHandledInButtonGroup = true;
+
   const rightButtons: ButtonConfig[] = [
     {
       id: 'help',
@@ -232,56 +252,124 @@ Select or create a volume to get started.`;
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        flexWrap: 'nowrap',
+        flexShrink: 0,
       }}
     >
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+      >
         {leftButtons.map(
-          ({ id, label, tabValue, customOnClick, icon, disabled }) => (
-            <LoadingButton
-              sx={{ minWidth: '10px' }}
-              loading={id === 'refresh' && isFetching}
-              key={id}
-              variant="outlined"
-              disabled={disabled}
-              color={
-                volumeTab === tabValue || volumeRootTab === tabValue
-                  ? 'secondary'
-                  : 'primary'
-              }
-              size="small"
-              onClick={() => {
-                invalidate();
-                if (customOnClick) {
-                  customOnClick();
-                } else if (tabValue) {
-                  if (objId === undefined) {
-                    dispatch(updateState({ volumeRootTab: tabValue }));
-                  } else {
-                    dispatch(updateState({ volumeTab: tabValue }));
-                  }
+          ({ id, label, tabValue, customOnClick, icon, disabled }) => {
+            if (id === 'edit' && volumeTab === 'edit') {
+              return (
+                <ButtonGroup
+                  key="edit-group"
+                  variant="outlined"
+                  size="small"
+                  sx={{ height: '32px' }}
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(updateState({ volumeTab: 'details' }));
+                    }}
+                    color="error"
+                    sx={{
+                      minWidth: '28px !important',
+                      width: '28px',
+                      p: 0,
+                      borderRight: '1px solid rgba(0,0,0,0.12)',
+                    }}
+                    variant="outlined"
+                  >
+                    x
+                  </Button>
+                  <Button
+                    color="secondary"
+                    sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                    variant="outlined"
+                  >
+                    Edit
+                  </Button>
+                </ButtonGroup>
+              );
+            }
+            if (id === 'perms') {
+              return (
+                <React.Fragment key="perms-split">
+                  <ButtonGroup variant="outlined" size="small">
+                    <LoadingButton
+                      sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                      variant="outlined"
+                      color={volumeTab === 'perms' ? 'secondary' : 'primary'}
+                      onClick={() => {
+                        invalidatePerms();
+                        dispatch(updateState({ volumeTab: 'perms' }));
+                      }}
+                    >
+                      Perms
+                    </LoadingButton>
+                    {volumeTab === 'perms' && (
+                      <Button
+                        onClick={() => {
+                          setModal('podPermissions');
+                        }}
+                        color="primary"
+                        sx={{
+                          fontSize: '14px',
+                          minWidth: '28px !important',
+                          width: '28px',
+                        }}
+                        variant="outlined"
+                      >
+                        +
+                      </Button>
+                    )}
+                  </ButtonGroup>
+                </React.Fragment>
+              );
+            }
+            return (
+              <LoadingButton
+                sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
+                loading={id === 'refresh' && isFetching}
+                key={id}
+                variant="outlined"
+                disabled={disabled}
+                color={
+                  volumeTab === tabValue || volumeRootTab === tabValue
+                    ? 'secondary'
+                    : 'primary'
                 }
-              }}
-            >
-              {icon || label}
-            </LoadingButton>
-          )
+                size="small"
+                onClick={() => {
+                  invalidate();
+                  if (customOnClick) {
+                    customOnClick();
+                  } else if (tabValue) {
+                    if (objId === undefined) {
+                      dispatch(updateState({ volumeRootTab: tabValue }));
+                    } else {
+                      dispatch(updateState({ volumeTab: tabValue }));
+                    }
+                  }
+                }}
+              >
+                {icon || label}
+              </LoadingButton>
+            );
+          }
         )}
       </Stack>
-      <Stack spacing={2} direction="row">
-        {volumeTab === 'perms' && (
-          <Button
-            key="permissions"
-            sx={{ minWidth: '10px' }}
-            variant="outlined"
-            color="primary"
-            size="small"
-            onClick={() => {
-              setModal('podPermissions');
-            }}
-          >
-            +
-          </Button>
-        )}
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+      >
         {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
           <Button
             key={id}
@@ -292,6 +380,7 @@ Select or create a volume to get started.`;
                 : 'primary'
             }
             size="small"
+            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => {
               if (customOnClick) {
                 customOnClick();
@@ -312,7 +401,7 @@ Select or create a volume to get started.`;
   );
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -360,43 +449,113 @@ Select or create a volume to get started.`;
           </Button>
         </Stack>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div className={styles['content-row']}>
+        <div className={` ${styles['nav']} `}>
           <NavVolumes />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            flex: 1,
-            overflow: 'auto',
-          }}
-        >
-          {renderTabBar(getTabBarButtons(), rightButtons)}
-          <div className={styles['container']}>
-            <PodsCodeMirror
-              editValue={
-                volumeTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (volumeTab === 'edit' && objId !== undefined) ||
-                (volumeRootTab === 'createVolume' && objId === undefined)
-              }
-              editPanel={
-                volumeTab === 'edit' && objId !== undefined ? (
-                  <VolumeWizardEdit
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                ) : (
-                  <VolumeWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                )
-              }
-            />
+        <div className={styles['right-pane']}>
+          <div className={styles['work-toolbar']}>
+            {renderTabBar(getTabBarButtons(), rightButtons)}
+          </div>
+          <div className={styles['work-content']}>
+            <div className={styles['container']}>
+              {/* Permissions chips when viewing perms */}
+              {volumeTab === 'perms' && objId !== undefined && (
+                <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                  {isFetchingPerms ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Loading permissions...
+                    </Typography>
+                  ) : errorPerms ? (
+                    <Typography variant="body2" color="error">
+                      Error loading permissions
+                    </Typography>
+                  ) : podPerms && typeof podPerms === 'object' ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {(() => {
+                        const permsData = podPerms.permissions ?? podPerms;
+                        const entries: [string, string][] = Array.isArray(
+                          permsData
+                        )
+                          ? permsData.map((entry: string) => {
+                              const parts = entry.split(':');
+                              return [parts[0], parts.slice(1).join(':')] as [
+                                string,
+                                string
+                              ];
+                            })
+                          : Object.entries(permsData);
+                        if (entries.length === 0) {
+                          return (
+                            <Typography variant="body2" color="text.secondary">
+                              No permissions set
+                            </Typography>
+                          );
+                        }
+                        return entries.map(([user, level]) => (
+                          <Chip
+                            key={user}
+                            label={`${user}:${level}`}
+                            size="small"
+                            variant="outlined"
+                            onDelete={() => handleDeleteVolumePermission(user)}
+                            disabled={isDeletingVolumePermission}
+                            sx={{
+                              fontFamily: 'monospace',
+                              fontSize: '0.8rem',
+                              borderRadius: 1,
+                              ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                                ? {
+                                    borderColor: '#9c27b0',
+                                    color: '#9c27b0',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9c27b0',
+                                    },
+                                  }
+                                : level === 'USER'
+                                ? {
+                                    borderColor: '#9e9e9e',
+                                    color: '#9e9e9e',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9e9e9e',
+                                    },
+                                  }
+                                : {}),
+                            }}
+                          />
+                        ));
+                      })()}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No permissions data available
+                    </Typography>
+                  )}
+                </Box>
+              )}
+              {volumeTab === 'edit' && objId !== undefined ? (
+                <VolumeWizardEdit key={objId} volume={pod} />
+              ) : volumeRootTab === 'createVolume' && objId === undefined ? (
+                <VolumeWizard
+                  sharedData={sharedData}
+                  setSharedData={setSharedData}
+                />
+              ) : (
+                <PodsCodeMirror
+                  editValue=""
+                  value={codeMirrorValue?.toString() ?? ''}
+                  isVisible={true}
+                  isEditorVisible={false}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div>{renderTooltipModal()}</div>
