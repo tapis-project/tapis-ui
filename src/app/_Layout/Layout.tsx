@@ -34,6 +34,10 @@ import type { ChatTurn } from 'app/_context/chat/agentTypes';
 import 'app/MlHub/_context/registerMlHubChat';
 import 'app/Systems/_context/registerSystemsChat';
 import 'app/Files/_context/registerFilesChat';
+import 'app/Apps/_context/registerAppsChat';
+import 'app/Jobs/_context/registerJobsChat';
+import 'app/Workflows/_context/registerWorkflowsChat';
+import 'app/Pods/_context/registerPodsChat';
 
 const LayoutContent: React.FC = () => {
   const { claims, pathTenantId, pathSiteId } = useTapisConfig();
@@ -206,7 +210,7 @@ const LayoutContent: React.FC = () => {
         <PageLayout
           left={<Sidebar />}
           right={
-            <div style={{ height: '100vh' }}>
+            <div style={{ height: '100%' }}>
               <div>{crumbs && crumbs.length == 0 ? null : header}</div>
               <div className="body">
                 <Router />
@@ -232,7 +236,7 @@ const LayoutContent: React.FC = () => {
               : chatConfig.emptyStateContent
           }
           resizable
-          initialWidth={520}
+          initialWidth={580}
           minWidth={360}
           maxWidth={960}
           enableExport

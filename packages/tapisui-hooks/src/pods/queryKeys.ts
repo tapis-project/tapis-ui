@@ -20,8 +20,12 @@ const QueryKeys = {
   getTemplate: 'pods/getTemplate',
   createTemplate: 'pods/createTemplate',
   updateTemplate: 'pods/updateTemplate',
+  deleteTemplate: 'pods/deleteTemplate',
   listTemplates: 'pods/listTemplates',
   listTemplatesAndTags: 'pods/listTemplatesAndTags',
+  getTemplatePermissions: 'pods/getTemplatePermissions',
+  setTemplatePermission: 'pods/setTemplatePermission',
+  deleteTemplatePermission: 'pods/deleteTemplatePermission',
 
   // Images
   getImage: 'pods/getImage',
@@ -54,6 +58,7 @@ const QueryKeys = {
   // Template Tags
   getTemplateTag: 'pods/getTemplateTag',
   createTemplateTag: 'pods/createTemplateTag',
+  deleteTemplateTag: 'pods/deleteTemplateTag',
   listTemplateTags: 'pods/listTemplateTags',
 };
 

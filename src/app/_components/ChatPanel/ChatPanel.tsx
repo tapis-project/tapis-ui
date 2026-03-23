@@ -26,6 +26,152 @@ import { format, isToday } from 'date-fns';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Markdown from 'markdown-to-jsx';
 
+/**
+ * Styled inline code span for chat markdown rendering.
+ */
+const InlineCode: React.FC<React.HTMLAttributes<HTMLElement>> = ({
+  children,
+  ...rest
+}) => (
+  <code
+    {...rest}
+    style={{
+      backgroundColor: '#f0f0f0',
+      border: '1px solid #e0e0e0',
+      borderRadius: 3,
+      padding: '1px 5px',
+      fontSize: '0.82em',
+      fontFamily:
+        '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
+      wordBreak: 'break-word',
+    }}
+  >
+    {children}
+  </code>
+);
+
+/**
+ * Styled fenced code block with a language label and copy button.
+ * Handles both ```lang ... ``` blocks rendered as <pre><code>.
+ */
+const CodeBlock: React.FC<{
+  children?: React.ReactNode;
+  className?: string;
+}> = ({ children, className }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  // Extract language from className (e.g. "lang-python" -> "python")
+  let language = '';
+  if (className && typeof className === 'string') {
+    const match = className.match(/lang(?:uage)?-(\S+)/);
+    if (match) language = match[1];
+  }
+
+  // Flatten children to plain text for copy
+  const extractText = (node: React.ReactNode): string => {
+    if (typeof node === 'string') return node;
+    if (typeof node === 'number') return String(node);
+    if (Array.isArray(node)) return node.map(extractText).join('');
+    if (React.isValidElement(node) && node.props?.children)
+      return extractText(node.props.children as React.ReactNode);
+    return '';
+  };
+
+  const codeText = extractText(children).replace(/\n$/, '');
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* noop */
+    }
+  };
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        my: 1,
+        borderRadius: '6px',
+        overflow: 'hidden',
+        border: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
+      {/* Header bar with language label + copy */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: '#343541',
+          px: 1.5,
+          py: 0.5,
+          minHeight: 28,
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            color: '#b0b0b0',
+            fontFamily: 'monospace',
+            fontSize: '0.7rem',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            userSelect: 'none',
+          }}
+        >
+          {language || 'code'}
+        </Typography>
+        <IconButton
+          size="small"
+          onClick={handleCopy}
+          sx={{
+            color: '#b0b0b0',
+            p: 0.25,
+            '&:hover': { color: '#fff' },
+          }}
+          aria-label="Copy code"
+        >
+          {copied ? (
+            <CheckIcon sx={{ fontSize: 14 }} />
+          ) : (
+            <ContentCopyIcon sx={{ fontSize: 14 }} />
+          )}
+        </IconButton>
+      </Box>
+      {/* Code content */}
+      <Box
+        component="pre"
+        sx={{
+          m: 0,
+          p: 1.5,
+          bgcolor: '#1e1e2e',
+          color: '#e0e0e0',
+          overflowX: 'auto',
+          fontSize: '0.8rem',
+          lineHeight: 1.6,
+          fontFamily:
+            '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
+          whiteSpace: 'pre',
+          '& code': {
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            fontSize: 'inherit',
+            fontFamily: 'inherit',
+            color: 'inherit',
+          },
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
+
 export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -87,8 +233,8 @@ const formatTimestamp = (timestamp?: number | Date | string): string => {
 
 const CLAMP_FALLBACK_WIDTH = 480;
 const CLAMP_FALLBACK_HEIGHT = 640;
-const TOP_PADDING = 36;
-const BOTTOM_PADDING = 40;
+const TOP_PADDING = 8;
+const BOTTOM_PADDING = 8;
 
 /**
  * ChatPanel - A persistent side panel design (no backdrop, integrated into layout)
@@ -155,7 +301,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     minHeightValue,
     maxHeight ??
       (typeof window !== 'undefined'
-        ? Math.max(window.innerHeight - 32, minHeightValue)
+        ? Math.max(
+            window.innerHeight - TOP_PADDING - BOTTOM_PADDING,
+            minHeightValue
+          )
         : 1200)
   );
 
@@ -372,8 +521,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         typeof window !== 'undefined'
           ? window.innerHeight
           : resizeState.current.startHeight;
-      const tentativeTop = Math.max(0, resizeState.current.startTop + deltaY);
-      const maxTop = Math.max(0, viewportHeight - minHeightValue);
+      const tentativeTop = Math.max(
+        TOP_PADDING,
+        resizeState.current.startTop + deltaY
+      );
+      const maxTop = Math.max(
+        TOP_PADDING,
+        viewportHeight - minHeightValue - BOTTOM_PADDING
+      );
       const newTop = Math.min(tentativeTop, maxTop);
       const maxHeightAllowed = viewportHeight - newTop - BOTTOM_PADDING;
       const rawHeight = resizeState.current.startHeight - deltaY;
@@ -419,8 +574,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         typeof window !== 'undefined'
           ? window.innerHeight
           : resizeState.current.startHeight;
-      const tentativeTop = Math.max(0, resizeState.current.startTop + deltaY);
-      const maxTop = Math.max(0, viewportHeight - minHeightValue);
+      const tentativeTop = Math.max(
+        TOP_PADDING,
+        resizeState.current.startTop + deltaY
+      );
+      const maxTop = Math.max(
+        TOP_PADDING,
+        viewportHeight - minHeightValue - BOTTOM_PADDING
+      );
       const newTop = Math.min(tentativeTop, maxTop);
       const maxHeightAllowed = viewportHeight - newTop - BOTTOM_PADDING;
       const rawHeight = resizeState.current.startHeight - deltaY;
@@ -531,11 +692,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
       const newLeft = Math.min(Math.max(0, tentativeLeft), maxLeft);
 
       const maxTop = Math.max(
-        0,
-        viewportHeight - Math.max(panelHeight, minHeightValue) - 8
+        TOP_PADDING,
+        viewportHeight - Math.max(panelHeight, minHeightValue) - BOTTOM_PADDING
       );
       const tentativeTop = resizeState.current.startTop + deltaY;
-      const newTop = Math.min(Math.max(0, tentativeTop), maxTop);
+      const newTop = Math.min(Math.max(TOP_PADDING, tentativeTop), maxTop);
 
       setPanelLeft(newLeft);
       setPanelTop(newTop);
@@ -560,6 +721,74 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     panelTop,
     minHeightValue,
   ]);
+
+  // Ensure the panel stays within the viewport on window resize
+  // and when it is (re)opened after a resize.
+  const ensurePanelVisible = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Keep some padding from the edges so the close button is always reachable
+    const horizontalPadding = 16;
+
+    // Never let the panel be taller/wider than the available viewport
+    const maxAllowedHeight = Math.max(
+      minHeightValue,
+      viewportHeight - TOP_PADDING - BOTTOM_PADDING
+    );
+    const nextHeight = Math.min(panelHeight, maxAllowedHeight);
+
+    const maxAllowedWidth = Math.max(
+      280,
+      viewportWidth - horizontalPadding * 2
+    );
+    const nextWidth = Math.min(panelWidth, maxAllowedWidth);
+
+    const maxLeft = Math.max(
+      horizontalPadding,
+      viewportWidth - nextWidth - horizontalPadding
+    );
+    const nextLeft = Math.min(Math.max(horizontalPadding, panelLeft), maxLeft);
+
+    const maxTop = Math.max(
+      TOP_PADDING,
+      viewportHeight - nextHeight - BOTTOM_PADDING
+    );
+    const nextTop = Math.min(Math.max(TOP_PADDING, panelTop), maxTop);
+
+    setPanelWidth(nextWidth);
+    setPanelLeft(nextLeft);
+    setPanelTop(nextTop);
+    setPanelHeight(nextHeight);
+  }, [panelWidth, panelHeight, panelLeft, panelTop, minHeightValue]);
+
+  // Reposition when the window is resized while the chat is open
+  useEffect(() => {
+    if (!open) return;
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      ensurePanelVisible();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Run once on mount/open to correct any off-screen state
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [open, ensurePanelVisible]);
+
+  // Also ensure the panel is visible whenever it transitions from closed to open,
+  // even if the window size changed while it was closed.
+  useEffect(() => {
+    if (!open) return;
+    ensurePanelVisible();
+  }, [open, ensurePanelVisible]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -691,6 +920,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           minHeight: minHeightValue,
           maxHeight: maxHeightValue,
           width: effectiveWidth,
+          maxWidth: 'calc(100vw - 32px)',
           display: 'flex',
           flexDirection: 'column',
           zIndex: 1300,
@@ -873,10 +1103,13 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             userSelect: isDragging ? 'none' : 'auto',
           }}
         >
-          <Typography variant="subtitle1" sx={{ flex: 1, fontWeight: 600 }}>
-            {title}
-          </Typography>
-          {headerExtras}
+          {headerExtras ? (
+            <Box sx={{ flex: 1, minWidth: 0 }}>{headerExtras}</Box>
+          ) : (
+            <Typography variant="subtitle1" sx={{ flex: 1, fontWeight: 600 }}>
+              {title}
+            </Typography>
+          )}
           {enableExport && messages.length > 0 && (
             <Tooltip title="Export chat" placement="bottom">
               <IconButton
@@ -913,7 +1146,20 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
               </IconButton>
             </Tooltip>
           )}
-          <IconButton aria-label="Close chat" onClick={onClose} size="small">
+          <IconButton
+            aria-label="Close chat"
+            onClick={onClose}
+            size="small"
+            sx={{
+              border: '1px solid',
+              borderColor: '#b71c1c80',
+              color: '#b71c1c',
+              '&:hover': {
+                bgcolor: '#b71c1c14',
+                borderColor: '#b71c1c',
+              },
+            }}
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </Stack>
@@ -946,7 +1192,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                 >
                   <Box
                     sx={{
-                      maxWidth: '80%',
+                      maxWidth: '97%',
                       px: 1.25,
                       py: 1,
                       borderRadius: 1.5,
@@ -1016,6 +1262,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                             textDecoration: 'none',
                           },
                         },
+                        '& h1, & h2, & h3, & h4, & h5, & h6': {
+                          fontSize: '1.25rem !important',
+                          fontWeight: 600,
+                          marginTop: '0.5em',
+                          marginBottom: '0.5em',
+                          '&:first-of-type': {
+                            marginTop: 0,
+                          },
+                        },
                       }}
                     >
                       <Markdown
@@ -1033,6 +1288,105 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                               props: {
                                 variant: 'body2',
                                 component: 'p',
+                              },
+                            },
+                            pre: {
+                              component: ({ children, ...props }: any) => {
+                                // markdown-to-jsx wraps fenced blocks in <pre><code class="lang-x">.
+                                // Forward the code child's className so CodeBlock can read the language.
+                                const child =
+                                  React.Children.toArray(children)[0];
+                                const childProps = React.isValidElement(child)
+                                  ? (child.props as any)
+                                  : {};
+                                return (
+                                  <CodeBlock className={childProps.className}>
+                                    {childProps.children ?? children}
+                                  </CodeBlock>
+                                );
+                              },
+                            },
+                            code: {
+                              component: ({
+                                children,
+                                className,
+                                ...props
+                              }: any) => {
+                                // If rendered inside a <pre> (fenced block) CodeBlock handles it.
+                                // This override only styles *inline* code (`backtick`).
+                                return (
+                                  <InlineCode {...props}>{children}</InlineCode>
+                                );
+                              },
+                            },
+                            ul: {
+                              component: (props: any) => (
+                                <Box
+                                  component="ul"
+                                  sx={{
+                                    pl: 2.5,
+                                    my: 0.5,
+                                    fontSize: '0.875rem',
+                                    '& li': { mb: 0.25 },
+                                  }}
+                                  {...props}
+                                />
+                              ),
+                            },
+                            ol: {
+                              component: (props: any) => (
+                                <Box
+                                  component="ol"
+                                  sx={{
+                                    pl: 2.5,
+                                    my: 0.5,
+                                    fontSize: '0.875rem',
+                                    '& li': { mb: 0.25 },
+                                  }}
+                                  {...props}
+                                />
+                              ),
+                            },
+                            h1: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h1',
+                              },
+                            },
+                            h2: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h2',
+                              },
+                            },
+                            h3: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h3',
+                              },
+                            },
+                            h4: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h4',
+                              },
+                            },
+                            h5: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h5',
+                              },
+                            },
+                            h6: {
+                              component: Typography,
+                              props: {
+                                variant: 'h6',
+                                component: 'h6',
                               },
                             },
                           },
@@ -1080,7 +1434,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
               <Box
                 sx={{
-                  maxWidth: '70%',
+                  maxWidth: '85%',
                   px: 1.25,
                   py: 1,
                   borderRadius: 1.5,

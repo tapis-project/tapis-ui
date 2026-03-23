@@ -3,11 +3,14 @@ import { Systems } from '@tapis/tapis-typescript';
 import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { default as FilesQueryKeys } from '../files/queryKeys';
 
 type CreateUserCredentialHookParams = {
   systemId: string;
   userName?: string;
   reqUpdateCredential: Systems.ReqUpdateCredential;
+  createTmsKeys?: boolean;
+  skipCredentialCheck?: boolean;
 };
 
 const useCreateCredential = () => {
@@ -36,7 +39,9 @@ const useCreateCredential = () => {
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries([QueryKeys.list, QueryKeys.details]);
+    [FilesQueryKeys.list, QueryKeys.list, QueryKeys.details].map((qk) => {
+      queryClient.invalidateQueries(qk);
+    });
   };
 
   // Return hook object with loading states and login function

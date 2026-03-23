@@ -1,0 +1,25 @@
+.modal-settings {
+  max-height: 38rem;
+  overflow-y: scroll;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dependency-warning {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.4);
+}
+
+.dependency-list {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

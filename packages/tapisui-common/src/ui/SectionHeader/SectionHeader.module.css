@@ -32,6 +32,7 @@
   align-content: flex-end;
   padding-left: 16px;
   padding-right: 16px;
+  min-width: 0;
 }
 /* Header actions are always after heading text */
 .heading ~ * {

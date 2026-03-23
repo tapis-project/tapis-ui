@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useCallback } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { SectionHeader, LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
@@ -67,8 +67,30 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-  const { accessToken, claims, basePath } = useTapisConfig();
-  const { extension } = useExtension();
+  const { accessToken, claims, basePath, setAccessToken } = useTapisConfig();
+  const navigate = useHistory();
+  // TODO All tenant-specific functionality must be refactored into their respective
+  // extenstions
+  const { extension, extensionName } = useExtension();
+  const isIcicle = extensionName === '@icicle/tapisui-extension';
+
+  // Hidden dev token input — revealed by long-pressing "TAPIS" for 3s
+  const isDevHost =
+    location.hostname === 'localhost' ||
+    location.hostname === 'icicleai.tapis.io' ||
+    location.hostname === 'public.tapis.io';
+  const [showDevInput, setShowDevInput] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onTapisPointerDown = useCallback(() => {
+    if (!isDevHost) return;
+    longPressTimer.current = setTimeout(() => setShowDevInput((v) => !v), 3000);
+  }, [isDevHost]);
+  const onTapisPointerUp = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
@@ -108,9 +130,7 @@ const Dashboard: React.FC = () => {
           <>
             <Card
               className={`${styles.card} ${styles['welcome-card']} ${styles['card-wide']}`}
-              style={{
-                width: '51rem',
-              }}
+              style={isIcicle ? undefined : { width: '51rem' }}
             >
               <CardHeader>
                 <div className={styles['card-header']}>
@@ -120,50 +140,190 @@ const Dashboard: React.FC = () => {
                       className="dashboard__card-icon"
                     />
                   </div>
-                  <div>Welcome to TapisUI!</div>
+                  <div>
+                    {isIcicle ? 'ICICLE AI TapisUI' : 'Welcome to TapisUI!'}
+                  </div>
                 </div>
               </CardHeader>
               <CardBody>
                 <CardText>
-                  TapisUI is a React + TypeScript web application that provides
-                  a unified, user-friendly interface which provides validated,
-                  up-to-date, and automated access to all Tapis Services.
-                  TapisUI is designed for researchers, students, and developers
-                  who want to manage computational resources, launch jobs,
-                  deploy containers, and interface with cyberinfrastructure.
+                  {isIcicle ? (
+                    <>
+                      Led by The Ohio State University, NSF ICICLE is building
+                      next-generation cyberinfrastructure to democratize AI and
+                      make it accessible across domains. Through integrated
+                      plug-and-play AI and interdisciplinary communities, ICICLE
+                      advances AI and CI to address societal challenges. The
+                      components below highlight ICICLE&apos;s work across three
+                      use-inspired domains. Learn more at{' '}
+                      <a
+                        href="https://icicle.ai"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        icicle.ai
+                      </a>
+                      .
+                    </>
+                  ) : (
+                    <>
+                      TapisUI is a React + TypeScript web application that
+                      provides a unified, user-friendly interface which provides
+                      validated, up-to-date, and automated access to all Tapis
+                      Services. TapisUI is designed for researchers, students,
+                      and developers who want to manage computational resources,
+                      launch jobs, deploy containers, and interface with
+                      cyberinfrastructure.
+                    </>
+                  )}
                 </CardText>
-                <div className={styles['welcome-links']}>
-                  <div>
-                    📚{' '}
-                    <a
-                      href="https://tapis.readthedocs.io/en/latest/technical/tapisui.html"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      TapisUI & Tapis Documentation
-                    </a>
+                {isIcicle && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '1rem',
+                      flexWrap: 'nowrap',
+                      marginTop: '1rem',
+                    }}
+                  >
+                    <Card className={styles.card} style={{ marginRight: 0 }}>
+                      <CardHeader>
+                        <div className={styles['card-header']}>
+                          <div>
+                            <Icon
+                              name="simulation"
+                              className="dashboard__card-icon"
+                            />
+                          </div>
+                          <div>Animal Ecology</div>
+                        </div>
+                      </CardHeader>
+                      <CardBody>
+                        <CardText>
+                          Explore modeling and simulation tools tailored for
+                          animal ecology workflows.
+                        </CardText>
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <Link to="/ml-edge">ML Edge</Link>
+                        </div>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          Configure experiments, models, and algorithm settings
+                          in a graphical interface for edge-to-center studies.
+                        </div>
+                        <div>
+                          <Link to="/openpass">OpenPASS</Link>
+                        </div>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          A distributed drone platform that captures and
+                          analyzes aerial imagery for precision agriculture and
+                          field management.
+                        </div>
+                      </CardBody>
+                    </Card>
+                    <Card className={styles.card} style={{ marginRight: 0 }}>
+                      <CardHeader>
+                        <div className={styles['card-header']}>
+                          <div>
+                            <Icon
+                              name="globe"
+                              className="dashboard__card-icon"
+                            />
+                          </div>
+                          <div>Digital Agriculture</div>
+                        </div>
+                      </CardHeader>
+                      <CardBody>
+                        <CardText>
+                          Connect to tools that support digital agriculture data
+                          collection and analysis.
+                        </CardText>
+                        <div>
+                          <Link to="/harvest">Harvest</Link>
+                        </div>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          Build pipelines to preprocess data, train models on
+                          HPC, run inference, and visualize field insights.
+                        </div>
+                      </CardBody>
+                    </Card>
+                    <Card className={styles.card} style={{ marginRight: 0 }}>
+                      <CardHeader>
+                        <div className={styles['card-header']}>
+                          <div>
+                            <Icon
+                              name="globe"
+                              className="dashboard__card-icon"
+                            />
+                          </div>
+                          <div>Food Systems</div>
+                        </div>
+                      </CardHeader>
+                      <CardBody>
+                        <CardText>
+                          Access ICICLE food systems portals and sandboxes for
+                          exploration and analysis.
+                        </CardText>
+                        <div>
+                          <Link to="/food-flow-portal">Food Flow Portal</Link>
+                        </div>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          Interactive map to explore GNN FoodFlow results and
+                          download filtered data.
+                        </div>
+                        <div>
+                          <Link to="/feast">FEAST</Link>
+                        </div>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          Simulate how food retail changes affect household
+                          access and evaluate equity strategies.
+                        </div>
+                        <div>
+                          <Link to="/food-security-sandbox">
+                            Food Security Sandbox
+                          </Link>
+                        </div>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          Collaborative ML platform for agricultural data with
+                          privacy-preserving training and risk analysis.
+                        </div>
+                      </CardBody>
+                    </Card>
                   </div>
-                  <div>
-                    🔧{' '}
-                    <a
-                      href="https://tapis-project.github.io/live-docs/?service=Systems"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Live Tapis Documentation
-                    </a>
+                )}
+                {!isIcicle && (
+                  <div className={styles['welcome-links']}>
+                    <div>
+                      📚{' '}
+                      <a
+                        href="https://tapis.readthedocs.io/en/latest/technical/tapisui.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        TapisUI & Tapis Documentation
+                      </a>
+                    </div>
+                    <div>
+                      🔧{' '}
+                      <a
+                        href="https://tapis-project.github.io/live-docs/?service=Systems"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Live Tapis Documentation
+                      </a>
+                    </div>
+                    <div>
+                      💻{' '}
+                      <a
+                        href="https://github.com/tapis-project/tapis-ui"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        GitHub Repository
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    💻{' '}
-                    <a
-                      href="https://github.com/tapis-project/tapis-ui"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      GitHub Repository
-                    </a>
-                  </div>
-                </div>
+                )}
               </CardBody>
             </Card>
             <DashboardCard
@@ -220,23 +380,75 @@ const Dashboard: React.FC = () => {
             )}
           </>
         ) : (
-          <Card>
-            <CardHeader>
-              <div className={styles['card-header']}>
-                <div>
-                  <Icon name="user" className="dashboard__card-icon" />
+          <>
+            <Card>
+              <CardHeader style={{ cursor: 'default' }}>
+                <div className={styles['card-header']}>
+                  <div>
+                    <Icon name="user" className="dashboard__card-icon" />
+                  </div>
+                  <div>You are not logged in</div>
                 </div>
-                <div>You are not logged in</div>
-              </div>
-            </CardHeader>
-            <CardBody>
-              <CardTitle>Please log in to use TAPIS</CardTitle>
-            </CardBody>
-            <CardFooter className={styles['card-footer']}>
-              <Link to="/login">Proceed to login</Link>
-              <Icon name="push-right" />
-            </CardFooter>
-          </Card>
+              </CardHeader>
+              <CardBody>
+                <CardTitle>
+                  Please log in to use{' '}
+                  <span
+                    onPointerDown={onTapisPointerDown}
+                    onPointerUp={onTapisPointerUp}
+                    onPointerLeave={onTapisPointerUp}
+                    style={{ userSelect: 'none' }}
+                  >
+                    TAPIS
+                  </span>
+                </CardTitle>
+              </CardBody>
+              <CardFooter
+                className={styles['card-footer']}
+                onClick={() => navigate.push('/login')}
+                style={{ cursor: 'pointer', alignItems: 'center' }}
+              >
+                <Link to="/login" style={{ lineHeight: 1 }}>
+                  Proceed to login
+                </Link>
+                <span
+                  style={{ color: '#007bff', lineHeight: 1, display: 'flex' }}
+                >
+                  <Icon name="push-right" />
+                </span>
+              </CardFooter>
+            </Card>
+            {isDevHost && showDevInput && (
+              <input
+                type="text"
+                placeholder="Paste JWT access_token"
+                autoFocus
+                style={{
+                  width: '100%',
+                  fontFamily: 'monospace',
+                  fontSize: '0.7rem',
+                  padding: '4px',
+                  marginTop: '0.5rem',
+                  opacity: 0.6,
+                }}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter') {
+                    const jwt = (e.target as HTMLInputElement).value.trim();
+                    if (jwt) {
+                      setAccessToken({
+                        access_token: jwt,
+                        expires_at: new Date(
+                          Date.now() + 14400 * 1000
+                        ).toISOString(),
+                        expires_in: 14400,
+                      });
+                      navigate.push('/');
+                    }
+                  }
+                }}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

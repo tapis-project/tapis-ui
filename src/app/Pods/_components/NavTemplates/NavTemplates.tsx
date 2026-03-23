@@ -73,16 +73,19 @@ const NavTemplates: React.FC = () => {
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
     var tabState = 'details';
-    const parts = itemId.split('-');
+    // Use '::' as delimiter to avoid conflicts with hyphens in template IDs or tag names
+    const parts = itemId.split('::');
     const templateId = parts[0];
     let redirectUrl = `/pods/templates/${templateId}`;
 
     if (parts.length === 2) {
+      // This is a tag prefix level (e.g., "headscale::0.6.1-shell")
       redirectUrl += `/tags/${parts[1]}`;
       tabState = 'details';
-    } else if (parts.length >= 3) {
+    } else if (parts.length === 3) {
+      // This is a full tag with timestamp (e.g., "headscale::0.6.1-shell::2026-02-04-06:03:07")
       const prefix = parts[1];
-      const timestamp = parts.slice(2).join('-');
+      const timestamp = parts[2];
       redirectUrl += `/tags/${prefix}@${timestamp}`;
       tabState = 'detailsTag';
     }
@@ -124,14 +127,28 @@ const NavTemplates: React.FC = () => {
 
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
-    const time = new Date(timestamp);
+    // Ensure timestamp is treated as UTC by appending Z if it's an ISO format without timezone
+    let normalizedTimestamp = timestamp;
+    if (
+      timestamp.includes('T') &&
+      !timestamp.endsWith('Z') &&
+      !timestamp.includes('+')
+    ) {
+      normalizedTimestamp = timestamp + 'Z';
+    }
+    const time = new Date(normalizedTimestamp);
     const diffInSeconds = Math.floor((now.getTime() - time.getTime()) / 1000);
 
     if (diffInSeconds < 120) {
       return `${diffInSeconds} secs`;
-    } else if (diffInSeconds < 2 * 24 * 60 * 60) {
+    } else if (diffInSeconds < 2 * 60 * 60) {
+      // 2 minutes to 2 hours: show minutes
       const diffInMinutes = Math.floor(diffInSeconds / 60);
       return `${diffInMinutes} mins`;
+    } else if (diffInSeconds < 2 * 24 * 60 * 60) {
+      // 2 hours to 2 days: show hours
+      const diffInHours = Math.floor(diffInSeconds / (60 * 60));
+      return `${diffInHours} hrs`;
     } else {
       const diffInDays = Math.floor(diffInSeconds / (24 * 60 * 60));
       return `${diffInDays} days`;
@@ -146,14 +163,18 @@ const NavTemplates: React.FC = () => {
       const [prefix, timestamp] = tag.tag_timestamp.split('@');
       const parsedDate = new Date(timestamp.replace(/-/g, '/'));
       const formattedTimestamp = format(parsedDate, 'yyyy/MM/dd');
-      const timeAgo = formatTimeAgo(timestamp.replace(/-/g, '/'));
+      // Use creation_ts (ISO format) for accurate time ago calculation
+      const timeAgo = formatTimeAgo(
+        tag.creation_ts || timestamp.replace(/-/g, '/')
+      );
       if (!groupedTags[prefix]) {
         groupedTags[prefix] = [];
       }
+      // Use '::' as delimiter to avoid conflicts with hyphens in tag names
       groupedTags[prefix].push(
         <CustomTreeItem
-          key={`${templateId}-${prefix}-${timestamp}`}
-          itemId={`${templateId}-${prefix}-${timestamp}`}
+          key={`${templateId}::${prefix}::${timestamp}`}
+          itemId={`${templateId}::${prefix}::${timestamp}`}
           label={`${formattedTimestamp} | ${timeAgo}`}
           isLeaf={true}
         />
@@ -161,8 +182,8 @@ const NavTemplates: React.FC = () => {
     });
     const children = Object.keys(groupedTags).map((prefix) => (
       <CustomTreeItem
-        key={`${templateId}-${prefix}`}
-        itemId={`${templateId}-${prefix}`}
+        key={`${templateId}::${prefix}`}
+        itemId={`${templateId}::${prefix}`}
         label={prefix}
       >
         {groupedTags[prefix]}

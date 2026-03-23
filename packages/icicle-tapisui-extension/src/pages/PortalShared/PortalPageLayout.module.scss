@@ -1,0 +1,285 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: #ffffff;
+}
+
+.banner {
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1.25rem 2rem;
+}
+
+.bannerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.bannerTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #222222;
+}
+
+.bannerSubtitle {
+  color: #5a5a5a;
+  margin-top: 0.35rem;
+  text-align: center;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+  min-height: 100%;
+  background: #ffffff;
+  box-sizing: border-box;
+  padding-bottom: 3rem;
+}
+
+.introText {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  color: #4f4f4f;
+  text-align: justify;
+  text-align-last: center;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.introTextCompact {
+  margin: 0;
+  max-width: 100%;
+  text-align: left;
+}
+
+.introText p {
+  margin: 0 0 1rem;
+}
+
+.introText p:last-child {
+  margin-bottom: 0;
+}
+
+.welcomeBox {
+  max-width: 960px;
+  margin: 0 auto 1rem;
+  padding: 1.25rem 1.75rem;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e6ea;
+  text-align: center;
+}
+
+.welcomeTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f3b64;
+  margin-bottom: 0.75rem;
+}
+
+.welcomeText {
+  color: #3d4a5b;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.cardSection {
+  margin-top: 1.5rem;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e6ea;
+  background: #ffffff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
+  height: 100%;
+}
+
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.cardText {
+  color: #2f2f2f;
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.cardList {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.cardListItem {
+  color: #3d4a5b;
+  font-size: 0.95rem;
+}
+
+.cardButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid #0b5ea6;
+  color: #0b5ea6;
+  font-weight: 600;
+  text-decoration: none;
+  background: #f0f6ff;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cardButton:hover {
+  background: #0b5ea6;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.subCardGrid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.subCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #e2e6ea;
+  background: #f9fbff;
+  text-decoration: none;
+  color: #1f1f1f;
+  font-weight: 600;
+}
+
+.subCard:hover {
+  text-decoration: none;
+  background: #eef4ff;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f1f1f;
+}
+
+.serviceList {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+}
+
+.sectionBox {
+  width: 100%;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e2e6ea;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.contentBox {
+  width: 100%;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e2e6ea;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.contentStack {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.serviceRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #e2e6ea;
+  background: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.serviceLabel {
+  font-weight: 600;
+  color: #2a2a2a;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.serviceLink {
+  color: #0b5ea6;
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.serviceLink:hover {
+  text-decoration: underline;
+}
+
+.linkList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.noteCard {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #dbe5f0;
+  background: #ffffff;
+  color: #4a4a4a;
+}
+
+.noteCard a {
+  color: #0b5ea6;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.noteCard a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .content {
+    padding: 1.5rem;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}

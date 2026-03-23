@@ -13,7 +13,10 @@ function buildSystemPrompt(): string {
     'between systems in Tapis. Provide clear, accurate, and helpful answers based on your knowledge of Tapis Files. ' +
     'If you are unsure about something or need to provide more detailed information, ' +
     'please refer users to the official Tapis Files documentation at: ' +
-    'https://tapis.readthedocs.io/en/latest/technical/files.html'
+    'https://tapis.readthedocs.io/en/latest/technical/files.html\n\n' +
+    'Formatting: Your responses are displayed in a chat panel with limited width. ' +
+    'Keep lines in code blocks and examples to roughly 80 characters or fewer. ' +
+    'For prose, write naturally but prefer shorter paragraphs and concise sentences.'
   );
 }
 
@@ -39,7 +42,7 @@ async function callRAGPODS(
         'X-Tapis-Token': actualToken,
       },
       body: JSON.stringify({
-        question,
+        message: question,
         model,
       }),
     });
@@ -115,7 +118,7 @@ export const FileQAAgent: Agent = {
       context.ragPODSEndpoint ||
       (process.env.NODE_ENV === 'development'
         ? '/api/rag/chat'
-        : 'https://rag.pods.tacc.tapis.io/chat');
+        : 'https://tapisagent.pods.tacc.tapis.io/chat');
 
     if (!ragPODSEndpoint) {
       return {

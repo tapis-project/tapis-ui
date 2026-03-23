@@ -19,7 +19,6 @@ import { LoadingButton as Button } from '@mui/lab';
 import {
   Menu,
   Collapse,
-  List,
   ListItemButton,
   ListItemText,
   ListItemIcon,
@@ -41,18 +40,7 @@ import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
 import { Tenants as Hooks } from '@tapis/tapisui-hooks';
 import { Link, useHistory } from 'react-router-dom';
 
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import {
-  QueryWrapper,
-  PageLayout,
-  Breadcrumbs,
-  breadcrumbsFromPathname,
-} from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { FloatingChatButton } from 'app/_components';
 import { ChatContext } from 'app/_context/chat';
 
@@ -62,11 +50,11 @@ type SidebarItems = {
 
 const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
-  const { extension } = useExtension();
+  const { extension, extensionName } = useExtension();
   const chatContextValue = useContext(ChatContext);
+  const isIcicleExtension = extensionName === '@icicle/tapisui-extension';
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [sectionOpenStates, setSectionOpenStates] = useState<{
     [key: string]: boolean;
@@ -227,10 +215,7 @@ const Sidebar: React.FC = () => {
     );
   };
   return (
-    <div
-      className={styles.root}
-      style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}
-    >
+    <div className={styles.root} style={{ position: 'relative' }}>
       <div
         style={{
           display: 'flex',
@@ -239,6 +224,7 @@ const Sidebar: React.FC = () => {
           alignItems: 'center', // vertical
           marginTop: '.6rem',
           marginBottom: '.6rem',
+          flexShrink: 0,
           // marginRight: '0.2rem',
         }}
       >
@@ -300,6 +286,9 @@ const Sidebar: React.FC = () => {
       />
 
       <Navbar>
+        {isIcicleExtension &&
+          accessToken &&
+          renderSidebarItem('/home', 'globe', 'Portal Home(beta)')}
         {renderSidebarItem('/', 'dashboard', 'Dashboard')}
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
@@ -308,9 +297,12 @@ const Sidebar: React.FC = () => {
               // Beta sidebar with sections
               <>
                 {/* No Section items - always visible */}
-                {extension.betaSidebar.noSection?.mainServices?.map(
-                  (serviceId: string) => sidebarItems[serviceId]
-                )}
+                {extension.betaSidebar.noSection?.mainServices
+                  ?.filter(
+                    (serviceId: string) =>
+                      !(isIcicleExtension && serviceId === 'home')
+                  )
+                  .map((serviceId: string) => sidebarItems[serviceId])}
                 {extension.betaSidebar.noSection?.secondaryServices &&
                   extension.betaSidebar.noSection.secondaryServices.length >
                     0 && (
@@ -341,9 +333,12 @@ const Sidebar: React.FC = () => {
                         </ListItemButton>
                       </div>
                       <Collapse in={moreOpenStates['noSection']}>
-                        {extension.betaSidebar.noSection.secondaryServices.map(
-                          (serviceId: string) => sidebarItems[serviceId]
-                        )}
+                        {extension.betaSidebar.noSection.secondaryServices
+                          .filter(
+                            (serviceId: string) =>
+                              !(isIcicleExtension && serviceId === 'home')
+                          )
+                          .map((serviceId: string) => sidebarItems[serviceId])}
                       </Collapse>
                     </>
                   )}
@@ -389,9 +384,12 @@ const Sidebar: React.FC = () => {
                     </div>
                     <Collapse in={sectionOpenStates[section.name]}>
                       {/* Main services in section */}
-                      {section.mainServices.map(
-                        (serviceId: string) => sidebarItems[serviceId]
-                      )}
+                      {section.mainServices
+                        .filter(
+                          (serviceId: string) =>
+                            !(isIcicleExtension && serviceId === 'home')
+                        )
+                        .map((serviceId: string) => sidebarItems[serviceId])}
 
                       {/* Secondary services in section */}
                       {section.secondaryServices &&
@@ -431,9 +429,14 @@ const Sidebar: React.FC = () => {
                               </ListItemButton>
                             </div>
                             <Collapse in={moreOpenStates[section.name]}>
-                              {section.secondaryServices.map(
-                                (serviceId: string) => sidebarItems[serviceId]
-                              )}
+                              {section.secondaryServices
+                                .filter(
+                                  (serviceId: string) =>
+                                    !(isIcicleExtension && serviceId === 'home')
+                                )
+                                .map(
+                                  (serviceId: string) => sidebarItems[serviceId]
+                                )}
                             </Collapse>
                           </>
                         )}
@@ -484,105 +487,144 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
-      <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
-        <FloatingChatButton />
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
+          <FloatingChatButton />
+        </div>
+        <Chip
+          variant="outlined"
+          style={{
+            borderRadius: '8px',
+          }}
+          label={
+            !expanded ? (
+              <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div>
+                  <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+                </div>
+                {expanded && (
+                  <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                    Chatbot
+                  </div>
+                )}
+              </div>
+            )
+          }
+          onClick={() => chatContextValue?.toggleChat()}
+          sx={{
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '.6rem',
+            marginBottom: '.4rem',
+            color: '#707070',
+            '& .MuiChip-label': {
+              display: 'flex',
+              whiteSpace: 'normal',
+            },
+          }}
+        />
+        <Chip
+          variant="outlined"
+          style={{
+            borderRadius: '8px',
+          }}
+          label={
+            !expanded ? (
+              <SettingsRounded sx={{ width: 24, height: 24 }} />
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div>
+                  <SettingsRounded sx={{ width: 24, height: 24 }} />
+                </div>
+                {claims['tapis/username'] ? (
+                  <div
+                    style={{
+                      marginLeft: '.4rem',
+                      maxWidth: '9rem',
+                      overflow: 'hidden',
+                      fontSize: 12,
+                      lineHeight: 1.2,
+                    }}
+                    title={
+                      claims['tapis/username'] +
+                      '@' +
+                      claims['sub'].split('@')[1]
+                    }
+                  >
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {claims['tapis/username']}
+                    </div>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      @{claims['sub'].split('@')[1]}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      marginLeft: '.4rem',
+                      maxWidth: '9rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {'Logged Out'}
+                  </div>
+                )}
+              </div>
+            )
+          }
+          onClick={handleClick} // Move the click handler here to make the entire div clickable
+          sx={{
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '.6rem',
+            color: '#707070',
+            //minWidth: '0rem',
+            //width: '2rem',
+            '& .MuiChip-label': {
+              display: 'flex',
+              whiteSpace: 'normal',
+            },
+          }}
+        />
       </div>
-      <Chip
-        variant="outlined"
-        style={{
-          borderRadius: '8px',
-        }}
-        label={
-          !expanded ? (
-            <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                fontSize: 12,
-                lineHeight: 1.2,
-                overflow: 'hidden',
-              }}
-            >
-              <div>
-                <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-              </div>
-              {expanded && (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  Chatbot
-                </div>
-              )}
-            </div>
-          )
-        }
-        onClick={() => chatContextValue?.toggleChat()}
-        sx={{
-          height: '2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '.6rem',
-          marginBottom: '.4rem',
-          color: '#707070',
-          '& .MuiChip-label': {
-            display: 'flex',
-            whiteSpace: 'normal',
-          },
-        }}
-      />
-      <Chip
-        variant="outlined"
-        style={{
-          borderRadius: '8px',
-        }}
-        label={
-          !expanded ? (
-            <SettingsRounded sx={{ width: 24, height: 24 }} />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                fontSize: 12,
-                lineHeight: 1.2,
-                overflow: 'hidden',
-              }}
-            >
-              <div>
-                <SettingsRounded sx={{ width: 24, height: 24 }} />
-              </div>
-              {claims['tapis/username'] ? (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {claims['tapis/username']}
-                  <br />@{claims['sub'].split('@')[1]}
-                </div>
-              ) : (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {'Logged Out'}
-                </div>
-              )}
-            </div>
-          )
-        }
-        onClick={handleClick} // Move the click handler here to make the entire div clickable
-        sx={{
-          height: '2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '.6rem',
-          color: '#707070',
-          //minWidth: '0rem',
-          //width: '2rem',
-          '& .MuiChip-label': {
-            display: 'flex',
-            whiteSpace: 'normal',
-          },
-        }}
-      />
 
       <Menu
         anchorEl={anchorEl}
@@ -591,15 +633,16 @@ const Sidebar: React.FC = () => {
         onClose={handleClose}
         onClick={handleClose}
         PaperProps={{
-          style: {
-            maxHeight: 48 * 4.5,
-          },
           elevation: 0,
           sx: {
-            overflow: 'visible',
+            maxHeight: 'calc(100vh - 100px)',
+            overflow: 'auto',
             filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.52))',
             mt: 0.5,
             ml: 1.2,
+            '& .MuiMenuItem-root': {
+              minHeight: 'auto',
+            },
           },
         }}
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -784,7 +827,6 @@ const Sidebar: React.FC = () => {
                     if (event.button === 1) {
                       event.preventDefault();
                       window.open(tenant.base_url + '/', '_blank');
-                      setModal(undefined);
                     }
                   }}
                   component="a"

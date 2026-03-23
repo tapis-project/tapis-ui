@@ -28,7 +28,9 @@ const Layout: React.FC<LayoutProps> = ({
           }`}
         >
           {left}
-          <div className={styles['right']}>{right}</div>
+          <div className={styles['right']} style={{ minWidth: '360px' }}>
+            {right}
+          </div>
         </div>
         {bottom}
       </div>

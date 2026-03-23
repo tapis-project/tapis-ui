@@ -18,13 +18,14 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/platform/:platform/:modelId`}
+        path={`${path}/platform/:platform/:modelId*`}
         render={({
           match: {
             params: { platform, modelId },
           },
-        }: RouteComponentProps<{ platform: string; modelId: string }>) => {
-          return <ModelDetails platform={platform} modelId={modelId} />;
+        }: RouteComponentProps<{ platform: string; modelId?: string }>) => {
+          console.log({ platform, modelId });
+          return <ModelDetails platform={platform} modelId={modelId!} />;
         }}
       />
 

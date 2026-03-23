@@ -14,7 +14,7 @@ const useGetModelIngestion = (
     () =>
       API.Models.Ingestions.getModelIngestion(
         ingestionId,
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken?.access_token || ''
       ),
     {

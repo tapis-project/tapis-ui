@@ -34,7 +34,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@tapis/tapis-typescript": "^0.0.62",
+    "@tapis/tapis-typescript": "^0.0.64",
     "simple-git": "^3.24.0"
   }
 }

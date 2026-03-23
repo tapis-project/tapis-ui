@@ -6,7 +6,14 @@ export type ChatTurn = {
 };
 
 export type AgentContext = {
-  section: 'ml-hub' | 'jobs' | 'files';
+  section:
+    | 'ml-hub'
+    | 'jobs'
+    | 'files'
+    | 'apps'
+    | 'workflows'
+    | 'pods'
+    | 'systems';
   basePath: string;
   mlHubBasePath?: string;
   jwt: string;

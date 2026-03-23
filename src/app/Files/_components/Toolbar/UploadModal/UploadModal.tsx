@@ -36,7 +36,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   toggle,
   path,
   systemId,
-  maxFileSizeBytes = 524288000,
+  maxFileSizeBytes = 5000000000,
 }) => {
   const [files, setFiles] = useState<Array<File>>([]);
 

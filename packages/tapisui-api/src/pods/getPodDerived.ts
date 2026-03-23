@@ -2,7 +2,7 @@ import { Pods } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
 const getPodDerived = (
-  params: Pods.GetPodRequest,
+  params: Pods.GetDerivedPodRequest,
   basePath: string,
   jwt: string
 ): Promise<Pods.PodResponse> => {
