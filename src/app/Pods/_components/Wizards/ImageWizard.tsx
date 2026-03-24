@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup, Typography } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
@@ -7,11 +7,94 @@ import {
   GenericModal,
   SubmitWrapper,
   FMTextField,
+  Icon,
 } from '@tapis/tapisui-common';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import AutoPruneEmptyFields from './Common/AutoPruneEmptyFields';
-import { useFormik, FormikProvider } from 'formik';
+import { useFormik, FormikProvider, FieldArray } from 'formik';
 import styles from './Common/Wizard.module.scss';
+
+const TenantsSection = ({ formik }: any) => (
+  <FieldArray
+    name="tenants"
+    render={(arrayHelpers) => (
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '.5rem',
+          }}
+        >
+          <Typography variant="subtitle1">Tenants</Typography>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => arrayHelpers.push('')}
+            style={{
+              height: 30,
+              fontSize: 11,
+              marginLeft: 'auto',
+              padding: '0px 8px',
+            }}
+          >
+            + Tenant
+          </Button>
+        </div>
+        {formik.values.tenants &&
+          formik.values.tenants.map((t: string, i: number) => (
+            <ButtonGroup
+              key={i}
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                alignItems: 'bottom',
+                marginBottom: '.8rem',
+                height: 40,
+              }}
+            >
+              <FMTextField
+                formik={formik}
+                name={`tenants.${i}`}
+                label={`Tenant ${i}`}
+                value={t}
+                style={{ minWidth: 180, flex: 1 }}
+                InputProps={{
+                  sx: {
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                    height: 40,
+                    boxSizing: 'border-box',
+                  },
+                }}
+              />
+              <Button
+                type="button"
+                color="error"
+                variant="outlined"
+                onClick={() => arrayHelpers.remove(i)}
+                sx={{
+                  minWidth: 36,
+                  maxWidth: 36,
+                  height: 40,
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
+                  borderLeft: 'none',
+                }}
+                aria-label="Remove tenant"
+              >
+                <Icon name="trash" />
+              </Button>
+            </ButtonGroup>
+          ))}
+      </div>
+    )}
+  />
+);
 
 export type ImageWizardProps = {
   sharedData: any;
@@ -31,7 +114,7 @@ const ImageWizard: React.FC<ImageWizardProps> = ({
   const initialValues: any = {
     image_id: '',
     description: '',
-    tenants: '',
+    tenants: [''],
   };
 
   const { createImage, isLoading, error, isSuccess, reset } =
@@ -49,7 +132,11 @@ const ImageWizard: React.FC<ImageWizardProps> = ({
     description: Yup.string()
       .min(1)
       .max(2048, 'Description should not be longer than 2048 characters'),
-    tenants: Yup.number().min(1).max(20000).required(),
+    tenants: Yup.array().of(
+      Yup.string()
+        .min(1, 'Tenant cannot be empty')
+        .max(128, 'Tenant should not be longer than 128 characters')
+    ),
   });
 
   const onSubmit = (
@@ -115,12 +202,7 @@ const ImageWizard: React.FC<ImageWizardProps> = ({
             multiline={true}
             description="Description of this image for future reference"
           />
-          <FMTextField
-            formik={formik}
-            name="tenants"
-            label="Tenants"
-            description="The tenants that can use this image"
-          />
+          <TenantsSection formik={formik} />
         </form>
       </FormikProvider>
     </div>
