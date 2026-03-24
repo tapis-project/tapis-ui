@@ -192,12 +192,12 @@ extension.registerService({
   component: DataLabeler,
 });
 
-extension.registerService({
-  id: 'jupyter-lab',
-  sidebarDisplayName: 'JupyterLab',
-  iconName: 'jupyter',
-  component: JupyterLab,
-});
+// extension.registerService({
+//   id: 'jupyter-lab',
+//   sidebarDisplayName: 'JupyterLab',
+//   iconName: 'jupyter',
+//   component: JupyterLab,
+// });
 
 extension.registerService({
   id: 'open-webui',
@@ -283,12 +283,13 @@ extension.registerService({
   component: Patra,
 });
 
-extension.registerService({
-  id: 'analytics',
-  sidebarDisplayName: 'Analytics',
-  iconName: 'globe',
-  component: CatalogAnalytics,
-});
+// extension.registerService({
+//   id: 'analytics',
+//   sidebarDisplayName: 'Analytics',
+//   iconName: 'globe',
+//   component: CatalogAnalytics,
+
+// });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
 

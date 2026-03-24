@@ -10,6 +10,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useExtension } from 'extensions';
 import { Implicit } from '@tapis/tapisui-extensions-core/dist/oauth2';
+import { isLocalhost } from 'utils/resolveBasePath';
 import styles from './Login.module.scss';
 
 const Login: React.FC = () => {
@@ -66,12 +67,9 @@ const Login: React.FC = () => {
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
 
-    // OIDC redirect URIs in extensions point to the production hostname, so they
-    // cannot complete when running on localhost. Fall back to password-only.
-    if (
-      /localhost|127\.0\.0\.1/.test(window.location.hostname) &&
-      passwordAuth
-    ) {
+    // OIDC redirect URIs in extensions point to the production hostname and
+    // cannot complete on localhost.
+    if (isLocalhost() && passwordAuth) {
       implicitAuthURL = undefined;
     }
   } else {
@@ -89,16 +87,13 @@ const Login: React.FC = () => {
       `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
         defaultRedirectURI
       )}&use_iframe_redirect=${String(implicitIframe)}`;
-    console.debug(
-      `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
-    );
 
-    // For development add password Auth as implicit hasn't been implemented for localhost yet.
-    // TODO: remove implicitAuth check. Shouldn't show password auth ever, but clients not bootstrapped yet.
-    passwordAuth =
-      location.href.startsWith('http://localhost:3000') || !implicitAuthURL
-        ? true
-        : true; // always password auth for now
+    passwordAuth = true;
+
+    // redirect_uri is built from basePath (the remote tenant) and cannot return to localhost.
+    if (isLocalhost()) {
+      implicitAuthURL = undefined;
+    }
   }
 
   // Compute initial auth method synchronously so first render doesn't flash buttons
