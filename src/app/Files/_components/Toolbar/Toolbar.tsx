@@ -1,7 +1,11 @@
 import { Files, Systems } from '@tapis/tapis-typescript';
 import React, { useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
-import { Icon, QueryWrapper } from '@tapis/tapisui-common';
+import {
+  HostEvalNavigationButton,
+  Icon,
+  QueryWrapper,
+} from '@tapis/tapisui-common';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import MoveCopyModal from './MoveCopyModal';
@@ -103,6 +107,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
   });
 
   const system = systemData?.result ?? undefined;
+  const showHostEvalButton =
+    system?.systemType === Systems.SystemTypeEnum.Linux &&
+    system?.isDynamicEffectiveUser &&
+    (!system?.rootDir || system?.rootDir === '/');
+  const isAuthenticated = !isLoadingPermissions && !errorPermissions;
 
   const canModify = useCallback(
     (
@@ -144,9 +153,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
       if (isZip) {
         params.zip = true;
         params.destination = `${params.destination}.zip`;
-        add({ icon: 'data-files', message: `Preparing download` });
-        params.onStart = (response: Response) => {
-          add({ icon: 'data-files', message: `Starting download` });
+        add({ icon: 'data-files', message: 'Preparing download' });
+        params.onStart = () => {
+          add({ icon: 'data-files', message: 'Starting download' });
         };
       }
       download(params, {
@@ -154,8 +163,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
           ? () => {
               add({
                 icon: 'data-files',
-                message: `Download failed`,
                 status: 'ERROR',
+                message: 'Download failed',
               });
             }
           : undefined,
@@ -242,6 +251,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 icon="globe"
                 disabled={false}
                 onClick={() => setModal('transfer')}
+              />
+            )}
+            {showHostEvalButton && (
+              <HostEvalNavigationButton
+                systemId={systemId}
+                isAuthenticated={isAuthenticated}
+                variant="toolbar"
               />
             )}
             {show('download', buttons) && (

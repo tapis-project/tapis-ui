@@ -71,6 +71,8 @@ import {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
+  HostEvalNavigationButton,
+  type HostEvalNavigationButtonProps,
   JobTypeChip,
   JobLauncher,
   JobStatusIcon,
@@ -173,6 +175,8 @@ export {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
+  HostEvalNavigationButton,
+  type HostEvalNavigationButtonProps,
   // Tapis Job Components & types
   JobTypeChip,
   JobLauncher,

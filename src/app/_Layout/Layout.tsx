@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 import { Router } from 'app/_Router';
-import { NotificationsProvider } from 'app/_components/Notifications';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Tenants as Hooks } from '@tapis/tapisui-hooks';
 import './Layout.scss';
@@ -468,11 +467,9 @@ const LayoutContent: React.FC = () => {
 
 const Layout: React.FC = () => {
   return (
-    <NotificationsProvider>
-      <ChatProvider>
-        <LayoutContent />
-      </ChatProvider>
-    </NotificationsProvider>
+    <ChatProvider>
+      <LayoutContent />
+    </ChatProvider>
   );
 };
 
