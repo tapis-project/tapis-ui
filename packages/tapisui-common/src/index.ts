@@ -42,8 +42,14 @@ import {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
+  FilterableObjectsListV2,
+  getStatusColor,
 } from './ui';
 import { type FilterConfig } from './ui/FilterableObjectsList/FilterableObjectsList';
+import {
+  type ItemBadge,
+  type SortOption,
+} from './ui/FilterableObjectsList/FilterableObjectsListV2';
 import {
   QueryWrapper,
   SubmitWrapper,
@@ -148,7 +154,11 @@ export {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
+  FilterableObjectsListV2,
+  getStatusColor,
   type FilterConfig,
+  type ItemBadge,
+  type SortOption,
   // Wrappers
   QueryWrapper,
   SubmitWrapper,
