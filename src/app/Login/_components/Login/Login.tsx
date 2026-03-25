@@ -156,18 +156,21 @@ const Login: React.FC = () => {
     ) {
       setImplicitError(undefined);
       setImplicitReady(false);
-      fetch(implicitAuthURL, { method: 'GET' })
+      // Use redirect: 'manual' so fetch stops at the initial 302 rather than
+      // following the cross-origin redirect to the institution login page.
+      // Chromium (unlike Firefox) enforces CORS on redirect chains and throws
+      // a network error when the redirect target lacks CORS headers, which
+      // permanently keeps implicitReady false. A redirect (opaqueredirect)
+      // is sufficient proof the OAuth2 client exists.
+      fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
         .then((response) => {
-          if (activeAuthMethod === 'implicit' && implicitIframe) {
-            // Special case for iframe: 400 means error
-            if (response.status === 400) {
-              setImplicitError('There was an error getting auth context (400)');
-              setImplicitReady(false);
-              return;
-            }
-          }
-          if (response.status === 200) {
+          // opaqueredirect (status 0) = 302 redirect → client exists
+          if (response.type === 'opaqueredirect' || response.status === 200) {
             setImplicitReady(true);
+          } else if (response.status === 400) {
+            // 400 means client mis-configuration on the server
+            setImplicitError('There was an error getting auth context (400)');
+            setImplicitReady(false);
           } else {
             console.debug(
               `Login: implicitAuthURL: ${implicitAuthURL}. Tenant probably doesn't have default client created? Talk to admin.`
@@ -195,7 +198,7 @@ const Login: React.FC = () => {
       if (implicitIframe) {
         // Attempt to fetch the implicit auth URL to check if it's valid
         // Possible client might not exist for tenant.
-        fetch(implicitAuthURL, { method: 'GET' })
+        fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
           .then((response) => {
             if (response.status === 400) {
               setImplicitError('There was an error getting auth context (400)');
