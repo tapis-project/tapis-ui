@@ -37,6 +37,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Tooltip,
 } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { EditorView } from 'codemirror';
@@ -61,6 +62,7 @@ type SidebarItems = {
 
 const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
+  const isAuthenticated = Boolean(accessToken?.access_token);
   const { extension, extensionName } = useExtension();
   const chatContextValue = useContext(ChatContext);
   const queryClient = useQueryClient();
@@ -549,53 +551,63 @@ const Sidebar: React.FC = () => {
       </Navbar>
       <div style={{ flexShrink: 0 }}>
         <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
-          <FloatingChatButton />
+          <FloatingChatButton isAuthenticated={isAuthenticated} />
         </div>
-        <Chip
-          variant="outlined"
-          style={{
-            borderRadius: '8px',
-          }}
-          label={
-            !expanded ? (
-              <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  fontSize: 12,
-                  lineHeight: 1.2,
-                  overflow: 'hidden',
-                }}
-              >
-                <div>
-                  <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-                </div>
-                {expanded && (
-                  <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                    Chatbot
-                  </div>
-                )}
-              </div>
-            )
+        <Tooltip
+          title={
+            isAuthenticated ? 'Open Chatbot' : 'Please log in to use chatbot'
           }
-          onClick={() => chatContextValue?.toggleChat()}
-          sx={{
-            height: '2rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '.6rem',
-            marginBottom: '.4rem',
-            color: '#707070',
-            '& .MuiChip-label': {
-              display: 'flex',
-              whiteSpace: 'normal',
-            },
-          }}
-        />
+          placement="right"
+        >
+          <span>
+            <Chip
+              variant="outlined"
+              disabled={!isAuthenticated}
+              style={{
+                borderRadius: '8px',
+              }}
+              label={
+                !expanded ? (
+                  <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      fontSize: 12,
+                      lineHeight: 1.2,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div>
+                      <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+                    </div>
+                    {expanded && (
+                      <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                        Chatbot
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              onClick={() => chatContextValue?.toggleChat()}
+              sx={{
+                height: '2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '.6rem',
+                marginBottom: '.4rem',
+                color: '#707070',
+                '& .MuiChip-label': {
+                  display: 'flex',
+                  whiteSpace: 'normal',
+                },
+              }}
+            />
+          </span>
+        </Tooltip>
         <Chip
           variant="outlined"
           style={{
