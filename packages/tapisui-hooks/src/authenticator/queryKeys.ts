@@ -6,6 +6,7 @@ import {
 const QueryKeys = {
   login: 'authenticator/login',
   listProfiles: 'authenticator/listprofiles',
+  getProfile: 'authenticator/getprofile',
   listClients: 'authenticator/listclients',
   deleteClients: 'authenticator/deleteclients',
   createClient: 'authenticator/createclient',
