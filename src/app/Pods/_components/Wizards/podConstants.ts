@@ -39,19 +39,18 @@ const networkingValidator = Yup.object().test(
 
 const volumeMountsValidator = Yup.object().test(
   'volume-mounts-object',
-  'Each volume mount must have type, mount_path, sub_path (all <=128 chars)',
+  'Each volume mount key (mount_path) must be non-empty and <=128 chars, and each value must have a type (<=128 chars)',
   (obj) => {
     if (!obj) return true;
-    return Object.values(obj).every(
-      (v: any) =>
+    return Object.entries(obj).every(
+      ([mountPath, v]: [string, any]) =>
+        typeof mountPath === 'string' &&
+        mountPath.length > 0 &&
+        mountPath.length <= 128 &&
         typeof v === 'object' &&
         typeof v.type === 'string' &&
         v.type.length > 0 &&
-        v.type.length <= 128 &&
-        typeof v.mount_path === 'string' &&
-        v.mount_path.length > 0 &&
-        v.mount_path.length <= 128 &&
-        (typeof v.sub_path === 'string' ? v.sub_path.length <= 128 : true)
+        v.type.length <= 128
     );
   }
 );
@@ -120,7 +119,7 @@ export const podCreateValidation = Yup.object({
 
 // ── Defaults & read-only fields ──────────────────────────────────────────────
 
-export const POD_READ_ONLY_FIELDS = ['pod_id', 'image', 'template'];
+export const POD_READ_ONLY_FIELDS = ['pod_id'];
 
 export const POD_DEFAULT_VALUES = {
   pod_id: '',
@@ -180,7 +179,7 @@ export const POD_FIELD_TEMPLATES: FieldTemplate[] = [
     label: 'Volume Mounts',
     field: 'volume_mounts',
     defaultValue: {
-      my_volume: { type: 'tapisvolume', mount_path: '/data', sub_path: '' },
+      '/data': { type: 'tapisvolume', source_id: 'myvolume' },
     },
     description: 'Attach storage volumes',
   },

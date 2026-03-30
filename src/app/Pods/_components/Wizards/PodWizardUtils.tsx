@@ -387,16 +387,18 @@ export const VolumeMountsSection = ({ formik }: any) => (
           }}
           onClick={() => {
             let idx = 1;
-            let nextKey = `volume${idx}`;
+            let nextKey = `/mount${idx}`;
             const existing = Object.keys(formik.values.volume_mounts || {});
             while (existing.includes(nextKey)) {
               idx++;
-              nextKey = `volume${idx}`;
+              nextKey = `/mount${idx}`;
             }
-            formik.setFieldValue(`volume_mounts.${nextKey}`, {
-              type: 'tapisvolume',
-              mount_path: '/dir/to/mount/to',
-              sub_path: '/dir/to/mount',
+            formik.setFieldValue(`volume_mounts`, {
+              ...formik.values.volume_mounts,
+              [nextKey]: {
+                type: 'tapisvolume',
+                source_id: '',
+              },
             });
           }}
         >
@@ -406,7 +408,7 @@ export const VolumeMountsSection = ({ formik }: any) => (
       {formik.values.volume_mounts &&
         Object.entries(formik.values.volume_mounts).length > 0 &&
         Object.entries(formik.values.volume_mounts).map(
-          ([key, value]: [string, any], i) => (
+          ([mountPath, value]: [string, any], i) => (
             <div key={i} style={{ display: 'flex', marginBottom: '.5rem' }}>
               <div
                 style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
@@ -414,17 +416,17 @@ export const VolumeMountsSection = ({ formik }: any) => (
                 <div style={{ display: 'flex' }}>
                   <FMTextField
                     formik={formik}
-                    name={`volume_mounts.${key}.__name`}
-                    label="Name"
-                    value={key}
+                    name={`volume_mounts.${mountPath}.__name`}
+                    label="Mount Path (key)"
+                    value={mountPath}
                     onChange={(e: any) => {
-                      const newName = e.target.value;
-                      if (!newName || newName === key) return;
-                      if (formik.values.volume_mounts[newName]) return;
+                      const newPath = e.target.value;
+                      if (!newPath || newPath === mountPath) return;
+                      if (formik.values.volume_mounts[newPath]) return;
                       const oldObj = formik.values.volume_mounts;
                       const newObj = Object.fromEntries(
                         Object.entries(oldObj).map(([k, v]) =>
-                          k === key ? [newName, v] : [k, v]
+                          k === mountPath ? [newPath, v] : [k, v]
                         )
                       );
                       formik.setFieldValue('volume_mounts', newObj);
@@ -441,7 +443,7 @@ export const VolumeMountsSection = ({ formik }: any) => (
                   />
                   <FMSelect
                     formik={formik}
-                    name={`volume_mounts.${key}.type`}
+                    name={`volume_mounts.${mountPath}.type`}
                     label="Volume Type"
                     labelId={''}
                     value={value.type}
@@ -470,30 +472,17 @@ export const VolumeMountsSection = ({ formik }: any) => (
                 <div style={{ display: 'flex' }}>
                   <FMTextField
                     formik={formik}
-                    name={`volume_mounts.${key}.mount_path`}
-                    label="Mount Path"
-                    value={value.mount_path}
+                    name={`volume_mounts.${mountPath}.source_id`}
+                    label="Source ID"
+                    value={value.source_id || ''}
                     InputProps={{
                       style: {
                         height: 40,
                         boxSizing: 'border-box',
-                        borderRadius: 0,
                       },
-                      sx: { flex: 1 },
-                    }}
-                    style={{ flex: 1 }}
-                  />
-                </div>
-                <div style={{ display: 'flex' }}>
-                  <FMTextField
-                    formik={formik}
-                    name={`volume_mounts.${key}.sub_path`}
-                    label="Sub Path"
-                    value={value.sub_path}
-                    InputProps={{
-                      style: { height: 40, boxSizing: 'border-box' },
                       sx: { borderRadius: 0, borderBottomLeftRadius: '6px' },
                     }}
+                    style={{ flex: 1 }}
                   />
                 </div>
               </div>
@@ -503,13 +492,13 @@ export const VolumeMountsSection = ({ formik }: any) => (
                 variant="outlined"
                 onClick={() => {
                   const newVol = { ...formik.values.volume_mounts };
-                  delete newVol[key];
+                  delete newVol[mountPath];
                   formik.setFieldValue('volume_mounts', newVol);
                 }}
                 sx={{
                   minWidth: 30,
                   maxWidth: 30,
-                  height: '9rem',
+                  height: '5rem',
                   marginLeft: 0,
                   alignSelf: 'stretch',
                   borderRadius: '6px',
