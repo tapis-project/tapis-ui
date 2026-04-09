@@ -56,6 +56,7 @@ const LayoutContent: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isSending, setIsSending] = useState(false);
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
+  const isAuthenticated = Boolean(accessToken?.access_token);
 
   // Get the current chat configuration
   const chatConfig = useMemo(() => {
@@ -219,7 +220,7 @@ const LayoutContent: React.FC = () => {
           }
         />
       </div>
-      <FloatingChatButton />
+      <FloatingChatButton isAuthenticated={isAuthenticated} />
       {chatConfig ? (
         <ChatPanel
           open={isChatOpen}
