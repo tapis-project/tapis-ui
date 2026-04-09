@@ -3,7 +3,7 @@ const QueryKeys = {
   details: 'systems/details',
   patch: 'systems/patch',
   listSchedulerProfiles: 'systems/listScehdulerProfiles',
-  makeNewSystem: 'systems/makeNewSystem',
+  createSystem: 'systems/createSystem',
   deleteSystem: 'systems/deleteSystem',
   shareSystemPublic: 'systems/shareSystemPublic',
   unShareSystemPublic: 'systems/unShareSystemPublic',

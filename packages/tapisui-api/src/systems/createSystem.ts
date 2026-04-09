@@ -1,7 +1,7 @@
 import { Systems } from '@tapis/tapis-typescript';
 import { apiGenerator, errorDecoder } from '../utils';
 
-const makeNewSystem = (
+const createSystem = (
   reqCreateSystem: Systems.CreateSystemRequest,
   basePath: string,
   jwt: string
@@ -17,4 +17,4 @@ const makeNewSystem = (
   );
 };
 
-export default makeNewSystem;
+export default createSystem;

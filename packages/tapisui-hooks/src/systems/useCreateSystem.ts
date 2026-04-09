@@ -4,12 +4,12 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-type MkNewSystemHookParams = {
+type CreateSystemHookParams = {
   reqPostSystem: Systems.ReqPostSystem;
   skipCredentialCheck: boolean;
 };
 
-const useMakeNewSystem = () => {
+const useCreateSystem = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
@@ -18,10 +18,10 @@ const useMakeNewSystem = () => {
   //
   // In this case, mkdir helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, MkNewSystemHookParams>(
-      [QueryKeys.makeNewSystem, basePath, jwt],
+    useMutation<Systems.RespBasic, Error, CreateSystemHookParams>(
+      [QueryKeys.createSystem, basePath, jwt],
       ({ reqPostSystem, skipCredentialCheck }) =>
-        API.makeNewSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
+        API.createSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
     );
 
   // Return hook object with loading states and login function
@@ -32,11 +32,11 @@ const useMakeNewSystem = () => {
     data,
     error,
     reset,
-    makeNewSystem: (
+    createSystem: (
       reqPostSystem: Systems.ReqPostSystem,
       skipCredentialCheck: boolean = true,
       // react-query options to allow callbacks such as onSuccess
-      options?: MutateOptions<Systems.RespBasic, Error, MkNewSystemHookParams>
+      options?: MutateOptions<Systems.RespBasic, Error, CreateSystemHookParams>
     ) => {
       // Call mutate to trigger a single post-like API operation
       return mutate({ reqPostSystem, skipCredentialCheck }, options);
@@ -44,4 +44,4 @@ const useMakeNewSystem = () => {
   };
 };
 
-export default useMakeNewSystem;
+export default useCreateSystem;
