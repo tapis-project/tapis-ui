@@ -36,6 +36,9 @@ const Router: React.FC = () => {
           <Dashboard />
         )}
       </Route>
+      <Route exact path="/dashboard">
+        <Dashboard />
+      </Route>
       <Route path="/login">
         <Login />
       </Route>
