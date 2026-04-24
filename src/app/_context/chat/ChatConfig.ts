@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
-import { Agent, AgentContext } from './agentTypes';
+import { Agent, AgentContext, type ChatMessageMeta } from './agentTypes';
 
 export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: number;
+  meta?: ChatMessageMeta;
 };
 
 export type ChatConfig = {

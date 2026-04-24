@@ -2,6 +2,7 @@ import {
   Agent,
   AgentContext,
   AgentResult,
+  AgentStreamHandlers,
   ChatTurn,
 } from 'app/_context/chat/agentTypes';
 import {
@@ -123,7 +124,8 @@ async function callLiteLLM(
   endpoint: string,
   messages: LLMMessage[],
   jwt: string,
-  model: string = 'llama4-17b'
+  model: string = 'llama4-17b',
+  handlers?: AgentStreamHandlers
 ): Promise<string> {
   const token = extractTapisToken(jwt);
   try {
@@ -137,9 +139,75 @@ async function callLiteLLM(
         model,
         messages,
         temperature: 0.2,
+        stream: Boolean(handlers?.onDelta),
       }),
+      signal: handlers?.signal,
     });
     await assertOkResponse(response, LITELLM_SERVICE_NAME);
+
+    if (handlers?.onDelta) {
+      if (!response.body) {
+        throw new Error('LiteLLM API did not return a streaming body');
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let pending = '';
+      let fullContent = '';
+      let thinkingOpen = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        pending += decoder.decode(value, { stream: true });
+        const lines = pending.split('\n');
+        pending = lines.pop() || '';
+
+        for (const lineRaw of lines) {
+          const line = lineRaw.trim();
+          if (!line.startsWith('data: ')) continue;
+          if (line === 'data: [DONE]') continue;
+          try {
+            const chunk = JSON.parse(line.slice(6));
+            const contentDelta: string =
+              chunk?.choices?.[0]?.delta?.content ?? '';
+            const reasoningDelta: string =
+              chunk?.choices?.[0]?.delta?.reasoning_content ?? '';
+            if (reasoningDelta) {
+              if (!thinkingOpen) {
+                thinkingOpen = true;
+                fullContent += '<think>';
+                handlers.onDelta('<think>');
+              }
+              fullContent += reasoningDelta;
+              handlers.onDelta(reasoningDelta);
+            }
+            if (contentDelta) {
+              if (thinkingOpen) {
+                thinkingOpen = false;
+                fullContent += '</think>';
+                handlers.onDelta('</think>');
+              }
+              fullContent += contentDelta;
+              handlers.onDelta(contentDelta);
+            }
+          } catch {
+            // Ignore malformed stream chunks and continue processing.
+          }
+        }
+      }
+
+      if (thinkingOpen) {
+        thinkingOpen = false;
+        fullContent += '</think>';
+        handlers.onDelta('</think>');
+      }
+
+      if (!fullContent) {
+        throw new Error('LiteLLM API returned empty streamed answer');
+      }
+      return fullContent;
+    }
+
     const data = await response.json();
     const content: string = data?.choices?.[0]?.message?.content ?? '';
     if (!content) {
@@ -151,6 +219,38 @@ async function callLiteLLM(
   }
 }
 
+async function prepareModelSelection(
+  history: ChatTurn[],
+  context: AgentContext
+) {
+  const userText = getLastUserMessage(history);
+  const platformMatch = userText.match(/platform\s*:\s*([\w-]+)/i);
+  const platform = platformMatch
+    ? platformMatch[1].toLowerCase()
+    : 'huggingface';
+  const models = await fetchModels(
+    platform,
+    context.mlHubBasePath || context.basePath,
+    context.jwt
+  );
+  const litellmEndpoint =
+    process.env.NODE_ENV === 'development'
+      ? '/api/litellm'
+      : 'https://litellm.pods.tacc.tapis.io';
+  const messages: LLMMessage[] = [
+    { role: 'system', content: buildLLMSystemPrompt() },
+    ...buildPriorMessages(history),
+    { role: 'user', content: buildLLMUserPrompt(userText, platform, models) },
+  ];
+  return { litellmEndpoint, messages, jwt: context.jwt };
+}
+
+function isAbortLikeError(e: unknown): boolean {
+  if (e instanceof DOMException) return e.name === 'AbortError';
+  if (e instanceof Error) return e.name === 'AbortError';
+  return false;
+}
+
 export const ModelSelectionAgent: Agent = {
   id: 'model-selection',
   name: 'Model Selection Agent',
@@ -159,37 +259,47 @@ export const ModelSelectionAgent: Agent = {
     history: ChatTurn[],
     context: AgentContext
   ): Promise<AgentResult> => {
-    const userText = getLastUserMessage(history);
-
-    // Expect platform embedded in the user text for MVP, e.g., "platform: HuggingFace"
-    const platformMatch = userText.match(/platform\s*:\s*([\w-]+)/i);
-    const platform = platformMatch
-      ? platformMatch[1].toLowerCase()
-      : 'huggingface';
-
-    const models = await fetchModels(
-      platform,
-      context.mlHubBasePath || context.basePath,
-      context.jwt
-    );
-
-    const litellmEndpoint =
-      process.env.NODE_ENV === 'development'
-        ? '/api/litellm'
-        : 'https://litellm.pods.tacc.tapis.io';
-
+    const prep = await prepareModelSelection(history, context);
     let llmRaw = '';
     try {
-      const sys = buildLLMSystemPrompt();
-      const usr = buildLLMUserPrompt(userText, platform, models);
-      const messages: LLMMessage[] = [
-        { role: 'system', content: sys },
-        ...buildPriorMessages(history),
-        { role: 'user', content: usr },
-      ];
-      llmRaw = await callLiteLLM(litellmEndpoint, messages, context.jwt);
+      llmRaw = await callLiteLLM(prep.litellmEndpoint, prep.messages, prep.jwt);
     } catch (e) {
       llmRaw = `LiteLLM error: ${formatAgentError(e)}`;
+    }
+
+    return {
+      messages: [
+        {
+          id: `${Date.now()}-assistant-raw`,
+          role: 'assistant',
+          content: llmRaw || 'No response from model.',
+        },
+      ],
+    };
+  },
+  respondStream: async (
+    history: ChatTurn[],
+    context: AgentContext,
+    handlers: AgentStreamHandlers
+  ): Promise<AgentResult> => {
+    const prep = await prepareModelSelection(history, context);
+    let llmRaw = '';
+    try {
+      llmRaw = await callLiteLLM(
+        prep.litellmEndpoint,
+        prep.messages,
+        prep.jwt,
+        'llama4-17b',
+        handlers
+      );
+    } catch (e) {
+      const isAborted = handlers.signal?.aborted || isAbortLikeError(e);
+      if (!isAborted) {
+        llmRaw = `LiteLLM error: ${formatAgentError(e)}`;
+        handlers.onDelta?.(llmRaw);
+      }
+    } finally {
+      handlers.onDone?.();
     }
 
     return {
