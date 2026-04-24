@@ -57,6 +57,17 @@ async function callRAGQA(
   }
 }
 
+function buildPriorTranscript(history: ChatTurn[]): string {
+  // Drop the trailing user turn — that's the current question, surfaced
+  // separately. Skip system turns; the agent supplies its own system prompt.
+  const lastUserIdx = history.map((t) => t.role).lastIndexOf('user');
+  const prior = lastUserIdx >= 0 ? history.slice(0, lastUserIdx) : history;
+  return prior
+    .filter((t) => t.role === 'user' || t.role === 'assistant')
+    .map((t) => `${t.role === 'user' ? 'User' : 'Assistant'}: ${t.content}`)
+    .join('\n');
+}
+
 function buildSystemPrompt(config: RAGQAAgentConfig): string {
   const { domain, scopeDescription, docsUrl, extraInstructions } = config;
   const intro =
@@ -106,9 +117,14 @@ export function createRAGQAAgent(config: RAGQAAgentConfig): Agent {
           ? DEV_RAG_ENDPOINT
           : PROD_RAG_ENDPOINT);
 
+      const transcript = buildPriorTranscript(history);
+
       let answer = '';
       try {
-        const fullQuestion = `${systemPrompt}\n\nUser question: ${userQuestion}`;
+        const fullQuestion =
+          `${systemPrompt}\n\n` +
+          (transcript ? `Previous conversation:\n${transcript}\n\n` : '') +
+          `User question: ${userQuestion}`;
         answer = await callRAGQA(ragEndpoint, context.jwt, fullQuestion);
       } catch (e) {
         answer = `Error: ${formatAgentError(e)}`;
