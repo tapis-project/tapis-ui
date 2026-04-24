@@ -291,7 +291,9 @@ const LayoutContent: React.FC = () => {
           },
           onDone: () => {
             flushStreamState(false);
-            if (abortControllersRef.current[requestChatId] === abortController) {
+            if (
+              abortControllersRef.current[requestChatId] === abortController
+            ) {
               abortControllersRef.current[requestChatId] = null;
             }
           },
