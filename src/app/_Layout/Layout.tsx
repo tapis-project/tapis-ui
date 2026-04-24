@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 import { Router } from 'app/_Router';
 import { NotificationsProvider } from 'app/_components/Notifications';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -39,6 +39,35 @@ import 'app/Jobs/_context/registerJobsChat';
 import 'app/Workflows/_context/registerWorkflowsChat';
 import 'app/Pods/_context/registerPodsChat';
 
+function parseAssistantStream(raw: string) {
+  const thinkStartToken = '<think>';
+  const thinkEndToken = '</think>';
+  let visible = '';
+  let thinking = '';
+  let cursor = 0;
+  let thinkingInProgress = false;
+
+  while (cursor < raw.length) {
+    const start = raw.indexOf(thinkStartToken, cursor);
+    if (start === -1) {
+      visible += raw.slice(cursor);
+      break;
+    }
+    visible += raw.slice(cursor, start);
+    const thinkStart = start + thinkStartToken.length;
+    const end = raw.indexOf(thinkEndToken, thinkStart);
+    if (end === -1) {
+      thinking += raw.slice(thinkStart);
+      thinkingInProgress = true;
+      break;
+    }
+    thinking += raw.slice(thinkStart, end);
+    cursor = end + thinkEndToken.length;
+  }
+
+  return { visible, thinking, thinkingInProgress };
+}
+
 const LayoutContent: React.FC = () => {
   const { claims, pathTenantId, pathSiteId } = useTapisConfig();
   const { extension } = useExtension();
@@ -53,10 +82,26 @@ const LayoutContent: React.FC = () => {
 
   // Chat functionality
   const { isChatOpen, setIsChatOpen, activeChatId } = useContext(ChatContext);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isSending, setIsSending] = useState(false);
+  const [messagesByChatId, setMessagesByChatId] = useState<
+    Record<string, ChatMessage[]>
+  >({});
+  const [isSendingByChatId, setIsSendingByChatId] = useState<
+    Record<string, boolean>
+  >({});
+  const abortControllersRef = useRef<Record<string, AbortController | null>>(
+    {}
+  );
+  const loadedChatIdsRef = useRef<Set<string>>(new Set());
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
   const isAuthenticated = Boolean(accessToken?.access_token);
+
+  useEffect(() => {
+    return () => {
+      Object.values(abortControllersRef.current).forEach((controller) =>
+        controller?.abort()
+      );
+    };
+  }, []);
 
   // Get the current chat configuration
   const chatConfig = useMemo(() => {
@@ -74,18 +119,60 @@ const LayoutContent: React.FC = () => {
     return chatConfig?.storageKey || 'ml-hub-model-chat-messages';
   }, [chatConfig]);
 
+  const updateMessagesForChat = (
+    chatId: string,
+    updater: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])
+  ) => {
+    setMessagesByChatId((prev) => {
+      const prevMessages = prev[chatId] || [];
+      const nextMessages =
+        typeof updater === 'function' ? updater(prevMessages) : updater;
+      if (typeof window !== 'undefined') {
+        const key = getChatConfig(chatId)?.storageKey;
+        if (key) {
+          if (!nextMessages || nextMessages.length === 0) {
+            try {
+              window.localStorage.removeItem(key);
+            } catch (e) {
+              console.warn('Failed to clear persisted chat messages', e);
+            }
+          } else {
+            const hasActiveStream = nextMessages.some(
+              (m) => m.meta?.stream?.streaming === true
+            );
+            if (!hasActiveStream) {
+              try {
+                window.localStorage.setItem(key, JSON.stringify(nextMessages));
+              } catch (e) {
+                console.warn('Failed to persist chat messages', e);
+              }
+            }
+          }
+        }
+      }
+      return { ...prev, [chatId]: nextMessages };
+    });
+  };
+
+  const setSendingForChat = (chatId: string, isSending: boolean) => {
+    setIsSendingByChatId((prev) => ({ ...prev, [chatId]: isSending }));
+  };
+
   // Load messages when chat ID changes
   useEffect(() => {
     if (typeof window === 'undefined' || !chatConfig) return;
+    if (loadedChatIdsRef.current.has(activeChatId)) return;
+    loadedChatIdsRef.current.add(activeChatId);
     try {
       const raw = window.localStorage.getItem(storageKey);
       if (!raw) {
-        setMessages([]);
+        updateMessagesForChat(activeChatId, []);
         return;
       }
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        setMessages(
+        updateMessagesForChat(
+          activeChatId,
           parsed.filter(
             (msg) =>
               msg &&
@@ -95,26 +182,16 @@ const LayoutContent: React.FC = () => {
           )
         );
       } else {
-        setMessages([]);
+        updateMessagesForChat(activeChatId, []);
       }
     } catch (error) {
       console.warn('Failed to restore chat messages', error);
-      setMessages([]);
+      updateMessagesForChat(activeChatId, []);
     }
-  }, [storageKey, chatConfig]);
+  }, [storageKey, chatConfig, activeChatId]);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      if (!messages || messages.length === 0) {
-        window.localStorage.removeItem(storageKey);
-        return;
-      }
-      window.localStorage.setItem(storageKey, JSON.stringify(messages));
-    } catch (error) {
-      console.warn('Failed to persist chat messages', error);
-    }
-  }, [messages, storageKey]);
+  const activeMessages = messagesByChatId[activeChatId] || [];
+  const activeIsSending = Boolean(isSendingByChatId[activeChatId]);
 
   const handleSend = async (text: string) => {
     if (!chatConfig) {
@@ -122,18 +199,25 @@ const LayoutContent: React.FC = () => {
       return;
     }
 
+    const requestChatId = activeChatId;
     const now = Date.now();
     const userTurn: ChatTurn = {
       id: `${now}-user`,
       role: 'user',
       content: text,
     };
-    const nextHistory: ChatTurn[] = [...messages, userTurn];
-    setMessages([...messages, { ...userTurn, timestamp: now }]);
-    setIsSending(true);
+    const currentMessages = messagesByChatId[requestChatId] || [];
+    const nextHistory: ChatTurn[] = [...currentMessages, userTurn];
+    updateMessagesForChat(requestChatId, [
+      ...currentMessages,
+      { ...userTurn, timestamp: now },
+    ]);
+    setSendingForChat(requestChatId, true);
+    let streamingAssistantMessageId: string | null = null;
+
     try {
       if (!accessToken?.access_token) {
-        setMessages((prev) => [
+        updateMessagesForChat(requestChatId, (prev) => [
           ...prev,
           {
             id: `${Date.now()}-error`,
@@ -145,44 +229,163 @@ const LayoutContent: React.FC = () => {
         return;
       }
 
-      // Get agent context from the chat config
       const agentContext = chatConfig.getAgentContext({
         accessToken,
         basePath,
         mlHubBasePath,
       });
 
-      // Use the agent from the chat config
-      const result = await chatConfig.agent.respond(nextHistory, agentContext);
-      if (result.messages && result.messages.length > 0) {
-        const now = Date.now();
-        setMessages((prev) => [
+      const canStream = typeof chatConfig.agent.respondStream === 'function';
+
+      if (canStream) {
+        const assistantMessageId = `${Date.now()}-assistant-stream`;
+        streamingAssistantMessageId = assistantMessageId;
+        let rawStream = '';
+        const abortController = new AbortController();
+        abortControllersRef.current[requestChatId] = abortController;
+
+        updateMessagesForChat(requestChatId, (prev) => [
           ...prev,
-          ...result.messages.map((msg) => ({ ...msg, timestamp: now })),
+          {
+            id: assistantMessageId,
+            role: 'assistant',
+            content: '',
+            timestamp: Date.now(),
+            meta: {
+              stream: {
+                thinking: '',
+                thinkingInProgress: false,
+                streaming: true,
+              },
+            },
+          },
         ]);
+
+        const flushStreamState = (streaming: boolean) => {
+          const parsed = parseAssistantStream(rawStream);
+          updateMessagesForChat(requestChatId, (prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? {
+                    ...msg,
+                    content: parsed.visible,
+                    meta: {
+                      ...msg.meta,
+                      stream: {
+                        thinking: parsed.thinking,
+                        thinkingInProgress: parsed.thinkingInProgress,
+                        streaming,
+                      },
+                    },
+                  }
+                : msg
+            )
+          );
+        };
+
+        await chatConfig.agent.respondStream!(nextHistory, agentContext, {
+          signal: abortController.signal,
+          onDelta: (delta) => {
+            rawStream += delta;
+            flushStreamState(true);
+          },
+          onDone: () => {
+            flushStreamState(false);
+            if (abortControllersRef.current[requestChatId] === abortController) {
+              abortControllersRef.current[requestChatId] = null;
+            }
+          },
+        });
+      } else {
+        const result = await chatConfig.agent.respond(
+          nextHistory,
+          agentContext
+        );
+        if (result.messages && result.messages.length > 0) {
+          const responseTimestamp = Date.now();
+          updateMessagesForChat(requestChatId, (prev) => [
+            ...prev,
+            ...result.messages.map((msg) => ({
+              ...msg,
+              timestamp: responseTimestamp,
+            })),
+          ]);
+        }
       }
     } catch (error) {
+      if ((error as Error)?.name === 'AbortError') {
+        if (streamingAssistantMessageId) {
+          updateMessagesForChat(requestChatId, (prev) =>
+            prev.map((msg) =>
+              msg.id === streamingAssistantMessageId
+                ? {
+                    ...msg,
+                    meta: {
+                      ...msg.meta,
+                      stream: {
+                        ...(msg.meta?.stream ?? {
+                          thinking: '',
+                          thinkingInProgress: false,
+                          streaming: false,
+                        }),
+                        streaming: false,
+                      },
+                    },
+                  }
+                : msg
+            )
+          );
+        }
+        return;
+      }
       console.error('Error sending message:', error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `${Date.now()}-error`,
-          role: 'assistant',
-          content:
-            'An error occurred while processing your message. Please try again.',
-          timestamp: Date.now(),
-        },
-      ]);
+      const errorContent =
+        'An error occurred while processing your message. Please try again.';
+      if (streamingAssistantMessageId) {
+        updateMessagesForChat(requestChatId, (prev) =>
+          prev.map((msg) =>
+            msg.id === streamingAssistantMessageId
+              ? {
+                  ...msg,
+                  content: errorContent,
+                  timestamp: Date.now(),
+                  meta: {
+                    ...msg.meta,
+                    stream: {
+                      ...(msg.meta?.stream ?? {
+                        thinking: '',
+                        thinkingInProgress: false,
+                        streaming: false,
+                      }),
+                      streaming: false,
+                    },
+                  },
+                }
+              : msg
+          )
+        );
+      } else {
+        updateMessagesForChat(requestChatId, (prev) => [
+          ...prev,
+          {
+            id: `${Date.now()}-error`,
+            role: 'assistant',
+            content: errorContent,
+            timestamp: Date.now(),
+          },
+        ]);
+      }
     } finally {
-      setIsSending(false);
+      setSendingForChat(requestChatId, false);
     }
   };
 
   const handleClearChat = () => {
-    setMessages([]);
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(storageKey);
-    }
+    const currentChatId = activeChatId;
+    abortControllersRef.current[currentChatId]?.abort();
+    abortControllersRef.current[currentChatId] = null;
+    updateMessagesForChat(currentChatId, []);
+    setSendingForChat(currentChatId, false);
   };
 
   // Set the document title dynamically based on the tenant ID
@@ -226,9 +429,9 @@ const LayoutContent: React.FC = () => {
           open={isChatOpen}
           onClose={() => setIsChatOpen(false)}
           title={chatConfig.title}
-          messages={messages}
+          messages={activeMessages}
           onSend={handleSend}
-          isSending={isSending}
+          isSending={activeIsSending}
           onClearChat={handleClearChat}
           headerExtras={<ChatSelector />}
           emptyStateContent={
