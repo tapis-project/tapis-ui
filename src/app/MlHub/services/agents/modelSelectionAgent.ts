@@ -106,10 +106,22 @@ function buildLLMUserPrompt(
   );
 }
 
+type LLMMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+
+function buildPriorMessages(history: ChatTurn[]): LLMMessage[] {
+  // Drop the trailing user turn — the caller replaces it with the enhanced
+  // prompt that injects the model list. Keep system turns out; the agent
+  // supplies its own.
+  const lastUserIdx = history.map((t) => t.role).lastIndexOf('user');
+  const prior = lastUserIdx >= 0 ? history.slice(0, lastUserIdx) : history;
+  return prior
+    .filter((t) => t.role === 'user' || t.role === 'assistant')
+    .map((t) => ({ role: t.role as 'user' | 'assistant', content: t.content }));
+}
+
 async function callLiteLLM(
   endpoint: string,
-  systemPrompt: string,
-  userPrompt: string,
+  messages: LLMMessage[],
   jwt: string,
   model: string = 'llama4-17b'
 ): Promise<string> {
@@ -123,10 +135,7 @@ async function callLiteLLM(
       },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
+        messages,
         temperature: 0.2,
       }),
     });
@@ -173,7 +182,12 @@ export const ModelSelectionAgent: Agent = {
     try {
       const sys = buildLLMSystemPrompt();
       const usr = buildLLMUserPrompt(userText, platform, models);
-      llmRaw = await callLiteLLM(litellmEndpoint, sys, usr, context.jwt);
+      const messages: LLMMessage[] = [
+        { role: 'system', content: sys },
+        ...buildPriorMessages(history),
+        { role: 'user', content: usr },
+      ];
+      llmRaw = await callLiteLLM(litellmEndpoint, messages, context.jwt);
     } catch (e) {
       llmRaw = `LiteLLM error: ${formatAgentError(e)}`;
     }
