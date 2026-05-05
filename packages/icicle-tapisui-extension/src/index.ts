@@ -25,6 +25,7 @@ import {
   DigitalAgAaaS,
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
+  Patra,
 } from './pages';
 
 const extension = createExtension({
@@ -66,6 +67,7 @@ const extension = createExtension({
     'files',
     'apps',
     'harvest',
+    'patra',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -100,6 +102,7 @@ const extension = createExtension({
         'files',
         'apps',
         'harvest',
+        'patra',
       ],
     },
   },
@@ -260,6 +263,13 @@ extension.registerService({
   sidebarDisplayName: 'Harvest',
   iconName: 'globe',
   component: Harvest,
+});
+
+extension.registerService({
+  id: 'patra',
+  sidebarDisplayName: 'Patra',
+  iconName: 'globe',
+  component: Patra,
 });
 
 extension.registerService({
