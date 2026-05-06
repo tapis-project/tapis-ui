@@ -308,7 +308,7 @@ const Login: React.FC = () => {
               <Button
                 // Only disable when using default implicit auth as client for tenant might not exist.
                 // if extension.getAuthByType('implicit') then we assume the config is correct.
-                disabled={extension ? false : !!implicitError || !implicitReady}
+                // TODO uncomment disabled={extension ? false : !!implicitError || !implicitReady}
                 onClick={() => {
                   setActiveAuthMethod('implicit');
                 }}
