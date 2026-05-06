@@ -33,7 +33,7 @@ const Login: React.FC = () => {
   // 4. default password client or error message
   let implicitAuthURL: string | undefined = undefined;
   let implicitIframe: boolean = false;
-  let passwordAuth = undefined;
+  let passwordAuth: boolean | undefined = undefined;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
     if (
@@ -249,7 +249,7 @@ const Login: React.FC = () => {
   if (activeAuthMethod === 'implicit' && !implicitIframe && !passwordAuth) {
     return (
       <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <p>Redirecting to your institution's login...</p>
+        <p>Redirecting to your login page...</p>
       </div>
     );
   }
@@ -294,7 +294,7 @@ const Login: React.FC = () => {
       )}
       {(activeAuthMethod === undefined || activeAuthMethod === 'implicit') && (
         <div className={styles['buttons']}>
-          {passwordAuth && (
+          {/* {passwordAuth && (
             <Button
               onClick={() => {
                 setActiveAuthMethod('password');
@@ -302,7 +302,7 @@ const Login: React.FC = () => {
             >
               Log in with username and password
             </Button>
-          )}
+          )} */}
           {implicitAuthURL !== undefined && (
             <>
               <Button
@@ -315,7 +315,7 @@ const Login: React.FC = () => {
                 //change to loading until implicitReady is true
                 isLoading={!implicitReady}
               >
-                Log in with your institution
+                Log in
               </Button>
               {/* {implicitError && (
                 <div style={{ color: 'red', marginTop: '0.5em' }}>
