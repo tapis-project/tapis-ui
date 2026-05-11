@@ -27,6 +27,7 @@ import {
   FoodLogisticsAaaS,
   Patra,
 } from './pages';
+import { SmartLabeler } from './pages/SmartLabeler';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -68,6 +69,7 @@ const extension = createExtension({
     'apps',
     'harvest',
     'patra',
+    'smart-labeler',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -103,6 +105,7 @@ const extension = createExtension({
         'apps',
         'harvest',
         'patra',
+        'smart-labeler',
       ],
     },
   },
@@ -258,6 +261,14 @@ extension.registerService({
   iconName: 'globe',
   component: DigitalAgOpenPASS,
 });
+
+extension.registerService({
+  id: 'smart-labeler',
+  sidebarDisplayName: 'Smart Labeling and Annotation',
+  iconName: 'globe',
+  component: SmartLabeler,
+});
+
 extension.registerService({
   id: 'harvest',
   sidebarDisplayName: 'Harvest',
