@@ -63,9 +63,17 @@ const Login: React.FC = () => {
           implicitAuth.redirectURI
         )}&use_iframe_redirect=${String(implicitIframe)}`;
     }
-    // TODO - Get localhost working with http://localhost:3000/#/oauth2
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
+
+    // OIDC redirect URIs in extensions point to the production hostname, so they
+    // cannot complete when running on localhost. Fall back to password-only.
+    if (
+      /localhost|127\.0\.0\.1/.test(window.location.hostname) &&
+      passwordAuth
+    ) {
+      implicitAuthURL = undefined;
+    }
   } else {
     // If no extension, use default implicit and password auth
     const defaultAuthURL = basePath
