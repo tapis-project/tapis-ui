@@ -15,6 +15,9 @@ import {
   CircularProgress,
   Paper,
   Link,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import CloseIcon from '@mui/icons-material/Close';
@@ -25,6 +28,18 @@ import CheckIcon from '@mui/icons-material/Check';
 import { format, isToday } from 'date-fns';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Markdown from 'markdown-to-jsx';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+
+const thinkingSpinnerSx = {
+  fontSize: 15,
+  color: '#d97706',
+  animation: 'tapis-thinking-spin 1s linear infinite',
+  '@keyframes tapis-thinking-spin': {
+    '0%': { transform: 'rotate(0deg)' },
+    '100%': { transform: 'rotate(360deg)' },
+  },
+} as const;
 
 /**
  * Styled inline code span for chat markdown rendering.
@@ -177,6 +192,7 @@ export type ChatMessage = {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: number | Date | string;
+  meta?: import('app/_context/chat/agentTypes').ChatMessageMeta;
 };
 
 export type ChatPanelProps = {
@@ -907,6 +923,9 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     : parseWidth(width) ?? CLAMP_FALLBACK_WIDTH;
   const effectiveHeight = resizable ? panelHeight : height;
   const headerDraggableAreaHeight = 48;
+  const hasActiveStreamingMessage = messages.some(
+    (m) => m.role === 'assistant' && Boolean(m.meta?.stream?.streaming)
+  );
 
   return (
     <>
@@ -1395,6 +1414,77 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                         {m.content}
                       </Markdown>
                     </Box>
+                    {m.role === 'assistant' &&
+                      m.meta?.stream?.streaming &&
+                      !m.content &&
+                      !m.meta?.stream?.thinking && (
+                        <Stack
+                          direction="row"
+                          spacing={0.75}
+                          alignItems="center"
+                          sx={{ mt: 0.5 }}
+                        >
+                          <AutorenewIcon sx={thinkingSpinnerSx} />
+                          <Typography variant="caption" color="text.secondary">
+                            Streaming response...
+                          </Typography>
+                        </Stack>
+                      )}
+                    {m.role === 'assistant' && m.meta?.stream?.thinking && (
+                      <Accordion
+                        disableGutters
+                        elevation={0}
+                        sx={{
+                          mt: 1,
+                          bgcolor: '#fff7e6',
+                          border: '1px solid #ffe2b7',
+                          borderRadius: 1,
+                          '&:before': { display: 'none' },
+                        }}
+                      >
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon fontSize="small" />}
+                          sx={{
+                            minHeight: 30,
+                            '& .MuiAccordionSummary-content': { my: 0.5 },
+                          }}
+                        >
+                          <Stack
+                            direction="row"
+                            spacing={0.75}
+                            alignItems="center"
+                          >
+                            {m.meta?.stream?.thinkingInProgress ? (
+                              <AutorenewIcon sx={thinkingSpinnerSx} />
+                            ) : null}
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: 600, color: '#8a5800' }}
+                            >
+                              {m.meta?.stream?.thinkingInProgress
+                                ? 'Thinking (streaming...)'
+                                : 'Thinking trace'}
+                            </Typography>
+                          </Stack>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ pt: 0, pb: 1 }}>
+                          <Typography
+                            variant="caption"
+                            component="pre"
+                            sx={{
+                              m: 0,
+                              whiteSpace: 'pre-wrap',
+                              fontFamily:
+                                '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
+                              fontSize: '0.72rem',
+                              color: '#7a5a22',
+                            }}
+                          >
+                            {m.meta.stream.thinking}
+                          </Typography>
+                        </AccordionDetails>
+                      </Accordion>
+                    )}
                     <Tooltip
                       title={
                         copiedMessageId === m.id ? 'Copied!' : 'Copy message'
@@ -1430,7 +1520,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                   </Box>
                 </Box>
               ))}
-          {isSending && (
+          {isSending && !hasActiveStreamingMessage && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
               <Box
                 sx={{
