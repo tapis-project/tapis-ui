@@ -15,7 +15,7 @@ export const SmartLabeler: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          src={`https://smart-labeler-sailab.nrp-nautilus.io/`}
+          src={`https://smartlabeler.pods.icicleai.tapis.io/`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
