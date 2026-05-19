@@ -19,6 +19,12 @@ const services: ServiceItem[] = [
     link: 'https://github.com/ICICLE-ai/forte-api',
   },
   {
+    label: 'Smart Labeling and Annotation',
+    name: 'Smart Labeler',
+    link: '/smart-labeler',
+    internal: true,
+  },
+  {
     label: 'Semi Supervised and Fully Supervised High-Performance Training',
     name: 'Upcoming',
     link: '#',
