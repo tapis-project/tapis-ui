@@ -380,7 +380,7 @@ const Sidebar: React.FC = () => {
       <Navbar>
         {isIcicleExtension &&
           accessToken &&
-          renderSidebarItem('/home', 'globe', 'Portal Home(beta)')}
+          renderSidebarItem('/home', 'globe', 'Portal Home')}
         {renderSidebarItem(
           extensionName === '@icicle/tapisui-extension' ? '/dashboard' : '/',
           'dashboard',

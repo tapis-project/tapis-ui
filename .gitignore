@@ -73,6 +73,7 @@ web_modules/
 .env.test
 agents.md
 AGENTS.md
+CLAUDE.md
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

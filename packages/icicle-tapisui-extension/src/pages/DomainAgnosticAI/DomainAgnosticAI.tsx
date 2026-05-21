@@ -25,6 +25,13 @@ const services: ServiceItem[] = [
     internal: true,
   },
   {
+    label:
+      'ICICLE Chatbook: A Chatbook built on top of ICICLE CI services to let you chat with your text, PDF, and other data.',
+    name: 'ICICLE Chatbook',
+    link: '/icicle-chatbook',
+    internal: true,
+  },
+  {
     label: 'Semi Supervised and Fully Supervised High-Performance Training',
     name: 'Upcoming',
     link: '#',

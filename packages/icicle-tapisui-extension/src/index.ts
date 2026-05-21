@@ -20,6 +20,7 @@ import {
   FoodSecuritySandbox,
   PortalHome,
   DomainAgnosticAI,
+  ICICLEChatbook,
   DomainAgnosticCI,
   DomainSpecificServices,
   DigitalAgAaaS,
@@ -52,6 +53,7 @@ const extension = createExtension({
     'training-catalog',
     'home',
     'domain-agnostic-ai',
+    'icicle-chatbook',
     'domain-agnostic-ci',
     'domain-specific-services',
     'digital-ag-aaas',
@@ -88,6 +90,7 @@ const extension = createExtension({
         'analytics',
         'training-catalog',
         'domain-agnostic-ai',
+        'icicle-chatbook',
         'domain-agnostic-ci',
         'domain-specific-services',
         'digital-ag-aaas',
@@ -131,7 +134,7 @@ const extension = createExtension({
 // Order of registration determines sidebar order!!
 extension.registerService({
   id: 'home',
-  sidebarDisplayName: 'Portal Home (beta)',
+  sidebarDisplayName: 'Portal Home',
   iconName: 'globe',
   component: PortalHome,
 });
@@ -141,6 +144,13 @@ extension.registerService({
   sidebarDisplayName: 'ICICLE-AIaaS',
   iconName: 'globe',
   component: DomainAgnosticAI,
+});
+
+extension.registerService({
+  id: 'icicle-chatbook',
+  sidebarDisplayName: 'ICICLE Chatbook',
+  iconName: 'globe',
+  component: ICICLEChatbook,
 });
 
 extension.registerService({
