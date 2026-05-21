@@ -15,6 +15,7 @@ export { FEAST } from './FEAST';
 export { FoodSecuritySandbox } from './FoodSecuritySandbox';
 export { PortalHome } from './PortalHome';
 export { DomainAgnosticAI } from './DomainAgnosticAI';
+export { ICICLEChatbook } from './ICICLEChatbook';
 export { DomainAgnosticCI } from './DomainAgnosticCI';
 export { DomainSpecificServices } from './DomainSpecificServices';
 export { DigitalAgAaaS } from './DigitalAgAaaS';
