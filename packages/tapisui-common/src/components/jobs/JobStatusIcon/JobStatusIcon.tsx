@@ -20,7 +20,7 @@ import styles from './JobStatusIcon.module.scss';
 
 type Status = Jobs.JobStatusEnum | Jobs.JobListDTOStatusEnum;
 
-type Animation = 'rotate';
+type Animation = 'rotate' | 'pulse';
 
 const getJobStatusIcon = (status: Status, animation?: Animation) => {
   switch (status) {
