@@ -284,6 +284,7 @@ const JobsNav: React.FC = () => {
           includeAllGroupItemIcon={({ object }: any) => (
             <JobStatusIcon
               status={object.status}
+              condition={object.condition}
               animation={
                 object.status === Jobs.JobListDTOStatusEnum.Running
                   ? 'rotate'
@@ -356,6 +357,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
@@ -384,6 +386,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
@@ -412,6 +415,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
@@ -441,6 +445,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'

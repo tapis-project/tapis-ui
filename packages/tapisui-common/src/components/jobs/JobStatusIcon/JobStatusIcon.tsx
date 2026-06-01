@@ -14,21 +14,45 @@ import {
   Dangerous,
   RestorePage,
   Autorenew,
+  TimerOff,
 } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 import styles from './JobStatusIcon.module.scss';
 
 type Status = Jobs.JobStatusEnum | Jobs.JobListDTOStatusEnum;
+type Condition = Jobs.JobConditionEnum | Jobs.JobListDTOConditionEnum;
 
 type Animation = 'rotate';
 
-const getJobStatusIcon = (status: Status, animation?: Animation) => {
+const schedulerConditionLabels: Partial<Record<string, string>> = {
+  SCHEDULER_TIMEOUT: 'Job stopped — reached the scheduler time limit',
+  SCHEDULER_DEADLINE: 'Job stopped — reached the scheduler deadline',
+  SCHEDULER_OUT_OF_MEMORY: 'Job stopped — ran out of memory',
+  SCHEDULER_CANCELLED: 'Job stopped — cancelled by the scheduler',
+  SCHEDULER_STOPPED: 'Job stopped by the scheduler',
+  SCHEDULER_TERMINATED: 'Job terminated by the scheduler',
+};
+
+const getJobStatusIcon = (
+  status: Status,
+  condition?: Condition,
+  animation?: Animation
+) => {
+  if (
+    (status === Jobs.JobStatusEnum.Failed ||
+      status === Jobs.JobListDTOStatusEnum.Failed) &&
+    condition &&
+    schedulerConditionLabels[condition as string]
+  ) {
+    return <TimerOff style={{ color: '#9e9e9e' }} />;
+  }
+
   switch (status) {
     case Jobs.JobStatusEnum.SubmittingJob:
     case Jobs.JobListDTOStatusEnum.SubmittingJob:
       return <Publish style={{ color: '#ffa726' }} />;
     case Jobs.JobStatusEnum.Failed:
-    case Jobs.JobStatusEnum.Failed:
+    case Jobs.JobListDTOStatusEnum.Failed:
       return <Cancel color="error" />;
     case Jobs.JobStatusEnum.Paused:
     case Jobs.JobListDTOStatusEnum.Paused:
@@ -75,12 +99,17 @@ const getJobStatusIcon = (status: Status, animation?: Animation) => {
 
 const JobStatusIcon: React.FC<{
   status: Status;
+  condition?: Condition;
   tooltip?: string;
   animation?: Animation;
-}> = ({ status, tooltip, animation = undefined }) => {
+}> = ({ status, condition, tooltip, animation = undefined }) => {
+  const defaultTooltip =
+    condition && schedulerConditionLabels[condition as string]
+      ? schedulerConditionLabels[condition as string]!
+      : status;
   return (
-    <Tooltip placement="top" title={tooltip ? tooltip : status}>
-      {getJobStatusIcon(status, animation)}
+    <Tooltip placement="top" title={tooltip ?? defaultTooltip}>
+      {getJobStatusIcon(status, condition, animation)}
     </Tooltip>
   );
 };
