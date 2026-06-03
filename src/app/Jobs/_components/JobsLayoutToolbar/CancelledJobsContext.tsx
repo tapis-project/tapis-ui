@@ -1,6 +1,9 @@
-import App from 'app/_Layout';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext } from 'react';
 
-const myContext = createContext('job status');
+export type CancelledJobsContext<T> = {
+  job_uuid: string;
+  job_status: string;
+  job_cancel_request: boolean;
+};
 
-export default myContext;
+export default CancelledJobsContext;
