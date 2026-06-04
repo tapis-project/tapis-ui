@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Systems as SystemsHooks,
   Files as FilesHooks,
@@ -6,6 +6,7 @@ import {
 } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
+import { HostEvalNavigationButton } from '../../files';
 import { QueryWrapper } from '../../../wrappers';
 import styles from './SystemDetail.module.scss';
 import {
@@ -37,12 +38,9 @@ import {
   AccountTree,
   Share,
   Update,
-  Home,
-  ArrowDropDown,
 } from '@mui/icons-material';
 import {
   Button,
-  ButtonGroup,
   Chip,
   CircularProgress,
   Divider,
@@ -55,10 +53,6 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
-  Popper,
-  Grow,
-  Paper,
-  ClickAwayListener,
 } from '@mui/material';
 import { useHistory, Link } from 'react-router-dom';
 import {
@@ -142,145 +136,6 @@ const TmsKeysAuthButton: React.FC<{
         </Alert>
       )}
     </div>
-  );
-};
-
-const envVarOptions = [
-  { label: 'Go to $HOME', envVar: 'HOME' },
-  { label: 'Go to $WORK', envVar: 'WORK' },
-  { label: 'Go to $SCRATCH', envVar: 'SCRATCH' },
-];
-
-const HostEvalButton: React.FC<{
-  systemId: string;
-  isAuthenticated: boolean;
-}> = ({ systemId, isAuthenticated }) => {
-  const [open, setOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [triggered, setTriggered] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
-  const anchorRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const history = useHistory();
-
-  const selected = envVarOptions[selectedIndex];
-
-  const { data, isLoading, isError, error, refetch } = SystemsHooks.useHostEval(
-    { systemId, envVarName: selected.envVar },
-    {
-      enabled: false,
-      retry: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const path = data?.result?.name;
-
-  // When data arrives after a triggered request, show "going to..." then redirect
-  React.useEffect(() => {
-    if (triggered && path && !redirecting && !isError) {
-      setRedirecting(true);
-      timerRef.current = setTimeout(() => {
-        history.push(`/files/${systemId}${path}`);
-      }, 1400);
-    }
-  }, [triggered, path, redirecting, isError, history, systemId]);
-
-  // Cancel redirect on error
-  React.useEffect(() => {
-    if (isError && timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-      setRedirecting(false);
-    }
-  }, [isError]);
-
-  // Cleanup timer on unmount only
-  React.useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  const handleHostVarButtonClick = () => {
-    setTriggered(true);
-    setRedirecting(false);
-    refetch();
-  };
-
-  const handleMenuItemClick = (index: number) => {
-    setSelectedIndex(index);
-    setTriggered(false);
-    setRedirecting(false);
-    setOpen(false);
-  };
-
-  return (
-    <>
-      <ButtonGroup
-        variant="text"
-        size="small"
-        ref={anchorRef}
-        disabled={!isAuthenticated}
-      >
-        <Button
-          onClick={handleHostVarButtonClick}
-          disabled={isLoading || redirecting}
-          startIcon={isLoading ? <CircularProgress size={16} /> : <Home />}
-        >
-          {isLoading
-            ? 'Resolving...'
-            : redirecting && path
-            ? `Going to ${path} ...`
-            : selected.label}
-        </Button>
-        <Button
-          onClick={() => setOpen((prev) => !prev)}
-          aria-label="select environment variable"
-          disabled={isLoading || redirecting}
-        >
-          <ArrowDropDown />
-        </Button>
-      </ButtonGroup>
-      <Popper
-        open={open}
-        anchorEl={anchorRef.current}
-        transition
-        disablePortal
-        sx={{ zIndex: 1 }}
-      >
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin:
-                placement === 'bottom' ? 'center top' : 'center bottom',
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={() => setOpen(false)}>
-                <MenuList autoFocusItem>
-                  {envVarOptions.map((option, index) => (
-                    <MenuItem
-                      key={option.envVar}
-                      selected={index === selectedIndex}
-                      onClick={() => handleMenuItemClick(index)}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
-      {isError && error && triggered && (
-        <Alert severity="error" sx={{ mt: 1 }}>
-          {error.message || `Failed to resolve $${selected.envVar}`}
-        </Alert>
-      )}
-    </>
   );
 };
 
@@ -788,7 +643,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             {system.systemType === Systems.SystemTypeEnum.Linux &&
               system.isDynamicEffectiveUser &&
               (!system.rootDir || system.rootDir === '/') && (
-                <HostEvalButton
+                <HostEvalNavigationButton
                   systemId={system.id!}
                   isAuthenticated={authenticated}
                 />

@@ -284,6 +284,7 @@ const JobsNav: React.FC = () => {
           includeAllGroupItemIcon={({ object }: any) => (
             <JobStatusIcon
               status={object.status}
+              condition={object.condition}
               animation={
                 object.status === Jobs.JobListDTOStatusEnum.Running
                   ? 'rotate'
@@ -324,12 +325,13 @@ const JobsNav: React.FC = () => {
                 />
               ),
               groupItemIcon: (
-                { fieldValue }: any // TODO FIXME This 'any' makes me sad. Fix
+                { object }: any // TODO FIXME This 'any' makes me sad. Fix
               ) => (
                 <JobStatusIcon
-                  status={fieldValue}
+                  status={object.status}
+                  condition={object.condition}
                   animation={
-                    fieldValue === Jobs.JobListDTOStatusEnum.Running
+                    object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
                       : undefined
                   }
@@ -356,6 +358,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
@@ -384,6 +387,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
@@ -412,6 +416,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'
@@ -441,6 +446,7 @@ const JobsNav: React.FC = () => {
               ) => (
                 <JobStatusIcon
                   status={object.status}
+                  condition={object.condition}
                   animation={
                     object.status === Jobs.JobListDTOStatusEnum.Running
                       ? 'rotate'

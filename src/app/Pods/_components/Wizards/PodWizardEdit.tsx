@@ -43,8 +43,6 @@ const PodWizardEdit: React.FC<{ pod: any }> = ({ pod }) => {
       // Strip read-only fields that the API doesn't accept on update
       const payload = { ...prunedValues };
       delete payload.pod_id;
-      delete payload.image;
-      delete payload.template;
       updatePod({ podId: objId, updatePod: payload }, { onSuccess });
     },
     [objId, updatePod, onSuccess]
@@ -65,14 +63,12 @@ const PodWizardEdit: React.FC<{ pod: any }> = ({ pod }) => {
           name="image"
           label="Image"
           description="Docker image to use, must be on allowlist. ex. mongo:6.0"
-          disabled
         />
         <FMTextField
           formik={formik}
           name="template"
           label="Template"
           description="Pods template to use."
-          disabled
         />
         <FMTextField
           formik={formik}

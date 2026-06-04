@@ -134,6 +134,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
                 status={
                   isCanceled ? Jobs.JobStatusEnum.Cancelled : job?.status!
                 }
+                condition={job?.condition}
                 animation={
                   [
                     Jobs.JobStatusEnum.Running,

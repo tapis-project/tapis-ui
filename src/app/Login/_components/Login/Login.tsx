@@ -10,6 +10,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useExtension } from 'extensions';
 import { Implicit } from '@tapis/tapisui-extensions-core/dist/oauth2';
+import { isLocalhost } from 'utils/resolveBasePath';
 import styles from './Login.module.scss';
 
 const Login: React.FC = () => {
@@ -66,12 +67,18 @@ const Login: React.FC = () => {
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
 
+<<<<<<< HEAD
     // OIDC redirect URIs in extensions point to the production hostname, so they
     // cannot complete when running on localhost. Fall back to password-only.
     if (
       /localhost|127\.0\.0\.1/.test(window.location.hostname) &&
       passwordAuth
     ) {
+=======
+    // OIDC redirect URIs in extensions point to the production hostname and
+    // cannot complete on localhost.
+    if (isLocalhost() && passwordAuth) {
+>>>>>>> 4c63c94ebc9b7f15b1ac37d2916583902abe206d
       implicitAuthURL = undefined;
     }
   } else {
@@ -89,16 +96,13 @@ const Login: React.FC = () => {
       `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
         defaultRedirectURI
       )}&use_iframe_redirect=${String(implicitIframe)}`;
-    console.debug(
-      `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
-    );
 
-    // For development add password Auth as implicit hasn't been implemented for localhost yet.
-    // TODO: remove implicitAuth check. Shouldn't show password auth ever, but clients not bootstrapped yet.
-    passwordAuth =
-      location.href.startsWith('http://localhost:3000') || !implicitAuthURL
-        ? true
-        : true; // always password auth for now
+    passwordAuth = true;
+
+    // redirect_uri is built from basePath (the remote tenant) and cannot return to localhost.
+    if (isLocalhost()) {
+      implicitAuthURL = undefined;
+    }
   }
 
   // Compute initial auth method synchronously so first render doesn't flash buttons
@@ -161,18 +165,21 @@ const Login: React.FC = () => {
     ) {
       setImplicitError(undefined);
       setImplicitReady(false);
-      fetch(implicitAuthURL, { method: 'GET' })
+      // Use redirect: 'manual' so fetch stops at the initial 302 rather than
+      // following the cross-origin redirect to the institution login page.
+      // Chromium (unlike Firefox) enforces CORS on redirect chains and throws
+      // a network error when the redirect target lacks CORS headers, which
+      // permanently keeps implicitReady false. A redirect (opaqueredirect)
+      // is sufficient proof the OAuth2 client exists.
+      fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
         .then((response) => {
-          if (activeAuthMethod === 'implicit' && implicitIframe) {
-            // Special case for iframe: 400 means error
-            if (response.status === 400) {
-              setImplicitError('There was an error getting auth context (400)');
-              setImplicitReady(false);
-              return;
-            }
-          }
-          if (response.status === 200) {
+          // opaqueredirect (status 0) = 302 redirect → client exists
+          if (response.type === 'opaqueredirect' || response.status === 200) {
             setImplicitReady(true);
+          } else if (response.status === 400) {
+            // 400 means client mis-configuration on the server
+            setImplicitError('There was an error getting auth context (400)');
+            setImplicitReady(false);
           } else {
             console.debug(
               `Login: implicitAuthURL: ${implicitAuthURL}. Tenant probably doesn't have default client created? Talk to admin.`
@@ -200,7 +207,7 @@ const Login: React.FC = () => {
       if (implicitIframe) {
         // Attempt to fetch the implicit auth URL to check if it's valid
         // Possible client might not exist for tenant.
-        fetch(implicitAuthURL, { method: 'GET' })
+        fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
           .then((response) => {
             if (response.status === 400) {
               setImplicitError('There was an error getting auth context (400)');

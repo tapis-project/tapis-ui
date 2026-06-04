@@ -20,6 +20,7 @@ import {
   Visibility,
   ContentCopy,
   ChatBubbleOutline,
+  PersonOutline,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -37,6 +38,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  TextField,
   Tooltip,
 } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -44,7 +46,10 @@ import { EditorView } from 'codemirror';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import { Tenants as Hooks } from '@tapis/tapisui-hooks';
+import {
+  Tenants as Hooks,
+  Authenticator as AuthHooks,
+} from '@tapis/tapisui-hooks';
 import { Link, useHistory } from 'react-router-dom';
 
 import { QueryWrapper } from '@tapis/tapisui-common';
@@ -80,6 +85,31 @@ const Sidebar: React.FC = () => {
   const [moreOpenStates, setMoreOpenStates] = useState<{
     [key: string]: boolean;
   }>({});
+  const [profileUsername, setProfileUsername] = useState('');
+  const [profileLookup, setProfileLookup] = useState('');
+  const [profileInitialized, setProfileInitialized] = useState(false);
+
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    error: profileError,
+  } = AuthHooks.useGetProfile(
+    { username: profileLookup },
+    { enabled: !!profileLookup }
+  );
+
+  // When the Profiles modal opens, initialize with the current user's username
+  useEffect(() => {
+    if (modal === 'profiles' && !profileInitialized && claims?.['sub']) {
+      const currentUser = (claims['sub'] as string).split('@')[0];
+      setProfileUsername(currentUser);
+      setProfileLookup(currentUser);
+      setProfileInitialized(true);
+    }
+    if (modal !== 'profiles') {
+      setProfileInitialized(false);
+    }
+  }, [modal, claims, profileInitialized]);
 
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
@@ -350,7 +380,7 @@ const Sidebar: React.FC = () => {
       <Navbar>
         {isIcicleExtension &&
           accessToken &&
-          renderSidebarItem('/home', 'globe', 'Portal Home(beta)')}
+          renderSidebarItem('/home', 'globe', 'Portal Home')}
         {renderSidebarItem(
           extensionName === '@icicle/tapisui-extension' ? '/dashboard' : '/',
           'dashboard',
@@ -743,6 +773,15 @@ const Sidebar: React.FC = () => {
           <ListItemText>Copy Access Token</ListItemText>
         </MenuItem>
         <MenuItem
+          disabled={!(claims && claims['sub'])}
+          onClick={() => setModal('profiles')}
+        >
+          <ListItemIcon>
+            <PersonOutline fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Profiles</ListItemText>
+        </MenuItem>
+        <MenuItem
           onClick={() => {
             history.push('/workflows/secrets');
           }}
@@ -874,6 +913,206 @@ const Sidebar: React.FC = () => {
           <Typography component="div" sx={valueBlockStyle}>
             <CountdownDisplay expirationTime={claims['exp']} />
           </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModal(undefined)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={modal === 'profiles'}
+        onClose={() => setModal(undefined)}
+        aria-labelledby="profiles-dialog-title"
+        PaperProps={{
+          style: { width: '32rem', maxWidth: '90%' },
+        }}
+      >
+        <DialogTitle id="profiles-dialog-title">User Profile</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Look up an OAuth2 profile by username. GET /v3/oauth2/profiles/
+            {'\u007B'}user{'\u007D'}
+          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center',
+              marginBottom: '16px',
+            }}
+          >
+            <TextField
+              size="small"
+              label="Username"
+              value={profileUsername}
+              onChange={(e) => setProfileUsername(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && profileUsername.trim()) {
+                  setProfileLookup(profileUsername.trim());
+                }
+              }}
+              sx={{ flex: 1 }}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => setProfileLookup(profileUsername.trim())}
+              disabled={!profileUsername.trim()}
+              loading={profileLoading}
+            >
+              Submit
+            </Button>
+          </div>
+          {profileError && (
+            <Typography color="error" variant="body2" sx={{ mb: 1 }}>
+              {profileError.message}
+            </Typography>
+          )}
+          {profileData?.result &&
+            (() => {
+              const p = profileData.result as any;
+              const fields: {
+                label: string;
+                value: string | number | null | undefined;
+              }[] = [
+                { label: 'Username', value: p.username },
+                {
+                  label: 'Name',
+                  value:
+                    p.name ||
+                    [p.given_name, p.last_name].filter(Boolean).join(' ') ||
+                    null,
+                },
+                { label: 'Given Name', value: p.given_name },
+                { label: 'Last Name', value: p.last_name },
+                { label: 'Email', value: p.email },
+                { label: 'UID', value: p.uid },
+                { label: 'Phone', value: p.phone },
+                { label: 'Mobile Phone', value: p.mobile_phone },
+                { label: 'Create Time', value: p.create_time },
+              ];
+
+              // Parse LDAP Distinguished Name into readable parts
+              const dnAbbreviations: Record<string, string> = {
+                cn: 'Common Name',
+                ou: 'Org Unit',
+                dc: 'Domain',
+                o: 'Organization',
+                uid: 'User ID',
+                l: 'Locality',
+                st: 'State',
+                c: 'Country',
+              };
+              const dnParts = p.dn
+                ? p.dn.split(',').map((part: string) => {
+                    const [key, ...rest] = part.trim().split('=');
+                    const k = key.toLowerCase();
+                    return {
+                      abbr: key,
+                      full: dnAbbreviations[k] || key,
+                      value: rest.join('='),
+                    };
+                  })
+                : [];
+              return (
+                <>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                      {fields.map(({ label, value }) => (
+                        <tr key={label}>
+                          <td
+                            style={{
+                              padding: '6px 12px 6px 0',
+                              fontWeight: 600,
+                              whiteSpace: 'nowrap',
+                              verticalAlign: 'top',
+                              color: '#555',
+                              borderBottom: '1px solid #eee',
+                            }}
+                          >
+                            {label}
+                          </td>
+                          <td
+                            style={{
+                              padding: '6px 0',
+                              wordBreak: 'break-all',
+                              borderBottom: '1px solid #eee',
+                            }}
+                          >
+                            {value ?? <span style={{ color: '#999' }}>—</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {dnParts.length > 0 && (
+                    <>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ mt: 2, mb: 0.5, color: '#555' }}
+                      >
+                        Distinguished Name (DN)
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ display: 'block', mb: 1, color: '#888' }}
+                      >
+                        {p.dn}
+                      </Typography>
+                      <table
+                        style={{ width: '100%', borderCollapse: 'collapse' }}
+                      >
+                        <tbody>
+                          {dnParts.map(
+                            (
+                              part: {
+                                abbr: string;
+                                full: string;
+                                value: string;
+                              },
+                              i: number
+                            ) => (
+                              <tr key={i}>
+                                <td
+                                  style={{
+                                    padding: '4px 10px 4px 0',
+                                    fontWeight: 600,
+                                    whiteSpace: 'nowrap',
+                                    color: '#555',
+                                    fontSize: '0.85rem',
+                                    borderBottom: '1px solid #f0f0f0',
+                                  }}
+                                >
+                                  {part.full}
+                                  <span
+                                    style={{
+                                      fontWeight: 400,
+                                      color: '#aaa',
+                                      marginLeft: 4,
+                                    }}
+                                  >
+                                    ({part.abbr})
+                                  </span>
+                                </td>
+                                <td
+                                  style={{
+                                    padding: '4px 0',
+                                    fontSize: '0.85rem',
+                                    borderBottom: '1px solid #f0f0f0',
+                                  }}
+                                >
+                                  {part.value}
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </>
+              );
+            })()}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setModal(undefined)}>Close</Button>

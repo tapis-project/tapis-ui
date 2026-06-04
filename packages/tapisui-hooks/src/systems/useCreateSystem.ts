@@ -12,17 +12,20 @@ type CreateSystemHookParams = {
 const useCreateSystem = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
-
-  // The useMutation react-query hook is used to call operations that make server-side changes
-  // (Other hooks would be used for data retrieval)
-  //
-  // In this case, mkdir helper is called to perform the operation
-  const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, CreateSystemHookParams>(
-      [QueryKeys.createSystem, basePath, jwt],
-      ({ reqPostSystem, skipCredentialCheck }) =>
-        API.createSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
-    );
+  const {
+    mutate,
+    mutateAsync,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+    reset,
+  } = useMutation<Systems.RespBasic, Error, CreateSystemHookParams>(
+    [QueryKeys.createSystem, basePath, jwt],
+    ({ reqPostSystem, skipCredentialCheck }) =>
+      API.createSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
+  );
 
   // Return hook object with loading states and login function
   return {
@@ -35,11 +38,9 @@ const useCreateSystem = () => {
     createSystem: (
       reqPostSystem: Systems.ReqPostSystem,
       skipCredentialCheck: boolean = true,
-      // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<Systems.RespBasic, Error, CreateSystemHookParams>
     ) => {
-      // Call mutate to trigger a single post-like API operation
-      return mutate({ reqPostSystem, skipCredentialCheck }, options);
+      return mutateAsync({ reqPostSystem, skipCredentialCheck }, options);
     },
   };
 };
