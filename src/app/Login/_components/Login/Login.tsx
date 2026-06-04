@@ -67,18 +67,9 @@ const Login: React.FC = () => {
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
 
-<<<<<<< HEAD
-    // OIDC redirect URIs in extensions point to the production hostname, so they
-    // cannot complete when running on localhost. Fall back to password-only.
-    if (
-      /localhost|127\.0\.0\.1/.test(window.location.hostname) &&
-      passwordAuth
-    ) {
-=======
     // OIDC redirect URIs in extensions point to the production hostname and
     // cannot complete on localhost.
     if (isLocalhost() && passwordAuth) {
->>>>>>> 4c63c94ebc9b7f15b1ac37d2916583902abe206d
       implicitAuthURL = undefined;
     }
   } else {
