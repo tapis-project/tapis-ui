@@ -9,6 +9,7 @@ import {
 } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
 import { JobsHelp } from 'app/_components/Help';
+import { CancelledJobsProvider } from '../_components/JobsLayoutToolbar/CancelledJobsContext';
 
 const Layout: React.FC = () => {
   const header = (
@@ -43,7 +44,11 @@ const Layout: React.FC = () => {
     </LayoutBody>
   );
 
-  return <PageLayout top={header} left={sidebar} right={body} />;
+  return (
+    <CancelledJobsProvider>
+      <PageLayout top={header} left={sidebar} right={body} />
+    </CancelledJobsProvider>
+  );
 };
 
 export default Layout;

@@ -29,6 +29,7 @@ import {
   FilesProvider,
   useFilesSelect,
 } from 'app/Files/_components/FilesContext';
+import { useCancelledJobs } from '../_components/JobsLayoutToolbar/CancelledJobsContext';
 
 const createJobDisplay = (job: any) => {
   const keysToPrettyPrint = ['parameterSet', 'fileInputs', 'notes'];
@@ -90,6 +91,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
     isSuccess: cancelIsSuccess,
     reset: cancelReset,
   } = Hooks.useCancel();
+  const { markCancelled } = useCancelledJobs();
   const jobDisplay = job ? createJobDisplay(job) : undefined;
   const history = useHistory();
 
@@ -196,7 +198,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
           <Divider />
           <div className={styles['flex-space-between']}>
             <div className={styles['flex']}>
-              {jobTerminalStatuses.includes(job?.status!) ? (
+              {isCanceled || jobTerminalStatuses.includes(job?.status!) ? (
                 <Button
                   size="small"
                   startIcon={<Replay />}
@@ -224,6 +226,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
                   color="error"
                   onClick={() => {
                     setIsCanceled(true);
+                    markCancelled(job?.uuid!);
                     cancel(
                       { jobUuid: job?.uuid! },
                       {
