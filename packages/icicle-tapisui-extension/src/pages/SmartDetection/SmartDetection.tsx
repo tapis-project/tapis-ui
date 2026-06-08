@@ -1,7 +1,5 @@
-import * as React from 'react';
-import { SectionHeader } from '@tapis/tapisui-common';
 import { Component } from '@tapis/tapisui-extensions-core';
-export const Harvest: Component = ({ accessToken }) => {
+export const SmartDetection: Component = ({ accessToken }) => {
   return (
     <div
       style={{
@@ -15,8 +13,8 @@ export const Harvest: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          // src={`https://harvest.pods.icicleai.tapis.io/`}
-          src={`http://localhost:5173/`}
+          // src={`https://smartlabeler.pods.icicleai.tapis.io/`}
+          src={`http://localhost:5174/`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
@@ -24,4 +22,4 @@ export const Harvest: Component = ({ accessToken }) => {
     </div>
   );
 };
-export default Harvest;
+export default SmartDetection;

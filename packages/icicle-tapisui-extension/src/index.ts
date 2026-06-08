@@ -27,7 +27,8 @@ import {
   FoodLogisticsAaaS,
   Patra,
 } from './pages';
-import { SmartLabeler } from './pages/SmartLabeler';
+import { SmartDetection } from './pages/SmartDetection';
+import { SmartSegmentation } from './pages/SmartSegmentation';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -69,7 +70,8 @@ const extension = createExtension({
     'apps',
     'harvest',
     'patra',
-    'smart-labeler',
+    'smart-detection',
+    'smart-segmentation',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -105,7 +107,8 @@ const extension = createExtension({
         'apps',
         'harvest',
         'patra',
-        'smart-labeler',
+        'smart-detection',
+        'smart-segmentation',
       ],
     },
   },
@@ -263,10 +266,16 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'smart-labeler',
-  sidebarDisplayName: 'Smart Labeling and Annotation',
+  id: 'smart-detection',
+  sidebarDisplayName: 'Smart Detection',
   iconName: 'globe',
-  component: SmartLabeler,
+  component: SmartDetection,
+});
+extension.registerService({
+  id: 'smart-segmentation',
+  sidebarDisplayName: 'Smart Segmentation',
+  iconName: 'globe',
+  component: SmartSegmentation,
 });
 
 extension.registerService({
