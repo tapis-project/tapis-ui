@@ -22,7 +22,7 @@ import styles from './JobStatusIcon.module.scss';
 type Status = Jobs.JobStatusEnum | Jobs.JobListDTOStatusEnum;
 type Condition = Jobs.JobConditionEnum | Jobs.JobListDTOConditionEnum;
 
-type Animation = 'rotate';
+type Animation = 'rotate' | 'pulse';
 
 const schedulerConditionLabels: Partial<Record<string, string>> = {
   SCHEDULER_TIMEOUT: 'Job stopped — reached the scheduler time limit',
