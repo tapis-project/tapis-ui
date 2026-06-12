@@ -243,73 +243,73 @@ const NativeModelsSearch: React.FC = () => {
             state.prevCursor === undefined && state.currentCursor === undefined
               ? undefined
               : () => {
-                let libraries = filters.libraries.filter(
-                  (l) => l !== null && l !== undefined
-                );
+                  let libraries = filters.libraries.filter(
+                    (l) => l !== null && l !== undefined
+                  );
 
-                let taskTypes = filters.task_types.filter(
-                  (t) => t !== null && t !== undefined
-                );
+                  let taskTypes = filters.task_types.filter(
+                    (t) => t !== null && t !== undefined
+                  );
 
-                let criterion: Models.DiscoveryCriterion = {};
-                if (libraries.length > 0) {
-                  criterion['libraries'] = libraries;
-                }
-
-                if (taskTypes.length > 0) {
-                  criterion['task_types'] = taskTypes;
-                }
-                discover(
-                  {
-                    limit: filters.limit,
-                    includeCount: true,
-                    cursor: state.prevCursor,
-                    discoveryCriteria: {
-                      criteria: [criterion],
-                    },
-                  },
-                  {
-                    onSuccess: onSuccessPrevious,
+                  let criterion: Models.DiscoveryCriterion = {};
+                  if (libraries.length > 0) {
+                    criterion['libraries'] = libraries;
                   }
-                );
-              }
+
+                  if (taskTypes.length > 0) {
+                    criterion['task_types'] = taskTypes;
+                  }
+                  discover(
+                    {
+                      limit: filters.limit,
+                      includeCount: true,
+                      cursor: state.prevCursor,
+                      discoveryCriteria: {
+                        criteria: [criterion],
+                      },
+                    },
+                    {
+                      onSuccess: onSuccessPrevious,
+                    }
+                  );
+                }
           }
           next={
             state.cursors.length < 0 || state.nextCursor === undefined
               ? undefined
               : () => {
-                let libraries = filters.libraries.filter(
-                  (l) => l !== null && l !== undefined
-                );
+                  let libraries = filters.libraries.filter(
+                    (l) => l !== null && l !== undefined
+                  );
 
-                let taskTypes = filters.task_types.filter(
-                  (t) => t !== null && t !== undefined
-                );
+                  let taskTypes = filters.task_types.filter(
+                    (t) => t !== null && t !== undefined
+                  );
 
-                let criterion: Models.DiscoveryCriterion = {};
+                  let criterion: Models.DiscoveryCriterion = {};
 
-                if (libraries.length > 0) {
-                  criterion['libraries'] = libraries;
-                }
-
-                if (taskTypes.length > 0) {
-                  criterion['task_types'] = taskTypes;
-                }
-
-                discover(
-                  {
-                    limit: filters.limit,
-                    includeCount: true,
-                    cursor: state.cursors.at(-1),
-                    discoveryCriteria: {
-                      criteria: [criterion],
-                    },
-                  },
-                  {
-                    onSuccess: onSuccessNext,
+                  if (libraries.length > 0) {
+                    criterion['libraries'] = libraries;
                   }
-                );
-              }
+
+                  if (taskTypes.length > 0) {
+                    criterion['task_types'] = taskTypes;
+                  }
+
+                  discover(
+                    {
+                      limit: filters.limit,
+                      includeCount: true,
+                      cursor: state.cursors.at(-1),
+                      discoveryCriteria: {
+                        criteria: [criterion],
+                      },
+                    },
+                    {
+                      onSuccess: onSuccessNext,
+                    }
+                  );
+                }
           }
           isLoading={isLoading}
         />
