@@ -25,8 +25,7 @@ const services: ServiceItem[] = [
     internal: true,
   },
   {
-    label:
-      'Smart Labeler : Domain agnostic service for image segmentation',
+    label: 'Smart Labeler : Domain agnostic service for image segmentation',
     name: 'Smart Labeler : Semantic segmentation',
     link: '/smart-segmentation',
     internal: true,
