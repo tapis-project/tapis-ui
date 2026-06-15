@@ -1,7 +1,5 @@
-import * as React from 'react';
-import { SectionHeader } from '@tapis/tapisui-common';
 import { Component } from '@tapis/tapisui-extensions-core';
-export const SmartLabeler: Component = ({ accessToken }) => {
+export const SmartSegmentation: Component = ({ accessToken }) => {
   return (
     <div
       style={{
@@ -15,7 +13,7 @@ export const SmartLabeler: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          src={`https://smartlabeler.pods.icicleai.tapis.io/`}
+          src={`https://smartlabelersegmentation.pods.icicleai.tapis.io/`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
@@ -23,4 +21,4 @@ export const SmartLabeler: Component = ({ accessToken }) => {
     </div>
   );
 };
-export default SmartLabeler;
+export default SmartSegmentation;
