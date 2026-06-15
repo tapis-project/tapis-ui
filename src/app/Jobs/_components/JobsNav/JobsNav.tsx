@@ -9,6 +9,7 @@ import {
   FilterConfig,
 } from '@tapis/tapisui-common';
 import { Work, Dns, Apps, AccessTime } from '@mui/icons-material';
+import { useCancelledJobs } from '../JobsLayoutToolbar/CancelledJobsContext';
 
 // Job filter configuration
 const jobFilterConfig: FilterConfig = {
@@ -256,7 +257,12 @@ const JobsNav: React.FC = () => {
     orderBy: 'lastUpdated(DESC)',
   });
   const { url } = useRouteMatch();
-  const jobs: Array<Jobs.JobListDTO> = data?.result ?? [];
+  const { cancelledUuids } = useCancelledJobs();
+  const jobs: Array<Jobs.JobListDTO> = (data?.result ?? []).map((job) =>
+    cancelledUuids.has(job.uuid!)
+      ? { ...job, status: Jobs.JobListDTOStatusEnum.Cancelled }
+      : job
+  );
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
