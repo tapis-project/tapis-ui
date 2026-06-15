@@ -13,8 +13,7 @@ export const SmartDetection: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          // src={`https://smartlabeler.pods.icicleai.tapis.io/`}
-          src={`http://localhost:5174/`}
+          src={`https://smartlabelerdetection.pods.icicleai.tapis.io/`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>

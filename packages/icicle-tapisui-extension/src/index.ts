@@ -70,7 +70,7 @@ const extension = createExtension({
     'apps',
     'harvest',
     'patra',
-    'smart-detection',
+    'smart-labeler',
     'smart-segmentation',
     //'data-labeler',
     //'smart-scheduler',
@@ -107,7 +107,7 @@ const extension = createExtension({
         'apps',
         'harvest',
         'patra',
-        'smart-detection',
+        'smart-labeler',
         'smart-segmentation',
       ],
     },
@@ -266,14 +266,14 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'smart-detection',
-  sidebarDisplayName: 'Smart Detection',
+  id: 'smart-labeler',
+  sidebarDisplayName: 'Smart Labeler : Object detection',
   iconName: 'globe',
   component: SmartDetection,
 });
 extension.registerService({
   id: 'smart-segmentation',
-  sidebarDisplayName: 'Smart Segmentation',
+  sidebarDisplayName: 'Smart Labeler : Semantic segmentation',
   iconName: 'globe',
   component: SmartSegmentation,
 });

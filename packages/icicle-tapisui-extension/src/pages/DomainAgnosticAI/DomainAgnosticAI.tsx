@@ -19,15 +19,15 @@ const services: ServiceItem[] = [
     link: 'https://github.com/ICICLE-ai/forte-api',
   },
   {
-    label: 'Smart Detection : Domain agnostic service for object detection',
-    name: 'Smart Detection',
-    link: '/smart-detection',
+    label: 'Smart Labeler : Domain agnostic service for object detection',
+    name: 'Smart Labeler : Object detection',
+    link: '/smart-labeler',
     internal: true,
   },
   {
     label:
-      'Smart Segmentation : Domain agnostic service for image segmentation',
-    name: 'Smart Segmentation',
+      'Smart Labeler : Domain agnostic service for image segmentation',
+    name: 'Smart Labeler : Semantic segmentation',
     link: '/smart-segmentation',
     internal: true,
   },

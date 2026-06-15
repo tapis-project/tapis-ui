@@ -13,8 +13,7 @@ export const SmartSegmentation: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          // src={`https://smartlabeler.pods.icicleai.tapis.io/`}
-          src={`http://localhost:5175/`}
+          src={`https://smartlabelersegmentation.pods.icicleai.tapis.io/`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
