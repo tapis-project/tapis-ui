@@ -527,7 +527,7 @@ export default function ModelCard({ model }: ModelCardProps) {
               {model.name}
             </Typography>
 
-            {!!!model.canonical && (
+            {model.canonical && (
               <PlatformChip platform={Platform.HuggingFace} />
             )}
 
