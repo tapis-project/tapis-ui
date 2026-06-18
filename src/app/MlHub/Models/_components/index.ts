@@ -1,0 +1,1 @@
+export { ModelCard } from './ModelCard';

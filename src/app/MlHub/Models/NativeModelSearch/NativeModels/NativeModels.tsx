@@ -1,27 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Table, Badge } from 'reactstrap';
-import {
-  Button,
-  Chip,
-  CircularProgress,
-  FormControl,
-  TextField,
-} from '@mui/material';
+import { Button, Chip, FormControl, TextField } from '@mui/material';
 import { JSONDisplay } from '@tapis/tapisui-common';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import styles from './NativeModels.module.scss';
-// import DeploymentStrategyModal from './DeploymentStrategyModal';
 import {
-  // deploymentStrategyCatalog,
   modelDeploymentReadiness,
   StrategyReadiness,
   DeploymentStrategy,
-  ClientDeploymentStrategy,
+  PlatformDeploymentStrategy,
 } from './nativeModels.data';
-import { Models } from '@mlhub/ts-sdk';
+// import { Models } from '@mlhub/ts-sdk';
+import * as Models from '@mlhub/models-ts-sdk';
 import { LoadingButton } from '@mui/lab';
 import { MdNavigateNext, MdNavigateBefore } from 'react-icons/md';
+import { ModelCard } from '../../_components';
 
 type ActiveModalState = {
   modelName: string;
@@ -29,7 +23,7 @@ type ActiveModalState = {
 } | null;
 
 type StrategyButtonProps = {
-  client: string;
+  platform: string;
   strategy: DeploymentStrategy;
   // modelName: string;
   // strategyReadiness: StrategyReadiness | undefined;
@@ -37,7 +31,7 @@ type StrategyButtonProps = {
 };
 
 const StrategyButton: React.FC<StrategyButtonProps> = ({
-  client,
+  platform,
   strategy,
   // strategyId,
   // strategyMeta,
@@ -45,66 +39,13 @@ const StrategyButton: React.FC<StrategyButtonProps> = ({
   // strategyReadiness,
   // onOpenModal,
 }) => {
-  // const credentialQuery = SystemsHooks.useCheckCredential(
-  //   {
-  //     systemId: strategyMeta.systemId ?? '',
-  //   },
-  //   {
-  //     enabled: !!strategyMeta.systemId,
-  //     retry: 0,
-  //   }
-  // );
-
-  // const credentialReady = useMemo(() => {
-  //   if (!strategyMeta.systemId) {
-  //     return true; // No credentials required
-  //   }
-  //   if (credentialQuery.isLoading) {
-  //     return null; // Still checking - return null to indicate loading state
-  //   }
-  //   if (credentialQuery.error) {
-  //     return false; // Credentials missing
-  //   }
-  //   return credentialQuery.data?.status?.toLowerCase() === 'success';
-  // }, [
-  //   credentialQuery.data,
-  //   credentialQuery.error,
-  //   credentialQuery.isLoading,
-  //   strategyMeta.systemId,
-  // ]);
-
-  // const allocationReady = useMemo(() => {
-  //   if (!strategyReadiness) {
-  //     return true; // No allocation info, assume ready
-  //   }
-  //   if (!strategyReadiness.requiresAllocation) {
-  //     return true; // Allocation not required
-  //   }
-  //   return strategyReadiness.hasAllocation;
-  // }, [strategyReadiness]);
-
-  // const isCheckingCredentials = credentialReady === null;
-  // const allReady = credentialReady === true && allocationReady;
-
   return (
-    <Button
-      key={`${client}-${strategy.name}`}
+    <Chip
+      key={`${platform}-${strategy.name}`}
       variant="outlined"
       size="small"
-      color="success"
-      // color={
-      //   isCheckingCredentials ? 'inherit' : allReady ? 'success' : 'warning'
-      // }
-      // onClick={() => onOpenModal(modelName, strategyId)}
-      // disabled={isCheckingCredentials}
-      // startIcon={
-      //   isCheckingCredentials ? (
-      //     <CircularProgress size={12} sx={{ color: 'inherit' }} />
-      //   ) : undefined
-      // }
-    >
-      {client}: {strategy.name}
-    </Button>
+      label={strategy.name}
+    />
   );
 };
 
@@ -140,29 +81,6 @@ const NativeModels: React.FC<NativeModelsProps> = ({
       staleTime: 5 * 60 * 1000,
     }
   );
-
-  useEffect(() => {
-    if (systemsLoading) {
-      return;
-    }
-    if (systemsError) {
-      console.warn('MLHub NativeModels: failed to list systems', systemsError);
-      return;
-    }
-    if (systemsData?.result) {
-      console.groupCollapsed(
-        'MLHub NativeModels: available systems (listType=ALL, select=summary)'
-      );
-      systemsData.result.forEach((system) => {
-        console.log(
-          `${system.id} | type=${
-            system.systemType ?? 'unknown'
-          } | defaultAuthn=${system.defaultAuthnMethod ?? 'n/a'}`
-        );
-      });
-      console.groupEnd();
-    }
-  }, [systemsData, systemsError, systemsLoading]);
 
   const openModal = (modelName: string, strategyId: string) =>
     setActiveModal({ modelName, strategyId });
@@ -209,8 +127,6 @@ const NativeModels: React.FC<NativeModelsProps> = ({
   }, [models, filters, setFilters]);
 
   const filteredModels = filterModels();
-
-  // const { model: selectedModel, strategy, readiness } = getSelected();
 
   return (
     <div>
@@ -275,8 +191,18 @@ const NativeModels: React.FC<NativeModelsProps> = ({
           </div>
         )}
       </div>
-      <div className={styles['table-container']}>
-        <Table responsive hover>
+      <div className={styles['model-card-container']}>
+        {models.length === 0 ? (
+          <p className="text-center text-muted">
+            Search models by task type and libraries, then filter by model name,
+            author, or tag
+          </p>
+        ) : (
+          filteredModels.map((model) => {
+            return <ModelCard model={model} />;
+          })
+        )}
+        {/* <Table responsive hover>
           <thead>
             <tr>
               <th style={{ width: '18%' }}>Model</th>
@@ -299,7 +225,7 @@ const NativeModels: React.FC<NativeModelsProps> = ({
             ) : (
               filteredModels.map((model) => {
                 const keywords = model.keywords ?? [];
-                const deploymentStrategies: Array<ClientDeploymentStrategy> =
+                const deploymentStrategies: Array<PlatformDeploymentStrategy> =
                   model.annotations['deployment_strategies'];
                 const displayName = model.name;
 
@@ -313,8 +239,7 @@ const NativeModels: React.FC<NativeModelsProps> = ({
                         </div>
                         <div className="mt-2">
                           <Badge color="light" className="text-dark">
-                            {model.annotations?.canonical?.platform ||
-                              'platform: unknown'}
+                            {model.canonical?.platform || 'platform: unknown'}
                           </Badge>
                         </div>
                       </td>
@@ -360,7 +285,7 @@ const NativeModels: React.FC<NativeModelsProps> = ({
                             return strategy.strategies.map((s) => {
                               return (
                                 <StrategyButton
-                                  client={strategy.client}
+                                  platform={strategy.platform}
                                   strategy={s}
                                 />
                               );
@@ -418,7 +343,7 @@ const NativeModels: React.FC<NativeModelsProps> = ({
               })
             )}
           </tbody>
-        </Table>
+        </Table> */}
       </div>
 
       {/* {selectedModel && strategy && (

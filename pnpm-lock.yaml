@@ -54,6 +54,12 @@ importers:
       '@jest/globals':
         specifier: 30.2.0
         version: 30.2.0
+      '@mlhub/deployments-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
+      '@mlhub/models-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -1994,8 +2000,14 @@ packages:
   '@mlhub/deployments-ts-sdk@0.1.1':
     resolution: {integrity: sha512-XTM6egldBGdLdys4JsplEtHSunhv0XxO7F8C6iOfteEdAIN92schB0jeBL5tLn7flqgj+eRi2ADKyU89MAjB7w==}
 
+  '@mlhub/deployments-ts-sdk@0.2.0':
+    resolution: {integrity: sha512-IzJpZ136UuVqLFZCqv5f77uHUZSeJRIwMnFJejFagnDzguT6yHOw4RQKoKr8oU9cLXY2sqiSUnMY2CgEDsDBmw==}
+
   '@mlhub/models-ts-sdk@0.1.1':
     resolution: {integrity: sha512-CNY/vXq4V3V4dAdxUtyySA8ZuMwkICCtF7EZQC0eTuSAQ71FOKDlXldkJaPyWAlC8817LabAE4TMYz0OuPswug==}
+
+  '@mlhub/models-ts-sdk@0.2.0':
+    resolution: {integrity: sha512-S8pM1DHh9/zZ8Y8t8RBN/cb1oqZZwm+uuTLJ5UjjiPtSV5o7rmJU7AB3GLhHY6T/LXxy3D3G47k4UhUNZwREvQ==}
 
   '@mlhub/ts-sdk@0.1.3':
     resolution: {integrity: sha512-0BixORe/ByERPxOWeXRCQa0LnV5AaUMGAXMC2VoOepVWdYlMj/fO1q8PyyfkYv8XczmeRHJ4o9htcv6ojPLK9A==}
@@ -8151,7 +8163,11 @@ snapshots:
 
   '@mlhub/deployments-ts-sdk@0.1.1': {}
 
+  '@mlhub/deployments-ts-sdk@0.2.0': {}
+
   '@mlhub/models-ts-sdk@0.1.1': {}
+
+  '@mlhub/models-ts-sdk@0.2.0': {}
 
   '@mlhub/ts-sdk@0.1.3':
     dependencies:
