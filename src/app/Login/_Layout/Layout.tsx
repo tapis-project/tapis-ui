@@ -8,15 +8,12 @@ import { useExtension } from 'extensions';
 
 const Layout: React.FC = () => {
   const { accessToken, basePath } = useTapisConfig();
-  const { extensionName } = useExtension();
+  const { extension } = useExtension();
   let location = useLocation<{ from: Location }>();
   let { from } = location.state || { from: { pathname: '/' } };
+  const landingRoute = extension?.serviceMap?.['home']?.route;
   if (accessToken?.access_token) {
-    return (
-      <Redirect
-        to={extensionName === '@icicle/tapisui-extension' ? '/home' : from}
-      />
-    );
+    return <Redirect to={landingRoute ?? from} />;
   }
 
   const body = (
