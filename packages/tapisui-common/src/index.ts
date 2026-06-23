@@ -42,8 +42,14 @@ import {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
+  FilterableObjectsListV2,
+  getStatusColor,
 } from './ui';
 import { type FilterConfig } from './ui/FilterableObjectsList/FilterableObjectsList';
+import {
+  type ItemBadge,
+  type SortOption,
+} from './ui/FilterableObjectsList/FilterableObjectsListV2';
 import {
   QueryWrapper,
   SubmitWrapper,
@@ -71,6 +77,8 @@ import {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
+  HostEvalNavigationButton,
+  type HostEvalNavigationButtonProps,
   JobTypeChip,
   JobLauncher,
   JobStatusIcon,
@@ -146,7 +154,11 @@ export {
   TooltipModal,
   Tabs,
   FilterableObjectsList,
+  FilterableObjectsListV2,
+  getStatusColor,
   type FilterConfig,
+  type ItemBadge,
+  type SortOption,
   // Wrappers
   QueryWrapper,
   SubmitWrapper,
@@ -173,6 +185,8 @@ export {
   TransferCreate,
   FileExplorer,
   FileSelectModal,
+  HostEvalNavigationButton,
+  type HostEvalNavigationButtonProps,
   // Tapis Job Components & types
   JobTypeChip,
   JobLauncher,

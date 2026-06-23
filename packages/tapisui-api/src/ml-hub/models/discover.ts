@@ -1,4 +1,4 @@
-import { Models } from '@mlhub/ts-sdk';
+import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 const discover = (

@@ -11,7 +11,9 @@ const listPods = (
     basePath,
     jwt
   );
-  return errorDecoder<Pods.PodsResponse>(() => api.listPods());
+  return errorDecoder<Pods.PodsResponse>(() =>
+    api.listPods({ derivedLite: true })
+  );
 };
 
 export default listPods;

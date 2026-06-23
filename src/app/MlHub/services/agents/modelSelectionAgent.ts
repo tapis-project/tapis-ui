@@ -2,9 +2,19 @@ import {
   Agent,
   AgentContext,
   AgentResult,
+  AgentStreamHandlers,
   ChatTurn,
 } from 'app/_context/chat/agentTypes';
+import {
+  assertOkResponse,
+  extractTapisToken,
+  formatAgentError,
+  getLastUserMessage,
+  wrapNetworkError,
+} from 'app/_context/chat/agentUtils';
 import { MLHub as API } from '@tapis/tapisui-api';
+
+const LITELLM_SERVICE_NAME = 'LiteLLM';
 
 type ModelLite = {
   id?: string;
@@ -97,79 +107,148 @@ function buildLLMUserPrompt(
   );
 }
 
+type LLMMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+
+function buildPriorMessages(history: ChatTurn[]): LLMMessage[] {
+  // Drop the trailing user turn — the caller replaces it with the enhanced
+  // prompt that injects the model list. Keep system turns out; the agent
+  // supplies its own.
+  const lastUserIdx = history.map((t) => t.role).lastIndexOf('user');
+  const prior = lastUserIdx >= 0 ? history.slice(0, lastUserIdx) : history;
+  return prior
+    .filter((t) => t.role === 'user' || t.role === 'assistant')
+    .map((t) => ({ role: t.role as 'user' | 'assistant', content: t.content }));
+}
+
 async function callLiteLLM(
   endpoint: string,
-  systemPrompt: string,
-  userPrompt: string,
+  messages: LLMMessage[],
   jwt: string,
-  model: string = 'llama4-17b'
+  model: string = 'llama4-17b',
+  handlers?: AgentStreamHandlers
 ): Promise<string> {
-  // Extract token if it's an object with access_token property, otherwise use as-is
-  const actualToken =
-    typeof jwt === 'string' ? jwt : (jwt as any)?.access_token || jwt;
-
-  if (!actualToken || typeof actualToken !== 'string') {
-    throw new Error('Invalid token: Token is required and must be a string');
-  }
-
+  const token = extractTapisToken(jwt);
   try {
     const response = await fetch(`${endpoint}/v1/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Tapis-Token': actualToken,
+        'X-Tapis-Token': token,
       },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
+        messages,
         temperature: 0.2,
+        stream: Boolean(handlers?.onDelta),
       }),
+      signal: handlers?.signal,
     });
+    await assertOkResponse(response, LITELLM_SERVICE_NAME);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = `LiteLLM API error (${response.status}): ${errorText}`;
+    if (handlers?.onDelta) {
+      if (!response.body) {
+        throw new Error('LiteLLM API did not return a streaming body');
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let pending = '';
+      let fullContent = '';
+      let thinkingOpen = false;
 
-      // Try to parse error response for better error message
-      try {
-        const errorData = JSON.parse(errorText);
-        if (errorData.message) {
-          errorMessage = `LiteLLM API error (${response.status}): ${errorData.message}`;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        pending += decoder.decode(value, { stream: true });
+        const lines = pending.split('\n');
+        pending = lines.pop() || '';
+
+        for (const lineRaw of lines) {
+          const line = lineRaw.trim();
+          if (!line.startsWith('data: ')) continue;
+          if (line === 'data: [DONE]') continue;
+          try {
+            const chunk = JSON.parse(line.slice(6));
+            const contentDelta: string =
+              chunk?.choices?.[0]?.delta?.content ?? '';
+            const reasoningDelta: string =
+              chunk?.choices?.[0]?.delta?.reasoning_content ?? '';
+            if (reasoningDelta) {
+              if (!thinkingOpen) {
+                thinkingOpen = true;
+                fullContent += '<think>';
+                handlers.onDelta('<think>');
+              }
+              fullContent += reasoningDelta;
+              handlers.onDelta(reasoningDelta);
+            }
+            if (contentDelta) {
+              if (thinkingOpen) {
+                thinkingOpen = false;
+                fullContent += '</think>';
+                handlers.onDelta('</think>');
+              }
+              fullContent += contentDelta;
+              handlers.onDelta(contentDelta);
+            }
+          } catch {
+            // Ignore malformed stream chunks and continue processing.
+          }
         }
-      } catch {
-        // If parsing fails, use the original error text
       }
 
-      throw new Error(errorMessage);
+      if (thinkingOpen) {
+        thinkingOpen = false;
+        fullContent += '</think>';
+        handlers.onDelta('</think>');
+      }
+
+      if (!fullContent) {
+        throw new Error('LiteLLM API returned empty streamed answer');
+      }
+      return fullContent;
     }
 
     const data = await response.json();
     const content: string = data?.choices?.[0]?.message?.content ?? '';
-
     if (!content) {
-      throw new Error('LiteLLM API returned empty answer');
+      throw new Error(`${LITELLM_SERVICE_NAME} API returned empty answer`);
     }
-
     return content;
   } catch (e) {
-    if (e instanceof Error) {
-      // Check for CORS errors
-      if (
-        e.message.includes('CORS') ||
-        e.message.includes('Failed to fetch') ||
-        e.message.includes('NetworkError')
-      ) {
-        throw new Error(
-          `CORS error: Unable to connect to LiteLLM API. If running in development, ensure the Vite proxy is configured. Error: ${e.message}`
-        );
-      }
-      throw e;
-    }
-    throw new Error(`LiteLLM error: ${e}`);
+    throw wrapNetworkError(e, LITELLM_SERVICE_NAME);
   }
+}
+
+async function prepareModelSelection(
+  history: ChatTurn[],
+  context: AgentContext
+) {
+  const userText = getLastUserMessage(history);
+  const platformMatch = userText.match(/platform\s*:\s*([\w-]+)/i);
+  const platform = platformMatch
+    ? platformMatch[1].toLowerCase()
+    : 'hugging-face';
+  const models = await fetchModels(
+    platform,
+    context.mlHubBasePath || context.basePath,
+    context.jwt
+  );
+  const litellmEndpoint =
+    process.env.NODE_ENV === 'development'
+      ? '/api/litellm'
+      : 'https://litellm.pods.tacc.tapis.io';
+  const messages: LLMMessage[] = [
+    { role: 'system', content: buildLLMSystemPrompt() },
+    ...buildPriorMessages(history),
+    { role: 'user', content: buildLLMUserPrompt(userText, platform, models) },
+  ];
+  return { litellmEndpoint, messages, jwt: context.jwt };
+}
+
+function isAbortLikeError(e: unknown): boolean {
+  if (e instanceof DOMException) return e.name === 'AbortError';
+  if (e instanceof Error) return e.name === 'AbortError';
+  return false;
 }
 
 export const ModelSelectionAgent: Agent = {
@@ -180,67 +259,58 @@ export const ModelSelectionAgent: Agent = {
     history: ChatTurn[],
     context: AgentContext
   ): Promise<AgentResult> => {
-    const lastUser = [...history].reverse().find((t) => t.role === 'user');
-    const userText = lastUser?.content || '';
-
-    // Expect platform embedded in the user text for MVP, e.g., "platform: HuggingFace"
-    const platformMatch = userText.match(/platform\s*:\s*([\w-]+)/i);
-    const platform = platformMatch
-      ? platformMatch[1].toLowerCase()
-      : 'huggingface';
-
-    const models = await fetchModels(
-      platform,
-      context.mlHubBasePath || context.basePath,
-      context.jwt
-    );
-
-    // Determine which service to use
-    const litellmEndpoint =
-      process.env.NODE_ENV === 'development'
-        ? '/api/litellm'
-        : 'https://litellm.pods.tacc.tapis.io';
-    const hasLiteLLMConfig = true; // Always use LiteLLM
-
-    if (!hasLiteLLMConfig) {
-      return {
-        messages: [
-          {
-            id: `${Date.now()}-assistant`,
-            role: 'assistant',
-            content:
-              'LLM configuration error: Please configure LiteLLM endpoint.',
-          },
-        ],
-      };
-    }
-
-    let llmRaw: string = '';
+    const prep = await prepareModelSelection(history, context);
+    let llmRaw = '';
     try {
-      const sys = buildLLMSystemPrompt();
-      const usr = buildLLMUserPrompt(userText, platform, models);
-
-      const content = await callLiteLLM(litellmEndpoint, sys, usr, context.jwt);
-      llmRaw = content || '';
+      llmRaw = await callLiteLLM(prep.litellmEndpoint, prep.messages, prep.jwt);
     } catch (e) {
-      const message =
-        e instanceof Error
-          ? e.message
-          : typeof e === 'string'
-          ? e
-          : JSON.stringify(e);
-      llmRaw = `LiteLLM error: ${message}`;
+      llmRaw = `LiteLLM error: ${formatAgentError(e)}`;
     }
 
-    const messagesOut: ChatTurn[] = [
-      {
-        id: `${Date.now()}-assistant-raw`,
-        role: 'assistant',
-        content: llmRaw || 'No response from model.',
-      },
-    ];
+    return {
+      messages: [
+        {
+          id: `${Date.now()}-assistant-raw`,
+          role: 'assistant',
+          content: llmRaw || 'No response from model.',
+        },
+      ],
+    };
+  },
+  respondStream: async (
+    history: ChatTurn[],
+    context: AgentContext,
+    handlers: AgentStreamHandlers
+  ): Promise<AgentResult> => {
+    const prep = await prepareModelSelection(history, context);
+    let llmRaw = '';
+    try {
+      llmRaw = await callLiteLLM(
+        prep.litellmEndpoint,
+        prep.messages,
+        prep.jwt,
+        'llama4-17b',
+        handlers
+      );
+    } catch (e) {
+      const isAborted = handlers.signal?.aborted || isAbortLikeError(e);
+      if (!isAborted) {
+        llmRaw = `LiteLLM error: ${formatAgentError(e)}`;
+        handlers.onDelta?.(llmRaw);
+      }
+    } finally {
+      handlers.onDone?.();
+    }
 
-    return { messages: messagesOut };
+    return {
+      messages: [
+        {
+          id: `${Date.now()}-assistant-raw`,
+          role: 'assistant',
+          content: llmRaw || 'No response from model.',
+        },
+      ],
+    };
   },
 };
 

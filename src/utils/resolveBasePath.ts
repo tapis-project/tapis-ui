@@ -1,3 +1,6 @@
+export const isLocalhost = () =>
+  /127\.0\.0\.1|localhost/.test(window.location.hostname);
+
 export const resolveBasePath = () => {
   let baseUrl = import.meta.env.VITE_TAPIS_BASE_URL;
   if (import.meta.env.VITE_SERVERLESS_DEPLOYMENT !== 'true') {

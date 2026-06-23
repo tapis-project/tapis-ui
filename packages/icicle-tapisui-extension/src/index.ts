@@ -20,12 +20,16 @@ import {
   FoodSecuritySandbox,
   PortalHome,
   DomainAgnosticAI,
+  ICICLEChatbook,
   DomainAgnosticCI,
   DomainSpecificServices,
   DigitalAgAaaS,
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
+  Patra,
 } from './pages';
+import { SmartDetection } from './pages/SmartDetection';
+import { SmartSegmentation } from './pages/SmartSegmentation';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -50,6 +54,7 @@ const extension = createExtension({
     'training-catalog',
     'home',
     'domain-agnostic-ai',
+    'icicle-chatbook',
     'domain-agnostic-ci',
     'domain-specific-services',
     'digital-ag-aaas',
@@ -66,6 +71,9 @@ const extension = createExtension({
     'files',
     'apps',
     'harvest',
+    'patra',
+    'smart-labeler',
+    'smart-segmentation',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -84,6 +92,7 @@ const extension = createExtension({
         'analytics',
         'training-catalog',
         'domain-agnostic-ai',
+        'icicle-chatbook',
         'domain-agnostic-ci',
         'domain-specific-services',
         'digital-ag-aaas',
@@ -100,6 +109,9 @@ const extension = createExtension({
         'files',
         'apps',
         'harvest',
+        'patra',
+        'smart-labeler',
+        'smart-segmentation',
       ],
     },
   },
@@ -125,7 +137,7 @@ const extension = createExtension({
 // Order of registration determines sidebar order!!
 extension.registerService({
   id: 'home',
-  sidebarDisplayName: 'Portal Home (beta)',
+  sidebarDisplayName: 'Portal Home',
   iconName: 'globe',
   component: PortalHome,
 });
@@ -135,6 +147,13 @@ extension.registerService({
   sidebarDisplayName: 'ICICLE-AIaaS',
   iconName: 'globe',
   component: DomainAgnosticAI,
+});
+
+extension.registerService({
+  id: 'icicle-chatbook',
+  sidebarDisplayName: 'ICICLE Chatbook',
+  iconName: 'globe',
+  component: ICICLEChatbook,
 });
 
 extension.registerService({
@@ -186,12 +205,12 @@ extension.registerService({
   component: DataLabeler,
 });
 
-extension.registerService({
-  id: 'jupyter-lab',
-  sidebarDisplayName: 'JupyterLab',
-  iconName: 'jupyter',
-  component: JupyterLab,
-});
+// extension.registerService({
+//   id: 'jupyter-lab',
+//   sidebarDisplayName: 'JupyterLab',
+//   iconName: 'jupyter',
+//   component: JupyterLab,
+// });
 
 extension.registerService({
   id: 'open-webui',
@@ -255,6 +274,21 @@ extension.registerService({
   iconName: 'globe',
   component: DigitalAgOpenPASS,
 });
+
+extension.registerService({
+  id: 'smart-labeler',
+  sidebarDisplayName: 'Smart Labeler : Object Detection',
+  iconName: 'globe',
+  component: SmartDetection,
+});
+
+extension.registerService({
+  id: 'smart-segmentation',
+  sidebarDisplayName: 'Smart Labeler : Semantic Segmentation',
+  iconName: 'globe',
+  component: SmartSegmentation,
+});
+
 extension.registerService({
   id: 'harvest',
   sidebarDisplayName: 'Harvest',
@@ -263,11 +297,19 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'analytics',
-  sidebarDisplayName: 'Analytics',
+  id: 'patra',
+  sidebarDisplayName: 'Patra',
   iconName: 'globe',
-  component: CatalogAnalytics,
+  component: Patra,
 });
+
+// extension.registerService({
+//   id: 'analytics',
+//   sidebarDisplayName: 'Analytics',
+//   iconName: 'globe',
+//   component: CatalogAnalytics,
+
+// });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
 

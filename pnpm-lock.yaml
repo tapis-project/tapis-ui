@@ -54,12 +54,15 @@ importers:
       '@jest/globals':
         specifier: 30.2.0
         version: 30.2.0
+      '@mlhub/deployments-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/models-ts-sdk':
-        specifier: ^0.0.0
-        version: 0.0.0
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/ts-sdk':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.1.3
+        version: 0.1.3
       '@mui/icons-material':
         specifier: ^7.3.4
         version: 7.3.9(@mui/material@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
@@ -82,8 +85,8 @@ importers:
         specifier: workspace:*
         version: link:packages/scoped-tapisui-extension
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: 0.0.68
+        version: 0.0.68
       '@tapis/tapisui-api':
         specifier: workspace:*
         version: link:packages/tapisui-api
@@ -272,8 +275,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@tapis/tapis-typescript-pods':
-        specifier: 0.0.13
-        version: 0.0.13
+        specifier: 0.0.14
+        version: 0.0.14
       '@tapis/tapis-typescript-systems':
         specifier: 0.0.7
         version: 0.0.7
@@ -402,8 +405,8 @@ importers:
         specifier: ^7.7.0
         version: 7.29.12(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@mui/material@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       '@tapis/tapisui-common':
         specifier: workspace:*
         version: link:../tapisui-common
@@ -463,8 +466,8 @@ importers:
   packages/example-extension:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       '@tapis/tapisui-common':
         specifier: file:../tapisui-common
         version: file:packages/tapisui-common(@babel/runtime@7.29.2)(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@18.3.1(react@18.3.1))(rollup@4.59.0)(vite@6.3.5(@types/node@18.19.130)(sass@1.98.0))
@@ -512,8 +515,8 @@ importers:
         specifier: ^7.7.0
         version: 7.29.12(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@mui/material@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       '@tapis/tapisui-common':
         specifier: workspace:*
         version: link:../tapisui-common
@@ -573,8 +576,8 @@ importers:
   packages/scoped-tapisui-extension:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       '@tapis/tapisui-common':
         specifier: workspace:*
         version: link:../tapisui-common
@@ -628,11 +631,11 @@ importers:
   packages/tapisui-api:
     dependencies:
       '@mlhub/ts-sdk':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.1.3
+        version: 0.1.3
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       axios:
         specifier: ^1.7.5
         version: 1.13.6
@@ -680,8 +683,8 @@ importers:
         specifier: ^26.0.1
         version: 26.0.3(rollup@4.59.0)
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       '@tapis/tapisui-hooks':
         specifier: workspace:*
         version: link:../tapisui-hooks
@@ -831,8 +834,8 @@ importers:
   packages/tapisui-extension-devtools:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       simple-git:
         specifier: ^3.24.0
         version: 3.33.0
@@ -850,8 +853,8 @@ importers:
   packages/tapisui-extensions-core:
     dependencies:
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       simple-git:
         specifier: ^3.24.0
         version: 3.33.0
@@ -875,11 +878,11 @@ importers:
   packages/tapisui-hooks:
     dependencies:
       '@mlhub/ts-sdk':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.1.3
+        version: 0.1.3
       '@tapis/tapis-typescript':
-        specifier: ^0.0.65
-        version: 0.0.65
+        specifier: ^0.0.68
+        version: 0.0.68
       '@tapis/tapisui-api':
         specifier: file:../tapisui-api
         version: link:../tapisui-api
@@ -1994,14 +1997,20 @@ packages:
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
 
-  '@mlhub/models-ts-sdk@0.0.0':
-    resolution: {integrity: sha512-jgV9Bna739dQY9VPJQHaMYkRWNBCYQMKDthWHepCcQxaCruBMH8hzcbE5Q0i0XlzrhxcU55jZfxyNcolLjX7cQ==}
+  '@mlhub/deployments-ts-sdk@0.1.1':
+    resolution: {integrity: sha512-XTM6egldBGdLdys4JsplEtHSunhv0XxO7F8C6iOfteEdAIN92schB0jeBL5tLn7flqgj+eRi2ADKyU89MAjB7w==}
 
-  '@mlhub/models-ts-sdk@0.0.8':
-    resolution: {integrity: sha512-ORZ4Yjw5xdxqu9MVqdpMXmFGnNIV3DioZfY/SzpcFBGyR1Rv5w2J11H01SsJkwIk7am5CdWUQguoXq4pa8JaEA==}
+  '@mlhub/deployments-ts-sdk@0.2.0':
+    resolution: {integrity: sha512-IzJpZ136UuVqLFZCqv5f77uHUZSeJRIwMnFJejFagnDzguT6yHOw4RQKoKr8oU9cLXY2sqiSUnMY2CgEDsDBmw==}
 
-  '@mlhub/ts-sdk@0.0.8':
-    resolution: {integrity: sha512-i6s6KSYlNAJYKoLT3lYed1NM6k0XLjluN7zsyTphVlhlngG9sCxMQ5FzIXiDJIKDuiooQxm1Fe5V5pUAvE7mgQ==}
+  '@mlhub/models-ts-sdk@0.1.1':
+    resolution: {integrity: sha512-CNY/vXq4V3V4dAdxUtyySA8ZuMwkICCtF7EZQC0eTuSAQ71FOKDlXldkJaPyWAlC8817LabAE4TMYz0OuPswug==}
+
+  '@mlhub/models-ts-sdk@0.2.0':
+    resolution: {integrity: sha512-S8pM1DHh9/zZ8Y8t8RBN/cb1oqZZwm+uuTLJ5UjjiPtSV5o7rmJU7AB3GLhHY6T/LXxy3D3G47k4UhUNZwREvQ==}
+
+  '@mlhub/ts-sdk@0.1.3':
+    resolution: {integrity: sha512-0BixORe/ByERPxOWeXRCQa0LnV5AaUMGAXMC2VoOepVWdYlMj/fO1q8PyyfkYv8XczmeRHJ4o9htcv6ojPLK9A==}
 
   '@mui/core-downloads-tracker@7.3.9':
     resolution: {integrity: sha512-MOkOCTfbMJwLshlBCKJ59V2F/uaLYfmKnN76kksj6jlGUVdI25A9Hzs08m+zjBRdLv+sK7Rqdsefe8X7h/6PCw==}
@@ -2763,8 +2772,8 @@ packages:
   '@tapis/tapis-typescript-apps@0.0.9':
     resolution: {integrity: sha512-wwsYqXHBGVqnWxfDumNSPLnvGVlV3XZ0dmu/xd3pKCsu4dGmCQL2K7kh/k4V9Gf7K2+QEQW7pV30gz0Ygcn+UA==}
 
-  '@tapis/tapis-typescript-authenticator@1.8.4':
-    resolution: {integrity: sha512-B8YH/9QnVCoTHvrC8nrHOngluNicAn4yKp02AWhpZrSCDoFAH0kY+U444NUYIb4h+JAcOrk73IPw+ZTEFofdVg==}
+  '@tapis/tapis-typescript-authenticator@1.8.5':
+    resolution: {integrity: sha512-ifTORoqYxyLdVdtt5TC/ppOijDcSBSMVvabkE7+4TDJjca3FjUo5/S/wluunFqFQs7aj/LC9RvVRjRBGsEDfBg==}
 
   '@tapis/tapis-typescript-files@0.0.4':
     resolution: {integrity: sha512-Zdft3GmB9friLrEazXfY5bxy9KaDD/24vvO2Xd5Z4AQ0rIhL5zhGY/OhRmDgvT8yISAwDITGkpeZYpE9ZT8dbg==}
@@ -2781,8 +2790,11 @@ packages:
   '@tapis/tapis-typescript-notifications@0.0.1':
     resolution: {integrity: sha512-hCzEx0N0AHSOK6bzyaqoKURQv8DzXFXnt5KDHrWyflj/4S7T2/0zu+ruxj3n0ATvZuZnvKBJH/0rAowLCscc5g==}
 
-  '@tapis/tapis-typescript-pods@0.0.13':
-    resolution: {integrity: sha512-puqE3A2lOSl2qg9qRvbQUjmbIm7ZSrI9egskFXnPU9pppGMJRtMeGJ4NRDoaULkc/397r6Rza0kuTPaclQnAnw==}
+  '@tapis/tapis-typescript-pods@0.0.14':
+    resolution: {integrity: sha512-hAYtuKbIk/fZHXmnLHuc6Jtu+csZATO7c13kCeiLqYUsq4ruYwRjgf5Hzpkux8urWKRD9KnvO24dQHFH83jI5A==}
+
+  '@tapis/tapis-typescript-sk@0.0.3':
+    resolution: {integrity: sha512-R2lT5VcT8Cp1f/YPvPeg178OAT5FfhpMiEVcz18AX1iC+1+cx0iJnCecO5cXtabLrbobw7WST8zK9fKS+QWH1w==}
 
   '@tapis/tapis-typescript-streams@0.0.4':
     resolution: {integrity: sha512-9jEOWo5Ryi+w8AUEh+APDz1cfHEAMJxZdYOLNpyGHnKCLg4KFEfYqr6vbeHXE9MeW/VSoXODTfQSTpmI6LjYKA==}
@@ -2796,8 +2808,8 @@ packages:
   '@tapis/tapis-typescript-workflows@1.9.0-a3':
     resolution: {integrity: sha512-AIsZRNmG0TwRwL0P55l41m09t7doxKi2Mq++joILYzRd2vxHXgyRw1zV8I1sbZ/H7vH1Fb1qz4AkLYuErwwhSQ==}
 
-  '@tapis/tapis-typescript@0.0.65':
-    resolution: {integrity: sha512-ek9bQshmI+/7RG8/KXR2KUttIHMQuoEqlWiPqo1scpzkOKEuLqkzcFAD8EwyynSM7/3fCSMD8IS+BVVwETXrYQ==}
+  '@tapis/tapis-typescript@0.0.68':
+    resolution: {integrity: sha512-ro63hzdwsBZt/Uc/DDnYo7vphLE58XPVFOZNNemiLinGzi1KkAnaEvOHGKGFAFv+LHggS80ctHcu8ohLMCU8qg==}
 
   '@tapis/tapisui-api@file:packages/tapisui-api':
     resolution: {directory: packages/tapisui-api, type: directory}
@@ -8149,14 +8161,18 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@mlhub/models-ts-sdk@0.0.0': {}
+  '@mlhub/deployments-ts-sdk@0.1.1': {}
 
-  '@mlhub/models-ts-sdk@0.0.8': {}
+  '@mlhub/deployments-ts-sdk@0.2.0': {}
 
-  '@mlhub/ts-sdk@0.0.8':
+  '@mlhub/models-ts-sdk@0.1.1': {}
+
+  '@mlhub/models-ts-sdk@0.2.0': {}
+
+  '@mlhub/ts-sdk@0.1.3':
     dependencies:
-      '@mlhub/models-ts-sdk': 0.0.8
-      '@types/mocha': 9.1.1
+      '@mlhub/deployments-ts-sdk': 0.1.1
+      '@mlhub/models-ts-sdk': 0.1.1
 
   '@mui/core-downloads-tracker@7.3.9': {}
 
@@ -8844,7 +8860,7 @@ snapshots:
 
   '@tapis/tapis-typescript-apps@0.0.9': {}
 
-  '@tapis/tapis-typescript-authenticator@1.8.4': {}
+  '@tapis/tapis-typescript-authenticator@1.8.5': {}
 
   '@tapis/tapis-typescript-files@0.0.4': {}
 
@@ -8856,7 +8872,9 @@ snapshots:
 
   '@tapis/tapis-typescript-notifications@0.0.1': {}
 
-  '@tapis/tapis-typescript-pods@0.0.13': {}
+  '@tapis/tapis-typescript-pods@0.0.14': {}
+
+  '@tapis/tapis-typescript-sk@0.0.3': {}
 
   '@tapis/tapis-typescript-streams@0.0.4': {}
 
@@ -8866,17 +8884,18 @@ snapshots:
 
   '@tapis/tapis-typescript-workflows@1.9.0-a3': {}
 
-  '@tapis/tapis-typescript@0.0.65':
+  '@tapis/tapis-typescript@0.0.68':
     dependencies:
       '@tapis/tapis-typescript-actors': 0.0.3
       '@tapis/tapis-typescript-apps': 0.0.9
-      '@tapis/tapis-typescript-authenticator': 1.8.4
+      '@tapis/tapis-typescript-authenticator': 1.8.5
       '@tapis/tapis-typescript-files': 0.0.4
       '@tapis/tapis-typescript-jobs': 0.0.6
       '@tapis/tapis-typescript-mlhub-datasets': 0.0.1
       '@tapis/tapis-typescript-mlhub-models': 0.0.2
       '@tapis/tapis-typescript-notifications': 0.0.1
-      '@tapis/tapis-typescript-pods': 0.0.13
+      '@tapis/tapis-typescript-pods': 0.0.14
+      '@tapis/tapis-typescript-sk': 0.0.3
       '@tapis/tapis-typescript-streams': 0.0.4
       '@tapis/tapis-typescript-systems': 0.0.7
       '@tapis/tapis-typescript-tenants': 0.0.2
@@ -8885,8 +8904,8 @@ snapshots:
 
   '@tapis/tapisui-api@file:packages/tapisui-api':
     dependencies:
-      '@mlhub/ts-sdk': 0.0.8
-      '@tapis/tapis-typescript': 0.0.65
+      '@mlhub/ts-sdk': 0.1.3
+      '@tapis/tapis-typescript': 0.0.68
       axios: 1.13.6
       cross-fetch: 3.2.0
       streamsaver: 2.0.6
@@ -8903,7 +8922,7 @@ snapshots:
       '@mui/lab': 7.0.1-beta.18(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@mui/material@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/material': 7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rollup/plugin-commonjs': 26.0.3(rollup@4.59.0)
-      '@tapis/tapis-typescript': 0.0.65
+      '@tapis/tapis-typescript': 0.0.68
       '@tapis/tapisui-hooks': link:packages/tapisui-hooks
       '@testing-library/react': 14.2.1(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@uiw/react-textarea-code-editor': 3.1.1(@babel/runtime@7.29.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -8943,8 +8962,8 @@ snapshots:
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)':
     dependencies:
-      '@mlhub/ts-sdk': 0.0.8
-      '@tapis/tapis-typescript': 0.0.65
+      '@mlhub/ts-sdk': 0.1.3
+      '@tapis/tapis-typescript': 0.0.68
       '@tapis/tapisui-api': file:packages/tapisui-api
       cross-fetch: 3.2.0
       js-cookie: 3.0.5
