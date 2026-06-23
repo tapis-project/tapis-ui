@@ -24,12 +24,8 @@ import LabelIcon from '@mui/icons-material/Label';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { ModelMetadata, Platform } from '@mlhub/models-ts-sdk';
 import { ClientStrategySet, Strategy } from '@mlhub/deployments-ts-sdk';
-import { Code, Polyline } from '@mui/icons-material';
-// import type {
-//   ModelCardData,
-//   ModelCardActions,
-//   PlatformStrategy,
-// } from '../../types/model-card';
+import { Code, Gavel, Polyline } from '@mui/icons-material';
+import { useHistory } from 'react-router-dom';
 
 // ── Icons ──────────────────────────────────────────────────────
 
@@ -106,24 +102,6 @@ const DownloadIcon = () => {
     </SvgIcon>
   );
 };
-
-function LicenseBadge({ license }: { license: string }) {
-  return (
-    <Chip
-      label={`license: ${license}`}
-      size="small"
-      sx={{
-        borderRadius: 0.5,
-        fontSize: '0.6rem',
-        fontWeight: 700,
-        height: 20,
-        letterSpacing: '0.04em',
-        backgroundColor: '#E6ECFD',
-        color: 'primary.main',
-      }}
-    />
-  );
-}
 
 // ── Deploy Popover Content ─────────────────────────────────────
 
@@ -435,6 +413,7 @@ interface ModelCardProps {
 }
 
 export default function ModelCard({ model }: ModelCardProps) {
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
 
@@ -514,7 +493,11 @@ export default function ModelCard({ model }: ModelCardProps) {
           >
             <Typography
               variant="subtitle1"
+              onClick={() => {
+                history.push(`/ml-hub/models/${model.author}/${model.name}`);
+              }}
               sx={{
+                cursor: 'pointer',
                 fontWeight: 700,
                 fontSize: '0.9375rem',
                 lineHeight: 1.4,
@@ -528,10 +511,70 @@ export default function ModelCard({ model }: ModelCardProps) {
             </Typography>
 
             {model.canonical && (
-              <PlatformChip platform={Platform.HuggingFace} />
+              <>
+                {/* likes/downloads row - alignItems moved to sx */}
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{ alignItems: 'center' }}
+                >
+                  <PlatformChip platform={model.canonical.platform} />
+                  {model.canonical?.likes && (
+                    <Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{ alignItems: 'center' }}
+                    >
+                      <HeartIcon />
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {formatBigNumber(`${model.canonical.likes!}`)}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {model.canonical?.downloads && (
+                    <Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{ alignItems: 'center' }}
+                    >
+                      <DownloadIcon />
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {formatBigNumber(`${model.canonical.downloads!}`)}
+                      </Typography>
+                    </Stack>
+                  )}
+                </Stack>
+                {model.canonical?.gated !== undefined &&
+                  model.canonical?.gated && (
+                    <Chip
+                      label="Gated"
+                      size="small"
+                      color="warning"
+                      variant="filled"
+                      sx={{
+                        borderRadius: 0.5,
+                        fontSize: '0.625rem',
+                        fontWeight: 700,
+                        height: 20,
+                      }}
+                    />
+                  )}
+              </>
             )}
-
-            {model.license && <LicenseBadge license={model.license} />}
           </Stack>
 
           {/* Author */}
@@ -567,7 +610,7 @@ export default function ModelCard({ model }: ModelCardProps) {
                   letterSpacing: '0.05em',
                 }}
               >
-                Modalities
+                Capabilities
               </Typography>
               {(model.task_types || []).map((t) => (
                 <Chip
@@ -702,6 +745,41 @@ export default function ModelCard({ model }: ModelCardProps) {
               )}
             </Stack>
           )}
+          {model.license && (
+            <Stack
+              direction="row"
+              spacing={1}
+              useFlexGap
+              sx={{ alignItems: 'center', flexWrap: 'wrap' }}
+            >
+              <Gavel sx={{ fontSize: 15, color: 'text.disabled' }} />
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: 'text.disabled',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                License
+              </Typography>
+              <Chip
+                key={model.license}
+                label={model.license}
+                size="small"
+                sx={{
+                  borderRadius: 0.5,
+                  border: '1px solid #2C67EC',
+                  fontSize: '0.6rem',
+                  fontWeight: 600,
+                  height: 18,
+                  backgroundColor: '#E6ECFD',
+                  color: '#2C67EC',
+                }}
+              />
+            </Stack>
+          )}
         </Stack>
 
         {/* ── 3. Middle-right: Stats ──────────────────────────── */}
@@ -710,63 +788,7 @@ export default function ModelCard({ model }: ModelCardProps) {
           direction="column"
           spacing={1}
           sx={{ alignItems: 'flex-end', flexShrink: 0 }}
-        >
-          {/* likes/downloads row - alignItems moved to sx */}
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-            {model.canonical?.likes && (
-              <Stack
-                direction="row"
-                spacing={0.5}
-                sx={{ alignItems: 'center' }}
-              >
-                <HeartIcon />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  {formatBigNumber(`${model.canonical.likes!}`)}
-                </Typography>
-              </Stack>
-            )}
-            {model.canonical?.downloads && (
-              <Stack
-                direction="row"
-                spacing={0.5}
-                sx={{ alignItems: 'center' }}
-              >
-                <DownloadIcon />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  {formatBigNumber(`${model.canonical.downloads!}`)}
-                </Typography>
-              </Stack>
-            )}
-          </Stack>
-          {model.canonical?.gated !== undefined && model.canonical?.gated && (
-            <Chip
-              label="Gated"
-              size="small"
-              color="warning"
-              variant="filled"
-              sx={{
-                borderRadius: 0.5,
-                fontSize: '0.625rem',
-                fontWeight: 700,
-                height: 20,
-              }}
-            />
-          )}
-        </Stack>
+        ></Stack>
 
         {/* ── 4. Right: Actions Menu ─────────────────────────── */}
         <Box
