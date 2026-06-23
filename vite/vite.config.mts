@@ -21,6 +21,21 @@ export default defineConfig({
   css: {
     preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
   },
+  resolve: {
+    dedupe: [
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codemirror/language',
+      '@codemirror/lint',
+      '@codemirror/autocomplete',
+      '@codemirror/commands',
+      '@codemirror/search',
+      '@codemirror/lang-json',
+      '@codemirror/lang-python',
+      'codemirror',
+      '@uiw/react-codemirror',
+    ],
+  },
   optimizeDeps: {
     include: [
       '@emotion/styled',
@@ -28,13 +43,23 @@ export default defineConfig({
       '@mui/system',
       '@mui/icons-material',
       '@mui/lab',
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codemirror/language',
+      '@codemirror/lint',
+      '@codemirror/autocomplete',
+      '@codemirror/commands',
+      '@codemirror/search',
+      '@codemirror/lang-json',
+      '@codemirror/lang-python',
+      'codemirror',
+      '@uiw/react-codemirror',
     ],
   },
   plugins: [
     react(),
     commonjs({
       include: [
-        /node_modules\/@uiw\/react-codemirror/, // Ensure CommonJS transformation for node_modules
         /node_modules\/react-table/, // Include react-table for CommonJS transformation
         /node_modules\/react/,
         /node_modules\/react-dom/,
@@ -114,7 +139,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api/rag': {
-        target: 'https://rag.pods.tacc.tapis.io',
+        target: 'https://tapisagent.pods.tacc.tapis.io',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/rag/, ''),
         secure: true,

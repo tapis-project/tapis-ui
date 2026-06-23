@@ -30,7 +30,7 @@ const useGetModelByPlatform = (
       const response = await API.Models.Platforms.getModelByPlatform(
         params.platform,
         params.modelId,
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken.access_token
       );
 

@@ -37,6 +37,7 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
         systemId,
       },
       {
+        enabled: open,
         refetchOnWindowFocus: false,
       }
     );
@@ -52,8 +53,6 @@ const GlobusAuthModal: React.FC<ModalProps> = ({ open, toggle, systemId }) => {
   } = Hooks.useGenerateGlobusTokens();
 
   const result = data?.result || undefined;
-
-  console.log({ result });
 
   return (
     <Dialog

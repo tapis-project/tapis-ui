@@ -196,55 +196,68 @@ const PodsNavigation: React.FC<PodsNavigationProps> = ({ from, id, id2 }) => {
   // console.log('PodsNavigation: activePage', activePage);
   // console.log('PodsNavigation: from', from);
   return (
-    <Stack spacing={2} direction="row">
-      <Button
-        variant="outlined"
-        color={activePage === 'podspage' ? 'secondary' : 'primary'}
-        size="small"
-        onClick={() => updateStateAndNavigate('pods', from, id)}
-        onAuxClick={(event) => handleMiddleClick(event, 'pods', id)}
-        //href={'/#/pods'} ## we could use href here, but it would mean clicking the button would redirect to
-        // /pods/images rather than using stored state to navigate to most recently used pod
-      >
-        Pods
-      </Button>
-      <Button
-        variant="outlined"
-        color={activePage === 'templatespage' ? 'secondary' : 'primary'}
-        size="small"
-        onClick={() => updateStateAndNavigate('templates', from, id)}
-        onAuxClick={(event) => handleMiddleClick(event, 'templates', id)}
-      >
-        Templates
-      </Button>
-      <Button
-        variant="outlined"
-        color={activePage === 'imagespage' ? 'secondary' : 'primary'}
-        size="small"
-        onClick={() => updateStateAndNavigate('images', from, id)}
-        onAuxClick={(event) => handleMiddleClick(event, 'images', id)}
-      >
-        Images
-      </Button>
-      <Button
-        variant="outlined"
-        color={activePage === 'volumespage' ? 'secondary' : 'primary'}
-        size="small"
-        onClick={() => updateStateAndNavigate('volumes', from, id)}
-        onAuxClick={(event) => handleMiddleClick(event, 'volumes', id)}
-      >
-        Volumes
-      </Button>
-      <Button
-        variant="outlined"
-        color={activePage === 'snapshotspage' ? 'secondary' : 'primary'}
-        size="small"
-        onClick={() => updateStateAndNavigate('snapshots', from, id)}
-        onAuxClick={(event) => handleMiddleClick(event, 'snapshots', id)}
-      >
-        Snapshots
-      </Button>
-    </Stack>
+    <div
+      style={{
+        overflow: 'auto',
+        display: 'flex',
+        flexShrink: 0,
+      }}
+    >
+      <Stack spacing={2} direction="row" sx={{ flexShrink: 0 }}>
+        <Button
+          variant="outlined"
+          color={activePage === 'podspage' ? 'secondary' : 'primary'}
+          size="small"
+          onClick={() => updateStateAndNavigate('pods', from, id)}
+          onAuxClick={(event) => handleMiddleClick(event, 'pods', id)}
+          sx={{ whiteSpace: 'nowrap' }}
+          //href={'/#/pods'} ## we could use href here, but it would mean clicking the button would redirect to
+          // /pods/images rather than using stored state to navigate to most recently used pod
+        >
+          Pods
+        </Button>
+        <Button
+          variant="outlined"
+          color={activePage === 'templatespage' ? 'secondary' : 'primary'}
+          size="small"
+          onClick={() => updateStateAndNavigate('templates', from, id)}
+          onAuxClick={(event) => handleMiddleClick(event, 'templates', id)}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
+          Templates
+        </Button>
+        <Button
+          variant="outlined"
+          color={activePage === 'imagespage' ? 'secondary' : 'primary'}
+          size="small"
+          onClick={() => updateStateAndNavigate('images', from, id)}
+          onAuxClick={(event) => handleMiddleClick(event, 'images', id)}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
+          Images
+        </Button>
+        <Button
+          variant="outlined"
+          color={activePage === 'volumespage' ? 'secondary' : 'primary'}
+          size="small"
+          onClick={() => updateStateAndNavigate('volumes', from, id)}
+          onAuxClick={(event) => handleMiddleClick(event, 'volumes', id)}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
+          Volumes
+        </Button>
+        <Button
+          variant="outlined"
+          color={activePage === 'snapshotspage' ? 'secondary' : 'primary'}
+          size="small"
+          onClick={() => updateStateAndNavigate('snapshots', from, id)}
+          onAuxClick={(event) => handleMiddleClick(event, 'snapshots', id)}
+          sx={{ whiteSpace: 'nowrap' }}
+        >
+          Snapshots
+        </Button>
+      </Stack>
+    </div>
   );
 };
 

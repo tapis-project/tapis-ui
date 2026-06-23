@@ -12,7 +12,7 @@ const useListModelIngestions = (
     ['mlhub-ingestions-list', accessToken?.access_token],
     () =>
       API.Models.Ingestions.listModelIngestions(
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken?.access_token || ''
       ),
     {

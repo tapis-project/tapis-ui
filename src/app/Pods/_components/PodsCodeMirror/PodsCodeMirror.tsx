@@ -62,7 +62,7 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
         display: 'flex',
         flexDirection: 'row',
         flexGrow: 1,
-        overflow: 'hidden',
+        overflow: 'visible',
       }}
     >
       {isEditorVisible && (
@@ -72,8 +72,7 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
             padding: '8px',
             minWidth: '28rem',
             width: '28rem',
-            height: 'calc(100vh - 170px)', //'46rem',
-            maxHeight: 'calc(100vh - 170px)',
+            height: '100%',
             border: '1px solid rgba(112, 112, 112, 0.25)',
             marginRight: '.8em',
             overflow: 'auto',
@@ -84,19 +83,14 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
       )}
       <Grid
         container
-        // flexDirection="column"
-        // height="40rem"
-        maxHeight={'calc(100vh - 169px)'}
         flexWrap={'nowrap'}
-        height="auto"
         rowSpacing={0.4}
-        // height="44rem" (this causes side by side)
-        overflow="auto"
         sx={{
           display: 'flex',
           flexDirection: 'column',
           minWidth: '20rem',
           flexGrow: 1,
+          overflow: 'visible',
         }}
       >
         <CodeMirror
@@ -105,13 +99,7 @@ const PodsCodeMirror: React.FC<PodsCodeMirrorProps> = ({
           readOnly={!editable}
           onChange={onChange}
           extensions={[json(), EditorView.lineWrapping]}
-          // height = "22rem"
-          // height="46rem" // Keep this for correct height horizontal scroll # if removed, breaks slinky view
-          // height="100%"
           minHeight="46rem"
-          // maxWidth='20rem'
-          //height="100%"
-          maxHeight="calc(100vh - 170px)"
           width="100%"
           theme={vscodeDarkInit({
             settings: {

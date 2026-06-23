@@ -15,7 +15,21 @@ import {
   DigitalAgOpenPASS,
   ComponentCatalog,
   Harvest,
+  FoodFlowPortal,
+  FEAST,
+  FoodSecuritySandbox,
+  PortalHome,
+  DomainAgnosticAI,
+  ICICLEChatbook,
+  DomainAgnosticCI,
+  DomainSpecificServices,
+  DigitalAgAaaS,
+  AnimalEcologyAaaS,
+  FoodLogisticsAaaS,
+  Patra,
 } from './pages';
+import { SmartDetection } from './pages/SmartDetection';
+import { SmartSegmentation } from './pages/SmartSegmentation';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -38,6 +52,17 @@ const extension = createExtension({
     'jupyter-lab',
     'analytics',
     'training-catalog',
+    'home',
+    'domain-agnostic-ai',
+    'icicle-chatbook',
+    'domain-agnostic-ci',
+    'domain-specific-services',
+    'digital-ag-aaas',
+    'animal-ecology-aaas',
+    'food-logistics-aaas',
+    'food-flow-portal',
+    'feast',
+    'food-security-sandbox',
     'component-catalog',
     'ckn-dashboard',
     'openpass',
@@ -46,9 +71,50 @@ const extension = createExtension({
     'files',
     'apps',
     'harvest',
+    'patra',
+    'smart-labeler',
+    'smart-segmentation',
     //'data-labeler',
     //'smart-scheduler',
   ],
+  betaSidebar: {
+    enabled: true,
+    sections: [],
+    noSection: {
+      mainServices: ['home'],
+      secondaryServices: [
+        'workflows',
+        'pods',
+        'ml-hub',
+        'ml-edge',
+        'open-web-ui',
+        'jupyter-lab',
+        'analytics',
+        'training-catalog',
+        'domain-agnostic-ai',
+        'icicle-chatbook',
+        'domain-agnostic-ci',
+        'domain-specific-services',
+        'digital-ag-aaas',
+        'animal-ecology-aaas',
+        'food-logistics-aaas',
+        'food-flow-portal',
+        'feast',
+        'food-security-sandbox',
+        'component-catalog',
+        'ckn-dashboard',
+        'openpass',
+        'systems',
+        'jobs',
+        'files',
+        'apps',
+        'harvest',
+        'patra',
+        'smart-labeler',
+        'smart-segmentation',
+      ],
+    },
+  },
   authMethods: ['implicit', 'password'],
   logo: {
     filePath: './logo_icicle.png',
@@ -70,6 +136,62 @@ const extension = createExtension({
 
 // Order of registration determines sidebar order!!
 extension.registerService({
+  id: 'home',
+  sidebarDisplayName: 'Portal Home',
+  iconName: 'globe',
+  component: PortalHome,
+});
+
+extension.registerService({
+  id: 'domain-agnostic-ai',
+  sidebarDisplayName: 'ICICLE-AIaaS',
+  iconName: 'globe',
+  component: DomainAgnosticAI,
+});
+
+extension.registerService({
+  id: 'icicle-chatbook',
+  sidebarDisplayName: 'ICICLE Chatbook',
+  iconName: 'globe',
+  component: ICICLEChatbook,
+});
+
+extension.registerService({
+  id: 'domain-agnostic-ci',
+  sidebarDisplayName: 'ICICLE-CIaaS',
+  iconName: 'globe',
+  component: DomainAgnosticCI,
+});
+
+extension.registerService({
+  id: 'domain-specific-services',
+  sidebarDisplayName: 'ICICLE-DOaaS',
+  iconName: 'globe',
+  component: DomainSpecificServices,
+});
+
+extension.registerService({
+  id: 'digital-ag-aaas',
+  sidebarDisplayName: 'ICICLE-DAaaS',
+  iconName: 'globe',
+  component: DigitalAgAaaS,
+});
+
+extension.registerService({
+  id: 'animal-ecology-aaas',
+  sidebarDisplayName: 'ICICLE-AEaaS',
+  iconName: 'globe',
+  component: AnimalEcologyAaaS,
+});
+
+extension.registerService({
+  id: 'food-logistics-aaas',
+  sidebarDisplayName: 'ICICLE-FLSaaS',
+  iconName: 'globe',
+  component: FoodLogisticsAaaS,
+});
+
+extension.registerService({
   id: 'ml-edge',
   sidebarDisplayName: 'ML Edge',
   iconName: 'simulation',
@@ -83,12 +205,12 @@ extension.registerService({
   component: DataLabeler,
 });
 
-extension.registerService({
-  id: 'jupyter-lab',
-  sidebarDisplayName: 'JupyterLab',
-  iconName: 'jupyter',
-  component: JupyterLab,
-});
+// extension.registerService({
+//   id: 'jupyter-lab',
+//   sidebarDisplayName: 'JupyterLab',
+//   iconName: 'jupyter',
+//   component: JupyterLab,
+// });
 
 extension.registerService({
   id: 'open-webui',
@@ -112,6 +234,27 @@ extension.registerService({
 });
 
 extension.registerService({
+  id: 'food-flow-portal',
+  sidebarDisplayName: 'Food Flow Portal',
+  iconName: 'globe',
+  component: FoodFlowPortal,
+});
+
+extension.registerService({
+  id: 'feast',
+  sidebarDisplayName: 'FEAST',
+  iconName: 'globe',
+  component: FEAST,
+});
+
+extension.registerService({
+  id: 'food-security-sandbox',
+  sidebarDisplayName: 'Food Security Sandbox',
+  iconName: 'globe',
+  component: FoodSecuritySandbox,
+});
+
+extension.registerService({
   id: 'component-catalog',
   sidebarDisplayName: 'Catalog',
   iconName: 'globe',
@@ -131,6 +274,21 @@ extension.registerService({
   iconName: 'globe',
   component: DigitalAgOpenPASS,
 });
+
+extension.registerService({
+  id: 'smart-labeler',
+  sidebarDisplayName: 'Smart Labeler : Object Detection',
+  iconName: 'globe',
+  component: SmartDetection,
+});
+
+extension.registerService({
+  id: 'smart-segmentation',
+  sidebarDisplayName: 'Smart Labeler : Semantic Segmentation',
+  iconName: 'globe',
+  component: SmartSegmentation,
+});
+
 extension.registerService({
   id: 'harvest',
   sidebarDisplayName: 'Harvest',
@@ -139,11 +297,19 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'analytics',
-  sidebarDisplayName: 'Analytics',
+  id: 'patra',
+  sidebarDisplayName: 'Patra',
   iconName: 'globe',
-  component: CatalogAnalytics,
+  component: Patra,
 });
+
+// extension.registerService({
+//   id: 'analytics',
+//   sidebarDisplayName: 'Analytics',
+//   iconName: 'globe',
+//   component: CatalogAnalytics,
+
+// });
 
 extension.serviceCustomizations.workflows.dagTasks = generatedTasks;
 

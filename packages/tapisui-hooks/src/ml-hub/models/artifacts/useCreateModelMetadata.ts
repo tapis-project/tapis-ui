@@ -23,7 +23,7 @@ const useCreateModelMetadata = () => {
             artifactId: vars.artifactId,
             metadata: vars.metadata,
           },
-          mlHubBasePath + '/mlhub',
+          mlHubBasePath,
           accessToken?.access_token || ''
         )
     );

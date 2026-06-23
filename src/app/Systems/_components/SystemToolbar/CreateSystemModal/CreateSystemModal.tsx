@@ -29,10 +29,11 @@ import {
   SchedulerTypeEnum,
 } from '@tapis/tapis-typescript-systems';
 import { MUIStepper, useStepperState } from 'app/_components/MUIStepper';
-import { Systems as Hooks } from '@tapis/tapisui-hooks';
+import { Systems as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { State } from 'app/_components/MUIStepper/MUIStepper';
 import BatchSettings from './Settings/Batch/BatchSettings';
 import BatchLogicalQueuesSettings from './Settings/Batch/BatchLogicalQueuesSettings';
+import { useQueryClient } from 'react-query';
 
 type LogicalQueue = {
   name: string;
@@ -49,8 +50,67 @@ type LogicalQueue = {
   maxMinutes?: number;
 };
 
+const validationSchema = Yup.object({
+  id: Yup.string()
+    .min(1)
+    .max(80)
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    )
+    .required(),
+  description: Yup.string().max(2048),
+  host: Yup.string()
+    .min(1)
+    .max(256)
+    .required()
+    .matches(
+      /^[a-zA-Z0-9_.-]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  rootDir: Yup.string()
+    .max(4096)
+    .matches(
+      /^[a-zA-Z0-9_.-/]+$/,
+      "Only alphanumeric characters '.', '/' '_', '-' allowed for id"
+    ),
+  effectiveUserId: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_${}@.-]+$/,
+      "Only alphanumeric characters '$', '{', '}', '@', '.', '_', '-' allowed for id"
+    ),
+  batchLogicalQueuesSettings: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_.-/]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    ),
+  batchSchedulerProfile: Yup.string()
+    .max(60)
+    .matches(
+      /^[a-zA-Z0-9_.-/]+$/,
+      "Only alphanumeric characters '.', '_', '-' allowed for id"
+    )
+    .required(),
+});
+
 const SystemDetailStep: React.FC = () => {
   const { state, updateState } = useStepperState();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = (value: string) => {
+    try {
+      validationSchema.validateSyncAt('id', { id: value });
+      setErrors((e) => ({ ...e, id: '' }));
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors((e) => ({ ...e, id: err.message }));
+      }
+      return false;
+    }
+  };
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
       <TextField
@@ -60,13 +120,16 @@ const SystemDetailStep: React.FC = () => {
         label="System Id"
         required
         defaultValue={state.id}
-        helperText={'Choose a unique name for this system'}
+        helperText={errors.id || 'Choose a unique name for this system'}
         FormHelperTextProps={{
           sx: { m: 0, marginTop: '4px' },
         }}
         onChange={(e) => {
-          updateState({ id: e.target.value });
+          const value = e.target.value;
+          updateState({ id: value });
+          validate(value);
         }}
+        error={!!errors.id}
         style={{ marginTop: '16px' }}
       />
       <TextField
@@ -88,58 +151,86 @@ const SystemDetailStep: React.FC = () => {
   );
 };
 
+type HostValidator = {
+  host: string;
+  rootDir: string;
+  effectiveUserId: string;
+};
+
 const SystemHostStep: React.FC = () => {
   const { state, updateState } = useStepperState();
   const types = Object.values(Systems.SystemTypeEnum).map((r) => r);
   const authns = Object.values(Systems.AuthnEnum).map((r) => r);
+  const [errors, setErrors] = useState<Record<keyof HostValidator, string>>({
+    host: '',
+    rootDir: '',
+    effectiveUserId: '',
+  });
+  const fields: (keyof HostValidator)[] = [
+    'host',
+    'rootDir',
+    'effectiveUserId',
+  ];
+  const validate = (values: HostValidator) => {
+    for (const field of fields)
+      try {
+        validationSchema.validateSyncAt(field, values);
+        setErrors((e) => ({ ...e, [field]: '' }));
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          setErrors((e) => ({ ...e, [field]: err.message }));
+          return false;
+        }
+      }
+    return true;
+  };
+
+  const handleChange = (field: keyof HostValidator) => (e: any) => {
+    const value = e.target.value;
+
+    const fullState: HostValidator = {
+      host: field === 'host' ? value : state.host ?? '',
+      rootDir: field === 'rootDir' ? value : state.rootDir ?? '',
+      effectiveUserId:
+        field === 'effectiveUserId' ? value : state.effectiveUserId ?? '',
+    };
+
+    updateState({ [field]: value });
+    validate(fullState);
+  };
   return (
     <FormControl fullWidth margin="dense" style={{ marginBottom: '-16px' }}>
       <TextField
+        label="System Host"
+        value={state.host ?? ''}
+        onChange={handleChange('host')}
+        error={!!errors.host}
+        helperText={errors.host}
         fullWidth
+        required
         size="small"
         margin="dense"
-        label="Host"
-        required
-        defaultValue={state.host}
-        helperText={'Host of the system'}
-        FormHelperTextProps={{
-          sx: { m: 0, marginTop: '4px' },
-        }}
-        onChange={(e) => {
-          updateState({ host: e.target.value });
-        }}
-        style={{ marginTop: '16px' }}
       />
       <TextField
-        fullWidth
-        size="small"
-        margin="dense"
         label="Root Directory"
-        required
-        defaultValue={state.rootDir}
-        helperText={'/'}
-        FormHelperTextProps={{
-          sx: { m: 0, marginTop: '4px' },
-        }}
-        onChange={(e) => {
-          updateState({ rootDir: e.target.value });
-        }}
-        style={{ marginTop: '16px' }}
-      />
-      <TextField
+        value={state.rootDir ?? ''}
+        onChange={handleChange('rootDir')}
+        error={!!errors.rootDir}
+        helperText={errors.rootDir || 'Default /'}
         fullWidth
         size="small"
         margin="dense"
+      />
+      <TextField
         label="Effective User Id"
-        defaultValue={state.effectiveUserId}
-        helperText={'Effective user id'}
-        FormHelperTextProps={{
-          sx: { m: 0, marginTop: '4px' },
-        }}
-        onChange={(e) => {
-          updateState({ effectiveUserId: e.target.value });
-        }}
-        style={{ marginTop: '16px' }}
+        value={state.effectiveUserId ?? ''}
+        onChange={handleChange('effectiveUserId')}
+        error={!!errors.effectiveUserId}
+        helperText={errors.effectiveUserId}
+        fullWidth
+        required
+        size="small"
+        margin="dense"
       />
 
       <Autocomplete
@@ -157,7 +248,6 @@ const SystemHostStep: React.FC = () => {
           <TextField {...params} label="System Type" variant="standard" />
         )}
       />
-      <FormHelperText> System Type </FormHelperText>
 
       <Autocomplete
         options={authns}
@@ -174,22 +264,6 @@ const SystemHostStep: React.FC = () => {
           <TextField {...params} label="Authn Method" variant="standard" />
         )}
       />
-      <FormHelperText> Default Authentication Method </FormHelperText>
-
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={!!state.canExec}
-            onChange={(e) => {
-              const value = e.target.checked;
-              updateState({ canExec: value });
-            }}
-          />
-        }
-        label="Can Exec"
-      />
-      <FormHelperText>Enable execution</FormHelperText>
-
       <FormControlLabel
         control={
           <Checkbox
@@ -240,13 +314,31 @@ const SystemRunTimeStep: React.FC<{
       ) : (
         <div style={{ opacity: 0.7 }}>RunTime Unavailable</div>
       )}
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={!!state.canExec}
+            onChange={(e) => {
+              const value = e.target.checked;
+              updateState({ canExec: value });
+            }}
+          />
+        }
+        label="Can Exec"
+      />
+      <FormHelperText>Enable execution</FormHelperText>
     </FormControl>
   );
+};
+
+type BatchValidator = {
+  batchSchedulerProfile: string;
 };
 
 const SystemBatchStep: React.FC = () => {
   const { state, updateState } = useStepperState();
   const schedulerTypes = Object.values(SchedulerTypeEnum);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const isLinux =
     (state.systemType ?? SystemTypeEnum.Linux) === SystemTypeEnum.Linux;
 
@@ -272,20 +364,39 @@ const SystemBatchStep: React.FC = () => {
   const updateQueue = (idx: number, value: LogicalQueue) =>
     setQueues(queues.map((q, i) => (i === idx ? value : q)));
 
+  const validateBatchSchedulerProfile = (value: string) => {
+    try {
+      validationSchema.validateSyncAt('batchSchedulerProfile', {
+        batchSchedulerProfile: value,
+      });
+      setErrors((e) => ({ ...e, batchSchedulerProfile: '' }));
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors((e) => ({ ...e, batchSchedulerProfile: err.message }));
+      }
+      return false;
+    }
+  };
+
+  const handleChange = (field: keyof BatchValidator) => (e: any) => {
+    const value = e.target.value;
+
+    const fullState: BatchValidator = {
+      batchSchedulerProfile:
+        field === 'batchSchedulerProfile'
+          ? value
+          : state.batchSchedulerProfile ?? '',
+    };
+
+    updateState({ [field]: value });
+    validateBatchSchedulerProfile(value);
+  };
+
   return (
     <div>
       {isLinux && (
         <Collapse title="Batch Settings" className={styles['array']}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={!!state.canRunBatch}
-                onChange={(e) => updateState({ canRunBatch: e.target.checked })}
-                color="primary"
-              />
-            }
-            label="Can Run Batch"
-          />
           {state.canRunBatch && (
             <div>
               <Select
@@ -314,11 +425,17 @@ const SystemBatchStep: React.FC = () => {
                 size="small"
                 margin="dense"
                 label="Batch Scheduler Profile"
-                value={state.batchSchedulerProfile}
-                onChange={(e) =>
-                  updateState({ batchSchedulerProfile: e.target.value })
+                required
+                value={state.batchSchedulerProfile ?? ''}
+                error={!!errors.batchSchedulerProfile}
+                helperText={
+                  errors.batchSchedulerProfile || 'Batch scheduler profile'
                 }
-                helperText="Batch scheduler profile (leave blank to unset)"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  updateState({ batchSchedulerProfile: value });
+                  validateBatchSchedulerProfile(value);
+                }}
                 style={{ marginTop: '16px' }}
               />
 
@@ -340,6 +457,7 @@ const SystemBatchStep: React.FC = () => {
                 title="Batch Logical Queues"
                 note={`${queues.length} item${queues.length !== 1 ? 's' : ''}`}
                 className={styles['array']}
+                requiredText=""
               >
                 {queues.map((queue, idx) => (
                   <Collapse
@@ -418,7 +536,7 @@ const SystemBatchStep: React.FC = () => {
                         Remove
                       </Button>
 
-                      <Button
+                      {/* <Button
                         onClick={() =>
                           updateQueue(idx, {
                             ...queue,
@@ -429,7 +547,7 @@ const SystemBatchStep: React.FC = () => {
                         variant="contained"
                       >
                         Save
-                      </Button>
+                      </Button> */}
                     </Box>
                   </Collapse>
                 ))}
@@ -462,9 +580,7 @@ const MiscellaneousStep: React.FC = () => {
           options={advancedSetting}
           getOptionLabel={(option) => option}
           value={advancedSetting as any}
-          onChange={(_, newValue) => {
-            /* noop for now */
-          }}
+          onChange={(_, newValue) => {}}
           renderInput={(params) => (
             <TextField {...params} label="Miscellaeous" variant="standard" />
           )}
@@ -476,21 +592,6 @@ const MiscellaneousStep: React.FC = () => {
     </FormControl>
   );
 };
-
-const validationSchema = Yup.object({
-  id: Yup.string()
-    .min(1)
-    .max(80)
-    .matches(
-      /^[a-zA-Z0-9_.-]+$/,
-      "Only alphanumeric characters '.', '_', '-' allowed"
-    )
-    .required(),
-  description: Yup.string().max(2048),
-  host: Yup.string().min(1).max(256).required(),
-  rootDir: Yup.string().max(4096),
-  effectiveUserId: Yup.string().max(60),
-});
 
 const initialState: Partial<ReqPostSystem> = {
   id: undefined,
@@ -538,12 +639,24 @@ const CreateSystemModal: React.FC<{
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ batchSchedulerProfile?: string }>({});
 
   const handleChange = (key: keyof ReqPostSystem, value: any) => {
+    setSubmitError(null);
+    setSubmitSuccess(false);
     setState((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { makeNewSystem } = Hooks.useMakeNewSystem();
+  const queryClient = useQueryClient();
+
+  const { createSystem } = Hooks.useCreateSystem();
+  const { accessToken } = useTapisConfig();
+
+  console.log('queryKeys list: ', Hooks.queryKeys.list);
+
+  const submissionSuccess = React.useCallback(() => {
+    queryClient.invalidateQueries([Hooks.queryKeys.list]);
+  }, [queryClient]);
 
   const handleSubmit = async (finalStateRaw: ReqPostSystem) => {
     try {
@@ -566,10 +679,13 @@ const CreateSystemModal: React.FC<{
       setIsSubmitting(true);
       setSubmitError(null);
 
-      await makeNewSystem(finalState);
+      await createSystem(finalState);
       onCreate?.(finalState);
 
+      await submissionSuccess();
       setSubmitSuccess(true);
+
+      setState(initialState);
       setIsSubmitting(false);
       toggle();
     } catch (e) {
@@ -581,6 +697,19 @@ const CreateSystemModal: React.FC<{
       setIsSubmitting(false);
     }
   };
+
+  const [resetKey, setResetKey] = useState(0);
+
+  React.useEffect(() => {
+    if (open) {
+      setResetKey((k) => k + 1);
+      setState(initialState);
+      setSubmitSuccess(false);
+      setSubmitError(null);
+      setIsSubmitting(false);
+      setWithJson(false);
+    }
+  }, [open]);
 
   return (
     <Dialog
@@ -638,20 +767,68 @@ const CreateSystemModal: React.FC<{
         ) : (
           <div className={styles['modal-settings']}>
             <MUIStepper
+              key={`${resetKey}-${withJson}`}
               initialState={state as State}
               backDisabled={submitSuccess}
-              nextDisabled={!!submitError || isSubmitting || submitSuccess}
+              nextDisabled={isSubmitting || submitSuccess}
               nextIsLoading={isSubmitting}
+              onStateChange={(newState: State) => {
+                setState(newState as Partial<ReqPostSystem>);
+              }}
               steps={[
                 {
                   label: 'Details',
                   element: <SystemDetailStep />,
-                  nextCondition: (state) => state.id !== undefined,
+                  nextCondition: (state) => {
+                    let idIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('id', { id: state.id });
+                    } catch (_) {
+                      idIsValid = false;
+                    }
+
+                    return state.id !== undefined && idIsValid;
+                  },
                 },
                 {
                   label: 'Host',
                   element: <SystemHostStep />,
-                  nextCondition: (state) => state.host !== undefined,
+                  nextCondition: (state) => {
+                    let hostIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('host', {
+                        host: state.host,
+                      });
+                    } catch (_) {
+                      hostIsValid = false;
+                    }
+
+                    let rootDirIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('rootDir', {
+                        rootDir: state.rootDir,
+                      });
+                    } catch (_) {
+                      rootDirIsValid = false;
+                    }
+
+                    let effUserIdIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('effectiveUserId', {
+                        effectiveUserId: state.effectiveUserId,
+                      });
+                    } catch (_) {
+                      effUserIdIsValid = false;
+                    }
+                    return (
+                      state.host !== undefined &&
+                      hostIsValid &&
+                      state.rootDir !== undefined &&
+                      rootDirIsValid &&
+                      state.effectiveUserId !== undefined &&
+                      effUserIdIsValid
+                    );
+                  },
                 },
                 {
                   label: 'Runtime',
@@ -685,6 +862,20 @@ const CreateSystemModal: React.FC<{
                     ) : (
                       <div> Batch Unvailable</div>
                     ),
+                  nextCondition: (state) => {
+                    let batchSchedulerProfileIsValid = true;
+                    try {
+                      validationSchema.validateSyncAt('batchSchedulerProfile', {
+                        batchSchedulerProfile: state.batchSchedulerProfile,
+                      });
+                    } catch (_) {
+                      batchSchedulerProfileIsValid = false;
+                    }
+                    return (
+                      state.batchSchedulerProfile !== undefined &&
+                      batchSchedulerProfileIsValid
+                    );
+                  },
                 },
               ]}
               finishButtonText="Create System"
@@ -702,6 +893,7 @@ const CreateSystemModal: React.FC<{
 
       {!withJson && (
         <DialogActions>
+          {/* {submitSuccess} */}
           <LoadingButton onClick={toggle}>
             {submitSuccess ? 'Continue' : 'Cancel'}
           </LoadingButton>

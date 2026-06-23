@@ -12,7 +12,7 @@ const useListModelArtifacts = (
     ['mlhub-artifacts-list', accessToken?.access_token],
     () =>
       API.Models.Artifacts.listModelArtifacts(
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken?.access_token || ''
       ),
     {

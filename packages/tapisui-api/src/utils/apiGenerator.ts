@@ -8,13 +8,29 @@ type ApiModule = {
   };
 };
 
+type HeaderProvider = () => Record<string, string>;
+const headerProviders = new Map<ApiModule, HeaderProvider>();
+
+/**
+ * Register a callback that returns extra headers for all API calls
+ * using a given SDK module (e.g. Pods). The callback is invoked on
+ * every request so it can read live state.
+ */
+export const registerModuleHeaders = (
+  module: ApiModule,
+  provider: HeaderProvider
+) => {
+  headerProviders.set(module, provider);
+};
+
 const apiGenerator = <T extends unknown>(
   module: ApiModule,
   api: BaseApiClass,
   basePath: string,
   jwt: string | null
 ): T => {
-  const headers: any = {};
+  const moduleHeaders = headerProviders.get(module)?.() ?? {};
+  const headers: any = { ...moduleHeaders };
   if (jwt) {
     headers['X-Tapis-Token'] = jwt;
   }

@@ -6,11 +6,11 @@ import QueryKeys from './queryKeys';
 
 const useGetImage = (
   params: Pods.GetImageRequest,
-  options: QueryObserverOptions<Pods.ImageResponse, Error> = {}
+  options: QueryObserverOptions<Pods.ResponseGetImage, Error> = {}
 ) => {
   const queryClient = useQueryClient(); // Get the queryClient instance
   const { accessToken, basePath } = useTapisConfig();
-  const result = useQuery<Pods.ImageResponse, Error>(
+  const result = useQuery<Pods.ResponseGetImage, Error>(
     [QueryKeys.getImage, params, accessToken],
     () => API.getImage(params, basePath, accessToken?.access_token ?? ''),
     {

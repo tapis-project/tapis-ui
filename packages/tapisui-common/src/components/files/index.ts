@@ -7,3 +7,5 @@ export { default as TransferCancel } from './TransferCancel';
 export { default as TransferCreate } from './TransferCreate';
 export { default as FileExplorer } from './FileExplorer';
 export { default as FileSelectModal } from './FileSelectModal';
+export { default as HostEvalNavigationButton } from './HostEvalNavigationButton';
+export type { HostEvalNavigationButtonProps } from './HostEvalNavigationButton';

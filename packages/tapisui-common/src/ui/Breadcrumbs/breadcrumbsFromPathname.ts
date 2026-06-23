@@ -6,7 +6,6 @@ const breadcrumbsFromPathname = (pathname: string) => {
   if (pathname.startsWith('/pods/images/')) {
     // special case - images urls can have slashes in them
     const image = pathname.replace('/pods/images/', '');
-    console.log(image);
     items.push({ to: normalize('/pods/'), text: 'pods' });
     items.push({ to: normalize('/pods/images/'), text: 'images' });
     if (image) {
@@ -15,7 +14,6 @@ const breadcrumbsFromPathname = (pathname: string) => {
   } else if (pathname.startsWith('/ml-hub/datasets/')) {
     // special case for ml-hub/datasets
     const dataset = pathname.replace('/ml-hub/datasets/', '');
-    console.log(dataset);
     items.push({ to: normalize('/ml-hub/'), text: 'ml-hub' });
     items.push({ to: normalize('/ml-hub/datasets/'), text: 'datasets' });
     if (dataset) {
@@ -27,7 +25,6 @@ const breadcrumbsFromPathname = (pathname: string) => {
   } else if (pathname.startsWith('/ml-hub/models/')) {
     // special case for ml-hub/models
     const model = pathname.replace('/ml-hub/models/', '');
-    console.log(model);
     items.push({ to: normalize('/ml-hub/'), text: 'ml-hub' });
     items.push({ to: normalize('/ml-hub/models/'), text: 'models' });
     if (model) {

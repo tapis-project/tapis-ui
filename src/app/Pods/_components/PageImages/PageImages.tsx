@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 import { Pods } from '@tapis/tapis-typescript';
@@ -23,7 +23,7 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from '../Pages.module.scss';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { RefreshRounded } from '@mui/icons-material';
 import { SectionMessage } from '@tapis/tapisui-common';
@@ -32,17 +32,23 @@ import { NavImages } from 'app/Pods/_components';
 import PodToolbar from 'app/Pods/_components/PodToolbar';
 
 import { ImageWizard } from '../';
-// import { DeleteImageModal } from '../Modals';
+import { ImageWizardEdit } from '../';
+import { DeleteImageModal } from '../Modals';
 import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
 import { NavLink } from 'react-router-dom';
 
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
+import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
 
 const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const dispatch = useAppDispatch();
   const { imageTab, imageRootTab } = useAppSelector((state) => state.pods);
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
   const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetImage(
     { imageId: objId },
     { enabled: !!objId }
@@ -123,11 +129,7 @@ Select an image to get started.`;
             ? `error: ${error}`
             : isFetching
             ? loadingText
-            : JSON.stringify(
-                'Ability to edit description/tenants not yet implemented',
-                null,
-                2
-              );
+            : JSON.stringify(pod, null, 2);
         default:
           return ''; // Default or placeholder value
       }
@@ -155,7 +157,9 @@ Select an image to get started.`;
       },
     },
     { id: 'details', label: 'Details', tabValue: 'details' },
-    { id: 'edit', label: 'Edit', tabValue: 'edit' },
+    ...(podsAdminMode
+      ? [{ id: 'edit', label: 'Edit', tabValue: 'edit' } as ButtonConfig]
+      : []),
   ];
 
   const rightButtons: ButtonConfig[] = [
@@ -176,11 +180,15 @@ Select an image to get started.`;
     if (objId === undefined) {
       return [
         { id: 'dashboard', label: 'Dashboard', tabValue: 'dashboard' },
-        {
-          id: 'createImage',
-          label: 'Create Image',
-          tabValue: 'createImage',
-        },
+        ...(podsAdminMode
+          ? [
+              {
+                id: 'createImage',
+                label: 'Create Image',
+                tabValue: 'createImage',
+              } as ButtonConfig,
+            ]
+          : []),
       ];
     }
     return leftButtons;
@@ -196,41 +204,88 @@ Select an image to get started.`;
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        flexWrap: 'nowrap',
+        flexShrink: 0,
       }}
     >
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+      >
         {leftButtons.map(
-          ({ id, label, tabValue, customOnClick, icon, disabled }) => (
-            <LoadingButton
-              sx={{ minWidth: '10px' }}
-              loading={id === 'refresh' && isFetching}
-              key={id}
-              variant="outlined"
-              disabled={disabled}
-              color={
-                imageTab === tabValue || imageRootTab === tabValue
-                  ? 'secondary'
-                  : 'primary'
-              }
-              size="small"
-              onClick={() => {
-                if (customOnClick) {
-                  customOnClick();
-                } else if (tabValue) {
-                  if (objId === undefined) {
-                    dispatch(updateState({ imageRootTab: tabValue }));
-                  } else {
-                    dispatch(updateState({ imageTab: tabValue }));
-                  }
+          ({ id, label, tabValue, customOnClick, icon, disabled }) => {
+            if (id === 'edit' && imageTab === 'edit') {
+              return (
+                <ButtonGroup
+                  key="edit-group"
+                  variant="outlined"
+                  size="small"
+                  sx={{ height: '32px' }}
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(updateState({ imageTab: 'details' }));
+                    }}
+                    color="error"
+                    sx={{
+                      minWidth: '28px !important',
+                      width: '28px',
+                      p: 0,
+                      borderRight: '1px solid rgba(0,0,0,0.12)',
+                    }}
+                    variant="outlined"
+                  >
+                    x
+                  </Button>
+                  <Button
+                    color="secondary"
+                    sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+                    variant="outlined"
+                  >
+                    Edit
+                  </Button>
+                </ButtonGroup>
+              );
+            }
+            return (
+              <LoadingButton
+                sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
+                loading={id === 'refresh' && isFetching}
+                key={id}
+                variant="outlined"
+                disabled={disabled}
+                color={
+                  imageTab === tabValue || imageRootTab === tabValue
+                    ? 'secondary'
+                    : 'primary'
                 }
-              }}
-            >
-              {icon || label}
-            </LoadingButton>
-          )
+                size="small"
+                onClick={() => {
+                  if (customOnClick) {
+                    customOnClick();
+                  } else if (tabValue) {
+                    if (objId === undefined) {
+                      dispatch(updateState({ imageRootTab: tabValue }));
+                    } else {
+                      dispatch(updateState({ imageTab: tabValue }));
+                    }
+                  }
+                }}
+              >
+                {icon || label}
+              </LoadingButton>
+            );
+          }
         )}
       </Stack>
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+      >
         {rightButtons.map(({ id, label, tabValue, customOnClick }) => (
           <Button
             key={id}
@@ -241,6 +296,7 @@ Select an image to get started.`;
                 : 'primary'
             }
             size="small"
+            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => {
               if (customOnClick) {
                 customOnClick();
@@ -261,7 +317,7 @@ Select an image to get started.`;
   );
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -278,80 +334,71 @@ Select an image to get started.`;
         <PodsNavigation from="images" id={objId} />
 
         <Stack spacing={2} direction="row">
-          <NavLink
-            to="/pods/images"
-            className={styles['nav-link']}
-            activeClassName={styles['active']}
-            onClick={() =>
-              dispatch(updateState({ imageRootTab: 'createImage' }))
-            }
-          >
+          {podsAdminMode && (
+            <NavLink
+              to="/pods/images"
+              className={styles['nav-link']}
+              activeClassName={styles['active']}
+              onClick={() =>
+                dispatch(updateState({ imageRootTab: 'createImage' }))
+              }
+            >
+              <Button
+                disabled={false}
+                variant="outlined"
+                size="small"
+                aria-label="createImage"
+                className={styles['toolbar-btn']}
+              >
+                Create
+              </Button>
+            </NavLink>
+          )}
+
+          {podsAdminMode && objId !== undefined && (
             <Button
               disabled={false}
               variant="outlined"
               size="small"
-              aria-label="createImage"
+              onClick={() => setModal('deleteImage')}
+              aria-label="deleteImage"
               className={styles['toolbar-btn']}
             >
-              Create
+              Delete
             </Button>
-          </NavLink>
-
-          {/* <Button
-            disabled={false}
-            variant="outlined"
-            size="small"
-            onClick={() => setModal('deleteImage')}
-            aria-label="deleteImage"
-            className={styles['toolbar-btn']}
-          >
-            Delete
-          </Button> */}
+          )}
         </Stack>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div className={styles['content-row']}>
+        <div className={` ${styles['nav']} `}>
           <NavImages />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            flex: 1,
-            overflow: 'auto',
-          }}
-        >
-          {renderTabBar(getTabBarButtons(), rightButtons)}
-          <div className={styles['container']}>
-            <PodsCodeMirror
-              editValue={
-                imageTab === 'edit' ? JSON.stringify(sharedData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (imageTab === 'edit' && objId !== undefined) ||
-                (imageRootTab === 'createImage' && objId === undefined)
-              }
-              //   <ImageWizardEdit
-              //   sharedData={sharedData}
-              //   setSharedData={setSharedData}
-              // />
-
-              editPanel={
-                imageTab === 'edit' && objId !== undefined ? (
-                  <div />
-                ) : (
-                  <ImageWizard
-                    sharedData={sharedData}
-                    setSharedData={setSharedData}
-                  />
-                )
-              }
-            />
+        <div className={styles['right-pane']}>
+          <div className={styles['work-toolbar']}>
+            {renderTabBar(getTabBarButtons(), rightButtons)}
+          </div>
+          <div className={styles['work-content']}>
+            <div className={styles['container']}>
+              {imageTab === 'edit' && objId !== undefined ? (
+                <ImageWizardEdit key={objId} image={pod} />
+              ) : imageRootTab === 'createImage' && objId === undefined ? (
+                <ImageWizard
+                  sharedData={sharedData}
+                  setSharedData={setSharedData}
+                />
+              ) : (
+                <PodsCodeMirror
+                  editValue=""
+                  value={codeMirrorValue?.toString() ?? ''}
+                  isVisible={true}
+                  isEditorVisible={false}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div>{renderTooltipModal()}</div>
-        {/* {modal === 'deleteImage' && <DeleteImageModal toggle={toggle} />} */}
+        {modal === 'deleteImage' && <DeleteImageModal toggle={toggle} />}
       </div>
     </div>
   );

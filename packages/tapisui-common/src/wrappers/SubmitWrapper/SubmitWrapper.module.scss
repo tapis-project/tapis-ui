@@ -2,13 +2,16 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  * {
-    margin-right: 0.5em;
+  flex-wrap: wrap;
+  gap: 0.5em;
+
+  > :first-child {
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 }
 
 .loading-spinner {
-  margin-left: 1em;
   width: inherit;
 }
 

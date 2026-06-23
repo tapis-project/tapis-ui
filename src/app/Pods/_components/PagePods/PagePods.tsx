@@ -12,8 +12,27 @@ import {
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDark, vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
+import { EditorView } from '@codemirror/view';
 import { decode } from 'base-64';
-import { Stack, Button, Tooltip } from '@mui/material';
+import {
+  Stack,
+  Button,
+  Tooltip,
+  Checkbox,
+  FormControlLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Box,
+  IconButton,
+  Tab,
+  Tabs as MuiTabs,
+  Paper,
+  Chip,
+} from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import {
   CopyButton,
   TooltipModal,
@@ -29,7 +48,6 @@ import { SectionMessage } from '@tapis/tapisui-common';
 import {
   ClickAwayListener,
   Grow,
-  Paper,
   Popper,
   MenuItem,
   MenuList,
@@ -55,7 +73,12 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     setDetailsDropdownOpen,
     setLogsDropdownOpen,
     templateNavExpandedItems,
+    derivedResolveSecrets,
   } = useAppSelector((state) => state.pods);
+
+  // State for config content modal
+  const [configModalOpen, setConfigModalOpen] = useState(false);
+  const [activeConfigTab, setActiveConfigTab] = useState(0);
   const history = useHistory();
 
   // Add missing refs for dropdown anchors
@@ -63,7 +86,7 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
   const logsAnchorRef = React.useRef<HTMLDivElement>(null);
 
   const { data, isLoading, isFetching, error, invalidate } = Hooks.useGetPod(
-    { podId: objId },
+    { podId: objId ?? '' },
     { enabled: !!objId }
   );
   const {
@@ -87,13 +110,33 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     error: errorPerms,
     invalidate: invalidatePerms,
   } = Hooks.useGetPodPermissions({ podId: objId }, { enabled: !!objId });
+  const { deletePod: deletePodPermission, isLoading: isDeletingPodPermission } =
+    Hooks.useDeletePodPermission();
   const {
     data: dataDerived,
     isLoading: isLoadingDerived,
     isFetching: isFetchingDerived,
     error: errorDerived,
     invalidate: invalidateDerived,
-  } = Hooks.useGetPodDerived({ podId: objId }, { enabled: !!objId });
+  } = Hooks.useGetPodDerived(
+    {
+      podId: objId ?? '',
+      resolveSecrets: derivedResolveSecrets,
+      includeConfigs: false,
+    },
+    { enabled: !!objId }
+  );
+
+  // Separate call for config contents (used in View Configs modal)
+  const { data: dataDerivedConfigs, isFetching: isFetchingDerivedConfigs } =
+    Hooks.useGetPodDerived(
+      {
+        podId: objId ?? '',
+        resolveSecrets: derivedResolveSecrets,
+        includeConfigs: true,
+      },
+      { enabled: !!objId && configModalOpen }
+    );
 
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
@@ -123,7 +166,62 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     setModal(undefined);
   };
 
+  // Handle delete permission for a single user
+  const handleDeletePodPermission = (user: string) => {
+    if (!objId) return;
+    deletePodPermission(
+      { podId: objId, user },
+      {
+        onSuccess: () => {
+          invalidatePerms();
+        },
+      }
+    );
+  };
+
   const loadingText = PodsLoadingText();
+
+  // Helper function to extract config_content entries from volume_mounts
+  const getConfigContents = (
+    data: any
+  ): Array<{
+    mountPath: string;
+    content: string;
+    permissions?: string;
+    updateMode?: string;
+  }> => {
+    if (!data?.volume_mounts) return [];
+
+    const configs: Array<{
+      mountPath: string;
+      content: string;
+      permissions?: string;
+      updateMode?: string;
+    }> = [];
+
+    Object.entries(data.volume_mounts).forEach(
+      ([mountPath, mount]: [string, any]) => {
+        if (mount?.config_content) {
+          configs.push({
+            mountPath,
+            content: mount.config_content
+              .replace(/\\n/g, '\n')
+              .replace(/\\t/g, '\t'),
+            permissions: mount.config_permissions,
+            updateMode: mount.config_update_mode,
+          });
+        }
+      }
+    );
+
+    return configs;
+  };
+
+  const podDerivedConfigs: Pods.PodResponseModel | undefined =
+    dataDerivedConfigs?.result;
+  const configContents = podDerivedConfigs
+    ? getConfigContents(podDerivedConfigs)
+    : [];
 
   const tooltipConfigs: {
     [key: string]: { tooltipTitle: string; tooltipText: string };
@@ -304,6 +402,7 @@ Select or create a pod to get started.`;
       size="small"
       color={podRootTab === 'dashboard' ? 'secondary' : 'primary'}
       onClick={() => dispatch(updateState({ podRootTab: 'dashboard' }))}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Dashboard
     </Button>,
@@ -314,6 +413,7 @@ Select or create a pod to get started.`;
         size="small"
         color={podRootTab === 'createPod' ? 'secondary' : 'primary'}
         onClick={() => dispatch(updateState({ podRootTab: 'createPod' }))}
+        sx={{ whiteSpace: 'nowrap' }}
       >
         Create Pod
       </Button>
@@ -340,28 +440,11 @@ Select or create a pod to get started.`;
           x
         </Button>
         <Button
-          onClick={() => {
-            dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'form' })
-            );
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+          color="secondary"
+          sx={{ minWidth: '80px', whiteSpace: 'nowrap' }}
+          variant="outlined"
         >
-          form
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(
-              updateState({ podRootTab: 'createPod', podEditTab: 'json' })
-            );
-          }}
-          color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
-          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
-        >
-          json
+          Create Pod
         </Button>
       </ButtonGroup>
     ),
@@ -372,6 +455,7 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       onClick={() => setModal('tooltip')}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Help
     </Button>,
@@ -381,7 +465,7 @@ Select or create a pod to get started.`;
   const detailsLeftButtons = [
     <LoadingButton
       key="refresh"
-      sx={{ minWidth: '10px' }}
+      sx={{ minWidth: '10px', whiteSpace: 'nowrap' }}
       loading={isFetching || isFetchingLogs || isFetchingSecrets}
       variant="outlined"
       color="primary"
@@ -425,7 +509,7 @@ Select or create a pod to get started.`;
         onClick={() => {
           dispatch(updateState({ podTab: 'edit' }));
         }}
-        sx={{ minWidth: '60px', height: '32px' }}
+        sx={{ minWidth: '60px', height: '32px', whiteSpace: 'nowrap' }}
       >
         Edit
       </Button>
@@ -452,24 +536,11 @@ Select or create a pod to get started.`;
           x
         </Button>
         <Button
-          onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'form' }));
-          }}
-          color={podEditTab === 'form' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
-          variant={podEditTab === 'form' ? 'outlined' : 'outlined'}
+          color="secondary"
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
+          variant="outlined"
         >
-          form
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(updateState({ podTab: 'edit', podEditTab: 'json' }));
-          }}
-          color={podEditTab === 'json' ? 'secondary' : 'primary'}
-          sx={{ minWidth: '60px' }}
-          variant={podEditTab === 'json' ? 'outlined' : 'outlined'}
-        >
-          json
+          Edit
         </Button>
       </ButtonGroup>
     ),
@@ -477,7 +548,7 @@ Select or create a pod to get started.`;
     <React.Fragment key="details-split">
       <ButtonGroup variant="outlined" size="small" ref={detailsAnchorRef}>
         <LoadingButton
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant="outlined"
           color={
             podTab === 'edit' || podTab === 'derived' || podTab === 'details'
@@ -638,7 +709,7 @@ Select or create a pod to get started.`;
     <React.Fragment key="logs-split">
       <ButtonGroup variant="outlined" size="small" ref={logsAnchorRef}>
         <LoadingButton
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant="outlined"
           color={
             (podTab === 'logs' || podTab === 'actionlogs') &&
@@ -759,13 +830,14 @@ Select or create a pod to get started.`;
         invalidate();
         dispatch(updateState({ podTab: 'secrets' }));
       }}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Secrets
     </Button>,
     <React.Fragment key="perms-split">
       <ButtonGroup variant="outlined" size="small">
         <LoadingButton
-          sx={{ minWidth: '60px' }}
+          sx={{ minWidth: '60px', whiteSpace: 'nowrap' }}
           variant="outlined"
           color={podTab === 'perms' ? 'secondary' : 'primary'}
           onClick={() => {
@@ -793,6 +865,42 @@ Select or create a pod to get started.`;
         )}
       </ButtonGroup>
     </React.Fragment>,
+    // Derived options - only show when derived tab is selected
+    podDetailTab === 'derived' &&
+      (podTab === 'details' || podTab === 'edit') && (
+        <React.Fragment key="derived-options">
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={derivedResolveSecrets ?? false}
+                onChange={(e) => {
+                  dispatch(
+                    updateState({ derivedResolveSecrets: e.target.checked })
+                  );
+                  invalidateDerived();
+                }}
+                sx={{ py: 0 }}
+              />
+            }
+            label="Resolve Secrets"
+            sx={{
+              ml: 1,
+              height: '32px',
+              '& .MuiFormControlLabel-label': { fontSize: '0.875rem' },
+            }}
+          />
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setConfigModalOpen(true)}
+            sx={{ ml: 1, height: '32px', whiteSpace: 'nowrap' }}
+          >
+            View Configs
+            {configContents.length > 0 ? ` (${configContents.length})` : ''}
+          </Button>
+        </React.Fragment>
+      ),
   ];
 
   const detailsRightButtons = [
@@ -820,6 +928,7 @@ Select or create a pod to get started.`;
             href={networkingUrl ? `https://${networkingUrl}` : undefined}
             target="_blank"
             rel="noopener noreferrer"
+            sx={{ whiteSpace: 'nowrap' }}
           >
             Link
           </Button>
@@ -841,6 +950,7 @@ Select or create a pod to get started.`;
         href={networkingUrl ? `https://${networkingUrl}` : undefined}
         target="_blank"
         rel="noopener noreferrer"
+        sx={{ whiteSpace: 'nowrap' }}
       >
         Link
       </Button>
@@ -850,6 +960,7 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       onClick={() => setModal('tooltip')}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Help
     </Button>,
@@ -858,6 +969,7 @@ Select or create a pod to get started.`;
       variant="outlined"
       size="small"
       onClick={() => navigator.clipboard.writeText(getCodeMirrorValue() ?? '')}
+      sx={{ whiteSpace: 'nowrap' }}
     >
       Copy
     </Button>,
@@ -875,12 +987,24 @@ Select or create a pod to get started.`;
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          flexWrap: 'nowrap',
+          flexShrink: 0,
         }}
       >
-        <Stack spacing={2} direction="row">
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'nowrap' }}
+        >
           {leftButtons.map((btn, idx) => btn)}
         </Stack>
-        <Stack spacing={2} direction="row">
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'nowrap', ml: 2 }}
+        >
           {rightButtons.map((btn, idx) => btn)}
         </Stack>
       </div>
@@ -888,7 +1012,7 @@ Select or create a pod to get started.`;
   };
 
   return (
-    <div>
+    <div className={styles['page-root']}>
       <div
         style={{
           paddingTop: '.4rem',
@@ -905,45 +1029,259 @@ Select or create a pod to get started.`;
         <PodsNavigation from="pods" id={objId} />
         <PodToolbar />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', overflow: 'auto' }}>
-        <div style={{}} className={` ${styles['nav']} `}>
+      <div className={styles['content-row']}>
+        <div style={{ flexShrink: 0 }} className={` ${styles['nav']} `}>
           <NavPods />
         </div>
-        <div
-          style={{
-            margin: '1rem',
-            flex: 1,
-            overflow: 'hidden',
-          }}
-        >
-          {objId === undefined
-            ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
-            : renderTabBar(detailsLeftButtons, detailsRightButtons)}
-          <div className={styles['container']}>
-            <PodsCodeMirror
-              editValue={
-                podTab === 'edit' ? JSON.stringify(createPodData, null, 2) : ''
-              }
-              value={codeMirrorValue?.toString() ?? ''}
-              isVisible={true}
-              isEditorVisible={
-                (podTab === 'edit' && objId !== undefined) ||
-                (podRootTab === 'createPod' && objId === undefined)
-              }
-              editPanel={
-                podTab === 'edit' && objId !== undefined ? (
-                  <PodWizardEdit pod={pod} />
-                ) : (
-                  <PodWizard />
-                )
-              }
-              //scrollToBottom should be true if podTab == 'log' or 'actionlogs'
-              scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
-            />
+        <div className={styles['right-pane']} style={{ minWidth: 352 }}>
+          <div className={styles['work-toolbar']}>
+            {objId === undefined
+              ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
+              : renderTabBar(detailsLeftButtons, detailsRightButtons)}
+          </div>
+          <div className={styles['work-content']}>
+            <div className={styles['container']}>
+              {/* Permissions chips when viewing perms */}
+              {podTab === 'perms' && objId !== undefined && (
+                <Box sx={{ px: 1, py: 1, mb: 1 }}>
+                  {isFetchingPerms ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Loading permissions...
+                    </Typography>
+                  ) : errorPerms ? (
+                    <Typography variant="body2" color="error">
+                      Error loading permissions
+                    </Typography>
+                  ) : podPerms && typeof podPerms === 'object' ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {(() => {
+                        const permsData = podPerms.permissions ?? podPerms;
+                        const entries: [string, string][] = Array.isArray(
+                          permsData
+                        )
+                          ? permsData.map((entry: string) => {
+                              const parts = entry.split(':');
+                              return [parts[0], parts.slice(1).join(':')] as [
+                                string,
+                                string
+                              ];
+                            })
+                          : Object.entries(permsData);
+                        if (entries.length === 0) {
+                          return (
+                            <Typography variant="body2" color="text.secondary">
+                              No permissions set
+                            </Typography>
+                          );
+                        }
+                        return entries.map(([user, level]) => (
+                          <Chip
+                            key={user}
+                            label={`${user}:${level}`}
+                            size="small"
+                            variant="outlined"
+                            onDelete={() => handleDeletePodPermission(user)}
+                            disabled={isDeletingPodPermission}
+                            sx={{
+                              fontFamily: 'monospace',
+                              fontSize: '0.8rem',
+                              borderRadius: 1,
+                              ...(level === 'ADMIN' || level === 'APPROVEDADMIN'
+                                ? {
+                                    borderColor: '#9c27b0',
+                                    color: '#9c27b0',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9c27b0',
+                                    },
+                                  }
+                                : level === 'USER'
+                                ? {
+                                    borderColor: '#9e9e9e',
+                                    color: '#9e9e9e',
+                                    '& .MuiChip-deleteIcon': {
+                                      color: '#9e9e9e',
+                                    },
+                                  }
+                                : {}),
+                            }}
+                          />
+                        ));
+                      })()}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No permissions data available
+                    </Typography>
+                  )}
+                </Box>
+              )}
+              {podTab === 'edit' && objId !== undefined ? (
+                <PodWizardEdit key={objId} pod={pod} />
+              ) : podRootTab === 'createPod' && objId === undefined ? (
+                <PodWizard />
+              ) : (
+                <PodsCodeMirror
+                  editValue=""
+                  value={codeMirrorValue?.toString() ?? ''}
+                  isVisible={true}
+                  isEditorVisible={false}
+                  scrollToBottom={podTab === 'logs' || podTab === 'actionlogs'}
+                />
+              )}
+            </div>
           </div>
           <div>{renderTooltipModal()}</div>
           {/* modals */}
           {modal === 'podPermissions' && <PodPermissionModal toggle={toggle} />}
+          {/* Config Content Modal */}
+          <Dialog
+            open={configModalOpen}
+            onClose={() => setConfigModalOpen(false)}
+            maxWidth={false}
+            PaperProps={{
+              sx: {
+                width: '80vw',
+                height: '80vh',
+                maxWidth: '80vw',
+                maxHeight: '80vh',
+              },
+            }}
+          >
+            <DialogTitle
+              sx={{
+                m: 0,
+                p: 0,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  p: 2,
+                  pb: 1,
+                }}
+              >
+                <span>Config Contents</span>
+                <IconButton
+                  aria-label="close"
+                  onClick={() => setConfigModalOpen(false)}
+                  sx={{ color: (theme) => theme.palette.grey[500] }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              {configContents.length > 0 && (
+                <MuiTabs
+                  value={activeConfigTab}
+                  onChange={(_, newValue) => setActiveConfigTab(newValue)}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
+                >
+                  {configContents.map((config, index) => (
+                    <Tab
+                      key={index}
+                      label={config.mountPath}
+                      sx={{ textTransform: 'none', minWidth: 'auto' }}
+                    />
+                  ))}
+                </MuiTabs>
+              )}
+            </DialogTitle>
+            <DialogContent
+              sx={{ p: 0, display: 'flex', flexDirection: 'column' }}
+            >
+              {configContents.length > 0 && configContents[activeConfigTab] && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                    p: 2,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                  >
+                    {configContents[activeConfigTab].mountPath}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      mb: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {configContents[activeConfigTab].permissions &&
+                        `Permissions: ${configContents[activeConfigTab].permissions}`}
+                      {configContents[activeConfigTab].permissions &&
+                        configContents[activeConfigTab].updateMode &&
+                        ' | '}
+                      {configContents[activeConfigTab].updateMode &&
+                        `Update Mode: ${configContents[activeConfigTab].updateMode}`}
+                    </Typography>
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        navigator.clipboard.writeText(
+                          configContents[activeConfigTab].content
+                        )
+                      }
+                    >
+                      Copy
+                    </Button>
+                  </Box>
+                  <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                    <CodeMirror
+                      value={configContents[activeConfigTab].content}
+                      editable={false}
+                      readOnly={true}
+                      extensions={[json(), EditorView.lineWrapping]}
+                      height="100%"
+                      theme={vscodeDarkInit({
+                        settings: {
+                          caret: '#c6c6c6',
+                          fontFamily: 'monospace',
+                        },
+                      })}
+                      style={{
+                        height: '100%',
+                        fontSize: 12,
+                        fontFamily:
+                          'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                      }}
+                    />
+                  </Box>
+                </Box>
+              )}
+              {configContents.length === 0 && (
+                <Box sx={{ p: 2 }}>
+                  <Typography color="text.secondary">
+                    No config contents found.
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConfigModalOpen(false)}>Close</Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     </div>

@@ -74,7 +74,7 @@ const Models: React.FC = () => {
           }
           const response = await API.Models.Platforms.listModelsByPlatform(
             platformKey,
-            mlHubBasePath + '/mlhub',
+            mlHubBasePath,
             accessToken.access_token
           );
           return { ...response, platformName: platform.name };
@@ -198,10 +198,14 @@ const Models: React.FC = () => {
     history.push(`${path}/platform/${platform}`);
   };
 
+  const handleViewNativeModels = () => {
+    history.push(`${path}/native`);
+  };
+
   return (
     <div className={styles['models-container']}>
       <div className={styles['page-header']}>
-        <h2>Models</h2>
+        <h2>External Models</h2>
         <p className="text-muted">
           Browse and search models from all platforms
         </p>

@@ -1,13 +1,21 @@
 .cards {
+  --dashboard-card-width: 24rem;
+  --dashboard-card-gap: 1em;
   display: flex;
   flex-wrap: wrap;
   padding: 16px;
+  gap: var(--dashboard-card-gap);
 }
 
 .card {
-  width: 25em;
-  margin-right: 1em;
+  width: var(--dashboard-card-width);
   margin-bottom: 1em;
+}
+
+.welcome-card {
+  width: calc(
+    (var(--dashboard-card-width) * 3) + (var(--dashboard-card-gap) * 2)
+  );
 }
 
 .card-header {

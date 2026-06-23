@@ -16,6 +16,7 @@ const useDetails = (
     () => API.details(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
+      ...options,
     }
   );
   return result;

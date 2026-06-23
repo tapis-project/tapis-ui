@@ -18,6 +18,7 @@ const useListTemplateTags = (
       API.listTemplateTags(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
+      retry: false, // Don't retry on error - show error immediately
       ...options,
     }
   );

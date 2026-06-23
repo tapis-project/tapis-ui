@@ -1,4 +1,5 @@
 export { default as useList } from './useList';
+export { default as useDiscoverModels } from './useDiscoverModels';
 export { default as useDetails } from './useDetails';
 export { default as useDownloadLinks } from './useListDownloadLinks';
 export { default as useListByAuthor } from './useListByAuthor';

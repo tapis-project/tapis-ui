@@ -23,7 +23,7 @@ const useListModelsByPlatform = (
 
       const response = await API.Models.Platforms.listModelsByPlatform(
         params.platform,
-        mlHubBasePath + '/mlhub',
+        mlHubBasePath,
         accessToken.access_token
       );
 

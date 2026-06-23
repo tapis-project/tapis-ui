@@ -122,6 +122,7 @@ const JSONEditor = <T,>({
           display: 'flex',
           flexDirection: 'row',
           fontFamily: 'monospace',
+          width: '100%',
         }}
       >
         <CodeMirror
@@ -150,7 +151,8 @@ const JSONEditor = <T,>({
           }}
           color="black"
           style={{
-            overflow: 'auto',
+            width: '100%',
+            overflow: 'visible',
             whiteSpace: 'pre',
             fontSize: 16,
             lineHeight: 1.5,

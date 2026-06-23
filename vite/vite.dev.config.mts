@@ -22,6 +22,21 @@ export default defineConfig({
   css: {
     preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
   },
+  resolve: {
+    dedupe: [
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codemirror/language',
+      '@codemirror/lint',
+      '@codemirror/autocomplete',
+      '@codemirror/commands',
+      '@codemirror/search',
+      '@codemirror/lang-json',
+      '@codemirror/lang-python',
+      'codemirror',
+      '@uiw/react-codemirror',
+    ],
+  },
   optimizeDeps: {
     include: [
       '@emotion/styled',
@@ -87,7 +102,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api/rag': {
-        target: 'https://rag.pods.tacc.tapis.io',
+        target: 'https://tapisagent.pods.tacc.tapis.io',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/rag/, ''),
         secure: true,

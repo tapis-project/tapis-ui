@@ -8,7 +8,7 @@ import store from '@redux/store';
 
 const Layout: React.FC = () => {
   const body = (
-    <LayoutBody>
+    <LayoutBody constrain>
       <Provider store={store}>
         <Router />
       </Provider>

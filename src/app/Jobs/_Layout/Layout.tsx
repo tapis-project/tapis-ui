@@ -5,26 +5,24 @@ import {
   PageLayout,
   LayoutBody,
   LayoutNavWrapper,
-  SectionHeader,
+  LayoutHeader,
 } from '@tapis/tapisui-common';
 import { Link } from 'react-router-dom';
-import styles from './Layout.module.scss';
 import { JobsHelp } from 'app/_components/Help';
+import { CancelledJobsProvider } from '../_components/JobsLayoutToolbar/CancelledJobsContext';
 
 const Layout: React.FC = () => {
   const header = (
-    <SectionHeader>
-      <span className={`${styles['Jobs']}`}>
-        <span>
-          <Link to="/jobs" style={{ color: '#444444' }}>
-            Jobs
-          </Link>
-        </span>
-        <span className={`${styles['Jobs-Help']}`}>
+    <LayoutHeader>
+      <span>
+        <Link to="/jobs" style={{ color: '#444444', textDecoration: 'none' }}>
+          Jobs
+        </Link>
+        <span style={{ marginLeft: '16px' }}>
           <JobsHelp />
         </span>
       </span>
-    </SectionHeader>
+    </LayoutHeader>
   );
 
   const sidebar = (
@@ -46,7 +44,11 @@ const Layout: React.FC = () => {
     </LayoutBody>
   );
 
-  return <PageLayout top={header} left={sidebar} right={body} />;
+  return (
+    <CancelledJobsProvider>
+      <PageLayout top={header} left={sidebar} right={body} />
+    </CancelledJobsProvider>
+  );
 };
 
 export default Layout;

@@ -33,6 +33,7 @@ export type Service = {
   icon?: string;
   iconName?: string;
   component?: Component;
+  route?: string;
 };
 
 type ServiceCustomizations = {

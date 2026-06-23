@@ -24,7 +24,7 @@ const useIngestModelByPlatform = () => {
             modelId: vars.modelId,
             ingestArtifactRequest: vars.ingestArtifactRequest || defaultBody,
           },
-          mlHubBasePath + '/mlhub',
+          mlHubBasePath,
           accessToken?.access_token || ''
         )
     );

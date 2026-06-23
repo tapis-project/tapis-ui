@@ -10,6 +10,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useExtension } from 'extensions';
 import { Implicit } from '@tapis/tapisui-extensions-core/dist/oauth2';
+import { isLocalhost } from 'utils/resolveBasePath';
 import styles from './Login.module.scss';
 
 const Login: React.FC = () => {
@@ -18,9 +19,6 @@ const Login: React.FC = () => {
     useTapisConfig();
   const navigate = useHistory();
   const { extension } = useExtension();
-  const [activeAuthMethod, setActiveAuthMethod] = useState<
-    undefined | 'implicit' | 'password'
-  >(undefined);
   const [implicitError, setImplicitError] = useState<string | undefined>(
     undefined
   );
@@ -36,7 +34,7 @@ const Login: React.FC = () => {
   // 4. default password client or error message
   let implicitAuthURL: string | undefined = undefined;
   let implicitIframe: boolean = false;
-  let passwordAuth = undefined;
+  let passwordAuth: boolean | undefined = undefined;
   if (extension) {
     let implicitAuth = extension.getAuthByType('implicit') as Implicit;
     if (
@@ -66,9 +64,14 @@ const Login: React.FC = () => {
           implicitAuth.redirectURI
         )}&use_iframe_redirect=${String(implicitIframe)}`;
     }
-    // TODO - Get localhost working with http://localhost:3000/#/oauth2
     passwordAuth =
       (extension.getAuthByType('password') as boolean | undefined) || false;
+
+    // OIDC redirect URIs in extensions point to the production hostname and
+    // cannot complete on localhost.
+    if (isLocalhost() && passwordAuth) {
+      implicitAuthURL = undefined;
+    }
   } else {
     // If no extension, use default implicit and password auth
     const defaultAuthURL = basePath
@@ -84,17 +87,24 @@ const Login: React.FC = () => {
       `?client_id=${defaultClientId}&response_type=${defaultResponeType}&redirect_uri=${encodeURIComponent(
         defaultRedirectURI
       )}&use_iframe_redirect=${String(implicitIframe)}`;
-    console.debug(
-      `Implicit auth not-extension. implicitAuthURL: ${implicitAuthURL}`
-    );
 
-    // For development add password Auth as implicit hasn't been implemented for localhost yet.
-    // TODO: remove implicitAuth check. Shouldn't show password auth ever, but clients not bootstrapped yet.
-    passwordAuth =
-      location.href.startsWith('http://localhost:3000') || !implicitAuthURL
-        ? true
-        : true; // always password auth for now
+    passwordAuth = true;
+
+    // redirect_uri is built from basePath (the remote tenant) and cannot return to localhost.
+    if (isLocalhost()) {
+      implicitAuthURL = undefined;
+    }
   }
+
+  // Compute initial auth method synchronously so first render doesn't flash buttons
+  const [activeAuthMethod, setActiveAuthMethod] = useState<
+    undefined | 'implicit' | 'password'
+  >(() => {
+    if (implicitAuthURL && passwordAuth) return undefined; // show choice
+    if (implicitAuthURL) return 'implicit';
+    if (passwordAuth) return 'password';
+    return undefined;
+  });
 
   const onSubmit = ({
     username,
@@ -121,6 +131,11 @@ const Login: React.FC = () => {
     } else if (implicitAuthURL) {
       // Only implicit auth available
       setActiveAuthMethod('implicit');
+      // If redirect-based (not iframe), skip the Login page entirely
+      if (!implicitIframe) {
+        window.location.replace(implicitAuthURL);
+        return;
+      }
     } else if (passwordAuth) {
       // Only password auth available
       setActiveAuthMethod('password');
@@ -141,18 +156,21 @@ const Login: React.FC = () => {
     ) {
       setImplicitError(undefined);
       setImplicitReady(false);
-      fetch(implicitAuthURL, { method: 'GET' })
+      // Use redirect: 'manual' so fetch stops at the initial 302 rather than
+      // following the cross-origin redirect to the institution login page.
+      // Chromium (unlike Firefox) enforces CORS on redirect chains and throws
+      // a network error when the redirect target lacks CORS headers, which
+      // permanently keeps implicitReady false. A redirect (opaqueredirect)
+      // is sufficient proof the OAuth2 client exists.
+      fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
         .then((response) => {
-          if (activeAuthMethod === 'implicit' && implicitIframe) {
-            // Special case for iframe: 400 means error
-            if (response.status === 400) {
-              setImplicitError('There was an error getting auth context (400)');
-              setImplicitReady(false);
-              return;
-            }
-          }
-          if (response.status === 200) {
+          // opaqueredirect (status 0) = 302 redirect → client exists
+          if (response.type === 'opaqueredirect' || response.status === 200) {
             setImplicitReady(true);
+          } else if (response.status === 400) {
+            // 400 means client mis-configuration on the server
+            setImplicitError('There was an error getting auth context (400)');
+            setImplicitReady(false);
           } else {
             console.debug(
               `Login: implicitAuthURL: ${implicitAuthURL}. Tenant probably doesn't have default client created? Talk to admin.`
@@ -180,7 +198,7 @@ const Login: React.FC = () => {
       if (implicitIframe) {
         // Attempt to fetch the implicit auth URL to check if it's valid
         // Possible client might not exist for tenant.
-        fetch(implicitAuthURL, { method: 'GET' })
+        fetch(implicitAuthURL, { method: 'GET', redirect: 'manual' })
           .then((response) => {
             if (response.status === 400) {
               setImplicitError('There was an error getting auth context (400)');
@@ -203,10 +221,15 @@ const Login: React.FC = () => {
           // You may want to check event.origin for security
           if (event.data && event.data.type === 'tapis-auth-success') {
             if (event.data.access_token && event.data.access_token !== 'None') {
+              const expiresIn = event.data.expires_in || 14400;
+              const expiresAt =
+                event.data.expires_at && event.data.expires_at !== 't'
+                  ? event.data.expires_at
+                  : new Date(Date.now() + expiresIn * 1000).toISOString();
               setAccessToken({
                 access_token: event.data.access_token,
-                expires_at: event.data.expires_at || 't',
-                expires_in: event.data.expires_in || 14400,
+                expires_at: expiresAt,
+                expires_in: expiresIn,
               });
               // Redirect to home page or wherever appropriate
               navigate.push(`/`);
@@ -226,6 +249,16 @@ const Login: React.FC = () => {
       }
     }
   }, [activeAuthMethod, implicitIframe, implicitAuthURL]);
+
+  // If implicit-only redirect (not iframe), show a simple redirecting message
+  // while the browser navigates to the OAuth2 provider
+  if (activeAuthMethod === 'implicit' && !implicitIframe && !passwordAuth) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <p>Redirecting to your login page...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -267,7 +300,7 @@ const Login: React.FC = () => {
       )}
       {(activeAuthMethod === undefined || activeAuthMethod === 'implicit') && (
         <div className={styles['buttons']}>
-          {passwordAuth && (
+          {/* {passwordAuth && (
             <Button
               onClick={() => {
                 setActiveAuthMethod('password');
@@ -275,20 +308,20 @@ const Login: React.FC = () => {
             >
               Log in with username and password
             </Button>
-          )}
+          )} */}
           {implicitAuthURL !== undefined && (
             <>
               <Button
                 // Only disable when using default implicit auth as client for tenant might not exist.
                 // if extension.getAuthByType('implicit') then we assume the config is correct.
-                disabled={extension ? false : !!implicitError || !implicitReady}
+                // TODO uncomment disabled={extension ? false : !!implicitError || !implicitReady}
                 onClick={() => {
                   setActiveAuthMethod('implicit');
                 }}
                 //change to loading until implicitReady is true
                 isLoading={!implicitReady}
               >
-                Log in with your institution
+                Log in
               </Button>
               {/* {implicitError && (
                 <div style={{ color: 'red', marginTop: '0.5em' }}>

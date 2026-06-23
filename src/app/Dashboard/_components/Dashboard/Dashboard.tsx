@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useCallback } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { SectionHeader, LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
@@ -67,8 +67,30 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-  const { accessToken, claims, basePath } = useTapisConfig();
-  const { extension } = useExtension();
+  const { accessToken, claims, basePath, setAccessToken } = useTapisConfig();
+  const navigate = useHistory();
+  // TODO All tenant-specific functionality must be refactored into their respective
+  // extenstions
+  const { extension, extensionName } = useExtension();
+  const isIcicle = extensionName === '@icicle/tapisui-extension';
+
+  // Hidden dev token input — revealed by long-pressing "TAPIS" for 3s
+  const isDevHost =
+    location.hostname === 'localhost' ||
+    location.hostname === 'icicleai.tapis.io' ||
+    location.hostname === 'public.tapis.io';
+  const [showDevInput, setShowDevInput] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onTapisPointerDown = useCallback(() => {
+    if (!isDevHost) return;
+    longPressTimer.current = setTimeout(() => setShowDevInput((v) => !v), 3000);
+  }, [isDevHost]);
+  const onTapisPointerUp = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
@@ -108,9 +130,7 @@ const Dashboard: React.FC = () => {
           <>
             <Card
               className={`${styles.card} ${styles['welcome-card']} ${styles['card-wide']}`}
-              style={{
-                width: '51rem',
-              }}
+              style={{ width: '51rem' }}
             >
               <CardHeader>
                 <div className={styles['card-header']}>
@@ -220,23 +240,75 @@ const Dashboard: React.FC = () => {
             )}
           </>
         ) : (
-          <Card>
-            <CardHeader>
-              <div className={styles['card-header']}>
-                <div>
-                  <Icon name="user" className="dashboard__card-icon" />
+          <>
+            <Card>
+              <CardHeader style={{ cursor: 'default' }}>
+                <div className={styles['card-header']}>
+                  <div>
+                    <Icon name="user" className="dashboard__card-icon" />
+                  </div>
+                  <div>You are not logged in</div>
                 </div>
-                <div>You are not logged in</div>
-              </div>
-            </CardHeader>
-            <CardBody>
-              <CardTitle>Please log in to use TAPIS</CardTitle>
-            </CardBody>
-            <CardFooter className={styles['card-footer']}>
-              <Link to="/login">Proceed to login</Link>
-              <Icon name="push-right" />
-            </CardFooter>
-          </Card>
+              </CardHeader>
+              <CardBody>
+                <CardTitle>
+                  Please log in to use{' '}
+                  <span
+                    onPointerDown={onTapisPointerDown}
+                    onPointerUp={onTapisPointerUp}
+                    onPointerLeave={onTapisPointerUp}
+                    style={{ userSelect: 'none' }}
+                  >
+                    TAPIS
+                  </span>
+                </CardTitle>
+              </CardBody>
+              <CardFooter
+                className={styles['card-footer']}
+                onClick={() => navigate.push('/login')}
+                style={{ cursor: 'pointer', alignItems: 'center' }}
+              >
+                <Link to="/login" style={{ lineHeight: 1 }}>
+                  Proceed to login
+                </Link>
+                <span
+                  style={{ color: '#007bff', lineHeight: 1, display: 'flex' }}
+                >
+                  <Icon name="push-right" />
+                </span>
+              </CardFooter>
+            </Card>
+            {isDevHost && showDevInput && (
+              <input
+                type="text"
+                placeholder="Paste JWT access_token"
+                autoFocus
+                style={{
+                  width: '100%',
+                  fontFamily: 'monospace',
+                  fontSize: '0.7rem',
+                  padding: '4px',
+                  marginTop: '0.5rem',
+                  opacity: 0.6,
+                }}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter') {
+                    const jwt = (e.target as HTMLInputElement).value.trim();
+                    if (jwt) {
+                      setAccessToken({
+                        access_token: jwt,
+                        expires_at: new Date(
+                          Date.now() + 14400 * 1000
+                        ).toISOString(),
+                        expires_in: 14400,
+                      });
+                      navigate.push('/');
+                    }
+                  }
+                }}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

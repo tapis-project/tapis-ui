@@ -1,6 +1,12 @@
 // TACC Core Styles for icons: https://github.com/TACC/Core-Styles/blob/main/src/lib/_imports/components/cortal.icon.font.css
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useSyncExternalStore,
+} from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useQueryClient } from 'react-query';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem } from '@tapis/tapisui-common';
 import { useExtension } from 'extensions';
@@ -14,12 +20,12 @@ import {
   Visibility,
   ContentCopy,
   ChatBubbleOutline,
+  PersonOutline,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
   Menu,
   Collapse,
-  List,
   ListItemButton,
   ListItemText,
   ListItemIcon,
@@ -32,29 +38,28 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  TextField,
+  Tooltip,
 } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { EditorView } from 'codemirror';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import { Tenants as Hooks } from '@tapis/tapisui-hooks';
+import {
+  Tenants as Hooks,
+  Authenticator as AuthHooks,
+} from '@tapis/tapisui-hooks';
 import { Link, useHistory } from 'react-router-dom';
 
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import {
-  QueryWrapper,
-  PageLayout,
-  Breadcrumbs,
-  breadcrumbsFromPathname,
-} from '@tapis/tapisui-common';
+import { QueryWrapper } from '@tapis/tapisui-common';
 import { FloatingChatButton } from 'app/_components';
 import { ChatContext } from 'app/_context/chat';
+import {
+  getPodsAdminMode,
+  setPodsAdminMode,
+  subscribePodsAdminMode,
+} from 'utils/podsAdminMode';
 
 type SidebarItems = {
   [key: string]: any;
@@ -62,11 +67,17 @@ type SidebarItems = {
 
 const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
-  const { extension } = useExtension();
+  const isAuthenticated = Boolean(accessToken?.access_token);
+  const { extension, extensionName } = useExtension();
   const chatContextValue = useContext(ChatContext);
+  const queryClient = useQueryClient();
+  const podsAdminMode = useSyncExternalStore(
+    subscribePodsAdminMode,
+    getPodsAdminMode
+  );
+  const isIcicleExtension = extensionName === '@icicle/tapisui-extension';
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modal, setModal] = useState<string | undefined>(undefined);
   const [sectionOpenStates, setSectionOpenStates] = useState<{
     [key: string]: boolean;
@@ -74,11 +85,54 @@ const Sidebar: React.FC = () => {
   const [moreOpenStates, setMoreOpenStates] = useState<{
     [key: string]: boolean;
   }>({});
+  const [profileUsername, setProfileUsername] = useState('');
+  const [profileLookup, setProfileLookup] = useState('');
+  const [profileInitialized, setProfileInitialized] = useState(false);
+
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    error: profileError,
+  } = AuthHooks.useGetProfile(
+    { username: profileLookup },
+    { enabled: !!profileLookup }
+  );
+
+  // When the Profiles modal opens, initialize with the current user's username
+  useEffect(() => {
+    if (modal === 'profiles' && !profileInitialized && claims?.['sub']) {
+      const currentUser = (claims['sub'] as string).split('@')[0];
+      setProfileUsername(currentUser);
+      setProfileLookup(currentUser);
+      setProfileInitialized(true);
+    }
+    if (modal !== 'profiles') {
+      setProfileInitialized(false);
+    }
+  }, [modal, claims, profileInitialized]);
 
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;
   const history = useHistory();
+
+  const valueBlockStyle = {
+    display: 'inline-block',
+    width: 'fit-content',
+    maxWidth: '100%',
+    marginTop: '0rem',
+    marginBottom: '0rem',
+    padding: '0.65rem 0.8rem',
+    borderRadius: '8px',
+    backgroundColor: '#f5f7fa',
+    border: '1px solid #d7dee7',
+    fontFamily:
+      'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+    fontSize: '0.95rem',
+    lineHeight: 1.3,
+    color: '#1f2933',
+    wordBreak: 'break-word' as const,
+  };
 
   // Initialize section open states based on defaultOpen values
   useEffect(() => {
@@ -108,10 +162,17 @@ const Sidebar: React.FC = () => {
   const renderSidebarItem = (
     to: string,
     icon: string | undefined,
-    text: string
+    text: string,
+    accent?: { accentLeft?: boolean; accentLeftColor?: string }
   ) => {
     return (
-      <NavItem to={to} icon={icon} key={uuidv4()}>
+      <NavItem
+        to={to}
+        icon={icon}
+        key={uuidv4()}
+        accentLeft={accent?.accentLeft}
+        accentLeftColor={accent?.accentLeftColor}
+      >
         {expanded ? text : ''}
       </NavItem>
     );
@@ -124,7 +185,26 @@ const Sidebar: React.FC = () => {
     apps: renderSidebarItem('/apps', 'applications', 'Apps'),
     jobs: renderSidebarItem('/jobs', 'jobs', 'Jobs'),
     workflows: renderSidebarItem('/workflows', 'publications', 'Workflows'),
-    pods: renderSidebarItem('/pods', 'visualization', 'Pods'),
+    pods: (
+      <NavItem
+        to="/pods"
+        icon="visualization"
+        key="pods-nav"
+        accentLeft={podsAdminMode}
+        accentLeftColor="#F69723"
+        onLongPress={() => {
+          setPodsAdminMode(!podsAdminMode);
+          queryClient.invalidateQueries({
+            predicate: (q) =>
+              typeof q.queryKey[0] === 'string' &&
+              q.queryKey[0].startsWith('pods/'),
+          });
+        }}
+        longPressMs={1200}
+      >
+        {expanded ? 'Pods' : ''}
+      </NavItem>
+    ),
     'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
   };
@@ -227,10 +307,7 @@ const Sidebar: React.FC = () => {
     );
   };
   return (
-    <div
-      className={styles.root}
-      style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}
-    >
+    <div className={styles.root} style={{ position: 'relative' }}>
       <div
         style={{
           display: 'flex',
@@ -239,6 +316,7 @@ const Sidebar: React.FC = () => {
           alignItems: 'center', // vertical
           marginTop: '.6rem',
           marginBottom: '.6rem',
+          flexShrink: 0,
           // marginRight: '0.2rem',
         }}
       >
@@ -300,7 +378,14 @@ const Sidebar: React.FC = () => {
       />
 
       <Navbar>
-        {renderSidebarItem('/', 'dashboard', 'Dashboard')}
+        {isIcicleExtension &&
+          accessToken &&
+          renderSidebarItem('/home', 'globe', 'Portal Home')}
+        {renderSidebarItem(
+          extensionName === '@icicle/tapisui-extension' ? '/dashboard' : '/',
+          'dashboard',
+          'Dashboard'
+        )}
         {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
         {accessToken && (
           <>
@@ -308,9 +393,12 @@ const Sidebar: React.FC = () => {
               // Beta sidebar with sections
               <>
                 {/* No Section items - always visible */}
-                {extension.betaSidebar.noSection?.mainServices?.map(
-                  (serviceId: string) => sidebarItems[serviceId]
-                )}
+                {extension.betaSidebar.noSection?.mainServices
+                  ?.filter(
+                    (serviceId: string) =>
+                      !(isIcicleExtension && serviceId === 'home')
+                  )
+                  .map((serviceId: string) => sidebarItems[serviceId])}
                 {extension.betaSidebar.noSection?.secondaryServices &&
                   extension.betaSidebar.noSection.secondaryServices.length >
                     0 && (
@@ -341,9 +429,12 @@ const Sidebar: React.FC = () => {
                         </ListItemButton>
                       </div>
                       <Collapse in={moreOpenStates['noSection']}>
-                        {extension.betaSidebar.noSection.secondaryServices.map(
-                          (serviceId: string) => sidebarItems[serviceId]
-                        )}
+                        {extension.betaSidebar.noSection.secondaryServices
+                          .filter(
+                            (serviceId: string) =>
+                              !(isIcicleExtension && serviceId === 'home')
+                          )
+                          .map((serviceId: string) => sidebarItems[serviceId])}
                       </Collapse>
                     </>
                   )}
@@ -366,18 +457,13 @@ const Sidebar: React.FC = () => {
                           pt: '8px',
                           pb: '8px',
                           fontWeight: 'bold',
+                          justifyContent: 'space-between',
                         }}
                       >
-                        {sectionOpenStates[section.name] ? (
-                          <ExpandLessRounded />
-                        ) : (
-                          <ExpandMoreRounded />
-                        )}
                         {expanded && (
                           <ListItemText
                             primary={section.name}
                             sx={{
-                              pl: '.5rem',
                               '& .MuiListItemText-primary': {
                                 fontWeight: 'bold',
                                 fontSize: '0.9rem',
@@ -385,13 +471,21 @@ const Sidebar: React.FC = () => {
                             }}
                           />
                         )}
+                        {sectionOpenStates[section.name] ? (
+                          <ExpandLessRounded />
+                        ) : (
+                          <ExpandMoreRounded />
+                        )}
                       </ListItemButton>
                     </div>
                     <Collapse in={sectionOpenStates[section.name]}>
                       {/* Main services in section */}
-                      {section.mainServices.map(
-                        (serviceId: string) => sidebarItems[serviceId]
-                      )}
+                      {section.mainServices
+                        .filter(
+                          (serviceId: string) =>
+                            !(isIcicleExtension && serviceId === 'home')
+                        )
+                        .map((serviceId: string) => sidebarItems[serviceId])}
 
                       {/* Secondary services in section */}
                       {section.secondaryServices &&
@@ -431,9 +525,14 @@ const Sidebar: React.FC = () => {
                               </ListItemButton>
                             </div>
                             <Collapse in={moreOpenStates[section.name]}>
-                              {section.secondaryServices.map(
-                                (serviceId: string) => sidebarItems[serviceId]
-                              )}
+                              {section.secondaryServices
+                                .filter(
+                                  (serviceId: string) =>
+                                    !(isIcicleExtension && serviceId === 'home')
+                                )
+                                .map(
+                                  (serviceId: string) => sidebarItems[serviceId]
+                                )}
                             </Collapse>
                           </>
                         )}
@@ -484,105 +583,154 @@ const Sidebar: React.FC = () => {
           </>
         )}
       </Navbar>
-      <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
-        <FloatingChatButton />
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>
+          <FloatingChatButton isAuthenticated={isAuthenticated} />
+        </div>
+        <Tooltip
+          title={
+            isAuthenticated ? 'Open Chatbot' : 'Please log in to use chatbot'
+          }
+          placement="right"
+        >
+          <span>
+            <Chip
+              variant="outlined"
+              disabled={!isAuthenticated}
+              style={{
+                borderRadius: '8px',
+              }}
+              label={
+                !expanded ? (
+                  <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      fontSize: 12,
+                      lineHeight: 1.2,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div>
+                      <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
+                    </div>
+                    {expanded && (
+                      <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
+                        Chatbot
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              onClick={() => chatContextValue?.toggleChat()}
+              sx={{
+                height: '2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '.6rem',
+                marginBottom: '.4rem',
+                color: '#707070',
+                '& .MuiChip-label': {
+                  display: 'flex',
+                  whiteSpace: 'normal',
+                },
+              }}
+            />
+          </span>
+        </Tooltip>
+        <Chip
+          variant="outlined"
+          style={{
+            borderRadius: '8px',
+          }}
+          label={
+            !expanded ? (
+              <SettingsRounded sx={{ width: 24, height: 24 }} />
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div>
+                  <SettingsRounded sx={{ width: 24, height: 24 }} />
+                </div>
+                {claims['tapis/username'] ? (
+                  <div
+                    style={{
+                      marginLeft: '.4rem',
+                      maxWidth: '9rem',
+                      overflow: 'hidden',
+                      fontSize: 12,
+                      lineHeight: 1.2,
+                    }}
+                    title={
+                      claims['tapis/username'] +
+                      '@' +
+                      claims['sub'].split('@')[1]
+                    }
+                  >
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {claims['tapis/username']}
+                    </div>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      @{claims['sub'].split('@')[1]}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      marginLeft: '.4rem',
+                      maxWidth: '9rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {'Logged Out'}
+                  </div>
+                )}
+              </div>
+            )
+          }
+          onClick={handleClick} // Move the click handler here to make the entire div clickable
+          sx={{
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '.6rem',
+            color: '#707070',
+            //minWidth: '0rem',
+            //width: '2rem',
+            '& .MuiChip-label': {
+              display: 'flex',
+              whiteSpace: 'normal',
+            },
+          }}
+        />
       </div>
-      <Chip
-        variant="outlined"
-        style={{
-          borderRadius: '8px',
-        }}
-        label={
-          !expanded ? (
-            <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                fontSize: 12,
-                lineHeight: 1.2,
-                overflow: 'hidden',
-              }}
-            >
-              <div>
-                <ChatBubbleOutline sx={{ width: 24, height: 24 }} />
-              </div>
-              {expanded && (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  Chatbot
-                </div>
-              )}
-            </div>
-          )
-        }
-        onClick={() => chatContextValue?.toggleChat()}
-        sx={{
-          height: '2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '.6rem',
-          marginBottom: '.4rem',
-          color: '#707070',
-          '& .MuiChip-label': {
-            display: 'flex',
-            whiteSpace: 'normal',
-          },
-        }}
-      />
-      <Chip
-        variant="outlined"
-        style={{
-          borderRadius: '8px',
-        }}
-        label={
-          !expanded ? (
-            <SettingsRounded sx={{ width: 24, height: 24 }} />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                fontSize: 12,
-                lineHeight: 1.2,
-                overflow: 'hidden',
-              }}
-            >
-              <div>
-                <SettingsRounded sx={{ width: 24, height: 24 }} />
-              </div>
-              {claims['tapis/username'] ? (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {claims['tapis/username']}
-                  <br />@{claims['sub'].split('@')[1]}
-                </div>
-              ) : (
-                <div style={{ marginLeft: '.4rem', maxWidth: '9rem' }}>
-                  {'Logged Out'}
-                </div>
-              )}
-            </div>
-          )
-        }
-        onClick={handleClick} // Move the click handler here to make the entire div clickable
-        sx={{
-          height: '2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '.6rem',
-          color: '#707070',
-          //minWidth: '0rem',
-          //width: '2rem',
-          '& .MuiChip-label': {
-            display: 'flex',
-            whiteSpace: 'normal',
-          },
-        }}
-      />
 
       <Menu
         anchorEl={anchorEl}
@@ -591,15 +739,16 @@ const Sidebar: React.FC = () => {
         onClose={handleClose}
         onClick={handleClose}
         PaperProps={{
-          style: {
-            maxHeight: 48 * 4.5,
-          },
           elevation: 0,
           sx: {
-            overflow: 'visible',
+            maxHeight: 'calc(100vh - 100px)',
+            overflow: 'auto',
             filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.52))',
             mt: 0.5,
             ml: 1.2,
+            '& .MuiMenuItem-root': {
+              minHeight: 'auto',
+            },
           },
         }}
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -622,6 +771,15 @@ const Sidebar: React.FC = () => {
             <ContentCopy fontSize="small" />
           </ListItemIcon>
           <ListItemText>Copy Access Token</ListItemText>
+        </MenuItem>
+        <MenuItem
+          disabled={!(claims && claims['sub'])}
+          onClick={() => setModal('profiles')}
+        >
+          <ListItemIcon>
+            <PersonOutline fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Profiles</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -747,12 +905,214 @@ const Sidebar: React.FC = () => {
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
           />
-          <Typography variant="h6">Current Domain: </Typography>
-          <Typography fontSize={'1.1rem'}>
+          <Typography variant="h6">Current Domain:</Typography>
+          <Typography component="div" sx={valueBlockStyle}>
             {basePath?.replace('https://', '').replace('http://', '')}
           </Typography>
           <Typography variant="h6">Token Life Remaining:</Typography>
-          <CountdownDisplay expirationTime={claims['exp']} />
+          <Typography component="div" sx={valueBlockStyle}>
+            <CountdownDisplay expirationTime={claims['exp']} />
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModal(undefined)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={modal === 'profiles'}
+        onClose={() => setModal(undefined)}
+        aria-labelledby="profiles-dialog-title"
+        PaperProps={{
+          style: { width: '32rem', maxWidth: '90%' },
+        }}
+      >
+        <DialogTitle id="profiles-dialog-title">User Profile</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Look up an OAuth2 profile by username. GET /v3/oauth2/profiles/
+            {'\u007B'}user{'\u007D'}
+          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center',
+              marginBottom: '16px',
+            }}
+          >
+            <TextField
+              size="small"
+              label="Username"
+              value={profileUsername}
+              onChange={(e) => setProfileUsername(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && profileUsername.trim()) {
+                  setProfileLookup(profileUsername.trim());
+                }
+              }}
+              sx={{ flex: 1 }}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => setProfileLookup(profileUsername.trim())}
+              disabled={!profileUsername.trim()}
+              loading={profileLoading}
+            >
+              Submit
+            </Button>
+          </div>
+          {profileError && (
+            <Typography color="error" variant="body2" sx={{ mb: 1 }}>
+              {profileError.message}
+            </Typography>
+          )}
+          {profileData?.result &&
+            (() => {
+              const p = profileData.result as any;
+              const fields: {
+                label: string;
+                value: string | number | null | undefined;
+              }[] = [
+                { label: 'Username', value: p.username },
+                {
+                  label: 'Name',
+                  value:
+                    p.name ||
+                    [p.given_name, p.last_name].filter(Boolean).join(' ') ||
+                    null,
+                },
+                { label: 'Given Name', value: p.given_name },
+                { label: 'Last Name', value: p.last_name },
+                { label: 'Email', value: p.email },
+                { label: 'UID', value: p.uid },
+                { label: 'Phone', value: p.phone },
+                { label: 'Mobile Phone', value: p.mobile_phone },
+                { label: 'Create Time', value: p.create_time },
+              ];
+
+              // Parse LDAP Distinguished Name into readable parts
+              const dnAbbreviations: Record<string, string> = {
+                cn: 'Common Name',
+                ou: 'Org Unit',
+                dc: 'Domain',
+                o: 'Organization',
+                uid: 'User ID',
+                l: 'Locality',
+                st: 'State',
+                c: 'Country',
+              };
+              const dnParts = p.dn
+                ? p.dn.split(',').map((part: string) => {
+                    const [key, ...rest] = part.trim().split('=');
+                    const k = key.toLowerCase();
+                    return {
+                      abbr: key,
+                      full: dnAbbreviations[k] || key,
+                      value: rest.join('='),
+                    };
+                  })
+                : [];
+              return (
+                <>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                      {fields.map(({ label, value }) => (
+                        <tr key={label}>
+                          <td
+                            style={{
+                              padding: '6px 12px 6px 0',
+                              fontWeight: 600,
+                              whiteSpace: 'nowrap',
+                              verticalAlign: 'top',
+                              color: '#555',
+                              borderBottom: '1px solid #eee',
+                            }}
+                          >
+                            {label}
+                          </td>
+                          <td
+                            style={{
+                              padding: '6px 0',
+                              wordBreak: 'break-all',
+                              borderBottom: '1px solid #eee',
+                            }}
+                          >
+                            {value ?? <span style={{ color: '#999' }}>—</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {dnParts.length > 0 && (
+                    <>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ mt: 2, mb: 0.5, color: '#555' }}
+                      >
+                        Distinguished Name (DN)
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ display: 'block', mb: 1, color: '#888' }}
+                      >
+                        {p.dn}
+                      </Typography>
+                      <table
+                        style={{ width: '100%', borderCollapse: 'collapse' }}
+                      >
+                        <tbody>
+                          {dnParts.map(
+                            (
+                              part: {
+                                abbr: string;
+                                full: string;
+                                value: string;
+                              },
+                              i: number
+                            ) => (
+                              <tr key={i}>
+                                <td
+                                  style={{
+                                    padding: '4px 10px 4px 0',
+                                    fontWeight: 600,
+                                    whiteSpace: 'nowrap',
+                                    color: '#555',
+                                    fontSize: '0.85rem',
+                                    borderBottom: '1px solid #f0f0f0',
+                                  }}
+                                >
+                                  {part.full}
+                                  <span
+                                    style={{
+                                      fontWeight: 400,
+                                      color: '#aaa',
+                                      marginLeft: 4,
+                                    }}
+                                  >
+                                    ({part.abbr})
+                                  </span>
+                                </td>
+                                <td
+                                  style={{
+                                    padding: '4px 0',
+                                    fontSize: '0.85rem',
+                                    borderBottom: '1px solid #f0f0f0',
+                                  }}
+                                >
+                                  {part.value}
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </>
+              );
+            })()}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setModal(undefined)}>Close</Button>
@@ -784,7 +1144,6 @@ const Sidebar: React.FC = () => {
                     if (event.button === 1) {
                       event.preventDefault();
                       window.open(tenant.base_url + '/', '_blank');
-                      setModal(undefined);
                     }
                   }}
                   component="a"

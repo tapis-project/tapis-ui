@@ -16,7 +16,7 @@ export const TrainingCatalog: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          src={`https://icicle-ai.github.io/training-catalog/other_resources/intro`}
+          src={`https://icicle-ai.github.io/training-catalog/docs/intro`}
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>

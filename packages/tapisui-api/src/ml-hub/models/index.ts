@@ -1,4 +1,5 @@
 export { default as list } from './list';
+export { default as discover } from './discover';
 export { default as details } from './details';
 export { default as inferenceServerDetails } from './inference/inferenceServerDetails';
 export { default as listDownloadLinks } from './listDownloadLinks';

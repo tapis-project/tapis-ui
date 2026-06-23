@@ -151,6 +151,7 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   filterConfig?: FilterConfig;
   defaultFilters?: Array<Filter>;
   onFiltersChange?: (filters: Array<Filter>) => void;
+  itemStyle?: (object: T) => React.CSSProperties | undefined;
 };
 
 export type FilterableObjectsListComponentProps<
@@ -207,6 +208,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   filterConfig = undefined,
   defaultFilters = [],
   onFiltersChange = undefined,
+  itemStyle = undefined,
 }) => {
   const open = useMemo(() => {
     let concatenatedOpen: FilterableObjectsListState['open'] =
@@ -563,7 +565,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   };
 
   return (
-    <div style={{ maxHeight: '100%', minHeight: '100%', overflowY: 'auto' }}>
+    <div style={{ maxHeight: '100%', minHeight: '100%', minWidth: '200px' }}>
       {title && (
         <>
           <List
@@ -604,6 +606,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   onClick={() => {
                     setState({ ...state, filterScope: 'filter' });
                   }}
+                  sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
                   Filter
                 </Button>
@@ -618,6 +621,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   onClick={() => {
                     setState({ ...state, filterScope: 'group' });
                   }}
+                  sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
                   Group
                 </Button>
@@ -632,6 +636,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                   onClick={() => {
                     setState({ ...state, filterScope: 'order' });
                   }}
+                  sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
                   Order
                 </Button>
@@ -1028,14 +1033,29 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                         (group.showDropdown ||
                           group.showDropdown === undefined) && (
                           <ListSubheader
-                            style={{ cursor: 'pointer', userSelect: 'none' }}
+                            style={{
+                              cursor: 'pointer',
+                              userSelect: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              overflow: 'hidden',
+                            }}
                             onClick={() => {
                               toggleDropdown(field, fieldValue);
                             }}
                           >
                             {groupIcon}
                             <Tooltip title={tooltip} placement="left">
-                              <span style={{ marginLeft: '32px' }}>
+                              <span
+                                style={{
+                                  marginLeft: '32px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  flex: '1 1 auto',
+                                  minWidth: 0,
+                                }}
+                              >
                                 <>
                                   {label.length <= 17
                                     ? label
@@ -1043,11 +1063,21 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                                 </>
                               </span>
                             </Tooltip>
-                            <span style={{ marginLeft: '8px' }}>
+                            <span
+                              style={{
+                                marginLeft: '8px',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
                               ({objects.length})
                             </span>
                             <span
-                              style={{ marginLeft: '8px', cursor: 'pointer' }}
+                              style={{
+                                marginLeft: '8px',
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                              }}
                             >
                               {isOpen ? <ExpandMore /> : <ExpandLess />}
                             </span>
@@ -1081,6 +1111,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                                   })
                                     ? 'rgba(157, 133, 239, 0.25)'
                                     : undefined,
+                                  ...(itemStyle ? itemStyle(object) : {}),
                                   // ...other styles...
                                 }}
                                 onClick={() => {
@@ -1122,7 +1153,15 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
                           );
                         })
                       ) : (
-                        <i style={{ padding: '16px' }}>No objects found</i>
+                        <i
+                          style={{
+                            padding: '16px',
+                            display: 'block',
+                            paddingTop: '8px',
+                          }}
+                        >
+                          No objects found
+                        </i>
                       )}
                     </List>
                   );

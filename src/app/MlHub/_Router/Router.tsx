@@ -5,6 +5,7 @@ import IngestModel from '../Ingestions/IngestModel';
 import { Dashboard } from '../Dashboard';
 import { Layout as ModelsLayout } from '../Models/_Layout';
 import { Layout as DatasetsLayout } from '../Datasets/_Layout';
+import { Model, Models, ModelSearch } from '../Models';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -14,7 +15,20 @@ const Router: React.FC = () => {
         <Dashboard />
       </Route>
 
-      <Route path={`${path}/models`}>
+      <Route path={`${path}/models`} exact>
+        <ModelSearch />
+      </Route>
+
+      <Route
+        path={`${path}/models/:author/:name`}
+        render={({
+          match: {
+            params: { author, name },
+          },
+        }: any) => <Model />}
+      />
+
+      <Route path={`${path}/platforms`}>
         <ModelsLayout />
       </Route>
 

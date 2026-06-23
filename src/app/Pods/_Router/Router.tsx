@@ -25,9 +25,7 @@ const Router: React.FC = () => {
             params: { imageId },
           },
         }: RouteComponentProps<{ imageId?: string }>) => (
-          <div>
-            <PageImages objId={imageId} />
-          </div>
+          <PageImages objId={imageId} />
         )}
       />
 
@@ -38,9 +36,7 @@ const Router: React.FC = () => {
             params: { templateId, tagId },
           },
         }: RouteComponentProps<{ templateId?: string; tagId?: string }>) => (
-          <div>
-            <PageTemplates objId={templateId} tagId={tagId || ''} />
-          </div>
+          <PageTemplates objId={templateId} tagId={tagId || ''} />
         )}
       />
 
@@ -51,9 +47,7 @@ const Router: React.FC = () => {
             params: { templateId },
           },
         }: RouteComponentProps<{ templateId?: string }>) => (
-          <div>
-            <PageTemplates objId={templateId} tagId={''} />
-          </div>
+          <PageTemplates objId={templateId} tagId={''} />
         )}
       />
 
@@ -64,9 +58,7 @@ const Router: React.FC = () => {
             params: { volumeId },
           },
         }: RouteComponentProps<{ volumeId?: string }>) => (
-          <div>
-            <PageVolumes objId={volumeId} />
-          </div>
+          <PageVolumes objId={volumeId} />
         )}
       />
 
@@ -77,9 +69,7 @@ const Router: React.FC = () => {
             params: { snapshotId },
           },
         }: RouteComponentProps<{ snapshotId?: string }>) => (
-          <div>
-            <PageSnapshots objId={snapshotId} />
-          </div>
+          <PageSnapshots objId={snapshotId} />
         )}
       />
 

@@ -3,12 +3,13 @@ const QueryKeys = {
   details: 'systems/details',
   patch: 'systems/patch',
   listSchedulerProfiles: 'systems/listScehdulerProfiles',
-  makeNewSystem: 'systems/makeNewSystem',
+  createSystem: 'systems/createSystem',
   deleteSystem: 'systems/deleteSystem',
   shareSystemPublic: 'systems/shareSystemPublic',
   unShareSystemPublic: 'systems/unShareSystemPublic',
   createChildSystem: 'systems/createChildSystem',
   createUserCredential: 'systems/createUserCredential',
+  removeUserCredential: 'systems/removeUserCredential',
   checkUserCredential: 'systems/checkUserCredential',
   getUserPerms: 'systems/getUserPerms',
   getGlobusAuthUrl: 'systems/getGlobusAuthUrl',
@@ -18,6 +19,7 @@ const QueryKeys = {
   changeOwner: 'systems/changeOwner',
   disableSystem: 'systems/disableSystem',
   enableSystem: 'systems/enableSystem',
+  hostEval: 'systems/hostEval',
 };
 
 export default QueryKeys;

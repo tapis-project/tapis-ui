@@ -6,6 +6,7 @@ import {
 } from '@tapis/tapisui-hooks';
 import { Systems } from '@tapis/tapis-typescript';
 import { JSONDisplay } from '../../../ui';
+import { HostEvalNavigationButton } from '../../files';
 import { QueryWrapper } from '../../../wrappers';
 import styles from './SystemDetail.module.scss';
 import {
@@ -41,6 +42,7 @@ import {
 import {
   Button,
   Chip,
+  CircularProgress,
   Divider,
   Alert,
   AlertTitle,
@@ -66,6 +68,7 @@ import {
   DisableSystemModal,
   EnableSystemModal,
   UpdateSystemModal,
+  RemoveCredentialModal,
 } from '../Modals';
 
 const AuthButton: React.FC<{
@@ -85,9 +88,61 @@ const AuthButton: React.FC<{
   );
 };
 
-const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
-  system,
-}) => {
+const TmsKeysAuthButton: React.FC<{
+  systemId: string;
+  setAuthenticated: () => void;
+}> = ({ systemId, setAuthenticated }) => {
+  const { create, isLoading, isSuccess, isError, error, invalidate } =
+    SystemsHooks.useCreateCredential();
+
+  const handleClick = () => {
+    create(
+      {
+        systemId,
+        reqUpdateCredential: {},
+        createTmsKeys: true,
+      },
+      {
+        onSuccess: () => {
+          invalidate();
+          setAuthenticated();
+        },
+      }
+    );
+  };
+
+  if (isSuccess) {
+    return (
+      <Alert severity="success" sx={{ mt: 1 }}>
+        Authorization successful. Standby while authentication is checked.
+      </Alert>
+    );
+  }
+
+  return (
+    <div>
+      <Button
+        size="small"
+        variant="text"
+        onClick={handleClick}
+        disabled={isLoading}
+        startIcon={isLoading ? <CircularProgress size={16} /> : <Login />}
+      >
+        {isLoading ? 'Authorizing...' : 'Authenticate with TMS keys'}
+      </Button>
+      {isError && error && (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {error.message || 'Failed to create TMS keys credential.'}
+        </Alert>
+      )}
+    </div>
+  );
+};
+
+const SystemSettingsMenu: React.FC<{
+  system: Systems.TapisSystem;
+  isAuthenticated: boolean;
+}> = ({ system, isAuthenticated }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [modal, setModal] = useState<string | undefined>(undefined);
   const history = useHistory();
@@ -135,6 +190,21 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
               <Add fontSize="small" />
             </ListItemIcon>
             <ListItemText>Create child system</ListItemText>
+          </MenuItem>
+          <MenuItem
+            disabled={
+              !isAuthenticated ||
+              (system.owner !== username && !system.isDynamicEffectiveUser)
+            }
+            onClick={() => {
+              setAnchorEl(null);
+              setModal('removecredential');
+            }}
+          >
+            <ListItemIcon>
+              <Lock fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Remove credentials</ListItemText>
           </MenuItem>
           <MenuItem
             disabled={system.owner !== username}
@@ -355,6 +425,13 @@ const SystemSettingsMenu: React.FC<{ system: Systems.TapisSystem }> = ({
           setModal(undefined);
         }}
       />
+      <RemoveCredentialModal
+        systemId={system.id!}
+        open={modal === 'removecredential'}
+        toggle={() => {
+          setModal(undefined);
+        }}
+      />
     </span>
   );
 };
@@ -365,16 +442,19 @@ type SystemCardProps = {
 
 const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
   const [showJSON, setShowJSON] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const history = useHistory();
   const [modal, setModal] = useState<string | undefined>(undefined);
-  const { data, isLoading } = FilesHooks.useList(
+  const { isLoading } = FilesHooks.useList(
     {
       systemId: system.id!,
       path: '/',
     },
     {
-      retry: 0,
-      refetchOnWindowFocus: false,
+      retry: 1,
+      onSuccess: (data) => {
+        setAuthenticated(true);
+      },
     }
   );
 
@@ -407,7 +487,10 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           </div>
           <div></div>
           <div>
-            <SystemSettingsMenu system={system} />
+            <SystemSettingsMenu
+              system={system}
+              isAuthenticated={authenticated}
+            />
           </div>
         </div>
         {!system.enabled && (
@@ -440,23 +523,32 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
         <div className={styles['card-line']}>
           <p className={styles['muted']}>Authenticated</p>
           {isLoading && <i>Checking credentials...</i>}
-          {!isLoading && !data && <Close color="error" />}
-          {!isLoading && data && <Check color="success" />}
+          {!isLoading && !authenticated && <Close color="error" />}
+          {!isLoading && authenticated && <Check color="success" />}
         </div>
-        {!isLoading && !data && (
+        {!isLoading && !authenticated && (
           <Alert severity="warning">
             <AlertTitle>Unauthenticated</AlertTitle>
             You must provide credentials for this host before you can perform
             file operations and run jobs with this system.
-            <AuthButton
-              toggle={() => {
-                setModal(
-                  system.systemType === Systems.SystemTypeEnum.Globus
-                    ? 'globusauth'
-                    : 'auth'
-                );
-              }}
-            />
+            {system.defaultAuthnMethod === Systems.AuthnEnum.TmsKeys ? (
+              <TmsKeysAuthButton
+                systemId={system.id!}
+                setAuthenticated={() => {
+                  setAuthenticated(true);
+                }}
+              />
+            ) : (
+              <AuthButton
+                toggle={() => {
+                  setModal(
+                    system.systemType === Systems.SystemTypeEnum.Globus
+                      ? 'globusauth'
+                      : 'auth'
+                  );
+                }}
+              />
+            )}
           </Alert>
         )}
         <Divider />
@@ -540,7 +632,7 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           <div className={styles['flex']}>
             <Button
               size="small"
-              disabled={!data}
+              disabled={!authenticated}
               onClick={() => {
                 history.push(`/files/${system.id}`);
               }}
@@ -548,6 +640,14 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
             >
               View Files
             </Button>
+            {system.systemType === Systems.SystemTypeEnum.Linux &&
+              system.isDynamicEffectiveUser &&
+              (!system.rootDir || system.rootDir === '/') && (
+                <HostEvalNavigationButton
+                  systemId={system.id!}
+                  isAuthenticated={authenticated}
+                />
+              )}
           </div>
           <div></div>
           <div></div>
@@ -679,13 +779,15 @@ const SystemCard: React.FC<SystemCardProps> = ({ system }) => {
           setModal(undefined);
         }}
       />
-      <GlobusAuthModal
-        systemId={system.id!}
-        open={modal === 'globusauth'}
-        toggle={() => {
-          setModal(undefined);
-        }}
-      />
+      {modal === 'globusauth' && (
+        <GlobusAuthModal
+          systemId={system.id!}
+          open={true}
+          toggle={() => {
+            setModal(undefined);
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -695,6 +797,7 @@ const SystemDetail: React.FC<{ systemId: string }> = ({ systemId }) => {
     systemId,
     select: 'allAttributes',
   });
+
   const system: Systems.TapisSystem | undefined = data?.result;
   return (
     <QueryWrapper isLoading={isLoading} error={error}>
