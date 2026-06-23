@@ -22,6 +22,9 @@ export default defineConfig({
     preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
   },
   resolve: {
+    alias: {
+      events: 'events',
+    },
     dedupe: [
       '@codemirror/state',
       '@codemirror/view',
@@ -54,6 +57,7 @@ export default defineConfig({
       '@codemirror/lang-python',
       'codemirror',
       '@uiw/react-codemirror',
+      '@kitware/vtk.js',
     ],
   },
   plugins: [
@@ -73,6 +77,8 @@ export default defineConfig({
         /packages\/tapisui-common\/node_modules\/react-router/,
         /packages\/tapisui-common\/node_modules\/react-is/,
         /packages\/icicle-tapisui-extension\/node_modules\/react-is/,
+        /node_modules\/globalthis/,
+        /node_modules\/xmlbuilder2/,
       ],
       requireReturnsDefault: false, // "preferred" | "auto" | true | false
       strictRequires: 'debug',
@@ -110,6 +116,8 @@ export default defineConfig({
           'editor-vendor': ['@codemirror/lang-json', '@codemirror/lang-python', '@uiw/react-codemirror', 'codemirror'],
           // Visualization libraries
           'viz-vendor': ['@xyflow/react', 'reactflow', 'leaflet', 'react-leaflet'],
+          // VTK.js (large scientific visualization library)
+          'vtk-vendor': ['@kitware/vtk.js'],
         },
         // Optimize chunk file naming
         chunkFileNames: (chunkInfo) => {
