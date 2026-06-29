@@ -79,6 +79,7 @@ export default defineConfig({
         /packages\/icicle-tapisui-extension\/node_modules\/react-is/,
         /node_modules\/globalthis/,
         /node_modules\/xmlbuilder2/,
+          /node_modules\/@oozcitak/,
       ],
       requireReturnsDefault: false, // "preferred" | "auto" | true | false
       strictRequires: 'debug',
