@@ -13,8 +13,8 @@ export type RuleSet = {
   rules: Rule[];
 };
 
-export type ClientDeploymentStrategy = {
-  client: string;
+export type PlatformDeploymentStrategy = {
+  platform: string;
   strategies: Array<DeploymentStrategy>;
 };
 

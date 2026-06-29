@@ -1,4 +1,4 @@
-import { Models } from '@tapis/tapis-typescript';
+import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 const details = (
@@ -12,7 +12,7 @@ const details = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.RespModel>(() => api.getModel(params));
+  return errorDecoder<Models.GetModelResponse>(() => api.getModel(params));
 };
 
 export default details;

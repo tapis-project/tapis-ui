@@ -1,5 +1,5 @@
 import { useMutation, MutateOptions, useQueryClient } from 'react-query';
-import { Models } from '@mlhub/ts-sdk';
+import * as Models from '@mlhub/models-ts-sdk';
 import { MLHub as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';

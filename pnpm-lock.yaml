@@ -57,12 +57,15 @@ importers:
       '@kitware/vtk.js':
         specifier: ^36.2.0
         version: 36.2.0(autoprefixer@10.5.0(postcss@8.5.8))(wslink@2.5.0)
+      '@mlhub/deployments-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/models-ts-sdk':
-        specifier: ^0.0.0
-        version: 0.0.0
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/ts-sdk':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.1.3
+        version: 0.1.3
       '@mui/icons-material':
         specifier: ^7.3.4
         version: 7.3.9(@mui/material@7.3.9(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
@@ -633,9 +636,15 @@ importers:
 
   packages/tapisui-api:
     dependencies:
+      '@mlhub/deployments-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
+      '@mlhub/models-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/ts-sdk':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.1.3
+        version: 0.1.3
       '@tapis/tapis-typescript':
         specifier: ^0.0.68
         version: 0.0.68
@@ -880,9 +889,15 @@ importers:
 
   packages/tapisui-hooks:
     dependencies:
+      '@mlhub/deployments-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
+      '@mlhub/models-ts-sdk':
+        specifier: '=0.2.0'
+        version: 0.2.0
       '@mlhub/ts-sdk':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.1.3
+        version: 0.1.3
       '@tapis/tapis-typescript':
         specifier: ^0.0.68
         version: 0.0.68
@@ -2007,14 +2022,20 @@ packages:
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
 
-  '@mlhub/models-ts-sdk@0.0.0':
-    resolution: {integrity: sha512-jgV9Bna739dQY9VPJQHaMYkRWNBCYQMKDthWHepCcQxaCruBMH8hzcbE5Q0i0XlzrhxcU55jZfxyNcolLjX7cQ==}
+  '@mlhub/deployments-ts-sdk@0.1.1':
+    resolution: {integrity: sha512-XTM6egldBGdLdys4JsplEtHSunhv0XxO7F8C6iOfteEdAIN92schB0jeBL5tLn7flqgj+eRi2ADKyU89MAjB7w==}
 
-  '@mlhub/models-ts-sdk@0.0.8':
-    resolution: {integrity: sha512-ORZ4Yjw5xdxqu9MVqdpMXmFGnNIV3DioZfY/SzpcFBGyR1Rv5w2J11H01SsJkwIk7am5CdWUQguoXq4pa8JaEA==}
+  '@mlhub/deployments-ts-sdk@0.2.0':
+    resolution: {integrity: sha512-IzJpZ136UuVqLFZCqv5f77uHUZSeJRIwMnFJejFagnDzguT6yHOw4RQKoKr8oU9cLXY2sqiSUnMY2CgEDsDBmw==}
 
-  '@mlhub/ts-sdk@0.0.8':
-    resolution: {integrity: sha512-i6s6KSYlNAJYKoLT3lYed1NM6k0XLjluN7zsyTphVlhlngG9sCxMQ5FzIXiDJIKDuiooQxm1Fe5V5pUAvE7mgQ==}
+  '@mlhub/models-ts-sdk@0.1.1':
+    resolution: {integrity: sha512-CNY/vXq4V3V4dAdxUtyySA8ZuMwkICCtF7EZQC0eTuSAQ71FOKDlXldkJaPyWAlC8817LabAE4TMYz0OuPswug==}
+
+  '@mlhub/models-ts-sdk@0.2.0':
+    resolution: {integrity: sha512-S8pM1DHh9/zZ8Y8t8RBN/cb1oqZZwm+uuTLJ5UjjiPtSV5o7rmJU7AB3GLhHY6T/LXxy3D3G47k4UhUNZwREvQ==}
+
+  '@mlhub/ts-sdk@0.1.3':
+    resolution: {integrity: sha512-0BixORe/ByERPxOWeXRCQa0LnV5AaUMGAXMC2VoOepVWdYlMj/fO1q8PyyfkYv8XczmeRHJ4o9htcv6ojPLK9A==}
 
   '@msgpack/msgpack@2.8.0':
     resolution: {integrity: sha512-h9u4u/jiIRKbq25PM+zymTyW6bhTzELvOoUd+AvYriWOAKpLGnIamaET3pnHYoI5iYphAHBI4ayx0MehR+VVPQ==}
@@ -8306,14 +8327,18 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@mlhub/models-ts-sdk@0.0.0': {}
+  '@mlhub/deployments-ts-sdk@0.1.1': {}
 
-  '@mlhub/models-ts-sdk@0.0.8': {}
+  '@mlhub/deployments-ts-sdk@0.2.0': {}
 
-  '@mlhub/ts-sdk@0.0.8':
+  '@mlhub/models-ts-sdk@0.1.1': {}
+
+  '@mlhub/models-ts-sdk@0.2.0': {}
+
+  '@mlhub/ts-sdk@0.1.3':
     dependencies:
-      '@mlhub/models-ts-sdk': 0.0.8
-      '@types/mocha': 9.1.1
+      '@mlhub/deployments-ts-sdk': 0.1.1
+      '@mlhub/models-ts-sdk': 0.1.1
 
   '@msgpack/msgpack@2.8.0': {}
 
@@ -9064,7 +9089,9 @@ snapshots:
 
   '@tapis/tapisui-api@file:packages/tapisui-api':
     dependencies:
-      '@mlhub/ts-sdk': 0.0.8
+      '@mlhub/deployments-ts-sdk': 0.2.0
+      '@mlhub/models-ts-sdk': 0.2.0
+      '@mlhub/ts-sdk': 0.1.3
       '@tapis/tapis-typescript': 0.0.68
       axios: 1.13.6
       cross-fetch: 3.2.0
@@ -9122,7 +9149,9 @@ snapshots:
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)':
     dependencies:
-      '@mlhub/ts-sdk': 0.0.8
+      '@mlhub/deployments-ts-sdk': 0.2.0
+      '@mlhub/models-ts-sdk': 0.2.0
+      '@mlhub/ts-sdk': 0.1.3
       '@tapis/tapis-typescript': 0.0.68
       '@tapis/tapisui-api': file:packages/tapisui-api
       cross-fetch: 3.2.0

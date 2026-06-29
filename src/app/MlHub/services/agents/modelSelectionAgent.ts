@@ -227,7 +227,7 @@ async function prepareModelSelection(
   const platformMatch = userText.match(/platform\s*:\s*([\w-]+)/i);
   const platform = platformMatch
     ? platformMatch[1].toLowerCase()
-    : 'huggingface';
+    : 'hugging-face';
   const models = await fetchModels(
     platform,
     context.mlHubBasePath || context.basePath,

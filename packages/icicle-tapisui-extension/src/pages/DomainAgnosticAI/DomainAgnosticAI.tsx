@@ -19,9 +19,17 @@ const services: ServiceItem[] = [
     link: 'https://github.com/ICICLE-ai/forte-api',
   },
   {
-    label: 'Smart Labeling and Annotation',
-    name: 'Smart Labeler',
+    label:
+      'Smart Labeler : Inteligent AI pipeline for Zero and Few shot object detection',
+    name: 'Smart Labeler : Object detection',
     link: '/smart-labeler',
+    internal: true,
+  },
+  {
+    label:
+      'Smart Labeler : Inteligent AI pipeline for Zero and Few shot object detection',
+    name: 'Smart Labeler : Semantic segmentation',
+    link: '/smart-segmentation',
     internal: true,
   },
   {

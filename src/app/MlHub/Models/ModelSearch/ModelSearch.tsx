@@ -138,11 +138,6 @@ const NativeModelsSearch: React.FC = () => {
 
   return (
     <div className={styles['native-models-search-container']}>
-      <Alert severity="warning">
-        <AlertTitle>Model Discovery Beta</AlertTitle>
-        Model discovery funtionality is available, however the deployment
-        strategies listed in some table entries is purely for demonstration
-      </Alert>
       <div>
         <SectionHeader>
           Discover Models
