@@ -1,5 +1,5 @@
 import { Files, Systems } from '@tapis/tapis-typescript';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, lazy, Suspense } from 'react';
 import { Button } from 'reactstrap';
 import {
   HostEvalNavigationButton,
@@ -14,6 +14,7 @@ import UploadModal from './UploadModal';
 import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import CreatePostitModal from './CreatePostitModal';
+const VtkModal = lazy(() => import('./VtkModal'));
 import TransferModal from './TransferModal';
 import ShareModal from './ShareModal';
 import { useLocation } from 'react-router-dom';
@@ -70,7 +71,8 @@ type Op =
   | 'move'
   | 'folder'
   | 'delete'
-  | 'transfers';
+  | 'transfers'
+  | 'visualize';
 
 type ToolbarProps = {
   systemId: string;
@@ -202,6 +204,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 }
                 onClick={() => setModal('postit')}
                 aria-label="View file"
+              />
+            )}
+            {show('visualize', buttons) && (
+              <ToolbarButton
+                text="Visualize"
+                icon="data-files"
+                disabled={
+                  selectedFiles.length !== 1 ||
+                  selectedFiles[0].type !== Files.FileTypeEnum.File
+                }
+                onClick={() => setModal('visualize')}
+                aria-label="Visualize file"
               />
             )}
             {show('rename', buttons) && (
@@ -364,6 +378,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 systemId={systemId}
                 path={currentPath}
               />
+            )}
+            {modal === 'visualize' && (
+              <Suspense fallback={null}>
+                <VtkModal
+                  toggle={toggle}
+                  systemId={systemId}
+                  path={currentPath}
+                />
+              </Suspense>
             )}
             {modal === 'share' && (
               <ShareModal
