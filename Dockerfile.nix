@@ -33,7 +33,7 @@ COPY \
   --exclude=./build \
   --exclude=./deploy \
   ./ ./
-RUN nix --extra-experimental-features 'nix-command flakes' develop --command pnpm -r build
+RUN nix --extra-experimental-features 'nix-command flakes' develop --command bash -c 'pnpm -r build && pnpm build'
 
 FROM nginx:alpine as production-stage
 COPY --from=build-stage /tapisui/dist /usr/share/nginx/html
