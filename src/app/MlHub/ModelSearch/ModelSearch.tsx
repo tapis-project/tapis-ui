@@ -84,23 +84,20 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
 
 const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
   const [state, dispatch] = useReducer(reducer, initialReducerState);
-  const {
-    libraries,
-    limit,
-    taskTypes,
-    setTaskTypes: setSelectedTasks,
-  } = useModelFilter();
+  const { libraries, limit, taskTypes } = useModelFilter();
 
-  const {
-    data,
-    discover,
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-    reset,
-    invalidate,
-  } = Hooks.Models.useDiscoverModels();
+  const { data, discover, isLoading, isError, error } =
+    Hooks.Models.useDiscoverModels({
+      options: {
+        autoRunParams: {
+          discoveryCriteria: {
+            criteria: [{ author: 'mlhub' }],
+          },
+          limit: 100,
+          includeCount: true,
+        },
+      },
+    });
 
   const models = data?.result ?? [];
   const respMetadata = (data?.metadata as DiscoverModelsResponseMetadata) ?? {};
@@ -155,10 +152,6 @@ const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
       }
     );
   };
-
-  const handleNext = () => {};
-
-  const handlPrevious = () => {};
 
   return (
     <div className={styles['native-models-search-container']}>

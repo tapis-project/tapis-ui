@@ -3,8 +3,15 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { MLHub as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
+import { useEffect } from 'react';
 
-const useDiscoverModels = () => {
+type DiscoverModelsHookParams = {
+  options?: {
+    autoRunParams?: Models.DiscoverModelsRequest;
+  };
+};
+
+const useDiscoverModels = ({ options }: DiscoverModelsHookParams) => {
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
@@ -21,6 +28,12 @@ const useDiscoverModels = () => {
     >([QueryKeys.discover, mlHubBasePath, jwt], (params) =>
       API.Models.discover(params, mlHubBasePath, jwt)
     );
+
+  useEffect(() => {
+    if (options?.autoRunParams !== undefined) {
+      mutate(options.autoRunParams);
+    }
+  }, []);
 
   const invalidate = () => {
     queryClient.invalidateQueries(QueryKeys.discover);

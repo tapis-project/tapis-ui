@@ -14,7 +14,7 @@ import styles from './Dashboard.module.scss';
 import { ChatContext } from 'app/_context/chat';
 import { useHistory } from 'react-router-dom';
 import { Download, SmartToy, Upload } from '@mui/icons-material';
-import { ModelStatCard } from '../Model/_components';
+import { ModelStatCard, GlobalModelStatCard } from '../Model/_components';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const Dashboard: React.FC = () => {
@@ -48,12 +48,7 @@ const Dashboard: React.FC = () => {
                 history.push('/mlhub/models');
               }}
             />
-            <StatCard
-              icon={<PublicIcon />}
-              label="Global"
-              count={'~ 670k'}
-              color="success.main"
-            />
+            <GlobalModelStatCard />
             <StatCard
               icon={<Download />}
               label="Ingestions"

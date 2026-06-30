@@ -91,7 +91,7 @@ const TopNavbar = () => {
             </ListItemIcon>
             <ListItemText
               primary="Discover"
-              secondary="Discover models from MLHubs global collection of ~700k models"
+              secondary="Discover models from MLHub's global collection of ~700k models"
               slotProps={{
                 primary: { sx: { fontWeight: 600 } },
                 secondary: {

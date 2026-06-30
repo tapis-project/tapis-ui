@@ -4,12 +4,14 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
+import { CircularProgress } from '@mui/material';
 
 interface StatCardProps {
   icon: React.ReactNode;
   label: string;
   count: number | string;
   color?: string;
+  isLoading?: boolean;
   onClick?: () => void;
 }
 
@@ -19,6 +21,7 @@ export default function StatCard({
   count,
   onClick,
   color = 'primary.main',
+  isLoading,
 }: StatCardProps) {
   return (
     <Paper
@@ -66,7 +69,11 @@ export default function StatCard({
           component="p"
           sx={{ fontWeight: 700, lineHeight: 1.2 }}
         >
-          {count.toLocaleString()}
+          {isLoading ? (
+            <CircularProgress aria-label="Loading…" />
+          ) : (
+            count.toLocaleString()
+          )}
         </Typography>
       </Stack>
     </Paper>
