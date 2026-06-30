@@ -21,9 +21,6 @@ import {
   Popover,
   MenuItem,
   MenuList,
-  useTheme,
-  ThemeProvider,
-  createTheme,
   CssBaseline,
   Snackbar,
   Alert,
@@ -522,7 +519,6 @@ function MetricCard({
   value: string;
   href?: string;
 }) {
-  const theme = useTheme();
   return (
     <Box
       sx={{
@@ -531,8 +527,7 @@ function MetricCard({
         gap: 1.5,
         p: 1.25,
         borderRadius: '4px',
-        backgroundColor:
-          theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#fafafa',
+        backgroundColor: '#fafafa',
         border: '1px solid',
         borderColor: 'divider',
       }}
@@ -573,15 +568,13 @@ function SectionCard({
   children: React.ReactNode;
   action?: React.ReactNode;
 }) {
-  const theme = useTheme();
   return (
     <Box
       sx={{
         borderRadius: '4px',
         border: '1px solid',
         borderColor: 'divider',
-        backgroundColor:
-          theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#fafafa',
+        backgroundColor: '#fafafa',
         overflow: 'hidden',
       }}
     >
@@ -671,12 +664,11 @@ function MetadataTable({
 
 interface ForkPopoverProps {
   onFork: () => void;
-  onForkAndIngest: () => void;
+  onForkAndDeploy: () => void;
   size?: 'small' | 'medium';
 }
 
-function ForkPopover({ onFork, onForkAndIngest, size }: ForkPopoverProps) {
-  const theme = useTheme();
+function ForkPopover({ onFork, onForkAndDeploy, size }: ForkPopoverProps) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
@@ -768,9 +760,10 @@ function ForkPopover({ onFork, onForkAndIngest, size }: ForkPopoverProps) {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              onForkAndIngest();
+              onForkAndDeploy();
               setAnchorEl(null);
             }}
+            disabled
             sx={{ fontWeight: 600, fontSize: '0.8125rem', py: 1, gap: 1 }}
           >
             <ForkRightIcon fontSize="small" />
@@ -793,7 +786,6 @@ function DeployDialog({
   onClose: () => void;
   model: ModelMetadata;
 }) {
-  const theme = useTheme();
   const [platformTab, setPlatformTab] = React.useState(0);
   const [selectedStrategy, setSelectedStrategy] = React.useState<string | null>(
     null
@@ -926,9 +918,7 @@ function DeployDialog({
                   selectedStrategy === s.name ? 'primary.main' : 'divider',
                 backgroundColor:
                   selectedStrategy === s.name
-                    ? theme.palette.mode === 'dark'
-                      ? 'rgba(33,150,243,0.08)'
-                      : 'rgba(33,150,243,0.04)'
+                    ? 'rgba(33,150,243,0.04)'
                     : 'transparent',
                 cursor: 'pointer',
                 mb: 0.5,
@@ -982,10 +972,7 @@ function DeployDialog({
             sx={{
               p: 2,
               borderRadius: '4px',
-              backgroundColor:
-                theme.palette.mode === 'dark'
-                  ? 'rgba(34,197,94,0.08)'
-                  : '#f0fdf4',
+              backgroundColor: '#f0fdf4',
               border: '1px solid',
               borderColor: '#bbf7d0',
             }}
@@ -1429,7 +1416,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                       message: `Forked ${model.name} to your workspace`,
                     })
                   }
-                  onForkAndIngest={() =>
+                  onForkAndDeploy={() =>
                     setForkSnackbar({
                       open: true,
                       message: `Forked and ingesting artifact for ${model.name}`,
@@ -1455,7 +1442,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                     Deploy
                   </Button>
                 </Tooltip>
-                
+
                 {/* <Tooltip title="View all deployment strategies">
                   <IconButton size="small" sx={{ color: 'text.secondary' }}>
                     <SettingsIcon fontSize="small" />
