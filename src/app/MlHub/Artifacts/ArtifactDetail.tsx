@@ -186,7 +186,7 @@ const ArtifactDetail: React.FC<Props> = ({ artifactId }) => {
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
         <Button
           color="secondary"
-          onClick={() => history.push('/ml-hub/artifacts')}
+          onClick={() => history.push('/mlhub/artifacts')}
         >
           ← Back to Artifacts
         </Button>

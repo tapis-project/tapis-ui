@@ -1,1 +1,0 @@
-export { ModelCard } from './ModelCard';

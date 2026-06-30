@@ -10,6 +10,7 @@ export { default as listByLibrary } from './listByLibrary';
 export { default as listByQuery } from './listByQuery';
 export { default as listByTask } from './listByTask';
 export { default as modelCardDetails } from './modelCardDetails';
+export { default as getModel } from './getModel';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
 export * as Ingestions from './ingestions';

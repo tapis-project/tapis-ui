@@ -94,14 +94,14 @@ registerChat({
   id: 'model-selection',
   title: 'Model Assistant',
   agent: ModelSelectionAgent,
-  storageKey: 'ml-hub-model-chat-messages',
+  storageKey: 'mlhub-model-chat-messages',
   emptyStateContent: ModelSelectionEmptyState,
   examplePrompts: [
     'Show me text generation models',
     'Recommend models for sentiment analysis',
   ],
   getAgentContext: (baseContext) => ({
-    section: 'ml-hub',
+    section: 'mlhub',
     basePath: baseContext.basePath || '',
     mlHubBasePath: baseContext.mlHubBasePath,
     jwt: baseContext.accessToken?.access_token || '',

@@ -223,7 +223,7 @@ const Dashboard: React.FC = () => {
                 icon="share"
                 name="ML Hub"
                 text="View available models and datasets, run inference and training on ML models"
-                link="/ml-hub"
+                link="/mlhub"
                 counter={`${4} services`}
                 loading={apps?.isLoading}
               />

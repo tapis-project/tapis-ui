@@ -12,7 +12,7 @@ const ArtifactsList: React.FC = () => {
   const artifacts = data?.result || [];
 
   const handleClick = (artifactId: string) => {
-    history.push(`/ml-hub/artifacts/${artifactId}`);
+    history.push(`/mlhub/artifacts/${artifactId}`);
   };
 
   return (

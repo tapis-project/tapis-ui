@@ -3,9 +3,12 @@ import { Route, useRouteMatch, Switch } from 'react-router-dom';
 import IngestionDetail from '../Ingestions/IngestionDetail';
 import IngestModel from '../Ingestions/IngestModel';
 import { Dashboard } from '../Dashboard';
-import { Layout as ModelsLayout } from '../Models/_Layout';
+import { Layout as ModelsLayout } from '../PlatformModels/_Layout';
 import { Layout as DatasetsLayout } from '../Datasets/_Layout';
-import { Model, Models, ModelSearch } from '../Models';
+import { Layout as ModelDetailsLayout } from '../Model';
+import { ModelSearch } from '../ModelSearch';
+import * as MLHubModels from '@mlhub/models-ts-sdk';
+import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -15,20 +18,28 @@ const Router: React.FC = () => {
         <Dashboard />
       </Route>
 
-      <Route path={`${path}/models`} exact>
-        <ModelSearch />
+      <Route path={`${path}/global/models`} exact>
+        <ModelFilterProvider>
+          <ModelSearch scope={'global'} />
+        </ModelFilterProvider>
       </Route>
 
       <Route
-        path={`${path}/models/:author/:name`}
+        path={`${path}/global/models/:author/:name`}
         render={({
           match: {
             params: { author, name },
           },
-        }: any) => <Model />}
+        }: any) => (
+          <ModelDetailsLayout
+            scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Global}
+            author={author}
+            name={name}
+          />
+        )}
       />
 
-      <Route path={`${path}/platforms`}>
+      {/* <Route path={`${path}/platforms`}>
         <ModelsLayout />
       </Route>
 
@@ -47,7 +58,7 @@ const Router: React.FC = () => {
             params: { ingestionId },
           },
         }: any) => <IngestionDetail ingestionId={ingestionId} />}
-      />
+      /> */}
     </Switch>
   );
 };

@@ -11,6 +11,7 @@ export { default as useListByTask } from './useListByTask';
 export { default as useInferenceServerDetails } from './inference/useInferenceServerDetails';
 export { default as queryKeys } from './queryKeys';
 export { default as useModelCardDetails } from './useModelCardDetails';
+export { default as useGetModel } from './useGetModel';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
 export * as Ingestions from './ingestions';

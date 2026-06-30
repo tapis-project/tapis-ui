@@ -77,7 +77,7 @@ const Router: React.FC = () => {
           <Workflows />
         </Suspense>
       </ProtectedRoute>
-      <ProtectedRoute accessToken={accessToken?.access_token} path="/ml-hub">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/mlhub">
         <Suspense fallback={<RouteLoader />}>
           <MlHub />
         </Suspense>

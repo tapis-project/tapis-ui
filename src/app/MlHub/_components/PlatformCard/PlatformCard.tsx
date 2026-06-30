@@ -54,7 +54,7 @@ const PlatformCard: React.FC<PlatformCardProps> = ({
                 className={styles['capability-badge']}
                 // Future: Add onClick handler or wrap in Link component
                 // onClick={() => handleCapabilityClick(capability, platform.platform)}
-                // as={Link} to={`/ml-hub/platforms/${platform.platform}/capabilities/${capability}`}
+                // as={Link} to={`/mlhub/platforms/${platform.platform}/capabilities/${capability}`}
               >
                 {capability}
               </Badge>

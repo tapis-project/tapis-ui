@@ -205,7 +205,7 @@ const Sidebar: React.FC = () => {
         {expanded ? 'Pods' : ''}
       </NavItem>
     ),
-    'ml-hub': renderSidebarItem('/ml-hub', 'share', 'ML Hub'),
+    mlhub: renderSidebarItem('/mlhub', 'share', 'ML Hub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
   };
 

@@ -123,7 +123,7 @@ const IngestModel: React.FC = () => {
         onSuccess: (resp: Models.IngestModelArtifactResponse) => {
           const ingestionId = resp.result?.id as string;
           if (ingestionId) {
-            history.push(`/ml-hub/ingestions/${ingestionId}`);
+            history.push(`/mlhub/ingestions/${ingestionId}`);
           }
         },
       }
@@ -131,7 +131,7 @@ const IngestModel: React.FC = () => {
   };
 
   const handleIngestionClick = (ingestionId: string) => {
-    history.push(`/ml-hub/ingestions/${ingestionId}`);
+    history.push(`/mlhub/ingestions/${ingestionId}`);
   };
 
   const ingestions = ingestionsData?.result || [];
