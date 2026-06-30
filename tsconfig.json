@@ -24,7 +24,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": "src",
-    "types": ["vite/client", "node"]
+    "types": ["vite/client", "node", "@kitware/vtk.js"]
     // "useDefineForClassFields": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
