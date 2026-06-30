@@ -1440,7 +1440,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                   <Button
                     variant="contained"
                     startIcon={<CloudUploadIcon fontSize="small" />}
-                    onClick={() => setDeployDialogOpen(true)}
+                    onClick={() => setOpenStrategiesDialog(true)}
                     size="small"
                     sx={{
                       textTransform: 'none',
@@ -1455,12 +1455,9 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                     Deploy
                   </Button>
                 </Tooltip>
-                <Tooltip title="View all deployment strategies">
-                  <IconButton
-                    size="small"
-                    onClick={() => setOpenStrategiesDialog(true)}
-                    sx={{ color: 'text.secondary' }}
-                  >
+                
+                {/* <Tooltip title="View all deployment strategies">
+                  <IconButton size="small" sx={{ color: 'text.secondary' }}>
                     <SettingsIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
@@ -1473,7 +1470,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                   <IconButton size="small" sx={{ color: 'text.secondary' }}>
                     <MoreHorizIcon fontSize="small" />
                   </IconButton>
-                </Tooltip>
+                </Tooltip> */}
               </Box>
             </Box>
 
@@ -1644,51 +1641,6 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                       </Typography>
                     </Box>
                   </Box>
-
-                  <Divider />
-                  <Box>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 600,
-                        color: 'text.secondary',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.04em',
-                        display: 'block',
-                        mb: 0.75,
-                      }}
-                    >
-                      Metrics
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 0.75,
-                      }}
-                    >
-                      <MetricCard
-                        icon={<DownloadIcon fontSize="small" />}
-                        label="Downloads"
-                        value={
-                          model.canonical
-                            ? `${formatNumber(model.canonical.downloads!)}`
-                            : 'N/A'
-                        }
-                      />
-                      <MetricCard
-                        icon={<FavoriteIcon fontSize="small" />}
-                        label="Likes"
-                        value={
-                          model.canonical
-                            ? `${formatNumber(model.canonical.likes!)}`
-                            : 'N/A'
-                        }
-                      />
-                    </Box>
-                  </Box>
-
-                  <Divider />
                   <Box>
                     <Typography
                       variant="caption"
@@ -1793,43 +1745,159 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                           }}
                         />
                       </Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-                            fontSize: '0.8125rem',
-                          }}
-                        >
-                          Model SHA
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontWeight: 600,
-                            color: 'text.primary',
-                            fontSize: '0.8125rem',
-                          }}
-                        >
-                          {model.canonical?.sha
-                            ? model.canonical.sha.slice(0, 12) + '…'
-                            : 'N/A'}
-                        </Typography>
-                      </Box>
                     </Box>
+                    {model.canonical && (
+                      <>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 600,
+                            color: 'text.secondary',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.04em',
+                            display: 'block',
+                            mb: 0.75,
+                            mt: '16px',
+                          }}
+                        >
+                          Canonical info
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1.25,
+                          }}
+                        >
+                          <Box>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 0.6,
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: 'text.secondary',
+                                    fontSize: '0.8125rem',
+                                  }}
+                                >
+                                  Platform
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: 600,
+                                    color: 'text.primary',
+                                    fontSize: '0.8125rem',
+                                  }}
+                                >
+                                  {model.canonical?.platform}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: 'text.secondary',
+                                    fontSize: '0.8125rem',
+                                  }}
+                                >
+                                  Model Id
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: 600,
+                                    color: 'text.primary',
+                                    fontSize: '0.8125rem',
+                                  }}
+                                >
+                                  {model.canonical?.model_id}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: 'text.secondary',
+                                    fontSize: '0.8125rem',
+                                  }}
+                                >
+                                  Model SHA
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontFamily: 'monospace',
+                                    fontWeight: 600,
+                                    color: 'text.primary',
+                                    fontSize: '0.8125rem',
+                                  }}
+                                >
+                                  {model.canonical?.sha || 'N/A'}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </Box>
+                          <Box>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 0.75,
+                              }}
+                            >
+                              <MetricCard
+                                icon={<DownloadIcon fontSize="small" />}
+                                label="Downloads"
+                                value={
+                                  model.canonical
+                                    ? `${formatNumber(
+                                        model.canonical.downloads!
+                                      )}`
+                                    : 'N/A'
+                                }
+                              />
+                              <MetricCard
+                                icon={<FavoriteIcon fontSize="small" />}
+                                label="Likes"
+                                value={
+                                  model.canonical
+                                    ? `${formatNumber(model.canonical.likes!)}`
+                                    : 'N/A'
+                                }
+                              />
+                            </Box>
+                          </Box>
+                        </Box>
+                      </>
+                    )}
                   </Box>
                 </Box>
               </SectionCard>
 
-              {/* Deployment Overview */}
+              {/* Deployment Strategy Overview */}
               <SectionCard
-                title="Deployment"
+                title="Compatible Deployment Strategies"
                 action={
                   <Button
                     size="small"
@@ -1950,6 +2018,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                         {(ps?.strategies?.length ?? 0) > 3 && (
                           <Typography
                             variant="caption"
+                            onClick={() => setOpenStrategiesDialog(true)}
                             sx={{
                               color: 'text.disabled',
                               display: 'block',
@@ -1986,27 +2055,9 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
               </SectionCard>
 
               {/* Key Features */}
-              <SectionCard
-                title="Keywords"
-                action={
-                  hiddenKws.length > 0 ? (
-                    <Button
-                      size="small"
-                      variant="text"
-                      onClick={() => setVisibleKeywords((v) => v + 5)}
-                      sx={{
-                        textTransform: 'none',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Show All ({keywords.length})
-                    </Button>
-                  ) : null
-                }
-              >
+              <SectionCard title="Keywords">
                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                  {visibleKws.map((kw) => (
+                  {keywords.map((kw) => (
                     <Chip
                       key={kw}
                       label={kw}
@@ -2050,7 +2101,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
           <TabPanel value={tabValue} index={1}>
             {/* Deployment Tab */}
             <SectionCard
-              title="Available Deployment Strategies"
+              title="Compatible Deployment Strategies"
               action={
                 <Button
                   size="small"
@@ -2270,49 +2321,23 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
           <TabPanel value={tabValue} index={3}>
             {/* Keywords Tab */}
             <SectionCard title="Keywords">
-              {[
-                { type: 'Task', color: '#2563eb', bg: 'rgba(33,150,243,0.08)' },
-                {
-                  type: 'Library',
-                  color: '#7c3aed',
-                  bg: 'rgba(124,58,237,0.08)',
-                },
-                { type: 'Other', color: '#ea580c', bg: 'rgba(234,88,12,0.08)' },
-              ].map((cat) => (
-                <Box key={cat.type} sx={{ mb: 2 }}>
-                  <Typography
-                    variant="caption"
+              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                {keywords.map((kw) => (
+                  <Chip
+                    key={kw}
+                    label={kw}
+                    size="small"
                     sx={{
-                      fontWeight: 700,
-                      color: cat.color,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.04em',
-                      fontSize: '0.65rem',
-                      display: 'block',
-                      mb: 0.5,
+                      borderRadius: '3px',
+                      fontSize: '0.6rem',
+                      height: 22,
+                      fontWeight: 600,
+                      backgroundColor: 'rgba(124,58,237,0.08)',
+                      color: '#7c3aed',
                     }}
-                  >
-                    {cat.type}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                    {keywords.map((kw) => (
-                      <Chip
-                        key={kw}
-                        label={kw}
-                        size="small"
-                        sx={{
-                          borderRadius: '3px',
-                          fontSize: '0.6rem',
-                          height: 22,
-                          fontWeight: 600,
-                          backgroundColor: cat.bg,
-                          color: cat.color,
-                        }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              ))}
+                  />
+                ))}
+              </Box>
             </SectionCard>
           </TabPanel>
 
@@ -2347,17 +2372,18 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
           maxWidth="md"
           PaperProps={{ sx: { borderRadius: '6px', minHeight: '360px' } }}
         >
-          <DialogTitle sx={{ pb: 1 }}>
+          <DialogTitle sx={{ pb: '16px' }}>
             <Box
               sx={{
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'top',
                 justifyContent: 'space-between',
               }}
             >
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                All Deployment Strategies
+                Viable Deployment Strategies
               </Typography>
+
               <IconButton
                 size="small"
                 onClick={() => setOpenStrategiesDialog(false)}
@@ -2367,86 +2393,97 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
             </Box>
           </DialogTitle>
           <DialogContent sx={{ pt: 1 }}>
-            {platforms.map((p) => {
-              const css = clientStrategySets?.find((cs) => cs.platform === p);
-              return (
-                <Box key={p} sx={{ mb: 2, lastChild: { mb: 0 } }}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 700,
-                      color: 'primary.main',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.04em',
-                      fontSize: '0.7rem',
-                      mb: 1,
-                    }}
-                  >
-                    {p}
-                  </Typography>
-                  <Box
-                    sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}
-                  >
-                    {css?.strategies.map((strat) => (
-                      <Box
-                        key={strat.name}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          p: 1.25,
-                          borderRadius: '4px',
-                          border: '1px solid',
-                          borderColor: 'divider',
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontWeight: 600,
-                              color: 'text.primary',
-                              fontSize: '0.8125rem',
-                            }}
-                          >
-                            {strat.name}
-                          </Typography>
-                          {strat.description && (
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: 'text.secondary',
-                                fontSize: '0.7rem',
-                                display: 'block',
-                              }}
-                            >
-                              {strat.description}
-                            </Typography>
-                          )}
-                        </Box>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => {
-                            setSelectedStrategy(strat);
-                            setStrategyDetailOpen(true);
-                            setOpenStrategiesDialog(false);
-                          }}
+            <Typography variant="body2" color="text.secondary">
+              Deploy this model as a server using the following deployment
+              strategies
+            </Typography>
+            <Divider />
+            <Box sx={{ mt: '8px' }}>
+              {platforms.map((p) => {
+                const css = clientStrategySets?.find((cs) => cs.platform === p);
+                return (
+                  <Box key={p} sx={{ mb: 2, lastChild: { mb: 0 } }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: 700,
+                        color: 'primary.main',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em',
+                        fontSize: '0.7rem',
+                        mb: 1,
+                      }}
+                    >
+                      {p}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.5,
+                      }}
+                    >
+                      {css?.strategies.map((strat) => (
+                        <Box
+                          key={strat.name}
                           sx={{
-                            textTransform: 'none',
-                            fontSize: '0.7rem',
-                            borderRadius: '3px',
-                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            p: 1.25,
+                            borderRadius: '4px',
+                            border: '1px solid',
+                            borderColor: 'divider',
                           }}
                         >
-                          Details
-                        </Button>
-                      </Box>
-                    ))}
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                color: 'text.primary',
+                                fontSize: '0.8125rem',
+                              }}
+                            >
+                              {strat.name}
+                            </Typography>
+                            {strat.description && (
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: 'text.secondary',
+                                  fontSize: '0.7rem',
+                                  display: 'block',
+                                }}
+                              >
+                                {strat.description}
+                              </Typography>
+                            )}
+                          </Box>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => {
+                              setSelectedStrategy(strat);
+                              setStrategyDetailOpen(true);
+                              setOpenStrategiesDialog(false);
+                            }}
+                            sx={{
+                              textTransform: 'none',
+                              fontSize: '0.7rem',
+                              borderRadius: '3px',
+                              fontWeight: 600,
+                            }}
+                          >
+                            Details
+                          </Button>
+                        </Box>
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              );
-            })}
+                );
+              })}
+            </Box>
           </DialogContent>
         </Dialog>
         {!!selectedStrategy && (
