@@ -37,7 +37,7 @@ const PaginatedModels: React.FC<NativeModelsProps> = ({
     if (diff > 0) {
       return (
         <Typography sx={{ color: '#d32f2f' }}>
-          {diff} models hidden for questionable content
+          {diff} model{diff > 1 ? 's' : ''} hidden for questionable content
         </Typography>
       );
     }

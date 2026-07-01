@@ -163,7 +163,7 @@ const FilterModelsModal = ({ open, onClose, onApply }: FilterModalProps) => {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       slotProps={{
         paper: {
