@@ -51,9 +51,10 @@ import PublicIcon from '@mui/icons-material/Public';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { ModelMetadata, Platform, Task } from '@mlhub/models-ts-sdk';
 import { ClientStrategySet, Strategy } from '@mlhub/deployments-ts-sdk';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
 import { QueryWrapper } from '@tapis/tapisui-common';
+import { useHistory } from 'react-router-dom';
 
 interface DeployFormData {
   allocation: string;
@@ -804,9 +805,10 @@ const StrategyDetailDialog = ({
 // ─── Main Component ──────────────────────────────────────────────────
 type ModelDetailsProps = {
   model: Models.ModelMetadata;
-  scope: 'global' | 'tenant';
+  scope: 'global' | 'tenant' | 'me';
 };
 const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
+  const { create, isLoading, error } = Hooks.Models.useCreateModel();
   const [tabValue, setTabValue] = React.useState(0);
   const [deployDialogOpen, setDeployDialogOpen] = React.useState(false);
   const [openStrategiesDialog, setOpenStrategiesDialog] = React.useState(false);
@@ -814,10 +816,8 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<Strategy | null>(null);
   const [visibleKeywords, setVisibleKeywords] = React.useState(5);
-  const [forkSnackbar, setForkSnackbar] = React.useState<{
-    open: boolean;
-    message: string;
-  }>({ open: false, message: '' });
+  const history = useHistory();
+  const { username } = useTapisConfig();
   const clientStrategySets: Array<ClientStrategySet> =
     model.annotations?.deployment_strategies || [];
   const platforms = clientStrategySets.map((ps) => ps.platform) ?? [];
@@ -1042,20 +1042,27 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
               </Box>
 
               <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
-                <ForkPopover
-                  onFork={() =>
-                    setForkSnackbar({
-                      open: true,
-                      message: `Forked ${model.name} to your workspace`,
-                    })
-                  }
-                  onForkAndDeploy={() =>
-                    setForkSnackbar({
-                      open: true,
-                      message: `Forked and ingesting artifact for ${model.name}`,
-                    })
-                  }
-                />
+                {['global', 'tenant'].includes(scope) && (
+                  <ForkPopover
+                    onFork={() => {
+                      create(
+                        {
+                          createModelMetadataBody: {
+                            ...model,
+                          },
+                        },
+                        {
+                          onSuccess: () => {
+                            history.push(`/mlhub/me/models/${model.name}`);
+                          },
+                        }
+                      );
+                    }}
+                    onForkAndDeploy={() => {
+                      alert('Disabled');
+                    }}
+                  />
+                )}
                 <Tooltip title="Deploy this model">
                   <Button
                     variant="contained"

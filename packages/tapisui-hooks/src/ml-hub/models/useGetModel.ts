@@ -4,17 +4,15 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { useTapisConfig } from '../..';
 import QueryKeys from './queryKeys';
 
-const useModelCardDetails = (
+const useGetModel = (
   params: Models.GetModelByAuthorAndNameRequest,
   options: QueryObserverOptions<Models.GetModelResponse, Error> = {}
 ) => {
   const { accessToken, mlHubBasePath } = useTapisConfig();
   const result = useQuery<Models.GetModelResponse, Error>(
-    [QueryKeys.modelCardDetails, params, accessToken],
-    // Default to no token. This will generate a 403 when calling the list function
-    // which is expected behavior for not having a token
+    [QueryKeys.getByAuthorAndName, params, accessToken],
     () =>
-      API.Models.getModel(
+      API.Models.getByAuthorAndName(
         params,
         mlHubBasePath,
         accessToken?.access_token ?? ''
@@ -26,4 +24,4 @@ const useModelCardDetails = (
   return result;
 };
 
-export default useModelCardDetails;
+export default useGetModel;

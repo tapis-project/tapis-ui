@@ -1,8 +1,8 @@
 import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
-const details = (
-  params: Models.GetModelRequest,
+const getByAuthorAndName = (
+  params: Models.GetModelByAuthorAndNameRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -12,7 +12,10 @@ const details = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.GetModelResponse>(() => api.getModel(params));
+
+  return errorDecoder<Models.GetModelResponse>(() =>
+    api.getModelByAuthorAndName(params)
+  );
 };
 
-export default details;
+export default getByAuthorAndName;

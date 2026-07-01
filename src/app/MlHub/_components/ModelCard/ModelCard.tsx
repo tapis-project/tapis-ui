@@ -410,7 +410,7 @@ const DeployDropdown = ({
 
 interface ModelCardProps {
   model: ModelMetadata;
-  scope: 'global' | 'tenant';
+  scope: 'global' | 'tenant' | 'me';
 }
 
 const ModelCard = ({ model, scope }: ModelCardProps) => {
@@ -436,8 +436,17 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
   const taskTypes = model.task_types || [];
 
   const handleViewDetails = () => {
-    let scopeUri = scope === 'global' ? 'global/' : '';
-    history.push(`/mlhub/${scopeUri}models/${model.author}/${model.name}`);
+    switch (scope) {
+      case 'global':
+        history.push(`/mlhub/global/models/${model.name}`);
+        break;
+      case 'tenant':
+        history.push(`/mlhub/models/${model.author}/${model.name}`);
+        break;
+      case 'me':
+        history.push(`/mlhub/me/models/${model.name}`);
+        break;
+    }
   };
 
   return (

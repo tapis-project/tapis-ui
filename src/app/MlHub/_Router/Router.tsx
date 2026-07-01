@@ -9,14 +9,35 @@ import { Layout as ModelDetailsLayout } from '../Model';
 import { ModelSearch } from '../ModelSearch';
 import * as MLHubModels from '@mlhub/models-ts-sdk';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
+  const { username } = useTapisConfig();
   return (
     <Switch>
       <Route path={`${path}`} exact>
         <Dashboard />
       </Route>
+
+      <Route path={`${path}/me/models`} exact>
+        <ModelFilterProvider>
+          <ModelSearch scope={'me'} />
+        </ModelFilterProvider>
+      </Route>
+
+      <Route
+        path={`${path}/me/models/:name`}
+        render={({
+          match: {
+            params: { name },
+          },
+        }: any) => {
+          return (
+            <ModelDetailsLayout scope={'me'} author={username} name={name} />
+          );
+        }}
+      />
 
       <Route path={`${path}/global/models`} exact>
         <ModelFilterProvider>
@@ -25,14 +46,29 @@ const Router: React.FC = () => {
       </Route>
 
       <Route
-        path={`${path}/global/models/:author/:name`}
+        path={`${path}/global/models/:name`}
+        render={({
+          match: {
+            params: { name },
+          },
+        }: any) => (
+          <ModelDetailsLayout
+            scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Global}
+            author={'mlhub'}
+            name={name}
+          />
+        )}
+      />
+
+      <Route
+        path={`${path}/models/:author/:name`}
         render={({
           match: {
             params: { author, name },
           },
         }: any) => (
           <ModelDetailsLayout
-            scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Global}
+            scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Tenant}
             author={author}
             name={name}
           />

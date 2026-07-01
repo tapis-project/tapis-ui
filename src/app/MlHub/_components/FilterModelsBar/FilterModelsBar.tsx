@@ -64,6 +64,7 @@ const LIBRARY_CHIP_STYLE = {
 
 interface FilterBarProps {
   onApply: () => void;
+  scope?: 'me' | 'global' | 'tenant';
 }
 
 const getTaskCategory = (task: Models.Task): Task['category'] => {
@@ -76,7 +77,10 @@ const getTaskLabel = (task: Models.Task): Task['label'] => {
   return TASK_TYPES.find((t) => task == t.value)?.label || 'unknown';
 };
 
-const FilterModelsBar: React.FC<FilterBarProps> = ({ onApply }) => {
+const FilterModelsBar: React.FC<FilterBarProps> = ({
+  onApply,
+  scope = 'global',
+}) => {
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const {
     libraries: selectedLibraries,
@@ -89,6 +93,17 @@ const FilterModelsBar: React.FC<FilterBarProps> = ({ onApply }) => {
   const [open, setOpen] = useState(false);
 
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const getTitle = useMemo(() => {
+    switch (scope) {
+      case 'me':
+        return 'My Models';
+      case 'global':
+        return 'Global Models';
+      case 'tenant':
+        return 'Public Models';
+    }
+  }, [scope]);
 
   useEffect(() => {
     if (!filtersExpanded) return;
@@ -135,112 +150,138 @@ const FilterModelsBar: React.FC<FilterBarProps> = ({ onApply }) => {
           py: 1.25,
           alignItems: 'center',
           gap: 1.5,
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
         }}
       >
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: 600,
-              color: 'text.secondary',
-              fontSize: '0.75rem',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Limit
-          </Typography>
-          <FormControl size="small">
-            <Select
-              value={limit}
-              onChange={(e) => setLimit(Number(e.target.value))}
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {getTitle}
+        </Typography>
+        <Stack
+          direction="row"
+          sx={{
+            px: { xs: 2, sm: 3 },
+            py: 1.25,
+            alignItems: 'center',
+            gap: 1.5,
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="caption"
               sx={{
-                height: 28,
-                fontSize: '0.8rem',
                 fontWeight: 600,
-                minWidth: 68,
-                borderRadius: 1.5,
-                '& .MuiSelect-select': { py: 0, px: 1.25 },
-              }}
-              MenuProps={{
-                slotProps: {
-                  paper: {
-                    sx: { borderRadius: 2, mt: 0.5 },
-                  },
-                },
+                color: 'text.secondary',
+                fontSize: '0.75rem',
+                whiteSpace: 'nowrap',
               }}
             >
-              <MenuItem value={10} sx={{ fontSize: '0.8rem', fontWeight: 500 }}>
-                10
-              </MenuItem>
-              <MenuItem value={50} sx={{ fontSize: '0.8rem', fontWeight: 500 }}>
-                50
-              </MenuItem>
-              <MenuItem
-                value={100}
-                sx={{ fontSize: '0.8rem', fontWeight: 500 }}
+              Limit
+            </Typography>
+            <FormControl size="small">
+              <Select
+                value={limit}
+                onChange={(e) => setLimit(Number(e.target.value))}
+                sx={{
+                  height: 28,
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  minWidth: 68,
+                  borderRadius: 1.5,
+                  '& .MuiSelect-select': { py: 0, px: 1.25 },
+                }}
+                MenuProps={{
+                  slotProps: {
+                    paper: {
+                      sx: { borderRadius: 2, mt: 0.5 },
+                    },
+                  },
+                }}
               >
-                100
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
-        {hasActiveFilters && (
+                <MenuItem
+                  value={10}
+                  sx={{ fontSize: '0.8rem', fontWeight: 500 }}
+                >
+                  10
+                </MenuItem>
+                <MenuItem
+                  value={50}
+                  sx={{ fontSize: '0.8rem', fontWeight: 500 }}
+                >
+                  50
+                </MenuItem>
+                <MenuItem
+                  value={100}
+                  sx={{ fontSize: '0.8rem', fontWeight: 500 }}
+                >
+                  100
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+          {hasActiveFilters && (
+            <Button
+              size="small"
+              onClick={() => setFiltersExpanded((prev) => !prev)}
+              endIcon={
+                filtersExpanded ? (
+                  <ExpandLessRoundedIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <ExpandMoreRoundedIcon sx={{ fontSize: 18 }} />
+                )
+              }
+              sx={{
+                height: 28,
+                px: 1.5,
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                borderRadius: '100px',
+                bgcolor: 'rgba(15, 118, 110, 0.08)',
+                color: '#11766E',
+                border: '1px solid',
+                borderColor: 'rgba(15, 118, 110, 0.15)',
+                '&:hover': {
+                  bgcolor: 'rgba(15, 118, 110, 0.14)',
+                  borderColor: 'rgba(15, 118, 110, 0.25)',
+                },
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {totalFilters} active
+            </Button>
+          )}
+
           <Button
-            size="small"
-            onClick={() => setFiltersExpanded((prev) => !prev)}
-            endIcon={
-              filtersExpanded ? (
-                <ExpandLessRoundedIcon sx={{ fontSize: 18 }} />
-              ) : (
-                <ExpandMoreRoundedIcon sx={{ fontSize: 18 }} />
-              )
-            }
+            variant="contained"
+            onClick={() => {
+              setOpen(true);
+            }}
+            startIcon={<FilterAltRoundedIcon />}
             sx={{
-              height: 28,
-              px: 1.5,
-              fontSize: '0.75rem',
-              fontWeight: 600,
+              px: 3,
+              py: 0.75,
+              fontSize: '0.875rem',
               borderRadius: '100px',
-              bgcolor: 'rgba(15, 118, 110, 0.08)',
-              color: '#11766E',
-              border: '1px solid',
-              borderColor: 'rgba(15, 118, 110, 0.15)',
+              backgroundColor: '#11766E',
+              boxShadow: '0 1px 8px rgba(15, 118, 110, 0.2)',
               '&:hover': {
-                bgcolor: 'rgba(15, 118, 110, 0.14)',
-                borderColor: 'rgba(15, 118, 110, 0.25)',
+                boxShadow: '0 2px 14px rgba(15, 118, 110, 0.3)',
+                transform: 'translateY(-1px)',
               },
               transition: 'all 0.2s ease',
               whiteSpace: 'nowrap',
             }}
           >
-            {totalFilters} active
+            Filters{totalFilters > 0 ? ` (${totalFilters})` : ''}
           </Button>
-        )}
-
-        <Button
-          variant="contained"
-          onClick={() => {
-            setOpen(true);
-          }}
-          startIcon={<FilterAltRoundedIcon />}
-          sx={{
-            px: 3,
-            py: 0.75,
-            fontSize: '0.875rem',
-            borderRadius: '100px',
-            backgroundColor: '#11766E',
-            boxShadow: '0 1px 8px rgba(15, 118, 110, 0.2)',
-            '&:hover': {
-              boxShadow: '0 2px 14px rgba(15, 118, 110, 0.3)',
-              transform: 'translateY(-1px)',
-            },
-            transition: 'all 0.2s ease',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Filters{totalFilters > 0 ? ` (${totalFilters})` : ''}
-        </Button>
+        </Stack>
       </Stack>
 
       <Collapse in={filtersExpanded && hasActiveFilters}>

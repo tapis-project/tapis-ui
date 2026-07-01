@@ -1,21 +1,9 @@
-import React, { useReducer, useState } from 'react';
-import {
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Autocomplete,
-  Alert,
-  AlertTitle,
-} from '@mui/material';
-import { Button } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import React, { useMemo, useReducer } from 'react';
+import { Alert, AlertTitle } from '@mui/material';
 import styles from './ModelSearch.module.scss';
 import { Models } from '@mlhub/ts-sdk';
 import { PaginatedModels } from './PaginatedModels';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
-import { SectionHeader } from '@tapis/tapisui-common';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { FilterModelsBar } from '../_components';
 import { useModelFilter } from '../_context/ModelFilterContext/ModelFilterContext';
 
@@ -82,8 +70,20 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
   }
 };
 
-const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
+const ModelSearch: React.FC<{ scope: 'me' | 'global' | 'tenant' }> = ({
+  scope,
+}) => {
   const [state, dispatch] = useReducer(reducer, initialReducerState);
+  const { username } = useTapisConfig();
+  let author = useMemo(() => {
+    switch (scope) {
+      case 'global':
+      case 'tenant':
+        return 'mlhub';
+      case 'me':
+        return username;
+    }
+  }, [scope]);
   const { libraries, limit, taskTypes } = useModelFilter();
 
   const { data, discover, isLoading, isError, error } =
@@ -91,7 +91,7 @@ const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
       options: {
         autoRunParams: {
           discoveryCriteria: {
-            criteria: [{ author: 'mlhub' }],
+            criteria: [{ author }],
           },
           limit: 100,
           includeCount: true,
@@ -130,6 +130,11 @@ const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
 
   const handleDiscover = () => {
     let criterion: Models.DiscoveryCriterion = {};
+
+    if (scope === 'me') {
+      criterion['author'] = username;
+    }
+
     if (libraries.length > 0) {
       criterion['libraries'] = libraries;
     }
@@ -160,6 +165,7 @@ const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
           onApply={() => {
             handleDiscover();
           }}
+          scope={scope}
         />
       </div>
       {isError && error ? (
@@ -177,6 +183,11 @@ const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
               ? undefined
               : () => {
                   let criterion: Models.DiscoveryCriterion = {};
+
+                  if (scope === 'me') {
+                    criterion['author'] = username;
+                  }
+
                   if (libraries.length > 0) {
                     criterion['libraries'] = libraries;
                   }
@@ -205,6 +216,10 @@ const ModelSearch: React.FC<{ scope: 'global' | 'tenant' }> = ({ scope }) => {
               ? undefined
               : () => {
                   let criterion: Models.DiscoveryCriterion = {};
+
+                  if (scope === 'me') {
+                    criterion['author'] = username;
+                  }
 
                   if (libraries.length > 0) {
                     criterion['libraries'] = libraries;

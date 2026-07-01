@@ -21,7 +21,7 @@ const ModelStatCard: React.FC<ModelsStatCardProps> = ({ author }) => {
       count={models.length}
       color="info.main"
       onClick={() => {
-        history.push('/mlhub/my/models');
+        history.push('/mlhub/me/models');
       }}
     />
   );

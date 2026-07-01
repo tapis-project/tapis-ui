@@ -107,7 +107,7 @@ const TopNavbar = () => {
           <MenuItem
             onClick={() => {
               setModelsAnchor(null);
-              history.push('/mlhub/my/models');
+              history.push('/mlhub/me/models');
             }}
             sx={{ px: 2.5, py: 1.5 }}
           >

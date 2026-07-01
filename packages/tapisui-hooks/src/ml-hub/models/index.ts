@@ -12,6 +12,7 @@ export { default as useInferenceServerDetails } from './inference/useInferenceSe
 export { default as queryKeys } from './queryKeys';
 export { default as useModelCardDetails } from './useModelCardDetails';
 export { default as useGetModel } from './useGetModel';
+export { default as useCreateModel } from './useCreateModel';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
 export * as Ingestions from './ingestions';

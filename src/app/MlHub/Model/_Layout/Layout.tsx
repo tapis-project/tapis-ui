@@ -6,14 +6,16 @@ import Model from '../Model';
 type ModelDetailsLayoutProps = {
   author: string;
   name: string;
-  scope: Models.GetModelByAuthorAndNameScopeEnum;
+  scope: 'global' | 'tenant' | 'me';
 };
 
 const Layout: React.FC<ModelDetailsLayoutProps> = ({ author, name, scope }) => {
   const { data, isLoading, error } = Hooks.Models.useGetModel({
     author,
     name,
-    scope,
+    scope: (['tenant', 'me'].includes(scope)
+      ? 'tenant'
+      : 'global') as Models.GetModelByAuthorAndNameScopeEnum,
   });
 
   const model = data?.result ?? undefined;

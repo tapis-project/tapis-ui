@@ -8,7 +8,7 @@ import { ModelCard } from '../../_components';
 
 type NativeModelsProps = {
   models: Array<Models.ModelMetadata>;
-  scope: 'global' | 'tenant';
+  scope: 'global' | 'tenant' | 'me';
   count?: number;
   previous?: () => void;
   next?: () => void;
