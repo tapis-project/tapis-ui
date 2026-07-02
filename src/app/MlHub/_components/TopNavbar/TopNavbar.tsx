@@ -9,12 +9,13 @@ import {
   ListItemText,
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
+  HomeOutlined as DashboardIcon,
   SmartToy as SmartToyIcon,
   Search as SearchIcon,
   ExpandMore as ExpandMoreIcon,
   Person as PersonIcon,
   AutoAwesome as AutoAwesomeIcon,
+  Business,
 } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { ChatContext } from 'app/_context/chat';
@@ -117,6 +118,31 @@ const TopNavbar = () => {
             <ListItemText
               primary="My Models"
               secondary="Access your models owned by you and others in your organization"
+              slotProps={{
+                primary: { sx: { fontWeight: 600 } },
+                secondary: {
+                  sx: {
+                    fontSize: '0.75rem',
+                    color: 'text.secondary',
+                    mt: 0.25,
+                  },
+                },
+              }}
+            />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setModelsAnchor(null);
+              history.push('/mlhub/models');
+            }}
+            sx={{ px: 2.5, py: 1.5 }}
+          >
+            <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>
+              <Business />
+            </ListItemIcon>
+            <ListItemText
+              primary="Public Models"
+              secondary="Access models made public by users in your organization"
               slotProps={{
                 primary: { sx: { fontWeight: 600 } },
                 secondary: {

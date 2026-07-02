@@ -124,22 +124,26 @@ function TabPanel({
   children,
   value,
   index,
+  show = true,
 }: {
   children: React.ReactNode;
   value: number;
   index: number;
+  show?: boolean;
 }) {
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`model-tabpanel-${index}`}
-      aria-labelledby={`model-tab-${index}`}
-      sx={{ width: '100%', p: 3 }}
-    >
-      {value === index && <Box sx={{ width: '100%' }}>{children}</Box>}
-    </Box>
-  );
+  if (show) {
+    return (
+      <Box
+        role="tabpanel"
+        hidden={value !== index}
+        id={`model-tabpanel-${index}`}
+        aria-labelledby={`model-tab-${index}`}
+        sx={{ width: '100%', p: 3 }}
+      >
+        {value === index && <Box sx={{ width: '100%' }}>{children}</Box>}
+      </Box>
+    );
+  }
 }
 
 function MetricCard({
@@ -807,6 +811,7 @@ type ModelDetailsProps = {
   model: Models.ModelMetadata;
   scope: 'global' | 'tenant' | 'me';
 };
+
 const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
   const { create, isLoading, error } = Hooks.Models.useCreateModel();
   const [tabValue, setTabValue] = React.useState(0);
@@ -822,6 +827,15 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
     model.annotations?.deployment_strategies || [];
   const platforms = clientStrategySets.map((ps) => ps.platform) ?? [];
 
+  // Parse the keywords for paper ids on arxiv
+  const papers = React.useMemo(() => {
+    return (model.keywords ?? [])
+      .filter((k) => k.startsWith('arxiv:'))
+      .map((k) => {
+        return 'https://arxiv.org/html/' + k.split('arxiv:')[1];
+      });
+  }, [model, scope]);
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: <InfoIcon fontSize="small" /> },
     {
@@ -832,6 +846,12 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
     { id: 'source', label: 'Source', icon: <LanguageIcon fontSize="small" /> },
     { id: 'keywords', label: 'Keywords', icon: <LabelIcon fontSize="small" /> },
     { id: 'metadata', label: 'Metadata', icon: <CodeIcon fontSize="small" /> },
+    {
+      id: 'papers',
+      label: 'Papers',
+      icon: <CodeIcon fontSize="small" />,
+      show: papers.length > 0,
+    },
   ];
 
   const keywords = model.keywords || [];
@@ -1209,13 +1229,15 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                 '& .MuiTabs-indicator': { height: 2, borderRadius: 1 },
               }}
             >
-              {tabs.map((tab, i) => (
-                <Tab
-                  key={tab.id}
-                  label={tab.label}
-                  sx={{ fontSize: '0.8125rem' }}
-                />
-              ))}
+              {tabs
+                .filter((t) => !(t.show ?? true) === false)
+                .map((tab, i) => (
+                  <Tab
+                    key={tab.id}
+                    label={tab.label}
+                    sx={{ fontSize: '0.8125rem' }}
+                  />
+                ))}
             </Tabs>
           </Box>
         </Box>
@@ -1983,6 +2005,20 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
               )}
             </SectionCard>
           </TabPanel>
+
+          {papers.length > 0 && (
+            <TabPanel value={tabValue} index={5}>
+              <SectionCard title="Papers">
+                <iframe
+                  style={{
+                    width: '100%',
+                    height: '600px',
+                  }}
+                  src={papers[0]}
+                />
+              </SectionCard>
+            </TabPanel>
+          )}
         </Box>
 
         {/* ─── Modals ───────────────────────────────────────────── */}
@@ -2021,8 +2057,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
           </DialogTitle>
           <DialogContent sx={{ pt: 1 }}>
             <Typography variant="body2" color="text.secondary">
-              Deploy this model as a server using the following deployment
-              strategies
+              Deploy this model using the following deployment strategies
             </Typography>
             <Divider />
             <Box sx={{ mt: '8px' }}>

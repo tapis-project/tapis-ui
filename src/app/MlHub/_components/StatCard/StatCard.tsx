@@ -9,6 +9,7 @@ import { CircularProgress } from '@mui/material';
 interface StatCardProps {
   icon: React.ReactNode;
   label: string;
+  caption?: string;
   count: number | string;
   color?: string;
   isLoading?: boolean;
@@ -18,6 +19,7 @@ interface StatCardProps {
 export default function StatCard({
   icon,
   label,
+  caption,
   count,
   onClick,
   color = 'primary.main',
@@ -57,24 +59,38 @@ export default function StatCard({
         {icon}
       </Avatar>
       <Stack spacing={0}>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ fontWeight: 500 }}
-        >
-          {label}
-        </Typography>
-        <Typography
-          variant="h5"
-          component="p"
-          sx={{ fontWeight: 700, lineHeight: 1.2 }}
-        >
-          {isLoading ? (
-            <CircularProgress aria-label="Loading…" />
-          ) : (
-            count.toLocaleString()
-          )}
-        </Typography>
+        {isLoading ? (
+          <CircularProgress aria-label="Loading…" />
+        ) : (
+          <span>
+            <Typography
+              variant="h6"
+              display="inline"
+              color="text.main"
+              sx={{ fontWeight: 700 }}
+            >
+              {label}:
+            </Typography>
+            <Typography
+              variant="h6"
+              display="inline"
+              color="text.secondary"
+              sx={{ ml: '8px', fontWeight: 700 }}
+            >
+              {count.toLocaleString()}
+            </Typography>
+          </span>
+        )}
+
+        {caption && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ lineHeight: 'normal' }}
+          >
+            {caption}
+          </Typography>
+        )}
       </Stack>
     </Paper>
   );

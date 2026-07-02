@@ -1,14 +1,16 @@
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks/';
 import { StatCard } from '../../../_components';
-import { Lock } from '@mui/icons-material';
+import { Business } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 
-type ModelsStatCardProps = {
+type TenantModelStatCardProps = {
   author: string;
 };
 
-const ModelStatCard: React.FC<ModelsStatCardProps> = ({ author }) => {
+const TenantModelStatCard: React.FC<TenantModelStatCardProps> = ({
+  author,
+}) => {
   const { data, isLoading, error } = Hooks.Models.useListByAuthor({ author });
   const history = useHistory();
 
@@ -16,15 +18,16 @@ const ModelStatCard: React.FC<ModelsStatCardProps> = ({ author }) => {
 
   return (
     <StatCard
-      icon={<Lock fontSize="large" />}
-      label="My Models"
+      icon={<Business />}
+      label="Public Models"
+      caption="Public models owned by users in your organization"
       count={models.length}
-      color="info.main"
+      color="warning.main"
       onClick={() => {
-        history.push('/mlhub/me/models');
+        history.push('/mlhub/models');
       }}
     />
   );
 };
 
-export default ModelStatCard;
+export default TenantModelStatCard;

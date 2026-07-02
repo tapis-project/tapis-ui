@@ -14,7 +14,11 @@ import styles from './Dashboard.module.scss';
 import { ChatContext } from 'app/_context/chat';
 import { useHistory } from 'react-router-dom';
 import { Download, SmartToy, Upload } from '@mui/icons-material';
-import { ModelStatCard, GlobalModelStatCard } from '../Model/_components';
+import {
+  MyModelStatCard,
+  GlobalModelStatCard,
+  TenantModelStatCard,
+} from '../Model/_components';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 const Dashboard: React.FC = () => {
@@ -38,27 +42,21 @@ const Dashboard: React.FC = () => {
 
           {/* Models Section */}
           <Section title="Models" icon={<SmartToy />}>
-            <ModelStatCard author={username} />
-            <StatCard
-              icon={<BusinessIcon />}
-              label="Available"
-              count={12}
-              color="warning.main"
-              onClick={() => {
-                history.push('/mlhub/models');
-              }}
-            />
+            <MyModelStatCard author={username} />
+            <TenantModelStatCard author={username} />
             <GlobalModelStatCard />
             <StatCard
               icon={<Download />}
               label="Ingestions"
-              count={47}
+              caption="Model artifacts you have uploaded or ingested from external platforms"
+              count={'?'}
               color="success.main"
             />
             <StatCard
               icon={<Upload />}
               label="Publications"
-              count={47}
+              caption="Instances in which you have published your MLHub models to other platforms"
+              count={'?'}
               color="success.main"
             />
           </Section>

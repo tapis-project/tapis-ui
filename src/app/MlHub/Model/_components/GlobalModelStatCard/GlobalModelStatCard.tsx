@@ -26,14 +26,13 @@ const GlobalModelStatCard: React.FC = () => {
 
   const respMetadata = (data?.metadata as DiscoverModelsResponseMetadata) ?? {};
 
-  console.log({ data });
-
   return (
     <StatCard
       icon={<Public fontSize="large" />}
       label="Global Models"
-      count={respMetadata.count ?? 'No count'}
-      color="info.main"
+      caption="MLHub-curated models from external platforms"
+      count={respMetadata.count ?? 0}
+      color="none"
       isLoading={isLoading}
       onClick={() => {
         history.push('/mlhub/global/models');
