@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LabelIcon from '@mui/icons-material/Label';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { RocketLaunch } from '@mui/icons-material';
 import { ModelMetadata, Platform } from '@mlhub/models-ts-sdk';
 import { ClientStrategySet, Strategy } from '@mlhub/deployments-ts-sdk';
 import { Code, Gavel, Polyline } from '@mui/icons-material';
@@ -158,7 +158,7 @@ const DeployDropdown = ({
         <Button
           size="small"
           variant="outlined"
-          startIcon={<CloudUploadIcon sx={{ fontSize: 16 }} />}
+          startIcon={<RocketLaunch sx={{ fontSize: 16 }} />}
           onClick={handleOpen}
           disableRipple
           sx={{
@@ -216,7 +216,7 @@ const DeployDropdown = ({
             }}
           >
             <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
-              <CloudUploadIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+              <RocketLaunch sx={{ fontSize: 16, color: 'primary.main' }} />
               <Typography
                 variant="caption"
                 sx={{
@@ -873,7 +873,7 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
               onClick={handleViewDetails}
               sx={{ borderRadius: 0.5, gap: 1.5, px: 1.5, py: 0.75 }}
             >
-              <CloudUploadIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+              <RocketLaunch sx={{ fontSize: 18, color: 'text.secondary' }} />
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 View Details
               </Typography>
@@ -921,7 +921,7 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
                 }}
                 sx={{ borderRadius: 0.5, gap: 1.5, px: 1.5, py: 0.75 }}
               >
-                <CloudUploadIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                <RocketLaunch sx={{ fontSize: 18, color: 'success.main' }} />
                 <Typography
                   variant="body2"
                   sx={{ fontWeight: 500, color: 'success.dark' }}
