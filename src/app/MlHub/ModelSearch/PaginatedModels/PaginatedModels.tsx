@@ -24,10 +24,11 @@ const PaginatedModels: React.FC<NativeModelsProps> = ({
   isLoading,
 }) => {
   const appropriateModels = useMemo(() => {
+    console.log({ models });
     return models.filter((m) => {
       return (
-        !m.keywords?.includes('not-for-all-audiences') &&
-        !m.keywords?.includes('roleplay')
+        !m.tags?.includes('not-for-all-audiences') &&
+        !m.tags?.includes('roleplay')
       );
     });
   }, [models, count]);

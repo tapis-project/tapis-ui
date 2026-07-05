@@ -26,7 +26,7 @@ const ArtifactDetail: React.FC<Props> = ({ artifactId }) => {
     version: '',
     framework: '',
     model_type: '',
-    keywords: [],
+    tags: [],
     license: '',
     // Datasets
     pretraining_datasets: [],

@@ -418,9 +418,10 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
 
-  const [keywordAnchorEl, setKeywordAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const openKeywords = Boolean(keywordAnchorEl);
+  const [tagAnchorEl, setTagAnchorEl] = React.useState<null | HTMLElement>(
+    null
+  );
+  const openTags = Boolean(tagAnchorEl);
 
   const clientStrategySets: Array<ClientStrategySet> =
     model.annotations?.deployment_strategies ?? [];
@@ -429,8 +430,8 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
     clientStrategySets.flatMap((item) => item.strategies).length > 0;
 
   const visibleCount = 5;
-  const keywords = model.keywords || [];
-  const hiddenKeywords = keywords.slice(visibleCount);
+  const tags = model.tags || [];
+  const hiddenTags = tags.slice(visibleCount);
 
   const libraries = model.libraries || [];
   const taskTypes = model.task_types || [];
@@ -683,8 +684,8 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
             </Stack>
           )}
 
-          {/* Keywords row - alignItems moved to sx */}
-          {keywords.length > 0 && (
+          {/* Tags row - alignItems moved to sx */}
+          {tags.length > 0 && (
             <Stack
               direction="row"
               spacing={1}
@@ -701,9 +702,9 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
                   letterSpacing: '0.05em',
                 }}
               >
-                Keywords
+                Tags
               </Typography>
-              {keywords.slice(0, visibleCount).map((kw) => (
+              {tags.slice(0, visibleCount).map((kw) => (
                 <Chip
                   key={kw}
                   label={kw.length > 22 ? kw.slice(0, 19) + '…' : kw}
@@ -721,11 +722,11 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
                   }}
                 />
               ))}
-              {keywords.length > visibleCount && (
+              {tags.length > visibleCount && (
                 <Chip
-                  label={`+${hiddenKeywords.length}`}
+                  label={`+${hiddenTags.length}`}
                   size="small"
-                  onClick={(e) => setKeywordAnchorEl(e.currentTarget)}
+                  onClick={(e) => setTagAnchorEl(e.currentTarget)}
                   onMouseEnter={(e) => {
                     (e.target as HTMLElement).style.transform = 'scale(1.05)';
                     (e.target as HTMLElement).style.transition =
@@ -957,11 +958,11 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
         </Box>
       </CardContent>
 
-      {/* Keywords dropdown - hidden tags shown as clickable overlay */}
+      {/* Tags dropdown - hidden tags shown as clickable overlay */}
       <Popover
-        open={openKeywords}
-        anchorEl={keywordAnchorEl}
-        onClose={() => setKeywordAnchorEl(null)}
+        open={openTags}
+        anchorEl={tagAnchorEl}
+        onClose={() => setTagAnchorEl(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slotProps={{
@@ -1007,11 +1008,11 @@ const ModelCard = ({ model, scope }: ModelCardProps) => {
               mb: 0.75,
             }}
           >
-            Keywords ({keywords.length})
+            Tags ({tags.length})
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.375 }}>
-            {keywords.map((kw) => {
-              const isHidden = keywords.indexOf(kw) >= visibleCount;
+            {tags.map((kw) => {
+              const isHidden = tags.indexOf(kw) >= visibleCount;
               return (
                 <Chip
                   key={kw}

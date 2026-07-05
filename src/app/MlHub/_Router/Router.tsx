@@ -15,87 +15,89 @@ const Router: React.FC = () => {
   const { path } = useRouteMatch();
   const { username } = useTapisConfig();
   return (
-    <Switch>
-      <Route path={`${path}`} exact>
-        <Dashboard />
-      </Route>
+    <>
+      <Switch>
+        <Route path={`${path}`} exact>
+          <Dashboard />
+        </Route>
 
-      <Route path={`${path}/me/models`} exact>
-        <ModelFilterProvider>
-          <ModelSearch scope={'me'} />
-        </ModelFilterProvider>
-      </Route>
+        <Route path={`${path}/me/models`} exact>
+          <ModelFilterProvider>
+            <ModelSearch scope={'me'} />
+          </ModelFilterProvider>
+        </Route>
 
-      <Route
-        path={`${path}/me/models/:name`}
-        render={({
-          match: {
-            params: { name },
-          },
-        }: any) => {
-          return (
-            <ModelDetailsLayout scope={'me'} author={username} name={name} />
-          );
-        }}
-      />
+        <Route
+          path={`${path}/me/models/:name`}
+          render={({
+            match: {
+              params: { name },
+            },
+          }: any) => {
+            return (
+              <ModelDetailsLayout scope={'me'} author={username} name={name} />
+            );
+          }}
+        />
 
-      <Route path={`${path}/global/models`} exact>
-        <ModelFilterProvider>
-          <ModelSearch scope={'global'} />
-        </ModelFilterProvider>
-      </Route>
+        <Route path={`${path}/global/models`} exact>
+          <ModelFilterProvider>
+            <ModelSearch scope={'global'} />
+          </ModelFilterProvider>
+        </Route>
 
-      <Route
-        path={`${path}/global/models/:name`}
-        render={({
-          match: {
-            params: { name },
-          },
-        }: any) => (
-          <ModelDetailsLayout
-            scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Global}
-            author={'mlhub'}
-            name={name}
-          />
-        )}
-      />
+        <Route
+          path={`${path}/global/models/:name`}
+          render={({
+            match: {
+              params: { name },
+            },
+          }: any) => (
+            <ModelDetailsLayout
+              scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Global}
+              author={'mlhub'}
+              name={name}
+            />
+          )}
+        />
 
-      <Route
-        path={`${path}/models/:author/:name`}
-        render={({
-          match: {
-            params: { author, name },
-          },
-        }: any) => (
-          <ModelDetailsLayout
-            scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Tenant}
-            author={author}
-            name={name}
-          />
-        )}
-      />
+        <Route
+          path={`${path}/models/:author/:name`}
+          render={({
+            match: {
+              params: { author, name },
+            },
+          }: any) => (
+            <ModelDetailsLayout
+              scope={MLHubModels.GetModelByAuthorAndNameScopeEnum.Tenant}
+              author={author}
+              name={name}
+            />
+          )}
+        />
 
-      {/* <Route path={`${path}/platforms`}>
-        <ModelsLayout />
-      </Route>
+        {/* <Route path={`${path}/platforms`}>
+          <ModelsLayout />
+        </Route>
 
-      <Route path={`${path}/datasets`}>
-        <DatasetsLayout />
-      </Route>
+        <Route path={`${path}/datasets`}>
+          <DatasetsLayout />
+        </Route>
 
-      <Route path={`${path}/ingestions`} exact>
-        <IngestModel />
-      </Route>
+        <Route path={`${path}/ingestions`} exact>
+          <IngestModel />
+        </Route>
 
-      <Route
-        path={`${path}/ingestions/:ingestionId`}
-        render={({
-          match: {
-            params: { ingestionId },
-          },
-        }: any) => <IngestionDetail ingestionId={ingestionId} />}
-      /> */}
-    </Switch>
+        <Route
+          path={`${path}/ingestions/:ingestionId`}
+          render={({
+            match: {
+              params: { ingestionId },
+            },
+          }: any) => <IngestionDetail ingestionId={ingestionId} />}
+        /> */}
+      </Switch>
+    </>
   );
 };
 

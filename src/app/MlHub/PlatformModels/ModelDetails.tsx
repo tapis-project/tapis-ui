@@ -156,12 +156,12 @@ const ModelDetails: React.FC<ModelDetailsProps> = ({ modelId, platform }) => {
                   </div>
                 )}
 
-                {model.keywords && (
+                {model.tags && (
                   <div className="mt-4 pt-4 border-top">
                     <div className="text-muted small mb-2 text-uppercase fw-semibold">
-                      Keywords
+                      Tags
                     </div>
-                    <div className="lh-lg">{model.keywords}</div>
+                    <div className="lh-lg">{model.tags}</div>
                   </div>
                 )}
 

@@ -18,7 +18,7 @@ const Layout: React.FC<ModelDetailsLayoutProps> = ({ author, name, scope }) => {
       : 'global') as Models.GetModelByAuthorAndNameScopeEnum,
   });
 
-  const model = data?.result ?? undefined;
+  const model = (data?.result as unknown as Models.ModelMetadata) ?? undefined;
 
   return (
     <QueryWrapper isLoading={isLoading} error={error}>

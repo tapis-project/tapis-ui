@@ -17,6 +17,7 @@ const Pods = lazy(() => import('../Pods'));
 const Files = lazy(() => import('../Files'));
 const Workflows = lazy(() => import('../Workflows'));
 const MlHub = lazy(() => import('../MlHub'));
+const MLHub2 = lazy(() => import('../MLHub2'));
 const Authenticator = lazy(() => import('../Authenticator'));
 const UIPatterns = lazy(() => import('../UIPatterns'));
 
@@ -80,6 +81,11 @@ const Router: React.FC = () => {
       <ProtectedRoute accessToken={accessToken?.access_token} path="/mlhub">
         <Suspense fallback={<RouteLoader />}>
           <MlHub />
+        </Suspense>
+      </ProtectedRoute>
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/mlhub2">
+        <Suspense fallback={<RouteLoader />}>
+          <MLHub2 />
         </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">

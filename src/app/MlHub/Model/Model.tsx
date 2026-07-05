@@ -820,16 +820,16 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
   const [strategyDetailOpen, setStrategyDetailOpen] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<Strategy | null>(null);
-  const [visibleKeywords, setVisibleKeywords] = React.useState(5);
+  const [visibleTags, setVisibleTags] = React.useState(5);
   const history = useHistory();
   const { username } = useTapisConfig();
   const clientStrategySets: Array<ClientStrategySet> =
     model.annotations?.deployment_strategies || [];
   const platforms = clientStrategySets.map((ps) => ps.platform) ?? [];
 
-  // Parse the keywords for paper ids on arxiv
+  // Parse the tags for paper ids on arxiv
   const papers = React.useMemo(() => {
-    return (model.keywords ?? [])
+    return (model.tags ?? [])
       .filter((k) => k.startsWith('arxiv:'))
       .map((k) => {
         return 'https://arxiv.org/html/' + k.split('arxiv:')[1];
@@ -844,7 +844,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
       icon: <CloudUploadIcon fontSize="small" />,
     },
     { id: 'source', label: 'Source', icon: <LanguageIcon fontSize="small" /> },
-    { id: 'keywords', label: 'Keywords', icon: <LabelIcon fontSize="small" /> },
+    { id: 'tags', label: 'Tags', icon: <LabelIcon fontSize="small" /> },
     { id: 'metadata', label: 'Metadata', icon: <CodeIcon fontSize="small" /> },
     {
       id: 'papers',
@@ -854,11 +854,11 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
     },
   ];
 
-  const keywords = model.keywords || [];
+  const tags = model.tags || [];
   const taskTypes = model.task_types || [];
   const libraries = model.libraries || [];
-  const visibleKws = keywords.slice(0, visibleKeywords);
-  const hiddenKws = keywords.slice(visibleKeywords);
+  const visibleKws = tags.slice(0, visibleTags);
+  const hiddenKws = tags.slice(visibleTags);
 
   const sourceRows: { label: string; value: string | React.ReactNode }[] = [
     {
@@ -1121,7 +1121,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
               </Box>
             </Box>
 
-            {/* License + Keywords */}
+            {/* License + Tags */}
             <Box
               sx={{
                 display: 'flex',
@@ -1185,7 +1185,7 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
                   size="small"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setVisibleKeywords((v) => v + 5);
+                    setVisibleTags((v) => v + 5);
                   }}
                   sx={{
                     borderRadius: '3px',
@@ -1704,9 +1704,9 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
               </SectionCard>
 
               {/* Key Features */}
-              <SectionCard title="Keywords">
+              <SectionCard title="Tags">
                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                  {keywords.map((kw) => (
+                  {tags.map((kw) => (
                     <Chip
                       key={kw}
                       label={kw}
@@ -1968,10 +1968,10 @@ const Model: React.FC<ModelDetailsProps> = ({ model, scope }) => {
           </TabPanel>
 
           <TabPanel value={tabValue} index={3}>
-            {/* Keywords Tab */}
-            <SectionCard title="Keywords">
+            {/* Tags Tab */}
+            <SectionCard title="Tags">
               <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                {keywords.map((kw) => (
+                {tags.map((kw) => (
                   <Chip
                     key={kw}
                     label={kw}
