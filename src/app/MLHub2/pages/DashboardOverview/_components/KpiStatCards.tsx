@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from '../../../_context/NavContext';
 import {
   Box,
   Card,
@@ -46,8 +46,7 @@ export default function KpiStatCards({
   statusDistribution,
   totalDeployments,
 }: KpiStatCardsProps) {
-  const history = useHistory();
-
+  const { navigate } = useNavigate();
   const stats: KpiStat[] = [
     {
       title: 'Total Models',
@@ -117,7 +116,7 @@ export default function KpiStatCards({
         <Grid size={{ xs: 12, sm: 6, lg: 2 }} key={stat.title}>
           <Card
             elevation={0}
-            onClick={() => stat.navigateTo && history.push(stat.navigateTo)}
+            onClick={() => stat.navigateTo && navigate(stat.navigateTo)}
             sx={{
               height: '100%',
               background: (theme) =>

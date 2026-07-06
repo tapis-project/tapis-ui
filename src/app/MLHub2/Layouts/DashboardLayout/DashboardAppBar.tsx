@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, AppBar, Toolbar, Typography, Tabs, Tab } from '@mui/material';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
@@ -9,59 +9,52 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import DatasetMarketplaceIcon from '@mui/icons-material/Dataset';
+import { useNavigate } from '../../_context/NavContext';
 
 /* ─── Nav config ──────────────────────────────────────────────── */
-const ROOT = '/mlhub2';
-const route = (path: string) => {
-  if (path === '/') return ROOT;
-  return ROOT + path;
-};
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: route('/'), icon: <DashboardIcon /> },
-  { label: 'Models', path: route('/models'), icon: <SmartToyIcon /> },
+  { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
+  { label: 'Models', path: '/models', icon: <SmartToyIcon /> },
   {
     label: 'Marketplace',
-    path: route('/marketplace'),
+    path: '/marketplace',
     icon: <StorefrontIcon />,
   },
   {
     label: 'Deployments',
-    path: route('/deployments'),
+    path: '/deployments',
     icon: <RocketLaunchIcon />,
   },
-  { label: 'Datasets', path: route('/datasets'), icon: <DatasetIcon /> },
+  { label: 'Datasets', path: '/datasets', icon: <DatasetIcon /> },
   {
     label: 'Data Market',
-    path: route('/dataset-marketplace'),
+    path: '/dataset-marketplace',
     icon: <DatasetMarketplaceIcon />,
   },
-  { label: 'Artifacts', path: route('/artifacts'), icon: <Inventory2Icon /> },
+  { label: 'Artifacts', path: '/artifacts', icon: <Inventory2Icon /> },
 ] as const;
 
-function getActiveTabIndex(pathname: string): number {
-  if (pathname === '/') return 0;
-  if (
-    pathname.startsWith(route('/models')) &&
-    !pathname.startsWith(route('/marketplace'))
-  )
+function getActiveTabIndex(root: string, pathname: string): number {
+  if (pathname === root) return 0;
+  if (pathname.startsWith(root + '/models') && !pathname.startsWith('/marketplace'))
     return 1;
-  if (pathname.startsWith(route('/marketplace'))) return 2;
-  if (pathname.startsWith(route('/deployments'))) return 3;
+  if (pathname.startsWith(root + '/marketplace')) return 2;
+  if (pathname.startsWith(root + '/deployments')) return 3;
   if (
-    pathname.startsWith(route('/datasets')) &&
-    !pathname.startsWith(route('/dataset-marketplace'))
+    pathname.startsWith(root + '/datasets') &&
+    !pathname.startsWith(root + '/dataset-marketplace')
   )
     return 4;
-  if (pathname.startsWith(route('/dataset-marketplace'))) return 5;
-  if (pathname.startsWith(route('/artifacts'))) return 6;
+  if (pathname.startsWith(root + '/dataset-marketplace')) return 5;
+  if (pathname.startsWith(root + '/artifacts')) return 6;
   return 0;
 }
 
 /* ─── Component ──────────────────────────────────────────────── */
 export default function DashboardAppBar() {
-  const history = useHistory();
+  const { navigate, root } = useNavigate();
   const location = useLocation();
-  const activeTab = getActiveTabIndex(location.pathname);
+  const activeTab = getActiveTabIndex(root, location.pathname);
 
   return (
     <AppBar
@@ -83,10 +76,10 @@ export default function DashboardAppBar() {
             gap: 1.5,
             cursor: 'pointer',
           }}
-          onClick={() => history.push(ROOT)}
+          onClick={() => navigate('/')}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && history.push(ROOT)}
+          onKeyDown={(e) => e.key === 'Enter' && navigate('/')}
         >
           <Box
             sx={{
@@ -119,7 +112,7 @@ export default function DashboardAppBar() {
         <Tabs
           value={activeTab}
           onChange={(_event, val) => {
-            history.push(NAV_ITEMS[val].path);
+            navigate(NAV_ITEMS[val].path);
           }}
           aria-label="Main navigation"
           sx={{

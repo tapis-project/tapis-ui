@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -26,6 +25,7 @@ import {
   deploymentStatusLabelMap,
   envColorMap,
 } from '../../_components/constants';
+import { useNavigate } from '../../_context/NavContext';
 
 interface DeploymentsTabProps {
   deployments: Deployment[];
@@ -48,7 +48,7 @@ export default function DeploymentsTab({
     null
   );
   const [popoverRow, setPopoverRow] = React.useState<Deployment | null>(null);
-  const history = useHistory();
+  const { navigate } = useNavigate();
 
   const handleDeploy = (
     data: Omit<Deployment, 'id' | 'status' | 'deployedAt'>
@@ -95,7 +95,7 @@ export default function DeploymentsTab({
               },
             },
           }}
-          onClick={() => history.push(`/deployments/${params.row.id}`)}
+          onClick={() => navigate(`/deployments/${params.row.id}`)}
         >
           <RocketLaunchIcon sx={{ color: 'success.main', fontSize: 18 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -395,7 +395,7 @@ export default function DeploymentsTab({
             fullWidth
             startIcon={<VisibilityIcon sx={{ fontSize: 18 }} />}
             onClick={() => {
-              if (popoverRow) history.push(`/deployments/${popoverRow.id}`);
+              if (popoverRow) navigate(`/deployments/${popoverRow.id}`);
               setPopoverAnchor(null);
               setPopoverRow(null);
             }}

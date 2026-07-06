@@ -15,7 +15,6 @@ import {
   Tooltip,
   Divider,
 } from '@mui/material';
-import { useHistory } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -50,8 +49,6 @@ export default function ModelMarketplace({
   models,
   onApply,
 }: ModelMarketplaceProps) {
-  const history = useHistory();
-
   // ─── Filter state ───────────────────────────────
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedTasks, setSelectedTasks] = React.useState<Set<Task>>(
@@ -694,7 +691,7 @@ export default function ModelMarketplace({
                         startIcon={<ForkRightIcon sx={{ fontSize: 16 }} />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          history.push(`/models/fork/${model.id}`);
+                          alert('Fork model');
                         }}
                         sx={{
                           textTransform: 'none',

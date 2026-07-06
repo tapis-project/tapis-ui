@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -30,6 +29,7 @@ import {
   datasetFormatIconMap,
   datasetFormatLabelMap,
 } from '../../_components/constants';
+import { useNavigate } from '../../_context/NavContext';
 
 interface DatasetsTabProps {
   datasets: Dataset[];
@@ -50,7 +50,7 @@ export default function DatasetsTab({
     null
   );
   const [actionsRow, setActionsRow] = React.useState<Dataset | null>(null);
-  const history = useHistory();
+  const { navigate } = useNavigate();
 
   const handleCreate = () => {
     setSelectedDataset(null);
@@ -110,7 +110,7 @@ export default function DatasetsTab({
               },
             },
           }}
-          onClick={() => history.push(`/datasets/${params.row.id}`)}
+          onClick={() => navigate(`/datasets/${params.row.id}`)}
         >
           <DatasetIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -441,7 +441,7 @@ export default function DatasetsTab({
         <List dense disablePadding>
           <ListItemButton
             onClick={() => {
-              if (actionsRow) history.push(`/datasets/${actionsRow.id}`);
+              if (actionsRow) navigate(`/datasets/${actionsRow.id}`);
               setActionsAnchor(null);
               setActionsRow(null);
             }}

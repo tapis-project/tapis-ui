@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -35,6 +34,7 @@ import {
   frameworkIconMap as inferenceBackendIconMap,
   frameworkLabelMap as inferenceBackendLabelMap,
 } from '../../_components/constants';
+import { useNavigate } from '../../_context/NavContext';
 
 interface ModelsTabProps {
   models: Model[];
@@ -55,7 +55,7 @@ export default function ModelsTab({
     null
   );
   const [actionsRow, setActionsRow] = React.useState<Model | null>(null);
-  const history = useHistory();
+  const { navigate } = useNavigate();
 
   const handleCreate = () => {
     setSelectedModel(null);
@@ -113,7 +113,7 @@ export default function ModelsTab({
               },
             },
           }}
-          onClick={() => history.push(`/models/${params.row.id}`)}
+          onClick={() => navigate(`/models/${params.row.id}`)}
         >
           <SmartToyIcon sx={{ color: 'primary.main', fontSize: 20 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -390,7 +390,7 @@ export default function ModelsTab({
         <List dense disablePadding>
           <ListItemButton
             onClick={() => {
-              if (actionsRow) history.push(`/models/${actionsRow.id}`);
+              if (actionsRow) navigate(`/models/${actionsRow.id}`);
               setActionsAnchor(null);
               setActionsRow(null);
             }}

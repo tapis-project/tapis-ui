@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -35,6 +34,7 @@ import {
 } from '../../_components/constants';
 import MetaItem from '../../_components/MetaItem';
 import DatasetArtifactDialog from './_components/DatasetArtifactDialog';
+import { useNavigate } from '../../_context/NavContext';
 
 interface DatasetDetailsPageProps {
   datasets: Dataset[];
@@ -50,7 +50,7 @@ export default function DatasetDetailsPage({
   onDelete,
 }: DatasetDetailsPageProps) {
   const { datasetId } = useParams<{ datasetId: string }>();
-  const history = useHistory();
+  const { navigate } = useNavigate();
 
   const dataset = datasets.find((d) => d.id === datasetId);
 
@@ -66,7 +66,7 @@ export default function DatasetDetailsPage({
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => history.push('/datasets')}
+          onClick={() => navigate('/datasets')}
           variant="contained"
         >
           Back to Datasets
@@ -108,7 +108,7 @@ export default function DatasetDetailsPage({
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => history.push('/datasets')}
+            onClick={() => navigate('/datasets')}
             sx={{ mr: 1, textTransform: 'none' }}
           >
             Datasets

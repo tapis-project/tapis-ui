@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -35,6 +34,7 @@ import {
   envColorMap,
 } from '../../_components/constants';
 import MetaItem from '../../_components/MetaItem';
+import { useNavigate } from '../../_context/NavContext';
 
 interface DeploymentDetailsPageProps {
   deployments: Deployment[];
@@ -46,7 +46,7 @@ export default function DeploymentDetailsPage({
   onDelete,
 }: DeploymentDetailsPageProps) {
   const { '*': deploymentId } = useParams<{ '*': string }>();
-  const history = useHistory();
+  const { navigate } = useNavigate();
 
   // HashRouter captures the wildcard segment after /deployments/
   const deployment = deployments.find((d) => d.id === deploymentId);
@@ -63,7 +63,7 @@ export default function DeploymentDetailsPage({
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => history.push('/deployments')}
+          onClick={() => navigate('/deployments')}
           variant="contained"
         >
           Back to Deployments
@@ -98,7 +98,7 @@ export default function DeploymentDetailsPage({
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => history.push('/deployments')}
+            onClick={() => navigate('/deployments')}
             sx={{ mr: 1, textTransform: 'none' }}
           >
             Deployments

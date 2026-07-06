@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -34,6 +33,7 @@ import {
   frameworkLabelMap,
 } from '../../_components/constants';
 import MetaItem from '../../_components/MetaItem';
+import { useNavigate } from '../../_context/NavContext';
 
 interface ModelDetailsPageProps {
   models: Model[];
@@ -51,7 +51,7 @@ export default function ModelDetailsPage({
   onDelete,
 }: ModelDetailsPageProps) {
   const { modelId } = useParams<{ modelId: string }>();
-  const history = useHistory();
+  const { navigate } = useNavigate();
 
   const model = models.find((m) => m.id === modelId);
 
@@ -66,7 +66,7 @@ export default function ModelDetailsPage({
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => history.push('/')}
+          onClick={() => navigate('/')}
           variant="contained"
         >
           Back to Models
@@ -120,7 +120,7 @@ export default function ModelDetailsPage({
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => history.push('/models')}
+            onClick={() => navigate('/models')}
             sx={{ mr: 1, textTransform: 'none' }}
           >
             Models
