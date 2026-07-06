@@ -36,7 +36,10 @@ const NAV_ITEMS = [
 
 function getActiveTabIndex(root: string, pathname: string): number {
   if (pathname === root) return 0;
-  if (pathname.startsWith(root + '/models') && !pathname.startsWith('/marketplace'))
+  if (
+    pathname.startsWith(root + '/models') &&
+    !pathname.startsWith('/marketplace')
+  )
     return 1;
   if (pathname.startsWith(root + '/marketplace')) return 2;
   if (pathname.startsWith(root + '/deployments')) return 3;
