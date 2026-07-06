@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -51,7 +51,7 @@ export default function ModelDetailsPage({
   onDelete,
 }: ModelDetailsPageProps) {
   const { modelId } = useParams<{ modelId: string }>();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const model = models.find((m) => m.id === modelId);
 
@@ -66,7 +66,7 @@ export default function ModelDetailsPage({
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => history.push('/')}
           variant="contained"
         >
           Back to Models
@@ -120,7 +120,7 @@ export default function ModelDetailsPage({
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/models')}
+            onClick={() => history.push('/models')}
             sx={{ mr: 1, textTransform: 'none' }}
           >
             Models
@@ -200,11 +200,11 @@ export default function ModelDetailsPage({
                 color={modelStatusColorMap[model.status]}
                 sx={{ fontWeight: 500, textTransform: 'capitalize' }}
               />
-              {model.framework.map((fw) => (
+              {model.libraries.map((lib) => (
                 <Chip
-                  key={fw}
-                  icon={<span>{frameworkIconMap[fw]}</span>}
-                  label={frameworkLabelMap[fw]}
+                  key={lib}
+                  icon={<span>{frameworkIconMap[lib]}</span>}
+                  label={frameworkLabelMap[lib]}
                   size="small"
                   variant="outlined"
                   sx={{ textTransform: 'capitalize' }}

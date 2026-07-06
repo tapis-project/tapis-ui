@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -50,7 +50,7 @@ export default function DatasetDetailsPage({
   onDelete,
 }: DatasetDetailsPageProps) {
   const { datasetId } = useParams<{ datasetId: string }>();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const dataset = datasets.find((d) => d.id === datasetId);
 
@@ -66,7 +66,7 @@ export default function DatasetDetailsPage({
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/datasets')}
+          onClick={() => history.push('/datasets')}
           variant="contained"
         >
           Back to Datasets
@@ -108,7 +108,7 @@ export default function DatasetDetailsPage({
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/datasets')}
+            onClick={() => history.push('/datasets')}
             sx={{ mr: 1, textTransform: 'none' }}
           >
             Datasets

@@ -11,33 +11,49 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 import DatasetMarketplaceIcon from '@mui/icons-material/Dataset';
 
 /* ─── Nav config ──────────────────────────────────────────────── */
+const ROOT = '/mlhub2';
+const route = (path: string) => {
+  if (path === '/') return ROOT;
+  return ROOT + path;
+};
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
-  { label: 'Models', path: '/models', icon: <SmartToyIcon /> },
-  { label: 'Marketplace', path: '/marketplace', icon: <StorefrontIcon /> },
-  { label: 'Deployments', path: '/deployments', icon: <RocketLaunchIcon /> },
-  { label: 'Datasets', path: '/datasets', icon: <DatasetIcon /> },
+  { label: 'Dashboard', path: route('/'), icon: <DashboardIcon /> },
+  { label: 'Models', path: route('/models'), icon: <SmartToyIcon /> },
+  {
+    label: 'Marketplace',
+    path: route('/marketplace'),
+    icon: <StorefrontIcon />,
+  },
+  {
+    label: 'Deployments',
+    path: route('/deployments'),
+    icon: <RocketLaunchIcon />,
+  },
+  { label: 'Datasets', path: route('/datasets'), icon: <DatasetIcon /> },
   {
     label: 'Data Market',
-    path: '/dataset-marketplace',
+    path: route('/dataset-marketplace'),
     icon: <DatasetMarketplaceIcon />,
   },
-  { label: 'Artifacts', path: '/artifacts', icon: <Inventory2Icon /> },
+  { label: 'Artifacts', path: route('/artifacts'), icon: <Inventory2Icon /> },
 ] as const;
 
 function getActiveTabIndex(pathname: string): number {
   if (pathname === '/') return 0;
-  if (pathname.startsWith('/models') && !pathname.startsWith('/marketplace'))
-    return 1;
-  if (pathname.startsWith('/marketplace')) return 2;
-  if (pathname.startsWith('/deployments')) return 3;
   if (
-    pathname.startsWith('/datasets') &&
-    !pathname.startsWith('/dataset-marketplace')
+    pathname.startsWith(route('/models')) &&
+    !pathname.startsWith(route('/marketplace'))
+  )
+    return 1;
+  if (pathname.startsWith(route('/marketplace'))) return 2;
+  if (pathname.startsWith(route('/deployments'))) return 3;
+  if (
+    pathname.startsWith(route('/datasets')) &&
+    !pathname.startsWith(route('/dataset-marketplace'))
   )
     return 4;
-  if (pathname.startsWith('/dataset-marketplace')) return 5;
-  if (pathname.startsWith('/artifacts')) return 6;
+  if (pathname.startsWith(route('/dataset-marketplace'))) return 5;
+  if (pathname.startsWith(route('/artifacts'))) return 6;
   return 0;
 }
 
@@ -67,10 +83,10 @@ export default function DashboardAppBar() {
             gap: 1.5,
             cursor: 'pointer',
           }}
-          onClick={() => history.push('/')}
+          onClick={() => history.push(ROOT)}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && history.push('/')}
+          onKeyDown={(e) => e.key === 'Enter' && history.push(ROOT)}
         >
           <Box
             sx={{

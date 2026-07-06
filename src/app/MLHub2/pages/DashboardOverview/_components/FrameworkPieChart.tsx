@@ -39,7 +39,7 @@ export default function FrameworkPieChart({
     >
       <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
-          Models by Framework
+          Models by Inference Backend
         </Typography>
         <Typography
           variant="caption"
@@ -52,7 +52,7 @@ export default function FrameworkPieChart({
         {isEmpty ? (
           <Box sx={{ py: 4, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              No framework data available
+              No inference backend data available
             </Typography>
           </Box>
         ) : (

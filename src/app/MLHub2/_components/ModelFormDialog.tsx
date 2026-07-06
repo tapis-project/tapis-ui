@@ -10,27 +10,13 @@ import {
   Box,
   Chip,
   Typography,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
-import type { Model, ModelFramework, ModelStatus } from '../types';
-
-const frameworks: { value: ModelFramework; label: string }[] = [
-  { value: 'pytorch', label: 'PyTorch' },
-  { value: 'tensorflow', label: 'TensorFlow' },
-  { value: 'sklearn', label: 'Scikit-learn' },
-  { value: 'xgboost', label: 'XGBoost' },
-  { value: 'onnx', label: 'ONNX' },
-  { value: 'custom', label: 'Custom' },
-];
-
-const statuses: { value: ModelStatus; label: string; color: string }[] = [
-  { value: 'draft', label: 'Draft', color: 'default' },
-  { value: 'pending', label: 'Pending', color: 'warning' as const },
-  { value: 'ready', label: 'Ready', color: 'success' as const },
-  { value: 'deprecated', label: 'Deprecated', color: 'error' as const },
-  { value: 'archived', label: 'Archived', color: 'default' },
-];
+import type { Model, InferenceBackend } from '../types';
+import {
+  INFERENCE_BACKEND_OPTIONS,
+  MODEL_STATUS_OPTIONS,
+  inferenceBackendLabelMap,
+} from '../enums';
 
 interface ModelFormDialogProps {
   open: boolean;
@@ -42,9 +28,9 @@ interface ModelFormDialogProps {
 const emptyForm = {
   name: '',
   description: '',
-  framework: [] as ModelFramework[],
+  libraries: [] as InferenceBackend[],
   version: '1.0.0',
-  status: 'draft' as ModelStatus,
+  status: 'draft' as Model['status'],
   f1Score: null as number | null,
   tags: [] as string[],
   author: '',
@@ -64,7 +50,7 @@ export default function ModelFormDialog({
       setForm({
         name: model.name,
         description: model.description,
-        framework: [...model.framework],
+        libraries: [...model.libraries],
         version: model.version,
         status: model.status,
         f1Score: model.f1Score,
@@ -89,12 +75,12 @@ export default function ModelFormDialog({
       setForm((prev) => ({ ...prev, [field]: value }));
     };
 
-  const handleFrameworkToggle = (fwValue: ModelFramework) => {
+  const handleLibraryToggle = (libValue: InferenceBackend) => {
     setForm((prev) => ({
       ...prev,
-      framework: prev.framework.includes(fwValue)
-        ? prev.framework.filter((f) => f !== fwValue)
-        : [...prev.framework, fwValue],
+      libraries: prev.libraries.includes(libValue)
+        ? prev.libraries.filter((l) => l !== libValue)
+        : [...prev.libraries, libValue],
     }));
   };
 
@@ -147,42 +133,39 @@ export default function ModelFormDialog({
           placeholder="Brief description of the model's purpose..."
         />
 
-        {/* Framework multi-select */}
+        {/* Inference Backends multi-select */}
         <Box>
           <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-            Frameworks
+            Inference Backends
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 1 }}>
-            {form.framework.map((fw) => {
-              const label = frameworks.find((f) => f.value === fw)?.label ?? fw;
-              return (
-                <Chip
-                  key={fw}
-                  label={label}
-                  size="small"
-                  onDelete={() => handleFrameworkToggle(fw)}
-                  color="primary"
-                  variant="outlined"
-                />
-              );
-            })}
+            {form.libraries.map((lib) => (
+              <Chip
+                key={lib}
+                label={inferenceBackendLabelMap[lib] ?? lib}
+                size="small"
+                onDelete={() => handleLibraryToggle(lib)}
+                color="primary"
+                variant="outlined"
+              />
+            ))}
           </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-            {frameworks
-              .filter((f) => !form.framework.includes(f.value))
-              .map((f) => (
-                <Chip
-                  key={f.value}
-                  label={`+ ${f.label}`}
-                  size="small"
-                  variant="outlined"
-                  onClick={() => handleFrameworkToggle(f.value)}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': { bgcolor: 'action.hover' },
-                  }}
-                />
-              ))}
+            {INFERENCE_BACKEND_OPTIONS.filter(
+              (f) => !form.libraries.includes(f.value)
+            ).map((f) => (
+              <Chip
+                key={f.value}
+                label={`+ ${f.label}`}
+                size="small"
+                variant="outlined"
+                onClick={() => handleLibraryToggle(f.value)}
+                sx={{
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: 'action.hover' },
+                }}
+              />
+            ))}
           </Box>
         </Box>
 
@@ -202,16 +185,10 @@ export default function ModelFormDialog({
             select
             fullWidth
           >
-            {statuses.map((s) => (
+            {MODEL_STATUS_OPTIONS.map((s) => (
               <MenuItem key={s.value} value={s.value}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Chip
-                    label={s.label}
-                    size="small"
-                    color={
-                      s.color as 'success' | 'error' | 'warning' | 'default'
-                    }
-                  />
+                  <Chip label={s.label} size="small" color={s.color} />
                 </Box>
               </MenuItem>
             ))}

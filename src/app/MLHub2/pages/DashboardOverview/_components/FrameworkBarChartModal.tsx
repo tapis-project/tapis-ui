@@ -41,7 +41,7 @@ export default function FrameworkBarChartModal({
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          Detailed Framework Breakdown
+          Detailed Inference Backend Breakdown
         </Typography>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
@@ -77,8 +77,8 @@ export default function FrameworkBarChartModal({
           color="text.secondary"
           sx={{ mt: 2, textAlign: 'center' }}
         >
-          Each model can use multiple frameworks — this chart shows total
-          framework assignments across all models.
+          Each model can use multiple inference backends — this chart shows
+          total backend assignments across all models.
         </Typography>
       </DialogContent>
     </Dialog>

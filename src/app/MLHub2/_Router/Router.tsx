@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 import type {
   Model,
@@ -14,28 +14,29 @@ import {
   mockArtifacts,
   mockDatasets,
   mockDatasetArtifacts,
-  // mockMarketplaceModels,
-  // mockMarketplaceDatasets,
+  mockMarketplaceModels,
+  mockMarketplaceDatasets,
 } from '../data/mockData';
 
 // Layout
 import DashboardLayout from '../Layouts/DashboardLayout';
 
 // Dialog components (shared across pages)
-// import DeploymentDialog from './_components/DeploymentDialog';
-// import ArtifactDialog from './_components/ArtifactDialog';
+import DeploymentDialog from '../_components/DeploymentDialog';
+import ArtifactDialog from '../_components/ArtifactDialog';
 import ModelFormDialog from '../_components/ModelFormDialog';
 
 // Page-level components
-// import ModelsTab from './pages/ModelsTab';
-// import DatasetsTab from './pages/DatasetsTab';
-// import DeploymentsTab from './pages/DeploymentsTab';
-// import ArtifactsTab from './pages/ArtifactsTab';
-// import ModelDetailsPage from './pages/ModelDetailsPage';
-// import DatasetDetailsPage from './pages/DatasetDetailsPage';
+import ModelsTab from '../pages/ModelsTab';
+import DatasetsTab from '../pages/DatasetsTab';
+import DeploymentsTab from '../pages/DeploymentsTab';
+import ArtifactsTab from '../pages/ArtifactsTab';
+import ModelDetailsPage from '../pages/ModelDetailsPage';
+import DatasetDetailsPage from '../pages/DatasetDetailsPage';
+import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
-// import ModelMarketplace from './pages/ModelMarketplace';
-// import DatasetMarketplace from './pages/DatasetMarketplace';
+import ModelMarketplace from '../pages/ModelMarketplace';
+import DatasetMarketplace from '../pages/DatasetMarketplace';
 
 /* ─── App Root ────────────────────────────────────────────────── */
 export default function Router() {
@@ -58,7 +59,7 @@ export default function Router() {
         id: m.id,
         name: m.name,
         version: m.version,
-        framework: m.framework,
+        libraries: m.libraries,
       })),
     [models]
   );
@@ -129,7 +130,7 @@ export default function Router() {
   return (
     <Switch>
       {/* Dashboard Overview */}
-      <Route path="/">
+      <Route path="/mlhub2" exact>
         <DashboardLayout>
           <Box>
             <DashboardOverview
@@ -150,127 +151,116 @@ export default function Router() {
       </Route>
 
       {/* Models */}
-      <Route
-        path="/models"
-        // element={
-        //   <DashboardLayout>
-        //     <ModelsTab
-        //       models={models}
-        //       onModelsChange={setModels}
-        //       deployments={deployments}
-        //       artifacts={artifacts}
-        //     />
-        //   </DashboardLayout>
-        // }
-      />
+      <Route path="/mlhub2/models" exact>
+        <DashboardLayout>
+          <ModelsTab
+            models={models}
+            onModelsChange={setModels}
+            deployments={deployments}
+            artifacts={artifacts}
+          />
+        </DashboardLayout>
+      </Route>
 
       {/* Model Marketplace */}
-      {/* <Route
-        path="/marketplace"
-        element={
-          <DashboardLayout>
-            <ModelMarketplace models={mockMarketplaceModels} />
-          </DashboardLayout>
-        }
-      /> */}
+      <Route path="/mlhub2/marketplace">
+        <DashboardLayout>
+          <ModelMarketplace models={mockMarketplaceModels} />
+        </DashboardLayout>
+      </Route>
 
       {/* Dataset Marketplace */}
-      {/* <Route
-        path="/dataset-marketplace"
-        element={
-          <DashboardLayout>
-            <DatasetMarketplace datasets={mockMarketplaceDatasets} />
-          </DashboardLayout>
-        }
-      /> */}
+      <Route path="/mlhub2/dataset-marketplace">
+        <DashboardLayout>
+          <DatasetMarketplace datasets={mockMarketplaceDatasets} />
+        </DashboardLayout>
+      </Route>
 
       {/* Datasets */}
-      {/* <Route
-        path="/datasets"
-        element={
-          <DashboardLayout>
-            <DatasetsTab
-              datasets={datasets}
-              onDatasetsChange={setDatasets}
-              datasetArtifacts={datasetArtifacts}
-            />
-          </DashboardLayout>
-        }
-      /> */}
+      <Route path="/mlhub2/datasets">
+        <DashboardLayout>
+          <DatasetsTab
+            datasets={datasets}
+            onDatasetsChange={setDatasets}
+            datasetArtifacts={datasetArtifacts}
+          />
+        </DashboardLayout>
+      </Route>
 
       {/* Dataset Detail Page */}
-      {/* <Route
-        path="/datasets/:datasetId"
-        element={
-          <DashboardLayout>
-            <DatasetDetailsPage
-              datasets={datasets}
-              datasetArtifacts={datasetArtifacts}
-              onEdit={() => window.history.back()}
+      <Route path="/mlhub2/datasets/:datasetId">
+        <DashboardLayout>
+          <DatasetDetailsPage
+            datasets={datasets}
+            datasetArtifacts={datasetArtifacts}
+            onEdit={() => window.history.back()}
+            onDelete={(id) => {
+              setDatasets((prev) => prev.filter((d) => d.id !== id));
+              window.history.back();
+            }}
+          />
+        </DashboardLayout>
+      </Route>
+
+      {/* Deployments */}
+      <Route path="/mlhub2/deployments">
+        <DashboardLayout>
+          <DeploymentsTab
+            deployments={deployments}
+            onDeploymentsChange={setDeployments}
+            models={modelSummary}
+          />
+        </DashboardLayout>
+      </Route>
+
+      {/* Deployment Detail Page */}
+      <Route path="/mlhub2/deployments/*">
+        <DashboardLayout>
+          <DeploymentDetailsPage
+            deployments={deployments}
+            onDelete={(id) => {
+              setDeployments((prev) => prev.filter((d) => d.id !== id));
+              window.history.back();
+            }}
+          />
+        </DashboardLayout>
+      </Route>
+
+      {/* Artifacts */}
+      <Route path="/mlhub2/artifacts">
+        <DashboardLayout>
+          <ArtifactsTab
+            artifacts={artifacts}
+            onArtifactsChange={setArtifacts}
+            models={modelSummary}
+            datasets={datasetSummary}
+          />
+        </DashboardLayout>
+      </Route>
+
+      {/* Model Detail Page */}
+      <Route path="/mlhub2/models/:modelId">
+        <DashboardLayout>
+          <Box>
+            <ModelDetailsPage
+              models={models}
+              deployments={deployments}
+              artifacts={artifacts}
+              onEdit={handleEditModel}
               onDelete={(id) => {
-                setDatasets((prev) => prev.filter((d) => d.id !== id));
+                setModels((prev) => prev.filter((m) => m.id !== id));
                 window.history.back();
               }}
             />
-          </DashboardLayout>
-        }
-      /> */}
-
-      {/* Deployments */}
-      {/* <Route
-        path="/deployments"
-        element={
-          <DashboardLayout>
-            <DeploymentsTab
-              deployments={deployments}
-              onDeploymentsChange={setDeployments}
-              models={modelSummary}
+            <ModelFormDialog
+              open={modelFormOpen}
+              model={editingModel}
+              onClose={handleCloseModelForm}
+              onSave={handleSaveModel}
             />
-          </DashboardLayout>
-        }
-      /> */}
-
-      {/* Artifacts */}
-      {/* <Route
-        path="/artifacts"
-        element={
-          <DashboardLayout>
-            <ArtifactsTab
-              artifacts={artifacts}
-              onArtifactsChange={setArtifacts}
-              models={modelSummary}
-              datasets={datasetSummary}
-            />
-          </DashboardLayout>
-        }
-      /> */}
-
-      {/* Model Detail Page */}
-      {/* <Route
-        path="/models/:modelId"
-        element={
-          <DashboardLayout>
-            <Box>
-              <ModelDetailsPage
-                models={models}
-                deployments={deployments}
-                artifacts={artifacts}
-                onEdit={handleEditModel}
-                onDelete={(id) => {
-                  setModels((prev) => prev.filter((m) => m.id !== id));
-                  window.history.back();
-                }}
-              />
-              <ModelFormDialog
-                open={modelFormOpen}
-                model={editingModel}
-                onClose={handleCloseModelForm}
-                onSave={handleSaveModel}
-              />
-            </Box>
-          </DashboardLayout>
-        }
-      /> */}
+          </Box>
+        </DashboardLayout>
+      </Route>
     </Switch>
   );
 }

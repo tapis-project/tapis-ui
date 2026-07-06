@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -10,15 +11,14 @@ import {
   alpha,
   Tooltip,
   Button,
-  Collapse,
+  Popover,
 } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { DataGrid, type GridColDef, GridToolbar } from '@mui/x-data-grid';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import StopIcon from '@mui/icons-material/Stop';
 import ReplayIcon from '@mui/icons-material/Replay';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import TerminalIcon from '@mui/icons-material/Terminal';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { Deployment } from '../../types';
 import DeploymentDialog from '../../_components/DeploymentDialog';
 import {
@@ -34,7 +34,7 @@ interface DeploymentsTabProps {
     id: string;
     name: string;
     version: string;
-    framework: string[];
+    libraries: string[];
   }>;
 }
 
@@ -44,10 +44,14 @@ export default function DeploymentsTab({
   models,
 }: DeploymentsTabProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
+  const [popoverAnchor, setPopoverAnchor] = React.useState<HTMLElement | null>(
+    null
+  );
+  const [popoverRow, setPopoverRow] = React.useState<Deployment | null>(null);
+  const history = useHistory();
 
   const handleDeploy = (
-    data: Omit<Deployment, 'id' | 'status' | 'deployedAt' | 'logs'>
+    data: Omit<Deployment, 'id' | 'status' | 'deployedAt'>
   ) => {
     const newDeployment: Deployment = {
       ...data,
@@ -55,52 +59,19 @@ export default function DeploymentsTab({
       status: data.environment === 'production' ? 'NotDeployed' : 'Running',
       deployedAt:
         data.environment === 'staging' ? new Date().toISOString() : null,
-      logs:
-        data.environment === 'staging'
-          ? [
-              '[INFO] Starting deployment pipeline...',
-              '[INFO] Pulling model artifact from registry...',
-              '[INFO] Container image built successfully',
-              `[INFO] Health check passed - serving on port ${
-                Math.floor(Math.random() * 1000) + 8000
-              }`,
-            ]
-          : [
-              '[INFO] Starting deployment pipeline...',
-              '[INFO] Pulling model artifact from registry...',
-              '[INFO] Artifact downloaded successfully',
-              '[INFO] Running pre-deployment checks...',
-              '[INFO] Provisioning infrastructure resources...',
-            ],
     };
     onDeploymentsChange([...deployments, newDeployment]);
   };
 
   const handleStop = (id: string) => {
     onDeploymentsChange(
-      deployments.map((d) =>
-        d.id === id
-          ? {
-              ...d,
-              status: 'Stopped',
-              logs: [...d.logs, '[WARN] Deployment stopped by user'],
-            }
-          : d
-      )
+      deployments.map((d) => (d.id === id ? { ...d, status: 'Stopped' } : d))
     );
   };
 
   const handleRollback = (id: string) => {
     onDeploymentsChange(
-      deployments.map((d) =>
-        d.id === id
-          ? {
-              ...d,
-              status: 'Running',
-              logs: [...d.logs, '[INFO] Rolling back to previous version...'],
-            }
-          : d
-      )
+      deployments.map((d) => (d.id === id ? { ...d, status: 'Running' } : d))
     );
   };
 
@@ -111,16 +82,25 @@ export default function DeploymentsTab({
       flex: 1.2,
       minWidth: 180,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            '&:hover': {
+              '& .MuiTypography-root': {
+                color: 'primary.main',
+                textDecoration: 'underline',
+              },
+            },
+          }}
+          onClick={() => history.push(`/deployments/${params.row.id}`)}
+        >
           <RocketLaunchIcon sx={{ color: 'success.main', fontSize: 18 }} />
-          <Box>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {params.value}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              v{params.row.modelVersion}
-            </Typography>
-          </Box>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {params.value}
+          </Typography>
         </Box>
       ),
     },
@@ -223,43 +203,15 @@ export default function DeploymentsTab({
       sortable: false,
       filterable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={0.5}>
-          <Tooltip title="View Logs">
-            <IconButton
-              size="small"
-              onClick={() =>
-                setExpandedRow(
-                  expandedRow === params.row.id ? null : params.row.id
-                )
-              }
-              color={expandedRow === params.row.id ? 'primary' : 'default'}
-            >
-              <TerminalIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          {params.row.status === 'Running' && (
-            <Tooltip title="Stop Deployment">
-              <IconButton
-                size="small"
-                onClick={() => handleStop(params.row.id)}
-                color="warning"
-              >
-                <StopIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-          {params.row.status === 'Failed' && (
-            <Tooltip title="Retry / Rollback">
-              <IconButton
-                size="small"
-                onClick={() => handleRollback(params.row.id)}
-                color="info"
-              >
-                <ReplayIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
+        <IconButton
+          size="small"
+          onClick={(e) => {
+            setPopoverAnchor(e.currentTarget);
+            setPopoverRow(params.row);
+          }}
+        >
+          <MoreVertIcon fontSize="small" />
+        </IconButton>
       ),
     },
   ];
@@ -289,7 +241,7 @@ export default function DeploymentsTab({
         </Stack>
         <Typography variant="body1" color="text.secondary">
           Monitor and manage model deployments across staging and production
-          environments — track health, scale, and logs.
+          environments — track health and scale.
         </Typography>
       </Box>
 
@@ -379,108 +331,111 @@ export default function DeploymentsTab({
           </Button>
         </Box>
 
-        <Box sx={{ position: 'relative' }}>
-          <DataGrid
-            rows={deployments}
-            columns={columns}
-            initialState={{
-              pagination: { paginationModel: { pageSize: 8 } },
-            }}
-            pageSizeOptions={[8, 15]}
-            disableRowSelectionOnClick
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: { debounceMs: 500 },
-              },
-            }}
-            autoHeight
-            getRowSpacing={(params) => ({
-              top: params.isFirstVisible ? 0 : 0,
-              bottom: 0,
-            })}
-            sx={{
-              border: 'none',
-              '& .MuiDataGrid-cell': { display: 'flex', alignItems: 'center' },
-              '& .MuiDataGrid-cellContent': {
-                display: 'flex',
-                alignItems: 'center',
-                overflow: 'visible',
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                bgcolor: (theme) =>
-                  theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
-              },
-              '& .MuiDataGrid-columnHeader': {
+        <DataGrid
+          rows={deployments}
+          columns={columns}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 8 } },
+          }}
+          pageSizeOptions={[8, 15]}
+          disableRowSelectionOnClick
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+              quickFilterProps: { debounceMs: 500 },
+            },
+          }}
+          autoHeight
+          getRowSpacing={(params) => ({
+            top: params.isFirstVisible ? 0 : 0,
+            bottom: 0,
+          })}
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-cell': { display: 'flex', alignItems: 'center' },
+            '& .MuiDataGrid-cellContent': {
+              display: 'flex',
+              alignItems: 'center',
+              overflow: 'visible',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              bgcolor: (theme) =>
+                theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
+            },
+            '& .MuiDataGrid-columnHeader': {
+              color: 'text.primary',
+              '& .MuiDataGrid-columnHeaderTitle': {
+                fontWeight: 600,
                 color: 'text.primary',
-                '& .MuiDataGrid-columnHeaderTitle': {
-                  fontWeight: 600,
-                  color: 'text.primary',
-                },
               },
-              '& .MuiDataGrid-iconButtonContainer': { color: 'text.secondary' },
-              '& .MuiDataGrid-menuIconButton': { color: 'text.secondary' },
-            }}
-          />
+            },
+            '& .MuiDataGrid-iconButtonContainer': { color: 'text.secondary' },
+            '& .MuiDataGrid-menuIconButton': { color: 'text.secondary' },
+          }}
+        />
+      </Card>
 
-          {/* Expanded Log Row */}
-          {expandedRow && (
-            <Collapse in={!!expandedRow} timeout="auto" unmountOnExit>
-              <Box
-                sx={{
-                  p: 2,
-                  mx: 2,
-                  mb: 2,
-                  mt: -1,
-                  bgcolor: 'grey.900',
-                  borderRadius: 2,
-                  maxHeight: 200,
-                  overflow: 'auto',
-                }}
-              >
-                <Typography
-                  variant="subtitle2"
-                  sx={{
-                    mb: 1,
-                    color: 'success.light',
-                    fontFamily: 'monospace',
-                    fontWeight: 600,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                  }}
-                >
-                  <TerminalIcon sx={{ fontSize: 16 }} /> Deployment Logs —{' '}
-                  {deployments.find((d) => d.id === expandedRow)?.modelName}
-                </Typography>
-                {deployments
-                  .find((d) => d.id === expandedRow)
-                  ?.logs.map((log, i) => (
-                    <Typography
-                      key={i}
-                      variant="body2"
-                      component="div"
-                      sx={{
-                        fontFamily: 'monospace',
-                        fontSize: '0.75rem',
-                        lineHeight: 1.6,
-                        color: log.includes('ERROR')
-                          ? 'error.main'
-                          : log.includes('[WARN]')
-                          ? 'warning.main'
-                          : 'grey.400',
-                        whiteSpace: 'pre-wrap',
-                      }}
-                    >
-                      {log}
-                    </Typography>
-                  ))}
-              </Box>
-            </Collapse>
+      {/* ─── Actions Popover ────────────────────────────── */}
+      <Popover
+        open={!!popoverAnchor}
+        anchorEl={popoverAnchor}
+        onClose={() => {
+          setPopoverAnchor(null);
+          setPopoverRow(null);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: { sx: { minWidth: 180, borderRadius: 2 } },
+        }}
+      >
+        <Box sx={{ py: 0.5 }}>
+          <Button
+            fullWidth
+            startIcon={<VisibilityIcon sx={{ fontSize: 18 }} />}
+            onClick={() => {
+              if (popoverRow) history.push(`/deployments/${popoverRow.id}`);
+              setPopoverAnchor(null);
+              setPopoverRow(null);
+            }}
+            color="primary"
+            sx={{ justifyContent: 'flex-start', px: 2, py: 1 }}
+          >
+            View Details
+          </Button>
+          {popoverRow?.status === 'Running' && (
+            <Button
+              fullWidth
+              startIcon={<StopIcon sx={{ fontSize: 18 }} />}
+              onClick={() => {
+                if (popoverRow) handleStop(popoverRow.id);
+                setPopoverAnchor(null);
+                setPopoverRow(null);
+              }}
+              color="warning"
+              sx={{ justifyContent: 'flex-start', px: 2, py: 1 }}
+            >
+              Stop Deployment
+            </Button>
+          )}
+          {popoverRow?.status === 'Failed' && (
+            <Button
+              fullWidth
+              startIcon={<ReplayIcon sx={{ fontSize: 18 }} />}
+              onClick={() => {
+                if (popoverRow) handleRollback(popoverRow.id);
+                setPopoverAnchor(null);
+                setPopoverRow(null);
+              }}
+              color="info"
+              sx={{ justifyContent: 'flex-start', px: 2, py: 1 }}
+            >
+              Retry / Rollback
+            </Button>
           )}
         </Box>
-      </Card>
+      </Popover>
 
       <DeploymentDialog
         open={dialogOpen}

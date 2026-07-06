@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import type { Model, Deployment, Artifact, Dataset } from '../../types';
-import { frameworkColorMap } from '../../_components/constants';
+import { inferenceBackendColorMap } from '../../enums';
 
 // ── Sub-components (one per visual section)
 import KpiStatCards from './_components/KpiStatCards';
@@ -38,13 +38,12 @@ export default function DashboardOverview({
   const [artifactOpen, setArtifactOpen] = React.useState(false);
 
   const handleDeploy = React.useCallback(
-    (deployment: Omit<Deployment, 'id' | 'status' | 'deployedAt' | 'logs'>) => {
+    (deployment: Omit<Deployment, 'id' | 'status' | 'deployedAt'>) => {
       const newDeployment: Deployment = {
         ...deployment,
         id: `deploy-${Date.now()}`,
         status: 'Running',
         deployedAt: new Date().toISOString(),
-        logs: [],
       };
       // In a real app this would go to the backend; for now we just close
       console.log('Deploying:', newDeployment);
@@ -73,19 +72,22 @@ export default function DashboardOverview({
   ).length;
   const totalArtifacts = artifacts.length;
 
-  // ─── Chart Data: Models by Framework ────────────────────────────
-  const frameworkData = React.useMemo(() => {
+  // ─── Chart Data: Models by Inference Backend ─────────────────────
+  const backendData = React.useMemo(() => {
     const counts: Record<string, number> = {};
     models.forEach((m) => {
-      m.framework.forEach((fw) => {
-        counts[fw] = (counts[fw] || 0) + 1;
+      m.libraries.forEach((lib) => {
+        counts[lib] = (counts[lib] || 0) + 1;
       });
     });
     return Object.entries(counts).map(([label, value], id) => ({
       id,
       value,
       label: label.charAt(0).toUpperCase() + label.slice(1),
-      color: frameworkColorMap[label] || '#9E9E9E',
+      color:
+        inferenceBackendColorMap[
+          label as keyof typeof inferenceBackendColorMap
+        ] || '#9E9E9E',
     }));
   }, [models]);
 
@@ -176,7 +178,7 @@ export default function DashboardOverview({
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <FrameworkPieChart
-            data={frameworkData}
+            data={backendData}
             onClick={() => setFrameworkModalOpen(true)}
           />
         </Grid>
@@ -205,7 +207,7 @@ export default function DashboardOverview({
       <FrameworkBarChartModal
         open={frameworkModalOpen}
         onClose={() => setFrameworkModalOpen(false)}
-        data={frameworkData}
+        data={backendData}
       />
 
       {/* ─── New Deployment Dialog (from Quick Actions) ─── */}

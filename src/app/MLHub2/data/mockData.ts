@@ -5,48 +5,15 @@ import type {
   Artifact,
   Dataset,
   DatasetArtifact,
-  DatasetFormat,
-  DatasetStatus,
-  ModelFramework,
-  MarketplaceModel,
-  MarketplaceDataset,
   ArtifactType,
 } from '../types';
-
-const frameworks: ModelFramework[] = [
-  'pytorch',
-  'tensorflow',
-  'sklearn',
-  'xgboost',
-  'onnx',
-  'custom',
-];
-const statuses: Array<Model['status']> = [
-  'draft',
-  'pending',
-  'ready',
-  'deprecated',
-  'archived',
-];
-
-const datasetFormats: Array<DatasetFormat> = [
-  'csv',
-  'parquet',
-  'json',
-  'jsonl',
-  'image',
-  'text',
-  'delta',
-  'custom',
-];
-const datasetStatuses: Array<DatasetStatus> = [
-  'draft',
-  'validating',
-  'ready',
-  'deprecated',
-  'archived',
-  'error',
-];
+import type { MarketplaceModel, MarketplaceDataset } from '../types';
+import {
+  ALL_INFERENCE_BACKENDS,
+  ALL_MODEL_STATUSES,
+  ALL_DATASET_FORMATS,
+  ALL_DATASET_STATUSES,
+} from '../enums';
 
 export const generateModels = (count: number): Model[] =>
   Array.from({ length: count }, (_, i) => ({
@@ -70,13 +37,16 @@ export const generateModels = (count: number): Model[] =>
         'Quality Inspection CNN',
       ][i % 15] + (i >= 15 ? ` v${Math.floor(i / 15) + 2}` : ''),
     description: faker.lorem.sentences(2),
-    framework: faker.helpers.arrayElements(frameworks, { min: 1, max: 3 }),
+    libraries: faker.helpers.arrayElements(ALL_INFERENCE_BACKENDS, {
+      min: 1,
+      max: 3,
+    }),
     version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(
       Math.random() * 10
     )}.${Math.floor(Math.random() * 10)}`,
-    status: statuses[i % statuses.length],
+    status: ALL_MODEL_STATUSES[i % ALL_MODEL_STATUSES.length],
     f1Score:
-      statuses[i % statuses.length] === 'ready'
+      ALL_MODEL_STATUSES[i % ALL_MODEL_STATUSES.length] === 'ready'
         ? Math.round((0.85 + Math.random() * 0.14) * 10000) / 100
         : null,
     createdAt: faker.date.past({ years: 1 }).toISOString(),
@@ -137,22 +107,6 @@ export const generateDeployments = (models: Model[]): Deployment[] =>
           ? faker.date.recent({ days: 14 }).toISOString()
           : null,
         startedBy: faker.person.fullName(),
-        logs:
-          status === 'Failed'
-            ? [
-                '[INFO] Pulling model artifact from registry...',
-                '[INFO] Artifact downloaded successfully (245MB)',
-                '[ERROR] Failed to load model: incompatible tensor shape',
-                '[ERROR] Deployment aborted.',
-              ]
-            : [
-                '[INFO] Starting deployment pipeline...',
-                '[INFO] Pulling model artifact from registry...',
-                '[INFO] Container image built successfully',
-                `[INFO] Health check passed - serving on port ${faker.number.int(
-                  { min: 8000, max: 9000 }
-                )}`,
-              ],
       };
     });
 
@@ -354,13 +308,13 @@ export const generateDatasets = (count: number): Dataset[] =>
         'Social Media Posts',
       ][i % 15] + (i >= 15 ? ` v${Math.floor(i / 15) + 2}` : ''),
     description: faker.lorem.sentences(2),
-    format: datasetFormats[i % datasetFormats.length],
+    format: ALL_DATASET_FORMATS[i % ALL_DATASET_FORMATS.length],
     version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(
       Math.random() * 10
     )}.0`,
-    status: datasetStatuses[i % datasetStatuses.length],
+    status: ALL_DATASET_STATUSES[i % ALL_DATASET_STATUSES.length],
     rowCount:
-      datasetStatuses[i % datasetStatuses.length] === 'ready'
+      ALL_DATASET_STATUSES[i % ALL_DATASET_STATUSES.length] === 'ready'
         ? faker.number.int({ min: 1_000, max: 50_000_000 })
         : null,
     size: [
@@ -501,7 +455,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'State-of-the-art BERT-large model fine-tuned on SQuAD 2.0 for question answering and reading comprehension tasks with exceptional accuracy.',
     platform: 'huggingface',
-    framework: ['pytorch', 'tensorflow'],
+    libraries: ['pytorch', 'tensorflow'],
     task: 'Question Answering',
     license: 'Apache-2.0',
     downloads: 4_520_000,
@@ -519,7 +473,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'Ultralytics YOLOv8x — the latest real-time object detection model with state-of-the-art speed/accuracy tradeoff. Supports 80 COCO classes.',
     platform: 'huggingface',
-    framework: ['pytorch', 'onnx'],
+    libraries: ['pytorch', 'onnx'],
     task: 'Object Detection',
     license: 'AGPL-3.0',
     downloads: 3_180_000,
@@ -536,7 +490,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'Latent text-to-image diffusion model capable of generating photorealistic images from text prompts. Supports inpainting, outpainting, and image-to-image.',
     platform: 'huggingface',
-    framework: ['pytorch'],
+    libraries: ['pytorch'],
     task: 'Text-to-Image Generation',
     license: 'CreativeML Open RAIL-M',
     downloads: 8_920_000,
@@ -554,7 +508,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'Deep residual network pretrained on ImageNet-1K. A foundational backbone for transfer learning, feature extraction, and classification tasks.',
     platform: 'pytorch-hub',
-    framework: ['pytorch', 'onnx'],
+    libraries: ['pytorch', 'onnx'],
     task: 'Image Classification',
     license: 'BSD-3-Clause',
     downloads: 2_450_000,
@@ -571,7 +525,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       "Meta's efficient instruction-tuned language model optimized for edge deployment, agentic workflows, and multilingual dialogue applications.",
     platform: 'huggingface',
-    framework: ['pytorch'],
+    libraries: ['pytorch'],
     task: 'Text Generation / Chat',
     license: 'LLaMA 3.2 Community License',
     downloads: 6_780_000,
@@ -588,7 +542,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'Production-grade XGBoost gradient boosting model trained on credit default data. Includes feature importance analysis and SHAP explanations.',
     platform: 'kaggle',
-    framework: ['xgboost', 'sklearn'],
+    libraries: ['xgboost', 'sklearn'],
     task: 'Tabular Classification',
     license: 'MIT',
     downloads: 320_000,
@@ -606,7 +560,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'EfficientNet-B4 convolutional neural network from TensorFlow Hub. Achieves ImageNet top-1 accuracy of 82.9% with significantly fewer parameters than ResNet.',
     platform: 'tensorflow-hub',
-    framework: ['tensorflow'],
+    libraries: ['tensorflow'],
     task: 'Image Classification / Feature Extraction',
     license: 'Apache-2.0',
     downloads: 780_000,
@@ -623,7 +577,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       "OpenAI's robust automatic speech recognition model supporting 99 languages. Transcribes audio to text with state-of-the-art accuracy across diverse accents.",
     platform: 'huggingface',
-    framework: ['pytorch'],
+    libraries: ['pytorch'],
     task: 'Speech Recognition',
     license: 'MIT',
     downloads: 5_340_000,
@@ -640,7 +594,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       "Google's Vision Transformer large variant pretrained on ImageNet-21K and fine-tuned on ImageNet-1K. Excellent zero-shot transfer capabilities.",
     platform: 'pytorch-hub',
-    framework: ['pytorch', 'tensorflow'],
+    libraries: ['pytorch', 'tensorflow'],
     task: 'Image Classification',
     license: 'Apache-2.0',
     downloads: 1_120_000,
@@ -657,7 +611,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       "OpenAI's GPT-2 medium (345M parameters) for general-purpose text generation, completion, and creative writing tasks. Fast inference on consumer hardware.",
     platform: 'huggingface',
-    framework: ['pytorch', 'tensorflow', 'onnx'],
+    libraries: ['pytorch', 'tensorflow', 'onnx'],
     task: 'Text Generation',
     license: 'Modified MIT',
     downloads: 9_150_000,
@@ -674,7 +628,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       'Optimized YOLOv7 exported to ONNX format for cross-platform inference. Ideal for CPU/GPU deployment in production pipelines without Python dependency.',
     platform: 'onnx-model-zoo',
-    framework: ['onnx'],
+    libraries: ['onnx'],
     task: 'Object Detection',
     license: 'GPL-3.0',
     downloads: 430_000,
@@ -692,7 +646,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     description:
       "Google DeepMind's TabNet — an attentive tabular learning architecture that achieves SOTA performance on tabular data without manual feature engineering.",
     platform: 'huggingface',
-    framework: ['pytorch'],
+    libraries: ['pytorch'],
     task: 'Tabular Classification / Regression',
     license: 'Apache-2.0',
     downloads: 185_000,

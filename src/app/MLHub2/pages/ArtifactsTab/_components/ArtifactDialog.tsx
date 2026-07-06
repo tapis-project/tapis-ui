@@ -28,7 +28,7 @@ interface ArtifactDialogProps {
     id: string;
     name: string;
     version: string;
-    framework: string[];
+    libraries: string[];
   }>;
   datasets: Array<{
     id: string;
@@ -217,7 +217,7 @@ export default function ArtifactDialog({
                     {model.name}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    v{model.version} · {model.framework.join(', ')}
+                    v{model.version} · {model.libraries.join(', ')}
                   </Typography>
                 </Box>
               </MenuItem>

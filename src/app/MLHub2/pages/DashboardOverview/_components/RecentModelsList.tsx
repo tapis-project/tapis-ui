@@ -145,11 +145,11 @@ export default function RecentModelsList({ models }: RecentModelsListProps) {
                       flexWrap: 'wrap',
                     }}
                   >
-                    {model.framework.slice(0, 2).map((fw) => (
+                    {model.libraries.slice(0, 2).map((lib) => (
                       <Chip
-                        key={fw}
+                        key={lib}
                         size="small"
-                        label={frameworkLabelMap[fw] ?? fw}
+                        label={frameworkLabelMap[lib] ?? lib}
                         variant="outlined"
                         sx={{
                           height: 20,
@@ -160,10 +160,10 @@ export default function RecentModelsList({ models }: RecentModelsListProps) {
                         }}
                       />
                     ))}
-                    {model.framework.length > 2 && (
+                    {model.libraries.length > 2 && (
                       <Chip
                         size="small"
-                        label={`+${model.framework.length - 2}`}
+                        label={`+${model.libraries.length - 2}`}
                         variant="outlined"
                         sx={{
                           height: 20,

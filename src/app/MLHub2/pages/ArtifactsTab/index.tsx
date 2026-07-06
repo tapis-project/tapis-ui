@@ -34,7 +34,7 @@ interface ArtifactsTabProps {
     id: string;
     name: string;
     version: string;
-    framework: string[];
+    libraries: string[];
   }>;
   datasets: Array<{
     id: string;

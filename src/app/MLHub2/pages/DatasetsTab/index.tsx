@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -9,14 +9,19 @@ import {
   Typography,
   Stack,
   alpha,
-  Tooltip,
   Button,
+  Popover,
+  ListItemIcon,
+  ListItemText,
+  List,
+  ListItemButton,
 } from '@mui/material';
 import { DataGrid, type GridColDef, GridToolbar } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import type { Dataset, DatasetArtifact } from '../../types';
 import DatasetFormDialog from './_components/DatasetFormDialog';
@@ -41,7 +46,11 @@ export default function DatasetsTab({
   const [selectedDataset, setSelectedDataset] = React.useState<Dataset | null>(
     null
   );
-  const navigate = useNavigate();
+  const [actionsAnchor, setActionsAnchor] = React.useState<HTMLElement | null>(
+    null
+  );
+  const [actionsRow, setActionsRow] = React.useState<Dataset | null>(null);
+  const history = useHistory();
 
   const handleCreate = () => {
     setSelectedDataset(null);
@@ -88,7 +97,21 @@ export default function DatasetsTab({
       flex: 1.5,
       minWidth: 220,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            '&:hover': {
+              '& .MuiTypography-root': {
+                color: 'secondary.main',
+                textDecoration: 'underline',
+              },
+            },
+          }}
+          onClick={() => history.push(`/datasets/${params.row.id}`)}
+        >
           <DatasetIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {params.value}
@@ -229,35 +252,21 @@ export default function DatasetsTab({
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 130,
+      width: 100,
       sortable: false,
       filterable: false,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', gap: 0.25 }}>
-          <Tooltip title="View Details">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={() => navigate(`/datasets/${params.row.id}`)}
-            >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton size="small" onClick={() => handleEdit(params.row)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={() => handleDelete(params.row.id)}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              setActionsAnchor(e.currentTarget);
+              setActionsRow(params.row);
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </>
       ),
     },
   ];
@@ -415,6 +424,69 @@ export default function DatasetsTab({
           }}
         />
       </Card>
+
+      <Popover
+        open={Boolean(actionsAnchor)}
+        anchorEl={actionsAnchor}
+        onClose={() => {
+          setActionsAnchor(null);
+          setActionsRow(null);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: { sx: { width: 180, mt: 0.5 } },
+        }}
+      >
+        <List dense disablePadding>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) history.push(`/datasets/${actionsRow.id}`);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              <VisibilityIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="View Details"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) handleEdit(actionsRow);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Edit"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) handleDelete(actionsRow.id);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: 'error.main' }}>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Delete"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+        </List>
+      </Popover>
 
       <DatasetFormDialog
         open={dialogOpen}

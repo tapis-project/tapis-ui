@@ -15,7 +15,7 @@ import {
   Tooltip,
   Divider,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -94,7 +94,7 @@ interface DatasetMarketplaceProps {
 export default function DatasetMarketplace({
   datasets,
 }: DatasetMarketplaceProps) {
-  const navigate = useNavigate();
+  const history = useHistory();
 
   // ─── Filter state ───────────────────────────────
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -247,6 +247,7 @@ export default function DatasetMarketplace({
                   whiteSpace: 'nowrap',
                   textTransform: 'none',
                   borderRadius: 2,
+                  px: 2,
                 }}
               >
                 Filters

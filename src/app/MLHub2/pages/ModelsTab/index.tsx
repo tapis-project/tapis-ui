@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -9,21 +9,31 @@ import {
   Typography,
   Stack,
   alpha,
-  Tooltip,
   Button,
+  Popover,
+  ListItemIcon,
+  ListItemText,
+  List,
+  ListItemButton,
 } from '@mui/material';
 import { DataGrid, type GridColDef, GridToolbar } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
-import type { Model, Deployment, Artifact, ModelFramework } from '../../types';
+import type {
+  Model,
+  Deployment,
+  Artifact,
+  InferenceBackend,
+} from '../../types';
 import ModelFormDialog from '../../_components/ModelFormDialog';
 import {
   modelStatusColorMap,
-  frameworkIconMap,
-  frameworkLabelMap,
+  frameworkIconMap as inferenceBackendIconMap,
+  frameworkLabelMap as inferenceBackendLabelMap,
 } from '../../_components/constants';
 
 interface ModelsTabProps {
@@ -41,7 +51,11 @@ export default function ModelsTab({
 }: ModelsTabProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [selectedModel, setSelectedModel] = React.useState<Model | null>(null);
-  const navigate = useNavigate();
+  const [actionsAnchor, setActionsAnchor] = React.useState<HTMLElement | null>(
+    null
+  );
+  const [actionsRow, setActionsRow] = React.useState<Model | null>(null);
+  const history = useHistory();
 
   const handleCreate = () => {
     setSelectedModel(null);
@@ -86,7 +100,21 @@ export default function ModelsTab({
       flex: 1.5,
       minWidth: 200,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            '&:hover': {
+              '& .MuiTypography-root': {
+                color: 'primary.main',
+                textDecoration: 'underline',
+              },
+            },
+          }}
+          onClick={() => history.push(`/models/${params.row.id}`)}
+        >
           <SmartToyIcon sx={{ color: 'primary.main', fontSize: 20 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {params.value}
@@ -95,18 +123,18 @@ export default function ModelsTab({
       ),
     },
     {
-      field: 'framework',
-      headerName: 'Framework',
-      width: 180,
+      field: 'libraries',
+      headerName: 'Inference Backend',
+      width: 200,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {(params.value as ModelFramework[]).map((fw) => (
+          {(params.value as InferenceBackend[]).map((lib) => (
             <Chip
-              key={fw}
-              label={frameworkLabelMap[fw] ?? fw}
+              key={lib}
+              label={inferenceBackendLabelMap[lib] ?? lib}
               size="small"
               variant="outlined"
-              icon={<span>{frameworkIconMap[fw] || ''}</span>}
+              icon={<span>{inferenceBackendIconMap[lib] || ''}</span>}
               sx={{
                 textTransform: 'capitalize',
                 height: 24,
@@ -139,35 +167,6 @@ export default function ModelsTab({
         />
       ),
     },
-    // {
-    //   field: 'f1Score',
-    //   headerName: 'F1 Score',
-    //   width: 100,
-    //   align: 'center',
-    //   headerAlign: 'center',
-    //   valueGetter: (_value, row) => (row.f1Score ? `${row.f1Score}%` : '—'),
-    //   renderCell: (params) =>
-    //     params.row.f1Score ? (
-    //       <Typography
-    //         variant="body2"
-    //         sx={{
-    //           fontWeight: 600,
-    //           color:
-    //             params.row.f1Score >= 95
-    //               ? 'success.main'
-    //               : params.row.f1Score >= 85
-    //                 ? 'warning.main'
-    //                 : 'error.main',
-    //         }}
-    //       >
-    //         {params.value}
-    //       </Typography>
-    //     ) : (
-    //       <Typography variant="body2" color="text.secondary">
-    //         —
-    //       </Typography>
-    //     ),
-    // },
     {
       field: 'tags',
       headerName: 'Tags',
@@ -207,35 +206,21 @@ export default function ModelsTab({
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 130,
+      width: 100,
       sortable: false,
       filterable: false,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', gap: 0.25 }}>
-          <Tooltip title="View Details">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={() => navigate(`/models/${params.row.id}`)}
-            >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton size="small" onClick={() => handleEdit(params.row)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={() => handleDelete(params.row.id)}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              setActionsAnchor(e.currentTarget);
+              setActionsRow(params.row);
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </>
       ),
     },
   ];
@@ -388,6 +373,69 @@ export default function ModelsTab({
           }}
         />
       </Card>
+
+      <Popover
+        open={Boolean(actionsAnchor)}
+        anchorEl={actionsAnchor}
+        onClose={() => {
+          setActionsAnchor(null);
+          setActionsRow(null);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: { sx: { width: 180, mt: 0.5 } },
+        }}
+      >
+        <List dense disablePadding>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) history.push(`/models/${actionsRow.id}`);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              <VisibilityIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="View Details"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) handleEdit(actionsRow);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Edit"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) handleDelete(actionsRow.id);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: 'error.main' }}>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Delete"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+        </List>
+      </Popover>
 
       <ModelFormDialog
         open={dialogOpen}

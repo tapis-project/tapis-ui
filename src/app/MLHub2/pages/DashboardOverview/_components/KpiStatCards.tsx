@@ -96,7 +96,7 @@ export default function KpiStatCards({
       color: 'info',
       trend: '+156',
       trendUp: true,
-      subtitle: 'Curated collection',
+      subtitle: 'Available to browse',
       navigateTo: '/marketplace',
     },
     {

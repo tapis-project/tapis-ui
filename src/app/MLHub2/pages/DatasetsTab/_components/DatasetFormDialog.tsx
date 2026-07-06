@@ -219,6 +219,7 @@ export default function DatasetFormDialog({
             onChange={handleChange('author')}
             fullWidth
             placeholder="Dataset owner name"
+            disabled={!!dataset}
           />
         </Box>
 

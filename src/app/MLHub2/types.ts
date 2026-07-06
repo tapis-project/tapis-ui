@@ -1,46 +1,31 @@
-export type ModelFramework =
-  | 'pytorch'
-  | 'tensorflow'
-  | 'sklearn'
-  | 'xgboost'
-  | 'onnx'
-  | 'custom';
-export type ModelStatus =
-  | 'draft'
-  | 'pending'
-  | 'ready'
-  | 'deprecated'
-  | 'archived';
-export type DeploymentEnvironment = 'staging' | 'production';
-export type DeploymentStatus =
-  | 'NotDeployed'
-  | 'Running'
-  | 'Stopped'
-  | 'Failed'
-  | 'Blocked'
-  | 'Unknown';
-export type ArtifactStorageType = 'platform' | 's3' | 'gcs' | 'azure' | 'url';
-export type ArtifactStatus = 'available' | 'uploading' | 'error' | 'archived';
-export type ArtifactType = 'model' | 'dataset';
+import type { InferenceBackend } from './enums';
+import type {
+  ModelStatus,
+  DeploymentEnvironment,
+  DeploymentStatus,
+  ArtifactStorageType,
+  ArtifactStatus,
+  ArtifactType,
+  DatasetFormat,
+  DatasetStatus,
+  MarketplacePlatform,
+  DatasetPlatform,
+} from './enums';
 
-// ── Dataset types ────────────────────────────────────────────────
-export type DatasetFormat =
-  | 'csv'
-  | 'parquet'
-  | 'json'
-  | 'jsonl'
-  | 'image'
-  | 'text'
-  | 'delta'
-  | 'custom'
-  | 'audio';
-export type DatasetStatus =
-  | 'draft'
-  | 'validating'
-  | 'ready'
-  | 'deprecated'
-  | 'archived'
-  | 'error';
+// Re-export for convenience (but prefer importing from './enums')
+export type { InferenceBackend };
+export type {
+  ModelStatus,
+  DeploymentEnvironment,
+  DeploymentStatus,
+  ArtifactStorageType,
+  ArtifactStatus,
+  ArtifactType,
+  DatasetFormat,
+  DatasetStatus,
+  MarketplacePlatform,
+  DatasetPlatform,
+} from './enums';
 
 export interface Dataset {
   id: string;
@@ -76,7 +61,7 @@ export interface Model {
   id: string;
   name: string;
   description: string;
-  framework: ModelFramework[];
+  libraries: InferenceBackend[];
   version: string;
   status: ModelStatus;
   f1Score: number | null;
@@ -99,7 +84,6 @@ export interface Deployment {
   memory: string;
   deployedAt: string | null;
   startedBy: string;
-  logs: string[];
 }
 
 export interface Artifact {
@@ -122,25 +106,13 @@ export interface Artifact {
 }
 
 // ── Marketplace (external curated) types ──────────────────────
-export type MarketplacePlatform =
-  | 'huggingface'
-  | 'tensorflow-hub'
-  | 'pytorch-hub'
-  | 'onnx-model-zoo'
-  | 'kaggle';
-export type DatasetPlatform =
-  | 'huggingface'
-  | 'kaggle'
-  | 'uciml'
-  | 'github'
-  | 'activeloop';
 
 export interface MarketplaceModel {
   id: string;
   name: string;
   description: string;
   platform: MarketplacePlatform;
-  framework: ModelFramework[];
+  libraries: InferenceBackend[];
   task: string; // e.g. 'Text Classification', 'Object Detection', 'Image Generation'
   license: string;
   downloads: number;

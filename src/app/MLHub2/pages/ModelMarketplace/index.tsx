@@ -15,7 +15,7 @@ import {
   Tooltip,
   Divider,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -24,58 +24,41 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ForkRightIcon from '@mui/icons-material/ForkRight';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
-import type {
-  MarketplaceModel,
-  MarketplacePlatform,
-  ModelFramework,
-} from '../../types';
+import type { MarketplaceModel, InferenceBackend } from '../../types';
 import {
-  frameworkLabelMap,
-  frameworkColorMap,
+  frameworkLabelMap as inferenceBackendLabelMap,
+  frameworkColorMap as inferenceBackendColorMap,
 } from '../../_components/constants';
-
-// ── Platform config ───────────────────────────────────
-const platformConfig: Record<
-  MarketplacePlatform,
-  { label: string; color: string; icon: string }
-> = {
-  huggingface: { label: 'Hugging Face', color: '#FFD21E', icon: '🤗' },
-  'tensorflow-hub': { label: 'TensorFlow Hub', color: '#FF6F00', icon: '🧠' },
-  'pytorch-hub': { label: 'PyTorch Hub', color: '#EE4C2C', icon: '🔥' },
-  'onnx-model-zoo': { label: 'ONNX Model Zoo', color: '#808080', icon: '⚡' },
-  kaggle: { label: 'Kaggle', color: '#20BEFF', icon: '📊' },
-};
-
-const ALL_PLATFORMS: MarketplacePlatform[] = [
-  'huggingface',
-  'tensorflow-hub',
-  'pytorch-hub',
-  'onnx-model-zoo',
-  'kaggle',
-];
-const ALL_FRAMEWORKS: ModelFramework[] = [
-  'pytorch',
-  'tensorflow',
-  'sklearn',
-  'xgboost',
-  'onnx',
-  'custom',
-];
+import { ALL_INFERENCE_BACKENDS, platformConfig } from '../../enums';
+import {
+  TASKS_BY_CATEGORY,
+  CATEGORY_COLOR_MAP,
+  type Task,
+} from '../../data/taskTypes';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 interface ModelMarketplaceProps {
   models: MarketplaceModel[];
+  onApply?: (filters: {
+    tasks: Set<Task>;
+    backends: InferenceBackend[];
+    searchQuery: string;
+  }) => void;
 }
 
-export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
-  const navigate = useNavigate();
+export default function ModelMarketplace({
+  models,
+  onApply,
+}: ModelMarketplaceProps) {
+  const history = useHistory();
 
   // ─── Filter state ───────────────────────────────
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedPlatforms, setSelectedPlatforms] = React.useState<
-    Set<MarketplacePlatform>
-  >(new Set());
-  const [selectedFrameworks, setSelectedFrameworks] = React.useState<
-    ModelFramework[]
+  const [selectedTasks, setSelectedTasks] = React.useState<Set<Task>>(
+    new Set()
+  );
+  const [selectedBackends, setSelectedBackends] = React.useState<
+    InferenceBackend[]
   >([]);
   const [showFilters, setShowFilters] = React.useState(false);
 
@@ -97,46 +80,55 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
         if (!searchable.includes(q)) return false;
       }
 
-      // Platform filter
-      if (selectedPlatforms.size > 0 && !selectedPlatforms.has(model.platform))
-        return false;
+      // Task type filter — match against task label or enum value string
+      if (selectedTasks.size > 0) {
+        const matches = [...selectedTasks].some(
+          (t) =>
+            t.label.toLowerCase() === model.task.toLowerCase() ||
+            String(t.value).toLowerCase() === model.task.toLowerCase() ||
+            model.task.toLowerCase().includes(t.label.toLowerCase()) ||
+            t.label.toLowerCase().includes(model.task.toLowerCase())
+        );
+        if (!matches) return false;
+      }
 
-      // Framework filter
+      // Inference backend filter
       if (
-        selectedFrameworks.length > 0 &&
-        !selectedFrameworks.some((fw) => model.framework.includes(fw))
+        selectedBackends.length > 0 &&
+        !selectedBackends.some((b) => model.libraries.includes(b))
       )
         return false;
 
       return true;
     });
-  }, [models, searchQuery, selectedPlatforms, selectedFrameworks]);
+  }, [models, searchQuery, selectedTasks, selectedBackends]);
 
   // ─── Toggle helpers ────────────────────────────
-  const togglePlatform = (platform: MarketplacePlatform) => {
-    setSelectedPlatforms((prev) => {
+  const toggleTask = (task: Task) => {
+    setSelectedTasks((prev) => {
       const next = new Set(prev);
-      next.has(platform) ? next.delete(platform) : next.add(platform);
+      next.has(task) ? next.delete(task) : next.add(task);
       return next;
     });
   };
 
-  const toggleFramework = (framework: ModelFramework) => {
-    setSelectedFrameworks((prev) =>
-      prev.includes(framework)
-        ? prev.filter((f) => f !== framework)
-        : [...prev, framework]
+  const toggleBackend = (backend: InferenceBackend) => {
+    setSelectedBackends((prev) =>
+      prev.includes(backend)
+        ? prev.filter((b) => b !== backend)
+        : [...prev, backend]
     );
   };
 
   const clearAllFilters = () => {
     setSearchQuery('');
-    setSelectedPlatforms(new Set());
-    setSelectedFrameworks([]);
+    setSelectedTasks(new Set());
+    setSelectedBackends([]);
   };
 
   const hasActiveFilters =
-    searchQuery || selectedPlatforms.size > 0 || selectedFrameworks.length > 0;
+    selectedTasks.size > 0 || selectedBackends.length > 0;
+  const canApply = hasActiveFilters || !!searchQuery.trim();
 
   // ─── Format number helper ──────────────────────
   const formatCount = (n: number): string => {
@@ -219,6 +211,7 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
                   whiteSpace: 'nowrap',
                   textTransform: 'none',
                   borderRadius: 2,
+                  px: 2,
                 }}
               >
                 Filters
@@ -226,8 +219,8 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
                   <Chip
                     label={
                       (searchQuery ? 1 : 0) +
-                      selectedPlatforms.size +
-                      selectedFrameworks.length
+                      selectedTasks.size +
+                      selectedBackends.length
                     }
                     size="small"
                     color="primary"
@@ -258,58 +251,30 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
             <Box sx={{ mt: 2 }}>
               <Divider sx={{ mb: 2 }} />
 
-              {/* Platform chips */}
-              <Box sx={{ mb: 2 }}>
+              {/* ── Inference Backend (top) ──────────────── */}
+              <Box sx={{ mb: 3 }}>
                 <Typography
                   variant="subtitle2"
                   sx={{ fontWeight: 600, mb: 1, color: 'text.secondary' }}
                 >
-                  Platform
+                  Inference Backend
                 </Typography>
                 <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
-                  {ALL_PLATFORMS.map((platform) => {
-                    const cfg = platformConfig[platform];
-                    const isSelected = selectedPlatforms.has(platform);
+                  {ALL_INFERENCE_BACKENDS.map((ib) => {
+                    const isSelected = selectedBackends.includes(ib);
                     return (
                       <Chip
-                        key={platform}
-                        label={`${cfg.icon} ${cfg.label}`}
-                        onClick={() => togglePlatform(platform)}
-                        variant={isSelected ? 'filled' : 'outlined'}
-                        color={isSelected ? 'primary' : 'default'}
-                        sx={{
-                          borderColor: isSelected ? undefined : 'divider',
-                          '& .MuiChip-label': { fontWeight: 500 },
-                          textTransform: 'none',
-                        }}
-                      />
-                    );
-                  })}
-                </Stack>
-              </Box>
-
-              {/* Framework chips */}
-              <Box>
-                <Typography
-                  variant="subtitle2"
-                  sx={{ fontWeight: 600, mb: 1, color: 'text.secondary' }}
-                >
-                  Framework
-                </Typography>
-                <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
-                  {ALL_FRAMEWORKS.map((fw) => {
-                    const isSelected = selectedFrameworks.includes(fw);
-                    return (
-                      <Chip
-                        key={fw}
-                        label={frameworkLabelMap[fw] ?? fw}
-                        onClick={() => toggleFramework(fw)}
+                        key={ib}
+                        label={inferenceBackendLabelMap[ib] ?? ib}
+                        onClick={() => toggleBackend(ib)}
                         variant={isSelected ? 'filled' : 'outlined'}
                         sx={{
                           bgcolor: isSelected
-                            ? alpha(frameworkColorMap[fw], 0.12)
+                            ? alpha(inferenceBackendColorMap[ib], 0.12)
                             : undefined,
-                          color: isSelected ? frameworkColorMap[fw] : undefined,
+                          color: isSelected
+                            ? inferenceBackendColorMap[ib]
+                            : undefined,
                           borderColor: isSelected ? undefined : 'divider',
                           '& .MuiChip-label': { fontWeight: 500 },
                           textTransform: 'capitalize',
@@ -319,6 +284,129 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
                   })}
                 </Stack>
               </Box>
+
+              <Divider sx={{ my: 2, opacity: 0.6 }} />
+
+              {/* ── Task Types (grouped by category) ─────── */}
+              <Box sx={{ mb: 2 }}>
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: 'center', gap: 1, mb: 1.5 }}
+                >
+                  <TaskAltIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: 700, letterSpacing: '-0.01em' }}
+                  >
+                    Task Types
+                  </Typography>
+                </Stack>
+
+                {TASKS_BY_CATEGORY.map((group) => {
+                  const catColor = CATEGORY_COLOR_MAP[group.category];
+                  return (
+                    <Box key={group.category} sx={{ mb: 2.5 }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 650,
+                          mb: 1,
+                          color: catColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.75,
+                        }}
+                      >
+                        <Box
+                          component="span"
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: catColor,
+                            display: 'inline-block',
+                            flexShrink: 0,
+                          }}
+                        />
+                        {group.category}
+                      </Typography>
+                      <Stack
+                        direction="row"
+                        sx={{ flexWrap: 'wrap', gap: 0.75 }}
+                      >
+                        {group.tasks.map((task) => {
+                          const isSelected = selectedTasks.has(task);
+                          return (
+                            <Chip
+                              key={String(task.value)}
+                              label={task.label}
+                              onClick={() => toggleTask(task)}
+                              variant={isSelected ? 'filled' : 'outlined'}
+                              size="small"
+                              sx={{
+                                ...(isSelected
+                                  ? {
+                                      bgcolor: alpha(catColor, 0.14),
+                                      color: catColor,
+                                      borderColor: catColor,
+                                    }
+                                  : {
+                                      borderColor: alpha(catColor, 0.35),
+                                      color: alpha(catColor, 0.85),
+                                    }),
+                                '& .MuiChip-label': { fontWeight: 500 },
+                                textTransform: 'none',
+                                fontSize: '0.78rem',
+                                transition: 'all 0.15s ease-in-out',
+                              }}
+                            />
+                          );
+                        })}
+                      </Stack>
+                    </Box>
+                  );
+                })}
+              </Box>
+
+              <Divider sx={{ opacity: 0.6 }} />
+
+              {/* ── Action Buttons ───────────────────────── */}
+              <Stack
+                direction="row"
+                sx={{ justifyContent: 'flex-end', gap: 1, mt: 2 }}
+              >
+                <Button
+                  size="small"
+                  onClick={clearAllFilters}
+                  disabled={!hasActiveFilters && !searchQuery.trim()}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Clear all
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() =>
+                    onApply?.({
+                      tasks: selectedTasks,
+                      backends: selectedBackends,
+                      searchQuery,
+                    })
+                  }
+                  disabled={!canApply}
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: 'none',
+                    '&:hover': {
+                      boxShadow: (theme) =>
+                        `0 2px 8px ${alpha(theme.palette.primary.main, 0.3)}`,
+                    },
+                  }}
+                >
+                  Apply
+                </Button>
+              </Stack>
             </Box>
           )}
         </CardContent>
@@ -477,23 +565,26 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
                     {/* Spacer */}
                     <Box sx={{ flex: 1 }} />
 
-                    {/* Frameworks */}
+                    {/* Inference Backends */}
                     <Stack
                       direction="row"
                       sx={{ flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}
                     >
-                      {model.framework.map((fw) => (
+                      {model.libraries.map((lib) => (
                         <Chip
-                          key={fw}
-                          label={frameworkLabelMap[fw]}
+                          key={lib}
+                          label={inferenceBackendLabelMap[lib]}
                           size="small"
                           variant="outlined"
                           sx={{
                             fontSize: '0.65rem',
                             height: 20,
                             textTransform: 'capitalize',
-                            borderColor: alpha(frameworkColorMap[fw], 0.35),
-                            color: frameworkColorMap[fw],
+                            borderColor: alpha(
+                              inferenceBackendColorMap[lib],
+                              0.35
+                            ),
+                            color: inferenceBackendColorMap[lib],
                             fontWeight: 600,
                             '& .MuiChip-label': { px: 0.75 },
                           }}
@@ -603,7 +694,7 @@ export default function ModelMarketplace({ models }: ModelMarketplaceProps) {
                         startIcon={<ForkRightIcon sx={{ fontSize: 16 }} />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/models/fork/${model.id}`);
+                          history.push(`/models/fork/${model.id}`);
                         }}
                         sx={{
                           textTransform: 'none',
