@@ -35,20 +35,25 @@ import {
   frameworkLabelMap as inferenceBackendLabelMap,
 } from '../../_components/constants';
 import { useNavigate } from '../../_context/NavContext';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import * as Models from '@mlhub/models-ts-sdk';
 
 interface ModelsTabProps {
-  models: Model[];
   onModelsChange: (models: Model[]) => void;
   deployments?: Deployment[];
   artifacts?: Artifact[];
 }
 
 export default function ModelsTab({
-  models,
   onModelsChange,
   deployments = [],
   artifacts = [],
 }: ModelsTabProps) {
+  const { username } = useTapisConfig();
+  const { data, isLoading, error } = Hooks.Models.useListByAuthor({
+    author: username,
+  });
+  const models = data?.result ?? [];
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [selectedModel, setSelectedModel] = React.useState<Model | null>(null);
   const [actionsAnchor, setActionsAnchor] = React.useState<HTMLElement | null>(
@@ -67,30 +72,32 @@ export default function ModelsTab({
     setDialogOpen(true);
   };
 
-  const handleSave = (data: Omit<Model, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSave = (
+    data: Omit<Models.ModelMetadata, 'id' | 'createdAt' | 'updatedAt'>
+  ) => {
     if (selectedModel) {
       // Edit existing
-      onModelsChange(
-        models.map((m) =>
-          m.id === selectedModel.id
-            ? { ...m, ...data, updatedAt: new Date().toISOString() }
-            : m
-        )
-      );
+      // onModelsChange(
+      //   models.map((m) =>
+      //     m.id === selectedModel.id
+      //       ? { ...m, ...data, updatedAt: new Date().toISOString() }
+      //       : m
+      //   )
+      // );
     } else {
-      // Create new
-      const newModel: Model = {
-        id: `model-${String(models.length + 1).padStart(3, '0')}`,
-        ...data,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      onModelsChange([...models, newModel]);
+      // // Create new
+      // const newModel: Model = {
+      //   id: `model-${String(models.length + 1).padStart(3, '0')}`,
+      //   ...data,
+      //   createdAt: new Date().toISOString(),
+      //   updatedAt: new Date().toISOString(),
+      // };
+      // onModelsChange([...models, newModel]);
     }
   };
 
   const handleDelete = (id: string) => {
-    onModelsChange(models.filter((m) => m.id !== id));
+    // onModelsChange(models.filter((m) => m.id !== id));
   };
 
   const columns: GridColDef[] = [
@@ -123,6 +130,11 @@ export default function ModelsTab({
       ),
     },
     {
+      field: 'author',
+      headerName: 'Author',
+      width: 130,
+    },
+    {
       field: 'libraries',
       headerName: 'Inference Backend',
       width: 200,
@@ -146,13 +158,6 @@ export default function ModelsTab({
       ),
     },
     {
-      field: 'version',
-      headerName: 'Version',
-      width: 90,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
       field: 'status',
       headerName: 'Status',
       width: 120,
@@ -170,7 +175,7 @@ export default function ModelsTab({
     {
       field: 'tags',
       headerName: 'Tags',
-      width: 180,
+      width: 320,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
           {(params.value as string[]).slice(0, 3).map((tag: string) => (
@@ -192,16 +197,11 @@ export default function ModelsTab({
       ),
     },
     {
-      field: 'author',
-      headerName: 'Author',
-      width: 130,
-    },
-    {
       field: 'updatedAt',
       headerName: 'Updated',
       width: 120,
       valueGetter: (_value, row) =>
-        new Date(row.updatedAt).toLocaleDateString(),
+        new Date(row.last_modified).toLocaleDateString(),
     },
     {
       field: 'actions',
@@ -227,10 +227,11 @@ export default function ModelsTab({
 
   const statusCounts = React.useMemo(() => {
     const counts: Record<string, number> = {};
-    models.forEach((m) => {
-      counts[m.status] = (counts[m.status] || 0) + 1;
-    });
-    return counts;
+    return { pending: 0, ready: 0, draft: 0 }; // TODO
+    // models.forEach((m) => {
+    //   counts[m.status] = (counts[m.status] || 0) + 1;
+    // });
+    // return counts;
   }, [models]);
 
   return (
@@ -334,6 +335,7 @@ export default function ModelsTab({
           </Button>
         </Box>
         <DataGrid
+          getRowId={(row) => row.author + row.name}
           rows={models}
           columns={columns}
           initialState={{
@@ -437,12 +439,12 @@ export default function ModelsTab({
         </List>
       </Popover>
 
-      <ModelFormDialog
+      {/* <ModelFormDialog
         open={dialogOpen}
         model={selectedModel}
         onClose={() => setDialogOpen(false)}
         onSave={handleSave}
-      />
+      /> */}
     </Box>
   );
 }

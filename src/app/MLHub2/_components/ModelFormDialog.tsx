@@ -17,12 +17,13 @@ import {
   MODEL_STATUS_OPTIONS,
   inferenceBackendLabelMap,
 } from '../enums';
+import * as Models from '@mlhub/models-ts-sdk';
 
 interface ModelFormDialogProps {
   open: boolean;
-  model: Model | null;
+  model: Models.ModelMetadata | null;
   onClose: () => void;
-  onSave: (model: Omit<Model, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSave: (model: Partial<Models.ModelMetadata>) => void;
 }
 
 const emptyForm = {
@@ -46,21 +47,21 @@ export default function ModelFormDialog({
   const [tagInput, setTagInput] = React.useState('');
 
   React.useEffect(() => {
-    if (model) {
-      setForm({
-        name: model.name,
-        description: model.description,
-        libraries: [...model.libraries],
-        version: model.version,
-        status: model.status,
-        f1Score: model.f1Score,
-        tags: [...model.tags],
-        author: model.author,
-      });
-    } else {
-      setForm({ ...emptyForm });
-      setTagInput('');
-    }
+    // if (model) {
+    //   setForm({
+    //     name: model.name,
+    //     description: model.description,
+    //     libraries: [...model.libraries],
+    //     version: model.version,
+    //     status: model.status,
+    //     f1Score: model.f1Score,
+    //     tags: [...model.tags],
+    //     author: model.author,
+    //   });
+    // } else {
+    //   setForm({ ...emptyForm });
+    //   setTagInput('');
+    // }
   }, [model, open]);
 
   const handleChange =
