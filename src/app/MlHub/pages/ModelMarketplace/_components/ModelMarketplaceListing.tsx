@@ -23,6 +23,9 @@ import { Download, Favorite, ForkRight, OpenInNew } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { formatCount } from '../../../_utils';
+import { ForkPopover } from '../../../_components/ForkPopover';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import { useNavigate } from '../../../_context/NavContext';
 
 type ModelMarketplaceListingProps = {
   models: Array<Models.ModelMetadata>;
@@ -35,7 +38,12 @@ type ModelMarketplaceListingProps = {
 export const ModelMarketplaceListing: React.FC<
   ModelMarketplaceListingProps
 > = ({ models, count, next, previous, isLoading }) => {
-  const appropriateModels = useMemo(() => {
+  // ----- Hooks
+  const { navigate } = useNavigate();
+  const { create } = Hooks.Models.useCreateModel();
+  const { username } = useTapisConfig();
+
+  const appropriateModels: Models.ModelMetadata[] = useMemo(() => {
     return models.filter((m) => {
       return (
         !m.tags?.includes('not-for-all-audiences') &&
@@ -350,32 +358,26 @@ export const ModelMarketplaceListing: React.FC<
                     </Stack>
 
                     {/* Fork Button — bottom right */}
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<ForkRight sx={{ fontSize: 16 }} />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        alert('Fork model');
+                    <ForkPopover
+                      isLoading={isLoading}
+                      onFork={() => {
+                        create(
+                          {
+                            createModelMetadataBody: {
+                              ...model,
+                            },
+                          },
+                          {
+                            onSuccess: () => {
+                              navigate(`/models/${username}/${model.name}`);
+                            },
+                          }
+                        );
                       }}
-                      sx={{
-                        textTransform: 'none',
-                        fontWeight: 700,
-                        fontSize: '0.75rem',
-                        borderRadius: 2,
-                        px: 2,
-                        boxShadow: 'none',
-                        '&:hover': {
-                          boxShadow: (theme) =>
-                            `0 4px 12px ${alpha(
-                              theme.palette.primary.main,
-                              0.3
-                            )}`,
-                        },
+                      onForkAndDeploy={() => {
+                        alert('Disabled');
                       }}
-                    >
-                      Fork Model
-                    </Button>
+                    />
                   </Box>
                 </CardContent>
               </Card>

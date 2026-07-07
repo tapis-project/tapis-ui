@@ -73,7 +73,7 @@ export const generateDeployments = (models: Model[]): Deployment[] =>
     .slice(0, 8)
     .map((model, i) => {
       const env: Deployment['environment'] =
-        i % 3 === 0 ? 'staging' : 'production';
+        i % 3 === 0 ? 'test' : 'production';
       const deploymentStatuses: Array<Deployment['status']> = [
         'Running',
         'Running',

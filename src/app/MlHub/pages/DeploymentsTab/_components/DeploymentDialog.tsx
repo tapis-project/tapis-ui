@@ -40,7 +40,7 @@ export default function DeploymentDialog({
 }: DeploymentDialogProps) {
   const [selectedModelId, setSelectedModelId] = React.useState('');
   const [environment, setEnvironment] =
-    React.useState<DeploymentEnvironment>('staging');
+    React.useState<DeploymentEnvironment>('test');
   const [replicas, setReplicas] = React.useState(2);
   const [cpu, setCpu] = React.useState('1');
   const [memory, setMemory] = React.useState('1Gi');
@@ -53,7 +53,7 @@ export default function DeploymentDialog({
   React.useEffect(() => {
     if (open) {
       setSelectedModelId('');
-      setEnvironment('staging');
+      setEnvironment('test');
       setReplicas(2);
       setCpu('1');
       setMemory('1Gi');
@@ -125,9 +125,9 @@ export default function DeploymentDialog({
           select
           fullWidth
         >
-          <MenuItem value="staging">
+          <MenuItem value="test">
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              🧪 Staging — Pre-production testing
+              🧪 Test — Pre-production testing
             </Box>
           </MenuItem>
           <MenuItem value="production">

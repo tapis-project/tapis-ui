@@ -487,7 +487,7 @@ export default function ModelDetailsPage({
                       >
                         {dep.environment === 'production'
                           ? 'Production'
-                          : 'Staging'}
+                          : 'Test'}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {dep.replicas}x replicas · {dep.cpu} CPU / {dep.memory}

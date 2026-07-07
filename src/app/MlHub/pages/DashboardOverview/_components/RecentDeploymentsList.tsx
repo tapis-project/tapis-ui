@@ -150,9 +150,7 @@ export default function RecentDeploymentsList({
                     <Chip
                       size="small"
                       label={
-                        dep.environment === 'production'
-                          ? 'Production'
-                          : 'Staging'
+                        dep.environment === 'production' ? 'Production' : 'Test'
                       }
                       color={envColorMap[dep.environment]}
                       variant="outlined"
