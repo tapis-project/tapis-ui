@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Box, AppBar, Toolbar, Typography, Tabs, Tab } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import PsychologyIcon from '@mui/icons-material/Psychology';
@@ -8,7 +7,6 @@ import Inventory2Icon from '@mui/icons-material/Inventory2';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import StorefrontIcon from '@mui/icons-material/Storefront';
-import DatasetMarketplaceIcon from '@mui/icons-material/Dataset';
 import { useNavigate } from '../../_context/NavContext';
 
 /* ─── Nav config ──────────────────────────────────────────────── */
@@ -16,7 +14,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
   { label: 'Models', path: '/models', icon: <SmartToyIcon /> },
   {
-    label: 'Marketplace',
+    label: 'Models Marketplace',
     path: '/marketplace',
     icon: <StorefrontIcon />,
   },
@@ -27,9 +25,9 @@ const NAV_ITEMS = [
   },
   { label: 'Datasets', path: '/datasets', icon: <DatasetIcon /> },
   {
-    label: 'Data Market',
+    label: 'Data Marketplace',
     path: '/dataset-marketplace',
-    icon: <DatasetMarketplaceIcon />,
+    icon: <StorefrontIcon />,
   },
   { label: 'Artifacts', path: '/artifacts', icon: <Inventory2Icon /> },
 ] as const;
