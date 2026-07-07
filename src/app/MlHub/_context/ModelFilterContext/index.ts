@@ -1,1 +1,1 @@
-export { default as ModelFilaterContext } from './ModelFilterContext';
+export { default as ModelFilterContext } from './ModelFilterContext';

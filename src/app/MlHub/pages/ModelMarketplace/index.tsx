@@ -13,6 +13,9 @@ import {
   IconButton,
   Tooltip,
   Divider,
+  FormControl,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
@@ -101,6 +104,7 @@ export default function ModelMarketplace() {
   // ─── Filter state ───────────────────────────────
   const {
     limit,
+    setLimit,
     libraries: selectedBackends,
     setLibraries: setSelectedBackends,
     taskTypes: selectedTasks,
@@ -175,6 +179,7 @@ export default function ModelMarketplace() {
   const filteredModels = React.useMemo(() => {
     return models.filter((model) => {
       const taskTypes = model.task_types || [];
+      const libraries = model.libraries || [];
       // Search filter (name, description, task, author, tags)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -184,33 +189,12 @@ export default function ModelMarketplace() {
           ...taskTypes,
           model.author,
           ...tags,
+          ...libraries,
         ]
           .join(' ')
           .toLowerCase();
         if (!searchable.includes(q)) return false;
       }
-
-      // Task type filter — match against task label or enum value string
-      // TODO Rework this filter logic
-      // if (selectedTasks.length > 0) {
-      //   const matches = [...selectedTasks].some(
-      //     (t) =>
-      //       t.label.toLowerCase() === model.task.toLowerCase() ||
-      //       String(t.value).toLowerCase() === model.task.toLowerCase() ||
-      //       taskTypes.map((tt) =>
-      //         tt.toLowerCase().includes(t.label.toLowerCase())
-      //       ).length > 0 ||
-      //       t.label.toLowerCase().includes(model.task.toLowerCase())
-      //   );
-      //   if (!matches) return false;
-      // }
-
-      // // Inference backend filter
-      // if (
-      //   selectedBackends.length > 0 &&
-      //   !selectedBackends.some((b) => model.libraries.includes(b))
-      // )
-      //   return false;
 
       return true;
     });
@@ -313,6 +297,50 @@ export default function ModelMarketplace() {
                 bgcolor: 'background.default',
               }}
             />
+
+            <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: 'text.secondary',
+                  fontSize: '0.75rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Limit
+              </Typography>
+              <FormControl size="small">
+                <Select
+                  value={limit}
+                  onChange={(e) => setLimit(Number(e.target.value))}
+                  sx={{
+                    height: 28,
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    minWidth: 68,
+                    borderRadius: 1.5,
+                    '& .MuiSelect-select': { py: 0, px: 1.25 },
+                  }}
+                  MenuProps={{
+                    slotProps: {
+                      paper: {
+                        sx: { borderRadius: 2, mt: 0.5 },
+                      },
+                    },
+                  }}
+                >
+                  {[10, 25, 50, 100].map((v) => (
+                    <MenuItem
+                      value={v}
+                      sx={{ fontSize: '0.8rem', fontWeight: 500 }}
+                    >
+                      {v}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
 
             <Tooltip title={showFilters ? 'Hide filters' : 'Show filters'}>
               <Button
@@ -528,7 +556,7 @@ export default function ModelMarketplace() {
       </Card>
 
       {/* ─── Model Cards Grid ─────────────────────────── */}
-      {filteredModels.length === 0 ? (
+      {filteredModels.length === 0 && isLoading === false ? (
         <Card
           elevation={0}
           sx={{

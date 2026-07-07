@@ -101,7 +101,7 @@ registerChat({
     'Recommend models for sentiment analysis',
   ],
   getAgentContext: (baseContext) => ({
-    section: 'ml-hub',
+    section: 'mlhub',
     basePath: baseContext.basePath || '',
     mlHubBasePath: baseContext.mlHubBasePath,
     jwt: baseContext.accessToken?.access_token || '',

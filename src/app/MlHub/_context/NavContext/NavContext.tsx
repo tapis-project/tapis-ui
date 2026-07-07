@@ -15,7 +15,7 @@ export const NavContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const history = useHistory();
-  const ROOT = '/mlhub2';
+  const ROOT = '/mlhub';
 
   // Pass both state and updater into the value object
   return (

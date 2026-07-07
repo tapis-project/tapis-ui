@@ -50,7 +50,7 @@ export const ModelMarketplaceListing: React.FC<
       return (
         <>
           <Typography variant="body2" sx={{ color: '#d32f2f' }}>
-            {diff} model{diff > 1 ? 's' : ''} hidden for questionable content
+            {diff} model{diff > 1 ? 's' : ''} hidden due to questionable content
           </Typography>
         </>
       );
@@ -65,30 +65,34 @@ export const ModelMarketplaceListing: React.FC<
         {appropriateModels.length < models.length &&
           renderInappropriateModelsCountComponent()}
       </Typography>
-      <Box sx={{ display: 'flex', width: '100%', mb: '8px' }}>
-        <LoadingButton
-          size="small"
-          disabled={isLoading || previous === undefined || models.length === 0}
-          loading={isLoading}
-          onClick={previous}
-          variant="outlined"
-          sx={{ cursor: 'pointer', borderRadius: '3px' }}
-          startIcon={<MdNavigateBefore />}
-        >
-          Previous
-        </LoadingButton>
-        <LoadingButton
-          size="small"
-          disabled={isLoading || next === undefined || models.length === 0}
-          loading={isLoading}
-          onClick={next}
-          variant="outlined"
-          sx={{ cursor: 'pointer', ml: 'auto', borderRadius: '3px' }}
-          endIcon={<MdNavigateNext />}
-        >
-          Next
-        </LoadingButton>
-      </Box>
+      {(next || previous) && (
+        <Box sx={{ display: 'flex', width: '100%', mb: '8px' }}>
+          <LoadingButton
+            size="small"
+            disabled={
+              isLoading || previous === undefined || models.length === 0
+            }
+            loading={isLoading}
+            onClick={previous}
+            variant="outlined"
+            sx={{ cursor: 'pointer', borderRadius: '3px' }}
+            startIcon={<MdNavigateBefore />}
+          >
+            Previous
+          </LoadingButton>
+          <LoadingButton
+            size="small"
+            disabled={isLoading || next === undefined || models.length === 0}
+            loading={isLoading}
+            onClick={next}
+            variant="outlined"
+            sx={{ cursor: 'pointer', ml: 'auto', borderRadius: '3px' }}
+            endIcon={<MdNavigateNext />}
+          >
+            Next
+          </LoadingButton>
+        </Box>
+      )}
       <Grid container spacing={'16px'}>
         {appropriateModels.map((model) => {
           const libraries = model.libraries || [];
