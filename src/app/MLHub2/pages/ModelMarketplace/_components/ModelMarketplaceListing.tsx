@@ -20,6 +20,9 @@ import {
   inferenceBackendLabelMap,
 } from '../../../enums';
 import { Download, Favorite, ForkRight, OpenInNew } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
+import { formatCount } from '../../../_utils';
 
 type ModelMarketplaceListingProps = {
   models: Array<Models.ModelMetadata>;
@@ -27,13 +30,6 @@ type ModelMarketplaceListingProps = {
   previous?: () => void;
   next?: () => void;
   isLoading?: boolean;
-};
-
-// ─── Format number helper ──────────────────────
-const formatCount = (n: number): string => {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
 };
 
 export const ModelMarketplaceListing: React.FC<
@@ -69,6 +65,30 @@ export const ModelMarketplaceListing: React.FC<
         {appropriateModels.length < models.length &&
           renderInappropriateModelsCountComponent()}
       </Typography>
+      <Box sx={{ display: 'flex', width: '100%', mb: '8px' }}>
+        <LoadingButton
+          size="small"
+          disabled={isLoading || previous === undefined || models.length === 0}
+          loading={isLoading}
+          onClick={previous}
+          variant="outlined"
+          sx={{ cursor: 'pointer', borderRadius: '3px' }}
+          startIcon={<MdNavigateBefore />}
+        >
+          Previous
+        </LoadingButton>
+        <LoadingButton
+          size="small"
+          disabled={isLoading || next === undefined || models.length === 0}
+          loading={isLoading}
+          onClick={next}
+          variant="outlined"
+          sx={{ cursor: 'pointer', ml: 'auto', borderRadius: '3px' }}
+          endIcon={<MdNavigateNext />}
+        >
+          Next
+        </LoadingButton>
+      </Box>
       <Grid container spacing={'16px'}>
         {appropriateModels.map((model) => {
           const libraries = model.libraries || [];
@@ -309,7 +329,7 @@ export const ModelMarketplaceListing: React.FC<
                           </Typography>
                         </Stack>
                       )}
-                      {/* Stars */}
+                      {/* Likes */}
                       <Stack
                         direction="row"
                         sx={{ gap: 0.35, alignItems: 'center' }}

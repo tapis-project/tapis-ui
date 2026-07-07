@@ -14,10 +14,11 @@ import {
 } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import { formatCount } from '../../../../_utils';
 
 export interface KpiCardProps {
   title: string;
-  value: string | number;
+  value: number;
   icon: React.ReactElement;
   color: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'secondary';
   trend: string;
@@ -121,7 +122,7 @@ export default function KpiCard({
               variant="h3"
               sx={{ fontWeight: 700, lineHeight: 1.2, mb: 0.5 }}
             >
-              {value}
+              {formatCount(value)}
             </Typography>
             <Typography
               variant="body2"

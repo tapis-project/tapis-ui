@@ -29,7 +29,7 @@ export default function ModelsMarketplaceCard() {
   return (
     <KpiCard
       title="Models Marketplace"
-      value={respMetadata.count!.toLocaleString()}
+      value={respMetadata.count!}
       icon={<PublicIcon />}
       color="info"
       trend="+156"

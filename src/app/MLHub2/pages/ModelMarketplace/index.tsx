@@ -115,6 +115,7 @@ export default function ModelMarketplace() {
     Hooks.Models.useDiscoverModels({});
 
   const models = data?.result ?? [];
+  const respMetadata = (data?.metadata as DiscoverModelsResponseMetadata) ?? {};
 
   const onSuccessSearch = (result: Models.DiscoverModelsResponse) => {
     let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
@@ -547,7 +548,69 @@ export default function ModelMarketplace() {
           </Typography>
         </Card>
       ) : (
-        <ModelMarketplaceListing models={filteredModels} />
+        <ModelMarketplaceListing
+          models={filteredModels}
+          count={respMetadata.count!}
+          previous={
+            state.prevCursor === undefined && state.currentCursor === undefined
+              ? undefined
+              : () => {
+                  let criterion: Models.DiscoveryCriterion = {};
+
+                  if (selectedBackends.length > 0) {
+                    criterion['libraries'] = selectedBackends;
+                  }
+
+                  if (selectedTasks.length > 0) {
+                    criterion['task_types'] = selectedTasks;
+                  }
+                  discover(
+                    {
+                      limit,
+                      includeCount: true,
+                      cursor: state.prevCursor,
+                      discoveryCriteria: {
+                        criteria: [criterion],
+                      },
+                    },
+                    {
+                      onSuccess: onSuccessPrevious,
+                    }
+                  );
+                }
+          }
+          next={
+            // TODO Really need to look into why I say < 0 here.
+            state.cursors.length < 0 || state.nextCursor === undefined
+              ? undefined
+              : () => {
+                  let criterion: Models.DiscoveryCriterion = {};
+
+                  if (selectedBackends.length > 0) {
+                    criterion['libraries'] = selectedBackends;
+                  }
+
+                  if (selectedTasks.length > 0) {
+                    criterion['task_types'] = selectedTasks;
+                  }
+
+                  discover(
+                    {
+                      limit,
+                      includeCount: true,
+                      cursor: state.cursors.at(-1),
+                      discoveryCriteria: {
+                        criteria: [criterion],
+                      },
+                    },
+                    {
+                      onSuccess: onSuccessNext,
+                    }
+                  );
+                }
+          }
+          isLoading={isLoading}
+        />
       )}
     </Box>
   );

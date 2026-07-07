@@ -15,7 +15,7 @@ export default function TotalModelsCard() {
   return (
     <KpiCard
       title="My Models"
-      value={models.length.toLocaleString()}
+      value={models.length}
       icon={<SmartToyIcon />}
       color="primary"
       trend="+12%"
