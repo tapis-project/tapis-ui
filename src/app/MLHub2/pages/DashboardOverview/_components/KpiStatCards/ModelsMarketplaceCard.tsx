@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PublicIcon from '@mui/icons-material/Public';
 import KpiCard from './KpiCard';
-import { mockMarketplaceModels } from '../../../../data/mockData';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 
 type DiscoverModelsResponseMetadata = {
@@ -38,6 +37,7 @@ export default function ModelsMarketplaceCard() {
       subtitle="Models curated by MLHub"
       navigateTo="/marketplace"
       loading={isLoading}
+      error={error}
     />
   );
 }

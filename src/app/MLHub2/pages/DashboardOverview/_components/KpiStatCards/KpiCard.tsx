@@ -9,6 +9,8 @@ import {
   Chip,
   alpha,
   CircularProgress,
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -23,6 +25,7 @@ export interface KpiCardProps {
   subtitle: string;
   navigateTo: string | null;
   loading: boolean;
+  error?: Error | null;
 }
 
 export default function KpiCard({
@@ -35,6 +38,7 @@ export default function KpiCard({
   subtitle,
   navigateTo,
   loading,
+  error = null,
 }: KpiCardProps) {
   const { navigate } = useNavigate();
 
@@ -62,6 +66,12 @@ export default function KpiCard({
       }}
     >
       <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+        {error && (
+          <Alert severity="error">
+            <AlertTitle>Error fetching KPI</AlertTitle>
+            {error.message}
+          </Alert>
+        )}
         <Stack
           direction="row"
           sx={{
