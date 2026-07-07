@@ -4,7 +4,6 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   Chip,
   TextField,
   InputAdornment,
@@ -17,60 +16,173 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
-import DownloadIcon from '@mui/icons-material/Download';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ForkRightIcon from '@mui/icons-material/ForkRight';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
-import type { MarketplaceModel, InferenceBackend } from '../../types';
 import {
   frameworkLabelMap as inferenceBackendLabelMap,
   frameworkColorMap as inferenceBackendColorMap,
 } from '../../_components/constants';
-import { ALL_INFERENCE_BACKENDS, platformConfig } from '../../enums';
-import {
-  TASKS_BY_CATEGORY,
-  CATEGORY_COLOR_MAP,
-  type Task,
-} from '../../data/taskTypes';
+import { ALL_INFERENCE_BACKENDS } from '../../enums';
+import { TASKS_BY_CATEGORY, CATEGORY_COLOR_MAP } from '../../data/taskTypes';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import * as Models from '@mlhub/models-ts-sdk';
+import { useModelFilter } from '../../_context/ModelFilterContext/ModelFilterContext';
+import { Check } from '@mui/icons-material';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { ModelMarketplaceListing } from './_components/ModelMarketplaceListing';
 
-interface ModelMarketplaceProps {
-  models: MarketplaceModel[];
-  onApply?: (filters: {
-    tasks: Set<Task>;
-    backends: InferenceBackend[];
-    searchQuery: string;
-  }) => void;
-}
+type DiscoverModelsResponseMetadata = {
+  count?: number;
+  cursor?: string;
+};
 
-export default function ModelMarketplace({
-  models,
-  onApply,
-}: ModelMarketplaceProps) {
+const initialReducerState: ReducerState = {
+  cursors: [undefined],
+  nextCursor: undefined,
+  prevCursor: undefined,
+  currentCursor: undefined,
+};
+
+type ReducerState = {
+  cursors: Array<string | undefined>;
+  prevCursor: string | undefined;
+  currentCursor: string | undefined;
+  nextCursor: string | undefined;
+};
+
+type ReducerAction =
+  | { type: 'push'; cursor: string | undefined }
+  | { type: 'pop'; cursor: string | undefined }
+  | { type: 'clear' };
+
+const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
+  let cursors: Array<string | undefined> = [...state.cursors];
+  let next = state.nextCursor;
+  let current = state.currentCursor;
+  let previous = state.prevCursor;
+  switch (action.type) {
+    case 'push':
+      cursors = [...cursors, action.cursor];
+      next = cursors.at(-1);
+      current = cursors.at(-2);
+      previous = cursors.at(-3);
+
+      return {
+        cursors,
+        prevCursor: previous,
+        currentCursor: current,
+        nextCursor: next,
+      };
+    case 'pop':
+      let stack = [...state.cursors];
+      // Update the last cursor with the cursor provided by the api call
+      stack.pop(); // remove the last cursor from the cursor stack
+      if (action.cursor !== undefined) {
+        stack.pop(); // remove the previous cursor from the cursor stack
+        stack = [...stack, action.cursor]; // Add the new
+      }
+
+      return {
+        cursors: stack,
+        prevCursor: stack.at(-3),
+        currentCursor: stack.at(-2),
+        nextCursor: stack.at(-1),
+      };
+
+    case 'clear':
+      return initialReducerState;
+  }
+};
+
+export default function ModelMarketplace() {
+  const tags: Models.ModelMetadata['tags'] = [];
+  const [state, dispatch] = React.useReducer(reducer, initialReducerState);
+
   // ─── Filter state ───────────────────────────────
+  const {
+    limit,
+    libraries: selectedBackends,
+    setLibraries: setSelectedBackends,
+    taskTypes: selectedTasks,
+    setTaskTypes: setSelectedTasks,
+  } = useModelFilter();
+
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedTasks, setSelectedTasks] = React.useState<Set<Task>>(
-    new Set()
-  );
-  const [selectedBackends, setSelectedBackends] = React.useState<
-    InferenceBackend[]
-  >([]);
   const [showFilters, setShowFilters] = React.useState(false);
+
+  // ─── Model discovery ───────────────────────────────
+  const { data, discover, isLoading, isError, error } =
+    Hooks.Models.useDiscoverModels({});
+
+  const models = data?.result ?? [];
+
+  const onSuccessSearch = (result: Models.DiscoverModelsResponse) => {
+    let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
+    if (!!cursor) {
+      dispatch({
+        type: 'push',
+        cursor: cursor!,
+      });
+    }
+  };
+
+  const onSuccessNext = (result: Models.DiscoverModelsResponse) => {
+    let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
+    dispatch({
+      type: 'push',
+      cursor: cursor!,
+    });
+  };
+
+  const onSuccessPrevious = (result: Models.DiscoverModelsResponse) => {
+    let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
+    dispatch({
+      type: 'pop',
+      cursor: cursor!,
+    });
+  };
+
+  const handleDiscover = () => {
+    let criterion: Models.DiscoveryCriterion = {};
+
+    if (selectedBackends.length > 0) {
+      criterion['libraries'] = selectedBackends;
+    }
+
+    if (selectedTasks.length > 0) {
+      criterion['task_types'] = selectedTasks;
+    }
+
+    console.log({ criterion });
+
+    dispatch({ type: 'clear' });
+    discover(
+      {
+        limit: limit ?? 10,
+        includeCount: true,
+        discoveryCriteria: {
+          criteria: [criterion],
+        },
+      },
+      {
+        onSuccess: onSuccessSearch,
+      }
+    );
+  };
 
   // ─── Filtering logic ────────────────────────────
   const filteredModels = React.useMemo(() => {
     return models.filter((model) => {
+      const taskTypes = model.task_types || [];
       // Search filter (name, description, task, author, tags)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const searchable = [
           model.name,
-          model.description,
-          model.task,
+          // model.description,
+          ...taskTypes,
           model.author,
-          ...model.tags,
+          ...tags,
         ]
           .join(' ')
           .toLowerCase();
@@ -78,61 +190,63 @@ export default function ModelMarketplace({
       }
 
       // Task type filter — match against task label or enum value string
-      if (selectedTasks.size > 0) {
-        const matches = [...selectedTasks].some(
-          (t) =>
-            t.label.toLowerCase() === model.task.toLowerCase() ||
-            String(t.value).toLowerCase() === model.task.toLowerCase() ||
-            model.task.toLowerCase().includes(t.label.toLowerCase()) ||
-            t.label.toLowerCase().includes(model.task.toLowerCase())
-        );
-        if (!matches) return false;
-      }
+      // TODO Rework this filter logic
+      // if (selectedTasks.length > 0) {
+      //   const matches = [...selectedTasks].some(
+      //     (t) =>
+      //       t.label.toLowerCase() === model.task.toLowerCase() ||
+      //       String(t.value).toLowerCase() === model.task.toLowerCase() ||
+      //       taskTypes.map((tt) =>
+      //         tt.toLowerCase().includes(t.label.toLowerCase())
+      //       ).length > 0 ||
+      //       t.label.toLowerCase().includes(model.task.toLowerCase())
+      //   );
+      //   if (!matches) return false;
+      // }
 
-      // Inference backend filter
-      if (
-        selectedBackends.length > 0 &&
-        !selectedBackends.some((b) => model.libraries.includes(b))
-      )
-        return false;
+      // // Inference backend filter
+      // if (
+      //   selectedBackends.length > 0 &&
+      //   !selectedBackends.some((b) => model.libraries.includes(b))
+      // )
+      //   return false;
 
       return true;
     });
   }, [models, searchQuery, selectedTasks, selectedBackends]);
 
   // ─── Toggle helpers ────────────────────────────
-  const toggleTask = (task: Task) => {
-    setSelectedTasks((prev) => {
-      const next = new Set(prev);
-      next.has(task) ? next.delete(task) : next.add(task);
-      return next;
-    });
+  const toggleBackend = (lib: string) => {
+    if (selectedBackends.includes(lib)) {
+      let modifiedBackends = selectedBackends.filter((l) => l !== lib);
+      setSelectedBackends(modifiedBackends);
+      return modifiedBackends;
+    }
+
+    setSelectedBackends([...selectedBackends, lib]);
+    return [...selectedBackends, lib];
   };
 
-  const toggleBackend = (backend: InferenceBackend) => {
-    setSelectedBackends((prev) =>
-      prev.includes(backend)
-        ? prev.filter((b) => b !== backend)
-        : [...prev, backend]
-    );
+  const toggleTask = (task: Models.Task) => {
+    if (selectedTasks.includes(task)) {
+      let modifiedTasks = selectedTasks.filter((l) => l !== task);
+      setSelectedTasks(modifiedTasks);
+      return modifiedTasks;
+    }
+
+    setSelectedTasks([...selectedTasks, task]);
+    return [...selectedTasks, task];
   };
 
   const clearAllFilters = () => {
     setSearchQuery('');
-    setSelectedTasks(new Set());
+    setSelectedTasks([]);
     setSelectedBackends([]);
   };
 
   const hasActiveFilters =
-    selectedTasks.size > 0 || selectedBackends.length > 0;
+    selectedTasks.length > 0 || selectedBackends.length > 0;
   const canApply = hasActiveFilters || !!searchQuery.trim();
-
-  // ─── Format number helper ──────────────────────
-  const formatCount = (n: number): string => {
-    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-    return String(n);
-  };
 
   return (
     <Box>
@@ -157,7 +271,7 @@ export default function ModelMarketplace({
       <Card
         elevation={0}
         sx={{
-          borderRadius: 3,
+          borderRadius: '8px',
           border: '1px solid',
           borderColor: 'divider',
           mb: 3,
@@ -194,7 +308,7 @@ export default function ModelMarketplace({
                 },
               }}
               sx={{
-                '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                '& .MuiOutlinedInput-root': { borderRadius: '8px' },
                 bgcolor: 'background.default',
               }}
             />
@@ -216,7 +330,7 @@ export default function ModelMarketplace({
                   <Chip
                     label={
                       (searchQuery ? 1 : 0) +
-                      selectedTasks.size +
+                      selectedTasks.length +
                       selectedBackends.length
                     }
                     size="small"
@@ -263,6 +377,7 @@ export default function ModelMarketplace({
                       <Chip
                         key={ib}
                         label={inferenceBackendLabelMap[ib] ?? ib}
+                        icon={isSelected ? <Check /> : undefined}
                         onClick={() => toggleBackend(ib)}
                         variant={isSelected ? 'filled' : 'outlined'}
                         sx={{
@@ -332,12 +447,17 @@ export default function ModelMarketplace({
                         sx={{ flexWrap: 'wrap', gap: 0.75 }}
                       >
                         {group.tasks.map((task) => {
-                          const isSelected = selectedTasks.has(task);
+                          const isSelected = selectedTasks.includes(task.value);
                           return (
                             <Chip
                               key={String(task.value)}
                               label={task.label}
-                              onClick={() => toggleTask(task)}
+                              icon={
+                                isSelected ? (
+                                  <Check sx={{ color: catColor }} />
+                                ) : undefined
+                              }
+                              onClick={() => toggleTask(task.value)}
                               variant={isSelected ? 'filled' : 'outlined'}
                               size="small"
                               sx={{
@@ -383,13 +503,10 @@ export default function ModelMarketplace({
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() =>
-                    onApply?.({
-                      tasks: selectedTasks,
-                      backends: selectedBackends,
-                      searchQuery,
-                    })
-                  }
+                  onClick={() => {
+                    setShowFilters(false);
+                    handleDiscover();
+                  }}
                   disabled={!canApply}
                   sx={{
                     textTransform: 'none',
@@ -409,17 +526,12 @@ export default function ModelMarketplace({
         </CardContent>
       </Card>
 
-      {/* ─── Results Summary ────────────────────────────── */}
-      <Typography variant="body2" color="text.disabled" sx={{ mb: 2 }}>
-        Showing {filteredModels.length} of {models.length} curated models
-      </Typography>
-
       {/* ─── Model Cards Grid ─────────────────────────── */}
       {filteredModels.length === 0 ? (
         <Card
           elevation={0}
           sx={{
-            borderRadius: 3,
+            borderRadius: '8px',
             border: '1px dashed',
             borderColor: 'divider',
             py: 10,
@@ -435,289 +547,7 @@ export default function ModelMarketplace({
           </Typography>
         </Card>
       ) : (
-        <Grid container spacing={2.5}>
-          {filteredModels.map((model) => {
-            const platCfg = platformConfig[model.platform];
-
-            return (
-              <Grid size={{ xs: 12 }} key={model.id}>
-                <Card
-                  elevation={0}
-                  sx={{
-                    height: '100%',
-                    borderRadius: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    transition:
-                      'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      transform: 'translateY(-3px)',
-                      boxShadow: (theme) =>
-                        `0 12px 28px ${alpha(theme.palette.primary.main, 0.1)}`,
-                      borderColor: (theme) =>
-                        alpha(theme.palette.primary.main, 0.25),
-                    },
-                  }}
-                >
-                  {/* Card Header with platform badge */}
-                  <Box
-                    sx={{
-                      px: 2.5,
-                      pt: 2.25,
-                      pb: 1,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    <Chip
-                      label={`${platCfg.icon} ${platCfg.label}`}
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: '0.72rem',
-                        borderColor: (theme) => alpha(platCfg.color, 0.4),
-                        color: 'text.primary',
-                        textTransform: 'none',
-                      }}
-                    />
-                    <Tooltip title="Open on source platform">
-                      <IconButton
-                        size="small"
-                        href={model.externalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        sx={{ opacity: 0.55, '&:hover': { opacity: 1 } }}
-                      >
-                        <OpenInNewIcon sx={{ fontSize: 16 }} />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-
-                  <CardContent
-                    sx={{
-                      flex: 1,
-                      p: 2.5,
-                      pt: 0.5,
-                      '&:last-child': { pb: 2.5 },
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    {/* Task badge */}
-                    <Chip
-                      label={model.task}
-                      size="small"
-                      color="primary"
-                      variant="filled"
-                      sx={{
-                        alignSelf: 'flex-start',
-                        fontWeight: 600,
-                        fontSize: '0.68rem',
-                        height: 22,
-                        mb: 1.25,
-                        textTransform: 'none',
-                      }}
-                    />
-
-                    {/* Name */}
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 700, lineHeight: 1.35, mb: 0.25 }}
-                    >
-                      {model.name}
-                    </Typography>
-
-                    {/* Author info */}
-                    <Typography
-                      variant="caption"
-                      color="text.disabled"
-                      sx={{ display: 'block', mb: 0.75 }}
-                    >
-                      by {model.author}
-                    </Typography>
-
-                    {/* Description */}
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        lineHeight: 1.55,
-                        mb: 1.5,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        minHeight: 44,
-                      }}
-                    >
-                      {model.description}
-                    </Typography>
-
-                    {/* Spacer */}
-                    <Box sx={{ flex: 1 }} />
-
-                    {/* Inference Backends */}
-                    <Stack
-                      direction="row"
-                      sx={{ flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}
-                    >
-                      {model.libraries.map((lib) => (
-                        <Chip
-                          key={lib}
-                          label={inferenceBackendLabelMap[lib]}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            fontSize: '0.65rem',
-                            height: 20,
-                            textTransform: 'capitalize',
-                            borderColor: alpha(
-                              inferenceBackendColorMap[lib],
-                              0.35
-                            ),
-                            color: inferenceBackendColorMap[lib],
-                            fontWeight: 600,
-                            '& .MuiChip-label': { px: 0.75 },
-                          }}
-                        />
-                      ))}
-                    </Stack>
-
-                    {/* Tags + License */}
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        gap: 0.5,
-                        mb: 1.75,
-                      }}
-                    >
-                      <Stack
-                        direction="row"
-                        sx={{ flexWrap: 'wrap', gap: 0.4 }}
-                      >
-                        {model.tags.slice(0, 4).map((tag) => (
-                          <Chip
-                            key={tag}
-                            label={`#${tag}`}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              fontSize: '0.62rem',
-                              height: 18,
-                              borderColor: 'divider',
-                              textTransform: 'none',
-                            }}
-                          />
-                        ))}
-                      </Stack>
-                      <Chip
-                        icon={<span style={{ fontSize: 10 }}>⚖</span>}
-                        label={model.license}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.65rem',
-                          height: 20,
-                          borderColor: 'divider',
-                          color: 'text.disabled',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.03em',
-                          '& .MuiChip-label': { fontWeight: 500 },
-                        }}
-                      />
-                    </Box>
-
-                    {/* Footer: stats + Fork button */}
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderTop: '1px solid',
-                        borderColor: 'divider',
-                        pt: 1.5,
-                      }}
-                    >
-                      {/* Stats */}
-                      <Stack
-                        direction="row"
-                        sx={{ gap: 1.5, alignItems: 'center' }}
-                      >
-                        {/* Downloads */}
-                        <Stack
-                          direction="row"
-                          sx={{ gap: 0.35, alignItems: 'center' }}
-                        >
-                          <DownloadIcon
-                            sx={{ fontSize: 15, color: 'text.secondary' }}
-                          />
-                          <Typography
-                            variant="caption"
-                            sx={{ fontWeight: 600, color: 'text.secondary' }}
-                          >
-                            {formatCount(model.downloads)}
-                          </Typography>
-                        </Stack>
-                        {/* Stars */}
-                        <Stack
-                          direction="row"
-                          sx={{ gap: 0.35, alignItems: 'center' }}
-                        >
-                          <StarBorderIcon
-                            sx={{ fontSize: 15, color: 'warning.main' }}
-                          />
-                          <Typography
-                            variant="caption"
-                            sx={{ fontWeight: 600, color: 'text.secondary' }}
-                          >
-                            {formatCount(model.stars)}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-
-                      {/* Fork Button — bottom right */}
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<ForkRightIcon sx={{ fontSize: 16 }} />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          alert('Fork model');
-                        }}
-                        sx={{
-                          textTransform: 'none',
-                          fontWeight: 700,
-                          fontSize: '0.75rem',
-                          borderRadius: 2,
-                          px: 2,
-                          boxShadow: 'none',
-                          '&:hover': {
-                            boxShadow: (theme) =>
-                              `0 4px 12px ${alpha(
-                                theme.palette.primary.main,
-                                0.3
-                              )}`,
-                          },
-                        }}
-                      >
-                        Fork Model
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            );
-          })}
-        </Grid>
+        <ModelMarketplaceListing models={filteredModels} />
       )}
     </Box>
   );

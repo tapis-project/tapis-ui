@@ -37,6 +37,7 @@ import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
 import ModelMarketplace from '../pages/ModelMarketplace';
 import DatasetMarketplace from '../pages/DatasetMarketplace';
+import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
 
 /* ─── App Root ────────────────────────────────────────────────── */
 export default function Router() {
@@ -154,7 +155,6 @@ export default function Router() {
       <Route path="/mlhub2/models" exact>
         <DashboardLayout>
           <ModelsTab
-            models={models}
             onModelsChange={setModels}
             deployments={deployments}
             artifacts={artifacts}
@@ -165,7 +165,9 @@ export default function Router() {
       {/* Model Marketplace */}
       <Route path="/mlhub2/marketplace">
         <DashboardLayout>
-          <ModelMarketplace models={mockMarketplaceModels} />
+          <ModelFilterProvider>
+            <ModelMarketplace />
+          </ModelFilterProvider>
         </DashboardLayout>
       </Route>
 

@@ -9,28 +9,27 @@
 // ════════════════════════════════════════════════════════════════
 // 1. INFERENCE BACKENDS (formerly "frameworks")
 // ════════════════════════════════════════════════════════════════
+import * as Models from '@mlhub/models-ts-sdk';
 
 export type InferenceBackend =
-  | 'pytorch'
-  | 'tensorflow'
-  | 'sklearn'
-  | 'xgboost'
-  | 'onnx'
-  | 'custom'
   | 'transformers'
   | 'diffusers'
-  | 'ultralytics';
+  | 'ultralytics'
+  | 'pytorch'
+  | 'tensorflow'
+  | 'xgboost'
+  | 'onnx'
+  | 'custom';
 
 /** The ordered list of all valid inference backends. Import this — never re-declare. */
 export const ALL_INFERENCE_BACKENDS: InferenceBackend[] = [
+  'transformers',
+  'diffusers',
   'pytorch',
   'tensorflow',
-  'sklearn',
   'xgboost',
   'onnx',
   'custom',
-  'transformers',
-  'diffusers',
   'ultralytics',
 ];
 
@@ -39,14 +38,13 @@ export const INFERENCE_BACKEND_OPTIONS: {
   value: InferenceBackend;
   label: string;
 }[] = [
+  { value: 'transformers', label: '🤗 Transformers' },
+  { value: 'diffusers', label: '🎨 Diffusers' },
   { value: 'pytorch', label: 'PyTorch' },
   { value: 'tensorflow', label: 'TensorFlow' },
-  { value: 'sklearn', label: 'Scikit-learn' },
   { value: 'xgboost', label: 'XGBoost' },
   { value: 'onnx', label: 'ONNX' },
   { value: 'custom', label: 'Custom' },
-  { value: 'transformers', label: '🤗 Transformers' },
-  { value: 'diffusers', label: '🎨 Diffusers' },
   { value: 'ultralytics', label: '🚀 Ultralytics' },
 ];
 
@@ -55,7 +53,6 @@ export const INFERENCE_BACKEND_OPTIONS: {
 export const inferenceBackendColorMap: Record<InferenceBackend, string> = {
   pytorch: '#EE4C2C',
   tensorflow: '#FF6F00',
-  sklearn: '#F7931E',
   xgboost: '#01793D',
   onnx: '#6B57FF',
   custom: '#8B8B8B',
@@ -67,7 +64,6 @@ export const inferenceBackendColorMap: Record<InferenceBackend, string> = {
 export const inferenceBackendIconMap: Record<InferenceBackend, string> = {
   pytorch: '\u{1F525}',
   tensorflow: '\u{1F9E0}',
-  sklearn: '\u{1F916}',
   xgboost: '\u{1F680}',
   onnx: '\u26A1',
   custom: '\u{1F4E6}',
@@ -79,7 +75,6 @@ export const inferenceBackendIconMap: Record<InferenceBackend, string> = {
 export const inferenceBackendLabelMap: Record<InferenceBackend, string> = {
   pytorch: 'PyTorch',
   tensorflow: 'TensorFlow',
-  sklearn: 'Scikit-learn',
   xgboost: 'XGBoost',
   onnx: 'ONNX',
   custom: 'Custom',
@@ -155,7 +150,7 @@ export const modelStatusColorMap: Record<
 // 3. DEPLOYMENT STATUS & ENVIRONMENT
 // ════════════════════════════════════════════════════════════════
 
-export type DeploymentEnvironment = 'staging' | 'production';
+export type DeploymentEnvironment = 'test' | 'production';
 export type DeploymentStatus =
   | 'NotDeployed'
   | 'Running'
@@ -198,7 +193,7 @@ export const envColorMap: Record<
   DeploymentEnvironment,
   'primary' | 'secondary' | 'warning'
 > = {
-  staging: 'warning',
+  test: 'warning',
   production: 'primary',
 };
 
@@ -306,34 +301,36 @@ export type ArtifactType = 'model' | 'dataset';
 // 6. MARKETPLACE PLATFORMS
 // ════════════════════════════════════════════════════════════════
 
-export type MarketplacePlatform =
-  | 'huggingface'
-  | 'tensorflow-hub'
-  | 'pytorch-hub'
-  | 'onnx-model-zoo'
-  | 'kaggle';
-export type DatasetPlatform =
-  | 'huggingface'
-  | 'kaggle'
-  | 'uciml'
-  | 'github'
-  | 'activeloop';
+export type MarketplacePlatform = Models.Platform;
 
 export const ALL_MARKETPLACE_PLATFORMS: MarketplacePlatform[] = [
-  'huggingface',
-  'tensorflow-hub',
-  'pytorch-hub',
-  'onnx-model-zoo',
-  'kaggle',
+  Models.Platform.HuggingFace,
 ];
 
-export const platformConfig: Record<
-  MarketplacePlatform,
-  { label: string; color: string; icon: string }
-> = {
-  huggingface: { label: 'Hugging Face', color: '#FFD21E', icon: '🤗' },
-  'tensorflow-hub': { label: 'TensorFlow Hub', color: '#FF6F00', icon: '🧠' },
-  'pytorch-hub': { label: 'PyTorch Hub', color: '#EE4C2C', icon: '🔥' },
-  'onnx-model-zoo': { label: 'ONNX Model Zoo', color: '#808080', icon: '⚡' },
-  kaggle: { label: 'Kaggle', color: '#20BEFF', icon: '📊' },
+export const getPlatformConfig = (platform?: Models.Platform) => {
+  switch (platform) {
+    case Models.Platform.HuggingFace:
+      return {
+        label: 'Hugging Face',
+        color: '#FFD21E',
+        icon: '🤗',
+      };
+    default:
+      return {
+        label: 'Unknown',
+        color: '#AAAAAA',
+        icon: '?',
+      };
+  }
+};
+export const platformConfig = {
+  [Models.Platform.HuggingFace]: {
+    label: 'Hugging Face',
+    color: '#FFD21E',
+    icon: '🤗',
+  },
+  // 'tensorflow-hub': { label: 'TensorFlow Hub', color: '#FF6F00', icon: '🧠' },
+  // 'pytorch-hub': { label: 'PyTorch Hub', color: '#EE4C2C', icon: '🔥' },
+  // 'onnx-model-zoo': { label: 'ONNX Model Zoo', color: '#808080', icon: '⚡' },
+  // kaggle: { label: 'Kaggle', color: '#20BEFF', icon: '📊' },
 };

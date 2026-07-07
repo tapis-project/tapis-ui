@@ -24,7 +24,6 @@ const PaginatedModels: React.FC<NativeModelsProps> = ({
   isLoading,
 }) => {
   const appropriateModels = useMemo(() => {
-    console.log({ models });
     return models.filter((m) => {
       return (
         !m.tags?.includes('not-for-all-audiences') &&
