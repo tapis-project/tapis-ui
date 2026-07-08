@@ -141,12 +141,6 @@ export default function Router() {
               datasets={datasets}
               onRegisterModel={() => setModelFormOpen(true)}
             />
-            <ModelFormDialog
-              open={modelFormOpen}
-              model={editingModel}
-              onClose={handleCloseModelForm}
-              onSave={handleSaveModel}
-            />
           </Box>
         </DashboardLayout>
       </Route>

@@ -23,45 +23,37 @@ interface ModelFormDialogProps {
   open: boolean;
   model: Models.ModelMetadata | null;
   onClose: () => void;
-  onSave: (model: Partial<Models.ModelMetadata>) => void;
 }
 
 const emptyForm = {
   name: '',
   description: '',
-  libraries: [] as InferenceBackend[],
-  version: '1.0.0',
-  status: 'draft' as Model['status'],
-  f1Score: null as number | null,
+  libraries: [] as string[],
   tags: [] as string[],
-  author: '',
 };
 
 export default function ModelFormDialog({
   open,
   model,
   onClose,
-  onSave,
 }: ModelFormDialogProps) {
   const [form, setForm] = React.useState(emptyForm);
   const [tagInput, setTagInput] = React.useState('');
 
   React.useEffect(() => {
-    // if (model) {
-    //   setForm({
-    //     name: model.name,
-    //     description: model.description,
-    //     libraries: [...model.libraries],
-    //     version: model.version,
-    //     status: model.status,
-    //     f1Score: model.f1Score,
-    //     tags: [...model.tags],
-    //     author: model.author,
-    //   });
-    // } else {
-    //   setForm({ ...emptyForm });
-    //   setTagInput('');
-    // }
+    const libraries = model?.libraries ?? [];
+    const tags = model?.tags ?? [];
+    if (model) {
+      setForm({
+        name: model.name,
+        description: model.description ?? '',
+        libraries,
+        tags,
+      });
+    } else {
+      setForm({ ...emptyForm });
+      setTagInput('');
+    }
   }, [model, open]);
 
   const handleChange =
@@ -172,14 +164,6 @@ export default function ModelFormDialog({
 
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
           <TextField
-            label="Version"
-            value={form.version}
-            onChange={handleChange('version')}
-            fullWidth
-            placeholder="1.0.0"
-          />
-
-          <TextField
             label="Status"
             value={form.status}
             onChange={handleChange('status')}
@@ -194,31 +178,6 @@ export default function ModelFormDialog({
               </MenuItem>
             ))}
           </TextField>
-        </Box>
-
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          <TextField
-            label="F1 Score (%)"
-            value={form.f1Score ?? ''}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                f1Score: e.target.value ? Number(e.target.value) : null,
-              }))
-            }
-            fullWidth
-            type="number"
-            slotProps={{ htmlInput: { min: 0, max: 100, step: 0.01 } }}
-            placeholder="e.g., 94.5"
-          />
-
-          <TextField
-            label="Author"
-            value={form.author}
-            onChange={handleChange('author')}
-            fullWidth
-            placeholder="Model owner name"
-          />
         </Box>
 
         {/* Tags */}

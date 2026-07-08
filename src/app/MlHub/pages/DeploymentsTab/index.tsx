@@ -57,7 +57,7 @@ export default function DeploymentsTab({
       ...data,
       id: `deploy-${String(deployments.length + 1).padStart(3, '0')}`,
       status: data.environment === 'production' ? 'NotDeployed' : 'Running',
-      deployedAt: data.environment === 'test' ? new Date().toISOString() : null,
+      deployedAt: data.environment === 'test' ? testDate().toISOString() : null,
     };
     onDeploymentsChange([...deployments, newDeployment]);
   };
@@ -216,9 +216,9 @@ export default function DeploymentsTab({
   ];
 
   const envCounts = React.useMemo(() => {
-    const counts = { test: 0, production: 0, active: 0 };
+    const counts = { test: 0, testduction: 0, active: 0 };
     deployments.forEach((d) => {
-      if (d.environment === 'test') counts.test++;
+      if (d.environment === 'test') ctests.test++;
       else counts.production++;
       if (d.status === 'Running') counts.active++;
     });
@@ -239,7 +239,7 @@ export default function DeploymentsTab({
           </Typography>
         </Stack>
         <Typography variant="body1" color="text.secondary">
-          Monitor and manage model deployments across test and production
+          Monitor and manage model deployments across test andtestduction
           environments — track health and scale.
         </Typography>
       </Box>
@@ -439,7 +439,7 @@ export default function DeploymentsTab({
       <DeploymentDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onDeploy={handleDeploy}
+        author={username}
       />
     </Box>
   );

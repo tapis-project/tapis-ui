@@ -145,11 +145,7 @@ export default function DashboardOverview({
       {/* ─── Quick Actions + Charts Row ─────────────────────── */}
       <Grid container spacing={2.5} sx={{ mt: 3, mb: 3 }}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <QuickActionsCard
-            onRegisterModel={onRegisterModel}
-            onNewDeployment={() => setDeploymentOpen(true)}
-            onUploadArtifact={() => setArtifactOpen(true)}
-          />
+          <QuickActionsCard />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
