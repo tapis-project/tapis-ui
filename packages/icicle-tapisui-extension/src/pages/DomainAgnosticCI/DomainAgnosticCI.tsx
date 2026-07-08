@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Component } from '@tapis/tapisui-extensions-core';
 import PortalPageLayout from '../PortalShared/PortalPageLayout';
+import { sortServices } from '../PortalShared/sortServices';
 import styles from '../PortalShared/PortalPageLayout.module.scss';
 
 type ServiceItem = {
@@ -66,6 +67,8 @@ const services: ServiceItem[] = [
   },
 ];
 
+const sortedServices = sortServices(services);
+
 export const DomainAgnosticCI: Component = () => {
   return (
     <PortalPageLayout title="Welcome to the ICICLE-CI-as-a-Service (ICICLE-CIaaS) page!">
@@ -83,7 +86,7 @@ export const DomainAgnosticCI: Component = () => {
             </p>
           </div>
           <div className={styles.serviceList}>
-            {services.map((service) => (
+            {sortedServices.map((service) => (
               <div key={service.name} className={styles.serviceRow}>
                 <div className={styles.serviceLabel}>{service.label}</div>
                 {service.upcoming ? (
