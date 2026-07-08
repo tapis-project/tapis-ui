@@ -15,6 +15,7 @@ import type { Model, InferenceBackend } from '../types';
 import {
   INFERENCE_BACKEND_OPTIONS,
   MODEL_STATUS_OPTIONS,
+  getInferenceBackendLabel,
   inferenceBackendLabelMap,
 } from '../enums';
 import * as Models from '@mlhub/models-ts-sdk';
@@ -68,7 +69,7 @@ export default function ModelFormDialog({
       setForm((prev) => ({ ...prev, [field]: value }));
     };
 
-  const handleLibraryToggle = (libValue: InferenceBackend) => {
+  const handleLibraryToggle = (libValue: string) => {
     setForm((prev) => ({
       ...prev,
       libraries: prev.libraries.includes(libValue)
@@ -94,7 +95,6 @@ export default function ModelFormDialog({
 
   const handleSubmit = () => {
     if (!form.name.trim()) return;
-    onSave(form);
     onClose();
   };
 
@@ -135,7 +135,7 @@ export default function ModelFormDialog({
             {form.libraries.map((lib) => (
               <Chip
                 key={lib}
-                label={inferenceBackendLabelMap[lib] ?? lib}
+                label={getInferenceBackendLabel(lib)}
                 size="small"
                 onDelete={() => handleLibraryToggle(lib)}
                 color="primary"
@@ -160,24 +160,6 @@ export default function ModelFormDialog({
               />
             ))}
           </Box>
-        </Box>
-
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          <TextField
-            label="Status"
-            value={form.status}
-            onChange={handleChange('status')}
-            select
-            fullWidth
-          >
-            {MODEL_STATUS_OPTIONS.map((s) => (
-              <MenuItem key={s.value} value={s.value}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Chip label={s.label} size="small" color={s.color} />
-                </Box>
-              </MenuItem>
-            ))}
-          </TextField>
         </Box>
 
         {/* Tags */}

@@ -29,7 +29,7 @@ import ModelFormDialog from '../_components/ModelFormDialog';
 // Page-level components
 import ModelsTab from '../pages/ModelsTab';
 import DatasetsTab from '../pages/DatasetsTab';
-import DeploymentsTab from '../pages/DeploymentsTab';
+import DeploymentsTab from '../pages/DeploymentsPage';
 import ArtifactsTab from '../pages/ArtifactsTab';
 import ModelDetailsPage from '../pages/ModelDetailsPage';
 import DatasetDetailsPage from '../pages/DatasetDetailsPage';
@@ -250,9 +250,8 @@ export default function Router() {
             />
             <ModelFormDialog
               open={modelFormOpen}
-              model={editingModel}
+              model={null}
               onClose={handleCloseModelForm}
-              onSave={handleSaveModel}
             />
           </Box>
         </DashboardLayout>

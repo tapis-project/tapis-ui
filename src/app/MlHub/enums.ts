@@ -72,6 +72,31 @@ export const inferenceBackendIconMap: Record<InferenceBackend, string> = {
   ultralytics: '\u{1F680}',
 };
 
+export const getInferenceBackendLabel = (
+  backend: InferenceBackend | string
+): string => {
+  switch (backend) {
+    case 'pytorch':
+      return 'PyTorch';
+    case 'tensorflow':
+      return 'TensorFlow';
+    case 'xgboost':
+      return 'XGBoost';
+    case 'onnx':
+      return 'ONNX';
+    case 'custom':
+      return 'Custom';
+    case 'transformers':
+      return 'Transformers';
+    case 'diffusers':
+      return 'Diffusers';
+    case 'ultralytics':
+      return 'Ultralytics';
+    default:
+      return backend;
+  }
+};
+
 export const inferenceBackendLabelMap: Record<InferenceBackend, string> = {
   pytorch: 'PyTorch',
   tensorflow: 'TensorFlow',

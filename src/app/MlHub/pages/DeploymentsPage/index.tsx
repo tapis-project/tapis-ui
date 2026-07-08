@@ -26,6 +26,7 @@ import {
   envColorMap,
 } from '../../_components/constants';
 import { useNavigate } from '../../_context/NavContext';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 interface DeploymentsTabProps {
   deployments: Deployment[];
@@ -38,10 +39,9 @@ interface DeploymentsTabProps {
   }>;
 }
 
-export default function DeploymentsTab({
+export default function DeploymentsPage({
   deployments,
   onDeploymentsChange,
-  models,
 }: DeploymentsTabProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [popoverAnchor, setPopoverAnchor] = React.useState<HTMLElement | null>(
@@ -49,18 +49,7 @@ export default function DeploymentsTab({
   );
   const [popoverRow, setPopoverRow] = React.useState<Deployment | null>(null);
   const { navigate } = useNavigate();
-
-  const handleDeploy = (
-    data: Omit<Deployment, 'id' | 'status' | 'deployedAt'>
-  ) => {
-    const newDeployment: Deployment = {
-      ...data,
-      id: `deploy-${String(deployments.length + 1).padStart(3, '0')}`,
-      status: data.environment === 'production' ? 'NotDeployed' : 'Running',
-      deployedAt: data.environment === 'test' ? testDate().toISOString() : null,
-    };
-    onDeploymentsChange([...deployments, newDeployment]);
-  };
+  const { username } = useTapisConfig();
 
   const handleStop = (id: string) => {
     onDeploymentsChange(
@@ -216,9 +205,9 @@ export default function DeploymentsTab({
   ];
 
   const envCounts = React.useMemo(() => {
-    const counts = { test: 0, testduction: 0, active: 0 };
+    const counts = { test: 0, production: 0, active: 0 };
     deployments.forEach((d) => {
-      if (d.environment === 'test') ctests.test++;
+      if (d.environment === 'test') counts.test++;
       else counts.production++;
       if (d.status === 'Running') counts.active++;
     });
@@ -239,7 +228,7 @@ export default function DeploymentsTab({
           </Typography>
         </Stack>
         <Typography variant="body1" color="text.secondary">
-          Monitor and manage model deployments across test andtestduction
+          Monitor and manage model deployments across test and production
           environments — track health and scale.
         </Typography>
       </Box>
