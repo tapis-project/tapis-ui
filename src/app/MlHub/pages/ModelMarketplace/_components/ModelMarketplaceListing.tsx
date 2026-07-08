@@ -152,7 +152,7 @@ export const ModelMarketplaceListing: React.FC<
                       textTransform: 'none',
                     }}
                   />
-                  <Tooltip title="Open on source platform">
+                  <Tooltip title={`Open on ${platCfg.label}`}>
                     <IconButton
                       size="small"
                       href={model.canonical?.locator.url!} // TODO Check for undefined
@@ -208,7 +208,8 @@ export const ModelMarketplaceListing: React.FC<
                     color="text.disabled"
                     sx={{ display: 'block', mb: 0.75 }}
                   >
-                    by {model.canonical?.author} &middot; curated by MLHub
+                    by {model.canonical?.author} &middot; from {platCfg.label}{' '}
+                    &middot; curated by MLHub
                   </Typography>
 
                   {/* Description */}

@@ -9,7 +9,7 @@ export default function DatasetsMarketplaceCard() {
   return (
     <KpiCard
       title="Datasets Marketplace"
-      value={count.toLocaleString()}
+      value={count}
       icon={<DatasetIcon />}
       color="secondary"
       trend="+89"

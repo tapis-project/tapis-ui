@@ -438,7 +438,6 @@ export default function DeploymentsTab({
 
       <DeploymentDialog
         open={dialogOpen}
-        models={models}
         onClose={() => setDialogOpen(false)}
         onDeploy={handleDeploy}
       />

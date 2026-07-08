@@ -13,20 +13,13 @@ import {
   InputAdornment,
 } from '@mui/material';
 import type { Deployment, DeploymentEnvironment } from '../types';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import * as Models from '@mlhub/models-ts-sdk';
 
 interface DeploymentDialogProps {
   open: boolean;
-  models: Array<{
-    id: string;
-    name: string;
-    version: string;
-    libraries: string[];
-    status?: string;
-  }>;
   onClose: () => void;
-  onDeploy: (
-    deployment: Omit<Deployment, 'id' | 'status' | 'deployedAt'>
-  ) => void;
+  author: string;
 }
 
 const cpuOptions = ['250m', '500m', '1', '2', '4'];
@@ -34,25 +27,22 @@ const memoryOptions = ['256Mi', '512Mi', '1Gi', '2Gi', '4Gi', '8Gi'];
 
 export default function DeploymentDialog({
   open,
-  models,
   onClose,
-  onDeploy,
+  author,
 }: DeploymentDialogProps) {
-  const [selectedModelId, setSelectedModelId] = React.useState('');
+  const [selectedModelName, setSelectedModelName] = React.useState('');
   const [environment, setEnvironment] =
     React.useState<DeploymentEnvironment>('test');
   const [replicas, setReplicas] = React.useState(2);
   const [cpu, setCpu] = React.useState('1');
   const [memory, setMemory] = React.useState('1Gi');
+  const { data, isLoading, error } = Hooks.Models.useListByAuthor({ author });
 
-  const readyModels = React.useMemo(
-    () => models.filter((m) => m.status === 'ready'),
-    [models]
-  );
+  const models = data?.result ?? [];
 
   React.useEffect(() => {
     if (open) {
-      setSelectedModelId('');
+      setSelectedModelName('');
       setEnvironment('test');
       setReplicas(2);
       setCpu('1');
@@ -60,24 +50,22 @@ export default function DeploymentDialog({
     }
   }, [open]);
 
-  const selectedModel = readyModels.find((m) => m.id === selectedModelId);
+  const selectedModel = models.find((m) => m.name === selectedModelName);
 
   const handleDeploy = () => {
-    if (!selectedModel) return;
-
-    onDeploy({
-      modelId: selectedModel.id,
-      modelName: selectedModel.name,
-      modelVersion: selectedModel.version,
-      environment,
-      endpoint: `https://api.ml-platform.io/v1/models/${selectedModel.name
-        .toLowerCase()
-        .replace(/\s+/g, '-')}/predict`,
-      replicas,
-      cpu,
-      memory,
-      startedBy: 'Current User',
-    });
+    // onDeploy({
+    //   modelId: selectedModel.id,
+    //   modelName: selectedModel.name,
+    //   modelVersion: selectedModel.version,
+    //   environment,
+    //   endpoint: `https://api.ml-platform.io/v1/models/${selectedModel.name
+    //     .toLowerCase()
+    //     .replace(/\s+/g, '-')}/predict`,
+    //   replicas,
+    //   cpu,
+    //   memory,
+    //   startedBy: 'Current User',
+    // });
     onClose();
   };
 
@@ -90,27 +78,24 @@ export default function DeploymentDialog({
       >
         <TextField
           label="Select Model"
-          value={selectedModelId}
-          onChange={(e) => setSelectedModelId(e.target.value)}
+          value={selectedModelName}
+          onChange={(e) => setSelectedModelName(e.target.value)}
           select
           fullWidth
           required
         >
-          {readyModels.map((model) => (
-            <MenuItem key={model.id} value={model.id}>
+          {models.map((model) => (
+            <MenuItem key={model.name} value={model.name}>
               <Box>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   {model.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  v{model.version} · {model.libraries.join(', ')}
                 </Typography>
               </Box>
             </MenuItem>
           ))}
         </TextField>
 
-        {readyModels.length === 0 && (
+        {models.length === 0 && (
           <Typography variant="body2" color="warning.main" sx={{ mt: -1 }}>
             No models with &quot;Ready&quot; status available for deployment.
           </Typography>
@@ -137,55 +122,6 @@ export default function DeploymentDialog({
           </MenuItem>
         </TextField>
 
-        <Box>
-          <Typography variant="body2" gutterBottom sx={{ fontWeight: 500 }}>
-            Replicas: {replicas}
-          </Typography>
-          <Slider
-            value={replicas}
-            onChange={(_, val) => setReplicas(val as number)}
-            min={environment === 'production' ? 2 : 1}
-            max={10}
-            step={1}
-            marks={[
-              { value: 1, label: '1' },
-              { value: 5, label: '5' },
-              { value: 10, label: '10' },
-            ]}
-            valueLabelDisplay="auto"
-          />
-        </Box>
-
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-          <TextField
-            label="CPU Request"
-            value={cpu}
-            onChange={(e) => setCpu(e.target.value)}
-            select
-            fullWidth
-          >
-            {cpuOptions.map((opt) => (
-              <MenuItem key={opt} value={opt}>
-                {opt} cores{Number(opt) > 0 ? '' : ''}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            label="Memory"
-            value={memory}
-            onChange={(e) => setMemory(e.target.value)}
-            select
-            fullWidth
-          >
-            {memoryOptions.map((opt) => (
-              <MenuItem key={opt} value={opt}>
-                {opt}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Box>
-
         {selectedModel && (
           <Box
             sx={{
@@ -200,8 +136,7 @@ export default function DeploymentDialog({
               Deployment Summary
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Model:</strong> {selectedModel.name} (v
-              {selectedModel.version})
+              <strong>Model:</strong> {selectedModel.name}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               <strong>Endpoint:</strong>{' '}
@@ -209,10 +144,6 @@ export default function DeploymentDialog({
                 https://api.ml-platform.io/v1/models/
                 {selectedModel.name.toLowerCase().replace(/\s+/g, '-')}/predict
               </code>
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Resources:</strong> {cpu} CPU · {memory} Memory ·{' '}
-              {replicas} replica(s)
             </Typography>
           </Box>
         )}
@@ -224,7 +155,7 @@ export default function DeploymentDialog({
         <Button
           variant="contained"
           onClick={handleDeploy}
-          disabled={!selectedModelId}
+          disabled={!selectedModelName}
         >
           🚀 Deploy
         </Button>

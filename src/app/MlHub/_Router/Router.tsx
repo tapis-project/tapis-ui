@@ -241,7 +241,7 @@ export default function Router() {
       </Route>
 
       {/* Model Detail Page */}
-      <Route path="/mlhub/models/:modelId">
+      <Route path="/mlhub/models/:author/:name">
         <DashboardLayout>
           <Box>
             <ModelDetailsPage

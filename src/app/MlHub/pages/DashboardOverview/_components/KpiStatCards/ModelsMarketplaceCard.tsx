@@ -34,7 +34,7 @@ export default function ModelsMarketplaceCard() {
       color="info"
       trend="+156"
       trendUp
-      subtitle="Models curated by MLHub"
+      subtitle="Discover curated models"
       navigateTo="/marketplace"
       loading={isLoading}
       error={error}

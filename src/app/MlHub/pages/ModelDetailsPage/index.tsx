@@ -50,10 +50,10 @@ export default function ModelDetailsPage({
   onEdit,
   onDelete,
 }: ModelDetailsPageProps) {
-  const { modelId } = useParams<{ modelId: string }>();
+  const { author, name } = useParams<{ author: string; name: string }>();
   const { navigate } = useNavigate();
 
-  const model = models.find((m) => m.id === modelId);
+  const model = models.find((m) => m.name === name && m.author === author);
 
   if (!model) {
     return (

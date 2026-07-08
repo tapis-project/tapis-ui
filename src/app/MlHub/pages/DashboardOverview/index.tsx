@@ -14,6 +14,7 @@ import RecentDeploymentsList from './_components/RecentDeploymentsList';
 import FrameworkBarChartModal from './_components/FrameworkBarChartModal';
 import DeploymentDialog from '../../_components/DeploymentDialog';
 import ArtifactDialog from '../../_components/ArtifactDialog';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 interface DashboardOverviewProps {
   models: Model[];
@@ -37,19 +38,8 @@ export default function DashboardOverview({
   const [deploymentOpen, setDeploymentOpen] = React.useState(false);
   const [artifactOpen, setArtifactOpen] = React.useState(false);
 
-  const handleDeploy = React.useCallback(
-    (deployment: Omit<Deployment, 'id' | 'status' | 'deployedAt'>) => {
-      const newDeployment: Deployment = {
-        ...deployment,
-        id: `deploy-${Date.now()}`,
-        status: 'Running',
-        deployedAt: new Date().toISOString(),
-      };
-      // In a real app this would go to the backend; for now we just close
-      console.log('Deploying:', newDeployment);
-    },
-    []
-  );
+  // --- Username
+  const { username } = useTapisConfig();
 
   const handleSaveArtifact = React.useCallback(
     (artifact: Omit<Artifact, 'id' | 'createdAt' | 'checksum' | 'status'>) => {
@@ -207,8 +197,7 @@ export default function DashboardOverview({
       <DeploymentDialog
         open={deploymentOpen}
         onClose={() => setDeploymentOpen(false)}
-        onDeploy={handleDeploy}
-        models={models}
+        author={username}
       />
 
       {/* ─── Upload Artifact Dialog (from Quick Actions) ── */}

@@ -37,6 +37,7 @@ import {
 import { useNavigate } from '../../_context/NavContext';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
+import { Launch, Rocket } from '@mui/icons-material';
 
 interface ModelsTabProps {
   onModelsChange: (models: Model[]) => void;
@@ -120,7 +121,9 @@ export default function ModelsTab({
               },
             },
           }}
-          onClick={() => navigate(`/models/${params.row.id}`)}
+          onClick={() =>
+            navigate(`/models/${params.row.author}/${params.row.name}`)
+          }
         >
           <SmartToyIcon sx={{ color: 'primary.main', fontSize: 20 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -226,12 +229,22 @@ export default function ModelsTab({
   ];
 
   const statusCounts = React.useMemo(() => {
-    const counts: Record<string, number> = {};
-    return { pending: 0, ready: 0, draft: 0 }; // TODO
-    // models.forEach((m) => {
-    //   counts[m.status] = (counts[m.status] || 0) + 1;
-    // });
-    // return counts;
+    const counts: Record<string, number> = {
+      deployable: 0,
+      ready: 0,
+      draft: 0,
+      pub: 0,
+      priv: 0,
+    };
+
+    models.forEach((m) => {
+      console.log({ m });
+      let strats = m.annotations.deployment_strategies || [];
+      if (strats.length > 0) {
+        counts['deployable'] += 1;
+      }
+    });
+    return counts;
   }, [models]);
 
   return (
@@ -262,24 +275,34 @@ export default function ModelsTab({
       >
         {[
           {
-            label: 'Total Models',
+            label: 'Total',
             count: models.length,
             color: 'primary' as const,
           },
           {
-            label: 'Pending',
-            count: statusCounts['pending'] || 0,
-            color: 'warning' as const,
-          },
-          {
-            label: 'Ready',
-            count: statusCounts['ready'] || 0,
+            label: '🚀  Deployable',
+            count: statusCounts['deployable'] || 0,
             color: 'success' as const,
           },
           {
-            label: 'Drafts',
-            count: statusCounts['draft'] || 0,
+            label: '🌎  Public',
+            count: statusCounts['pub'] || 0,
             color: 'info' as const,
+          },
+          {
+            label: '🔒  Private',
+            count: statusCounts['priv'] || 0,
+            color: 'secondary' as const,
+          },
+          {
+            label: '✅  Released',
+            count: statusCounts['released'] || 0,
+            color: 'success' as const,
+          },
+          {
+            label: '✏️  Drafts',
+            count: statusCounts['draft'] || 0,
+            color: 'warning' as const,
           },
         ].map((stat) => (
           <Card
