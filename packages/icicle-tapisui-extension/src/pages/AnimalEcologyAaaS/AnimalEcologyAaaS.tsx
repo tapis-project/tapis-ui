@@ -1,6 +1,7 @@
 import React from 'react';
 import { Component } from '@tapis/tapisui-extensions-core';
 import PortalPageLayout from '../PortalShared/PortalPageLayout';
+import { sortServices } from '../PortalShared/sortServices';
 import styles from '../PortalShared/PortalPageLayout.module.scss';
 
 type ServiceItem = {
@@ -24,6 +25,8 @@ const services: ServiceItem[] = [
   },
 ];
 
+const sortedServices = sortServices(services);
+
 export const AnimalEcologyAaaS: Component = () => {
   return (
     <PortalPageLayout title="Welcome to the ICICLE-Animal-Ecology-as-a-Service (ICICLE-AEaaS) page!">
@@ -38,7 +41,7 @@ export const AnimalEcologyAaaS: Component = () => {
             </p>
           </div>
           <div className={styles.serviceList}>
-            {services.map((service) => (
+            {sortedServices.map((service) => (
               <div key={service.label} className={styles.serviceRow}>
                 <div className={styles.serviceLabel}>{service.label}</div>
                 <div className={styles.cardText}>Upcoming</div>
