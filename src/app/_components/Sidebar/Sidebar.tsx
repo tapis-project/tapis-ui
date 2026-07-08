@@ -68,14 +68,17 @@ type SidebarItems = {
 const Sidebar: React.FC = () => {
   const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
   const isAuthenticated = Boolean(accessToken?.access_token);
-  const { extension, extensionName } = useExtension();
+  const { extension } = useExtension();
   const chatContextValue = useContext(ChatContext);
   const queryClient = useQueryClient();
   const podsAdminMode = useSyncExternalStore(
     subscribePodsAdminMode,
     getPodsAdminMode
   );
-  const isIcicleExtension = extensionName === '@icicle/tapisui-extension';
+  const landingServiceId =
+    extension?.serviceMap && 'home' in extension.serviceMap
+      ? 'home'
+      : undefined;
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [modal, setModal] = useState<string | undefined>(undefined);
@@ -378,11 +381,9 @@ const Sidebar: React.FC = () => {
       />
 
       <Navbar>
-        {isIcicleExtension &&
-          accessToken &&
-          renderSidebarItem('/home', 'globe', 'Portal Home')}
+        {landingServiceId && accessToken && sidebarItems[landingServiceId]}
         {renderSidebarItem(
-          extensionName === '@icicle/tapisui-extension' ? '/dashboard' : '/',
+          landingServiceId ? '/dashboard' : '/',
           'dashboard',
           'Dashboard'
         )}
@@ -395,8 +396,7 @@ const Sidebar: React.FC = () => {
                 {/* No Section items - always visible */}
                 {extension.betaSidebar.noSection?.mainServices
                   ?.filter(
-                    (serviceId: string) =>
-                      !(isIcicleExtension && serviceId === 'home')
+                    (serviceId: string) => serviceId !== landingServiceId
                   )
                   .map((serviceId: string) => sidebarItems[serviceId])}
                 {extension.betaSidebar.noSection?.secondaryServices &&
@@ -432,7 +432,7 @@ const Sidebar: React.FC = () => {
                         {extension.betaSidebar.noSection.secondaryServices
                           .filter(
                             (serviceId: string) =>
-                              !(isIcicleExtension && serviceId === 'home')
+                              serviceId !== landingServiceId
                           )
                           .map((serviceId: string) => sidebarItems[serviceId])}
                       </Collapse>
@@ -482,8 +482,7 @@ const Sidebar: React.FC = () => {
                       {/* Main services in section */}
                       {section.mainServices
                         .filter(
-                          (serviceId: string) =>
-                            !(isIcicleExtension && serviceId === 'home')
+                          (serviceId: string) => serviceId !== landingServiceId
                         )
                         .map((serviceId: string) => sidebarItems[serviceId])}
 
@@ -528,7 +527,7 @@ const Sidebar: React.FC = () => {
                               {section.secondaryServices
                                 .filter(
                                   (serviceId: string) =>
-                                    !(isIcicleExtension && serviceId === 'home')
+                                    serviceId !== landingServiceId
                                 )
                                 .map(
                                   (serviceId: string) => sidebarItems[serviceId]

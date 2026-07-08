@@ -25,16 +25,13 @@ import { useExtension } from 'extensions';
 const Router: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { logout } = Auth.useLogin();
-  const { extension, extensionName } = useExtension();
+  const { extension } = useExtension();
+  const landingRoute = extension?.serviceMap?.['home']?.route;
 
   return (
     <Switch>
       <Route exact path="/">
-        {extensionName === '@icicle/tapisui-extension' ? (
-          <Redirect to="/home" />
-        ) : (
-          <Dashboard />
-        )}
+        {landingRoute ? <Redirect to={landingRoute} /> : <Dashboard />}
       </Route>
       <Route exact path="/dashboard">
         <Dashboard />
