@@ -27,6 +27,7 @@ import {
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
   Patra,
+  IntelligentEdgeManagementService,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -112,6 +113,7 @@ const extension = createExtension({
         'patra',
         'smart-labeler',
         'smart-segmentation',
+        'intelligent-edge-management-service',
       ],
     },
   },
@@ -301,6 +303,12 @@ extension.registerService({
   sidebarDisplayName: 'Patra',
   iconName: 'globe',
   component: Patra,
+});
+extension.registerService({
+  id: 'intelligent-edge-management-service',
+  sidebarDisplayName: 'Intelligent Edge Management Service',
+  iconName: 'globe',
+  component: IntelligentEdgeManagementService,
 });
 
 // extension.registerService({
