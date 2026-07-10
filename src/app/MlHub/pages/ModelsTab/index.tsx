@@ -238,8 +238,7 @@ export default function ModelsTab({
     };
 
     models.forEach((m) => {
-      console.log({ m });
-      let strats = m.annotations.deployment_strategies || [];
+      let strats = m.deployment_strategy_refs;
       if (strats.length > 0) {
         counts['deployable'] += 1;
       }
