@@ -5,6 +5,6 @@ export type {
   AgentContext,
   AgentResult,
   ChatTurn,
-} from 'app/_context/chat/agentTypes';
+} from '../../../_context/chat/agentTypes';
 
 export { default as ModelSelectionAgent } from './modelSelectionAgent';

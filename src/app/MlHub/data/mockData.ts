@@ -14,6 +14,7 @@ import {
   ALL_DATASET_FORMATS,
   ALL_DATASET_STATUSES,
 } from '../enums';
+import { Platform } from '@mlhub/models-ts-sdk';
 
 export const generateModels = (count: number): Model[] =>
   Array.from({ length: count }, (_, i) => ({
@@ -454,7 +455,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'BERT-Large-Uncased (SQuAD Fine-tuned)',
     description:
       'State-of-the-art BERT-large model fine-tuned on SQuAD 2.0 for question answering and reading comprehension tasks with exceptional accuracy.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch', 'tensorflow'],
     task: 'Question Answering',
     license: 'Apache-2.0',
@@ -472,7 +473,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'YOLOv8x Object Detection',
     description:
       'Ultralytics YOLOv8x — the latest real-time object detection model with state-of-the-art speed/accuracy tradeoff. Supports 80 COCO classes.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch', 'onnx'],
     task: 'Object Detection',
     license: 'AGPL-3.0',
@@ -489,7 +490,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'Stable Diffusion XL 1.0',
     description:
       'Latent text-to-image diffusion model capable of generating photorealistic images from text prompts. Supports inpainting, outpainting, and image-to-image.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch'],
     task: 'Text-to-Image Generation',
     license: 'CreativeML Open RAIL-M',
@@ -507,7 +508,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'ResNet-50 (ImageNet Pretrained)',
     description:
       'Deep residual network pretrained on ImageNet-1K. A foundational backbone for transfer learning, feature extraction, and classification tasks.',
-    platform: 'pytorch-hub',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch', 'onnx'],
     task: 'Image Classification',
     license: 'BSD-3-Clause',
@@ -524,7 +525,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'Llama 3.2 3B Instruct',
     description:
       "Meta's efficient instruction-tuned language model optimized for edge deployment, agentic workflows, and multilingual dialogue applications.",
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch'],
     task: 'Text Generation / Chat',
     license: 'LLaMA 3.2 Community License',
@@ -541,8 +542,8 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'XGBoost Credit Default Predictor',
     description:
       'Production-grade XGBoost gradient boosting model trained on credit default data. Includes feature importance analysis and SHAP explanations.',
-    platform: 'kaggle',
-    libraries: ['xgboost', 'sklearn'],
+    platform: Platform.HuggingFace,
+    libraries: ['xgboost'],
     task: 'Tabular Classification',
     license: 'MIT',
     downloads: 320_000,
@@ -559,7 +560,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'EfficientNet-B4 (TensorFlow Hub)',
     description:
       'EfficientNet-B4 convolutional neural network from TensorFlow Hub. Achieves ImageNet top-1 accuracy of 82.9% with significantly fewer parameters than ResNet.',
-    platform: 'tensorflow-hub',
+    platform: Platform.HuggingFace,
     libraries: ['tensorflow'],
     task: 'Image Classification / Feature Extraction',
     license: 'Apache-2.0',
@@ -576,7 +577,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'Whisper Large v3 (Multilingual)',
     description:
       "OpenAI's robust automatic speech recognition model supporting 99 languages. Transcribes audio to text with state-of-the-art accuracy across diverse accents.",
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch'],
     task: 'Speech Recognition',
     license: 'MIT',
@@ -593,7 +594,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'ViT-Large/16 (Vision Transformer)',
     description:
       "Google's Vision Transformer large variant pretrained on ImageNet-21K and fine-tuned on ImageNet-1K. Excellent zero-shot transfer capabilities.",
-    platform: 'pytorch-hub',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch', 'tensorflow'],
     task: 'Image Classification',
     license: 'Apache-2.0',
@@ -610,7 +611,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'GPT-2 Medium Text Generator',
     description:
       "OpenAI's GPT-2 medium (345M parameters) for general-purpose text generation, completion, and creative writing tasks. Fast inference on consumer hardware.",
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch', 'tensorflow', 'onnx'],
     task: 'Text Generation',
     license: 'Modified MIT',
@@ -627,7 +628,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'ONNX YOLOv7 Object Detection',
     description:
       'Optimized YOLOv7 exported to ONNX format for cross-platform inference. Ideal for CPU/GPU deployment in production pipelines without Python dependency.',
-    platform: 'onnx-model-zoo',
+    platform: Platform.HuggingFace,
     libraries: ['onnx'],
     task: 'Object Detection',
     license: 'GPL-3.0',
@@ -645,7 +646,7 @@ export const mockMarketplaceModels: MarketplaceModel[] = [
     name: 'TabNet Tabular Deep Learning',
     description:
       "Google DeepMind's TabNet — an attentive tabular learning architecture that achieves SOTA performance on tabular data without manual feature engineering.",
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     libraries: ['pytorch'],
     task: 'Tabular Classification / Regression',
     license: 'Apache-2.0',
@@ -667,7 +668,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'ImageNet-1K (ILSVRC2012)',
     description:
       'The iconic large-scale dataset for visual object recognition research. Contains 1.28M training images across 1,000 object categories with bounding box annotations.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     format: 'image',
     domain: 'Computer Vision',
     license: 'Custom (Non-commercial)',
@@ -686,7 +687,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'GLUE Benchmark Collection',
     description:
       'General Language Understanding Evaluation benchmark — a collection of 9 NLP tasks for training and evaluating shared models across diverse language understanding tasks.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     format: 'csv',
     domain: 'NLP',
     license: 'Apache-2.0',
@@ -705,7 +706,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'California Housing Prices',
     description:
       'Classic tabular dataset derived from the 1990 U.S. Census. Used for regression tasks predicting median house prices in California districts based on housing attributes.',
-    platform: 'kaggle',
+    platform: Platform.HuggingFace,
     format: 'csv',
     domain: 'Tabular',
     license: 'CC0-1.0',
@@ -725,7 +726,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'LibriSpeech ASR Corpus',
     description:
       'Large-scale corpus of approximately 1000 hours of 16kHz read English speech audio, ideal for training automatic speech recognition models with transcriptions.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     format: 'audio',
     domain: 'Audio',
     license: 'CC-BY-4.0',
@@ -744,7 +745,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'COCO 2017 — Object Detection',
     description:
       'Microsoft COCO is a large-scale object detection, segmentation, and captioning dataset with 330K images, 1.5M object instances, and 80 object categories.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     format: 'image',
     domain: 'Computer Vision',
     license: 'CC-BY-4.0',
@@ -782,7 +783,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'LAION-5B Aesthetic Subset',
     description:
       'Large-scale image-text dataset filtered for aesthetic quality. Contains 600M+ image-caption pairs for CLIP-style contrastive learning and image generation fine-tuning.',
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     format: 'parquet',
     domain: 'Multimodal',
     license: 'CC-BY-4.0',
@@ -807,7 +808,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'Titanic - Machine Learning from Disaster',
     description:
       'The quintessential beginner ML competition dataset. Predict which passengers survived the Titanic disaster using passenger demographics and travel information.',
-    platform: 'kaggle',
+    platform: Platform.HuggingFace,
     format: 'csv',
     domain: 'Tabular',
     license: 'CC0-1.0',
@@ -851,7 +852,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'AudioSet — Sound Event Dataset',
     description:
       "Google's large-scale dataset of human-labeled 10-second sound clips drawn from YouTube videos. Covers 632 audio event classes in a hierarchical taxonomy.",
-    platform: 'huggingface',
+    platform: Platform.HuggingFace,
     format: 'audio',
     domain: 'Audio',
     license: 'CC-BY-4.0',

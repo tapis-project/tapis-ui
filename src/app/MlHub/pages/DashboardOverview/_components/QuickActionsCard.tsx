@@ -14,8 +14,8 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import DataExplorationIcon from '@mui/icons-material/DataExploration';
-import ModelFormDialog from 'app/MLHub/_components/ModelFormDialog';
-import DeploymentDialog from 'app/MLHub/_components/DeploymentDialog';
+import ModelFormDialog from '../../../_components/ModelFormDialog';
+import DeploymentDialog from '../../../_components/DeploymentDialog';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 export default function QuickActionsCard() {

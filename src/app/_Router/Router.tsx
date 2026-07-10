@@ -16,7 +16,6 @@ const Systems = lazy(() => import('../Systems'));
 const Pods = lazy(() => import('../Pods'));
 const Files = lazy(() => import('../Files'));
 const Workflows = lazy(() => import('../Workflows'));
-// const MlHub = lazy(() => import('../MlHub'));
 const MLHub = lazy(() => import('../MLHub'));
 const Authenticator = lazy(() => import('../Authenticator'));
 const UIPatterns = lazy(() => import('../UIPatterns'));

@@ -20,6 +20,7 @@ export default function ActiveDeploymentsCard() {
       trendUp
       subtitle={`${metrics.total} total`}
       navigateTo="/deployments"
+      loading={false}
     />
   );
 }

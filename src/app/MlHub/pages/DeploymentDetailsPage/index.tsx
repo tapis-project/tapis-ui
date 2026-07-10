@@ -459,7 +459,7 @@ export default function DeploymentDetailsPage({
           sx={{
             py: 3,
             px: 3,
-            bgcolor: (t) => alpha(t.palette[statusColor].main, 0.04),
+            bgcolor: (t) => alpha(statusColor, 0.04),
           }}
         >
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>

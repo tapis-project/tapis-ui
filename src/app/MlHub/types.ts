@@ -1,3 +1,4 @@
+import { Platform } from '@mlhub/models-ts-sdk';
 import type { InferenceBackend } from './enums';
 import type {
   ModelStatus,
@@ -9,7 +10,6 @@ import type {
   DatasetFormat,
   DatasetStatus,
   MarketplacePlatform,
-  DatasetPlatform,
 } from './enums';
 
 // Re-export for convenience (but prefer importing from './enums')
@@ -24,7 +24,6 @@ export type {
   DatasetFormat,
   DatasetStatus,
   MarketplacePlatform,
-  DatasetPlatform,
 } from './enums';
 
 export interface Dataset {
@@ -128,7 +127,7 @@ export interface MarketplaceDataset {
   id: string;
   name: string;
   description: string;
-  platform: DatasetPlatform;
+  platform: Platform;
   format: DatasetFormat;
   domain: string; // e.g. 'NLP', 'Computer Vision', 'Tabular', 'Audio', 'Multimodal'
   license: string;

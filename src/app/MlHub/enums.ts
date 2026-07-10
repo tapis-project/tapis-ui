@@ -348,6 +348,7 @@ export const getPlatformConfig = (platform?: Models.Platform) => {
       };
   }
 };
+
 export const platformConfig = {
   [Models.Platform.HuggingFace]: {
     label: 'Hugging Face',
