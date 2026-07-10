@@ -47,12 +47,6 @@ const services: ServiceItem[] = [
     upcoming: true,
   },
   {
-    label: 'Real Time Optimized Edge Inference',
-    name: 'ML Edge',
-    link: '/ml-edge',
-    internal: true,
-  },
-  {
     label:
       'Flexible Multi-model Server: Unified interface for serving multiple ML models across different inference engines',
     name: 'FlexServ',
