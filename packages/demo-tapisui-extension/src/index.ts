@@ -19,6 +19,8 @@ import {
   Tejas,
   Langflow,
 } from './pages';
+import { SmartDetection } from './pages/SmartDetection';
+import { SmartSegmentation } from './pages/SmartSegmentation';
 
 const extension = createExtension({
   allowMultiTenant: true,
@@ -51,6 +53,8 @@ const extension = createExtension({
         defaultOpen: true,
         mainServices: [
           'ml-hub',
+          'smart-detection',
+          'smart-segmentation',
           // 'ml-edge',
           // 'jupyter-lab',
           // 'open-web-ui'
@@ -81,6 +85,8 @@ const extension = createExtension({
     'workflows',
     'pods',
     'ml-hub',
+    'smart-detection',
+    'smart-segmentation',
     // 'ml-edge',
     // 'open-web-ui',
     // 'jupyter-lab',
@@ -114,6 +120,20 @@ const extension = createExtension({
       dagDefaultView: true,
     },
   },
+});
+
+extension.registerService({
+  id: 'smart-detection',
+  sidebarDisplayName: 'Smart Labeler : Object Detection',
+  iconName: 'globe',
+  component: SmartDetection,
+});
+
+extension.registerService({
+  id: 'smart-segmentation',
+  sidebarDisplayName: 'Smart Labeler : Semantic Segmentation',
+  iconName: 'globe',
+  component: SmartSegmentation,
 });
 
 // Order of registration determines sidebar order!!
