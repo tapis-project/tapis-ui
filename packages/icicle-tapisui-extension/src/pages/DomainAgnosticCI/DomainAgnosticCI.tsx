@@ -65,6 +65,13 @@ const services: ServiceItem[] = [
     name: 'HARP',
     link: 'https://github.com/ICICLE-ai/harp',
   },
+  {
+    label:
+      'Intelligent Edge Management Service : Intelligent Orchestration and Controller Service for deploying and managing AI applications on edge devices.',
+    name: 'Intelligent Edge Management Service : Edge Orchestration Platform',
+    link: '/intelligent-edge-management-service',
+    internal: true,
+  },
 ];
 
 const sortedServices = sortServices(services);
