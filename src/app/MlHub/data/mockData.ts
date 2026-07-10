@@ -764,7 +764,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'UCI Machine Learning Repository: Adult Income',
     description:
       'Classic census income prediction dataset. Predict whether annual income exceeds $50K/yr based on demographic features. Widely used for classification benchmarks.',
-    platform: 'uciml',
+    platform: Platform.HuggingFace,
     format: 'csv',
     domain: 'Tabular',
     license: 'CC0-1.0',
@@ -833,7 +833,7 @@ export const mockMarketplaceDatasets: MarketplaceDataset[] = [
     name: 'Common Crawl — Web Text Corpus',
     description:
       'Massive multilingual text corpus scraped from the web. Pre-cleaned and deduplicated, suitable for pretraining LLMs, embedding models, and text generation pipelines.',
-    platform: 'github',
+    platform: Platform.Github,
     format: 'jsonl',
     domain: 'NLP',
     license: 'CC-BY-4.0',
