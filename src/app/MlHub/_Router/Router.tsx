@@ -36,7 +36,7 @@ import DatasetDetailsPage from '../pages/DatasetDetailsPage';
 import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
 import ModelMarketplace from '../pages/ModelMarketplace';
-import DatasetMarketplace from '../pages/DatasetMarketplace';
+// import DatasetMarketplace from '../pages/DatasetMarketplace';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
 
 /* ─── App Root ────────────────────────────────────────────────── */
