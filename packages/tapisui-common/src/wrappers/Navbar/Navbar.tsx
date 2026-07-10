@@ -77,9 +77,10 @@ export const NavItem: React.FC<
               className={styles['nav-text']}
               primary={children}
               secondary={secondary}
+              slotProps={{ primary: { noWrap: true } }}
+              title={typeof children === 'string' ? children : undefined}
               style={{
                 paddingRight: '.8rem',
-                whiteSpace: 'nowrap',
                 margin: '0',
               }}
             />
