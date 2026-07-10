@@ -54,6 +54,12 @@ const services: ServiceItem[] = [
   },
   {
     label:
+      'Flexible Multi-model Server: Unified interface for serving multiple ML models across different inference engines',
+    name: 'FlexServ',
+    link: 'https://zhangwei217245.github.io/FlexServ/',
+  },
+  {
+    label:
       'Playground for Model Creation, Adaptation, Training, Compression, and Inference',
     name: 'MLHub',
     link: '/ml-hub',
