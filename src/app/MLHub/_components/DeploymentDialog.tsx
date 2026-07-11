@@ -11,10 +11,12 @@ import {
   Typography,
   Slider,
   InputAdornment,
+  Chip,
 } from '@mui/material';
 import type { Deployment, DeploymentEnvironment } from '../types';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
+import { getPlatformConfig } from '../enums';
 
 interface DeploymentDialogProps {
   open: boolean;
@@ -25,14 +27,21 @@ interface DeploymentDialogProps {
 const cpuOptions = ['250m', '500m', '1', '2', '4'];
 const memoryOptions = ['256Mi', '512Mi', '1Gi', '2Gi', '4Gi', '8Gi'];
 
+const uniqueIdFromStratRef = (strat: Models.DeploymentStrategyReference) => {
+  return strat.platform + ':' + strat.name;
+};
+
 export default function DeploymentDialog({
   open,
   onClose,
   author,
 }: DeploymentDialogProps) {
   const [selectedModelName, setSelectedModelName] = React.useState('');
-  const [environment, setEnvironment] =
-    React.useState<DeploymentEnvironment>('test');
+  const [selectedDeploymentStrategy, setSelectedDeploymentStrategy] =
+    React.useState<undefined | Models.DeploymentStrategyReference>(undefined);
+  const [environment, setEnvironment] = React.useState<
+    DeploymentEnvironment | undefined
+  >(undefined);
   const [replicas, setReplicas] = React.useState(2);
   const [cpu, setCpu] = React.useState('1');
   const [memory, setMemory] = React.useState('1Gi');
@@ -101,6 +110,47 @@ export default function DeploymentDialog({
           </Typography>
         )}
 
+        {selectedModel && (
+          <TextField
+            label="Choose Deployment Strategy"
+            value={undefined}
+            onChange={(e) => {}}
+            select
+            fullWidth
+            required
+          >
+            {selectedModel.deployment_strategy_refs.map((strat) => {
+              const cfg = getPlatformConfig(strat.platform);
+              return (
+                <MenuItem
+                  key={uniqueIdFromStratRef(strat)}
+                  value={uniqueIdFromStratRef(strat)}
+                  sx={{ borderBottom: '1px solid #CCCCCC' }}
+                  onClick={() => {
+                    setSelectedDeploymentStrategy(strat);
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Chip
+                      size="small"
+                      sx={{ bgcolor: cfg.color }}
+                      label={`${cfg.icon} ${cfg.label}`}
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        {strat.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {strat.description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </MenuItem>
+              );
+            })}
+          </TextField>
+        )}
+
         <TextField
           label="Environment"
           value={environment}
@@ -110,14 +160,14 @@ export default function DeploymentDialog({
           select
           fullWidth
         >
-          <MenuItem value="test">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              🧪 Test — Pre-production testing
-            </Box>
-          </MenuItem>
           <MenuItem value="production">
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               🚀 Production — Live traffic
+            </Box>
+          </MenuItem>
+          <MenuItem value="test">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              🧪 Test — Pre-production testing
             </Box>
           </MenuItem>
         </TextField>

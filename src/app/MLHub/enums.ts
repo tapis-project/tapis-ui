@@ -340,6 +340,15 @@ export const getPlatformConfig = (platform?: Models.Platform) => {
         color: '#FFD21E',
         icon: '🤗',
       };
+
+    case Models.Platform.TapisJobs:
+    case Models.Platform.TapisPods:
+      return {
+        label: 'Tapis',
+        color: '#F79721',
+        icon: '🐂',
+      };
+
     default:
       return {
         label: 'Unknown',
