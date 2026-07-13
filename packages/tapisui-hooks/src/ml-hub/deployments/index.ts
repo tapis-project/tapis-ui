@@ -1,1 +1,1 @@
-export * as Strategies from './strategies'
+export * as Strategies from './strategies';

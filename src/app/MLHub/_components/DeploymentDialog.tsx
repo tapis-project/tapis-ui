@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useMemo, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,69 +12,57 @@ import {
   Slider,
   InputAdornment,
   Chip,
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 import type { Deployment, DeploymentEnvironment } from '../types';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
+import * as Deployments from '@mlhub/deployments-ts-sdk';
 import { getPlatformConfig } from '../enums';
 
 interface DeploymentDialogProps {
+  model?: Models.ModelMetadata;
+  strat?: Deployments.Strategy;
   open: boolean;
   onClose: () => void;
   author: string;
 }
 
-const cpuOptions = ['250m', '500m', '1', '2', '4'];
-const memoryOptions = ['256Mi', '512Mi', '1Gi', '2Gi', '4Gi', '8Gi'];
-
-const uniqueIdFromStratRef = (strat: Models.DeploymentStrategyReference) => {
+const stratId = (strat: Models.DeploymentStrategyReference) => {
   return strat.platform + ':' + strat.name;
+};
+
+const removePrefix = (str: string, prefix: string) => {
+  return str.startsWith(prefix) ? str.slice(prefix.length) : str;
 };
 
 export default function DeploymentDialog({
   open,
   onClose,
   author,
+  model = undefined,
+  strat = undefined,
 }: DeploymentDialogProps) {
-  const [selectedModelName, setSelectedModelName] = React.useState('');
+  const { mlHubBasePath } = useTapisConfig();
+  const [selectedModel, setSelectedModel] = useState(model);
   const [selectedDeploymentStrategy, setSelectedDeploymentStrategy] =
-    React.useState<undefined | Models.DeploymentStrategyReference>(undefined);
-  const [environment, setEnvironment] = React.useState<
-    DeploymentEnvironment | undefined
-  >(undefined);
-  const [replicas, setReplicas] = React.useState(2);
-  const [cpu, setCpu] = React.useState('1');
-  const [memory, setMemory] = React.useState('1Gi');
-  const { data, isLoading, error } = Hooks.Models.useListByAuthor({ author });
+    useState(strat);
+  const [env, setEnv] = useState<'test' | 'production'>('test');
+  const [selectedParams, setSelectedParams] = useState<{ [key: string]: any }>(
+    {}
+  );
 
-  const models = data?.result ?? [];
+  // Models hooks
+  const { data: modelsData } = Hooks.Models.useListByAuthor({ author });
+  const models = modelsData?.result ?? [];
 
-  React.useEffect(() => {
-    if (open) {
-      setSelectedModelName('');
-      setEnvironment('test');
-      setReplicas(2);
-      setCpu('1');
-      setMemory('1Gi');
-    }
-  }, [open]);
-
-  const selectedModel = models.find((m) => m.name === selectedModelName);
+  // Deployments hooks
+  const { data: strategiesData, error } =
+    Hooks.Deployments.Strategies.useList();
+  const strats = strategiesData?.result ?? [];
 
   const handleDeploy = () => {
-    // onDeploy({
-    //   modelId: selectedModel.id,
-    //   modelName: selectedModel.name,
-    //   modelVersion: selectedModel.version,
-    //   environment,
-    //   endpoint: `https://api.ml-platform.io/v1/models/${selectedModel.name
-    //     .toLowerCase()
-    //     .replace(/\s+/g, '-')}/predict`,
-    //   replicas,
-    //   cpu,
-    //   memory,
-    //   startedBy: 'Current User',
-    // });
     onClose();
   };
 
@@ -85,29 +73,44 @@ export default function DeploymentDialog({
         dividers
         sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 2.5 }}
       >
-        <TextField
-          label="Select Model"
-          value={selectedModelName}
-          onChange={(e) => setSelectedModelName(e.target.value)}
-          select
-          fullWidth
-          required
-        >
-          {models.map((model) => (
-            <MenuItem key={model.name} value={model.name}>
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  {model.name}
-                </Typography>
-              </Box>
-            </MenuItem>
-          ))}
-        </TextField>
-
-        {models.length === 0 && (
-          <Typography variant="body2" color="warning.main" sx={{ mt: -1 }}>
-            No models with &quot;Ready&quot; status available for deployment.
-          </Typography>
+        {models.length === 0 ? (
+          <Alert severity="warning">
+            <AlertTitle>You have no models that we can deploy!</AlertTitle>
+            Search the Model Marketplace for deployable models
+          </Alert>
+        ) : (
+          <TextField
+            label="Select Model"
+            value={selectedModel}
+            select
+            fullWidth
+            required
+          >
+            {models.map((model) => (
+              <MenuItem
+                onClick={() => {
+                  setSelectedModel(model);
+                }}
+                key={model.name}
+                value={model.name}
+                disabled={model.deployment_strategy_refs.length === 0}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    {model.deployment_strategy_refs.length === 0 ? '🚫' : '🤖'}
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {model.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {model.author}
+                    </Typography>
+                  </Box>
+                </Box>
+              </MenuItem>
+            ))}
+          </TextField>
         )}
 
         {selectedModel && (
@@ -119,14 +122,17 @@ export default function DeploymentDialog({
             fullWidth
             required
           >
-            {selectedModel.deployment_strategy_refs.map((strat) => {
-              const cfg = getPlatformConfig(strat.platform);
+            {selectedModel.deployment_strategy_refs.map((ref) => {
+              const cfg = getPlatformConfig(ref.platform);
               return (
                 <MenuItem
-                  key={uniqueIdFromStratRef(strat)}
-                  value={uniqueIdFromStratRef(strat)}
+                  key={stratId(ref)}
+                  value={stratId(ref)}
                   sx={{ borderBottom: '1px solid #CCCCCC' }}
                   onClick={() => {
+                    let strat = strats.filter((s) => {
+                      return s.platform === ref.platform && s.name === ref.name;
+                    })[0];
                     setSelectedDeploymentStrategy(strat);
                   }}
                 >
@@ -138,10 +144,10 @@ export default function DeploymentDialog({
                     />
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                       <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        {strat.name}
+                        {ref.name}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {strat.description}
+                        {ref.description}
                       </Typography>
                     </Box>
                   </Box>
@@ -153,24 +159,52 @@ export default function DeploymentDialog({
 
         <TextField
           label="Environment"
-          value={environment}
-          onChange={(e) =>
-            setEnvironment(e.target.value as DeploymentEnvironment)
-          }
+          value={env}
+          onChange={(e) => setEnv(e.target.value as 'test' | 'production')}
           select
           fullWidth
         >
-          <MenuItem value="production">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              🚀 Production — Live traffic
+          <MenuItem key="env-test" value="test">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                🚀
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  Production
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Live traffic
+                </Typography>
+              </Box>
             </Box>
           </MenuItem>
-          <MenuItem value="test">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              🧪 Test — Pre-production testing
+          <MenuItem key="env-test" value="producion">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                🧪
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  Test
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Pre-production testing
+                </Typography>
+              </Box>
             </Box>
           </MenuItem>
         </TextField>
+
+        {selectedDeploymentStrategy && (
+          <DeploymentStratParameters
+            params={selectedDeploymentStrategy.parameters}
+            selectedParams={selectedParams}
+            handleSelectParam={(k, v) => {
+              setSelectedParams({ ...selectedParams, [k]: v });
+            }}
+          />
+        )}
 
         {selectedModel && (
           <Box
@@ -191,7 +225,10 @@ export default function DeploymentDialog({
             <Typography variant="body2" color="text.secondary">
               <strong>Endpoint:</strong>{' '}
               <code style={{ fontSize: '0.75rem' }}>
-                https://api.ml-platform.io/v1/models/
+                {`https://endpoints.mlhub.${removePrefix(
+                  mlHubBasePath,
+                  'https://'
+                )}`}
                 {selectedModel.name.toLowerCase().replace(/\s+/g, '-')}/predict
               </code>
             </Typography>
@@ -205,7 +242,7 @@ export default function DeploymentDialog({
         <Button
           variant="contained"
           onClick={handleDeploy}
-          disabled={!selectedModelName}
+          disabled={true /** TODO */}
         >
           🚀 Deploy
         </Button>
@@ -213,3 +250,100 @@ export default function DeploymentDialog({
     </Dialog>
   );
 }
+
+type DeploymentStratParametersProps = {
+  params: Deployments.Parameter[];
+  selectedParams: { [key: string]: any };
+  handleSelectParam: (key: string, value: any) => void;
+};
+
+const DeploymentStratParameters: React.FC<DeploymentStratParametersProps> = ({
+  params,
+  selectedParams,
+  handleSelectParam,
+}) => {
+  return (
+    <>
+      {params.map((param) => {
+        switch (!!param.choices) {
+          case true:
+            return (
+              <SelectParamField
+                param={param}
+                selectedParams={selectedParams}
+                handleSelectParam={handleSelectParam}
+              />
+            );
+          case false:
+            return (
+              <TextParamField
+                param={param}
+                selectedParams={selectedParams}
+                handleSelectParam={handleSelectParam}
+              />
+            );
+        }
+      })}
+    </>
+  );
+};
+
+type ParamProps = {
+  param: Deployments.Parameter;
+  selectedParams: { [key: string]: any };
+  handleSelectParam: (key: string, value: any) => void;
+};
+
+const SelectParamField: React.FC<ParamProps> = ({
+  param,
+  selectedParams,
+  handleSelectParam,
+}) => {
+  let choices = param.choices || [];
+  return (
+    <TextField
+      label={param.name}
+      value={selectedParams[param.name] ? param._default : undefined}
+      select
+      fullWidth
+      helperText={param.description}
+    >
+      {choices.map((choice) => {
+        return (
+          <MenuItem
+            key="env-test"
+            value="test"
+            onClick={() => {
+              handleSelectParam(param.name, choice);
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                ⚙️
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {choice}
+                </Typography>
+              </Box>
+            </Box>
+          </MenuItem>
+        );
+      })}
+    </TextField>
+  );
+};
+
+const TextParamField: React.FC<ParamProps> = ({ param, handleSelectParam }) => {
+  return (
+    <TextField
+      label={param.name}
+      value={param._default}
+      onChange={(e) => {
+        handleSelectParam(param.name, e.target.value);
+      }}
+      fullWidth
+      helperText={param.description}
+    />
+  );
+};
