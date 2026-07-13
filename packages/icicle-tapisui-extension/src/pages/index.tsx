@@ -22,3 +22,4 @@ export { DigitalAgAaaS } from './DigitalAgAaaS';
 export { AnimalEcologyAaaS } from './AnimalEcologyAaaS';
 export { FoodLogisticsAaaS } from './FoodLogisticsAaaS';
 export { Patra } from './Patra';
+export { IntelligentEdgeManagementService } from './IntelligentEdgeManagementService';

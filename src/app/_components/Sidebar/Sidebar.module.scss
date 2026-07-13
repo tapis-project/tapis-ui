@@ -6,6 +6,10 @@ $width: 800px;
   display: flex;
   flex-direction: column;
   height: 100%;
+  // Cap the width so long service names can't stretch the sidebar;
+  // NavItem labels ellipsize instead (full name shown via tooltip).
+  max-width: 16rem;
+  flex-shrink: 0;
 }
 
 .collapse-icon {

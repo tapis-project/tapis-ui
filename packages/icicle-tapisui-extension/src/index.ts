@@ -27,6 +27,7 @@ import {
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
   Patra,
+  IntelligentEdgeManagementService,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -64,7 +65,6 @@ const extension = createExtension({
     'feast',
     'food-security-sandbox',
     'component-catalog',
-    'ckn-dashboard',
     'openpass',
     'systems',
     'jobs',
@@ -74,6 +74,7 @@ const extension = createExtension({
     'patra',
     'smart-labeler',
     'smart-segmentation',
+    //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
   ],
@@ -102,7 +103,6 @@ const extension = createExtension({
         'feast',
         'food-security-sandbox',
         'component-catalog',
-        'ckn-dashboard',
         'openpass',
         'systems',
         'jobs',
@@ -112,6 +112,7 @@ const extension = createExtension({
         'patra',
         'smart-labeler',
         'smart-segmentation',
+        'intelligent-edge-management-service',
       ],
     },
   },
@@ -277,14 +278,14 @@ extension.registerService({
 
 extension.registerService({
   id: 'smart-labeler',
-  sidebarDisplayName: 'Smart Labeler : Object Detection',
+  sidebarDisplayName: 'Smart Labeling Service for Object Detection',
   iconName: 'globe',
   component: SmartDetection,
 });
 
 extension.registerService({
   id: 'smart-segmentation',
-  sidebarDisplayName: 'Smart Labeler : Semantic Segmentation',
+  sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
   iconName: 'globe',
   component: SmartSegmentation,
 });
@@ -301,6 +302,12 @@ extension.registerService({
   sidebarDisplayName: 'Patra',
   iconName: 'globe',
   component: Patra,
+});
+extension.registerService({
+  id: 'intelligent-edge-management-service',
+  sidebarDisplayName: 'Intelligent Edge Management Service',
+  iconName: 'globe',
+  component: IntelligentEdgeManagementService,
 });
 
 // extension.registerService({

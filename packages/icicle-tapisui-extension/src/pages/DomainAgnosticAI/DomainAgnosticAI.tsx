@@ -21,15 +21,15 @@ const services: ServiceItem[] = [
   },
   {
     label:
-      'Smart Labeler : Inteligent AI pipeline for Zero and Few shot object detection',
-    name: 'Smart Labeler : Object detection',
+      'Smart Labeling Service for Object Detection : Inteligent AI pipeline for Zero and Few shot object detection',
+    name: 'Smart Labeling Service for Object Detection',
     link: '/smart-labeler',
     internal: true,
   },
   {
     label:
-      'Smart Labeler : Inteligent AI pipeline for Zero and Few shot object detection',
-    name: 'Smart Labeler : Semantic segmentation',
+      'Intelligent Semantic Segmentation & Annotation : Inteligent AI pipeline for Zero and Few shot semantic segmentation',
+    name: 'Intelligent Semantic Segmentation & Annotation',
     link: '/smart-segmentation',
     internal: true,
   },
@@ -47,10 +47,10 @@ const services: ServiceItem[] = [
     upcoming: true,
   },
   {
-    label: 'Real Time Optimized Edge Inference',
-    name: 'ML Edge',
-    link: '/ml-edge',
-    internal: true,
+    label:
+      'Flexible Multi-model Server: Unified interface for serving multiple ML models across different inference engines',
+    name: 'FlexServ',
+    link: 'https://zhangwei217245.github.io/FlexServ/',
   },
   {
     label:
