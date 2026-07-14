@@ -297,7 +297,7 @@ importers:
         version: 0.0.7
       '@tapis/tapisui-extension-devtools':
         specifier: file:./packages/tapisui-extension-devtools
-        version: link:packages/tapisui-extension-devtools
+        version: file:packages/tapisui-extension-devtools
       '@testing-library/react':
         specifier: ^14.2.1
         version: 14.2.1(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2933,6 +2933,9 @@ packages:
 
   '@tapis/tapisui-common@file:packages/tapisui-common':
     resolution: {directory: packages/tapisui-common, type: directory}
+
+  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
+    resolution: {directory: packages/tapisui-extension-devtools, type: directory}
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks':
     resolution: {directory: packages/tapisui-hooks, type: directory}
@@ -9364,6 +9367,13 @@ snapshots:
       - supports-color
       - vite
 
+  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
+    dependencies:
+      '@tapis/tapis-typescript': 0.0.68
+      simple-git: 3.33.0
+    transitivePeerDependencies:
+      - supports-color
+
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)':
     dependencies:
       '@mlhub/deployments-ts-sdk': 0.8.0
@@ -9401,7 +9411,7 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/runtime': 7.29.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
@@ -13865,7 +13875,7 @@ snapshots:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
       '@types/node': 18.19.130
-      acorn: 8.14.1
+      acorn: 8.15.0
       acorn-walk: 8.3.4
       arg: 4.1.3
       create-require: 1.1.1

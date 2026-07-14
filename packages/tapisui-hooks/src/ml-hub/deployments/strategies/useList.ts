@@ -12,7 +12,7 @@ const useList = (
 ) => {
   const { accessToken, mlHubBasePath } = useTapisConfig();
   const result = useQuery<Deployments.ListDeploymentStrategiesResponse, Error>(
-    [QueryKeys.list, accessToken],
+    [QueryKeys.listStrategies, accessToken],
     // Default to no token. This will generate a 403 when calling the list function
     // which is expected behavior for not having a token
     () =>

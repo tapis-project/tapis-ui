@@ -1,5 +1,6 @@
 const QueryKeys = {
-  list: 'mlhub/deployment/strategies/list',
+  listStrategies: 'mlhub/deployment/strategies/list',
+  deployWithStrategy: 'mlhub/deployment/deploywithstrategy',
 };
 
 export default QueryKeys;
