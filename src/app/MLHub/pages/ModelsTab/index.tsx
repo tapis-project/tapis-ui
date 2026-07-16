@@ -37,19 +37,8 @@ import {
 import { useNavigate } from '../../_context/NavContext';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
-import { Launch, Rocket } from '@mui/icons-material';
 
-interface ModelsTabProps {
-  onModelsChange: (models: Model[]) => void;
-  deployments?: Deployment[];
-  artifacts?: Artifact[];
-}
-
-export default function ModelsTab({
-  onModelsChange,
-  deployments = [],
-  artifacts = [],
-}: ModelsTabProps) {
+export default function ModelsTab() {
   const { username } = useTapisConfig();
   const { data, isLoading, error } = Hooks.Models.useListByAuthor({
     author: username,

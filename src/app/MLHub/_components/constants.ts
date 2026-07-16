@@ -7,6 +7,9 @@ export {
   inferenceBackendColorMap as frameworkColorMap,
   inferenceBackendIconMap as frameworkIconMap,
   inferenceBackendLabelMap as frameworkLabelMap,
+  inferenceBackendColorMap,
+  inferenceBackendIconMap,
+  inferenceBackendLabelMap,
   // Model status
   modelStatusColorMap,
   // Deployment

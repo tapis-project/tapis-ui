@@ -61,7 +61,7 @@ export const inferenceBackendColorMap: Record<InferenceBackend, string> = {
   ultralytics: '#0288D1',
 };
 
-export const inferenceBackendIconMap: Record<InferenceBackend, string> = {
+export const inferenceBackendIconMap: { [key in InferenceBackend]: string } = {
   pytorch: '\u{1F525}',
   tensorflow: '\u{1F9E0}',
   xgboost: '\u{1F680}',
@@ -97,7 +97,7 @@ export const getInferenceBackendLabel = (
   }
 };
 
-export const inferenceBackendLabelMap: Record<InferenceBackend, string> = {
+export const inferenceBackendLabelMap: { [key in InferenceBackend]: string } = {
   pytorch: 'PyTorch',
   tensorflow: 'TensorFlow',
   xgboost: 'XGBoost',
@@ -112,16 +112,10 @@ export const inferenceBackendLabelMap: Record<InferenceBackend, string> = {
 // 2. MODEL STATUS
 // ════════════════════════════════════════════════════════════════
 
-export type ModelStatus =
-  | 'draft'
-  | 'pending'
-  | 'ready'
-  | 'deprecated'
-  | 'archived';
+export type ModelStatus = 'draft' | 'ready' | 'deprecated' | 'archived';
 
 export const ALL_MODEL_STATUSES: ModelStatus[] = [
   'draft',
-  'pending',
   'ready',
   'deprecated',
   'archived',
@@ -154,18 +148,15 @@ export const MODEL_STATUS_OPTIONS: {
   color: 'default' | 'warning' | 'success' | 'error' | 'info';
 }[] = [
   { value: 'draft', label: 'Draft', color: 'default' },
-  { value: 'pending', label: 'Pending', color: 'warning' },
   { value: 'ready', label: 'Ready', color: 'success' },
   { value: 'deprecated', label: 'Deprecated', color: 'error' },
   { value: 'archived', label: 'Archived', color: 'info' },
 ];
 
-export const modelStatusColorMap: Record<
-  ModelStatus,
-  'default' | 'warning' | 'success' | 'error' | 'info'
-> = {
+export const modelStatusColorMap: {
+  [key in ModelStatus]: 'default' | 'warning' | 'success' | 'error' | 'info';
+} = {
   draft: 'default',
-  pending: 'warning',
   ready: 'success',
   deprecated: 'error',
   archived: 'info',

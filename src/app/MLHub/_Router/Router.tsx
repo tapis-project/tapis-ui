@@ -21,11 +21,6 @@ import {
 // Layout
 import DashboardLayout from '../Layouts/DashboardLayout';
 
-// Dialog components (shared across pages)
-import DeploymentDialog from '../_components/DeploymentDialog';
-import ArtifactDialog from '../_components/ArtifactDialog';
-import ModelFormDialog from '../_components/ModelFormDialog';
-
 // Page-level components
 import ModelsTab from '../pages/ModelsTab';
 import DatasetsTab from '../pages/DatasetsTab';
@@ -36,6 +31,7 @@ import DatasetDetailsPage from '../pages/DatasetDetailsPage';
 import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
 import ModelMarketplace from '../pages/ModelMarketplace';
+import NotFound404 from '../pages/NotFound404';
 // import DatasetMarketplace from '../pages/DatasetMarketplace';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
 
@@ -51,7 +47,6 @@ export default function Router() {
 
   // Model creation / edit dialog
   const [modelFormOpen, setModelFormOpen] = React.useState(false);
-  const [editingModel, setEditingModel] = React.useState<Model | null>(null);
 
   // Derived data passed to child tabs
   const modelSummary = React.useMemo(
@@ -76,58 +71,6 @@ export default function Router() {
     [datasets]
   );
 
-  // Handle model creation from dashboard quick action
-  const handleCreateModel = React.useCallback(
-    (data: Omit<Model, 'id' | 'createdAt' | 'updatedAt'>) => {
-      const newModel: Model = {
-        id: `model-${String(models.length + 1).padStart(3, '0')}`,
-        ...data,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setModels((prev) => [...prev, newModel]);
-    },
-    [models.length]
-  );
-
-  // Handle opening the form dialog in edit mode
-  const handleEditModel = React.useCallback((model: Model) => {
-    setEditingModel(model);
-    setModelFormOpen(true);
-  }, []);
-
-  // Close the dialog and reset editing state
-  const handleCloseModelForm = React.useCallback(() => {
-    setModelFormOpen(false);
-    setEditingModel(null);
-  }, []);
-
-  // Save handler that handles both create and update
-  const handleSaveModel = React.useCallback(
-    (data: Omit<Model, 'id' | 'createdAt' | 'updatedAt'>) => {
-      if (editingModel) {
-        // Update existing model
-        setModels((prev) =>
-          prev.map((m) =>
-            m.id === editingModel.id
-              ? { ...m, ...data, updatedAt: new Date().toISOString() }
-              : m
-          )
-        );
-      } else {
-        // Create new model
-        const newModel: Model = {
-          id: `model-${String(models.length + 1).padStart(3, '0')}`,
-          ...data,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        setModels((prev) => [...prev, newModel]);
-      }
-    },
-    [editingModel, models.length]
-  );
-
   return (
     <Switch>
       {/* Dashboard Overview */}
@@ -148,11 +91,7 @@ export default function Router() {
       {/* Models */}
       <Route path="/mlhub/models" exact>
         <DashboardLayout>
-          <ModelsTab
-            onModelsChange={setModels}
-            deployments={deployments}
-            artifacts={artifacts}
-          />
+          <ModelsTab />
         </DashboardLayout>
       </Route>
 
@@ -238,24 +177,12 @@ export default function Router() {
       {/* Model Detail Page */}
       <Route path="/mlhub/models/:author/:name">
         <DashboardLayout>
-          <Box>
-            <ModelDetailsPage
-              models={models}
-              deployments={deployments}
-              artifacts={artifacts}
-              onEdit={handleEditModel}
-              onDelete={(id) => {
-                setModels((prev) => prev.filter((m) => m.id !== id));
-                window.history.back();
-              }}
-            />
-            <ModelFormDialog
-              open={modelFormOpen}
-              model={null}
-              onClose={handleCloseModelForm}
-            />
-          </Box>
+          <ModelDetailsPage />
         </DashboardLayout>
+      </Route>
+
+      <Route path="*">
+        <NotFound404 />
       </Route>
     </Switch>
   );
