@@ -17,6 +17,7 @@ import ArtifactDialog from '../../_components/ArtifactDialog';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { StorefrontRounded } from '@mui/icons-material';
 import { MarketplaceButton } from 'app/MLHub/_components/MarketplaceButton';
+import BannerWrapper from 'app/MLHub/_components/BannerWrapper';
 
 interface DashboardOverviewProps {
   models: Model[];

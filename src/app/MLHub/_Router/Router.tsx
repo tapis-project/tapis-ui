@@ -108,8 +108,7 @@ export default function Router() {
       {/* Dataset Marketplace */}
       <Route path="/mlhub/marketplaces/datasets">
         <DashboardLayout>
-          Coming Soon!
-          {/* <DatasetMarketplace datasets={mockMarketplaceDatasets} /> */}
+          <ComingSoon />
         </DashboardLayout>
       </Route>
 

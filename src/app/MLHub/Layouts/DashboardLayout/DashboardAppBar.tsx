@@ -1,4 +1,13 @@
-import { Box, AppBar, Toolbar, Typography, Tabs, Tab } from '@mui/material';
+import React from 'react';
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  Tabs,
+  Tab,
+  TabProps,
+} from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -6,7 +15,6 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DatasetIcon from '@mui/icons-material/Dataset';
-import StorefrontIcon from '@mui/icons-material/Storefront';
 import { useNavigate } from '../../_context/NavContext';
 import { AutoAwesome, Hardware } from '@mui/icons-material';
 
@@ -14,26 +22,17 @@ import { AutoAwesome, Hardware } from '@mui/icons-material';
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
   { label: 'Models', path: '/models', icon: <SmartToyIcon /> },
-  // {
-  //   label: 'Models Marketplace',
-  //   path: '/marketplaces/models',
-  //   icon: <StorefrontIcon />,
-  // },
+  { label: 'Deployments', path: '/deployments', icon: <RocketLaunchIcon /> },
   {
-    label: 'Deployments',
-    path: '/deployments',
-    icon: <RocketLaunchIcon />,
+    label: 'Datasets',
+    path: '/datasets',
+    icon: <DatasetIcon />,
+    comingSoon: true,
   },
-  { label: 'Datasets', path: '/datasets', icon: <DatasetIcon /> },
-  // {
-  //   label: 'Data Marketplace',
-  //   path: '/marketplaces/datasets',
-  //   icon: <StorefrontIcon />,
-  // },
   { label: 'Artifacts', path: '/artifacts', icon: <Inventory2Icon /> },
-  { label: 'Agents', path: '/agents', icon: <AutoAwesome /> },
-  { label: 'Tools', path: '/tools', icon: <Hardware /> },
-] as const;
+  { label: 'Agents', path: '/agents', icon: <AutoAwesome />, comingSoon: true },
+  { label: 'Tools', path: '/tools', icon: <Hardware />, comingSoon: true },
+];
 
 function getActiveTabIndex(root: string, pathname: string): number {
   if (pathname === root) return 0;
@@ -134,10 +133,13 @@ export default function DashboardAppBar() {
           }}
         >
           {NAV_ITEMS.map((item, idx) => (
-            <Tab
+            <BannerTab
               key={item.path}
               icon={item.icon}
               iconPosition="start"
+              bannerText={item.comingSoon ? 'Coming Soon' : undefined}
+              // Set variant choice here directly: 'angled' | 'flat-top' | 'flat-bottom'
+              bannerVariant={item.comingSoon ? 'flat-bottom' : undefined}
               label={item.label}
               id={`nav-tab-${idx}`}
               aria-controls={`nav-tabpanel-${idx}`}
@@ -148,3 +150,94 @@ export default function DashboardAppBar() {
     </AppBar>
   );
 }
+
+/* ─── Banner Tab Component ───────────────────────────────────── */
+export interface BannerTabProps extends TabProps {
+  bannerVariant?: 'angled' | 'flat-top' | 'flat-bottom';
+  bannerText?: string;
+}
+
+const BannerTab: React.FC<BannerTabProps> = (props) => {
+  const { bannerVariant = 'angled', bannerText, label, ...otherProps } = props;
+
+  const hasBanner = Boolean(bannerText);
+  const isAngled = bannerVariant === 'angled';
+
+  return (
+    <Tab
+      {...otherProps}
+      label={
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          {label}
+
+          {hasBanner && (
+            <Box
+              sx={{
+                position: 'absolute',
+                backgroundColor: 'rgba(255, 215, 0, 0.85)', // Brighter yellow with opacity
+                color: '#000000',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                zIndex: 2,
+                pointerEvents: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxSizing: 'border-box',
+
+                // Layout switching based purely on variant types
+                ...(isAngled
+                  ? {
+                      top: '50%',
+                      left: '50%',
+                      width: '150%',
+                      height: '18px',
+                      fontSize: '0.52rem',
+                      letterSpacing: '0.5px',
+                      transform: 'translate(-50%, -50%) rotate(-21deg)',
+                      transformOrigin: 'center center',
+                    }
+                  : {
+                      left: 0,
+                      width: '100%',
+                      height: '14px',
+                      fontSize: '0.55rem',
+                      letterSpacing: '0.5px',
+                      ...(bannerVariant === 'flat-top'
+                        ? { top: 0 }
+                        : { bottom: 0 }),
+                    }),
+              }}
+            >
+              {bannerText}
+            </Box>
+          )}
+        </Box>
+      }
+      sx={[
+        {
+          position: 'relative',
+          textTransform: 'none',
+          overflow: hasBanner && isAngled ? 'hidden' : 'visible',
+
+          // Re-balance label content padding internally depending on the chosen variant look
+          ...(hasBanner &&
+            !isAngled && {
+              ...(bannerVariant === 'flat-top'
+                ? { pt: 2, pb: 1 }
+                : { pt: 1, pb: 2 }),
+            }),
+        },
+        ...(Array.isArray(otherProps.sx) ? otherProps.sx : [otherProps.sx]),
+      ]}
+    />
+  );
+};
