@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import type { Model, Deployment, Artifact, Dataset } from '../../types';
 import { inferenceBackendColorMap } from '../../enums';
 
@@ -15,6 +15,8 @@ import FrameworkBarChartModal from './_components/FrameworkBarChartModal';
 import DeploymentDialog from '../../_components/DeploymentDialog';
 import ArtifactDialog from '../../_components/ArtifactDialog';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { StorefrontRounded } from '@mui/icons-material';
+import { MarketplaceButton } from 'app/MLHub/_components/MarketplaceButton';
 
 interface DashboardOverviewProps {
   models: Model[];
@@ -141,6 +143,11 @@ export default function DashboardOverview({
 
       {/* ─── KPI Stat Cards ─────────────────────────────────── */}
       <KpiStatCards />
+
+      <Box sx={{ display: 'flex', gap: '16px', pt: '32px' }}>
+        <MarketplaceButton marketplace="model" />
+        <MarketplaceButton marketplace="dataset" />
+      </Box>
 
       {/* ─── Quick Actions + Charts Row ─────────────────────── */}
       <Grid container spacing={2.5} sx={{ mt: 3, mb: 3 }}>

@@ -8,47 +8,42 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { useNavigate } from '../../_context/NavContext';
+import { AutoAwesome, Hardware } from '@mui/icons-material';
 
 /* ─── Nav config ──────────────────────────────────────────────── */
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
   { label: 'Models', path: '/models', icon: <SmartToyIcon /> },
-  {
-    label: 'Models Marketplace',
-    path: '/marketplace',
-    icon: <StorefrontIcon />,
-  },
+  // {
+  //   label: 'Models Marketplace',
+  //   path: '/marketplaces/models',
+  //   icon: <StorefrontIcon />,
+  // },
   {
     label: 'Deployments',
     path: '/deployments',
     icon: <RocketLaunchIcon />,
   },
   { label: 'Datasets', path: '/datasets', icon: <DatasetIcon /> },
-  {
-    label: 'Data Marketplace',
-    path: '/dataset-marketplace',
-    icon: <StorefrontIcon />,
-  },
+  // {
+  //   label: 'Data Marketplace',
+  //   path: '/marketplaces/datasets',
+  //   icon: <StorefrontIcon />,
+  // },
   { label: 'Artifacts', path: '/artifacts', icon: <Inventory2Icon /> },
+  { label: 'Agents', path: '/agents', icon: <AutoAwesome /> },
+  { label: 'Tools', path: '/tools', icon: <Hardware /> },
 ] as const;
 
 function getActiveTabIndex(root: string, pathname: string): number {
   if (pathname === root) return 0;
-  if (
-    pathname.startsWith(root + '/models') &&
-    !pathname.startsWith('/marketplace')
-  )
-    return 1;
-  if (pathname.startsWith(root + '/marketplace')) return 2;
-  if (pathname.startsWith(root + '/deployments')) return 3;
-  if (
-    pathname.startsWith(root + '/datasets') &&
-    !pathname.startsWith(root + '/dataset-marketplace')
-  )
-    return 4;
-  if (pathname.startsWith(root + '/dataset-marketplace')) return 5;
-  if (pathname.startsWith(root + '/artifacts')) return 6;
-  return 0;
+  if (pathname.startsWith(root + '/models')) return 1;
+  if (pathname.startsWith(root + '/deployments')) return 2;
+  if (pathname.startsWith(root + '/datasets')) return 3;
+  if (pathname.startsWith(root + '/artifacts')) return 4;
+  if (pathname.startsWith(root + '/agents')) return 5;
+  if (pathname.startsWith(root + '/tools')) return 6;
+  return -1;
 }
 
 /* ─── Component ──────────────────────────────────────────────── */
