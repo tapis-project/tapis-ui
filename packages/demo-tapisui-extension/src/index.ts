@@ -124,14 +124,14 @@ const extension = createExtension({
 
 extension.registerService({
   id: 'smart-detection',
-  sidebarDisplayName: 'Smart Labeler : Object Detection',
+  sidebarDisplayName: 'Smart Labeling Service for Object Detection',
   iconName: 'globe',
   component: SmartDetection,
 });
 
 extension.registerService({
   id: 'smart-segmentation',
-  sidebarDisplayName: 'Smart Labeler : Semantic Segmentation',
+  sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
   iconName: 'globe',
   component: SmartSegmentation,
 });
