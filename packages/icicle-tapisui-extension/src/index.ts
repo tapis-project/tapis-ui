@@ -31,6 +31,7 @@ import {
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
+import { NoCodeImageLab } from './pages/NoCodeImageLab';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -74,6 +75,7 @@ const extension = createExtension({
     'patra',
     'smart-labeler',
     'smart-segmentation',
+    'no-code-image-lab'
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -112,6 +114,7 @@ const extension = createExtension({
         'patra',
         'smart-labeler',
         'smart-segmentation',
+        'no-code-image-lab',
         'intelligent-edge-management-service',
       ],
     },
@@ -288,6 +291,13 @@ extension.registerService({
   sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
   iconName: 'globe',
   component: SmartSegmentation,
+});
+
+extension.registerService({
+  id: 'no-code-image-lab',
+  sidebarDisplayName: 'No-Code Image Lab',
+  iconName: 'globe',
+  component: NoCodeImageLab,
 });
 
 extension.registerService({
