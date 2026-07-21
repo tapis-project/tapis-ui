@@ -75,7 +75,7 @@ const extension = createExtension({
     'patra',
     'smart-labeler',
     'smart-segmentation',
-    'no-code-image-lab'
+    'no-code-image-lab',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
