@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
+
 import { ModelMetadata } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { TagCloud } from '../utils';
@@ -72,7 +73,7 @@ export function ComplianceSection({ model }: ComplianceSectionProps) {
           color="text.secondary"
           sx={{ mt: 0.5, display: 'block' }}
         >
-          Lower is better &middot; {'< 15%'} is recommended
+          Lower is better · {'< 15%'} is recommended
         </Typography>
       </Box>
 
@@ -89,23 +90,6 @@ export function ComplianceSection({ model }: ComplianceSectionProps) {
           <TagCloud tags={model.regulatory} />
         </Box>
       )}
-
-      {/* Deployment Strategies */}
-      {model.deployment_strategy_refs &&
-        model.deployment_strategy_refs.length > 0 && (
-          <Box sx={{ mt: 2 }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mb: 0.5, display: 'block' }}
-            >
-              Deployment Strategies
-            </Typography>
-            <TagCloud
-              tags={model.deployment_strategy_refs.map((s) => s.name)}
-            />
-          </Box>
-        )}
     </InfoSection>
   );
 }

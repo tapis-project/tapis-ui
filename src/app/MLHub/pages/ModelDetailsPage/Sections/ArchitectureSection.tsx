@@ -1,9 +1,10 @@
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
+
+import { ModelMetadata } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { KeyValueGrid } from '../utils';
-import { ModelMetadata } from '@mlhub/models-ts-sdk';
 
 interface ArchitectureSectionProps {
   model: ModelMetadata;
@@ -43,7 +44,7 @@ export function ArchitectureSection({ model }: ArchitectureSectionProps) {
 
   const canonicalRef = model.canonical
     ? `${model.canonical.author ?? 'unknown'}/${
-        model.canonical.model_id.split('/')[1] ?? 'unknown'
+        model.canonical.name ?? 'unknown'
       }`
     : null;
 

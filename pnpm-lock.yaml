@@ -61,11 +61,11 @@ importers:
         specifier: ^36.2.0
         version: 36.2.0(autoprefixer@10.5.0(postcss@8.5.8))(wslink@2.5.0)
       '@mlhub/deployments-ts-sdk':
-        specifier: '=0.8.0'
-        version: 0.8.0
+        specifier: '=0.11.0'
+        version: 0.11.0
       '@mlhub/models-ts-sdk':
-        specifier: '=0.8.0'
-        version: 0.8.0
+        specifier: '=0.11.0'
+        version: 0.11.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -297,7 +297,7 @@ importers:
         version: 0.0.7
       '@tapis/tapisui-extension-devtools':
         specifier: file:./packages/tapisui-extension-devtools
-        version: file:packages/tapisui-extension-devtools
+        version: link:packages/tapisui-extension-devtools
       '@testing-library/react':
         specifier: ^14.2.1
         version: 14.2.1(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -646,11 +646,11 @@ importers:
   packages/tapisui-api:
     dependencies:
       '@mlhub/deployments-ts-sdk':
-        specifier: '=0.8.0'
-        version: 0.8.0
+        specifier: '=0.11.0'
+        version: 0.11.0
       '@mlhub/models-ts-sdk':
-        specifier: '=0.8.0'
-        version: 0.8.0
+        specifier: '=0.11.0'
+        version: 0.11.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -899,11 +899,11 @@ importers:
   packages/tapisui-hooks:
     dependencies:
       '@mlhub/deployments-ts-sdk':
-        specifier: '=0.8.0'
-        version: 0.8.0
+        specifier: '=0.11.0'
+        version: 0.11.0
       '@mlhub/models-ts-sdk':
-        specifier: '=0.8.0'
-        version: 0.8.0
+        specifier: '=0.11.0'
+        version: 0.11.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -2051,14 +2051,14 @@ packages:
   '@mlhub/deployments-ts-sdk@0.1.1':
     resolution: {integrity: sha512-XTM6egldBGdLdys4JsplEtHSunhv0XxO7F8C6iOfteEdAIN92schB0jeBL5tLn7flqgj+eRi2ADKyU89MAjB7w==}
 
-  '@mlhub/deployments-ts-sdk@0.8.0':
-    resolution: {integrity: sha512-pPq21dsOiFQnXo1fcmt+VOCJUh/ndDxIGHrW+d9fMFKw4a5NAxvm4+BZlG/YwJAXcIKPXocS9k997UaxY5In7g==}
+  '@mlhub/deployments-ts-sdk@0.11.0':
+    resolution: {integrity: sha512-p98PwWWENnYNBEvWwzJv9Z+Ydl8BJFWNHOdbHkvFNnlxLHjv2usajn4CDCgs0WSo/js1Vuf7rZxxMRjhaVT0iA==}
 
   '@mlhub/models-ts-sdk@0.1.1':
     resolution: {integrity: sha512-CNY/vXq4V3V4dAdxUtyySA8ZuMwkICCtF7EZQC0eTuSAQ71FOKDlXldkJaPyWAlC8817LabAE4TMYz0OuPswug==}
 
-  '@mlhub/models-ts-sdk@0.8.0':
-    resolution: {integrity: sha512-tePTjcIzwd8SDjiXUDFHZDtJN7PuxcweRRj7Nwy7BoSCp6FU5ZY4qL/lWuHA46qIjw440QCyhla8TW3cZTF7HQ==}
+  '@mlhub/models-ts-sdk@0.11.0':
+    resolution: {integrity: sha512-uOR+KiThaTbiM9GkHIylPEdlRNlD1yOokgnoG7ulfK3EMERnG7FwAhgiivaeCio3+MmmUtohs9qqGeGcmwNLFg==}
 
   '@mlhub/ts-sdk@0.1.3':
     resolution: {integrity: sha512-0BixORe/ByERPxOWeXRCQa0LnV5AaUMGAXMC2VoOepVWdYlMj/fO1q8PyyfkYv8XczmeRHJ4o9htcv6ojPLK9A==}
@@ -2933,9 +2933,6 @@ packages:
 
   '@tapis/tapisui-common@file:packages/tapisui-common':
     resolution: {directory: packages/tapisui-common, type: directory}
-
-  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
-    resolution: {directory: packages/tapisui-extension-devtools, type: directory}
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks':
     resolution: {directory: packages/tapisui-hooks, type: directory}
@@ -8460,11 +8457,11 @@ snapshots:
 
   '@mlhub/deployments-ts-sdk@0.1.1': {}
 
-  '@mlhub/deployments-ts-sdk@0.8.0': {}
+  '@mlhub/deployments-ts-sdk@0.11.0': {}
 
   '@mlhub/models-ts-sdk@0.1.1': {}
 
-  '@mlhub/models-ts-sdk@0.8.0': {}
+  '@mlhub/models-ts-sdk@0.11.0': {}
 
   '@mlhub/ts-sdk@0.1.3':
     dependencies:
@@ -9309,8 +9306,8 @@ snapshots:
 
   '@tapis/tapisui-api@file:packages/tapisui-api':
     dependencies:
-      '@mlhub/deployments-ts-sdk': 0.8.0
-      '@mlhub/models-ts-sdk': 0.8.0
+      '@mlhub/deployments-ts-sdk': 0.11.0
+      '@mlhub/models-ts-sdk': 0.11.0
       '@mlhub/ts-sdk': 0.1.3
       '@tapis/tapis-typescript': 0.0.68
       axios: 1.13.6
@@ -9367,17 +9364,10 @@ snapshots:
       - supports-color
       - vite
 
-  '@tapis/tapisui-extension-devtools@file:packages/tapisui-extension-devtools':
-    dependencies:
-      '@tapis/tapis-typescript': 0.0.68
-      simple-git: 3.33.0
-    transitivePeerDependencies:
-      - supports-color
-
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)':
     dependencies:
-      '@mlhub/deployments-ts-sdk': 0.8.0
-      '@mlhub/models-ts-sdk': 0.8.0
+      '@mlhub/deployments-ts-sdk': 0.11.0
+      '@mlhub/models-ts-sdk': 0.11.0
       '@mlhub/ts-sdk': 0.1.3
       '@tapis/tapis-typescript': 0.0.68
       '@tapis/tapisui-api': file:packages/tapisui-api
@@ -13875,7 +13865,7 @@ snapshots:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
       '@types/node': 18.19.130
-      acorn: 8.15.0
+      acorn: 8.14.1
       acorn-walk: 8.3.4
       arg: 4.1.3
       create-require: 1.1.1

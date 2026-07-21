@@ -9,6 +9,8 @@ import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 
+import { DeploymentDialogProvider } from './DeploymentDialog';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ModelHeader } from './ModelHeader';
 import { ModelTabs, TabPanel } from './ModelTabs';
 import type { SectionTab } from './ModelTabs';
@@ -18,9 +20,9 @@ import { TrainingSection } from './Sections/TrainingSection';
 import { ArchitectureSection } from './Sections/ArchitectureSection';
 import { IOSection } from './Sections/IOSection';
 import { ComplianceSection } from './Sections/ComplianceSection';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { DeploymentSection } from './Sections/DeploymentSection';
 
-const ModelDetailsSkeleton = () => {
+function ModelDetailsSkeleton() {
   return (
     <Card>
       <Box sx={{ p: 3 }}>
@@ -46,14 +48,14 @@ const ModelDetailsSkeleton = () => {
       </Box>
     </Card>
   );
-};
+}
 
-export function ModelDetailsPage() {
+export default function ModelDetailsPage() {
   const params = useParams<{ author: string; name: string }>();
   const author = params.author ?? undefined;
   const name = params.name ?? undefined;
   const { data, isLoading, error } = Hooks.Models.useGetModel({ author, name });
-  const model = data?.result;
+  const model = data?.result || undefined;
 
   const [activeTab, setActiveTab] = useState<SectionTab>('general');
 
@@ -95,38 +97,41 @@ export function ModelDetailsPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
-      <Card>
-        {/* Header */}
-        <ModelHeader model={model} />
+      <DeploymentDialogProvider model={model}>
+        <Card>
+          {/* Header */}
+          <ModelHeader model={model} />
 
-        <Divider />
+          <Divider />
 
-        {/* Tabs */}
-        <Box sx={{ px: { xs: 2, md: 3, xl: 4 } }}>
-          <ModelTabs currentTab={activeTab} onChange={setActiveTab}>
-            <TabPanel value="general" currentTab={activeTab}>
-              <GeneralSection model={model} />
-            </TabPanel>
-            <TabPanel value="inference" currentTab={activeTab}>
-              <InferenceSection model={model} />
-            </TabPanel>
-            <TabPanel value="training" currentTab={activeTab}>
-              <TrainingSection model={model} />
-            </TabPanel>
-            <TabPanel value="architecture" currentTab={activeTab}>
-              <ArchitectureSection model={model} />
-            </TabPanel>
-            <TabPanel value="io" currentTab={activeTab}>
-              <IOSection model={model} />
-            </TabPanel>
-            <TabPanel value="compliance" currentTab={activeTab}>
-              <ComplianceSection model={model} />
-            </TabPanel>
-          </ModelTabs>
-        </Box>
-      </Card>
+          {/* Tabs */}
+          <Box sx={{ px: { xs: 2, md: 3, xl: 4 } }}>
+            <ModelTabs currentTab={activeTab} onChange={setActiveTab}>
+              <TabPanel value="general" currentTab={activeTab}>
+                <GeneralSection model={model} />
+              </TabPanel>
+              <TabPanel value="inference" currentTab={activeTab}>
+                <InferenceSection model={model} />
+              </TabPanel>
+              <TabPanel value="training" currentTab={activeTab}>
+                <TrainingSection model={model} />
+              </TabPanel>
+              <TabPanel value="architecture" currentTab={activeTab}>
+                <ArchitectureSection model={model} />
+              </TabPanel>
+              <TabPanel value="io" currentTab={activeTab}>
+                <IOSection model={model} />
+              </TabPanel>
+              <TabPanel value="compliance" currentTab={activeTab}>
+                <ComplianceSection model={model} />
+              </TabPanel>
+              <TabPanel value="deployment" currentTab={activeTab}>
+                <DeploymentSection model={model} />
+              </TabPanel>
+            </ModelTabs>
+          </Box>
+        </Card>
+      </DeploymentDialogProvider>
     </Container>
   );
 }
-
-export default ModelDetailsPage;

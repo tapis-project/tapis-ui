@@ -41,14 +41,13 @@ export function InferenceSection({ model }: InferenceSectionProps) {
     { label: 'Distributed', value: model.inference_distributed },
     ...(hardware
       ? [
-          // TODO
-          // {
-          //   label: 'GPU',
-          //   value: `${hardware.accelerators}x ${hardware.gpu_type}`,
-          // },
-          { label: 'CPU', value: `${hardware.cpus} cores` },
+          {
+            label: 'GPU',
+            value: `${hardware.gpu_count}x ${hardware.gpu_type}`,
+          },
+          { label: 'CPU', value: `${hardware.cpu_cores} cores` },
           { label: 'Memory', value: `${hardware.memory_gb} GB` },
-          { label: 'Storage', value: `${hardware.disk_gb} GB` },
+          { label: 'Storage', value: `${hardware.storage_gb} GB` },
         ]
       : []),
   ].filter((row) => row.value !== null && row.value !== undefined);

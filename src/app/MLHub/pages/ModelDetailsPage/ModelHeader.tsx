@@ -1,19 +1,25 @@
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { TagCloud } from './utils';
+import DescriptionIcon from '@mui/icons-material/Description';
+
+import type { ModelMetadata } from '../../types/model-metadata';
 import { ModelActionsBar } from './ModelActionsBar';
-import * as Models from '@mlhub/models-ts-sdk';
+import { ExpandableTagCloud } from './utils';
 
 interface ModelHeaderProps {
-  model: Models.ModelMetadata;
+  model: ModelMetadata;
 }
 
 export function ModelHeader({ model }: ModelHeaderProps) {
+  const annotationCount = model.annotations?.length ?? 0;
+
   return (
     <Box
       sx={{
@@ -63,7 +69,7 @@ export function ModelHeader({ model }: ModelHeaderProps) {
           {model.name.charAt(0).toUpperCase()}
         </Avatar>
 
-        {/* Title and Meta */}
+        {/* Title, Description, Tags, and Actions */}
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="h4" component="h1" sx={{ mb: 0.5 }}>
             {model.name}
@@ -80,12 +86,72 @@ export function ModelHeader({ model }: ModelHeaderProps) {
           )}
 
           {model.tags && model.tags.length > 0 && (
-            <TagCloud tags={model.tags} sx={{ mt: 2 }} />
+            <ExpandableTagCloud
+              tags={model.tags}
+              showCount={1}
+              sx={{ mt: 2 }}
+            />
           )}
-        </Box>
 
-        {/* Actions */}
-        <ModelActionsBar model={model} />
+          {/* Bottom bar: Annotations (left) + Actions (right) */}
+          <Box
+            sx={{
+              mt: 2,
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 1.5,
+            }}
+          >
+            {/* Annotations — left */}
+            <Tooltip
+              title={`View and manage ${annotationCount} annotation${
+                annotationCount === 1 ? '' : 's'
+              }`}
+            >
+              <Button
+                startIcon={<DescriptionIcon />}
+                onClick={() =>
+                  alert(
+                    `Manage ${annotationCount} annotation${
+                      annotationCount === 1 ? '' : 's'
+                    } for ${model.name}`
+                  )
+                }
+                variant="text"
+                size="small"
+                sx={{ textTransform: 'none', fontWeight: 500 }}
+              >
+                Annotations
+                {annotationCount > 0 && (
+                  <Box
+                    component="span"
+                    sx={{
+                      ml: 0.5,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minWidth: 18,
+                      height: 18,
+                      px: 0.5,
+                      borderRadius: '50%',
+                      bgcolor: 'primary.light',
+                      color: 'primary.contrastText',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {annotationCount}
+                  </Box>
+                )}
+              </Button>
+            </Tooltip>
+
+            {/* Actions — right */}
+            <ModelActionsBar model={model} />
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );

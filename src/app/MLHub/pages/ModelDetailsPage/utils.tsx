@@ -1,7 +1,19 @@
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Tooltip from '@mui/material/Tooltip';
+import { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import type { SxProps } from '@mui/material/styles';
+
+const TAG_MAX_LENGTH = 25;
+
+function truncateTag(tag: string): string {
+  if (tag.length <= TAG_MAX_LENGTH) return tag;
+  return tag.slice(0, TAG_MAX_LENGTH - 3) + '...';
+}
 
 interface TagCloudProps {
   tags: string[];
@@ -21,14 +33,107 @@ export function TagCloud({ tags, sx }: TagCloudProps) {
       }}
     >
       {tags.map((tag) => (
+        <TruncatedTagChip key={tag} tag={tag} />
+      ))}
+    </Box>
+  );
+}
+
+interface ExpandableTagCloudProps {
+  tags: string[];
+  showCount: number;
+  sx?: SxProps;
+}
+
+interface TruncatedTagChipProps {
+  tag: string;
+}
+
+function TruncatedTagChip({ tag }: TruncatedTagChipProps) {
+  const display = truncateTag(tag);
+  if (display !== tag) {
+    return (
+      <Tooltip title={tag} arrow>
         <Chip
-          key={tag}
-          label={tag}
+          label={display}
           size="small"
           sx={{ borderRadius: 4, fontWeight: 500 }}
         />
-      ))}
-    </Box>
+      </Tooltip>
+    );
+  }
+  return (
+    <Chip label={tag} size="small" sx={{ borderRadius: 4, fontWeight: 500 }} />
+  );
+}
+
+export function ExpandableTagCloud({
+  tags,
+  showCount,
+  sx,
+}: ExpandableTagCloudProps) {
+  if (!tags || tags.length === 0) return null;
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const hasMore = tags.length > showCount;
+  const visibleTags = tags.slice(0, showCount);
+  const hiddenCount = tags.length - showCount;
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
+          ...sx,
+        }}
+      >
+        {visibleTags.map((tag) => (
+          <TruncatedTagChip key={tag} tag={tag} />
+        ))}
+        {hasMore && (
+          <Chip
+            label={`+${hiddenCount} more`}
+            size="small"
+            onClick={() => setDialogOpen(true)}
+            sx={{
+              borderRadius: 4,
+              fontWeight: 500,
+              cursor: 'pointer',
+              '&:hover': { opacity: 0.85 },
+            }}
+          />
+        )}
+      </Box>
+
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="tags-dialog-title"
+      >
+        <DialogTitle id="tags-dialog-title">All Tags</DialogTitle>
+        <DialogContent
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1,
+            pt: 1,
+          }}
+        >
+          {tags.map((tag) => (
+            <Chip
+              key={tag}
+              label={tag}
+              size="small"
+              sx={{ borderRadius: 4, fontWeight: 500 }}
+            />
+          ))}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
 import Divider from '@mui/material/Divider';
+
 import { ModelMetadata } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { KeyValueGrid, TagCloud, formatDuration } from '../utils';
@@ -25,13 +26,13 @@ export function TrainingSection({ model }: TrainingSectionProps) {
     },
     ...(hardware
       ? [
-          // {
-          //   label: 'GPU',
-          //   value: `${hardware.gpu_count}x ${hardware.gpu_type}`,
-          // },
-          { label: 'CPU', value: `${hardware.cpus} cores` },
+          {
+            label: 'GPU',
+            value: `${hardware.gpu_count}x ${hardware.gpu_type}`,
+          },
+          { label: 'CPU', value: `${hardware.cpu_cores} cores` },
           { label: 'Memory', value: `${hardware.memory_gb} GB` },
-          { label: 'Storage', value: `${hardware.disk_gb} GB` },
+          { label: 'Storage', value: `${hardware.storage_gb} GB` },
         ]
       : []),
   ].filter((row) => row.value !== null && row.value !== undefined);

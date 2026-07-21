@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs';
 
 import ArchitectureIcon from '@mui/icons-material/Architecture';
 import GppGoodIcon from '@mui/icons-material/GppGood';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import SchoolIcon from '@mui/icons-material/School';
 import SpeedIcon from '@mui/icons-material/Speed';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
@@ -15,7 +16,8 @@ export type SectionTab =
   | 'training'
   | 'architecture'
   | 'io'
-  | 'compliance';
+  | 'compliance'
+  | 'deployment';
 
 interface TabItem {
   value: SectionTab;
@@ -45,6 +47,11 @@ const TABS: ReadonlyArray<TabItem> = [
     value: 'compliance',
     label: 'Compliance',
     icon: <GppGoodIcon fontSize="small" />,
+  },
+  {
+    value: 'deployment',
+    label: 'Deployment',
+    icon: <RocketLaunchIcon fontSize="small" />,
   },
 ];
 

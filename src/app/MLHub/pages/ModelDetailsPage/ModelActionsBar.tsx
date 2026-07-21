@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,54 +7,32 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Snackbar from '@mui/material/Snackbar';
+import FormHelperText from '@mui/material/FormHelperText';
+import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 
 import ArchiveIcon from '@mui/icons-material/Archive';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import DataObjectIcon from '@mui/icons-material/DataObject';
 
-import type {
-  DeploymentStrategyReference,
-  ModelMetadata,
-} from '@mlhub/models-ts-sdk';
+import type { ModelMetadata } from '../../types/model-metadata';
+import { useDeploymentDialog } from './DeploymentDialog';
 
 interface ModelActionsBarProps {
   model: ModelMetadata;
 }
 
-type ActionDialog = 'delete' | 'archive' | 'deploy' | null;
-
-interface SnackbarState {
-  open: boolean;
-  message: string;
-  severity: 'success' | 'error' | 'info';
-}
+type ActionDialog = 'delete' | 'archive' | null;
 
 export function ModelActionsBar({ model }: ModelActionsBarProps) {
   const [activeDialog, setActiveDialog] = useState<ActionDialog>(null);
-  const [selectedStrategy, setSelectedStrategy] = useState<string>('');
-  const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    message: '',
-    severity: 'success',
-  });
+
+  const { openDeploy } = useDeploymentDialog();
 
   const handleOpen = (dialog: ActionDialog) => {
-    if (dialog === 'deploy') {
-      setSelectedStrategy(model.deployment_strategy_refs[0]?.name ?? '');
-    }
     setActiveDialog(dialog);
   };
 
@@ -63,37 +40,16 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
     setActiveDialog(null);
   }, []);
 
-  const showNotification = useCallback(
-    (message: string, severity: 'success' | 'error' | 'info') => {
-      setSnackbar({ open: true, message, severity });
-    },
-    []
-  );
-
   const handleDelete = useCallback(() => {
     handleClose();
-    showNotification(`Model "${model.name}" has been deleted.`, 'success');
-  }, [handleClose, model.name, showNotification]);
+  }, [handleClose]);
 
   const handleArchive = useCallback(() => {
     handleClose();
-    showNotification(`Model "${model.name}" has been archived.`, 'info');
-  }, [handleClose, model.name, showNotification]);
-
-  const handleDeploy = useCallback(() => {
-    handleClose();
-    showNotification(
-      `Model "${model.name}" deployed using strategy "${selectedStrategy}".`,
-      'success'
-    );
-  }, [handleClose, model.name, selectedStrategy, showNotification]);
+  }, [handleClose]);
 
   const handleEdit = useCallback(() => {
-    showNotification(`Opening editor for "${model.name}"...`, 'info');
-  }, [model.name, showNotification]);
-
-  const handleViewAnnotations = useCallback(() => {
-    alert('View Annotations');
+    // Open editor
   }, []);
 
   return (
@@ -104,17 +60,6 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
         spacing={1}
         sx={{ justifyContent: 'flex-end' }}
       >
-        <Tooltip title="View model annotations">
-          <Button
-            startIcon={<DataObjectIcon />}
-            onClick={handleViewAnnotations}
-            variant="contained"
-            size="small"
-          >
-            View Annotations
-          </Button>
-        </Tooltip>
-
         <Tooltip title="Edit model details">
           <Button
             startIcon={<DriveFileRenameOutlineIcon />}
@@ -128,8 +73,8 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
 
         <Tooltip title="Deploy this model">
           <Button
-            startIcon={<CloudUploadIcon />}
-            onClick={() => handleOpen('deploy')}
+            startIcon={<RocketLaunchIcon />}
+            onClick={() => openDeploy()}
             variant="outlined"
             size="small"
           >
@@ -177,34 +122,6 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
         onClose={handleClose}
         onConfirm={handleArchive}
       />
-
-      {/* Deploy Dialog */}
-      <DeployDialog
-        open={activeDialog === 'deploy'}
-        modelName={model.name}
-        strategies={model.deployment_strategy_refs}
-        selectedStrategy={selectedStrategy}
-        onChangeStrategy={setSelectedStrategy}
-        onClose={handleClose}
-        onConfirm={handleDeploy}
-      />
-
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: '100%', borderRadius: 2 }}
-          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }
@@ -226,8 +143,17 @@ function DeleteConfirmDialog({
   onClose,
   onConfirm,
 }: ConfirmDialogProps) {
+  const [nameInput, setNameInput] = useState('');
+
+  const handleClose = useCallback(() => {
+    setNameInput('');
+    onClose();
+  }, [onClose]);
+
+  const matches = nameInput === modelName;
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ pb: 0 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
           <DeleteIcon sx={{ color: 'error.main' }} />
@@ -237,13 +163,40 @@ function DeleteConfirmDialog({
       <DialogContent>
         <DialogContentText sx={{ mt: 2 }}>
           Are you sure you want to delete <strong>{modelName}</strong>? This
-          action cannot be undone and will permanently remove the model and all
-          associated artifacts.
+          action cannot be undone. Deleting the model will not remove associated
+          artifacts, but will orphan any deployments and agents associated with
+          it.
         </DialogContentText>
+
+        <FormControl fullWidth sx={{ mt: 2 }}>
+          <TextField
+            label="Type model name to confirm"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            placeholder={modelName}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <DeleteIcon sx={{ color: 'error.main', mr: 1 }} />
+                ),
+              },
+            }}
+          />
+          {!matches && nameInput.length > 0 && (
+            <FormHelperText error>
+              Name must match exactly: "{modelName}"
+            </FormHelperText>
+          )}
+        </FormControl>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onConfirm} variant="contained" color="error">
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button
+          onClick={onConfirm}
+          variant="contained"
+          color="error"
+          disabled={!matches}
+        >
           Delete
         </Button>
       </DialogActions>
@@ -275,59 +228,6 @@ function ArchiveConfirmDialog({
         <Button onClick={onClose}>Cancel</Button>
         <Button onClick={onConfirm} variant="contained" color="warning">
           Archive
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Deploy Dialog                                                     */
-/* ------------------------------------------------------------------ */
-
-interface DeployDialogProps {
-  open: boolean;
-  modelName: string;
-  strategies: DeploymentStrategyReference[];
-  selectedStrategy: string;
-  onChangeStrategy: (id: string) => void;
-  onClose: () => void;
-  onConfirm: () => void;
-}
-
-function DeployDialog({
-  open,
-  modelName,
-  strategies,
-  selectedStrategy,
-  onChangeStrategy,
-  onClose,
-  onConfirm,
-}: DeployDialogProps) {
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ pb: 0 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-          <CheckCircleIcon sx={{ color: 'success.main' }} />
-          Deploy Model
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        <Typography sx={{ mt: 2, mb: 2 }} color="text.secondary">
-          Select a deployment strategy for <strong>{modelName}</strong>.
-        </Typography>
-
-        <Divider sx={{ my: 2 }} />
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          onClick={onConfirm}
-          variant="contained"
-          color="success"
-          disabled={!selectedStrategy}
-        >
-          Deploy
         </Button>
       </DialogActions>
     </Dialog>

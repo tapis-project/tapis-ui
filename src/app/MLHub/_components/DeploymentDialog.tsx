@@ -17,7 +17,7 @@ import {
   Stack,
   InputAdornment,
 } from '@mui/material';
-import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
 import * as Deployments from '@mlhub/deployments-ts-sdk';
 import { getPlatformConfig } from '../enums';
@@ -31,6 +31,7 @@ import {
 } from 'react-hook-form';
 import { Undo, Visibility, VisibilityOff } from '@mui/icons-material';
 import * as yup from 'yup';
+import { MarketplaceButton } from './MarketplaceButton';
 
 interface DeploymentDialogProps {
   model?: Models.ModelMetadata;
@@ -48,7 +49,7 @@ const refFromStratId = (stratId: string) => {
   return stratId.split(':');
 };
 
-type DeploymentType = 'live' | 'experimental';
+type DeploymentModality = 'service' | 'batch';
 
 export default function DeploymentDialog({
   open,
@@ -57,8 +58,6 @@ export default function DeploymentDialog({
   model = undefined,
   strat = undefined,
 }: DeploymentDialogProps) {
-  const { mlHubBasePath } = useTapisConfig();
-
   // Models hooks
   const { data: modelsData } = Hooks.Models.useListByAuthor({ author });
   const models = modelsData?.result ?? [];
@@ -79,7 +78,7 @@ export default function DeploymentDialog({
     description: string | null;
     model: Models.ModelMetadata | null;
     strategy: Deployments.Strategy | null;
-    deploymentType: DeploymentType | null;
+    deploymentModality: Deployments.DeploymentModality | null;
     parameters: Deployments.Parameter[];
   };
 
@@ -93,7 +92,7 @@ export default function DeploymentDialog({
     defaultValues: {
       model: model ?? null,
       strategy: strat ?? null,
-      deploymentType: null,
+      deploymentModality: null,
       parameters: [],
     },
     mode: 'onChange',
@@ -111,7 +110,10 @@ export default function DeploymentDialog({
   const description = useWatch({ control, name: 'description' });
   const selectedModel = useWatch({ control, name: 'model' });
   const selectedDeploymentStrategy = useWatch({ control, name: 'strategy' });
-  const selectedDeploymentType = useWatch({ control, name: 'deploymentType' });
+  const selectedDeploymentModality = useWatch({
+    control,
+    name: 'deploymentModality',
+  });
 
   const validationSchema = yup.object({
     name: yup.string().min(1).required('Deployment name is required'),
@@ -126,10 +128,10 @@ export default function DeploymentDialog({
       .mixed<Deployments.Strategy>()
       .nullable()
       .required('Please select a rollout strategy'),
-    deploymentType: yup
-      .mixed<DeploymentType>()
+    deploymentModality: yup
+      .mixed<DeploymentModality>()
       .nullable()
-      .required('Deployment type is required'),
+      .required('Deployment modality is required'),
     parameters: yup.array().of(
       yup.object({
         name: yup.string().required(),
@@ -191,6 +193,7 @@ export default function DeploymentDialog({
             <AlertTitle>You have no models that we can deploy!</AlertTitle>
             Search the Model Marketplace for deployable models
           </Alert>
+          <MarketplaceButton marketplace="model" />
         </DialogContent>
       )}
 
@@ -214,7 +217,7 @@ export default function DeploymentDialog({
                       resetField('description');
                       resetField('model');
                       resetField('strategy');
-                      resetField('deploymentType');
+                      resetField('deploymentModality');
                       resetField('parameters');
                     }}
                   >
@@ -227,13 +230,26 @@ export default function DeploymentDialog({
                     onClose={() => {
                       resetField('model');
                       resetField('strategy');
-                      resetField('deploymentType');
+                      resetField('deploymentModality');
                       resetField('parameters');
                     }}
                   >
                     <ModelMenuItem model={selectedModel} />
                   </SummaryItem>
                 </>
+              )}
+              {selectedDeploymentModality && (
+                <SummaryItem
+                  onClose={() => {
+                    resetField('deploymentModality');
+                    resetField('strategy');
+                    resetField('parameters');
+                  }}
+                >
+                  <DeploymentModalityMenuItem
+                    deploymentModality={selectedDeploymentModality}
+                  />
+                </SummaryItem>
               )}
               {selectedDeploymentStrategy && (
                 <SummaryItem
@@ -244,17 +260,6 @@ export default function DeploymentDialog({
                 >
                   <DeploymentStrategyMenuItem
                     strat={selectedDeploymentStrategy}
-                  />
-                </SummaryItem>
-              )}
-              {selectedDeploymentType && (
-                <SummaryItem
-                  onClose={() => {
-                    resetField('deploymentType');
-                  }}
-                >
-                  <DeploymentTypeMenuItem
-                    deploymentType={selectedDeploymentType}
                   />
                 </SummaryItem>
               )}
@@ -356,10 +361,10 @@ export default function DeploymentDialog({
             />
           )}
 
-          {/** 4. Deployment strategy select */}
-          {selectedModel && !selectedDeploymentStrategy && (
+          {/** 4. Deployment modality select */}
+          {selectedModel && !selectedDeploymentModality && (
             <Controller
-              name="strategy"
+              name="deploymentModality"
               control={control}
               rules={{ required: 'Must select a deployment strategy' }}
               render={({
@@ -367,65 +372,7 @@ export default function DeploymentDialog({
                 fieldState: { error },
               }) => (
                 <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Choose deployment strategy"
-                  error={!!error}
-                  helperText={error?.message}
-                  onBlur={onBlur}
-                  value={value?.name || ''}
-                  onChange={(e) => {
-                    const stratId = e.target.value;
-                    const stratRef = refFromStratId(stratId);
-                    const stratObject =
-                      strats.find(
-                        (s) =>
-                          s.platform === stratRef[0] && s.name === stratRef[1]
-                      ) || null;
-
-                    onChange(stratObject);
-
-                    // Inject parameters into the field array immediately on strategy choice
-                    if (stratObject && stratObject.parameters) {
-                      const mappedParams = stratObject.parameters.map((p) => ({
-                        ...p,
-                        value: p._default || '', // Set baseline tracking input value
-                      }));
-                      replaceParameterFields(mappedParams);
-                    } else {
-                      replaceParameterFields([]);
-                    }
-                  }}
-                >
-                  {selectedModel.deployment_strategy_refs.map((r) => {
-                    return (
-                      <MenuItem
-                        key={stratId(r)}
-                        value={stratId(r)}
-                        sx={{ borderBottom: '1px solid #CCCCCC' }}
-                      >
-                        <DeploymentStrategyMenuItem strat={r} />
-                      </MenuItem>
-                    );
-                  })}
-                </TextField>
-              )}
-            />
-          )}
-
-          {/** 5. Deployment type select */}
-          {selectedDeploymentStrategy && !selectedDeploymentType && (
-            <Controller
-              name="deploymentType"
-              control={control}
-              rules={{ required: 'Must select a deployment strategy' }}
-              render={({
-                field: { value, onChange, onBlur },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  label="Deployment Type"
+                  label="Deployment Modality"
                   value={value || ''}
                   select
                   helperText={error?.message}
@@ -437,11 +384,9 @@ export default function DeploymentDialog({
                   required
                   fullWidth
                 >
-                  {['live', 'experimental'].map((t) => (
-                    <MenuItem key="type-live" value={t}>
-                      <DeploymentTypeMenuItem
-                        deploymentType={t as DeploymentType}
-                      />
+                  {Object.values(Deployments.DeploymentModality).map((t) => (
+                    <MenuItem key={'modality-' + t} value={t}>
+                      <DeploymentModalityMenuItem deploymentModality={t} />
                     </MenuItem>
                   ))}
                 </TextField>
@@ -449,8 +394,83 @@ export default function DeploymentDialog({
             />
           )}
 
+          {/** 5. Deployment strategy select */}
+          {selectedModel &&
+            selectedDeploymentModality &&
+            !selectedDeploymentStrategy && (
+              <Controller
+                name="strategy"
+                control={control}
+                rules={{ required: 'Must select a deployment strategy' }}
+                render={({
+                  field: { value, onChange, onBlur },
+                  fieldState: { error },
+                }) => {
+                  const stratRefNames =
+                    selectedModel.deployment_strategy_refs.map((r) => r.name);
+
+                  const filteredStrats = strats.filter((s) => {
+                    return (
+                      s.deployment_modality === selectedDeploymentModality &&
+                      stratRefNames.includes(s.name)
+                    );
+                  });
+
+                  return (
+                    <TextField
+                      select
+                      fullWidth
+                      required
+                      label="Choose deployment strategy"
+                      error={!!error}
+                      helperText={error?.message}
+                      onBlur={onBlur}
+                      value={value?.name || ''}
+                      onChange={(e) => {
+                        const stratId = e.target.value;
+                        const stratRef = refFromStratId(stratId);
+                        const stratObject =
+                          strats.find(
+                            (s) =>
+                              s.platform === stratRef[0] &&
+                              s.name === stratRef[1]
+                          ) || null;
+
+                        onChange(stratObject);
+
+                        // Inject parameters into the field array immediately on strategy choice
+                        if (stratObject && stratObject.parameters) {
+                          const mappedParams = stratObject.parameters.map(
+                            (p) => ({
+                              ...p,
+                              value: p._default || '', // Set baseline tracking input value
+                            })
+                          );
+                          replaceParameterFields(mappedParams);
+                        } else {
+                          replaceParameterFields([]);
+                        }
+                      }}
+                    >
+                      {filteredStrats.map((s) => {
+                        return (
+                          <MenuItem
+                            key={stratId(s)}
+                            value={stratId(s)}
+                            sx={{ borderBottom: '1px solid #CCCCCC' }}
+                          >
+                            <DeploymentStrategyMenuItem strat={s} />
+                          </MenuItem>
+                        );
+                      })}
+                    </TextField>
+                  );
+                }}
+              />
+            )}
+
           {/** Parameters */}
-          {selectedDeploymentType && (
+          {selectedDeploymentModality && (
             <Box sx={{ mt: 1 }}>
               <Typography
                 variant="subtitle2"
@@ -504,9 +524,13 @@ export default function DeploymentDialog({
                             label={item.name}
                             required={item.required}
                             error={!!fieldError}
-                            type={!item.secret ? 'password' : 'text'}
+                            type={item.secret ? 'password' : 'text'}
                             helperText={
-                              fieldError ? fieldError.message : item.description
+                              fieldError
+                                ? fieldError.message
+                                : !item.secret
+                                ? item.description
+                                : '(Secret) ' + item.description
                             }
                           />
                         );
@@ -558,40 +582,40 @@ const SummaryItem: React.FC<PropsWithChildren<{ onClose: () => void }>> = ({
   );
 };
 
-const DeploymentTypeMenuItem = ({
-  deploymentType,
+const DeploymentModalityMenuItem = ({
+  deploymentModality,
 }: {
-  deploymentType: DeploymentType;
+  deploymentModality: Deployments.DeploymentModality;
 }) => {
-  switch (deploymentType) {
-    case 'live':
+  switch (deploymentModality) {
+    case Deployments.DeploymentModality.Service:
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            🔴
+            ⚙️
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              Live
+              Service
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Use this deployment type for non-experimental purposes
+              Deploy this model as a persistent service
             </Typography>
           </Box>
         </Box>
       );
-    case 'experimental':
+    case Deployments.DeploymentModality.Batch:
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            🧪
+            🔄
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              Experimental
+              Batch
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Pre-live testing
+              Deploy this model to HPC machines
             </Typography>
           </Box>
         </Box>

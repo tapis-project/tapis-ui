@@ -29,7 +29,12 @@ const NAV_ITEMS = [
     icon: <DatasetIcon />,
     comingSoon: true,
   },
-  { label: 'Artifacts', path: '/artifacts', icon: <Inventory2Icon /> },
+  {
+    label: 'Artifacts',
+    path: '/artifacts',
+    icon: <Inventory2Icon />,
+    comingSoon: true,
+  },
   { label: 'Agents', path: '/agents', icon: <AutoAwesome />, comingSoon: true },
   { label: 'Tools', path: '/tools', icon: <Hardware />, comingSoon: true },
 ];

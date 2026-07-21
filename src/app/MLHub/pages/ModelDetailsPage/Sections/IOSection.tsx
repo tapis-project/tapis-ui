@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { ModelIO, ModelMetadata } from '@mlhub/models-ts-sdk';
+import type { ModelIO, ModelMetadata } from '../../../types/model-metadata';
 import { InfoSection } from './InfoSection';
 
 interface IOFieldCardProps {
@@ -22,7 +22,7 @@ function IOFieldCard({ field }: IOFieldCardProps) {
         bgcolor: 'background.default',
       }}
     >
-      {/* <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 0.5 }}>
+      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 0.5 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           {field.name}
         </Typography>
@@ -49,7 +49,7 @@ function IOFieldCard({ field }: IOFieldCardProps) {
         <Typography variant="caption" color="text.secondary">
           {field.description}
         </Typography>
-      )} */}
+      )}
     </Box>
   );
 }
@@ -65,7 +65,7 @@ export function IOSection({ model }: IOSectionProps) {
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
         Inputs
       </Typography>
-      {/* {model.model_inputs && model.model_inputs.length > 0 ? (
+      {model.model_inputs && model.model_inputs.length > 0 ? (
         <Stack spacing={1}>
           {model.model_inputs.map((input) => (
             <IOFieldCard key={input.name} field={input} />
@@ -75,7 +75,7 @@ export function IOSection({ model }: IOSectionProps) {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           No input specifications defined.
         </Typography>
-      )} */}
+      )}
 
       <Divider sx={{ my: 2 }} />
 
@@ -85,9 +85,9 @@ export function IOSection({ model }: IOSectionProps) {
       </Typography>
       {model.model_outputs && model.model_outputs.length > 0 ? (
         <Stack spacing={1}>
-          {/* {model.model_outputs.map((output) => (
+          {model.model_outputs.map((output) => (
             <IOFieldCard key={output.name} field={output} />
-          ))} */}
+          ))}
         </Stack>
       ) : (
         <Typography variant="body2" color="text.secondary">
