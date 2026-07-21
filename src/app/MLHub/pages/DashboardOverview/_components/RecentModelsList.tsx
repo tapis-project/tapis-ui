@@ -109,8 +109,6 @@ export default function RecentModelsList({ models }: RecentModelsListProps) {
                     bgcolor: (theme) =>
                       model.status === 'ready'
                         ? alpha(theme.palette.success.main, 0.12)
-                        : model.status === 'pending'
-                        ? alpha(theme.palette.warning.main, 0.12)
                         : alpha(theme.palette.grey[300], 0.3),
                     fontSize: '0.85rem',
                   }}
