@@ -32,6 +32,7 @@ import {
 import { Undo, Visibility, VisibilityOff } from '@mui/icons-material';
 import * as yup from 'yup';
 import { MarketplaceButton } from './MarketplaceButton';
+import { LoadingButton } from '@mui/lab';
 
 interface DeploymentDialogProps {
   model?: Models.ModelMetadata;
@@ -69,7 +70,7 @@ export default function DeploymentDialog({
 
   const {
     deploy,
-    isLoading,
+    isLoading: deployIsLoading,
     error: deploymentError,
   } = Hooks.Deployments.useDeployWithStrategy();
 
@@ -119,6 +120,7 @@ export default function DeploymentDialog({
     name: yup.string().min(1).required('Deployment name is required'),
     description: yup
       .string()
+      .min(1)
       .max(200, 'Description cannot exceed 200 characters'),
     model: yup
       .mixed<Models.ModelMetadata>()
@@ -127,7 +129,7 @@ export default function DeploymentDialog({
     strategy: yup
       .mixed<Deployments.Strategy>()
       .nullable()
-      .required('Please select a rollout strategy'),
+      .required('Deployment strategy is required'),
     deploymentModality: yup
       .mixed<DeploymentModality>()
       .nullable()
@@ -154,22 +156,27 @@ export default function DeploymentDialog({
   };
 
   const handleDeploy = (data: FormInput) => {
-    console.log([data]);
+    // TODO Add try/catch
+    let validatedData = validationSchema.validateSync(data);
 
-    // deploy({
-    //   modelAuthor: selectedModel?.author!,
-    //   modelName: selectedModel?.name!,
-    //   scope: Deployments.DeployModelWithStrategyScopeEnum.Tenant,
-    //   platform: selectedDeploymentStrategy?.platform!,
-    //   strategyName: selectedDeploymentStrategy?.name!,
-    //   params: {},
-    //   deployModelWithStrategyBody: {
-    //     model_author: selectedModel?.author!,
-    //     model_name: selectedModel?.name!,
-    //     params: {},
-    //   },
-    // });
-    onClose();
+    deploy(
+      {
+        strategyName: validatedData.strategy.name,
+        platform: validatedData.strategy.platform,
+        deployModelWithStrategyBody: {
+          name: validatedData.name,
+          description: validatedData.description,
+          model_author: validatedData.model.author,
+          model_name: validatedData.model.name,
+          params: validatedData.parameters,
+        },
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   };
 
   return (
@@ -203,6 +210,13 @@ export default function DeploymentDialog({
           dividers
           sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 2.5 }}
         >
+          {deploymentError && (
+            <Alert severity="error">
+              <AlertTitle>Failed to Deploy</AlertTitle>
+              {deploymentError.message}
+            </Alert>
+          )}
+
           {/** Summary */}
           {selectedModel && (
             <Box>
@@ -547,13 +561,14 @@ export default function DeploymentDialog({
         <Button type="button" onClick={handleClose} color="inherit">
           Cancel
         </Button>
-        <Button
+        <LoadingButton
+          loading={deployIsLoading}
           type="submit"
           variant="contained"
           disabled={!isDirty || !isValid}
         >
           🚀 Deploy
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
