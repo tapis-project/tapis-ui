@@ -1,3 +1,4 @@
+import { useState } from 'React';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
@@ -7,17 +8,24 @@ import Typography from '@mui/material/Typography';
 
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
-import { ModelMetadata } from '@mlhub/models-ts-sdk';
-import { useDeploymentDialog } from '../DeploymentDialog';
+import {
+  DeploymentStrategyReference,
+  ModelMetadata,
+} from '@mlhub/models-ts-sdk';
+import DeploymentDialog from '../../../_components/DeploymentDialog';
 import { InfoSection } from './InfoSection';
+import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 interface DeploymentSectionProps {
   model: ModelMetadata;
 }
 
 export function DeploymentSection({ model }: DeploymentSectionProps) {
-  const { openDeploy } = useDeploymentDialog();
   const strategies = model.deployment_strategy_refs;
+  const [strat, setStrat] = useState<DeploymentStrategyReference | undefined>(
+    undefined
+  );
+  const { username } = useTapisConfig();
 
   return (
     <InfoSection>
@@ -32,7 +40,7 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {strategies.map((strategy, index) => (
             <Box
-              key={strategy.strategy_id ?? index}
+              key={strategy.name ?? index}
               sx={{
                 p: 2,
                 border: '1px solid',
@@ -45,15 +53,9 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
                   boxShadow: (theme) => theme.shadows[1],
                 },
               }}
-              onClick={() => openDeploy(strategy)}
+              onClick={() => setStrat(strategy)}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  openDeploy(strategy);
-                }
-              }}
             >
               <Box
                 sx={{
@@ -66,17 +68,12 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                     {strategy.name}
                   </Typography>
-                  {strategy.strategy_id && (
+                  {strategy.name && (
                     <Chip
-                      label={strategy.strategy_id}
+                      label={strategy.name}
                       size="small"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
-                  )}
-                  {strategy.endpoint && (
-                    <Typography variant="caption" color="text.secondary">
-                      {strategy.endpoint}
-                    </Typography>
                   )}
                 </Box>
 
@@ -86,7 +83,7 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
                   variant="outlined"
                   onClick={(e) => {
                     e.stopPropagation();
-                    openDeploy(strategy);
+                    setStrat(strategy);
                   }}
                   sx={{ minWidth: 'auto' }}
                 >
@@ -95,6 +92,13 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
               </Box>
             </Box>
           ))}
+          <DeploymentDialog
+            open={strat !== undefined}
+            onClose={() => setStrat(undefined)}
+            author={username}
+            defaultModel={model}
+            defaultStratRef={strat}
+          />
         </Box>
       ) : (
         <Typography variant="body2" color="text.secondary">

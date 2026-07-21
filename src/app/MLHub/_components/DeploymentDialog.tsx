@@ -1,4 +1,10 @@
-import { PropsWithChildren, useState } from 'react';
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -35,8 +41,8 @@ import { MarketplaceButton } from './MarketplaceButton';
 import { LoadingButton } from '@mui/lab';
 
 interface DeploymentDialogProps {
-  model?: Models.ModelMetadata;
-  strat?: Deployments.Strategy;
+  defaultModel?: Models.ModelMetadata;
+  defaultStratRef?: Models.DeploymentStrategyReference;
   open: boolean;
   onClose: () => void;
   author: string;
@@ -56,9 +62,12 @@ export default function DeploymentDialog({
   open,
   onClose,
   author,
-  model = undefined,
-  strat = undefined,
+  defaultModel = undefined,
+  defaultStratRef = undefined,
 }: DeploymentDialogProps) {
+  const [nameAndDescription, setNameAndDescription] = useState<
+    { name: string; description?: string | null } | undefined
+  >(undefined);
   // Models hooks
   const { data: modelsData } = Hooks.Models.useListByAuthor({ author });
   const models = modelsData?.result ?? [];
@@ -74,6 +83,18 @@ export default function DeploymentDialog({
     error: deploymentError,
   } = Hooks.Deployments.useDeployWithStrategy();
 
+  const defaultStrategy = useCallback(() => {
+    if (defaultStratRef) {
+      return strats.filter(
+        (s) =>
+          s.name === defaultStratRef.name &&
+          s.platform === defaultStratRef.platform
+      )[0];
+    }
+
+    return undefined;
+  }, [defaultStratRef, strats, strategiesData]);
+
   type FormInput = {
     name: string;
     description: string | null;
@@ -83,6 +104,15 @@ export default function DeploymentDialog({
     parameters: Deployments.Parameter[];
   };
 
+  const defaultValues = useCallback(() => {
+    return {
+      model: defaultModel ?? null,
+      strategy: defaultStrategy() ?? null,
+      deploymentModality: defaultStrategy()?.deployment_modality,
+      parameters: defaultStrategy()?.parameters,
+    };
+  }, [defaultModel, defaultStratRef, strategiesData, defaultStrategy]);
+
   const {
     control,
     handleSubmit,
@@ -90,14 +120,16 @@ export default function DeploymentDialog({
     reset,
     resetField,
   } = useForm<FormInput>({
-    defaultValues: {
-      model: model ?? null,
-      strategy: strat ?? null,
-      deploymentModality: null,
-      parameters: [],
-    },
+    defaultValues: defaultValues(),
     mode: 'onChange',
   });
+
+  useEffect(() => {
+    // Only update the form if data actually exists and the user hasn't typed anything yet
+    if ((modelsData || strategiesData) && !isDirty) {
+      reset(defaultValues());
+    }
+  }, [modelsData, strategiesData, defaultValues, reset, isDirty]);
 
   // Field array to manage the dynamic parameter list
   const { fields: parameterFields, replace: replaceParameterFields } =
@@ -151,7 +183,7 @@ export default function DeploymentDialog({
   });
 
   const handleClose = () => {
-    reset();
+    reset({});
     onClose();
   };
 
@@ -223,37 +255,36 @@ export default function DeploymentDialog({
               <Typography variant="subtitle2" gutterBottom>
                 Deployment Summary
               </Typography>
-              {name && selectedModel && (
+              <SummaryItem
+                hideClose={defaultModel !== undefined}
+                onClose={() => {
+                  resetField('model');
+                  resetField('strategy');
+                  resetField('deploymentModality');
+                  resetField('parameters');
+                }}
+              >
+                <ModelMenuItem model={selectedModel} />
+              </SummaryItem>
+              {nameAndDescription && (
                 <>
                   <SummaryItem
                     onClose={() => {
                       resetField('name');
                       resetField('description');
-                      resetField('model');
-                      resetField('strategy');
-                      resetField('deploymentModality');
-                      resetField('parameters');
+                      setNameAndDescription(undefined);
                     }}
                   >
                     <DetailsSummaryItem
-                      name={name}
-                      description={description ?? undefined}
+                      name={nameAndDescription.name}
+                      description={nameAndDescription.description ?? undefined}
                     />
-                  </SummaryItem>
-                  <SummaryItem
-                    onClose={() => {
-                      resetField('model');
-                      resetField('strategy');
-                      resetField('deploymentModality');
-                      resetField('parameters');
-                    }}
-                  >
-                    <ModelMenuItem model={selectedModel} />
                   </SummaryItem>
                 </>
               )}
               {selectedDeploymentModality && (
                 <SummaryItem
+                  hideClose={defaultStratRef !== undefined}
                   onClose={() => {
                     resetField('deploymentModality');
                     resetField('strategy');
@@ -267,6 +298,7 @@ export default function DeploymentDialog({
               )}
               {selectedDeploymentStrategy && (
                 <SummaryItem
+                  hideClose={defaultStratRef !== undefined}
                   onClose={() => {
                     resetField('strategy');
                     resetField('parameters');
@@ -280,63 +312,8 @@ export default function DeploymentDialog({
             </Box>
           )}
 
-          {/* 1. Name field */}
+          {/** Model select field */}
           {!selectedModel && (
-            <>
-              <Controller
-                name="name"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    required
-                    label="Deployment Name"
-                    placeholder="e.g., My Llama Deployment - Live"
-                    error={!!error}
-                    helperText={
-                      error
-                        ? error.message
-                        : 'Provide a name for this deployment.'
-                    }
-                    slotProps={{
-                      input: {
-                        sx: {
-                          '& input:-webkit-autofill': {
-                            WebkitBoxShadow:
-                              '0 0 0 100px white inset !important', // Change 'white' to match your input background
-                            WebkitTextFillColor: '#000000 !important', // Change to match your input text color
-                          },
-                        },
-                      },
-                    }}
-                  />
-                )}
-              />
-
-              {/* 2. Description field */}
-              <Controller
-                name="description"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    multiline
-                    rows={2}
-                    maxRows={6}
-                    label="Description"
-                    placeholder="Describe the operational scope or purpose of this deployment..."
-                    error={!!error}
-                    helperText={error?.message}
-                  />
-                )}
-              />
-            </>
-          )}
-
-          {/** 3. Model select field */}
-          {name && !selectedModel && (
             <Controller
               name="model"
               control={control}
@@ -375,40 +352,108 @@ export default function DeploymentDialog({
             />
           )}
 
-          {/** 4. Deployment modality select */}
-          {selectedModel && !selectedDeploymentModality && (
-            <Controller
-              name="deploymentModality"
-              control={control}
-              rules={{ required: 'Must select a deployment strategy' }}
-              render={({
-                field: { value, onChange, onBlur },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  label="Deployment Modality"
-                  value={value || ''}
-                  select
-                  helperText={error?.message}
-                  error={!!error}
-                  onChange={(e) => {
-                    onChange(e.target.value);
-                  }}
-                  onBlur={onBlur}
-                  required
-                  fullWidth
-                >
-                  {Object.values(Deployments.DeploymentModality).map((t) => (
-                    <MenuItem key={'modality-' + t} value={t}>
-                      <DeploymentModalityMenuItem deploymentModality={t} />
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
+          {/* Name and description field */}
+          {selectedModel && !nameAndDescription && (
+            <>
+              <Controller
+                name="name"
+                control={control}
+                render={({
+                  field: { onChange, ...rest },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    {...rest}
+                    fullWidth
+                    required
+                    onChange={(e) => {
+                      onChange(e.target.value);
+                    }}
+                    label="Deployment Name"
+                    placeholder="e.g., My Llama Deployment - Live"
+                    error={!!error}
+                    helperText={
+                      error
+                        ? error.message
+                        : 'Provide a name for this deployment.'
+                    }
+                    slotProps={{
+                      input: {
+                        sx: {
+                          '& input:-webkit-autofill': {
+                            WebkitBoxShadow:
+                              '0 0 0 100px white inset !important', // Change 'white' to match your input background
+                            WebkitTextFillColor: '#000000 !important', // Change to match your input text color
+                          },
+                        },
+                      },
+                    }}
+                  />
+                )}
+              />
+
+              <Controller
+                name="description"
+                control={control}
+                render={({
+                  field: { onChange, ...rest },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    {...rest}
+                    onChange={(e) => {
+                      onChange(e.target.value);
+                    }}
+                    fullWidth
+                    multiline
+                    rows={2}
+                    maxRows={6}
+                    label="Description"
+                    placeholder="Describe the operational scope or purpose of this deployment..."
+                    error={!!error}
+                    helperText={error?.message}
+                  />
+                )}
+              />
+            </>
           )}
 
-          {/** 5. Deployment strategy select */}
+          {/** Deployment modality select */}
+          {selectedModel &&
+            nameAndDescription &&
+            !selectedDeploymentModality && (
+              <Controller
+                name="deploymentModality"
+                control={control}
+                rules={{ required: 'Must select a deployment strategy' }}
+                render={({
+                  field: { value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="Deployment Modality"
+                    value={value || ''}
+                    select
+                    helperText={error?.message}
+                    error={!!error}
+                    onChange={(e) => {
+                      onChange(e.target.value);
+                    }}
+                    onBlur={onBlur}
+                    required
+                    fullWidth
+                  >
+                    {Object.values(Deployments.DeploymentModality).map((t) => (
+                      <MenuItem key={'modality-' + t} value={t}>
+                        <DeploymentModalityMenuItem deploymentModality={t} />
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            )}
+
+          {/** Deployment strategy select */}
           {selectedModel &&
             selectedDeploymentModality &&
             !selectedDeploymentStrategy && (
@@ -484,7 +529,7 @@ export default function DeploymentDialog({
             )}
 
           {/** Parameters */}
-          {selectedDeploymentModality && (
+          {selectedDeploymentModality && selectedDeploymentStrategy && (
             <Box sx={{ mt: 1 }}>
               <Typography
                 variant="subtitle2"
@@ -561,23 +606,35 @@ export default function DeploymentDialog({
         <Button type="button" onClick={handleClose} color="inherit">
           Cancel
         </Button>
-        <LoadingButton
-          loading={deployIsLoading}
-          type="submit"
-          variant="contained"
-          disabled={!isDirty || !isValid}
-        >
-          🚀 Deploy
-        </LoadingButton>
+        {nameAndDescription && (
+          <LoadingButton
+            loading={deployIsLoading}
+            type="submit"
+            variant="contained"
+            disabled={!isDirty || !isValid}
+          >
+            🚀 Deploy
+          </LoadingButton>
+        )}
+        {!nameAndDescription && (
+          <Button
+            type="button"
+            disabled={!name}
+            onClick={() => {
+              setNameAndDescription({ name, description: description ?? null });
+            }}
+          >
+            Next
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
 }
 
-const SummaryItem: React.FC<PropsWithChildren<{ onClose: () => void }>> = ({
-  onClose,
-  children,
-}) => {
+const SummaryItem: React.FC<
+  PropsWithChildren<{ onClose: () => void; hideClose?: undefined | boolean }>
+> = ({ onClose, hideClose, children }) => {
   return (
     <Box
       sx={{
@@ -590,9 +647,11 @@ const SummaryItem: React.FC<PropsWithChildren<{ onClose: () => void }>> = ({
       }}
     >
       <>{children}</>
-      <IconButton size="small" color="error" onClick={onClose}>
-        <Undo fontSize="small" />
-      </IconButton>
+      {!hideClose && (
+        <IconButton size="small" color="error" onClick={onClose}>
+          <Undo fontSize="small" />
+        </IconButton>
+      )}
     </Box>
   );
 };

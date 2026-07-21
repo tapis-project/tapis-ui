@@ -18,19 +18,17 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 
-import type { ModelMetadata } from '../../types/model-metadata';
-import { useDeploymentDialog } from './DeploymentDialog';
+import { ModelMetadata } from '@mlhub/models-ts-sdk';
+import DeploymentDialog from '../../_components/DeploymentDialog';
 
 interface ModelActionsBarProps {
   model: ModelMetadata;
 }
 
-type ActionDialog = 'delete' | 'archive' | null;
+type ActionDialog = 'delete' | 'archive' | 'deploy' | null;
 
 export function ModelActionsBar({ model }: ModelActionsBarProps) {
   const [activeDialog, setActiveDialog] = useState<ActionDialog>(null);
-
-  const { openDeploy } = useDeploymentDialog();
 
   const handleOpen = (dialog: ActionDialog) => {
     setActiveDialog(dialog);
@@ -74,7 +72,7 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
         <Tooltip title="Deploy this model">
           <Button
             startIcon={<RocketLaunchIcon />}
-            onClick={() => openDeploy()}
+            onClick={() => setActiveDialog('deploy')}
             variant="outlined"
             size="small"
           >
@@ -121,6 +119,14 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
         modelName={model.name}
         onClose={handleClose}
         onConfirm={handleArchive}
+      />
+
+      {/** Deploy Model dialog */}
+      <DeploymentDialog
+        open={activeDialog === 'deploy'}
+        defaultModel={model}
+        onClose={() => setActiveDialog(null)}
+        author={model.author}
       />
     </>
   );

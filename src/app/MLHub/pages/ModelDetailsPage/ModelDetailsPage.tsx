@@ -9,7 +9,7 @@ import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 
-import { DeploymentDialogProvider } from './DeploymentDialog';
+import DeploymentDialog from '../../_components/DeploymentDialog';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ModelHeader } from './ModelHeader';
 import { ModelTabs, TabPanel } from './ModelTabs';
@@ -97,41 +97,39 @@ export default function ModelDetailsPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
-      <DeploymentDialogProvider model={model}>
-        <Card>
-          {/* Header */}
-          <ModelHeader model={model} />
+      <Card>
+        {/* Header */}
+        <ModelHeader model={model} />
 
-          <Divider />
+        <Divider />
 
-          {/* Tabs */}
-          <Box sx={{ px: { xs: 2, md: 3, xl: 4 } }}>
-            <ModelTabs currentTab={activeTab} onChange={setActiveTab}>
-              <TabPanel value="general" currentTab={activeTab}>
-                <GeneralSection model={model} />
-              </TabPanel>
-              <TabPanel value="inference" currentTab={activeTab}>
-                <InferenceSection model={model} />
-              </TabPanel>
-              <TabPanel value="training" currentTab={activeTab}>
-                <TrainingSection model={model} />
-              </TabPanel>
-              <TabPanel value="architecture" currentTab={activeTab}>
-                <ArchitectureSection model={model} />
-              </TabPanel>
-              <TabPanel value="io" currentTab={activeTab}>
-                <IOSection model={model} />
-              </TabPanel>
-              <TabPanel value="compliance" currentTab={activeTab}>
-                <ComplianceSection model={model} />
-              </TabPanel>
-              <TabPanel value="deployment" currentTab={activeTab}>
-                <DeploymentSection model={model} />
-              </TabPanel>
-            </ModelTabs>
-          </Box>
-        </Card>
-      </DeploymentDialogProvider>
+        {/* Tabs */}
+        <Box sx={{ px: { xs: 2, md: 3, xl: 4 } }}>
+          <ModelTabs currentTab={activeTab} onChange={setActiveTab}>
+            <TabPanel value="general" currentTab={activeTab}>
+              <GeneralSection model={model} />
+            </TabPanel>
+            <TabPanel value="inference" currentTab={activeTab}>
+              <InferenceSection model={model} />
+            </TabPanel>
+            <TabPanel value="training" currentTab={activeTab}>
+              <TrainingSection model={model} />
+            </TabPanel>
+            <TabPanel value="architecture" currentTab={activeTab}>
+              <ArchitectureSection model={model} />
+            </TabPanel>
+            <TabPanel value="io" currentTab={activeTab}>
+              <IOSection model={model} />
+            </TabPanel>
+            <TabPanel value="compliance" currentTab={activeTab}>
+              <ComplianceSection model={model} />
+            </TabPanel>
+            <TabPanel value="deployment" currentTab={activeTab}>
+              <DeploymentSection model={model} />
+            </TabPanel>
+          </ModelTabs>
+        </Box>
+      </Card>
     </Container>
   );
 }

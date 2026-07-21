@@ -29,6 +29,7 @@ import type {
   InferenceBackend,
 } from '../../types';
 import ModelFormDialog from '../../_components/ModelFormDialog';
+import DeploymentDialog from '../../_components/DeploymentDialog';
 import {
   modelStatusColorMap,
   frameworkIconMap as inferenceBackendIconMap,
@@ -44,7 +45,7 @@ export default function ModelsTab() {
     author: username,
   });
   const models = data?.result ?? [];
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialog, setDialog] = React.useState<string | undefined>(undefined);
   const [selectedModel, setSelectedModel] = React.useState<Model | null>(null);
   const [actionsAnchor, setActionsAnchor] = React.useState<HTMLElement | null>(
     null
@@ -54,12 +55,12 @@ export default function ModelsTab() {
 
   const handleCreate = () => {
     setSelectedModel(null);
-    setDialogOpen(true);
+    setDialog(undefined);
   };
 
   const handleEdit = (model: Model) => {
     setSelectedModel(model);
-    setDialogOpen(true);
+    setDialog(undefined);
   };
 
   const handleSave = (
@@ -453,7 +454,7 @@ export default function ModelsTab() {
       {/* <ModelFormDialog
         open={dialogOpen}
         model={selectedModel}
-        onClose={() => setDialogOpen(false)}
+        onClose={() => setDialog(false)}
         onSave={handleSave}
       /> */}
     </Box>

@@ -43,7 +43,7 @@ export default function DeploymentsPage({
   deployments,
   onDeploymentsChange,
 }: DeploymentsTabProps) {
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialog, setDialog] = React.useState<string | undefined>(undefined);
   const [popoverAnchor, setPopoverAnchor] = React.useState<HTMLElement | null>(
     null
   );
@@ -248,15 +248,15 @@ export default function DeploymentsPage({
             color: 'primary' as const,
           },
           {
-            label: 'Active Services',
+            label: 'Services',
             count: envCounts.active,
             icon: '✅',
             color: 'success' as const,
           },
           {
-            label: 'Production',
+            label: 'Batch Jobs',
             count: envCounts.production,
-            icon: '🏭',
+            icon: '🔄',
             color: 'error' as const,
           },
           {
@@ -312,7 +312,7 @@ export default function DeploymentsPage({
           <Button
             variant="contained"
             startIcon={<RocketLaunchIcon />}
-            onClick={() => setDialogOpen(true)}
+            onClick={() => setDialog('deployments')}
             size="small"
           >
             New Deployment
@@ -425,11 +425,11 @@ export default function DeploymentsPage({
         </Box>
       </Popover>
 
-      <DeploymentDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
+      {/* <DeploymentDialog
+        open={dialog === 'deployments'}
+        onClose={() => setDialog(undefined)}
         author={username}
-      />
+      /> */}
     </Box>
   );
 }
