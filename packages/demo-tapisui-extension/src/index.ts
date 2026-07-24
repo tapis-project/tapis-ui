@@ -21,6 +21,7 @@ import {
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
+import { Patra } from './pages/Patra';
 
 const extension = createExtension({
   allowMultiTenant: true,
@@ -55,6 +56,7 @@ const extension = createExtension({
           'ml-hub',
           'smart-detection',
           'smart-segmentation',
+          'patra',
           // 'ml-edge',
           // 'jupyter-lab',
           // 'open-web-ui'
@@ -87,6 +89,7 @@ const extension = createExtension({
     'ml-hub',
     'smart-detection',
     'smart-segmentation',
+    'patra',
     // 'ml-edge',
     // 'open-web-ui',
     // 'jupyter-lab',
@@ -134,6 +137,15 @@ extension.registerService({
   sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
   iconName: 'globe',
   component: SmartSegmentation,
+});
+
+// Patra (demo portal) embedded via iframe with the portal-auth postMessage
+// handshake — shown in the Workbench section on public.tapis.io.
+extension.registerService({
+  id: 'patra',
+  sidebarDisplayName: 'Patra',
+  iconName: 'globe',
+  component: Patra,
 });
 
 // Order of registration determines sidebar order!!
