@@ -26,11 +26,13 @@ import {
   DigitalAgAaaS,
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
+  IcicleServicesV2,
   Patra,
   IntelligentEdgeManagementService,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
+import { NoCodeImageLab } from './pages/NoCodeImageLab';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -47,6 +49,7 @@ const extension = createExtension({
   mainSidebarServices: [
     'workflows',
     'pods',
+    'ai-hub',
     'ml-hub',
     'ml-edge',
     'open-web-ui',
@@ -54,13 +57,7 @@ const extension = createExtension({
     'analytics',
     'training-catalog',
     'home',
-    'domain-agnostic-ai',
     'icicle-chatbook',
-    'domain-agnostic-ci',
-    'domain-specific-services',
-    'digital-ag-aaas',
-    'animal-ecology-aaas',
-    'food-logistics-aaas',
     'food-flow-portal',
     'feast',
     'food-security-sandbox',
@@ -74,31 +71,50 @@ const extension = createExtension({
     'patra',
     'smart-labeler',
     'smart-segmentation',
+    'no-code-image-lab',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
   ],
   betaSidebar: {
     enabled: true,
-    sections: [],
+    sections: [
+      {
+        // The six ICICLE as-a-Service pages (plus the former Portal Home) are
+        // now indexed on the home Services Board (each catalog entry links back
+        // via its sourceRoute). Collapsed and out of the main sidebar, but the
+        // pages still render at their routes. `minimal` renders a quiet,
+        // recessed group header so Archive doesn't beckon users to open it.
+        name: 'Archive',
+        defaultOpen: false,
+        minimal: true,
+        // Listed directly (no "More" sub-group) so the whole archive is visible
+        // at a glance once expanded.
+        mainServices: [
+          'portal-home', // former ICICLE landing page
+          'domain-agnostic-ai', // AIaaS
+          'domain-agnostic-ci', // CIaaS
+          'domain-specific-services', // DOaaS
+          'digital-ag-aaas', // DAaaS
+          'animal-ecology-aaas', // AEaaS
+          'food-logistics-aaas', // FLSaaS
+        ],
+        secondaryServices: [],
+      },
+    ],
     noSection: {
       mainServices: ['home'],
       secondaryServices: [
         'workflows',
         'pods',
+        'ai-hub',
         'ml-hub',
         'ml-edge',
         'open-web-ui',
         'jupyter-lab',
         'analytics',
         'training-catalog',
-        'domain-agnostic-ai',
         'icicle-chatbook',
-        'domain-agnostic-ci',
-        'domain-specific-services',
-        'digital-ag-aaas',
-        'animal-ecology-aaas',
-        'food-logistics-aaas',
         'food-flow-portal',
         'feast',
         'food-security-sandbox',
@@ -112,6 +128,7 @@ const extension = createExtension({
         'patra',
         'smart-labeler',
         'smart-segmentation',
+        'no-code-image-lab',
         'intelligent-edge-management-service',
       ],
     },
@@ -136,8 +153,18 @@ const extension = createExtension({
 });
 
 // Order of registration determines sidebar order!!
+// Home = the Services Board. The app router redirects '/' to the 'home' service's
+// route, so the board is now the default landing page and the top sidebar item.
 extension.registerService({
   id: 'home',
+  sidebarDisplayName: 'Home',
+  iconName: 'simulation',
+  component: IcicleServicesV2,
+});
+
+// The former Portal Home, kept accessible (no longer the landing page).
+extension.registerService({
+  id: 'portal-home',
   sidebarDisplayName: 'Portal Home',
   iconName: 'globe',
   component: PortalHome,
@@ -288,6 +315,13 @@ extension.registerService({
   sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
   iconName: 'globe',
   component: SmartSegmentation,
+});
+
+extension.registerService({
+  id: 'no-code-image-lab',
+  sidebarDisplayName: 'No-Code Image Lab',
+  iconName: 'globe',
+  component: NoCodeImageLab,
 });
 
 extension.registerService({

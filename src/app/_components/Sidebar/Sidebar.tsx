@@ -447,16 +447,20 @@ const Sidebar: React.FC = () => {
                       style={{
                         whiteSpace: 'nowrap',
                         cursor: 'pointer',
-                        marginTop: '8px',
+                        marginTop: section.minimal ? '2px' : '8px',
                       }}
                     >
                       <ListItemButton
                         sx={{
-                          color: '#505050',
+                          // `minimal` sections render a quiet, recessed header
+                          // (muted, non-bold, tighter) so low-emphasis groups
+                          // like Archive don't beckon; the default is the bold
+                          // group heading.
+                          color: section.minimal ? '#909090' : '#505050',
                           pl: '1.4rem',
-                          pt: '8px',
-                          pb: '8px',
-                          fontWeight: 'bold',
+                          pt: section.minimal ? '2px' : '8px',
+                          pb: section.minimal ? '2px' : '8px',
+                          fontWeight: section.minimal ? 'normal' : 'bold',
                           justifyContent: 'space-between',
                         }}
                       >
@@ -465,16 +469,22 @@ const Sidebar: React.FC = () => {
                             primary={section.name}
                             sx={{
                               '& .MuiListItemText-primary': {
-                                fontWeight: 'bold',
-                                fontSize: '0.9rem',
+                                fontWeight: section.minimal ? 'normal' : 'bold',
+                                fontSize: section.minimal
+                                  ? '0.75rem'
+                                  : '0.9rem',
                               },
                             }}
                           />
                         )}
                         {sectionOpenStates[section.name] ? (
-                          <ExpandLessRounded />
+                          <ExpandLessRounded
+                            fontSize={section.minimal ? 'small' : 'medium'}
+                          />
                         ) : (
-                          <ExpandMoreRounded />
+                          <ExpandMoreRounded
+                            fontSize={section.minimal ? 'small' : 'medium'}
+                          />
                         )}
                       </ListItemButton>
                     </div>

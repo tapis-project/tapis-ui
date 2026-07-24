@@ -21,5 +21,6 @@ export { DomainSpecificServices } from './DomainSpecificServices';
 export { DigitalAgAaaS } from './DigitalAgAaaS';
 export { AnimalEcologyAaaS } from './AnimalEcologyAaaS';
 export { FoodLogisticsAaaS } from './FoodLogisticsAaaS';
+export { IcicleServicesV2 } from './IcicleServicesV2';
 export { Patra } from './Patra';
 export { IntelligentEdgeManagementService } from './IntelligentEdgeManagementService';

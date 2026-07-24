@@ -45,6 +45,7 @@ type betaSidebar = {
   sections: Array<{
     name: string;
     defaultOpen: boolean;
+    minimal?: boolean;
     mainServices: string[];
     secondaryServices?: string[];
   }>;

@@ -78,6 +78,12 @@ const services: ServiceItem[] = [
     link: '/intelligent-edge-management-service',
     internal: true,
   },
+  {
+    label: 'No-Code Image Lab : Visualize OpenCV pre-processing operations, ',
+    name: 'No-Code Image Lab',
+    link: '/no-code-image-lab',
+    internal: true,
+  },
 ];
 
 const sortedServices = sortServices(services);
