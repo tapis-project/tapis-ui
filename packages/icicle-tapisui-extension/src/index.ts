@@ -26,6 +26,7 @@ import {
   DigitalAgAaaS,
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
+  IcicleServicesV2,
   Patra,
   IntelligentEdgeManagementService,
 } from './pages';
@@ -48,6 +49,7 @@ const extension = createExtension({
   mainSidebarServices: [
     'workflows',
     'pods',
+    'ai-hub',
     'ml-hub',
     'ml-edge',
     'open-web-ui',
@@ -55,13 +57,8 @@ const extension = createExtension({
     'analytics',
     'training-catalog',
     'home',
-    'domain-agnostic-ai',
+    'portal-home',
     'icicle-chatbook',
-    'domain-agnostic-ci',
-    'domain-specific-services',
-    'digital-ag-aaas',
-    'animal-ecology-aaas',
-    'food-logistics-aaas',
     'food-flow-portal',
     'feast',
     'food-security-sandbox',
@@ -82,25 +79,38 @@ const extension = createExtension({
   ],
   betaSidebar: {
     enabled: true,
-    sections: [],
+    sections: [
+      {
+        // The six ICICLE as-a-Service pages are now indexed on the home Services
+        // Board (each catalog entry links back via its sourceRoute). Collapsed and
+        // out of the main sidebar, but the pages still render at their routes.
+        name: 'Services (Archive)',
+        defaultOpen: false,
+        mainServices: [],
+        secondaryServices: [
+          'domain-agnostic-ai', // AIaaS
+          'domain-agnostic-ci', // CIaaS
+          'domain-specific-services', // DOaaS
+          'digital-ag-aaas', // DAaaS
+          'animal-ecology-aaas', // AEaaS
+          'food-logistics-aaas', // FLSaaS
+        ],
+      },
+    ],
     noSection: {
       mainServices: ['home'],
       secondaryServices: [
         'workflows',
         'pods',
+        'ai-hub',
         'ml-hub',
         'ml-edge',
         'open-web-ui',
         'jupyter-lab',
         'analytics',
         'training-catalog',
-        'domain-agnostic-ai',
+        'portal-home',
         'icicle-chatbook',
-        'domain-agnostic-ci',
-        'domain-specific-services',
-        'digital-ag-aaas',
-        'animal-ecology-aaas',
-        'food-logistics-aaas',
         'food-flow-portal',
         'feast',
         'food-security-sandbox',
@@ -139,8 +149,18 @@ const extension = createExtension({
 });
 
 // Order of registration determines sidebar order!!
+// Home = the Services Board. The app router redirects '/' to the 'home' service's
+// route, so the board is now the default landing page and the top sidebar item.
 extension.registerService({
   id: 'home',
+  sidebarDisplayName: 'Home',
+  iconName: 'simulation',
+  component: IcicleServicesV2,
+});
+
+// The former Portal Home, kept accessible (no longer the landing page).
+extension.registerService({
+  id: 'portal-home',
   sidebarDisplayName: 'Portal Home',
   iconName: 'globe',
   component: PortalHome,
