@@ -57,7 +57,6 @@ const extension = createExtension({
     'analytics',
     'training-catalog',
     'home',
-    'portal-home',
     'icicle-chatbook',
     'food-flow-portal',
     'feast',
@@ -81,13 +80,18 @@ const extension = createExtension({
     enabled: true,
     sections: [
       {
-        // The six ICICLE as-a-Service pages are now indexed on the home Services
-        // Board (each catalog entry links back via its sourceRoute). Collapsed and
-        // out of the main sidebar, but the pages still render at their routes.
-        name: 'Services (Archive)',
+        // The six ICICLE as-a-Service pages (plus the former Portal Home) are
+        // now indexed on the home Services Board (each catalog entry links back
+        // via its sourceRoute). Collapsed and out of the main sidebar, but the
+        // pages still render at their routes. `minimal` renders a quiet,
+        // recessed group header so Archive doesn't beckon users to open it.
+        name: 'Archive',
         defaultOpen: false,
-        mainServices: [],
-        secondaryServices: [
+        minimal: true,
+        // Listed directly (no "More" sub-group) so the whole archive is visible
+        // at a glance once expanded.
+        mainServices: [
+          'portal-home', // former ICICLE landing page
           'domain-agnostic-ai', // AIaaS
           'domain-agnostic-ci', // CIaaS
           'domain-specific-services', // DOaaS
@@ -95,6 +99,7 @@ const extension = createExtension({
           'animal-ecology-aaas', // AEaaS
           'food-logistics-aaas', // FLSaaS
         ],
+        secondaryServices: [],
       },
     ],
     noSection: {
@@ -109,7 +114,6 @@ const extension = createExtension({
         'jupyter-lab',
         'analytics',
         'training-catalog',
-        'portal-home',
         'icicle-chatbook',
         'food-flow-portal',
         'feast',
