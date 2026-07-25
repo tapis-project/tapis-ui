@@ -6,6 +6,12 @@ import {
   Icon,
   QueryWrapper,
 } from '@tapis/tapisui-common';
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
 import styles from './Toolbar.module.scss';
 import CreateDirModal from './CreateDirModal';
 import MoveCopyModal from './MoveCopyModal';
@@ -15,6 +21,7 @@ import PermissionsModal from './PermissionsModal';
 import DeleteModal from './DeleteModal';
 import CreatePostitModal from './CreatePostitModal';
 const VtkModal = lazy(() => import('./VtkModal'));
+import LabelModal from './LabelModal';
 import TransferModal from './TransferModal';
 import ShareModal from './ShareModal';
 import { useLocation } from 'react-router-dom';
@@ -61,7 +68,40 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   );
 };
 
+const ToolbarDropdownButton: React.FC<{
+  text: string;
+  icon: string;
+  options: { label: string; onClick: () => void; disabled?: boolean }[];
+  disabled?: boolean;
+}> = ({ text, icon, options, disabled = false }) => {
+  const [open, setOpen] = useState(false);
+
+  const toggle = () => setOpen((prev) => !prev);
+
+  return (
+    <Dropdown isOpen={open} toggle={toggle}>
+      <DropdownToggle
+        disabled={disabled}
+        className={styles['toolbar-btn']}
+        caret
+      >
+        <Icon name={icon} />
+        <span> {text}</span>
+      </DropdownToggle>
+
+      <DropdownMenu container="body">
+        {options.map((opt, i) => (
+          <DropdownItem key={i} onClick={opt.onClick} disabled={opt.disabled}>
+            {opt.label}
+          </DropdownItem>
+        ))}
+      </DropdownMenu>
+    </Dropdown>
+  );
+};
+
 type Op =
+  | 'label'
   | 'view'
   | 'share'
   | 'download'
@@ -185,6 +225,21 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <div id="file-operation-toolbar">
         {pathname !== '/files' && (
           <div className={styles['toolbar-wrapper']}>
+            <ToolbarDropdownButton
+              text="Tools"
+              icon="applications"
+              options={[
+                {
+                  label: 'Labeler',
+                  onClick: () => setModal('label'),
+                  disabled:
+                    selectedFiles.length === 0 ||
+                    !selectedFiles.every(
+                      (file) => file.type === Files.FileTypeEnum.File
+                    ),
+                },
+              ]}
+            />
             {show('share', buttons) && (
               <ToolbarButton
                 text="Share"
@@ -312,6 +367,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 }
                 onClick={() => setModal('delete')}
                 aria-label="Delete"
+              />
+            )}
+            {modal === 'label' && (
+              <LabelModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
               />
             )}
             {modal === 'createdir' && (
