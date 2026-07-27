@@ -113,10 +113,10 @@ const extension = createExtension({
       },
       {
         // The core Tapis platform services — same set + order as the public
-        // extension's "Core Services" section, plus ML Hub, ML Edge, and the
+        // extension's "Tapis Services" section, plus ML Hub, ML Edge, and the
         // generic Tapis Dashboard (normally pinned above the whole sidebar —
         // 'dashboard' opts icicle out of that and files it in here instead).
-        name: 'Tapis',
+        name: 'Tapis Services',
         defaultOpen: false,
         mainServices: [
           'systems',
