@@ -26,6 +26,8 @@ export default defineConfig({
       events: 'events',
     },
     dedupe: [
+      'react',
+      'react-dom',
       '@codemirror/state',
       '@codemirror/view',
       '@codemirror/language',

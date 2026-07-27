@@ -1,2 +1,3 @@
 export * as Strategies from './strategies';
 export { default as deployModelWithStrategy } from './deployWithStrategy';
+export { default as listModelDeployments } from './list';

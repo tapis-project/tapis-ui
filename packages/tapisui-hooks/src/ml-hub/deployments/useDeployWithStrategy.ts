@@ -5,7 +5,7 @@ import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
 
 const useDeployWithStrategy = () => {
-  const { basePath, accessToken } = useTapisConfig();
+  const { mlHubBasePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
@@ -14,9 +14,9 @@ const useDeployWithStrategy = () => {
       Error,
       Deployments.DeployModelWithStrategyRequest
     >(
-      [QueryKeys.deployWithStrategy, basePath, jwt],
+      [QueryKeys.deployWithStrategy, mlHubBasePath, jwt],
       (params: Deployments.DeployModelWithStrategyRequest) =>
-        API.Deployments.deployModelWithStrategy(params, basePath, jwt)
+        API.Deployments.deployModelWithStrategy(params, mlHubBasePath, jwt)
     );
 
   // Return hook object with loading states and login function

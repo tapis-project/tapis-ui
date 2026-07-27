@@ -33,11 +33,13 @@ export default function DiscreteIntegerSlider({
   // that those values are not selectable, even though the rail extends there.
   const buildMarks = (): Mark[] => {
     const marks: Mark[] = [];
+
     for (let v = sliderMin; v <= max; v++) {
       const isSelectable = v >= min;
       const isEndpoint = v === sliderMin || v === max;
       const isMultipleOf5 = v % 5 === 0;
       const isTall = isEndpoint || isMultipleOf5;
+
       marks.push({
         value: v,
         label: (
@@ -50,6 +52,7 @@ export default function DiscreteIntegerSlider({
               color: isSelectable ? 'text.secondary' : 'text.disabled',
             }}
           >
+            {/* Mark Tick Line */}
             <Box
               sx={{
                 width: 2,
@@ -58,21 +61,23 @@ export default function DiscreteIntegerSlider({
                 borderRadius: 0.5,
               }}
             />
-            {isTall && (
-              <Box
-                component="span"
-                sx={{
-                  fontSize: '0.75rem',
-                  color: 'currentColor',
-                  mt: 0.5,
-                  fontVariantNumeric: 'tabular-nums',
-                  fontWeight: 500,
-                  lineHeight: 1,
-                }}
-              >
-                {v}
-              </Box>
-            )}
+
+            {/* Mark Label Number (Rendered unconditionally for all marks) */}
+            <Box
+              component="span"
+              sx={{
+                fontSize: '0.75rem',
+                color: 'currentColor',
+                mt: 0.5,
+                fontVariantNumeric: 'tabular-nums',
+                fontWeight: 500,
+                lineHeight: 1,
+                // Fades out short marks slightly so the main increments stand out
+                opacity: isTall ? 1 : 0.5,
+              }}
+            >
+              {v}
+            </Box>
           </Box>
         ),
       });
@@ -111,9 +116,6 @@ export default function DiscreteIntegerSlider({
       sx={{
         width: '100%',
         maxWidth: 640,
-        p: { xs: 3, sm: 3 },
-        border: 1,
-        borderColor: 'divider',
       }}
     >
       <Slider
@@ -122,15 +124,10 @@ export default function DiscreteIntegerSlider({
         max={max}
         step={1}
         marks={marks}
-        valueLabelDisplay="on"
+        valueLabelDisplay="off"
         onChange={handleChange}
         getAriaValueText={(v) => `${v}`}
         color="primary"
-        sx={
-          {
-            /* ... keeps your original styles ... */
-          }
-        }
       />
     </Paper>
   );

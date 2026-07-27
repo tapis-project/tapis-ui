@@ -46,6 +46,7 @@ import { getPlatformConfig } from '../enums';
 import DiscreteIntegerSlider from './DiscreteIntegerSlider';
 import { MarketplaceButton } from './MarketplaceButton';
 import { SectionHeader } from './SectionHeader';
+import { useToast } from '../_context/ToastsContext/useToast';
 
 interface DeploymentDialogProps {
   defaultModel?: Models.ModelMetadata;
@@ -85,7 +86,10 @@ type ParameterFieldProps = {
   control: Control<FormInput>;
   error?: { message?: string };
 };
-type AdvancedSettingsProps = { control: Control<FormInput> };
+type AdvancedSettingsProps = {
+  control: Control<FormInput>;
+  strategy: Deployments.Strategy;
+};
 type DeploymentSummaryProps = {
   model: Models.ModelMetadata | null;
   name: string;
@@ -156,6 +160,7 @@ const DeploymentDialog = ({
     error: deploymentError,
     reset: resetDeploy,
   } = Hooks.Deployments.useDeployWithStrategy();
+  const toast = useToast();
 
   const defaultStrategy = useMemo(
     () =>
@@ -173,7 +178,7 @@ const DeploymentDialog = ({
       name: defaultModel ? deploymentNameFor(defaultModel.name) : '',
       model: defaultModel ?? null,
       strategy: defaultStrategy ?? null,
-      deploymentModality: defaultStrategy?.deployment_modality ?? null,
+      deploymentModality: null,
       parameters: defaultStrategy?.parameters ?? [],
     }),
     [defaultModel, defaultStrategy]
@@ -221,7 +226,7 @@ const DeploymentDialog = ({
     );
     return strategies.filter(
       (item) =>
-        item.deployment_modality === modality &&
+        item.config.supported_deployment_modalities.includes(modality) &&
         allowedStrategyKeys.has(strategyKey(item))
     );
   }, [model, modality, strategies]);
@@ -272,9 +277,22 @@ const DeploymentDialog = ({
           model_author: data.model.author,
           model_name: data.model.name,
           params: data.parameters,
+          deployment_modality: data.deploymentModality,
         },
       },
-      { onSuccess: close }
+      {
+        onSuccess: (data) => {
+          close();
+          toast.success(
+            <p>
+              Deployment request <b>({data.result.name})</b> for model{' '}
+              <b>
+                ${data.result.model.author}/${data.result.model.name}
+              </b>{' '}
+            </p>
+          );
+        },
+      }
     );
   };
 
@@ -413,7 +431,7 @@ const DeploymentDialog = ({
             />
           )}
           {model && detailsConfirmed && modality && strategy && (
-            <AdvancedSettings control={control} />
+            <AdvancedSettings control={control} strategy={strategy} />
           )}
         </DialogContent>
       )}
@@ -435,7 +453,9 @@ const DeploymentDialog = ({
           <Button
             type="button"
             disabled={!name?.trim()}
-            onClick={() => setDetailsConfirmed(true)}
+            onClick={() => {
+              setDetailsConfirmed(true);
+            }}
           >
             Next
           </Button>
@@ -671,7 +691,7 @@ const ParameterField = ({
   );
 };
 
-const AdvancedSettings = ({ control }: AdvancedSettingsProps) => {
+const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
   return (
     <Accordion sx={accordionSx}>
       <AccordionSummary expandIcon={<ExpandMore />}>
@@ -717,7 +737,7 @@ const AdvancedSettings = ({ control }: AdvancedSettingsProps) => {
             <>
               <SectionHeader
                 title="Parallelism"
-                caption="How the model is sharded across replicas"
+                caption="How the model is sharded across nodes"
               />
               <FormControl fullWidth error={Boolean(fieldState.error)}>
                 <InputLabel id="parallelism-strategies-label">
@@ -739,7 +759,15 @@ const AdvancedSettings = ({ control }: AdvancedSettingsProps) => {
                 >
                   {Object.values(Deployments.ParallelismStrategy).map(
                     (item) => (
-                      <MenuItem key={item} value={item}>
+                      <MenuItem
+                        disabled={
+                          !strategy.config.supported_paralellism_strategies.includes(
+                            item
+                          )
+                        }
+                        key={item}
+                        value={item}
+                      >
                         {item}
                       </MenuItem>
                     )
@@ -747,7 +775,7 @@ const AdvancedSettings = ({ control }: AdvancedSettingsProps) => {
                 </Select>
                 <FormHelperText>
                   {fieldState.error?.message ??
-                    'Choose any parallelism strategies for this deployment.'}
+                    'Choose parallelism strategies for this deployment.'}
                 </FormHelperText>
               </FormControl>
             </>

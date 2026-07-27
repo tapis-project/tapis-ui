@@ -24,6 +24,8 @@ export default defineConfig({
   },
   resolve: {
     dedupe: [
+      'react',
+      'react-dom',
       '@codemirror/state',
       '@codemirror/view',
       '@codemirror/language',
