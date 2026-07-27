@@ -1048,10 +1048,10 @@ export const IcicleServicesV2: Component = () => {
               <Link href="#/component-catalog" underline="hover">
                 Component Catalog
               </Link>
-              , and hands-on AI — chat, agents, MCP — in the{' '}
+              {/* , and hands-on AI — chat, agents, MCP — in the{' '}
               <Link href="#/ai-hub" underline="hover">
                 AI Hub
-              </Link>
+              </Link> */}
               . Our code is open — dig through it all at{' '}
               <Link
                 href="https://github.com/ICICLE-ai"
