@@ -315,6 +315,14 @@ export const CATALOGS: Catalog[] = [
         href: '/intelligent-edge-management-service',
         status: 'live',
       },
+      {
+        label: 'No-Code Image Lab',
+        description:
+          'Visualize OpenCV pre-processing operations with no code required.',
+        name: 'No-Code Image Lab',
+        href: '/no-code-image-lab',
+        status: 'live',
+      },
     ],
   },
   {

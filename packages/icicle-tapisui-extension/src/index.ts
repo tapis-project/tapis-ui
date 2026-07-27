@@ -103,10 +103,10 @@ const extension = createExtension({
           'component-catalog',
           'openpass',
           'harvest',
-          'patra',
+          // 'patra',
           'smart-labeler',
           'smart-segmentation',
-          // 'no-code-image-lab',
+          'no-code-image-lab',
           'intelligent-edge-management-service',
         ],
         secondaryServices: [],
@@ -343,12 +343,12 @@ extension.registerService({
   component: SmartSegmentation,
 });
 
-// extension.registerService({
-//   id: 'no-code-image-lab',
-//   sidebarDisplayName: 'No-Code Image Lab',
-//   iconName: 'globe',
-//   component: NoCodeImageLab,
-// });
+extension.registerService({
+  id: 'no-code-image-lab',
+  sidebarDisplayName: 'No-Code Image Lab',
+  iconName: 'globe',
+  component: NoCodeImageLab,
+});
 
 extension.registerService({
   id: 'harvest',
