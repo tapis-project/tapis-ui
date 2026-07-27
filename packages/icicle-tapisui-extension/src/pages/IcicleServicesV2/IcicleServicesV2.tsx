@@ -400,7 +400,20 @@ const legendGroupLabelSx = {
 // together.
 const IconLegendTile: React.FC = () => (
   <Box sx={{ mt: 1.25, pt: 1.25, borderTop: BORDER }}>
-    <Typography sx={legendGroupLabelSx}>Tapis</Typography>
+    <Typography sx={{ ...legendGroupLabelSx }}>Link Legend</Typography>
+    <Stack
+      direction="row"
+      spacing={1.1}
+      useFlexGap
+      sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
+    >
+      {LEGEND_ITEMS.map((it) => (
+        <LegendItem key={it.kind} {...it} />
+      ))}
+    </Stack>
+    <Typography sx={{ ...legendGroupLabelSx, mt: 1, pt: 1, borderTop: BORDER }}>
+      Tapis
+    </Typography>
     <Stack
       direction="row"
       spacing={1.1}
@@ -411,19 +424,6 @@ const IconLegendTile: React.FC = () => (
       <LegendItem kind="portal" label="TapisUI Page" />
       {TAPIS_LEGEND_ITEMS.map((it) => (
         <TapisLegendItem key={it.glyph} {...it} />
-      ))}
-    </Stack>
-    <Typography sx={{ ...legendGroupLabelSx, mt: 1, pt: 1, borderTop: BORDER }}>
-      Links
-    </Typography>
-    <Stack
-      direction="row"
-      spacing={1.1}
-      useFlexGap
-      sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
-    >
-      {LEGEND_ITEMS.map((it) => (
-        <LegendItem key={it.kind} {...it} />
       ))}
     </Stack>
   </Box>
