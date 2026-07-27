@@ -181,6 +181,26 @@ const Sidebar: React.FC = () => {
     );
   };
 
+  // True when an extension's betaSidebar config explicitly places 'dashboard'
+  // somewhere (e.g. icicle's Tapis section) — in that case the standalone
+  // top-of-Navbar Dashboard link below is skipped, and the 'dashboard' key
+  // below is added to sidebarItems, so it renders once, from the section.
+  // Extensions that don't reference 'dashboard' (still the vast majority —
+  // e.g. the public extension) never get a 'dashboard' key at all, so the
+  // fallback "Original sidebar logic" below — which just iterates every
+  // sidebarItems entry — can't pick it up and duplicate it. Computed before
+  // sidebarItems on purpose: whether the key gets added depends on this.
+  const dashboardPlacedInSidebar =
+    !!extension?.betaSidebar?.enabled &&
+    [
+      ...(extension.betaSidebar.noSection?.mainServices ?? []),
+      ...(extension.betaSidebar.noSection?.secondaryServices ?? []),
+      ...extension.betaSidebar.sections.flatMap((section: any) => [
+        ...section.mainServices,
+        ...(section.secondaryServices ?? []),
+      ]),
+    ].includes('dashboard');
+
   const sidebarItems: SidebarItems = {
     //Existing sidebar items
     systems: renderSidebarItem('/systems', 'data-files', 'Systems'),
@@ -210,6 +230,15 @@ const Sidebar: React.FC = () => {
     ),
     mlhub: renderSidebarItem('/mlhub', 'share', 'ML Hub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
+    // Only added when an extension's config actually places 'dashboard'
+    // somewhere — see the comment on `dashboardPlacedInSidebar` above.
+    ...(dashboardPlacedInSidebar && {
+      dashboard: renderSidebarItem(
+        landingServiceId ? '/dashboard' : '/',
+        'dashboard',
+        'Dashboard'
+      ),
+    }),
   };
 
   if (extension !== undefined) {
@@ -381,216 +410,256 @@ const Sidebar: React.FC = () => {
       />
 
       <Navbar>
-        {landingServiceId && accessToken && sidebarItems[landingServiceId]}
-        {renderSidebarItem(
-          landingServiceId ? '/dashboard' : '/',
-          'dashboard',
-          'Dashboard'
-        )}
-        {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
-        {accessToken && (
-          <>
-            {extension?.betaSidebar?.enabled ? (
-              // Beta sidebar with sections
-              <>
-                {/* No Section items - always visible */}
-                {extension.betaSidebar.noSection?.mainServices
-                  ?.filter(
-                    (serviceId: string) => serviceId !== landingServiceId
-                  )
-                  .map((serviceId: string) => sidebarItems[serviceId])}
-                {extension.betaSidebar.noSection?.secondaryServices &&
-                  extension.betaSidebar.noSection.secondaryServices.length >
-                    0 && (
-                    <>
+        {/* Flex column spanning the WHOLE nav list (not just the betaSidebar
+            branch below) — Home/Dashboard/Login items are flex items here
+            too, so a `marginTop: 'auto'` section (Archive) pushes itself
+            against everything above it, not just its own nested wrapper.
+            Nesting a second minHeight: '100%' div below the Home item would
+            double-count height against the real nav-list box and force a
+            scrollbar (that's the bug this replaced). */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100%',
+          }}
+        >
+          {landingServiceId && accessToken && sidebarItems[landingServiceId]}
+          {!dashboardPlacedInSidebar &&
+            renderSidebarItem(
+              landingServiceId ? '/dashboard' : '/',
+              'dashboard',
+              'Dashboard'
+            )}
+          {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
+          {accessToken && (
+            <>
+              {extension?.betaSidebar?.enabled ? (
+                // Beta sidebar with sections
+                <>
+                  {/* No Section items - always visible */}
+                  {extension.betaSidebar.noSection?.mainServices
+                    ?.filter(
+                      (serviceId: string) => serviceId !== landingServiceId
+                    )
+                    .map((serviceId: string) => sidebarItems[serviceId])}
+                  {extension.betaSidebar.noSection?.secondaryServices &&
+                    extension.betaSidebar.noSection.secondaryServices.length >
+                      0 && (
+                      <>
+                        <div
+                          onClick={() => toggleMoreMenu('noSection')}
+                          style={{
+                            whiteSpace: 'nowrap',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <ListItemButton
+                            sx={{
+                              color: '#707070',
+                              pl: '1.4rem',
+                              pt: '5px',
+                              pb: '5px',
+                            }}
+                          >
+                            {moreOpenStates['noSection'] ? (
+                              <ExpandLessRounded />
+                            ) : (
+                              <ExpandMoreRounded />
+                            )}
+                            {expanded && (
+                              <ListItemText
+                                primary="More"
+                                sx={{ pl: '.5rem' }}
+                              />
+                            )}
+                          </ListItemButton>
+                        </div>
+                        <Collapse in={moreOpenStates['noSection']}>
+                          {extension.betaSidebar.noSection.secondaryServices
+                            .filter(
+                              (serviceId: string) =>
+                                serviceId !== landingServiceId
+                            )
+                            .map(
+                              (serviceId: string) => sidebarItems[serviceId]
+                            )}
+                        </Collapse>
+                      </>
+                    )}
+
+                  {/* Sectioned items */}
+                  {extension.betaSidebar.sections.map((section: any) => (
+                    <div
+                      key={section.name}
+                      // `minimal` (Archive) pushes itself to the true bottom of
+                      // the flex column via margin, not a fixed gap — reads as
+                      // separated from the two groups above instead of a third
+                      // peer, and collapses to a normal gap once content already
+                      // fills the pane and there's no slack left to push into.
+                      style={{ marginTop: section.minimal ? 'auto' : 0 }}
+                    >
                       <div
-                        onClick={() => toggleMoreMenu('noSection')}
+                        onClick={() => toggleSection(section.name)}
                         style={{
                           whiteSpace: 'nowrap',
                           cursor: 'pointer',
+                          marginTop: section.minimal ? '10px' : '2px',
                         }}
                       >
                         <ListItemButton
                           sx={{
-                            color: '#707070',
+                            // `minimal` sections render a quiet, recessed header
+                            // (muted, non-bold, a dashed top rule instead of a
+                            // solid group boundary) so low-emphasis groups like
+                            // Archive don't beckon; the default is the bold
+                            // group heading.
+                            color: section.minimal ? '#909090' : '#505050',
                             pl: '1.4rem',
-                            pt: '5px',
-                            pb: '5px',
+                            pt: section.minimal ? '2px' : '3px',
+                            pb: section.minimal ? '2px' : '5px',
+                            borderTop: section.minimal
+                              ? '1px dashed rgba(112,122,134,0.35)'
+                              : 'none',
+                            fontWeight: section.minimal ? 'normal' : 'bold',
+                            justifyContent: 'space-between',
                           }}
                         >
-                          {moreOpenStates['noSection'] ? (
-                            <ExpandLessRounded />
-                          ) : (
-                            <ExpandMoreRounded />
-                          )}
                           {expanded && (
-                            <ListItemText primary="More" sx={{ pl: '.5rem' }} />
+                            <ListItemText
+                              primary={section.name}
+                              sx={{
+                                '& .MuiListItemText-primary': {
+                                  fontWeight: section.minimal
+                                    ? 'normal'
+                                    : 'bold',
+                                  fontSize: section.minimal
+                                    ? '0.75rem'
+                                    : '0.9rem',
+                                },
+                              }}
+                            />
+                          )}
+                          {sectionOpenStates[section.name] ? (
+                            <ExpandLessRounded
+                              fontSize={section.minimal ? 'small' : 'medium'}
+                            />
+                          ) : (
+                            <ExpandMoreRounded
+                              fontSize={section.minimal ? 'small' : 'medium'}
+                            />
                           )}
                         </ListItemButton>
                       </div>
-                      <Collapse in={moreOpenStates['noSection']}>
-                        {extension.betaSidebar.noSection.secondaryServices
+                      <Collapse in={sectionOpenStates[section.name]}>
+                        {/* Main services in section */}
+                        {section.mainServices
                           .filter(
                             (serviceId: string) =>
                               serviceId !== landingServiceId
                           )
                           .map((serviceId: string) => sidebarItems[serviceId])}
-                      </Collapse>
-                    </>
-                  )}
 
-                {/* Sectioned items */}
-                {extension.betaSidebar.sections.map((section: any) => (
-                  <div key={section.name}>
-                    <div
-                      onClick={() => toggleSection(section.name)}
-                      style={{
-                        whiteSpace: 'nowrap',
-                        cursor: 'pointer',
-                        marginTop: section.minimal ? '2px' : '8px',
-                      }}
-                    >
-                      <ListItemButton
-                        sx={{
-                          // `minimal` sections render a quiet, recessed header
-                          // (muted, non-bold, tighter) so low-emphasis groups
-                          // like Archive don't beckon; the default is the bold
-                          // group heading.
-                          color: section.minimal ? '#909090' : '#505050',
-                          pl: '1.4rem',
-                          pt: section.minimal ? '2px' : '8px',
-                          pb: section.minimal ? '2px' : '8px',
-                          fontWeight: section.minimal ? 'normal' : 'bold',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        {expanded && (
-                          <ListItemText
-                            primary={section.name}
-                            sx={{
-                              '& .MuiListItemText-primary': {
-                                fontWeight: section.minimal ? 'normal' : 'bold',
-                                fontSize: section.minimal
-                                  ? '0.75rem'
-                                  : '0.9rem',
-                              },
-                            }}
-                          />
-                        )}
-                        {sectionOpenStates[section.name] ? (
-                          <ExpandLessRounded
-                            fontSize={section.minimal ? 'small' : 'medium'}
-                          />
-                        ) : (
-                          <ExpandMoreRounded
-                            fontSize={section.minimal ? 'small' : 'medium'}
-                          />
-                        )}
-                      </ListItemButton>
-                    </div>
-                    <Collapse in={sectionOpenStates[section.name]}>
-                      {/* Main services in section */}
-                      {section.mainServices
-                        .filter(
-                          (serviceId: string) => serviceId !== landingServiceId
-                        )
-                        .map((serviceId: string) => sidebarItems[serviceId])}
-
-                      {/* Secondary services in section */}
-                      {section.secondaryServices &&
-                        section.secondaryServices.length > 0 && (
-                          <>
-                            <div
-                              onClick={() => toggleMoreMenu(section.name)}
-                              style={{
-                                whiteSpace: 'nowrap',
-                                cursor: 'pointer',
-                              }}
-                            >
-                              <ListItemButton
-                                sx={{
-                                  color: '#707070',
-                                  pl: '1.4rem',
-                                  pt: '3px',
-                                  pb: '3px',
+                        {/* Secondary services in section */}
+                        {section.secondaryServices &&
+                          section.secondaryServices.length > 0 && (
+                            <>
+                              <div
+                                onClick={() => toggleMoreMenu(section.name)}
+                                style={{
+                                  whiteSpace: 'nowrap',
+                                  cursor: 'pointer',
                                 }}
                               >
-                                {moreOpenStates[section.name] ? (
-                                  <ExpandLessRounded fontSize="small" />
-                                ) : (
-                                  <ExpandMoreRounded fontSize="small" />
-                                )}
-                                {expanded && (
-                                  <ListItemText
-                                    primary="More"
-                                    sx={{
-                                      pl: '.5rem',
-                                      '& .MuiListItemText-primary': {
-                                        fontSize: '0.8rem',
-                                      },
-                                    }}
-                                  />
-                                )}
-                              </ListItemButton>
-                            </div>
-                            <Collapse in={moreOpenStates[section.name]}>
-                              {section.secondaryServices
-                                .filter(
-                                  (serviceId: string) =>
-                                    serviceId !== landingServiceId
-                                )
-                                .map(
-                                  (serviceId: string) => sidebarItems[serviceId]
-                                )}
-                            </Collapse>
-                          </>
-                        )}
-                    </Collapse>
-                  </div>
-                ))}
-              </>
-            ) : (
-              // Original sidebar logic
-              <>
-                {mainSidebarItems.map((item) => item)}
-                {secondarySidebarItems.length > 0 &&
-                  extension !== undefined &&
-                  extension.showSecondarySideBar != false && (
-                    <>
-                      <div
-                        onClick={toggleSecondaryItems}
-                        style={{
-                          whiteSpace: 'nowrap',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <ListItemButton
-                          sx={{
-                            color: '#707070',
-                            pl: '1.4rem',
-                            pt: '5px',
-                            pb: '5px',
+                                <ListItemButton
+                                  sx={{
+                                    color: '#707070',
+                                    pl: '1.4rem',
+                                    pt: '3px',
+                                    pb: '3px',
+                                  }}
+                                >
+                                  {moreOpenStates[section.name] ? (
+                                    <ExpandLessRounded fontSize="small" />
+                                  ) : (
+                                    <ExpandMoreRounded fontSize="small" />
+                                  )}
+                                  {expanded && (
+                                    <ListItemText
+                                      primary="More"
+                                      sx={{
+                                        pl: '.5rem',
+                                        '& .MuiListItemText-primary': {
+                                          fontSize: '0.8rem',
+                                        },
+                                      }}
+                                    />
+                                  )}
+                                </ListItemButton>
+                              </div>
+                              <Collapse in={moreOpenStates[section.name]}>
+                                {section.secondaryServices
+                                  .filter(
+                                    (serviceId: string) =>
+                                      serviceId !== landingServiceId
+                                  )
+                                  .map(
+                                    (serviceId: string) =>
+                                      sidebarItems[serviceId]
+                                  )}
+                              </Collapse>
+                            </>
+                          )}
+                      </Collapse>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                // Original sidebar logic
+                <>
+                  {mainSidebarItems.map((item) => item)}
+                  {secondarySidebarItems.length > 0 &&
+                    extension !== undefined &&
+                    extension.showSecondarySideBar != false && (
+                      <>
+                        <div
+                          onClick={toggleSecondaryItems}
+                          style={{
+                            whiteSpace: 'nowrap',
+                            cursor: 'pointer',
                           }}
                         >
-                          {openSecondary ? (
-                            <ExpandLessRounded />
-                          ) : (
-                            <ExpandMoreRounded />
-                          )}
-                          {expanded && (
-                            <ListItemText primary="More" sx={{ pl: '.5rem' }} />
-                          )}
-                        </ListItemButton>
-                      </div>
-                      <Collapse in={openSecondary}>
-                        {secondarySidebarItems.map((item) => item)}
-                      </Collapse>
-                    </>
-                  )}
-              </>
-            )}
-          </>
-        )}
+                          <ListItemButton
+                            sx={{
+                              color: '#707070',
+                              pl: '1.4rem',
+                              pt: '5px',
+                              pb: '5px',
+                            }}
+                          >
+                            {openSecondary ? (
+                              <ExpandLessRounded />
+                            ) : (
+                              <ExpandMoreRounded />
+                            )}
+                            {expanded && (
+                              <ListItemText
+                                primary="More"
+                                sx={{ pl: '.5rem' }}
+                              />
+                            )}
+                          </ListItemButton>
+                        </div>
+                        <Collapse in={openSecondary}>
+                          {secondarySidebarItems.map((item) => item)}
+                        </Collapse>
+                      </>
+                    )}
+                </>
+              )}
+            </>
+          )}
+        </div>
       </Navbar>
       <div style={{ flexShrink: 0 }}>
         <div style={{ margin: '.6rem', marginBottom: '.4rem' }}>

@@ -280,6 +280,156 @@ const MiniLinkButton: React.FC<{ link: ServiceLink }> = ({ link }) => {
 };
 
 /**
+ * The kind → glyph mapping as a standalone element (no link, no tooltip), for
+ * the icon legend. Mirrors the kind branches MiniLinkButton renders so the
+ * legend always shows the exact marks users see on the rows.
+ */
+const KindGlyph: React.FC<{ kind: ServiceLinkKind }> = ({ kind }) => {
+  if (kind === 'pod') return <FontIcon name="visualization" size="0.6rem" />;
+  if (kind === 'portal')
+    return (
+      <Box
+        component="span"
+        sx={{ fontFamily: 'monospace', fontSize: '0.58rem', fontWeight: 700 }}
+      >
+        UI
+      </Box>
+    );
+  const Glyph = LINK_ICON[kind];
+  return <Glyph sx={{ fontSize: '0.85rem', flexShrink: 0 }} />;
+};
+
+// The core Tapis platform icon-font glyphs — the exact iconName each service
+// uses in the main sidebar (see Sidebar.tsx's sidebarItems + the Tapis
+// section registered in index.ts), so a link that points at a named Tapis
+// service (Systems/Files/Jobs/Apps/Workflows/Pods) carries the identical mark
+// a user already recognizes from the side pane, and the legend calls it out
+// as its own group rather than mixing it into the generic link-kind glyphs.
+const TAPIS_LEGEND_ITEMS: { glyph: string; label: string }[] = [
+  { glyph: 'data-files', label: 'Systems' },
+  { glyph: 'folder', label: 'Files' },
+  { glyph: 'jobs', label: 'Jobs' },
+  { glyph: 'applications', label: 'Apps' },
+  { glyph: 'publications', label: 'Workflows' },
+  { glyph: 'visualization', label: 'Pods' },
+];
+
+/** One Tapis-icon + label pair — always green (a page inside TapisUI). */
+const TapisLegendItem: React.FC<{ glyph: string; label: string }> = ({
+  glyph,
+  label,
+}) => (
+  <Stack
+    direction="row"
+    spacing={0.5}
+    alignItems="center"
+    sx={{ whiteSpace: 'nowrap' }}
+  >
+    <Box
+      sx={{
+        width: 20,
+        height: 18,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: STATUS_COLOR.live,
+        border: BORDER,
+        borderRadius: 1,
+        flexShrink: 0,
+      }}
+    >
+      <FontIcon name={glyph} size="0.68rem" />
+    </Box>
+    <Typography sx={fineSx}>{label}</Typography>
+  </Stack>
+);
+
+// The generic destination-kind glyphs — what a link resolves to when it
+// ISN'T one of the named Tapis services above. Ordered in-portal first
+// (green), then off-platform (purple) — the same green/purple language the
+// row buttons and status dots use. ('pod' is omitted here — a live deployed
+// pod renders the same Pods glyph already shown in the Tapis group above.)
+const LEGEND_ITEMS: { kind: ServiceLinkKind; label: string }[] = [
+  { kind: 'repo', label: 'Code on GitHub' },
+  { kind: 'docs', label: 'Docs & guides' },
+  { kind: 'pypi', label: 'PyPI package' },
+  { kind: 'npm', label: 'npm package' },
+  { kind: 'site', label: 'External site' },
+];
+
+/** One glyph + label pair; glyph boxed and colored like the mini row buttons. */
+const LegendItem: React.FC<{ kind: ServiceLinkKind; label: string }> = ({
+  kind,
+  label,
+}) => (
+  <Stack
+    direction="row"
+    spacing={0.5}
+    alignItems="center"
+    sx={{ whiteSpace: 'nowrap' }}
+  >
+    <Box
+      sx={{
+        width: 20,
+        height: 18,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: kind === 'portal' ? STATUS_COLOR.live : STATUS_COLOR.ext,
+        border: BORDER,
+        borderRadius: 1,
+        flexShrink: 0,
+      }}
+    >
+      <KindGlyph kind={kind} />
+    </Box>
+    <Typography sx={fineSx}>{label}</Typography>
+  </Stack>
+);
+
+const legendGroupLabelSx = {
+  ...fineSx,
+  fontSize: '0.58rem',
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  mb: 0.5,
+} as const;
+
+// Inside the title tile, hairline-divided under the mini-stats. Split top
+// (Tapis) / bottom (generic links) so the two glyph vocabularies never blur
+// together.
+const IconLegendTile: React.FC = () => (
+  <Box sx={{ mt: 1.25, pt: 1.25, borderTop: BORDER }}>
+    <Typography sx={legendGroupLabelSx}>Tapis</Typography>
+    <Stack
+      direction="row"
+      spacing={1.1}
+      useFlexGap
+      sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
+    >
+      {/* generic "somewhere in TapisUI" glyph leads, then the named services */}
+      <LegendItem kind="portal" label="TapisUI Page" />
+      {TAPIS_LEGEND_ITEMS.map((it) => (
+        <TapisLegendItem key={it.glyph} {...it} />
+      ))}
+    </Stack>
+    <Typography sx={{ ...legendGroupLabelSx, mt: 1, pt: 1, borderTop: BORDER }}>
+      Links
+    </Typography>
+    <Stack
+      direction="row"
+      spacing={1.1}
+      useFlexGap
+      sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
+    >
+      {LEGEND_ITEMS.map((it) => (
+        <LegendItem key={it.kind} {...it} />
+      ))}
+    </Stack>
+  </Box>
+);
+
+/**
  * One service row (ready or upcoming). Collapsed it stays a single tidy line
  * (label ellipsis-truncated) with a strip of glanceable destination glyphs
  * on the right — one tiny button per link. Clicking the row toggles the FULL
@@ -368,7 +518,10 @@ const ServiceRow: React.FC<{ item: ServiceItem }> = ({ item }) => {
         </Box>
       </Stack>
       <Collapse in={open}>
-        <Box sx={{ pl: '34px', pr: 1.5, pb: 0.85 }}>
+        {/* flush-left with the row start (matches the header Stack's pl) rather
+            than hanging-indented under the label — keeps every row's text on one
+            even left margin. */}
+        <Box sx={{ pl: 1.5, pr: 1.5, pb: 0.85 }}>
           <Typography sx={{ ...fineSx, lineHeight: 1.45 }}>
             {item.description}
           </Typography>
@@ -852,6 +1005,8 @@ export const IcicleServicesV2: Component = () => {
                 hint="Each catalog below mirrors one of the original as-a-Service pages — click its code chip to open the full page."
               />
             </Stack>
+            {/* icon legend — under the mini-stats in the title tile */}
+            <IconLegendTile />
           </Box>
           <Box
             sx={{

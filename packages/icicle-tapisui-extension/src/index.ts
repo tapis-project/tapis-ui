@@ -50,7 +50,7 @@ const extension = createExtension({
     'workflows',
     'pods',
     'ai-hub',
-    'ml-hub',
+    'mlhub',
     'ml-edge',
     'open-web-ui',
     'jupyter-lab',
@@ -78,7 +78,59 @@ const extension = createExtension({
   ],
   betaSidebar: {
     enabled: true,
+    // Grouped like the public extension's sidebar (named sections with real
+    // subheaders) instead of one flat noSection + "More" dump — ICICLE's own
+    // services get top billing (open by default), Tapis platform services get
+    // their own quieter group below, and the former as-a-Service pages stay
+    // tucked away in Archive at the very bottom.
     sections: [
+      {
+        // Every ICICLE-specific service/portal not on the Services Board.
+        // Open by default — this is the group most icicleai.tapis.io users
+        // actually want on landing.
+        name: 'ICICLE Services',
+        defaultOpen: true,
+        mainServices: [
+          'ai-hub',
+          'open-web-ui',
+          'jupyter-lab',
+          'analytics',
+          'training-catalog',
+          'icicle-chatbook',
+          'food-flow-portal',
+          'feast',
+          'food-security-sandbox',
+          'component-catalog',
+          'openpass',
+          'harvest',
+          'patra',
+          'smart-labeler',
+          'smart-segmentation',
+          // 'no-code-image-lab',
+          'intelligent-edge-management-service',
+        ],
+        secondaryServices: [],
+      },
+      {
+        // The core Tapis platform services — same set + order as the public
+        // extension's "Core Services" section, plus ML Hub, ML Edge, and the
+        // generic Tapis Dashboard (normally pinned above the whole sidebar —
+        // 'dashboard' opts icicle out of that and files it in here instead).
+        name: 'Tapis',
+        defaultOpen: false,
+        mainServices: [
+          'systems',
+          'apps',
+          'jobs',
+          'files',
+          'workflows',
+          'pods',
+          'mlhub',
+          'ml-edge',
+          'dashboard',
+        ],
+        secondaryServices: [],
+      },
       {
         // The six ICICLE as-a-Service pages (plus the former Portal Home) are
         // now indexed on the home Services Board (each catalog entry links back
@@ -104,33 +156,7 @@ const extension = createExtension({
     ],
     noSection: {
       mainServices: ['home'],
-      secondaryServices: [
-        'workflows',
-        'pods',
-        'ai-hub',
-        'ml-hub',
-        'ml-edge',
-        'open-web-ui',
-        'jupyter-lab',
-        'analytics',
-        'training-catalog',
-        'icicle-chatbook',
-        'food-flow-portal',
-        'feast',
-        'food-security-sandbox',
-        'component-catalog',
-        'openpass',
-        'systems',
-        'jobs',
-        'files',
-        'apps',
-        'harvest',
-        'patra',
-        'smart-labeler',
-        'smart-segmentation',
-        'no-code-image-lab',
-        'intelligent-edge-management-service',
-      ],
+      secondaryServices: [],
     },
   },
   authMethods: ['implicit', 'password'],
@@ -317,12 +343,12 @@ extension.registerService({
   component: SmartSegmentation,
 });
 
-extension.registerService({
-  id: 'no-code-image-lab',
-  sidebarDisplayName: 'No-Code Image Lab',
-  iconName: 'globe',
-  component: NoCodeImageLab,
-});
+// extension.registerService({
+//   id: 'no-code-image-lab',
+//   sidebarDisplayName: 'No-Code Image Lab',
+//   iconName: 'globe',
+//   component: NoCodeImageLab,
+// });
 
 extension.registerService({
   id: 'harvest',

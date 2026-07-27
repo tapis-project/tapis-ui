@@ -123,11 +123,10 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
-        label:
-          'Patra Model Cards (Model Sheets): Data and model cards for provenance-rich AI model documentation',
+        label: 'Patra Model Cards',
         description:
-          'The Patra knowledge base serves data and model cards — provenance, versions, and deployment metadata for AI models.',
-        name: 'Patra Model Cards (Model Sheets)',
+          'Manage information about AI models, datasets and their active use; also accessible through MLHub.',
+        name: 'Patra Model Cards',
         href: 'https://patra.pods.icicleai.tapis.io/',
         status: 'ext',
         links: [
