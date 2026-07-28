@@ -278,6 +278,8 @@ const DeploymentDialog = ({
           model_name: data.model.name,
           params: data.parameters,
           deployment_modality: data.deploymentModality,
+          replicas: data.replicas,
+          parallelism_strategies: data.parallelismStrategies,
         },
       },
       {
@@ -634,6 +636,20 @@ const ParameterField = ({
             required={parameter.required}
             error={Boolean(error)}
             helperText={error?.message ?? parameter.description}
+            autoComplete={`dont-autofill-${parameter.name}`} // Prevent autofill
+            slotProps={{
+              input: {
+                sx: {
+                  '& input:-webkit-autofill': {
+                    // Adjust this to match your theme background and text color
+                    WebkitBoxShadow: '0 0 0 100px #ffffff inset !important',
+                    WebkitTextFillColor: '#000000 !important',
+                    // Fixes the transition lag when autofill triggers
+                    transition: 'background-color 5000s ease-in-out 0s',
+                  },
+                },
+              },
+            }}
           >
             {parameter.choices.map((choice) => (
               <MenuItem
@@ -666,8 +682,18 @@ const ParameterField = ({
                 ? `(Secret) ${parameter.description ?? ''}`
                 : parameter.description)
             }
+            autoComplete={`dont-autofill-${parameter.name}`} // Prevent autofill
             slotProps={{
               input: {
+                sx: {
+                  '& input:-webkit-autofill': {
+                    // Adjust this to match your theme background and text color
+                    WebkitBoxShadow: '0 0 0 100px #ffffff inset !important',
+                    WebkitTextFillColor: '#000000 !important',
+                    // Fixes the transition lag when autofill triggers
+                    transition: 'background-color 5000s ease-in-out 0s',
+                  },
+                },
                 endAdornment: parameter.secret ? (
                   <InputAdornment position="end">
                     <IconButton
@@ -695,12 +721,10 @@ const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
   return (
     <Accordion sx={accordionSx}>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Box>
-          <Typography sx={{ fontWeight: 600 }}>Advanced Settings</Typography>
-          <Typography variant="caption">
-            Replication &amp; Parallelism
-          </Typography>
-        </Box>
+        <SectionHeader
+          title="Advanced Settings"
+          caption="Replication & Parallelism"
+        />
       </AccordionSummary>
       <AccordionDetails
         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
@@ -715,6 +739,11 @@ const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
                 title="Replicas"
                 caption="Specify the total number of instances to deploy"
               />
+              <Alert severity="info">
+                Note: This is not the same as the number of nodes this model
+                will be deployed across. A single instance (replica) may require
+                multiple nodes and sharding.
+              </Alert>
               <DiscreteIntegerSlider
                 min={1}
                 sliderMin={0}
@@ -736,9 +765,16 @@ const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
           render={({ field, fieldState }) => (
             <>
               <SectionHeader
-                title="Parallelism"
-                caption="How the model is sharded across nodes"
+                title="Sharding"
+                caption="How the model is sharded across nodes. Applies to all replicas"
               />
+              {strategy.config.supported_paralellism_strategies.length ===
+                0 && (
+                <Alert severity="warning">
+                  No sharding strategies availble for the current selected
+                  deployment strategy ({strategy.name})
+                </Alert>
+              )}
               <FormControl fullWidth error={Boolean(fieldState.error)}>
                 <InputLabel id="parallelism-strategies-label">
                   Parallelism Strategies

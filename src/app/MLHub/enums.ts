@@ -197,7 +197,7 @@ export const deploymentStatusChipColor: Record<
 };
 
 export const deploymentStatusLabelMap: Record<DeploymentStatus, string> = {
-  NotDeployed: '\u{1F4E6} Not Deployed',
+  NotDeployed: '\u{1F4E6} Pending',
   Running: '\u2705 Running',
   Stopped: '\u23F9\uFE0F Stopped',
   Failed: '\u274C Failed',

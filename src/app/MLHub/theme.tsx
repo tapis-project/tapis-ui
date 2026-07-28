@@ -1,8 +1,33 @@
 import { createTheme } from '@mui/material/styles';
+import { yellow } from '@mui/material/colors';
+import '@mui/material/SvgIcon';
+
+// Add a yellow to the theme pallet
+declare module '@mui/material/styles' {
+  interface Palette {
+    yellow: Palette['primary'];
+  }
+  interface PaletteOptions {
+    yellow?: PaletteOptions['primary'];
+  }
+}
+
+// Add yellow as an option for color on MUI svg icons
+declare module '@mui/material/SvgIcon' {
+  interface SvgIconPropsColorOverrides {
+    yellow: true;
+  }
+}
 
 const theme = createTheme({
   cssVariables: true,
   palette: {
+    yellow: {
+      main: yellow[800], // Using 600 ensures decent visibility
+      light: yellow[600],
+      dark: yellow[900],
+      contrastText: '#000000',
+    },
     primary: {
       main: '#6366f1',
       light: '#818cf8',

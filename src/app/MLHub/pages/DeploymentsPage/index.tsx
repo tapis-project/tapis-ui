@@ -15,8 +15,6 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { DataGrid, type GridColDef, GridToolbar } from '@mui/x-data-grid';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import StopIcon from '@mui/icons-material/Stop';
-import ReplayIcon from '@mui/icons-material/Replay';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { Deployment } from '../../types';
 import DeploymentDialog from '../../_components/DeploymentDialog';
@@ -27,48 +25,36 @@ import {
 } from '../../_components/constants';
 import { useNavigate } from '../../_context/NavContext';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import * as Deployments from '@mlhub/deployments-ts-sdk';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import {
+  AccessTime,
+  Autorenew,
+  Block,
+  Dangerous,
+  HelpOutline,
+  SmartToy,
+  StopCircle,
+} from '@mui/icons-material';
 
-interface DeploymentsTabProps {
-  deployments: Deployment[];
-  onDeploymentsChange: (deployments: Deployment[]) => void;
-  models: Array<{
-    id: string;
-    name: string;
-    version: string;
-    libraries: string[];
-  }>;
-}
-
-export default function DeploymentsPage({
-  deployments,
-  onDeploymentsChange,
-}: DeploymentsTabProps) {
+export default function DeploymentsPage() {
   const [dialog, setDialog] = React.useState<string | undefined>(undefined);
   const [popoverAnchor, setPopoverAnchor] = React.useState<HTMLElement | null>(
     null
   );
   const [popoverRow, setPopoverRow] = React.useState<Deployment | null>(null);
+  const { data } = Hooks.Deployments.useList();
+  const deployments = data?.result || [];
   const { navigate } = useNavigate();
   const { username } = useTapisConfig();
 
-  const handleStop = (id: string) => {
-    onDeploymentsChange(
-      deployments.map((d) => (d.id === id ? { ...d, status: 'Stopped' } : d))
-    );
-  };
-
-  const handleRollback = (id: string) => {
-    onDeploymentsChange(
-      deployments.map((d) => (d.id === id ? { ...d, status: 'Running' } : d))
-    );
-  };
-
   const columns: GridColDef[] = [
     {
-      field: 'modelName',
-      headerName: 'Model',
+      field: 'name',
+      headerName: 'Deployment Name',
       flex: 1.2,
-      minWidth: 180,
+      minWidth: 200,
+      valueGetter: (_, row) => row.name,
       renderCell: (params) => (
         <Box
           sx={{
@@ -93,69 +79,59 @@ export default function DeploymentsPage({
       ),
     },
     {
-      field: 'environment',
-      headerName: 'Environment',
-      width: 120,
+      field: 'modelName',
+      headerName: 'Model',
+      flex: 1.2,
+      minWidth: 120,
       renderCell: (params) => (
-        <Chip
-          label={params.value}
-          size="small"
-          color={envColorMap[params.value as Deployment['environment']]}
-          variant="outlined"
-          sx={{ textTransform: 'capitalize', fontWeight: 600 }}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            '&:hover': {
+              '& .MuiTypography-root': {
+                color: 'primary.main',
+                textDecoration: 'underline',
+              },
+            },
+          }}
+          onClick={() =>
+            navigate(
+              `/models/${params.row.model.author}/${params.row.model.name}`
+            )
+          }
+        >
+          <SmartToy sx={{ color: 'secondary.main', fontSize: 18 }} />
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              {params.row.model.name}
+            </Typography>
+            <Typography variant="caption">
+              by {params.row.model.author}
+            </Typography>
+          </Box>
+        </Box>
       ),
     },
     {
-      field: 'status',
+      field: 'state',
       headerName: 'Status',
       width: 130,
       renderCell: (params) => (
         <Chip
           label={
-            deploymentStatusLabelMap[params.value as Deployment['status']] ||
+            deploymentStatusLabelMap[params.value as Deployments.State] ||
             params.value
           }
           size="small"
           color={
-            deploymentStatusChipColor[params.value as Deployment['status']] ||
+            deploymentStatusChipColor[params.value as Deployments.State] ||
             'default'
           }
           sx={{ fontWeight: 500 }}
         />
-      ),
-    },
-    {
-      field: 'endpoint',
-      headerName: 'Endpoint',
-      flex: 1.5,
-      minWidth: 200,
-      renderCell: (params) => (
-        <Typography
-          variant="body2"
-          component="code"
-          sx={{
-            bgcolor: (theme) =>
-              theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100',
-            color: (theme) =>
-              theme.palette.mode === 'dark' ? 'grey.200' : 'text.secondary',
-            px: 0.75,
-            py: 0.25,
-            borderRadius: 1,
-            fontSize: '0.7rem',
-            fontFamily: 'monospace',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            maxWidth: '100%',
-            display: 'block',
-            border: (theme) =>
-              theme.palette.mode === 'dark' ? '1px solid' : 'none',
-            borderColor: 'divider',
-          }}
-        >
-          {params.value}
-        </Typography>
       ),
     },
     {
@@ -164,25 +140,45 @@ export default function DeploymentsPage({
       width: 90,
       align: 'center',
       headerAlign: 'center',
-      valueGetter: (_value, row) => `${row.replicas}x`,
+      valueGetter: (_value, row) => `x ${row.replicas?.count ?? '?'}`,
     },
     {
-      field: 'resources',
-      headerName: 'Resources',
-      width: 110,
-      valueGetter: (_value, row) => `${row.cpu} / ${row.memory}`,
-      renderCell: (params) => (
-        <Typography variant="body2" color="text.secondary">
-          {params.value}
-        </Typography>
-      ),
+      field: 'parallelism_strategies',
+      headerName: 'Sharding',
+      minWidth: 150,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => {
+        const parallelismStrategies =
+          (params.row
+            .parallelism_strategies as Deployments.ParallelismStrategy[]) ?? [];
+
+        if (parallelismStrategies.length === 0) {
+          return <Chip size="small" label={'None'} />;
+        }
+
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '4px',
+              p: '4px',
+              flexDirection: 'column',
+            }}
+          >
+            {parallelismStrategies.map((ps) => (
+              <Chip size="small" label={ps} />
+            ))}
+          </Box>
+        );
+      },
     },
     {
-      field: 'deployedAt',
+      field: 'createdAt',
       headerName: 'Deployed At',
-      width: 130,
+      width: 200,
       valueGetter: (_value, row) =>
-        row.deployedAt ? new Date(row.deployedAt).toLocaleString() : '—',
+        row.created_at ? new Date(row.created_at).toLocaleString() : '—',
     },
     {
       field: 'actions',
@@ -204,12 +200,37 @@ export default function DeploymentsPage({
     },
   ];
 
-  const envCounts = React.useMemo(() => {
-    const counts = { test: 0, production: 0, active: 0 };
+  const statusCounts = React.useMemo(() => {
+    const counts = {
+      total: deployments.length,
+      running: 0,
+      stopped: 0,
+      notDeployed: 0,
+      failed: 0,
+      unknown: 0,
+      blocked: 0,
+    };
     deployments.forEach((d) => {
-      if (d.environment === 'test') counts.test++;
-      else counts.production++;
-      if (d.status === 'Running') counts.active++;
+      switch (d.state) {
+        case Deployments.State.Running:
+          counts.running++;
+          return;
+        case Deployments.State.Stopped:
+          counts.stopped++;
+          return;
+        case Deployments.State.NotDeployed:
+          counts.notDeployed++;
+          return;
+        case Deployments.State.Failed:
+          counts.failed++;
+          return;
+        case Deployments.State.Blocked:
+          counts.blocked++;
+          return;
+        case Deployments.State.Unknown:
+          counts.unknown++;
+          return;
+      }
     });
     return counts;
   }, [deployments]);
@@ -242,28 +263,46 @@ export default function DeploymentsPage({
       >
         {[
           {
-            label: 'Total Deployments',
+            label: 'Total',
             count: deployments.length,
-            icon: '🚀',
+            icon: <RocketLaunchIcon color="primary" />,
             color: 'primary' as const,
           },
           {
-            label: 'Services',
-            count: envCounts.active,
-            icon: '✅',
+            label: 'Pending',
+            count: statusCounts.notDeployed,
+            icon: <AccessTime color="info" />,
+            color: 'info' as const,
+          },
+          {
+            label: 'Running',
+            count: statusCounts.running,
+            icon: <Autorenew color="success" />,
             color: 'success' as const,
           },
           {
-            label: 'Batch Jobs',
-            count: envCounts.production,
-            icon: '🔄',
-            color: 'error' as const,
+            label: 'Stopped',
+            count: statusCounts.stopped,
+            icon: <StopCircle color="yellow" />,
+            color: 'yellow' as const,
           },
           {
-            label: 'Test',
-            count: envCounts.test,
-            icon: '🧪',
+            label: 'Unknown',
+            count: statusCounts.unknown,
+            icon: <HelpOutline color="warning" />,
             color: 'warning' as const,
+          },
+          {
+            label: 'Blocked',
+            count: statusCounts.blocked,
+            icon: <Block color="warning" />,
+            color: 'warning' as const,
+          },
+          {
+            label: 'Failed',
+            count: statusCounts.failed,
+            icon: <Dangerous color="error" />,
+            color: 'error' as const,
           },
         ].map((stat) => (
           <Card
@@ -273,8 +312,9 @@ export default function DeploymentsPage({
               minWidth: 150,
               background: (theme) =>
                 alpha(theme.palette[stat.color].main, 0.08),
-              borderLeft: '4px solid',
-              borderColor: `${stat.color}.main`,
+              border: '1px solid',
+              borderColor: (theme) =>
+                alpha(theme.palette[stat.color].main, 0.15),
             }}
           >
             <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
@@ -314,6 +354,7 @@ export default function DeploymentsPage({
             startIcon={<RocketLaunchIcon />}
             onClick={() => setDialog('deployments')}
             size="small"
+            color="success"
           >
             New Deployment
           </Button>
@@ -334,7 +375,7 @@ export default function DeploymentsPage({
               quickFilterProps: { debounceMs: 500 },
             },
           }}
-          autoHeight
+          getRowHeight={() => 'auto'}
           getRowSpacing={(params) => ({
             top: params.isFirstVisible ? 0 : 0,
             bottom: 0,
@@ -392,7 +433,7 @@ export default function DeploymentsPage({
           >
             View Details
           </Button>
-          {popoverRow?.status === 'Running' && (
+          {/* {popoverRow?.status === 'Running' && (
             <Button
               fullWidth
               startIcon={<StopIcon sx={{ fontSize: 18 }} />}
@@ -421,15 +462,15 @@ export default function DeploymentsPage({
             >
               Retry / Rollback
             </Button>
-          )}
+          )} */}
         </Box>
       </Popover>
 
-      {/* <DeploymentDialog
+      <DeploymentDialog
         open={dialog === 'deployments'}
         onClose={() => setDialog(undefined)}
         author={username}
-      /> */}
+      />
     </Box>
   );
 }
