@@ -21,6 +21,7 @@ import {
   ContentCopy,
   ChatBubbleOutline,
   PersonOutline,
+  HomeRounded,
 } from '@mui/icons-material';
 import { LoadingButton as Button } from '@mui/lab';
 import {
@@ -166,12 +167,14 @@ const Sidebar: React.FC = () => {
     to: string,
     icon: string | undefined,
     text: string,
-    accent?: { accentLeft?: boolean; accentLeftColor?: string }
+    accent?: { accentLeft?: boolean; accentLeftColor?: string },
+    iconElement?: React.ReactNode
   ) => {
     return (
       <NavItem
         to={to}
         icon={icon}
+        iconElement={iconElement}
         key={uuidv4()}
         accentLeft={accent?.accentLeft}
         accentLeftColor={accent?.accentLeftColor}
@@ -247,7 +250,11 @@ const Sidebar: React.FC = () => {
       sidebarItems[id] = renderSidebarItem(
         service.route,
         service.iconName,
-        service.sidebarDisplayName
+        service.sidebarDisplayName,
+        undefined,
+        // The icon font has no house glyph — the landing/Services-Board item
+        // gets a real MUI home icon instead of whatever iconName it declares.
+        id === 'home' ? <HomeRounded fontSize="small" /> : undefined
       );
     }
   }
@@ -497,7 +504,10 @@ const Sidebar: React.FC = () => {
                       // separated from the two groups above instead of a third
                       // peer, and collapses to a normal gap once content already
                       // fills the pane and there's no slack left to push into.
-                      style={{ marginTop: section.minimal ? 'auto' : 0 }}
+                      style={{
+                        marginTop: section.minimal ? 'auto' : 0,
+                        flexShrink: 0,
+                      }}
                     >
                       <div
                         onClick={() => toggleSection(section.name)}

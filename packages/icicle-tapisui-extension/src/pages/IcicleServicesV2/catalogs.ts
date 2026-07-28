@@ -465,10 +465,10 @@ export const CATALOGS: Catalog[] = [
 export const DOAAS = {
   code: 'DOaaS',
   expansion: 'ICICLE Domain-as-a-Service',
-  fullTitle: 'Domain-as-a-Service (ICICLE-DOaaS)',
+  fullTitle: 'Domain-as-a-Service',
   sourceRoute: '/domain-specific-services',
   intro:
-    'Explore ICICLE services tailored to specific domains. Use the Portal Home page to navigate to the digital agriculture, animal ecology, and food logistics and security service pages.',
+    'Explore ICICLE services tailored to specific research and science domains.',
 };
 
 export const statusCounts = (items: ServiceItem[]) => ({

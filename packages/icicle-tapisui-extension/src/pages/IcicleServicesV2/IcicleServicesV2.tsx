@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Chip,
@@ -93,8 +93,8 @@ const goSx = (color: string) =>
     },
   } as const);
 
-// The monospace blue catalog-code chip — shared by the panel headers (opens
-// the catalog's full page) and the header jump row (scrolls to the panel).
+// The monospace blue catalog-code chip — shared by the panel headers (glows
+// the panel) and the header jump row (scrolls to + glows the panel).
 const codeChipSx = {
   height: 18,
   flexShrink: 0,
@@ -105,6 +105,14 @@ const codeChipSx = {
   color: '#2f7fd1',
   bgcolor: 'rgba(47,127,209,0.12)',
   '& .MuiChip-label': { px: 0.75 },
+} as const;
+
+// Same shape as codeChipSx, but neutral grey — for board-wide actions
+// (Expand all, View upcoming) that aren't tied to any one catalog's color.
+const actionChipSx = {
+  ...codeChipSx,
+  color: 'text.secondary',
+  bgcolor: 'rgba(112,122,134,0.14)',
 } as const;
 
 /** DOM id a catalog panel scrolls to from the header jump chips */
@@ -333,7 +341,9 @@ const TapisLegendItem: React.FC<{ glyph: string; label: string }> = ({
         alignItems: 'center',
         justifyContent: 'center',
         color: STATUS_COLOR.live,
-        border: BORDER,
+        // transparent, not the row buttons' visible BORDER — these aren't
+        // clickable, so they shouldn't look like an idle button
+        border: '1px solid transparent',
         borderRadius: 1,
         flexShrink: 0,
       }}
@@ -376,7 +386,9 @@ const LegendItem: React.FC<{ kind: ServiceLinkKind; label: string }> = ({
         alignItems: 'center',
         justifyContent: 'center',
         color: kind === 'portal' ? STATUS_COLOR.live : STATUS_COLOR.ext,
-        border: BORDER,
+        // transparent, not the row buttons' visible BORDER — these aren't
+        // clickable, so they shouldn't look like an idle button
+        border: '1px solid transparent',
         borderRadius: 1,
         flexShrink: 0,
       }}
@@ -437,8 +449,20 @@ const IconLegendTile: React.FC = () => (
  * per-row (isolated), so any number can be open at once. Link clicks stop
  * propagation so they navigate without toggling.
  */
-const ServiceRow: React.FC<{ item: ServiceItem }> = ({ item }) => {
+/** bump `seq` to force every row open/closed; rows still toggle individually
+ * afterward — the signal only sets the starting point, it isn't "locked". */
+type ExpandAllSignal = { open: boolean; seq: number };
+
+const ServiceRow: React.FC<{
+  item: ServiceItem;
+  expandAllSignal?: ExpandAllSignal;
+}> = ({ item, expandAllSignal }) => {
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on seq on
+  // purpose: re-apply even if `open` repeats the same boolean as before.
+  useEffect(() => {
+    if (expandAllSignal) setOpen(expandAllSignal.open);
+  }, [expandAllSignal?.seq]);
   // every destination: the primary (item.href, labeled by item.name) plus
   // extras — collapsed shows them as glyphs, expanded as labeled buttons.
   // kind is inferred from the href (github → repo mark, '/x' → UI, …).
@@ -616,7 +640,22 @@ const CatalogPanel: React.FC<{
   onToggleSoon: () => void;
   /** briefly glow — set when a header jump chip lands on this panel */
   flash?: boolean;
-}> = ({ catalog, soonOpen, onToggleSoon, flash }) => {
+  /** the panel's own code chip calls this instead of navigating away — glows
+   * itself (agnostic tier) or the whole DOaaS trio (domain tier) */
+  onGlow: () => void;
+  glowTip: string;
+  /** the header "Expand/Collapse all" button — applies to every row's own
+   * detail toggle, never to the "N upcoming" accordion itself */
+  expandAllSignal?: ExpandAllSignal;
+}> = ({
+  catalog,
+  soonOpen,
+  onToggleSoon,
+  flash,
+  onGlow,
+  glowTip,
+  expandAllSignal,
+}) => {
   const counts = statusCounts(catalog.items);
   const ready = catalog.items.filter((i) => i.status !== 'soon');
   const soon = catalog.items.filter((i) => i.status === 'soon');
@@ -661,13 +700,12 @@ const CatalogPanel: React.FC<{
           spacing={1}
           sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
         >
-          <Tooltip title={`Open the full ${catalog.code} page`} placement="top">
+          <Tooltip title={glowTip} placement="top">
             <Chip
               label={catalog.code}
               size="small"
-              component="a"
-              href={`#${catalog.sourceRoute}`}
               clickable
+              onClick={onGlow}
               sx={codeChipSx}
             />
           </Tooltip>
@@ -694,20 +732,20 @@ const CatalogPanel: React.FC<{
             )}
           </Stack>
         </Stack>
-        {/* original page title, kept verbatim */}
-        <Tooltip title={catalog.fullTitle} placement="top-start">
-          <Typography
-            sx={{
-              fontFamily: 'monospace',
-              fontSize: '0.66rem',
-              color: '#2f7fd1',
-              mt: 0.5,
-              display: 'inline-block',
-            }}
-          >
-            {catalog.expansion}
-          </Typography>
-        </Tooltip>
+        {/* the boilerplate "Welcome to the ICICLE-X-as-a-Service (ICICLE-XaaS)
+            page!" tooltip repeated the same shape on every panel and added
+            nothing over the visible expansion text below it — dropped. */}
+        <Typography
+          sx={{
+            fontFamily: 'monospace',
+            fontSize: '0.66rem',
+            color: '#2f7fd1',
+            mt: 0.5,
+            display: 'inline-block',
+          }}
+        >
+          {catalog.expansion}
+        </Typography>
         <Typography sx={{ ...fineSx, mt: 0.4, lineHeight: 1.45 }}>
           {catalog.intro}
         </Typography>
@@ -716,7 +754,11 @@ const CatalogPanel: React.FC<{
       {/* ready services — always visible; click a row to expand its subtext */}
       <Box>
         {ready.map((item) => (
-          <ServiceRow key={item.label + item.name} item={item} />
+          <ServiceRow
+            key={item.label + item.name}
+            item={item}
+            expandAllSignal={expandAllSignal}
+          />
         ))}
       </Box>
 
@@ -754,7 +796,11 @@ const CatalogPanel: React.FC<{
           <Collapse in={isOpen}>
             <Box sx={{ opacity: 0.9 }}>
               {soon.map((item) => (
-                <ServiceRow key={item.label} item={item} />
+                <ServiceRow
+                  key={item.label}
+                  item={item}
+                  expandAllSignal={expandAllSignal}
+                />
               ))}
             </Box>
           </Collapse>
@@ -819,11 +865,13 @@ const MiniStat: React.FC<{
   </Tooltip>
 );
 
-const TierHead: React.FC<{ k: string; title: string; story: string }> = ({
-  k,
-  title,
-  story,
-}) => (
+const TierHead: React.FC<{
+  k: string;
+  title: string;
+  story: string;
+  /** Tier 2 only — a real glow-chip in place of a plain "· DOaaS" suffix */
+  chip?: { label: string; tip: string; onClick: () => void };
+}> = ({ k, title, story, chip }) => (
   <Stack
     direction="row"
     spacing={1.25}
@@ -844,9 +892,20 @@ const TierHead: React.FC<{ k: string; title: string; story: string }> = ({
     <Typography sx={{ fontSize: '0.95rem', fontWeight: 600, flexShrink: 0 }}>
       {title}
     </Typography>
-    <Typography
-      sx={{ ...fineSx, flex: 1, minWidth: '16ch', textAlign: 'right' }}
-    >
+    {chip && (
+      <Tooltip title={chip.tip} placement="top">
+        <Chip
+          label={chip.label}
+          size="small"
+          clickable
+          onClick={chip.onClick}
+          sx={codeChipSx}
+        />
+      </Tooltip>
+    )}
+    {/* left-aligned, not right — right-align left a wide dead gap between
+        the preceding elements and where the text actually started */}
+    <Typography sx={{ ...fineSx, flex: 1, minWidth: '16ch' }}>
       {story}
     </Typography>
   </Stack>
@@ -862,6 +921,17 @@ export const IcicleServicesV2: Component = () => {
   // one shared toggle so opening any 'upcoming' section opens them all
   const [soonOpen, setSoonOpen] = useState(false);
   const toggleSoon = () => setSoonOpen((v) => !v);
+  // "Expand/Collapse all" — only ever touches each row's own detail toggle,
+  // never the "N upcoming — press to preview" accordion above (soonOpen).
+  // `seq` (not just `open`) is the effect dependency down in ServiceRow, so
+  // clicking Expand All twice in a row (e.g. after manually re-collapsing a
+  // couple of rows) still re-applies instead of being a no-op repeat value.
+  const [expandAllSignal, setExpandAllSignal] = useState<ExpandAllSignal>({
+    open: false,
+    seq: 0,
+  });
+  const toggleExpandAll = () =>
+    setExpandAllSignal((s) => ({ open: !s.open, seq: s.seq + 1 }));
   // header jump chips, in board order (DOaaS lands on the Tier 2 section)
   const jumps = [
     ...agnostic.map((c) => ({
@@ -998,12 +1068,12 @@ export const IcicleServicesV2: Component = () => {
                 hollow
                 hint="Hollow dot — planned but not available yet; expand a catalog's 'upcoming' section to read about them."
               />
-              <MiniStat
+              {/* <MiniStat
                 n={CATALOGS.length}
                 label="catalogs"
                 color="#2f7fd1"
                 hint="Each catalog below mirrors one of the original as-a-Service pages — click its code chip to open the full page."
-              />
+              /> */}
             </Stack>
             {/* icon legend — under the mini-stats in the title tile */}
             <IconLegendTile />
@@ -1042,11 +1112,11 @@ export const IcicleServicesV2: Component = () => {
               Every ICICLE service on one board — tap a catalog above, open a
               row to learn more, follow its link to use it. Guides live in the{' '}
               <Link href="#/training-catalog" underline="hover">
-                Training Catalog
+                <b>Training Catalog</b>
               </Link>
               , visuals in the{' '}
               <Link href="#/component-catalog" underline="hover">
-                Component Catalog
+                <b>Component Catalog</b>
               </Link>
               {/* , and hands-on AI — chat, agents, MCP — in the{' '}
               <Link href="#/ai-hub" underline="hover">
@@ -1060,10 +1130,36 @@ export const IcicleServicesV2: Component = () => {
                 underline="hover"
                 sx={{ whiteSpace: 'nowrap' }}
               >
-                github.com/ICICLE-ai
+                <b>github.com/ICICLE-ai</b>
               </Link>
               .
             </Typography>
+            <Stack
+              direction="row"
+              spacing={0.75}
+              sx={{ mt: 1, flexWrap: 'wrap' }}
+            >
+              {/* Opens/closes every row's own detail toggle across every
+                  panel — never the "N upcoming" accordion below. */}
+              <Chip
+                label={expandAllSignal.open ? 'Collapse all' : 'Expand all'}
+                size="small"
+                clickable
+                onClick={toggleExpandAll}
+                sx={actionChipSx}
+              />
+              {/* The same shared toggle each panel's own "N upcoming — press
+                  to preview" strip uses, just fired for every panel at once
+                  (panels with nothing BUT upcoming items manage their own
+                  open state and are unaffected either way). */}
+              <Chip
+                label={soonOpen ? 'Close upcoming' : 'View upcoming'}
+                size="small"
+                clickable
+                onClick={toggleSoon}
+                sx={actionChipSx}
+              />
+            </Stack>
           </Box>
         </Box>
 
@@ -1088,6 +1184,9 @@ export const IcicleServicesV2: Component = () => {
                 soonOpen={soonOpen}
                 onToggleSoon={toggleSoon}
                 flash={flash === c.code}
+                onGlow={() => jumpTo(c.code)}
+                glowTip={`${c.expansion} — ${c.name}`}
+                expandAllSignal={expandAllSignal}
               />
             ))}
           </Box>
@@ -1096,9 +1195,14 @@ export const IcicleServicesV2: Component = () => {
         {/* Tier 2 — domain-specific (DOaaS) */}
         <Box id={panelId(DOAAS.code)} sx={{ scrollMarginTop: 12 }}>
           <TierHead
-            k={`Tier 2 · ${DOAAS.code}`}
+            k="Tier 2"
             title={DOAAS.fullTitle}
             story={DOAAS.intro}
+            chip={{
+              label: DOAAS.code,
+              tip: `${DOAAS.expansion} — the umbrella over the three domain catalogs`,
+              onClick: () => jumpTo(DOAAS.code),
+            }}
           />
           <Box
             sx={{
@@ -1114,6 +1218,9 @@ export const IcicleServicesV2: Component = () => {
                 soonOpen={soonOpen}
                 onToggleSoon={toggleSoon}
                 flash={flash === c.code || flash === DOAAS.code}
+                onGlow={() => jumpTo(c.code)}
+                glowTip={`${c.expansion} — ${c.name}`}
+                expandAllSignal={expandAllSignal}
               />
             ))}
           </Box>
