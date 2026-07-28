@@ -77,7 +77,13 @@ export const NavItem: React.FC<
         onTouchEnd={cancelPress}
         onClick={handleClick}
       >
-        <ListItemButton style={{ paddingLeft: '1.5rem' }}>
+        <ListItemButton
+          style={{
+            paddingTop: '5px',
+            paddingBottom: '5px',
+            paddingLeft: '1.5rem',
+          }}
+        >
           {iconElement ?? (icon && <Icon name={icon} />)}
           {children ? (
             <ListItemText
