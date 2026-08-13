@@ -114,6 +114,20 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
+        label: 'No-Code Workflow Studio',
+        description:
+          'A no-code workflow studio for building and executing workflows without programming.',
+        name: 'No-Code Workflow Studio',
+        href: '/no-code-workflow-studio',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/workflow-orchestrator',
+          },
+        ],
+        status: 'live',
+      },
+      {
         label:
           'ICICLE Chatbook: A Chatbook built on top of ICICLE CI services to let you chat with your text, PDF, and other data.',
         description:
