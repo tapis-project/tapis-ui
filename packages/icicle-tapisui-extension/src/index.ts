@@ -33,6 +33,7 @@ import {
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
 import { NoCodeImageLab } from './pages/NoCodeImageLab';
+import { WorkflowStudio } from './pages/WorkflowStudio';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -72,6 +73,7 @@ const extension = createExtension({
     'smart-labeler',
     'smart-segmentation',
     'no-code-image-lab',
+    'no-code-workflow-studio',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -107,6 +109,7 @@ const extension = createExtension({
           'smart-labeler',
           'smart-segmentation',
           'no-code-image-lab',
+          'no-code-workflow-studio',
           'intelligent-edge-management-service',
         ],
         secondaryServices: [],
@@ -348,6 +351,13 @@ extension.registerService({
   sidebarDisplayName: 'No-Code Image Lab',
   iconName: 'globe',
   component: NoCodeImageLab,
+});
+
+extension.registerService({
+  id: 'no-code-workflow-studio',
+  sidebarDisplayName: 'No-Code Workflow Studio',
+  iconName: 'globe',
+  component: WorkflowStudio,
 });
 
 extension.registerService({
