@@ -359,6 +359,21 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
+        label: 'Earth Data Hub',
+        description:
+          'Harvest workflows for collecting and processing crop and field data.',
+        name: 'Earth Data Hub',
+        href: '/earth-data-hub',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/geoharmonizer-ui',
+            kind: 'repo',
+          },
+        ],
+        status: 'live',
+      },
+      {
         label: 'Drone-based Field Analysis',
         description:
           'Analyze fields from drone imagery to inform agronomic decisions.',
