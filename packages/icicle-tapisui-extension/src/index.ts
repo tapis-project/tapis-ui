@@ -34,6 +34,7 @@ import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
 import { NoCodeImageLab } from './pages/NoCodeImageLab';
 import { WorkflowStudio } from './pages/WorkflowStudio';
+import { EarthDataHub } from './pages/EarthDataHub';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -74,6 +75,7 @@ const extension = createExtension({
     'smart-segmentation',
     'no-code-image-lab',
     'no-code-workflow-studio',
+    'earth-data-hub',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -110,6 +112,7 @@ const extension = createExtension({
           'smart-segmentation',
           'no-code-image-lab',
           'no-code-workflow-studio',
+          'earth-data-hub',
           'intelligent-edge-management-service',
         ],
         secondaryServices: [],
@@ -358,6 +361,13 @@ extension.registerService({
   sidebarDisplayName: 'No-Code Workflow Studio',
   iconName: 'globe',
   component: WorkflowStudio,
+});
+
+extension.registerService({
+  id: 'earth-data-hub',
+  sidebarDisplayName: 'Earth Data Hub',
+  iconName: 'globe',
+  component: EarthDataHub,
 });
 
 extension.registerService({
