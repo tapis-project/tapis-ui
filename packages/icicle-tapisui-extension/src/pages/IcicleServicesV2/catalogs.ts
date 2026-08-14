@@ -114,6 +114,20 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
+        label: 'No-Code Workflow Studio',
+        description:
+          'A no-code workflow studio for building and executing workflows without programming.',
+        name: 'No-Code Workflow Studio',
+        href: '/no-code-workflow-studio',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/workflow-orchestrator',
+          },
+        ],
+        status: 'live',
+      },
+      {
         label:
           'ICICLE Chatbook: A Chatbook built on top of ICICLE CI services to let you chat with your text, PDF, and other data.',
         description:
@@ -123,11 +137,10 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
-        label:
-          'Patra Model Cards (Model Sheets): Data and model cards for provenance-rich AI model documentation',
+        label: 'Patra Model Cards',
         description:
-          'The Patra knowledge base serves data and model cards — provenance, versions, and deployment metadata for AI models.',
-        name: 'Patra Model Cards (Model Sheets)',
+          'Manage information about AI models, datasets and their active use; also accessible through MLHub.',
+        name: 'Patra Model Cards',
         href: 'https://patra.pods.icicleai.tapis.io/',
         status: 'ext',
         links: [
@@ -316,6 +329,14 @@ export const CATALOGS: Catalog[] = [
         href: '/intelligent-edge-management-service',
         status: 'live',
       },
+      {
+        label: 'No-Code Image Lab',
+        description:
+          'Visualize OpenCV pre-processing operations with no code required.',
+        name: 'No-Code Image Lab',
+        href: '/no-code-image-lab',
+        status: 'live',
+      },
     ],
   },
   {
@@ -335,6 +356,21 @@ export const CATALOGS: Catalog[] = [
           'Harvest workflows for collecting and processing crop and field data.',
         name: 'Harvest',
         href: '/harvest',
+        status: 'live',
+      },
+      {
+        label: 'Earth Data Hub',
+        description:
+          'Harvest workflows for collecting and processing crop and field data.',
+        name: 'Earth Data Hub',
+        href: '/earth-data-hub',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/geoharmonizer-ui',
+            kind: 'repo',
+          },
+        ],
         status: 'live',
       },
       {
@@ -458,10 +494,10 @@ export const CATALOGS: Catalog[] = [
 export const DOAAS = {
   code: 'DOaaS',
   expansion: 'ICICLE Domain-as-a-Service',
-  fullTitle: 'Domain-as-a-Service (ICICLE-DOaaS)',
+  fullTitle: 'Domain-as-a-Service',
   sourceRoute: '/domain-specific-services',
   intro:
-    'Explore ICICLE services tailored to specific domains. Use the Portal Home page to navigate to the digital agriculture, animal ecology, and food logistics and security service pages.',
+    'Explore ICICLE services tailored to specific research and science domains.',
 };
 
 export const statusCounts = (items: ServiceItem[]) => ({

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Chip,
@@ -93,8 +93,8 @@ const goSx = (color: string) =>
     },
   } as const);
 
-// The monospace blue catalog-code chip — shared by the panel headers (opens
-// the catalog's full page) and the header jump row (scrolls to the panel).
+// The monospace blue catalog-code chip — shared by the panel headers (glows
+// the panel) and the header jump row (scrolls to + glows the panel).
 const codeChipSx = {
   height: 18,
   flexShrink: 0,
@@ -105,6 +105,14 @@ const codeChipSx = {
   color: '#2f7fd1',
   bgcolor: 'rgba(47,127,209,0.12)',
   '& .MuiChip-label': { px: 0.75 },
+} as const;
+
+// Same shape as codeChipSx, but neutral grey — for board-wide actions
+// (Expand all, View upcoming) that aren't tied to any one catalog's color.
+const actionChipSx = {
+  ...codeChipSx,
+  color: 'text.secondary',
+  bgcolor: 'rgba(112,122,134,0.14)',
 } as const;
 
 /** DOM id a catalog panel scrolls to from the header jump chips */
@@ -280,6 +288,160 @@ const MiniLinkButton: React.FC<{ link: ServiceLink }> = ({ link }) => {
 };
 
 /**
+ * The kind → glyph mapping as a standalone element (no link, no tooltip), for
+ * the icon legend. Mirrors the kind branches MiniLinkButton renders so the
+ * legend always shows the exact marks users see on the rows.
+ */
+const KindGlyph: React.FC<{ kind: ServiceLinkKind }> = ({ kind }) => {
+  if (kind === 'pod') return <FontIcon name="visualization" size="0.6rem" />;
+  if (kind === 'portal')
+    return (
+      <Box
+        component="span"
+        sx={{ fontFamily: 'monospace', fontSize: '0.58rem', fontWeight: 700 }}
+      >
+        UI
+      </Box>
+    );
+  const Glyph = LINK_ICON[kind];
+  return <Glyph sx={{ fontSize: '0.85rem', flexShrink: 0 }} />;
+};
+
+// The core Tapis platform icon-font glyphs — the exact iconName each service
+// uses in the main sidebar (see Sidebar.tsx's sidebarItems + the Tapis
+// section registered in index.ts), so a link that points at a named Tapis
+// service (Systems/Files/Jobs/Apps/Workflows/Pods) carries the identical mark
+// a user already recognizes from the side pane, and the legend calls it out
+// as its own group rather than mixing it into the generic link-kind glyphs.
+const TAPIS_LEGEND_ITEMS: { glyph: string; label: string }[] = [
+  { glyph: 'data-files', label: 'Systems' },
+  { glyph: 'folder', label: 'Files' },
+  { glyph: 'jobs', label: 'Jobs' },
+  { glyph: 'applications', label: 'Apps' },
+  { glyph: 'publications', label: 'Workflows' },
+  { glyph: 'visualization', label: 'Pods' },
+];
+
+/** One Tapis-icon + label pair — always green (a page inside TapisUI). */
+const TapisLegendItem: React.FC<{ glyph: string; label: string }> = ({
+  glyph,
+  label,
+}) => (
+  <Stack
+    direction="row"
+    spacing={0.5}
+    alignItems="center"
+    sx={{ whiteSpace: 'nowrap' }}
+  >
+    <Box
+      sx={{
+        width: 20,
+        height: 18,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: STATUS_COLOR.live,
+        // transparent, not the row buttons' visible BORDER — these aren't
+        // clickable, so they shouldn't look like an idle button
+        border: '1px solid transparent',
+        borderRadius: 1,
+        flexShrink: 0,
+      }}
+    >
+      <FontIcon name={glyph} size="0.68rem" />
+    </Box>
+    <Typography sx={fineSx}>{label}</Typography>
+  </Stack>
+);
+
+// The generic destination-kind glyphs — what a link resolves to when it
+// ISN'T one of the named Tapis services above. Ordered in-portal first
+// (green), then off-platform (purple) — the same green/purple language the
+// row buttons and status dots use. ('pod' is omitted here — a live deployed
+// pod renders the same Pods glyph already shown in the Tapis group above.)
+const LEGEND_ITEMS: { kind: ServiceLinkKind; label: string }[] = [
+  { kind: 'repo', label: 'Code on GitHub' },
+  { kind: 'docs', label: 'Docs & guides' },
+  { kind: 'pypi', label: 'PyPI package' },
+  { kind: 'npm', label: 'npm package' },
+  { kind: 'site', label: 'External site' },
+];
+
+/** One glyph + label pair; glyph boxed and colored like the mini row buttons. */
+const LegendItem: React.FC<{ kind: ServiceLinkKind; label: string }> = ({
+  kind,
+  label,
+}) => (
+  <Stack
+    direction="row"
+    spacing={0.5}
+    alignItems="center"
+    sx={{ whiteSpace: 'nowrap' }}
+  >
+    <Box
+      sx={{
+        width: 20,
+        height: 18,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: kind === 'portal' ? STATUS_COLOR.live : STATUS_COLOR.ext,
+        // transparent, not the row buttons' visible BORDER — these aren't
+        // clickable, so they shouldn't look like an idle button
+        border: '1px solid transparent',
+        borderRadius: 1,
+        flexShrink: 0,
+      }}
+    >
+      <KindGlyph kind={kind} />
+    </Box>
+    <Typography sx={fineSx}>{label}</Typography>
+  </Stack>
+);
+
+const legendGroupLabelSx = {
+  ...fineSx,
+  fontSize: '0.58rem',
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  mb: 0.5,
+} as const;
+
+// Inside the title tile, hairline-divided under the mini-stats. Split top
+// (Tapis) / bottom (generic links) so the two glyph vocabularies never blur
+// together.
+const IconLegendTile: React.FC = () => (
+  <Box sx={{ mt: 1.25, pt: 1.25, borderTop: BORDER }}>
+    <Typography sx={{ ...legendGroupLabelSx }}>Link Legend</Typography>
+    <Stack
+      direction="row"
+      spacing={1.1}
+      useFlexGap
+      sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
+    >
+      {LEGEND_ITEMS.map((it) => (
+        <LegendItem key={it.kind} {...it} />
+      ))}
+    </Stack>
+    <Typography sx={{ ...legendGroupLabelSx, mt: 1, pt: 1, borderTop: BORDER }}>
+      Tapis
+    </Typography>
+    <Stack
+      direction="row"
+      spacing={1.1}
+      useFlexGap
+      sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
+    >
+      {/* generic "somewhere in TapisUI" glyph leads, then the named services */}
+      <LegendItem kind="portal" label="TapisUI Page" />
+      {TAPIS_LEGEND_ITEMS.map((it) => (
+        <TapisLegendItem key={it.glyph} {...it} />
+      ))}
+    </Stack>
+  </Box>
+);
+
+/**
  * One service row (ready or upcoming). Collapsed it stays a single tidy line
  * (label ellipsis-truncated) with a strip of glanceable destination glyphs
  * on the right — one tiny button per link. Clicking the row toggles the FULL
@@ -287,8 +449,20 @@ const MiniLinkButton: React.FC<{ link: ServiceLink }> = ({ link }) => {
  * per-row (isolated), so any number can be open at once. Link clicks stop
  * propagation so they navigate without toggling.
  */
-const ServiceRow: React.FC<{ item: ServiceItem }> = ({ item }) => {
+/** bump `seq` to force every row open/closed; rows still toggle individually
+ * afterward — the signal only sets the starting point, it isn't "locked". */
+type ExpandAllSignal = { open: boolean; seq: number };
+
+const ServiceRow: React.FC<{
+  item: ServiceItem;
+  expandAllSignal?: ExpandAllSignal;
+}> = ({ item, expandAllSignal }) => {
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on seq on
+  // purpose: re-apply even if `open` repeats the same boolean as before.
+  useEffect(() => {
+    if (expandAllSignal) setOpen(expandAllSignal.open);
+  }, [expandAllSignal?.seq]);
   // every destination: the primary (item.href, labeled by item.name) plus
   // extras — collapsed shows them as glyphs, expanded as labeled buttons.
   // kind is inferred from the href (github → repo mark, '/x' → UI, …).
@@ -368,7 +542,10 @@ const ServiceRow: React.FC<{ item: ServiceItem }> = ({ item }) => {
         </Box>
       </Stack>
       <Collapse in={open}>
-        <Box sx={{ pl: '34px', pr: 1.5, pb: 0.85 }}>
+        {/* flush-left with the row start (matches the header Stack's pl) rather
+            than hanging-indented under the label — keeps every row's text on one
+            even left margin. */}
+        <Box sx={{ pl: 1.5, pr: 1.5, pb: 0.85 }}>
           <Typography sx={{ ...fineSx, lineHeight: 1.45 }}>
             {item.description}
           </Typography>
@@ -463,7 +640,22 @@ const CatalogPanel: React.FC<{
   onToggleSoon: () => void;
   /** briefly glow — set when a header jump chip lands on this panel */
   flash?: boolean;
-}> = ({ catalog, soonOpen, onToggleSoon, flash }) => {
+  /** the panel's own code chip calls this instead of navigating away — glows
+   * itself (agnostic tier) or the whole DOaaS trio (domain tier) */
+  onGlow: () => void;
+  glowTip: string;
+  /** the header "Expand/Collapse all" button — applies to every row's own
+   * detail toggle, never to the "N upcoming" accordion itself */
+  expandAllSignal?: ExpandAllSignal;
+}> = ({
+  catalog,
+  soonOpen,
+  onToggleSoon,
+  flash,
+  onGlow,
+  glowTip,
+  expandAllSignal,
+}) => {
   const counts = statusCounts(catalog.items);
   const ready = catalog.items.filter((i) => i.status !== 'soon');
   const soon = catalog.items.filter((i) => i.status === 'soon');
@@ -508,13 +700,12 @@ const CatalogPanel: React.FC<{
           spacing={1}
           sx={{ flexWrap: 'wrap', rowGap: 0.5 }}
         >
-          <Tooltip title={`Open the full ${catalog.code} page`} placement="top">
+          <Tooltip title={glowTip} placement="top">
             <Chip
               label={catalog.code}
               size="small"
-              component="a"
-              href={`#${catalog.sourceRoute}`}
               clickable
+              onClick={onGlow}
               sx={codeChipSx}
             />
           </Tooltip>
@@ -541,20 +732,20 @@ const CatalogPanel: React.FC<{
             )}
           </Stack>
         </Stack>
-        {/* original page title, kept verbatim */}
-        <Tooltip title={catalog.fullTitle} placement="top-start">
-          <Typography
-            sx={{
-              fontFamily: 'monospace',
-              fontSize: '0.66rem',
-              color: '#2f7fd1',
-              mt: 0.5,
-              display: 'inline-block',
-            }}
-          >
-            {catalog.expansion}
-          </Typography>
-        </Tooltip>
+        {/* the boilerplate "Welcome to the ICICLE-X-as-a-Service (ICICLE-XaaS)
+            page!" tooltip repeated the same shape on every panel and added
+            nothing over the visible expansion text below it — dropped. */}
+        <Typography
+          sx={{
+            fontFamily: 'monospace',
+            fontSize: '0.66rem',
+            color: '#2f7fd1',
+            mt: 0.5,
+            display: 'inline-block',
+          }}
+        >
+          {catalog.expansion}
+        </Typography>
         <Typography sx={{ ...fineSx, mt: 0.4, lineHeight: 1.45 }}>
           {catalog.intro}
         </Typography>
@@ -563,7 +754,11 @@ const CatalogPanel: React.FC<{
       {/* ready services — always visible; click a row to expand its subtext */}
       <Box>
         {ready.map((item) => (
-          <ServiceRow key={item.label + item.name} item={item} />
+          <ServiceRow
+            key={item.label + item.name}
+            item={item}
+            expandAllSignal={expandAllSignal}
+          />
         ))}
       </Box>
 
@@ -601,7 +796,11 @@ const CatalogPanel: React.FC<{
           <Collapse in={isOpen}>
             <Box sx={{ opacity: 0.9 }}>
               {soon.map((item) => (
-                <ServiceRow key={item.label} item={item} />
+                <ServiceRow
+                  key={item.label}
+                  item={item}
+                  expandAllSignal={expandAllSignal}
+                />
               ))}
             </Box>
           </Collapse>
@@ -666,11 +865,13 @@ const MiniStat: React.FC<{
   </Tooltip>
 );
 
-const TierHead: React.FC<{ k: string; title: string; story: string }> = ({
-  k,
-  title,
-  story,
-}) => (
+const TierHead: React.FC<{
+  k: string;
+  title: string;
+  story: string;
+  /** Tier 2 only — a real glow-chip in place of a plain "· DOaaS" suffix */
+  chip?: { label: string; tip: string; onClick: () => void };
+}> = ({ k, title, story, chip }) => (
   <Stack
     direction="row"
     spacing={1.25}
@@ -691,9 +892,20 @@ const TierHead: React.FC<{ k: string; title: string; story: string }> = ({
     <Typography sx={{ fontSize: '0.95rem', fontWeight: 600, flexShrink: 0 }}>
       {title}
     </Typography>
-    <Typography
-      sx={{ ...fineSx, flex: 1, minWidth: '16ch', textAlign: 'right' }}
-    >
+    {chip && (
+      <Tooltip title={chip.tip} placement="top">
+        <Chip
+          label={chip.label}
+          size="small"
+          clickable
+          onClick={chip.onClick}
+          sx={codeChipSx}
+        />
+      </Tooltip>
+    )}
+    {/* left-aligned, not right — right-align left a wide dead gap between
+        the preceding elements and where the text actually started */}
+    <Typography sx={{ ...fineSx, flex: 1, minWidth: '16ch' }}>
       {story}
     </Typography>
   </Stack>
@@ -709,6 +921,17 @@ export const IcicleServicesV2: Component = () => {
   // one shared toggle so opening any 'upcoming' section opens them all
   const [soonOpen, setSoonOpen] = useState(false);
   const toggleSoon = () => setSoonOpen((v) => !v);
+  // "Expand/Collapse all" — only ever touches each row's own detail toggle,
+  // never the "N upcoming — press to preview" accordion above (soonOpen).
+  // `seq` (not just `open`) is the effect dependency down in ServiceRow, so
+  // clicking Expand All twice in a row (e.g. after manually re-collapsing a
+  // couple of rows) still re-applies instead of being a no-op repeat value.
+  const [expandAllSignal, setExpandAllSignal] = useState<ExpandAllSignal>({
+    open: false,
+    seq: 0,
+  });
+  const toggleExpandAll = () =>
+    setExpandAllSignal((s) => ({ open: !s.open, seq: s.seq + 1 }));
   // header jump chips, in board order (DOaaS lands on the Tier 2 section)
   const jumps = [
     ...agnostic.map((c) => ({
@@ -845,13 +1068,15 @@ export const IcicleServicesV2: Component = () => {
                 hollow
                 hint="Hollow dot — planned but not available yet; expand a catalog's 'upcoming' section to read about them."
               />
-              <MiniStat
+              {/* <MiniStat
                 n={CATALOGS.length}
                 label="catalogs"
                 color="#2f7fd1"
                 hint="Each catalog below mirrors one of the original as-a-Service pages — click its code chip to open the full page."
-              />
+              /> */}
             </Stack>
+            {/* icon legend — under the mini-stats in the title tile */}
+            <IconLegendTile />
           </Box>
           <Box
             sx={{
@@ -887,16 +1112,16 @@ export const IcicleServicesV2: Component = () => {
               Every ICICLE service on one board — tap a catalog above, open a
               row to learn more, follow its link to use it. Guides live in the{' '}
               <Link href="#/training-catalog" underline="hover">
-                Training Catalog
+                <b>Training Catalog</b>
               </Link>
               , visuals in the{' '}
               <Link href="#/component-catalog" underline="hover">
-                Component Catalog
+                <b>Component Catalog</b>
               </Link>
-              , and hands-on AI — chat, agents, MCP — in the{' '}
+              {/* , and hands-on AI — chat, agents, MCP — in the{' '}
               <Link href="#/ai-hub" underline="hover">
                 AI Hub
-              </Link>
+              </Link> */}
               . Our code is open — dig through it all at{' '}
               <Link
                 href="https://github.com/ICICLE-ai"
@@ -905,10 +1130,36 @@ export const IcicleServicesV2: Component = () => {
                 underline="hover"
                 sx={{ whiteSpace: 'nowrap' }}
               >
-                github.com/ICICLE-ai
+                <b>github.com/ICICLE-ai</b>
               </Link>
               .
             </Typography>
+            <Stack
+              direction="row"
+              spacing={0.75}
+              sx={{ mt: 1, flexWrap: 'wrap' }}
+            >
+              {/* Opens/closes every row's own detail toggle across every
+                  panel — never the "N upcoming" accordion below. */}
+              <Chip
+                label={expandAllSignal.open ? 'Collapse all' : 'Expand all'}
+                size="small"
+                clickable
+                onClick={toggleExpandAll}
+                sx={actionChipSx}
+              />
+              {/* The same shared toggle each panel's own "N upcoming — press
+                  to preview" strip uses, just fired for every panel at once
+                  (panels with nothing BUT upcoming items manage their own
+                  open state and are unaffected either way). */}
+              <Chip
+                label={soonOpen ? 'Close upcoming' : 'View upcoming'}
+                size="small"
+                clickable
+                onClick={toggleSoon}
+                sx={actionChipSx}
+              />
+            </Stack>
           </Box>
         </Box>
 
@@ -933,6 +1184,9 @@ export const IcicleServicesV2: Component = () => {
                 soonOpen={soonOpen}
                 onToggleSoon={toggleSoon}
                 flash={flash === c.code}
+                onGlow={() => jumpTo(c.code)}
+                glowTip={`${c.expansion} — ${c.name}`}
+                expandAllSignal={expandAllSignal}
               />
             ))}
           </Box>
@@ -941,9 +1195,14 @@ export const IcicleServicesV2: Component = () => {
         {/* Tier 2 — domain-specific (DOaaS) */}
         <Box id={panelId(DOAAS.code)} sx={{ scrollMarginTop: 12 }}>
           <TierHead
-            k={`Tier 2 · ${DOAAS.code}`}
+            k="Tier 2"
             title={DOAAS.fullTitle}
             story={DOAAS.intro}
+            chip={{
+              label: DOAAS.code,
+              tip: `${DOAAS.expansion} — the umbrella over the three domain catalogs`,
+              onClick: () => jumpTo(DOAAS.code),
+            }}
           />
           <Box
             sx={{
@@ -959,6 +1218,9 @@ export const IcicleServicesV2: Component = () => {
                 soonOpen={soonOpen}
                 onToggleSoon={toggleSoon}
                 flash={flash === c.code || flash === DOAAS.code}
+                onGlow={() => jumpTo(c.code)}
+                glowTip={`${c.expansion} — ${c.name}`}
+                expandAllSignal={expandAllSignal}
               />
             ))}
           </Box>

@@ -44,7 +44,7 @@ const extension = createExtension({
     },
     sections: [
       {
-        name: 'Core Services',
+        name: 'Tapis Services',
         defaultOpen: true,
         mainServices: ['systems', 'apps', 'jobs', 'files', 'workflows', 'pods'],
         secondaryServices: [],
