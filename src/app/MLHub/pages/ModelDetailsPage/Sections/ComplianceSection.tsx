@@ -11,23 +11,23 @@ interface ComplianceSectionProps {
 }
 
 export function ComplianceSection({ model }: ComplianceSectionProps) {
-  const biasScore = model.bias_evaluation_score;
+  // const biasScore = model.bias_evaluation_score;
 
-  let biasColor: 'success' | 'info' | 'warning' | 'error' = 'info';
-  if (biasScore !== null && biasScore !== undefined) {
-    if (biasScore < 0.15) {
-      biasColor = 'success';
-    } else if (biasScore < 0.35) {
-      biasColor = 'warning';
-    } else {
-      biasColor = 'error';
-    }
-  }
+  // let biasColor: 'success' | 'info' | 'warning' | 'error' = 'info';
+  // if (biasScore !== null && biasScore !== undefined) {
+  //   if (biasScore < 0.15) {
+  //     biasColor = 'success';
+  //   } else if (biasScore < 0.35) {
+  //     biasColor = 'warning';
+  //   } else {
+  //     biasColor = 'error';
+  //   }
+  // }
 
   return (
     <InfoSection>
       {/* Bias Score */}
-      <Box sx={{ mb: 2 }}>
+      {/* <Box sx={{ mb: 2 }}>
         <Box
           sx={{
             display: 'flex',
@@ -75,6 +75,18 @@ export function ComplianceSection({ model }: ComplianceSectionProps) {
         >
           Lower is better · {'< 15%'} is recommended
         </Typography>
+      </Box> */}
+
+      {/* License Tags */}
+      <Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mb: 0.5, display: 'block' }}
+        >
+          License
+        </Typography>
+        <TagCloud tags={[model.license ?? 'Unknown']} />
       </Box>
 
       {/* Regulatory Tags */}

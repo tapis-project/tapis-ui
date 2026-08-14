@@ -2,6 +2,7 @@ import { modelCardDetails } from '@tapis/tapisui-api/dist/ml-hub/models';
 
 const QueryKeys = {
   list: 'mlhub/models/list',
+  fork: 'mlhub/models/fork',
   discover: 'mlhub/models/discover',
   details: 'mlhub/models/details',
   listDownloadLinks: 'mlhub/models/listDownloadLinks',

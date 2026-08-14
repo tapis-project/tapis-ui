@@ -2,22 +2,12 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
-import ArchitectureIcon from '@mui/icons-material/Architecture';
 import GppGoodIcon from '@mui/icons-material/GppGood';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import SchoolIcon from '@mui/icons-material/School';
-import SpeedIcon from '@mui/icons-material/Speed';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import StarIcon from '@mui/icons-material/Star';
+import { Settings } from '@mui/icons-material';
 
-export type SectionTab =
-  | 'general'
-  | 'inference'
-  | 'training'
-  | 'architecture'
-  | 'io'
-  | 'compliance'
-  | 'deployment';
+export type SectionTab = 'general' | 'compliance' | 'deployment' | 'settings';
 
 interface TabItem {
   value: SectionTab;
@@ -28,22 +18,6 @@ interface TabItem {
 const TABS: ReadonlyArray<TabItem> = [
   { value: 'general', label: 'General', icon: <StarIcon fontSize="small" /> },
   {
-    value: 'inference',
-    label: 'Inference',
-    icon: <SpeedIcon fontSize="small" />,
-  },
-  {
-    value: 'training',
-    label: 'Training',
-    icon: <SchoolIcon fontSize="small" />,
-  },
-  {
-    value: 'architecture',
-    label: 'Architecture',
-    icon: <ArchitectureIcon fontSize="small" />,
-  },
-  { value: 'io', label: 'Model I/O', icon: <SwapHorizIcon fontSize="small" /> },
-  {
     value: 'compliance',
     label: 'Compliance',
     icon: <GppGoodIcon fontSize="small" />,
@@ -52,6 +26,11 @@ const TABS: ReadonlyArray<TabItem> = [
     value: 'deployment',
     label: 'Deployment',
     icon: <RocketLaunchIcon fontSize="small" />,
+  },
+  {
+    value: 'settings',
+    label: 'Settings',
+    icon: <Settings fontSize="small" />,
   },
 ];
 

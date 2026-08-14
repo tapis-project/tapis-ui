@@ -15,10 +15,6 @@ import { ModelHeader } from './ModelHeader';
 import { ModelTabs, TabPanel } from './ModelTabs';
 import type { SectionTab } from './ModelTabs';
 import { GeneralSection } from './Sections/GeneralSection';
-import { InferenceSection } from './Sections/InferenceSection';
-import { TrainingSection } from './Sections/TrainingSection';
-import { ArchitectureSection } from './Sections/ArchitectureSection';
-import { IOSection } from './Sections/IOSection';
 import { ComplianceSection } from './Sections/ComplianceSection';
 import { DeploymentSection } from './Sections/DeploymentSection';
 
@@ -109,22 +105,13 @@ export default function ModelDetailsPage() {
             <TabPanel value="general" currentTab={activeTab}>
               <GeneralSection model={model} />
             </TabPanel>
-            <TabPanel value="inference" currentTab={activeTab}>
-              <InferenceSection model={model} />
-            </TabPanel>
-            <TabPanel value="training" currentTab={activeTab}>
-              <TrainingSection model={model} />
-            </TabPanel>
-            <TabPanel value="architecture" currentTab={activeTab}>
-              <ArchitectureSection model={model} />
-            </TabPanel>
-            <TabPanel value="io" currentTab={activeTab}>
-              <IOSection model={model} />
-            </TabPanel>
             <TabPanel value="compliance" currentTab={activeTab}>
               <ComplianceSection model={model} />
             </TabPanel>
             <TabPanel value="deployment" currentTab={activeTab}>
+              <DeploymentSection model={model} />
+            </TabPanel>
+            <TabPanel value="settings" currentTab={activeTab}>
               <DeploymentSection model={model} />
             </TabPanel>
           </ModelTabs>

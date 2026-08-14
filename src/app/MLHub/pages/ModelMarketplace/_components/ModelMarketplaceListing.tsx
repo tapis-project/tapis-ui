@@ -40,7 +40,7 @@ export const ModelMarketplaceListing: React.FC<
 > = ({ models, count, next, previous, isLoading }) => {
   // ----- Hooks
   const { navigate } = useNavigate();
-  const { create } = Hooks.Models.useCreateModel();
+  const { fork } = Hooks.Models.useForkModel();
   const { username } = useTapisConfig();
 
   const appropriateModels: Models.ModelMetadata[] = useMemo(() => {
@@ -362,11 +362,10 @@ export const ModelMarketplaceListing: React.FC<
                     <ForkPopover
                       isLoading={isLoading}
                       onFork={() => {
-                        create(
+                        fork(
                           {
-                            createModelMetadataBody: {
-                              ...model,
-                            },
+                            author: model.author,
+                            name: model.name,
                           },
                           {
                             onSuccess: () => {

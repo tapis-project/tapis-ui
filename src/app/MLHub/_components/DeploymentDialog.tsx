@@ -62,10 +62,21 @@ type FormInput = {
   model: Models.ModelMetadata | null;
   strategy: Deployments.Strategy | null;
   deploymentModality: Deployments.DeploymentModality | null;
-  parameters: Deployments.Parameter[];
+  parameters: DeploymentParameterInput[];
   replicas: Deployments.ReplicaGroup['count'];
   parallelismStrategies: Deployments.ParallelismStrategy[];
 };
+
+type DeploymentParameterInput = {
+  definition: Deployments.Parameter;
+  value: Deployments.Parameter['_default'];
+};
+
+const parameterInputsFor = (parameters: Deployments.Parameter[]) =>
+  parameters.map((definition) => ({
+    definition,
+    value: definition._default ?? '',
+  }));
 
 type ErrorAlertProps = { error: Error };
 type DeploymentDetailsProps = { control: Control<FormInput> };
@@ -76,12 +87,12 @@ type StrategyPickerProps = {
 };
 type ParametersAccordionProps = {
   control: Control<FormInput>;
-  parameters: Array<Deployments.Parameter & { id: string }>;
+  parameters: Array<DeploymentParameterInput & { id: string }>;
   errors: FieldErrors<FormInput>;
   requiredCount: number;
 };
 type ParameterFieldProps = {
-  parameter: Deployments.Parameter & { id: string };
+  parameter: DeploymentParameterInput & { id: string };
   index: number;
   control: Control<FormInput>;
   error?: { message?: string };
@@ -179,7 +190,7 @@ const DeploymentDialog = ({
       model: defaultModel ?? null,
       strategy: defaultStrategy ?? null,
       deploymentModality: null,
-      parameters: defaultStrategy?.parameters ?? [],
+      parameters: parameterInputsFor(defaultStrategy?.parameters ?? []),
     }),
     [defaultModel, defaultStrategy]
   );
@@ -235,8 +246,8 @@ const DeploymentDialog = ({
     strategy?.parameters.filter(({ required }) => required).length ?? 0;
   const requiredParametersHaveValues = parameters.every(
     (parameter, index) =>
-      !parameter.required ||
-      hasParameterValue(parameterValues?.[index]?._default)
+      !parameter.definition.required ||
+      hasParameterValue(parameterValues?.[index]?.value)
   );
   const hasSummary = Boolean(
     model || name || description || modality || strategy
@@ -276,7 +287,10 @@ const DeploymentDialog = ({
           description: data.description || null,
           model_author: data.model.author,
           model_name: data.model.name,
-          params: data.parameters,
+          arguments: data.parameters.map(({ definition, value }) => ({
+            parameter_name: definition.name,
+            value: value!, // TODO Handle null/undefined values
+          })),
           deployment_modality: data.deploymentModality,
           replicas: data.replicas,
           parallelism_strategies: data.parallelismStrategies,
@@ -289,7 +303,7 @@ const DeploymentDialog = ({
             <p>
               Deployment request <b>({data.result.name})</b> for model{' '}
               <b>
-                ${data.result.model.author}/${data.result.model.name}
+                {data.result.model.author}/{data.result.model.name}
               </b>{' '}
             </p>
           );
@@ -419,7 +433,9 @@ const DeploymentDialog = ({
               control={control}
               strategies={availableStrategies}
               onSelect={(selected) =>
-                replaceParameters(selected?.parameters ?? [])
+                replaceParameters(
+                  parameterInputsFor(selected?.parameters ?? [])
+                )
               }
             />
           )}
@@ -602,7 +618,7 @@ const ParametersAccordion = ({
               parameter={parameter}
               index={index}
               control={control}
-              error={errors.parameters?.[index]?._default}
+              error={errors.parameters?.[index]?.value}
             />
           ))}
         </Stack>
@@ -618,25 +634,28 @@ const ParameterField = ({
   error,
 }: ParameterFieldProps) => {
   const [showSecret, setShowSecret] = useState(false);
+  const definition = parameter.definition;
   return (
     <Controller
-      name={`parameters.${index}._default`}
+      name={`parameters.${index}.value`}
       control={control}
       rules={{
         validate: (value) =>
-          !parameter.required || Boolean(value) || 'This parameter is required',
+          !definition.required ||
+          hasParameterValue(value) ||
+          'This parameter is required',
       }}
       render={({ field }) =>
-        parameter.choices?.length ? (
+        definition.choices?.length ? (
           <TextField
             {...field}
             select
             fullWidth
-            label={parameter.name}
-            required={parameter.required}
+            label={definition.name}
+            required={definition.required}
             error={Boolean(error)}
-            helperText={error?.message ?? parameter.description}
-            autoComplete={`dont-autofill-${parameter.name}`} // Prevent autofill
+            helperText={error?.message ?? definition.description}
+            autoComplete={`dont-autofill-${definition.name}`} // Prevent autofill
             slotProps={{
               input: {
                 sx: {
@@ -651,7 +670,7 @@ const ParameterField = ({
               },
             }}
           >
-            {parameter.choices.map((choice) => (
+            {definition.choices.map((choice) => (
               <MenuItem
                 key={choice.value}
                 value={choice.value}
@@ -672,17 +691,17 @@ const ParameterField = ({
           <TextField
             {...field}
             fullWidth
-            label={parameter.name}
-            required={parameter.required}
+            label={definition.name}
+            required={definition.required}
             error={Boolean(error)}
-            type={parameter.secret && !showSecret ? 'password' : 'text'}
+            type={definition.secret && !showSecret ? 'password' : 'text'}
             helperText={
               error?.message ??
-              (parameter.secret
-                ? `(Secret) ${parameter.description ?? ''}`
-                : parameter.description)
+              (definition.secret
+                ? `(Secret) ${definition.description ?? ''}`
+                : definition.description)
             }
-            autoComplete={`dont-autofill-${parameter.name}`} // Prevent autofill
+            autoComplete={`dont-autofill-${definition.name}`} // Prevent autofill
             slotProps={{
               input: {
                 sx: {
@@ -694,17 +713,17 @@ const ParameterField = ({
                     transition: 'background-color 5000s ease-in-out 0s',
                   },
                 },
-                endAdornment: parameter.secret ? (
+                endAdornment: definition.secret ? (
                   <InputAdornment position="end">
                     <IconButton
                       aria-label={`${showSecret ? 'hide' : 'show'} ${
-                        parameter.name
+                        definition.name
                       }`}
                       onClick={() => setShowSecret((shown) => !shown)}
                       onMouseDown={(event) => event.preventDefault()}
                       edge="end"
                     >
-                      {showSecret ? <VisibilityOff /> : <Visibility />}
+                      {!showSecret ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ) : undefined,
@@ -771,8 +790,8 @@ const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
               {strategy.config.supported_paralellism_strategies.length ===
                 0 && (
                 <Alert severity="warning">
-                  No sharding strategies availble for the current selected
-                  deployment strategy ({strategy.name})
+                  Sharding is not supported by the selected deployment strategy
+                  ({strategy.name})
                 </Alert>
               )}
               <FormControl fullWidth error={Boolean(fieldState.error)}>

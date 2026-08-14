@@ -9,16 +9,16 @@ import Typography from '@mui/material/Typography';
 
 import DescriptionIcon from '@mui/icons-material/Description';
 
-import type { ModelMetadata } from '../../types/model-metadata';
+import * as Models from '@mlhub/models-ts-sdk';
 import { ModelActionsBar } from './ModelActionsBar';
 import { ExpandableTagCloud } from './utils';
 
 interface ModelHeaderProps {
-  model: ModelMetadata;
+  model: Models.ModelMetadata;
 }
 
 export function ModelHeader({ model }: ModelHeaderProps) {
-  const annotationCount = model.annotations?.length ?? 0;
+  const annotationCount = [].length; // TODO
 
   return (
     <Box
@@ -55,7 +55,6 @@ export function ModelHeader({ model }: ModelHeaderProps) {
       >
         {/* Model Image / Avatar */}
         <Avatar
-          src={model.image ?? undefined}
           alt={model.name}
           sx={{
             width: { xs: 56, md: 72 },

@@ -13,6 +13,7 @@ export { default as modelCardDetails } from './modelCardDetails';
 export { default as getModel } from './getModel';
 export { default as getByAuthorAndName } from './getByAuthorAndName';
 export { default as create } from './create';
+export { default as fork } from './fork';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
 export * as Ingestions from './ingestions';

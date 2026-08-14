@@ -16,13 +16,6 @@ export function GeneralSection({ model }: GeneralSectionProps) {
     { label: 'Tenant', value: model.tenant_id },
     { label: 'Model Type', value: model.model_type },
     { label: 'License', value: model.license },
-    { label: 'Pretrained', value: model.pretrained ?? 'Unknown' },
-    { label: 'Multi-modal', value: model.multi_modal ?? 'Unknown' },
-    {
-      label: 'Training Time',
-      value: model.training_time,
-      formatValue: (v: unknown) => formatDuration(v as number),
-    },
   ];
 
   return (
