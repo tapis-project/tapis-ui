@@ -1,14 +1,16 @@
 import * as React from 'react';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import KpiCard from './KpiCard';
-import { mockDeployments } from '../../../../data/mockData';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 
-export default function ActiveDeploymentsCard() {
+const ActiveDeploymentsCard = () => {
+  const { data, isLoading } = Hooks.Deployments.useList();
+  const deployments = data?.result || [];
   const metrics = React.useMemo(() => {
-    const active = mockDeployments.filter((d) => d.status === 'Running').length;
-    const total = mockDeployments.length;
+    const active = deployments.filter((d) => d.state === 'Running').length;
+    const total = deployments.length;
     return { active, total };
-  }, []);
+  }, [data]);
 
   return (
     <KpiCard
@@ -20,7 +22,9 @@ export default function ActiveDeploymentsCard() {
       trendUp
       subtitle={`${metrics.total} total`}
       navigateTo="/deployments"
-      loading={false}
+      loading={isLoading}
     />
   );
-}
+};
+
+export default ActiveDeploymentsCard;

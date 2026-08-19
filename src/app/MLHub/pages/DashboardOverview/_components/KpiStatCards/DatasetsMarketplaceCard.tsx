@@ -15,7 +15,7 @@ export default function DatasetsMarketplaceCard() {
       trend="+89"
       trendUp
       subtitle="Curated collections"
-      navigateTo="/dataset-marketplace"
+      navigateTo="/marketplaces/datasets"
       loading={false}
     />
   );

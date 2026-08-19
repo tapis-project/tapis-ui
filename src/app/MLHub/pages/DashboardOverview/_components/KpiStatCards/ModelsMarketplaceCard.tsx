@@ -35,7 +35,7 @@ export default function ModelsMarketplaceCard() {
       trend="+156"
       trendUp
       subtitle="Discover curated models"
-      navigateTo="/marketplace"
+      navigateTo="/marketplaces/models"
       loading={isLoading}
       error={error}
     />

@@ -17,6 +17,7 @@ import type { SectionTab } from './ModelTabs';
 import { GeneralSection } from './Sections/GeneralSection';
 import { ComplianceSection } from './Sections/ComplianceSection';
 import { DeploymentSection } from './Sections/DeploymentSection';
+import { SettingsSection } from './Sections/SettingsSection';
 
 function ModelDetailsSkeleton() {
   return (
@@ -112,7 +113,7 @@ export default function ModelDetailsPage() {
               <DeploymentSection model={model} />
             </TabPanel>
             <TabPanel value="settings" currentTab={activeTab}>
-              <DeploymentSection model={model} />
+              <SettingsSection model={model} />
             </TabPanel>
           </ModelTabs>
         </Box>
