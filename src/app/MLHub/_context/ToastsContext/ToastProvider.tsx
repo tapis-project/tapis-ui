@@ -73,7 +73,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const factory = useCallback(
     (severity: ToastSeverity) =>
       (
-        message: string,
+        message: ReactNode,
         options?: Omit<ToastOptions, 'message' | 'severity'>
       ): string =>
         addToast({ message, severity, ...options }),

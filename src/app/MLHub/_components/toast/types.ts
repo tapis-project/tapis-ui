@@ -4,7 +4,7 @@ export type ToastSeverity = 'success' | 'info' | 'warning' | 'error';
 
 export interface ToastOptions {
   /** The message to display. */
-  message: string;
+  message: ReactNode;
   /** Severity determines icon + color. Default: 'info'. */
   severity?: ToastSeverity;
   /** Auto-dismiss duration in ms. Pass 0 to make it sticky (user must close). Default: 5000. */
