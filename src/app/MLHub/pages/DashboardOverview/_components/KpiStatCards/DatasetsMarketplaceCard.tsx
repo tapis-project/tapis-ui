@@ -2,6 +2,7 @@ import * as React from 'react';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import KpiCard from './KpiCard';
 import { mockMarketplaceDatasets } from '../../../../data/mockData';
+import { Storefront } from '@mui/icons-material';
 
 export default function DatasetsMarketplaceCard() {
   const count = React.useMemo(() => mockMarketplaceDatasets.length, []);
@@ -10,7 +11,7 @@ export default function DatasetsMarketplaceCard() {
     <KpiCard
       title="Datasets Marketplace"
       value={count}
-      icon={<DatasetIcon />}
+      icon={<Storefront />}
       color="secondary"
       trend="+89"
       trendUp

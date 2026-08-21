@@ -17,18 +17,20 @@ import DataExplorationIcon from '@mui/icons-material/DataExploration';
 import ModelFormDialog from '../../../_components/ModelFormDialog';
 import DeploymentDialog from '../../../_components/DeploymentDialog';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { useNavigate } from '../../../_context/NavContext';
 
 export default function QuickActionsCard() {
   const [modal, setModal] = useState<string | undefined>(undefined);
   const { username } = useTapisConfig();
+  const { navigate } = useNavigate();
 
   const actions = [
     {
-      label: 'Register Model',
+      label: 'Discover Models',
       icon: <SmartToyIcon />,
       color: 'primary' as const,
       onClick: () => {
-        setModal('createmodel');
+        navigate('/marketplaces/models');
       },
     },
     {
@@ -39,14 +41,14 @@ export default function QuickActionsCard() {
         setModal('deploymodel');
       },
     },
-    {
-      label: 'Upload Artifact',
-      icon: <UploadFileIcon />,
-      color: 'warning' as const,
-      onClick: () => {
-        setModal('createmodel');
-      },
-    },
+    // {
+    //   label: 'Upload Artifact',
+    //   icon: <UploadFileIcon />,
+    //   color: 'warning' as const,
+    //   onClick: () => {
+    //     setModal('createmodel');
+    //   },
+    // },
     // {
     //   label: 'View Reports',
     //   icon: <AssessmentIcon />,

@@ -18,10 +18,11 @@ import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { StorefrontRounded } from '@mui/icons-material';
 import { MarketplaceButton } from 'app/MLHub/_components/MarketplaceButton';
 import BannerWrapper from 'app/MLHub/_components/BannerWrapper';
+import { ModelDeployment, State } from '@mlhub/deployments-ts-sdk';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 
 interface DashboardOverviewProps {
   models: Model[];
-  deployments: Deployment[];
   artifacts: Artifact[];
   datasets: Dataset[];
   onRegisterModel?: () => void;
@@ -29,11 +30,14 @@ interface DashboardOverviewProps {
 
 export default function DashboardOverview({
   models,
-  deployments,
   artifacts,
   datasets,
   onRegisterModel,
 }: DashboardOverviewProps) {
+  // --- Deployments ----------------------------------------
+  const { data } = Hooks.Deployments.useList();
+  const deployments = data?.result ?? [];
+
   // ─── Framework bar-chart modal ──────────────────────────
   const [frameworkModalOpen, setFrameworkModalOpen] = React.useState(false);
 
@@ -61,7 +65,7 @@ export default function DashboardOverview({
   // ─── KPI Metrics ────────────────────────────────────────────────
   const totalModels = models.length;
   const activeDeployments = deployments.filter(
-    (d) => d.status === 'Running'
+    (d) => d.state === State.Running
   ).length;
   const totalArtifacts = artifacts.length;
 
@@ -88,7 +92,7 @@ export default function DashboardOverview({
   const deploymentStatusDistribution = React.useMemo(() => {
     const counts: Partial<Record<Deployment['status'], number>> = {};
     deployments.forEach((d) => {
-      counts[d.status] = (counts[d.status] || 0) + 1;
+      counts[d.state] = (counts[d.state] || 0) + 1;
     });
     return counts;
   }, [deployments]);
@@ -111,21 +115,12 @@ export default function DashboardOverview({
       [...deployments]
         .sort(
           (a, b) =>
-            new Date(b.deployedAt || 0).getTime() -
-            new Date(a.deployedAt || 0).getTime()
+            new Date(b.created_at || 0).getTime() -
+            new Date(a.created_at || 0).getTime()
         )
         .slice(0, 5),
     [deployments]
   );
-
-  // ─── Status Distribution for progress bars ─────────────────────
-  const statusDistribution = React.useMemo(() => {
-    const counts: Record<string, number> = {};
-    models.forEach((m) => {
-      counts[m.status] = (counts[m.status] || 0) + 1;
-    });
-    return counts;
-  }, [models]);
 
   return (
     <Box>
@@ -145,23 +140,18 @@ export default function DashboardOverview({
       {/* ─── KPI Stat Cards ─────────────────────────────────── */}
       <KpiStatCards />
 
-      <Box sx={{ display: 'flex', gap: '16px', pt: '32px' }}>
-        <MarketplaceButton marketplace="model" />
-        <MarketplaceButton marketplace="dataset" />
-      </Box>
-
       {/* ─── Quick Actions + Charts Row ─────────────────────── */}
       <Grid container spacing={2.5} sx={{ mt: 3, mb: 3 }}>
         <Grid size={{ xs: 12, md: 4 }}>
           <QuickActionsCard />
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+        {/* <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <ModelStatusBreakdown
             totalModels={totalModels}
             statusDistribution={statusDistribution}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <FrameworkPieChart
@@ -180,7 +170,7 @@ export default function DashboardOverview({
       </Grid>
 
       {/* ─── Recent Models & Deployments ─────────────────────── */}
-      <Grid container spacing={2.5}>
+      {/* <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, lg: 6 }}>
           <RecentModelsList models={recentModels} />
         </Grid>
@@ -188,7 +178,7 @@ export default function DashboardOverview({
         <Grid size={{ xs: 12, lg: 6 }}>
           <RecentDeploymentsList deployments={recentDeployments} />
         </Grid>
-      </Grid>
+      </Grid> */}
 
       {/* ─── Framework Bar Chart Modal ────────────────────── */}
       <FrameworkBarChartModal

@@ -2,6 +2,7 @@ import * as React from 'react';
 import PublicIcon from '@mui/icons-material/Public';
 import KpiCard from './KpiCard';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { Storefront } from '@mui/icons-material';
 
 type DiscoverModelsResponseMetadata = {
   count?: number;
@@ -30,7 +31,7 @@ export default function ModelsMarketplaceCard() {
     <KpiCard
       title="Models Marketplace"
       value={respMetadata.count!}
-      icon={<PublicIcon />}
+      icon={<Storefront />}
       color="info"
       trend="+156"
       trendUp

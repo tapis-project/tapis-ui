@@ -283,16 +283,6 @@ export default function ModelsTab() {
             count: statusCounts['priv'] || 0,
             color: 'secondary' as const,
           },
-          {
-            label: '✅  Released',
-            count: statusCounts['released'] || 0,
-            color: 'success' as const,
-          },
-          {
-            label: '✏️  Drafts',
-            count: statusCounts['draft'] || 0,
-            color: 'warning' as const,
-          },
         ].map((stat) => (
           <Card
             key={stat.label}
@@ -337,14 +327,6 @@ export default function ModelsTab() {
           }}
         >
           <Typography variant="h6">Model Registry</Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleCreate}
-            size="small"
-          >
-            New Model
-          </Button>
         </Box>
         <DataGrid
           getRowId={(row) => row.author + row.name}

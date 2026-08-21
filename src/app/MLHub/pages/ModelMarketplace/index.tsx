@@ -30,7 +30,7 @@ import { TASKS_BY_CATEGORY, CATEGORY_COLOR_MAP } from '../../data/taskTypes';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import * as Models from '@mlhub/models-ts-sdk';
 import { useModelFilter } from '../../_context/ModelFilterContext/ModelFilterContext';
-import { Check } from '@mui/icons-material';
+import { Check, Storefront } from '@mui/icons-material';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ModelMarketplaceListing } from './_components/ModelMarketplaceListing';
 
@@ -238,7 +238,7 @@ export default function ModelMarketplace() {
       {/* ─── Header ─────────────────────────────────────── */}
       <Box sx={{ mb: 3 }}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <PublicIcon sx={{ fontSize: 28, color: 'info.main' }} />
+          <Storefront sx={{ fontSize: 28, color: 'info.main' }} />
           <Typography
             variant="h4"
             sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}

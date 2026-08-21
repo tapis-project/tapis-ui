@@ -80,7 +80,6 @@ export default function Router() {
           <Box>
             <DashboardOverview
               models={models}
-              deployments={deployments}
               artifacts={artifacts}
               datasets={datasets}
               onRegisterModel={() => setModelFormOpen(true)}
@@ -129,11 +128,7 @@ export default function Router() {
       {/* Deployments */}
       <Route path="/mlhub/deployments">
         <DashboardLayout>
-          <DeploymentsTab
-            deployments={deployments}
-            onDeploymentsChange={setDeployments}
-            models={modelSummary}
-          />
+          <DeploymentsTab />
         </DashboardLayout>
       </Route>
 

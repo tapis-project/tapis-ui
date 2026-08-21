@@ -1,21 +1,21 @@
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts';
 import { Box, Card, CardContent, Typography } from '@mui/material';
-import type { DeploymentStatus } from '../../../types';
+import * as Deployments from '@mlhub/deployments-ts-sdk';
 import type {} from '@mui/x-charts';
 
 /** Canonical order of every deployment status the bar chart must display */
-const ALL_DEPLOYMENT_STATUSES: Array<DeploymentStatus> = [
-  'Running',
-  'Stopped',
-  'Failed',
-  'Blocked',
-  'Unknown',
-  'NotDeployed',
+const ALL_DEPLOYMENT_STATUSES: Array<Deployments.State> = [
+  Deployments.State.Running,
+  Deployments.State.Stopped,
+  Deployments.State.Failed,
+  Deployments.State.Blocked,
+  Deployments.State.Unknown,
+  Deployments.State.NotDeployed,
 ];
 
 interface DeploymentStatusChartProps {
-  deployments: Array<{ status: string; environment: string }>;
+  deployments: Array<{ state: string }>;
   distribution: Partial<Record<string, number>>;
 }
 
@@ -23,6 +23,7 @@ export default function DeploymentStatusChart({
   deployments,
   distribution,
 }: DeploymentStatusChartProps) {
+  console.log({ deployments });
   // Build chart data — always include ALL statuses, even when count is 0
   const chartData = ALL_DEPLOYMENT_STATUSES.map((status, id) => ({
     id,
