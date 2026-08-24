@@ -29,6 +29,7 @@ import {
   IcicleServicesV2,
   Patra,
   IntelligentEdgeManagementService,
+  Insights,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -76,6 +77,7 @@ const extension = createExtension({
     'no-code-image-lab',
     'no-code-workflow-studio',
     'earth-data-hub',
+    'insights',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -114,6 +116,7 @@ const extension = createExtension({
           'no-code-workflow-studio',
           'earth-data-hub',
           'intelligent-edge-management-service',
+          'insights',
         ],
         secondaryServices: [],
       },
@@ -390,6 +393,12 @@ extension.registerService({
   component: IntelligentEdgeManagementService,
 });
 
+extension.registerService({
+  id: 'insights',
+  sidebarDisplayName: 'Insights',
+  iconName: 'insights',
+  component: Insights,
+});
 // extension.registerService({
 //   id: 'analytics',
 //   sidebarDisplayName: 'Analytics',
