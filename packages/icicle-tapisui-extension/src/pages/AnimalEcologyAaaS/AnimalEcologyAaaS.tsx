@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Component } from '@tapis/tapisui-extensions-core';
 import PortalPageLayout from '../PortalShared/PortalPageLayout';
 import { sortServices } from '../PortalShared/sortServices';
@@ -6,10 +7,20 @@ import styles from '../PortalShared/PortalPageLayout.module.scss';
 
 type ServiceItem = {
   label: string;
+  name?: string;
+  link?: string;
+  internal?: boolean;
   upcoming?: boolean;
 };
 
 const services: ServiceItem[] = [
+  {
+    label:
+      'I-SAW Portal: Sensing and Analytics on Wildlife — plug-and-play field kits (camera-trap backpacks, drones) with live device monitoring',
+    name: 'I-SAW Portal',
+    link: '/isaw-portal',
+    internal: true,
+  },
   {
     label:
       'Design custom camera-trap hardware & software (ML-driven Planner for Ecologists)',
@@ -44,7 +55,22 @@ export const AnimalEcologyAaaS: Component = () => {
             {sortedServices.map((service) => (
               <div key={service.label} className={styles.serviceRow}>
                 <div className={styles.serviceLabel}>{service.label}</div>
-                <div className={styles.cardText}>Upcoming</div>
+                {service.upcoming || !service.link ? (
+                  <div className={styles.cardText}>Upcoming</div>
+                ) : service.internal ? (
+                  <Link to={service.link} className={styles.serviceLink}>
+                    {service.name}
+                  </Link>
+                ) : (
+                  <a
+                    href={service.link}
+                    className={styles.serviceLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {service.name}
+                  </a>
+                )}
               </div>
             ))}
           </div>
