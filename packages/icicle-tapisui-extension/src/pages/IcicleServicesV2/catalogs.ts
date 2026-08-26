@@ -422,6 +422,15 @@ export const CATALOGS: Catalog[] = [
     items: [
       {
         label:
+          'I-SAW Portal: Sensing and Analytics on Wildlife — plug-and-play field kits (camera-trap backpacks, drones) with live device monitoring',
+        description:
+          'Deploy and monitor I-SAW wildlife field kits — camera-trap backpacks and drones — from one plug-and-play control center.',
+        name: 'I-SAW Portal',
+        href: '/isaw-portal',
+        status: 'live',
+      },
+      {
+        label:
           'Design custom camera-trap hardware & software (ML-driven Planner for Ecologists)',
         description:
           'Design custom camera-trap hardware and software with an ML-driven planner built for ecologists.',
