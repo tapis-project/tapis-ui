@@ -399,6 +399,7 @@ extension.registerService({
   iconName: 'insights',
   component: Insights,
 });
+
 // extension.registerService({
 //   id: 'analytics',
 //   sidebarDisplayName: 'Analytics',

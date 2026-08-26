@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { SectionHeader } from '@tapis/tapisui-common';
 import { Component } from '@tapis/tapisui-extensions-core';
 
 export const Insights: Component = ({ accessToken }) => {
@@ -16,12 +15,13 @@ export const Insights: Component = ({ accessToken }) => {
       {accessToken ? (
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
-          src={`https://insights.pods.icicleai.tapis.io`}
+          src="https://insights.pods.icicleai.tapis.io"
+          title="ICICLE Insights"
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
       )}
-  </div>
+    </div>
   );
 };
 

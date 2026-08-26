@@ -24,3 +24,4 @@ export { FoodLogisticsAaaS } from './FoodLogisticsAaaS';
 export { IcicleServicesV2 } from './IcicleServicesV2';
 export { Patra } from './Patra';
 export { IntelligentEdgeManagementService } from './IntelligentEdgeManagementService';
+export { Insights } from './Insights';
