@@ -29,6 +29,8 @@ import {
   IcicleServicesV2,
   Patra,
   IntelligentEdgeManagementService,
+  ISAWPortal,
+  Insights,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -76,6 +78,8 @@ const extension = createExtension({
     'no-code-image-lab',
     'no-code-workflow-studio',
     'earth-data-hub',
+    'isaw-portal',
+    'insights',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -114,6 +118,8 @@ const extension = createExtension({
           'no-code-workflow-studio',
           'earth-data-hub',
           'intelligent-edge-management-service',
+          'isaw-portal',
+          'insights',
         ],
         secondaryServices: [],
       },
@@ -388,6 +394,20 @@ extension.registerService({
   sidebarDisplayName: 'Intelligent Edge Management Service',
   iconName: 'globe',
   component: IntelligentEdgeManagementService,
+});
+
+extension.registerService({
+  id: 'isaw-portal',
+  sidebarDisplayName: 'I-SAW Portal',
+  iconName: 'globe',
+  component: ISAWPortal,
+});
+
+extension.registerService({
+  id: 'insights',
+  sidebarDisplayName: 'Insights',
+  iconName: 'insights',
+  component: Insights,
 });
 
 // extension.registerService({
