@@ -2,9 +2,11 @@ import { useState, type ComponentType, type MouseEvent } from 'react';
 import AppsIcon from '@mui/icons-material/Apps';
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import {
   AppBar,
+  Avatar,
   Box,
   ButtonBase,
   Divider,
@@ -172,6 +174,7 @@ export function Category({ category, searchQuery, onClose }: CategoryProps) {
 
 type ServiceMenuProps = {
   categories: ServiceCategory[];
+  settingsService?: Service;
   barTitle: string;
   barDescription?: string;
   popoverTitle: string;
@@ -180,15 +183,21 @@ type ServiceMenuProps = {
 
 export default function ServiceMenu({
   categories,
+  settingsService,
   barTitle,
   barDescription,
   popoverTitle,
   popoverDescription,
 }: ServiceMenuProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [avatarAnchorEl, setAvatarAnchorEl] = useState<HTMLElement | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const open = Boolean(anchorEl);
+  const avatarMenuOpen = Boolean(avatarAnchorEl);
   const popoverId = open ? 'service-directory-popover' : undefined;
+  const avatarMenuId = avatarMenuOpen ? 'user-menu-popover' : undefined;
 
   const handleToggle = (event: MouseEvent<HTMLElement>) => {
     if (anchorEl) {
@@ -201,6 +210,10 @@ export default function ServiceMenu({
   const handleClose = () => {
     setAnchorEl(null);
     setSearchQuery('');
+  };
+
+  const handleAvatarMenuClose = () => {
+    setAvatarAnchorEl(null);
   };
 
   const matchingCategories = categories.filter((category) => {
@@ -224,6 +237,7 @@ export default function ServiceMenu({
     .filter((service) => Number.isInteger(service.featured))
     .sort((a, b) => (a.featured ?? 0) - (b.featured ?? 0))
     .slice(0, 3);
+  const SettingsServiceIcon = settingsService?.icon;
 
   return (
     <>
@@ -269,8 +283,84 @@ export default function ServiceMenu({
               </Typography>
             )}
           </Box>
+          {settingsService && (
+            <IconButton
+              aria-label="Open user menu"
+              aria-controls={avatarMenuId}
+              aria-haspopup="true"
+              aria-expanded={avatarMenuOpen ? 'true' : undefined}
+              onClick={(event) => {
+                handleClose();
+                setAvatarAnchorEl(event.currentTarget);
+              }}
+              sx={{ ml: 'auto', p: 0.25 }}
+            >
+              <Avatar sx={{ width: 34, height: 34, bgcolor: 'primary.main' }}>
+                <PersonRoundedIcon />
+              </Avatar>
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
+
+      {settingsService && (
+        <Popover
+          id={avatarMenuId}
+          open={avatarMenuOpen}
+          anchorEl={avatarAnchorEl}
+          onClose={handleAvatarMenuClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          slotProps={{
+            paper: {
+              sx: {
+                mt: 1,
+                minWidth: 200,
+                border: 1,
+                borderColor: 'divider',
+                borderRadius: 1.5,
+                boxShadow: '0 12px 32px rgba(15, 23, 42, 0.14)',
+              },
+            },
+          }}
+        >
+          <ButtonBase
+            component="button"
+            onClick={() => {
+              try {
+                settingsService.onClick();
+              } finally {
+                handleAvatarMenuClose();
+              }
+            }}
+            sx={{
+              width: '100%',
+              justifyContent: 'flex-start',
+              px: 1.5,
+              py: 1.25,
+              textAlign: 'left',
+              '&:hover': { bgcolor: 'action.hover' },
+            }}
+          >
+            {SettingsServiceIcon && (
+              <SettingsServiceIcon
+                sx={{
+                  mr: 1.25,
+                  color: settingsService.color ?? 'primary.main',
+                }}
+              />
+            )}
+            <Box>
+              <Typography variant="body2" sx={{ fontWeight: 650 }}>
+                {settingsService.title}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {settingsService.caption}
+              </Typography>
+            </Box>
+          </ButtonBase>
+        </Popover>
+      )}
 
       <Popover
         id={popoverId}

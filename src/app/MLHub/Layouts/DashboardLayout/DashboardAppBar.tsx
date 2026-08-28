@@ -97,6 +97,16 @@ export default function DashboardAppBar() {
     onClick: () => navigate('/'),
   };
 
+  const settingsService: Service = {
+    id: 'settings',
+    title: 'Settings',
+    caption: 'Manage your MLHub preferences',
+    icon: SettingsRounded,
+    color: '#64748b',
+    tags: ['settings', 'preferences', 'user', 'account'],
+    onClick: () => navigate('/settings'),
+  };
+
   const categories: ServiceCategory[] = [
     {
       id: 'models',
@@ -290,10 +300,10 @@ export default function DashboardAppBar() {
       ],
     },
     {
-      id: 'home',
-      title: 'Home',
-      tags: ['home', 'dashboard', 'overview'],
-      services: [dashboardService],
+      id: 'user',
+      title: 'User',
+      tags: ['user', 'account', 'preferences', 'settings'],
+      services: [dashboardService, settingsService],
     },
   ];
 
@@ -396,6 +406,7 @@ export default function DashboardAppBar() {
     // </AppBar>
     <ServiceMenu
       categories={categories}
+      settingsService={settingsService}
       barTitle="MLHub"
       barDescription="Centralized AI Control Plane"
       popoverTitle="All services"

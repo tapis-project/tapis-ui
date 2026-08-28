@@ -178,6 +178,13 @@ export default function Router() {
         </DashboardLayout>
       </Route>
 
+      {/** Settings */}
+      <Route path="/mlhub/settings">
+        <DashboardLayout>
+          <ComingSoon />
+        </DashboardLayout>
+      </Route>
+
       <Route path="*">
         <NotFound404 />
       </Route>
