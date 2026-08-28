@@ -42,7 +42,10 @@ import {
   TimelineRounded,
   TravelExploreRounded,
 } from '@mui/icons-material';
-import ServiceMenu, { ServiceCategory } from '../../_components/ServiceMenu';
+import ServiceMenu, {
+  Service,
+  ServiceCategory,
+} from '../../_components/ServiceMenu';
 
 /* ─── Nav config ──────────────────────────────────────────────── */
 const NAV_ITEMS = [
@@ -83,10 +86,21 @@ export default function DashboardAppBar() {
 
   const activeTab = getActiveTabIndex(root, location.pathname);
 
+  const dashboardService: Service = {
+    id: 'dashboard',
+    title: 'Dashboard',
+    caption: 'View your MLHub overview',
+    icon: DashboardRounded,
+    color: '#2563eb',
+    tags: ['home', 'dashboard', 'overview'],
+    featured: 1,
+    onClick: () => navigate('/'),
+  };
+
   const categories: ServiceCategory[] = [
     {
       id: 'models',
-      title: 'Models',
+      title: 'AI/ML Models',
       tags: ['model registry', 'artifacts', 'ai'],
       services: [
         {
@@ -100,11 +114,12 @@ export default function DashboardAppBar() {
         },
         {
           id: 'model-marketplace',
-          title: 'Model marketplace',
+          title: 'Models marketplace',
           caption: 'Discover AI/ML models curated from external platforms',
           icon: StorefrontRounded,
           color: '#7c3aed',
           tags: ['models', 'discover', 'marketplace', 'catalog'],
+          featured: 2,
           onClick: () => navigate('/marketplaces/models'),
         },
         {
@@ -134,7 +149,7 @@ export default function DashboardAppBar() {
         },
         {
           id: 'dataset-marketplace',
-          title: 'Dataset marketplace',
+          title: 'Datasets marketplace',
           caption: 'Discover datasets curated from external platforms',
           icon: StorefrontRounded,
           color: '#d97706',
@@ -161,6 +176,7 @@ export default function DashboardAppBar() {
             'orchestration',
             'operations',
           ],
+          featured: 3,
           onClick: () => navigate('/fleet'),
         },
         {
@@ -272,6 +288,12 @@ export default function DashboardAppBar() {
           onClick: () => navigate('/endpoints'),
         },
       ],
+    },
+    {
+      id: 'home',
+      title: 'Home',
+      tags: ['home', 'dashboard', 'overview'],
+      services: [dashboardService],
     },
   ];
 

@@ -7,6 +7,7 @@ import {
   AppBar,
   Box,
   ButtonBase,
+  Divider,
   IconButton,
   InputAdornment,
   Popover,
@@ -24,6 +25,8 @@ export type Service = {
   onClick: () => void;
   tags: string[];
   color?: string;
+  /** Featured placement; lower values appear first. */
+  featured?: number;
 };
 
 export type ServiceCategory = {
@@ -216,6 +219,11 @@ export default function ServiceMenu({
       )
     );
   });
+  const visibleFeaturedServices = categories
+    .flatMap((category) => category.services)
+    .filter((service) => Number.isInteger(service.featured))
+    .sort((a, b) => (a.featured ?? 0) - (b.featured ?? 0))
+    .slice(0, 3);
 
   return (
     <>
@@ -247,20 +255,20 @@ export default function ServiceMenu({
           >
             {open ? <CloseRoundedIcon /> : <AppsIcon />}
           </IconButton>
-          <Typography
-            sx={{ ml: 1.5, fontWeight: 750, letterSpacing: '-0.02em' }}
-          >
-            {barTitle}
-          </Typography>
-          {barDescription && (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ ml: 1.5, display: { xs: 'none', sm: 'block' } }}
-            >
-              {barDescription}
+          <Box sx={{ ml: 1.5, minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 750, letterSpacing: '-0.02em' }}>
+              {barTitle}
             </Typography>
-          )}
+            {barDescription && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block', lineHeight: 1.2 }}
+              >
+                {barDescription}
+              </Typography>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -278,7 +286,9 @@ export default function ServiceMenu({
               width: { xs: 'calc(100vw - 24px)', sm: 760, md: 920 },
               maxWidth: 'calc(100vw - 24px)',
               maxHeight: 'min(720px, calc(100vh - 100px))',
-              overflowY: 'auto',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
               border: 1,
               borderColor: 'divider',
               boxShadow: '0 18px 50px rgba(15, 23, 42, 0.16)',
@@ -287,7 +297,15 @@ export default function ServiceMenu({
           },
         }}
       >
-        <Box sx={{ p: { xs: 2, sm: 3 }, bgcolor: 'background.paper' }}>
+        <Box
+          sx={{
+            p: { xs: 2, sm: 3 },
+            bgcolor: 'background.paper',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+          }}
+        >
           <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="h6"
@@ -318,49 +336,175 @@ export default function ServiceMenu({
                 ),
               },
             }}
-            sx={{ mb: 3 }}
+            sx={{ mb: visibleFeaturedServices.length > 0 ? 2 : 3 }}
           />
           <Box
             sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(2, minmax(0, 1fr))',
-                md: 'repeat(3, minmax(0, 1fr))',
-              },
-              gap: { xs: 3, sm: 3, md: 4 },
+              flex: '1 1 auto',
+              minHeight: 0,
+              overflowY: 'auto',
+              pr: 1,
             }}
           >
-            {matchingCategories.length > 0 ? (
-              matchingCategories.map((category) => (
-                <Category
-                  key={category.id}
-                  category={category}
-                  searchQuery={searchQuery}
-                  onClose={handleClose}
-                />
-              ))
-            ) : (
-              <Box
-                role="status"
-                sx={{
-                  gridColumn: '1 / -1',
-                  py: 6,
-                  textAlign: 'center',
-                  color: 'text.secondary',
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: 650, color: 'text.primary' }}
-                >
-                  No services match “{searchQuery}”
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  Try a different search term or tag.
-                </Typography>
-              </Box>
+            {visibleFeaturedServices.length > 0 && (
+              <>
+                <Box component="section" aria-labelledby="featured-services">
+                  <Typography
+                    id="featured-services"
+                    variant="overline"
+                    sx={{
+                      display: 'block',
+                      mb: 1,
+                      color: 'text.secondary',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                    }}
+                  >
+                    Featured
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        xs: '1fr',
+                        sm: 'repeat(3, minmax(0, 1fr))',
+                      },
+                      gap: 1,
+                    }}
+                  >
+                    {visibleFeaturedServices.map((service) => {
+                      const ServiceIcon = service.icon;
+                      return (
+                        <ButtonBase
+                          key={service.id}
+                          component="button"
+                          onClick={() => {
+                            try {
+                              service.onClick();
+                            } finally {
+                              handleClose();
+                            }
+                          }}
+                          sx={{
+                            minWidth: 0,
+                            justifyContent: 'flex-start',
+                            alignItems: 'flex-start',
+                            border: 1,
+                            borderColor: service.color ?? 'primary.light',
+                            borderRadius: 1.5,
+                            px: 1,
+                            py: 0.75,
+                            textAlign: 'left',
+                            bgcolor: 'background.paper',
+                            '&:hover': { bgcolor: 'action.hover' },
+                            '&:focus-visible': {
+                              outline: '2px solid',
+                              outlineColor: 'primary.main',
+                              outlineOffset: 1,
+                            },
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: 'grid',
+                              placeItems: 'center',
+                              flexShrink: 0,
+                              width: 32,
+                              height: 32,
+                              mt: 0.15,
+                              mr: 1,
+                              borderRadius: 1.25,
+                              color: service.color ?? 'primary.main',
+                              bgcolor: service.color
+                                ? `${service.color}16`
+                                : 'action.selected',
+                            }}
+                          >
+                            <ServiceIcon sx={{ fontSize: 18 }} />
+                          </Box>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: 'text.primary',
+                                fontWeight: 650,
+                                lineHeight: 1.3,
+                              }}
+                            >
+                              {service.title}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{
+                                display: 'block',
+                                mt: 0.2,
+                                lineHeight: 1.35,
+                              }}
+                            >
+                              {service.caption}
+                            </Typography>
+                          </Box>
+                          <ArrowOutwardRoundedIcon
+                            sx={{
+                              ml: 'auto',
+                              mt: 0.35,
+                              fontSize: 15,
+                              color: 'text.disabled',
+                              opacity: 0.7,
+                            }}
+                          />
+                        </ButtonBase>
+                      );
+                    })}
+                  </Box>
+                </Box>
+                <Divider sx={{ my: 3 }} />
+              </>
             )}
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, minmax(0, 1fr))',
+                  md: 'repeat(3, minmax(0, 1fr))',
+                },
+                gap: { xs: 3, sm: 3, md: 4 },
+              }}
+            >
+              {matchingCategories.length > 0 ? (
+                matchingCategories.map((category) => (
+                  <Category
+                    key={category.id}
+                    category={category}
+                    searchQuery={searchQuery}
+                    onClose={handleClose}
+                  />
+                ))
+              ) : (
+                <Box
+                  role="status"
+                  sx={{
+                    gridColumn: '1 / -1',
+                    py: 6,
+                    textAlign: 'center',
+                    color: 'text.secondary',
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: 650, color: 'text.primary' }}
+                  >
+                    No services match “{searchQuery}”
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 0.5 }}>
+                    Try a different search term or tag.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
         </Box>
       </Popover>
