@@ -19,6 +19,7 @@ import { useNavigate } from '../../_context/NavContext';
 import {
   AccountTreeRounded,
   AnalyticsRounded,
+  AssignmentRounded,
   AutoAwesome,
   CloudQueueRounded,
   CodeRounded,
@@ -80,7 +81,7 @@ function getActiveTabIndex(root: string, pathname: string): number {
 }
 
 /* ─── Component ──────────────────────────────────────────────── */
-export default function DashboardAppBar() {
+export default function MLHubAppBar() {
   const { navigate, root } = useNavigate();
   const location = useLocation();
 
@@ -174,8 +175,8 @@ export default function DashboardAppBar() {
       tags: ['control plane', 'orchestration', 'operations'],
       services: [
         {
-          id: 'fleet-management',
-          title: 'Fleet management',
+          id: 'agent-control-plan',
+          title: 'Agent control plane',
           caption: 'Operate the agent control plane and manage fleets',
           icon: AnalyticsRounded,
           color: '#ea580c',
@@ -187,7 +188,7 @@ export default function DashboardAppBar() {
             'operations',
           ],
           featured: 3,
-          onClick: () => navigate('/fleet'),
+          onClick: () => navigate('/agent-control-plane'),
         },
         {
           id: 'agent-registry',
@@ -196,16 +197,16 @@ export default function DashboardAppBar() {
           icon: SmartToyRounded,
           color: '#9333ea',
           tags: ['agents', 'register', 'create', 'records', 'inventory'],
-          onClick: () => navigate('/fleet/agents'),
+          onClick: () => navigate('/agent-control-plane/agents'),
         },
         {
           id: 'agent-records',
           title: 'Agent records',
           caption: 'Create agent records for templated agent deployment',
-          icon: RocketLaunchRounded,
+          icon: AssignmentRounded,
           color: '#16a34a',
           tags: ['agents', 'deploy', 'release', 'runtime'],
-          onClick: () => navigate('/fleet/records'),
+          onClick: () => navigate('/agent-control-plane/records'),
         },
       ],
     },

@@ -3,32 +3,40 @@ import Box from '@mui/material/Box';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '../../theme';
-import DashboardAppBar from './DashboardAppBar';
+import MLHubAppBar from './MLHubAppBar';
 
 /* ─── Shared Layout (App Bar + content area) ──────────────────── */
-interface DashboardLayoutProps {
+interface MLHubLayoutProps {
   children: React.ReactNode;
+  fullBleed?: boolean;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function MLHubLayout({
+  children,
+  fullBleed = false,
+}: MLHubLayoutProps) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box
         sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
       >
-        <DashboardAppBar />
+        <MLHubAppBar />
 
         {/* Main Content Area */}
         <Box
           component="main"
           sx={{
             flex: 1,
-            maxWidth: 1400,
-            mx: 'auto',
             width: '100%',
-            px: { xs: 2, sm: 3 },
-            py: 3,
+            ...(fullBleed
+              ? {}
+              : {
+                  maxWidth: 1400,
+                  mx: 'auto',
+                  px: { xs: 2, sm: 3 },
+                  py: 3,
+                }),
           }}
         >
           {children}

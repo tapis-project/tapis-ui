@@ -19,7 +19,7 @@ import {
 } from '../data/mockData';
 
 // Layout
-import DashboardLayout from '../Layouts/DashboardLayout';
+import MLHubLayout from '../Layouts/MLHubLayout';
 
 // Page-level components
 import ModelsTab from '../pages/ModelsTab';
@@ -35,6 +35,7 @@ import NotFound404 from '../pages/NotFound404';
 import ComingSoon from '../pages/ComingSoonPage';
 // import DatasetMarketplace from '../pages/DatasetMarketplace';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
+import { AgentControlPlane } from '../pages/AgentControlPlane';
 
 /* ─── App Root ────────────────────────────────────────────────── */
 export default function Router() {
@@ -76,7 +77,7 @@ export default function Router() {
     <Switch>
       {/* Dashboard Overview */}
       <Route path="/mlhub" exact>
-        <DashboardLayout>
+        <MLHubLayout>
           <Box>
             <DashboardOverview
               models={models}
@@ -85,56 +86,56 @@ export default function Router() {
               onRegisterModel={() => setModelFormOpen(true)}
             />
           </Box>
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Models */}
       <Route path="/mlhub/models" exact>
-        <DashboardLayout>
+        <MLHubLayout>
           <ModelsTab />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Model Marketplace */}
       <Route path="/mlhub/marketplaces/models">
-        <DashboardLayout>
+        <MLHubLayout>
           <ModelFilterProvider>
             <ModelMarketplace />
           </ModelFilterProvider>
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Dataset Marketplace */}
       <Route path="/mlhub/marketplaces/datasets">
-        <DashboardLayout>
+        <MLHubLayout>
           <ComingSoon />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Datasets */}
       <Route path="/mlhub/datasets">
-        <DashboardLayout>
+        <MLHubLayout>
           <ComingSoon />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Dataset Detail Page */}
       <Route path="/mlhub/datasets/:datasetId">
-        <DashboardLayout>
+        <MLHubLayout>
           <ComingSoon />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Deployments */}
       <Route path="/mlhub/deployments">
-        <DashboardLayout>
+        <MLHubLayout>
           <DeploymentsTab />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Deployment Detail Page */}
       <Route path="/mlhub/deployments/*">
-        <DashboardLayout>
+        <MLHubLayout>
           <DeploymentDetailsPage
             deployments={deployments}
             onDelete={(id) => {
@@ -142,51 +143,53 @@ export default function Router() {
               window.history.back();
             }}
           />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Artifacts */}
       <Route path="/mlhub/artifacts">
-        <DashboardLayout>
+        <MLHubLayout>
           <ArtifactsTab
             artifacts={artifacts}
             onArtifactsChange={setArtifacts}
             models={modelSummary}
             datasets={datasetSummary}
           />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/* Model Detail Page */}
       <Route path="/mlhub/models/:author/:name">
-        <DashboardLayout>
+        <MLHubLayout>
           <ModelDetailsPage />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/** Agents */}
-      <Route path="/mlhub/agents">
-        <DashboardLayout>
-          <ComingSoon />
-        </DashboardLayout>
+      <Route path="/mlhub/agent-control-plane">
+        <MLHubLayout fullBleed>
+          <AgentControlPlane />
+        </MLHubLayout>
       </Route>
 
       {/** Tools */}
       <Route path="/mlhub/tools">
-        <DashboardLayout>
+        <MLHubLayout>
           <ComingSoon />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       {/** Settings */}
       <Route path="/mlhub/settings">
-        <DashboardLayout>
+        <MLHubLayout>
           <ComingSoon />
-        </DashboardLayout>
+        </MLHubLayout>
       </Route>
 
       <Route path="*">
-        <NotFound404 />
+        <MLHubLayout>
+          <NotFound404 />
+        </MLHubLayout>
       </Route>
     </Switch>
   );
