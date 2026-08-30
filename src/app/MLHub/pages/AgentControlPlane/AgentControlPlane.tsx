@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { Box, Snackbar, Alert } from '@mui/material';
+import { Box } from '@mui/material';
 import { Header } from './Header';
 import { OverviewPage } from './OverviewPage';
 import { AgentsListPage } from './AgentsListPage';
@@ -13,10 +13,12 @@ import { Agent, AgentRecord, AgentLiveness } from '../types/agent';
 import { useListAgents } from '../hooks/useListAgents';
 import { useListAgentRecords } from '../hooks/useListAgentRecords';
 import { useNavigate } from '../../_context/NavContext';
+import { useToast } from '../../_context/ToastsContext/useToast';
 import { AgentControlPlaneTheme } from './uiTokens';
 
 export const AgentControlPlane = () => {
   const { navigate } = useNavigate();
+  const toast = useToast();
   const {
     toggleLiveness,
     probeAgent,
@@ -34,27 +36,6 @@ export const AgentControlPlane = () => {
   const [recordToInstantiate, setRecordToInstantiate] =
     useState<AgentRecord | null>(null);
 
-  const [toast, setToast] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'info' | 'warning' | 'error';
-  }>({
-    open: false,
-    message: '',
-    severity: 'info',
-  });
-
-  const showToast = (
-    message: string,
-    severity: 'success' | 'info' | 'warning' | 'error' = 'info'
-  ) => {
-    setToast({ open: true, message, severity });
-  };
-
-  const handleCloseToast = () => {
-    setToast((prev) => ({ ...prev, open: false }));
-  };
-
   // Toggle liveness
   const handleToggleLiveness = (agentId: string) => {
     const updated = toggleLiveness(agentId);
@@ -65,29 +46,33 @@ export const AgentControlPlane = () => {
       if (playgroundAgent?.id === agentId) {
         setPlaygroundAgent(updated);
       }
-      showToast(
-        `Agent "${updated.name}" state updated to ${updated.liveness}.`,
-        updated.liveness === AgentLiveness.Alive ? 'success' : 'warning'
-      );
+      const message = `Agent "${updated.name}" state updated to ${updated.liveness}.`;
+      if (updated.liveness === AgentLiveness.Alive) {
+        toast.success(message);
+      } else {
+        toast.warning(message);
+      }
     }
   };
 
   // Probe single agent
   const handleProbeAgent = (agentId: string) => {
     const result = probeAgent(agentId);
-    showToast(result.message, result.success ? 'success' : 'error');
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   };
 
   // Fleet wide probe refresh
   const handleRefreshAll = () => {
-    showToast(
-      'Initiating asynchronous fleet liveness probe sweep across all target endpoints...',
-      'info'
+    toast.info(
+      'Initiating asynchronous fleet liveness probe sweep across all target endpoints...'
     );
     refreshAll().then(() => {
-      showToast(
-        'Fleet probe sweep complete. All alive instances verified healthy.',
-        'success'
+      toast.success(
+        'Fleet probe sweep complete. All alive instances verified healthy.'
       );
     });
   };
@@ -97,9 +82,8 @@ export const AgentControlPlane = () => {
     registerAgent(newAgent);
     setIsRegisterOpen(false);
     setRecordToInstantiate(null);
-    showToast(
-      `Agent "${newAgent.name}" successfully registered & deployed!`,
-      'success'
+    toast.success(
+      `Agent "${newAgent.name}" successfully registered & deployed!`
     );
     navigate('/agent-control-plane/agents');
   };
@@ -108,9 +92,8 @@ export const AgentControlPlane = () => {
   const handleCreateRecord = (newRecord: AgentRecord) => {
     createRecord(newRecord);
     setIsCreateRecordOpen(false);
-    showToast(
-      `Agent Record "${newRecord.name}" (v${newRecord.version}) successfully published to registry!`,
-      'success'
+    toast.success(
+      `Agent Record "${newRecord.name}" (v${newRecord.version}) successfully published to registry!`
     );
     navigate('/agent-control-plane/records');
   };
@@ -215,23 +198,6 @@ export const AgentControlPlane = () => {
           onClose={() => setPlaygroundAgent(null)}
           onProbeAgent={handleProbeAgent}
         />
-
-        {/* Feedback Toast */}
-        <Snackbar
-          open={toast.open}
-          autoHideDuration={4000}
-          onClose={handleCloseToast}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        >
-          <Alert
-            onClose={handleCloseToast}
-            severity={toast.severity}
-            variant="filled"
-            sx={{ width: '100%', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}
-          >
-            {toast.message}
-          </Alert>
-        </Snackbar>
       </Box>
     </AgentControlPlaneTheme>
   );

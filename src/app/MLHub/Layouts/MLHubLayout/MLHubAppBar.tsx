@@ -48,27 +48,6 @@ import ServiceMenu, {
   ServiceCategory,
 } from '../../_components/ServiceMenu';
 
-/* ─── Nav config ──────────────────────────────────────────────── */
-const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
-  { label: 'Models', path: '/models', icon: <SmartToyIcon /> },
-  { label: 'Deployments', path: '/deployments', icon: <RocketLaunchIcon /> },
-  {
-    label: 'Datasets',
-    path: '/datasets',
-    icon: <DatasetIcon />,
-    comingSoon: true,
-  },
-  {
-    label: 'Artifacts',
-    path: '/artifacts',
-    icon: <Inventory2Icon />,
-    comingSoon: true,
-  },
-  { label: 'Agents', path: '/agents', icon: <AutoAwesome />, comingSoon: true },
-  { label: 'Tools', path: '/tools', icon: <Hardware />, comingSoon: true },
-];
-
 function getActiveTabIndex(root: string, pathname: string): number {
   if (pathname === root) return 0;
   if (pathname.startsWith(root + '/models')) return 1;
@@ -201,7 +180,7 @@ export default function MLHubAppBar() {
         },
         {
           id: 'agent-records',
-          title: 'Agent records',
+          title: 'Agent blueprints',
           caption: 'Create agent records for templated agent deployment',
           icon: AssignmentRounded,
           color: '#16a34a',
@@ -282,7 +261,7 @@ export default function MLHubAppBar() {
       services: [
         {
           id: 'traffic-observability',
-          title: 'Traffic & traces',
+          title: 'Network traffic & traces',
           caption: 'View traffic, traces, and spans across your domain',
           icon: TimelineRounded,
           color: '#4f46e5',
