@@ -1215,6 +1215,55 @@ console.log('Agent output:', result.data)`;
                 )}
               </Typography>
 
+              <Stack spacing={1} sx={{ mb: 1.5 }}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', fontWeight: 600 }}
+                  >
+                    DEFAULT INPUT MODES:
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{ flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}
+                  >
+                    {linkedRecord.default_input_modes.map((mode) => (
+                      <Chip
+                        key={mode}
+                        label={mode}
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontSize: '0.675rem', height: 20 }}
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', fontWeight: 600 }}
+                  >
+                    DEFAULT OUTPUT MODES:
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{ flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}
+                  >
+                    {linkedRecord.default_output_modes.map((mode) => (
+                      <Chip
+                        key={mode}
+                        label={mode}
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontSize: '0.675rem', height: 20 }}
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              </Stack>
+
               <Typography
                 variant="caption"
                 sx={{
@@ -1226,19 +1275,37 @@ console.log('Agent output:', result.data)`;
               >
                 INCLUDED SKILLS:
               </Typography>
-              <Stack
-                direction="row"
-                spacing={0.75}
-                sx={{ flexWrap: 'wrap', gap: 0.5 }}
-              >
+              <Stack spacing={0.75}>
                 {linkedRecord.skills.map((skill) => (
-                  <Chip
-                    key={skill.id}
-                    label={skill.name}
-                    size="small"
-                    variant="outlined"
-                    sx={{ fontSize: '0.7rem', height: 22 }}
-                  />
+                  <Box key={skill.id}>
+                    <Chip
+                      label={skill.name}
+                      size="small"
+                      variant="outlined"
+                      sx={{ fontSize: '0.7rem', height: 22 }}
+                    />
+                    {(skill.input_modes?.length ||
+                      skill.output_modes?.length) && (
+                      <Stack spacing={0.5} sx={{ mt: 0.5, ml: 0.5 }}>
+                        {skill.input_modes?.length ? (
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary' }}
+                          >
+                            In: {skill.input_modes.join(', ')}
+                          </Typography>
+                        ) : null}
+                        {skill.output_modes?.length ? (
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary' }}
+                          >
+                            Out: {skill.output_modes.join(', ')}
+                          </Typography>
+                        ) : null}
+                      </Stack>
+                    )}
+                  </Box>
                 ))}
               </Stack>
             </Paper>

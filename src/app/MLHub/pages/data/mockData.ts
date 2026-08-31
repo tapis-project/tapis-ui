@@ -50,6 +50,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
       streaming: true,
       push_notifications: false,
     },
+    default_input_modes: ['text/plain', 'application/json'],
+    default_output_modes: ['application/json'],
     provider: {
       organization: 'Nexus Core Intelligence',
       url: 'https://nexus.ai/providers/core-intel',
@@ -99,6 +101,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
         description:
           'Executes BM25 keyword matching combined with HNSW cosine embedding search.',
         tags: ['retrieval', 'vector-db', 'semantic-search'],
+        input_modes: ['text/plain', 'application/json'],
+        output_modes: ['application/json'],
         examples: [
           'Find recent SEC 10-K disclosures mentioning quantum computing risks',
           'Retrieve HIPAA compliant audit records matching customer ID 8892',
@@ -110,6 +114,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
         description:
           'Applies neural rerankers to top-100 retrieved passages for maximum context precision.',
         tags: ['rerank', 'nlp', 'precision'],
+        input_modes: ['application/json'],
+        output_modes: ['application/json'],
         examples: ['Rerank retrieved chunks using bge-reranker-large model'],
       },
     ],
@@ -130,6 +136,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
       streaming: false,
       push_notifications: true,
     },
+    default_input_modes: ['application/json'],
+    default_output_modes: ['application/json'],
     provider: {
       organization: 'Nexus Security Systems',
       url: 'https://nexus.ai/security',
@@ -175,6 +183,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
         description:
           'Calculates entropy and deviation across subnets in rolling 5-minute windows.',
         tags: ['security', 'network', 'ml-detector'],
+        input_modes: ['application/json'],
+        output_modes: ['application/json'],
         examples: [
           'Inspect egress traffic spike to unlisted external IP 198.51.100.44',
           'Audit IAM assume role actions for unexpected cross-region credentials',
@@ -186,6 +196,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
         description:
           'Attaches restrictive security group to compromised EC2 instances or terminates rogue tokens.',
         tags: ['remediation', 'containment', 'zero-trust'],
+        input_modes: ['application/json'],
+        output_modes: ['application/json'],
         examples: [
           'Quarantine instance i-0abcd1234ef567890 after verified malware beacon',
         ],
@@ -208,6 +220,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
       streaming: true,
       push_notifications: false,
     },
+    default_input_modes: ['text/plain'],
+    default_output_modes: ['application/json'],
     provider: {
       organization: 'Nexus Data Platform',
       url: 'https://nexus.ai/data',
@@ -251,6 +265,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
         description:
           'Translates human language questions into dialect-specific ANSI/Postgres SQL with EXPLAIN plan verification.',
         tags: ['sql', 'nlp', 'database', 'postgres'],
+        input_modes: ['text/plain'],
+        output_modes: ['application/sql', 'application/json'],
         examples: [
           'Calculate monthly recurring revenue churn segmented by enterprise vs self-serve plans in Q2',
           'Generate partitioned window query for top 5 purchasing users per country',
@@ -274,6 +290,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
       streaming: true,
       push_notifications: true,
     },
+    default_input_modes: ['application/pdf', 'image/tiff'],
+    default_output_modes: ['application/json'],
     provider: {
       organization: 'Nexus Vision Works',
       url: 'https://nexus.ai/vision',
@@ -312,6 +330,8 @@ export const INITIAL_AGENT_RECORDS: AgentRecord[] = [
         description:
           'Recognizes borderless and merged-cell tables, returning JSON/Markdown schema.',
         tags: ['vision', 'ocr', 'tables', 'document-ai'],
+        input_modes: ['application/pdf', 'image/tiff'],
+        output_modes: ['application/json', 'text/markdown'],
         examples: [
           'Extract line item billing matrix and tax subtotals from European VAT invoice',
         ],

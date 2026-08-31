@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { types as mimeTypes } from 'mime-types';
 import {
+  Autocomplete,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -68,6 +70,8 @@ interface FormSkillItem {
   description?: string;
   tags?: string[];
   examples?: string[];
+  inputModes?: string[];
+  outputModes?: string[];
 }
 
 interface CreateRecordFormValues {
@@ -82,6 +86,8 @@ interface CreateRecordFormValues {
   visibility: Visibility;
   streaming: boolean;
   pushNotifications: boolean;
+  defaultInputModes: string[];
+  defaultOutputModes: string[];
   tags: string[];
   artifacts: ArtifactLocator[];
   skills: FormSkillItem[];
@@ -89,6 +95,14 @@ interface CreateRecordFormValues {
 }
 
 const semverRegex = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
+
+const preferredMimeTypes = ['text/plain', 'application/json'];
+const mimeTypeOptions = [
+  ...preferredMimeTypes,
+  ...Array.from(new Set(Object.values(mimeTypes)))
+    .filter((mimeType) => !preferredMimeTypes.includes(mimeType))
+    .sort(),
+];
 
 const createRecordSchema = yup.object().shape({
   name: yup
@@ -115,6 +129,16 @@ const createRecordSchema = yup.object().shape({
     .required('Visibility is required'),
   streaming: yup.boolean().default(true),
   pushNotifications: yup.boolean().default(false),
+  defaultInputModes: yup
+    .array()
+    .of(yup.string().required())
+    .min(1, 'Select at least one default input MIME type')
+    .required(),
+  defaultOutputModes: yup
+    .array()
+    .of(yup.string().required())
+    .min(1, 'Select at least one default output MIME type')
+    .required(),
   tags: yup
     .array()
     .of(yup.string().required())
@@ -148,6 +172,16 @@ const createRecordSchema = yup.object().shape({
         description: yup.string().default(''),
         tags: yup.array().of(yup.string().required()).default([]),
         examples: yup.array().of(yup.string().required()).default([]),
+        inputModes: yup
+          .array()
+          .of(yup.string().required())
+          .min(1, 'Select at least one input MIME type when modes are set')
+          .optional(),
+        outputModes: yup
+          .array()
+          .of(yup.string().required())
+          .min(1, 'Select at least one output MIME type when modes are set')
+          .optional(),
       })
     )
     .test('unique-skill-ids', 'All Skill IDs must be unique', (skills) => {
@@ -219,6 +253,8 @@ export const CreateRecordDialog: React.FC<CreateRecordDialogProps> = ({
       visibility: Visibility.Public,
       streaming: true,
       pushNotifications: false,
+      defaultInputModes: ['text/plain', 'application/json'],
+      defaultOutputModes: ['application/json'],
       tags: ['blueprint', 'production'],
       artifacts: [
         {
@@ -237,6 +273,8 @@ export const CreateRecordDialog: React.FC<CreateRecordDialogProps> = ({
             'Analyze quarterly financial ledger',
             'Synthesize research paper findings',
           ],
+          inputModes: ['text/plain', 'application/json'],
+          outputModes: ['text/plain'],
         },
       ],
       interfaces: [
@@ -380,6 +418,8 @@ export const CreateRecordDialog: React.FC<CreateRecordDialogProps> = ({
       description: s.description?.trim() || '',
       tags: s.tags || [],
       examples: s.examples || [],
+      ...(s.inputModes?.length ? { input_modes: s.inputModes } : {}),
+      ...(s.outputModes?.length ? { output_modes: s.outputModes } : {}),
     }));
 
     const newRecord: AgentRecord = {
@@ -396,6 +436,8 @@ export const CreateRecordDialog: React.FC<CreateRecordDialogProps> = ({
         streaming: data.streaming,
         push_notifications: data.pushNotifications,
       },
+      default_input_modes: data.defaultInputModes,
+      default_output_modes: data.defaultOutputModes,
       provider: data.organization
         ? {
             organization: data.organization.trim(),
@@ -581,6 +623,60 @@ export const CreateRecordDialog: React.FC<CreateRecordDialogProps> = ({
                     label="Blueprint Description & Role"
                     error={!!error}
                     helperText={error?.message}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="defaultInputModes"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <Autocomplete
+                    multiple
+                    disableCloseOnSelect
+                    filterSelectedOptions
+                    options={mimeTypeOptions}
+                    value={field.value}
+                    onChange={(_event, value) => field.onChange(value)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        label="Default Input MIME Types"
+                        required
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="defaultOutputModes"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <Autocomplete
+                    multiple
+                    disableCloseOnSelect
+                    filterSelectedOptions
+                    options={mimeTypeOptions}
+                    value={field.value}
+                    onChange={(_event, value) => field.onChange(value)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        label="Default Output MIME Types"
+                        required
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
                   />
                 )}
               />
@@ -944,6 +1040,72 @@ export const CreateRecordDialog: React.FC<CreateRecordDialogProps> = ({
                             size="small"
                             label="Skill Description"
                             placeholder="Describe how the agent executes this skill"
+                          />
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Controller
+                        name={`skills.${idx}.inputModes`}
+                        control={control}
+                        render={({
+                          field: modesField,
+                          fieldState: { error },
+                        }) => (
+                          <Autocomplete
+                            multiple
+                            disableCloseOnSelect
+                            filterSelectedOptions
+                            options={mimeTypeOptions}
+                            value={modesField.value ?? []}
+                            onChange={(_event, value) =>
+                              modesField.onChange(
+                                value.length > 0 ? value : undefined
+                              )
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                size="small"
+                                label="Skill Input MIME Types"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Controller
+                        name={`skills.${idx}.outputModes`}
+                        control={control}
+                        render={({
+                          field: modesField,
+                          fieldState: { error },
+                        }) => (
+                          <Autocomplete
+                            multiple
+                            disableCloseOnSelect
+                            filterSelectedOptions
+                            options={mimeTypeOptions}
+                            value={modesField.value ?? []}
+                            onChange={(_event, value) =>
+                              modesField.onChange(
+                                value.length > 0 ? value : undefined
+                              )
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                size="small"
+                                label="Skill Output MIME Types"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
                           />
                         )}
                       />
