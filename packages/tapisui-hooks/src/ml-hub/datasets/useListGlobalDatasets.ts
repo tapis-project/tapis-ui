@@ -4,16 +4,16 @@ import * as Datasets from '@mlhub/datasets-ts-sdk';
 import { useTapisConfig } from '../..';
 import QueryKeys from './queryKeys';
 
-const useListDatasets = (
+const useListGlobalDatasets = (
   options: QueryObserverOptions<Datasets.ListDatasetsResponse, Error> = {}
 ) => {
   const { accessToken, mlHubBasePath } = useTapisConfig();
 
   return useQuery<Datasets.ListDatasetsResponse, Error>(
-    [QueryKeys.listDatasets, accessToken],
+    [QueryKeys.listGlobalDatasets, accessToken],
     () =>
       API.Datasets.listDatasets(
-        {},
+        { scope: Datasets.ListDatasetsScopeEnum.Global },
         mlHubBasePath,
         accessToken?.access_token ?? ''
       ),
@@ -24,4 +24,4 @@ const useListDatasets = (
   );
 };
 
-export default useListDatasets;
+export default useListGlobalDatasets;
