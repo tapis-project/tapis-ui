@@ -1,10 +1,3 @@
-export { default as useList } from './useList';
-export { default as useDetails } from './useDetails';
-export { default as useDownloadLinks } from './useListDownloadLinks';
-export { default as useListByAuthor } from './useListByAuthor';
-export { default as useListByLanguage } from './useListByLanguage';
-export { default as useListBySizeCategory } from './useListBySizeCategory';
-export { default as useListByQuery } from './useListByQuery';
-export { default as useListByTask } from './useListByTask';
-export { default as useCardDetails } from './useCardDetails';
+export { default as useListDatasets } from './useListDatasets';
+export { default as useGetDataset } from './useGetDataset';
 export { default as queryKeys } from './queryKeys';
