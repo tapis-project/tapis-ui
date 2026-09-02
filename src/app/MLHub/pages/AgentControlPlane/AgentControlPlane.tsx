@@ -125,9 +125,6 @@ export const AgentControlPlane = () => {
         />
         <Switch>
           <Route exact path="/mlhub/agent-control-plane">
-            <Redirect to="/mlhub/agent-control-plane/overview" />
-          </Route>
-          <Route exact path="/mlhub/agent-control-plane/overview">
             <OverviewPage
               onSelectAgent={(agent) => setSelectedAgent(agent)}
               onProbeAgent={handleProbeAgent}

@@ -47,10 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isRefreshing = propIsRefreshing ?? hookIsRefreshing;
   const handleRefresh = propRefreshAll ?? hookRefreshAll;
 
-  console.log({ loc: location.pathname });
-
-  const isOverview =
-    location.pathname === '/mlhub/agent-control-plane/overview';
+  const isOverview = location.pathname === '/mlhub/agent-control-plane';
   const isAgents = location.pathname === '/mlhub/agent-control-plane/agents';
   const isRecords = location.pathname === '/mlhub/agent-control-plane/records';
 
@@ -110,7 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Button
               size="small"
               variant={isOverview ? 'contained' : 'text'}
-              onClick={() => navigate('/agent-control-plane/overview')}
+              onClick={() => navigate('/agent-control-plane')}
               sx={{
                 px: 2,
                 py: 0.5,
