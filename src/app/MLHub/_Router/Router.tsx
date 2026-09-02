@@ -31,9 +31,9 @@ import DatasetDetailsPage from '../pages/DatasetDetailsPage';
 import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
 import ModelMarketplace from '../pages/ModelMarketplace';
+import DatasetsMarketplacePage from '../pages/DatasetMarketplace';
 import NotFound404 from '../pages/NotFound404';
 import ComingSoon from '../pages/ComingSoonPage';
-// import DatasetMarketplace from '../pages/DatasetMarketplace';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
 import { AgentControlPlane } from '../pages/AgentControlPlane';
 
@@ -108,7 +108,7 @@ export default function Router() {
       {/* Dataset Marketplace */}
       <Route path="/mlhub/marketplaces/datasets">
         <MLHubLayout>
-          <ComingSoon />
+          <DatasetsMarketplacePage />
         </MLHubLayout>
       </Route>
 

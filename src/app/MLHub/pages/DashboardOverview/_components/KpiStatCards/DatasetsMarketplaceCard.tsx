@@ -1,23 +1,30 @@
-import * as React from 'react';
-import DatasetIcon from '@mui/icons-material/Dataset';
 import KpiCard from './KpiCard';
-import { mockMarketplaceDatasets } from '../../../../data/mockData';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { Storefront } from '@mui/icons-material';
 
+type ListDatasetsMetadata = {
+  count?: number;
+};
+
 export default function DatasetsMarketplaceCard() {
-  const count = React.useMemo(() => mockMarketplaceDatasets.length, []);
+  const { data, isLoading, error } = Hooks.Datasets.useListGlobalDatasets({
+    limit: 1,
+    includeCount: true,
+  });
+  const metadata = (data?.metadata ?? {}) as ListDatasetsMetadata;
 
   return (
     <KpiCard
       title="Datasets Marketplace"
-      value={count}
+      value={metadata.count ?? 0}
       icon={<Storefront />}
       color="secondary"
       trend="+89"
       trendUp
       subtitle="Curated collections"
       navigateTo="/marketplaces/datasets"
-      loading={false}
+      loading={isLoading}
+      error={error}
     />
   );
 }

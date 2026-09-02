@@ -64,17 +64,17 @@ importers:
         specifier: ^36.2.0
         version: 36.2.0(autoprefixer@10.5.0(postcss@8.5.8))(wslink@2.5.0)
       '@mlhub/agents-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/datasets-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/deployments-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/models-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -664,17 +664,17 @@ importers:
   packages/tapisui-api:
     dependencies:
       '@mlhub/agents-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/datasets-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/deployments-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/models-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -923,17 +923,17 @@ importers:
   packages/tapisui-hooks:
     dependencies:
       '@mlhub/agents-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/datasets-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/deployments-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/models-ts-sdk':
-        specifier: '=0.23.0'
-        version: 0.23.0
+        specifier: '=0.24.0'
+        version: 0.24.0
       '@mlhub/ts-sdk':
         specifier: 0.1.3
         version: 0.1.3
@@ -2156,23 +2156,23 @@ packages:
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
 
-  '@mlhub/agents-ts-sdk@0.23.0':
-    resolution: {integrity: sha512-AqDj5K0nOofUW0EvGEoMQgncX7UykEb5rE394PTFBDKmjReiZ6uQx1AP5uW8+9tsHumlkQJb5N1oo9YQms1JvA==}
+  '@mlhub/agents-ts-sdk@0.24.0':
+    resolution: {integrity: sha512-z97vo9Az8vTuTNzoL9zcWMHcoF/B/1XF3yNT1hIuVO1+XCf3IgtRLepTYPdG60rZepsuxb7stNfs7RAX/PfymQ==}
 
-  '@mlhub/datasets-ts-sdk@0.23.0':
-    resolution: {integrity: sha512-6eeBFcIqVrFN6yV6jqBNEIC9C9ETwySFjRfECyQDLKRIA0BgADDGDRpXRE/XKRkcBKInc8b1ZvivX7K4nX7Pvg==}
+  '@mlhub/datasets-ts-sdk@0.24.0':
+    resolution: {integrity: sha512-mbw/32QfwjgBLRiZUh2GV6L0tE4LeHvIYh5MPT+o39XcCDHUq7VUxgUVEvgHd90hXFh0lRTBZ4IZs4YUqtWIdA==}
 
   '@mlhub/deployments-ts-sdk@0.1.1':
     resolution: {integrity: sha512-XTM6egldBGdLdys4JsplEtHSunhv0XxO7F8C6iOfteEdAIN92schB0jeBL5tLn7flqgj+eRi2ADKyU89MAjB7w==}
 
-  '@mlhub/deployments-ts-sdk@0.23.0':
-    resolution: {integrity: sha512-6wYOGx8IlAnNC2Kr9Ena09W5xqp/kUqtPJzdzU407PODpuVnepErk8jBiE3BLeYLUd2Hra7QDlQw4xtDJaQzkw==}
+  '@mlhub/deployments-ts-sdk@0.24.0':
+    resolution: {integrity: sha512-j3zY/0bYGa029mTh9MiGw9mXnawKCWQn9XOVWm4UOg7AR+hE9c5NLHsztzcwJode9scFUS5j4xqSbotsrZP8Rw==}
 
   '@mlhub/models-ts-sdk@0.1.1':
     resolution: {integrity: sha512-CNY/vXq4V3V4dAdxUtyySA8ZuMwkICCtF7EZQC0eTuSAQ71FOKDlXldkJaPyWAlC8817LabAE4TMYz0OuPswug==}
 
-  '@mlhub/models-ts-sdk@0.23.0':
-    resolution: {integrity: sha512-+fOsyix0wMpIY70G9d6an+A5CJG3wRoqidbmkxp8jjY34M9YeNg046W1btfkn7jHOnWO1G4pmKgqWPrcP32cNA==}
+  '@mlhub/models-ts-sdk@0.24.0':
+    resolution: {integrity: sha512-lvcrUs99f/fewQktkFe1177cdbxQDHlvo5nvv3zmdC6qqtdvmowDBEXRgKHwenmJqbKyR5j7FHABRYnsk7kFeg==}
 
   '@mlhub/ts-sdk@0.1.3':
     resolution: {integrity: sha512-0BixORe/ByERPxOWeXRCQa0LnV5AaUMGAXMC2VoOepVWdYlMj/fO1q8PyyfkYv8XczmeRHJ4o9htcv6ojPLK9A==}
@@ -8595,17 +8595,17 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@mlhub/agents-ts-sdk@0.23.0': {}
+  '@mlhub/agents-ts-sdk@0.24.0': {}
 
-  '@mlhub/datasets-ts-sdk@0.23.0': {}
+  '@mlhub/datasets-ts-sdk@0.24.0': {}
 
   '@mlhub/deployments-ts-sdk@0.1.1': {}
 
-  '@mlhub/deployments-ts-sdk@0.23.0': {}
+  '@mlhub/deployments-ts-sdk@0.24.0': {}
 
   '@mlhub/models-ts-sdk@0.1.1': {}
 
-  '@mlhub/models-ts-sdk@0.23.0': {}
+  '@mlhub/models-ts-sdk@0.24.0': {}
 
   '@mlhub/ts-sdk@0.1.3':
     dependencies:
@@ -9450,10 +9450,10 @@ snapshots:
 
   '@tapis/tapisui-api@file:packages/tapisui-api':
     dependencies:
-      '@mlhub/agents-ts-sdk': 0.23.0
-      '@mlhub/datasets-ts-sdk': 0.23.0
-      '@mlhub/deployments-ts-sdk': 0.23.0
-      '@mlhub/models-ts-sdk': 0.23.0
+      '@mlhub/agents-ts-sdk': 0.24.0
+      '@mlhub/datasets-ts-sdk': 0.24.0
+      '@mlhub/deployments-ts-sdk': 0.24.0
+      '@mlhub/models-ts-sdk': 0.24.0
       '@mlhub/ts-sdk': 0.1.3
       '@tapis/tapis-typescript': 0.0.68
       axios: 1.13.6
@@ -9512,10 +9512,10 @@ snapshots:
 
   '@tapis/tapisui-hooks@file:packages/tapisui-hooks(@types/node@18.19.130)(react-dom@18.3.1(react@18.3.1))(sass@1.98.0)':
     dependencies:
-      '@mlhub/agents-ts-sdk': 0.23.0
-      '@mlhub/datasets-ts-sdk': 0.23.0
-      '@mlhub/deployments-ts-sdk': 0.23.0
-      '@mlhub/models-ts-sdk': 0.23.0
+      '@mlhub/agents-ts-sdk': 0.24.0
+      '@mlhub/datasets-ts-sdk': 0.24.0
+      '@mlhub/deployments-ts-sdk': 0.24.0
+      '@mlhub/models-ts-sdk': 0.24.0
       '@mlhub/ts-sdk': 0.1.3
       '@tapis/tapis-typescript': 0.0.68
       '@tapis/tapisui-api': file:packages/tapisui-api
