@@ -30,6 +30,7 @@ import ModelDetailsPage from '../pages/ModelDetailsPage';
 import DatasetDetailsPage from '../pages/DatasetDetailsPage';
 import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
+import MarketplacePage from '../pages/MarketplacePage';
 import ModelMarketplace from '../pages/ModelMarketplace';
 import DatasetsMarketplacePage from '../pages/DatasetMarketplace';
 import NotFound404 from '../pages/NotFound404';
@@ -109,6 +110,13 @@ export default function Router() {
       <Route path="/mlhub/marketplaces/datasets">
         <MLHubLayout>
           <DatasetsMarketplacePage />
+        </MLHubLayout>
+      </Route>
+
+      {/* Marketplace landing page */}
+      <Route path="/mlhub/marketplaces" exact>
+        <MLHubLayout>
+          <MarketplacePage />
         </MLHubLayout>
       </Route>
 

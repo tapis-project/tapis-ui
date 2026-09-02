@@ -10,6 +10,7 @@ import {
   Typography,
   alpha,
   Card,
+  Skeleton,
 } from '@mui/material';
 import { useMemo } from 'react';
 import * as Models from '@mlhub/models-ts-sdk';
@@ -68,7 +69,7 @@ export const ModelMarketplaceListing: React.FC<
   return (
     <>
       {/* ─── Results Summary ────────────────────────────── */}
-      <Typography variant="body2" color="text.disabled" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Showing {appropriateModels.length} of {models.length} curated models
         {appropriateModels.length < models.length &&
           renderInappropriateModelsCountComponent()}
@@ -101,290 +102,315 @@ export const ModelMarketplaceListing: React.FC<
           </LoadingButton>
         </Box>
       )}
-      <Grid container spacing={'16px'}>
-        {appropriateModels.map((model) => {
-          const libraries = model.libraries || [];
-          const tags = model.tags || [];
-          const platCfg = getPlatformConfig(model.canonical?.platform);
+      {isLoading && appropriateModels.length === 0 ? (
+        <Grid container spacing={2}>
+          {Array.from({ length: 6 }, (_, index) => (
+            <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
+              <Card variant="outlined" sx={{ borderRadius: '8px' }}>
+                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                  <Skeleton variant="rounded" width={110} height={24} />
+                  <Skeleton width="68%" height={30} sx={{ mt: 1.5 }} />
+                  <Skeleton width="88%" height={20} />
+                  <Skeleton width="100%" height={48} sx={{ mt: 1.5 }} />
+                  <Skeleton width="100%" height={1} sx={{ mt: 4, mb: 1.5 }} />
+                  <Skeleton width="45%" height={20} />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <Grid container spacing={2}>
+          {appropriateModels.map((model) => {
+            const libraries = model.libraries || [];
+            const tags = model.tags || [];
+            const platCfg = getPlatformConfig(model.canonical?.platform);
 
-          return (
-            <Grid size={{ xs: 12 }} key={model.author + model.name}>
-              <Card
-                elevation={0}
-                sx={{
-                  height: '100%',
-                  borderRadius: '8px',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition:
-                    'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  '&:hover': {
-                    transform: 'translateY(-3px)',
-                    boxShadow: (theme) =>
-                      `0 12px 28px ${alpha(theme.palette.primary.main, 0.1)}`,
-                    borderColor: (theme) =>
-                      alpha(theme.palette.primary.main, 0.25),
-                  },
-                }}
+            return (
+              <Grid
+                size={{ xs: 12, sm: 6, lg: 4 }}
+                key={model.author + model.name}
               >
-                {/* Card Header with platform badge */}
-                <Box
+                <Card
+                  elevation={0}
                   sx={{
-                    px: 2.5,
-                    pt: 2.25,
-                    pb: 1,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                  }}
-                >
-                  <Chip
-                    label={`${platCfg.icon} ${platCfg.label}`}
-                    size="small"
-                    variant="outlined"
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '0.72rem',
-                      borderColor: (theme) => alpha(platCfg.color, 0.4),
-                      color: 'text.primary',
-                      textTransform: 'none',
-                    }}
-                  />
-                  <Tooltip title={`Open on ${platCfg.label}`}>
-                    <IconButton
-                      size="small"
-                      href={model.canonical?.locator.url!} // TODO Check for undefined
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      sx={{ opacity: 0.55, '&:hover': { opacity: 1 } }}
-                    >
-                      <OpenInNew sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-
-                <CardContent
-                  sx={{
-                    flex: 1,
-                    p: 2.5,
-                    pt: 0.5,
-                    '&:last-child': { pb: 2.5 },
+                    height: '100%',
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    transition:
+                      'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
                     display: 'flex',
                     flexDirection: 'column',
+                    '&:hover': {
+                      transform: 'translateY(-3px)',
+                      boxShadow: (theme) =>
+                        `0 12px 28px ${alpha(theme.palette.primary.main, 0.1)}`,
+                      borderColor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.25),
+                    },
                   }}
                 >
-                  {/* Task badges */}
-                  {model.task_types?.map((t) => (
-                    <Chip
-                      label={t}
-                      size="small"
-                      color="primary"
-                      variant="filled"
-                      sx={{
-                        alignSelf: 'flex-start',
-                        fontWeight: 600,
-                        fontSize: '0.68rem',
-                        height: 22,
-                        mb: 1.25,
-                        textTransform: 'none',
-                      }}
-                    />
-                  ))}
-
-                  {/* Name */}
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 700, lineHeight: 1.35, mb: 0.25 }}
-                  >
-                    {model.name}
-                  </Typography>
-
-                  {/* Author info */}
-                  <Typography
-                    variant="caption"
-                    color="text.disabled"
-                    sx={{ display: 'block', mb: 0.75 }}
-                  >
-                    by {model.canonical?.author} &middot; from {platCfg.label}{' '}
-                    &middot; curated by MLHub
-                  </Typography>
-
-                  {/* Description */}
-                  {model.description && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        lineHeight: 1.55,
-                        mb: 1.5,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        minHeight: 44,
-                      }}
-                    >
-                      {model.description}
-                    </Typography>
-                  )}
-
-                  {/* Spacer */}
-                  <Box sx={{ flex: 1 }} />
-
-                  {/* Inference Backends */}
-                  <Stack
-                    direction="row"
-                    sx={{ flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}
-                  >
-                    {libraries.map((lib) => {
-                      const library = lib as InferenceBackend;
-                      return (
-                        <Chip
-                          key={lib}
-                          label={inferenceBackendLabelMap[library]}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            fontSize: '0.65rem',
-                            height: 20,
-                            textTransform: 'capitalize',
-                            borderColor: alpha(
-                              inferenceBackendColorMap[library],
-                              0.35
-                            ),
-                            color: inferenceBackendColorMap[library],
-                            fontWeight: 600,
-                            '& .MuiChip-label': { px: 0.75 },
-                          }}
-                        />
-                      );
-                    })}
-                  </Stack>
-
-                  {/* Tags + License */}
+                  {/* Card Header with platform badge */}
                   <Box
                     sx={{
+                      px: 2.5,
+                      pt: 2.25,
+                      pb: 1,
                       display: 'flex',
-                      alignItems: 'center',
                       justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 0.5,
-                      mb: 1.75,
+                      alignItems: 'flex-start',
                     }}
                   >
-                    <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.4 }}>
-                      {tags.map((tag) => (
-                        <Chip
-                          key={tag}
-                          label={`#${tag}`}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            fontSize: '0.62rem',
-                            height: 18,
-                            borderColor: 'divider',
-                            textTransform: 'none',
-                          }}
-                        />
-                      ))}
-                    </Stack>
                     <Chip
-                      icon={<span style={{ fontSize: 10 }}>⚖</span>}
-                      label={model.license ?? 'unknown'}
+                      label={`${platCfg.icon} ${platCfg.label}`}
                       size="small"
                       variant="outlined"
                       sx={{
-                        textAlign: 'center',
-                        // fontSize: '0.65rem',
-                        // height: 20,
-                        // borderColor: 'divider',
-                        // color: 'text.disabled',
-                        textTransform: 'uppercase',
-                        // letterSpacing: '0.03em',
-                        '& .MuiChip-label': { fontWeight: 500 },
+                        fontWeight: 600,
+                        fontSize: '0.72rem',
+                        borderColor: (theme) => alpha(platCfg.color, 0.4),
+                        color: 'text.primary',
+                        textTransform: 'none',
                       }}
                     />
+                    <Tooltip title={`Open on ${platCfg.label}`}>
+                      <IconButton
+                        size="small"
+                        href={model.canonical?.locator.url!} // TODO Check for undefined
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        sx={{ opacity: 0.55, '&:hover': { opacity: 1 } }}
+                      >
+                        <OpenInNew sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
 
-                  {/* Footer: stats + Fork button */}
-                  <Box
+                  <CardContent
                     sx={{
+                      flex: 1,
+                      p: 2.5,
+                      pt: 0.5,
+                      '&:last-child': { pb: 2.5 },
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      borderTop: '1px solid',
-                      borderColor: 'divider',
-                      pt: 1.5,
+                      flexDirection: 'column',
                     }}
                   >
-                    {/* Stats */}
+                    {/* Task badges */}
+                    {model.task_types?.map((t) => (
+                      <Chip
+                        label={t}
+                        size="small"
+                        color="primary"
+                        variant="filled"
+                        sx={{
+                          alignSelf: 'flex-start',
+                          fontWeight: 600,
+                          fontSize: '0.68rem',
+                          height: 22,
+                          mb: 1.25,
+                          textTransform: 'none',
+                        }}
+                      />
+                    ))}
+
+                    {/* Name */}
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 700, lineHeight: 1.35, mb: 0.25 }}
+                    >
+                      {model.name}
+                    </Typography>
+
+                    {/* Author info */}
+                    <Typography
+                      variant="caption"
+                      color="text.disabled"
+                      sx={{ display: 'block', mb: 0.75 }}
+                    >
+                      by {model.canonical?.author} &middot; from {platCfg.label}{' '}
+                      &middot; curated by MLHub
+                    </Typography>
+
+                    {/* Description */}
+                    {model.description && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          lineHeight: 1.55,
+                          mb: 1.5,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          minHeight: 44,
+                        }}
+                      >
+                        {model.description}
+                      </Typography>
+                    )}
+
+                    {/* Spacer */}
+                    <Box sx={{ flex: 1 }} />
+
+                    {/* Inference Backends */}
                     <Stack
                       direction="row"
-                      sx={{ gap: 1.5, alignItems: 'center' }}
+                      sx={{ flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}
                     >
-                      {/* Downloads */}
-                      {model.canonical?.downloads && (
+                      {libraries.map((lib) => {
+                        const library = lib as InferenceBackend;
+                        return (
+                          <Chip
+                            key={lib}
+                            label={inferenceBackendLabelMap[library]}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              fontSize: '0.65rem',
+                              height: 20,
+                              textTransform: 'capitalize',
+                              borderColor: alpha(
+                                inferenceBackendColorMap[library],
+                                0.35
+                              ),
+                              color: inferenceBackendColorMap[library],
+                              fontWeight: 600,
+                              '& .MuiChip-label': { px: 0.75 },
+                            }}
+                          />
+                        );
+                      })}
+                    </Stack>
+
+                    {/* Tags + License */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: 0.5,
+                        mb: 1.75,
+                      }}
+                    >
+                      <Stack
+                        direction="row"
+                        sx={{ flexWrap: 'wrap', gap: 0.4 }}
+                      >
+                        {tags.map((tag) => (
+                          <Chip
+                            key={tag}
+                            label={`#${tag}`}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              fontSize: '0.62rem',
+                              height: 18,
+                              borderColor: 'divider',
+                              textTransform: 'none',
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                      <Chip
+                        icon={<span style={{ fontSize: 10 }}>⚖</span>}
+                        label={model.license ?? 'unknown'}
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                          textAlign: 'center',
+                          // fontSize: '0.65rem',
+                          // height: 20,
+                          // borderColor: 'divider',
+                          // color: 'text.disabled',
+                          textTransform: 'uppercase',
+                          // letterSpacing: '0.03em',
+                          '& .MuiChip-label': { fontWeight: 500 },
+                        }}
+                      />
+                    </Box>
+
+                    {/* Footer: stats + Fork button */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                        pt: 1.5,
+                      }}
+                    >
+                      {/* Stats */}
+                      <Stack
+                        direction="row"
+                        sx={{ gap: 1.5, alignItems: 'center' }}
+                      >
+                        {/* Downloads */}
+                        {model.canonical?.downloads && (
+                          <Stack
+                            direction="row"
+                            sx={{ gap: 0.35, alignItems: 'center' }}
+                          >
+                            <Download
+                              sx={{ fontSize: 15, color: 'text.secondary' }}
+                            />
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: 600, color: 'text.secondary' }}
+                            >
+                              {formatCount(model.canonical.downloads)}
+                            </Typography>
+                          </Stack>
+                        )}
+                        {/* Likes */}
                         <Stack
                           direction="row"
                           sx={{ gap: 0.35, alignItems: 'center' }}
                         >
-                          <Download
-                            sx={{ fontSize: 15, color: 'text.secondary' }}
-                          />
+                          <Favorite style={{ fontSize: 15, color: 'red' }} />
                           <Typography
                             variant="caption"
                             sx={{ fontWeight: 600, color: 'text.secondary' }}
                           >
-                            {formatCount(model.canonical.downloads)}
+                            {formatCount(model.canonical?.likes!)}{' '}
+                            {/** TODO check for undefined */}
                           </Typography>
                         </Stack>
-                      )}
-                      {/* Likes */}
-                      <Stack
-                        direction="row"
-                        sx={{ gap: 0.35, alignItems: 'center' }}
-                      >
-                        <Favorite style={{ fontSize: 15, color: 'red' }} />
-                        <Typography
-                          variant="caption"
-                          sx={{ fontWeight: 600, color: 'text.secondary' }}
-                        >
-                          {formatCount(model.canonical?.likes!)}{' '}
-                          {/** TODO check for undefined */}
-                        </Typography>
                       </Stack>
-                    </Stack>
 
-                    {/* Fork Button — bottom right */}
-                    <ForkPopover
-                      isLoading={isLoading}
-                      onFork={() => {
-                        fork(
-                          {
-                            author: model.author,
-                            name: model.name,
-                          },
-                          {
-                            onSuccess: () => {
-                              navigate(`/models/${username}/${model.name}`);
+                      {/* Fork Button — bottom right */}
+                      <ForkPopover
+                        isLoading={isLoading}
+                        onFork={() => {
+                          fork(
+                            {
+                              author: model.author,
+                              name: model.name,
                             },
-                          }
-                        );
-                      }}
-                      onForkAndDeploy={() => {
-                        alert('Disabled');
-                      }}
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
+                            {
+                              onSuccess: () => {
+                                navigate(`/models/${username}/${model.name}`);
+                              },
+                            }
+                          );
+                        }}
+                        onForkAndDeploy={() => {
+                          alert('Disabled');
+                        }}
+                      />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
     </>
   );
 };

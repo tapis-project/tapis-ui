@@ -22,7 +22,6 @@ import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import PublicIcon from '@mui/icons-material/Public';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -65,8 +64,16 @@ const formatBytes = (bytes: number) => {
 
 const getDatasetLabel = (dataset: Datasets.Dataset) =>
   dataset.provider === Datasets.DatasetProvider.HuggingFace
-    ? dataset.huggingface_repo_locator.id
+    ? dataset.huggingface_repo_locator?.id ?? dataset.id
     : dataset.id;
+
+const getDatasetAuthor = (dataset: Datasets.Dataset) => {
+  if (dataset.provider !== Datasets.DatasetProvider.HuggingFace) {
+    return dataset.owner;
+  }
+
+  return dataset.huggingface_repo_locator?.id.split('/')[0] || dataset.owner;
+};
 
 function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
   const provider = providerConfig[dataset.provider];
@@ -152,12 +159,14 @@ function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
           Dataset ID: {dataset.id}
         </Typography>
 
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 0.75, mt: 2 }}>
-          <PersonOutlineIcon sx={{ color: 'text.secondary', fontSize: 17 }} />
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {dataset.owner}
-          </Typography>
-        </Stack>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'block', mt: 1.5 }}
+        >
+          by {getDatasetAuthor(dataset)} &middot; from {provider.label} &middot;
+          curated by MLHub
+        </Typography>
         <Stack
           direction="row"
           sx={{ flexWrap: 'wrap', gap: 0.5, mt: 2, minHeight: 22 }}
@@ -288,7 +297,7 @@ export default function DatasetsMarketplacePage() {
   >([]);
   const [searchQuery, setSearchQuery] = React.useState('');
 
-  const { data, isLoading, isFetching, isError, error } =
+  const { data, isFetching, isError, error } =
     Hooks.Datasets.useListGlobalDatasets(
       { cursor, includeCount: true, limit },
       { keepPreviousData: true }
@@ -368,7 +377,92 @@ export default function DatasetsMarketplacePage() {
         </Typography>
       </Box>
 
-      {isLoading ? (
+      <Card
+        elevation={0}
+        sx={{
+          borderRadius: '8px',
+          border: '1px solid',
+          borderColor: 'divider',
+          mb: 3,
+        }}
+      >
+        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            sx={{ alignItems: { xs: 'stretch', sm: 'center' }, gap: 1.5 }}
+          >
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search this page by dataset, owner, tag, provider..."
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon
+                        sx={{ color: 'text.secondary', fontSize: 20 }}
+                      />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchQuery ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="Clear dataset search"
+                        edge="end"
+                        size="small"
+                        onClick={() => setSearchQuery('')}
+                      >
+                        <ClearIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : undefined,
+                },
+              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+            />
+            <Stack
+              direction="row"
+              sx={{ alignItems: 'center', gap: 1, flexShrink: 0 }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                Limit
+              </Typography>
+              <FormControl size="small">
+                <Select
+                  value={limit}
+                  onChange={(event) =>
+                    handleLimitChange(Number(event.target.value))
+                  }
+                  sx={{ minWidth: 76, borderRadius: '8px' }}
+                >
+                  {PAGE_SIZE_OPTIONS.map((pageSize) => (
+                    <MenuItem key={pageSize} value={pageSize}>
+                      {pageSize}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
+
+      <Box sx={{ mb: 2 }}>
+        <PaginationControls
+          canGoPrevious={previousCursors.length > 0 || !!previousCursor}
+          canGoNext={!!nextCursor}
+          isFetching={isFetching}
+          onPrevious={handlePreviousPage}
+          onNext={handleNextPage}
+        />
+      </Box>
+
+      {isFetching ? (
         <Grid container spacing={2}>
           {Array.from({ length: 6 }, (_, index) => (
             <Grid key={index} size={{ xs: 12, sm: 6, lg: 4 }}>
@@ -416,91 +510,6 @@ export default function DatasetsMarketplacePage() {
         </Card>
       ) : (
         <>
-          <Card
-            elevation={0}
-            sx={{
-              borderRadius: '8px',
-              border: '1px solid',
-              borderColor: 'divider',
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                sx={{ alignItems: { xs: 'stretch', sm: 'center' }, gap: 1.5 }}
-              >
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Search this page by dataset, owner, tag, provider..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon
-                            sx={{ color: 'text.secondary', fontSize: 20 }}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: searchQuery ? (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="Clear dataset search"
-                            edge="end"
-                            size="small"
-                            onClick={() => setSearchQuery('')}
-                          >
-                            <ClearIcon sx={{ fontSize: 16 }} />
-                          </IconButton>
-                        </InputAdornment>
-                      ) : undefined,
-                    },
-                  }}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
-                />
-                <Stack
-                  direction="row"
-                  sx={{ alignItems: 'center', gap: 1, flexShrink: 0 }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{ color: 'text.secondary', fontWeight: 600 }}
-                  >
-                    Limit
-                  </Typography>
-                  <FormControl size="small">
-                    <Select
-                      value={limit}
-                      onChange={(event) =>
-                        handleLimitChange(Number(event.target.value))
-                      }
-                      sx={{ minWidth: 76, borderRadius: '8px' }}
-                    >
-                      {PAGE_SIZE_OPTIONS.map((pageSize) => (
-                        <MenuItem key={pageSize} value={pageSize}>
-                          {pageSize}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Stack>
-              </Stack>
-            </CardContent>
-          </Card>
-
-          <Box sx={{ mb: 3 }}>
-            <PaginationControls
-              canGoPrevious={previousCursors.length > 0 || !!previousCursor}
-              canGoNext={!!nextCursor}
-              isFetching={isFetching}
-              onPrevious={handlePreviousPage}
-              onNext={handleNextPage}
-            />
-          </Box>
-
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             sx={{

@@ -262,8 +262,11 @@ export default function ModelMarketplace() {
           mb: 3,
         }}
       >
-        <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-          <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
+        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            sx={{ alignItems: { xs: 'stretch', sm: 'center' }, gap: 1.5 }}
+          >
             <TextField
               placeholder="Search by name, task, author, tags..."
               value={searchQuery}
@@ -298,7 +301,10 @@ export default function ModelMarketplace() {
               }}
             />
 
-            <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+            <Stack
+              direction="row"
+              sx={{ alignItems: 'center', gap: 1, flexShrink: 0 }}
+            >
               <Typography
                 variant="caption"
                 sx={{
@@ -314,14 +320,7 @@ export default function ModelMarketplace() {
                 <Select
                   value={limit}
                   onChange={(e) => setLimit(Number(e.target.value))}
-                  sx={{
-                    height: 28,
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    minWidth: 68,
-                    borderRadius: 1.5,
-                    '& .MuiSelect-select': { py: 0, px: 1.25 },
-                  }}
+                  sx={{ minWidth: 76, borderRadius: '8px' }}
                   MenuProps={{
                     slotProps: {
                       paper: {
@@ -350,8 +349,7 @@ export default function ModelMarketplace() {
                 sx={{
                   whiteSpace: 'nowrap',
                   textTransform: 'none',
-                  borderRadius: 2,
-                  px: 2,
+                  borderRadius: '8px',
                 }}
               >
                 Filters
@@ -556,7 +554,24 @@ export default function ModelMarketplace() {
       </Card>
 
       {/* ─── Model Cards Grid ─────────────────────────── */}
-      {filteredModels.length === 0 && isLoading === false ? (
+      {isError ? (
+        <Card
+          elevation={0}
+          sx={{
+            borderRadius: '8px',
+            border: '1px solid',
+            borderColor: 'error.light',
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" color="error" gutterBottom>
+            Unable to load marketplace models
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {error instanceof Error ? error.message : 'Please try again later.'}
+          </Typography>
+        </Card>
+      ) : filteredModels.length === 0 && isLoading === false ? (
         <Card
           elevation={0}
           sx={{
