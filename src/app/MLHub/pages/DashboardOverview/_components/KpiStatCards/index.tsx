@@ -21,9 +21,9 @@ export default function KpiStatCards() {
         <ActiveDeploymentsCard />
       </Grid>
 
-      <Grid size={{ xs: 12, sm: 6, lg: 2 }}>
+      {/* <Grid size={{ xs: 12, sm: 6, lg: 2 }}>
         <ArtifactsCard />
-      </Grid>
+      </Grid> */}
 
       <Grid size={{ xs: 12, sm: 6, lg: 2 }}>
         <ModelsMarketplaceCard />

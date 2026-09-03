@@ -204,7 +204,7 @@ export const AgentRecordsPage: React.FC<AgentRecordsPageProps> = ({
             expandedSections[artifactsSectionId] ?? true;
 
           return (
-            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 4 }} key={record.id}>
+            <Grid size={{ xs: 12, md: 6 }} key={record.id}>
               <Card
                 sx={{
                   height: '100%',

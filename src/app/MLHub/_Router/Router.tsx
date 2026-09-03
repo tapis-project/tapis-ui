@@ -23,7 +23,6 @@ import MLHubLayout from '../Layouts/MLHubLayout';
 
 // Page-level components
 import ModelsTab from '../pages/ModelsTab';
-import DatasetsTab from '../pages/DatasetsTab';
 import DeploymentsTab from '../pages/DeploymentsPage';
 import ArtifactsTab from '../pages/ArtifactsTab';
 import ModelDetailsPage from '../pages/ModelDetailsPage';
