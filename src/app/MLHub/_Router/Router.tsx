@@ -32,6 +32,7 @@ import DashboardOverview from '../pages/DashboardOverview';
 import MarketplacePage from '../pages/MarketplacePage';
 import ModelMarketplace from '../pages/ModelMarketplace';
 import DatasetsMarketplacePage from '../pages/DatasetMarketplace';
+import DatasetCollectionPage from '../pages/DatasetCollectionPage';
 import NotFound404 from '../pages/NotFound404';
 import ComingSoon from '../pages/ComingSoonPage';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
@@ -120,9 +121,9 @@ export default function Router() {
       </Route>
 
       {/* Datasets */}
-      <Route path="/mlhub/datasets">
+      <Route path="/mlhub/datasets" exact>
         <MLHubLayout>
-          <ComingSoon />
+          <DatasetCollectionPage />
         </MLHubLayout>
       </Route>
 

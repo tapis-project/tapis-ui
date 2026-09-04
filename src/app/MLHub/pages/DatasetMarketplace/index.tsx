@@ -26,10 +26,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import * as Datasets from '@mlhub/datasets-ts-sdk';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import * as React from 'react';
 import type { ReactElement } from 'react';
+import DatasetEmptyState from '../DatasetEmptyState';
+import { useToast } from '../../_context/ToastsContext/useToast';
+import { useNavigate } from '../../_context/NavContext';
 
 const providerConfig: Record<
   Datasets.DatasetProvider,
@@ -40,6 +44,7 @@ const providerConfig: Record<
     icon: <CloudOutlinedIcon fontSize="small" />,
     label: 'Hugging Face',
   },
+
   [Datasets.DatasetProvider.Tapis]: {
     color: '#1976d2',
     icon: <StorageOutlinedIcon fontSize="small" />,
@@ -63,9 +68,7 @@ const formatBytes = (bytes: number) => {
 };
 
 const getDatasetLabel = (dataset: Datasets.Dataset) =>
-  dataset.provider === Datasets.DatasetProvider.HuggingFace
-    ? dataset.huggingface_repo_locator?.id ?? dataset.id
-    : dataset.id;
+  dataset.name || dataset.id;
 
 const getDatasetAuthor = (dataset: Datasets.Dataset) => {
   if (dataset.provider !== Datasets.DatasetProvider.HuggingFace) {
@@ -75,7 +78,15 @@ const getDatasetAuthor = (dataset: Datasets.Dataset) => {
   return dataset.huggingface_repo_locator?.id.split('/')[0] || dataset.owner;
 };
 
-function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
+function DatasetCard({
+  dataset,
+  isAddingToCollection,
+  onAddToCollection,
+}: {
+  dataset: Datasets.Dataset;
+  isAddingToCollection: boolean;
+  onAddToCollection: (dataset: Datasets.Dataset) => void;
+}) {
   const provider = providerConfig[dataset.provider];
   const isPublic = dataset.visibility === Datasets.Visibility.Public;
 
@@ -167,6 +178,22 @@ function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
           by {getDatasetAuthor(dataset)} &middot; from {provider.label} &middot;
           curated by MLHub
         </Typography>
+        {dataset.description && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              display: '-webkit-box',
+              lineHeight: 1.5,
+              mt: 1.25,
+              overflow: 'hidden',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+            }}
+          >
+            {dataset.description}
+          </Typography>
+        )}
         <Stack
           direction="row"
           sx={{ flexWrap: 'wrap', gap: 0.5, mt: 2, minHeight: 22 }}
@@ -196,6 +223,7 @@ function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
           direction="row"
           sx={{
             alignItems: 'center',
+            justifyContent: 'space-between',
             gap: 1.5,
             borderTop: '1px solid',
             borderColor: 'divider',
@@ -203,21 +231,32 @@ function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
             pt: 1.5,
           }}
         >
-          <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-            <FolderOutlinedIcon
-              sx={{ color: 'text.secondary', fontSize: 17 }}
-            />
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', fontWeight: 600 }}
-            >
-              {dataset.item_count.toLocaleString()} item
-              {dataset.item_count === 1 ? '' : 's'}
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
+            <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
+              <FolderOutlinedIcon
+                sx={{ color: 'text.secondary', fontSize: 17 }}
+              />
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                {dataset.item_count.toLocaleString()} item
+                {dataset.item_count === 1 ? '' : 's'}
+              </Typography>
+            </Stack>
+            <Typography variant="caption" color="text.secondary">
+              {formatBytes(dataset.size)}
             </Typography>
           </Stack>
-          <Typography variant="caption" color="text.secondary">
-            {formatBytes(dataset.size)}
-          </Typography>
+          <Button
+            size="small"
+            startIcon={<LibraryAddOutlinedIcon />}
+            disabled={isAddingToCollection}
+            onClick={() => onAddToCollection(dataset)}
+            sx={{ flexShrink: 0, textTransform: 'none' }}
+          >
+            Add to collection
+          </Button>
         </Stack>
       </CardContent>
     </Card>
@@ -290,6 +329,8 @@ type PaginationMetadata = {
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
 export default function DatasetsMarketplacePage() {
+  const toast = useToast();
+  const { navigate } = useNavigate();
   const [limit, setLimit] = React.useState(25);
   const [cursor, setCursor] = React.useState<string | undefined>();
   const [previousCursors, setPreviousCursors] = React.useState<
@@ -302,8 +343,9 @@ export default function DatasetsMarketplacePage() {
       { cursor, includeCount: true, limit },
       { keepPreviousData: true }
     );
+  const { forkDataset, isLoading: isAddingToCollection } =
+    Hooks.Datasets.useForkDataset();
 
-  console.log({ data });
   const datasets = data?.result ?? [];
   const metadata = (data?.metadata ?? {}) as PaginationMetadata;
   const totalCount = metadata.count;
@@ -357,6 +399,26 @@ export default function DatasetsMarketplacePage() {
     }
 
     if (previousCursor) setCursor(previousCursor);
+  };
+
+  const handleAddToCollection = (dataset: Datasets.Dataset) => {
+    forkDataset(
+      { dataset },
+      {
+        onSuccess: () => {
+          toast.success(
+            `${getDatasetLabel(dataset)} was added to your collection.`
+          );
+          navigate('/datasets');
+        },
+        onError: (forkError) => {
+          toast.error(
+            forkError.message ||
+              'Unable to add this dataset to your collection.'
+          );
+        },
+      }
+    );
   };
 
   return (
@@ -488,26 +550,7 @@ export default function DatasetsMarketplacePage() {
           </Typography>
         </Card>
       ) : datasets.length === 0 ? (
-        <Card
-          elevation={0}
-          sx={{
-            borderRadius: '8px',
-            border: '1px dashed',
-            borderColor: 'divider',
-            py: 10,
-            textAlign: 'center',
-          }}
-        >
-          <StorefrontIcon
-            sx={{ fontSize: 48, color: 'text.disabled', mb: 1.5 }}
-          />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            No global datasets found
-          </Typography>
-          <Typography variant="body2" color="text.disabled">
-            Global datasets will appear here when they become available.
-          </Typography>
-        </Card>
+        <DatasetEmptyState scope="global" />
       ) : (
         <>
           <Stack
@@ -560,7 +603,11 @@ export default function DatasetsMarketplacePage() {
             <Grid container spacing={2}>
               {filteredDatasets.map((dataset) => (
                 <Grid key={dataset.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-                  <DatasetCard dataset={dataset} />
+                  <DatasetCard
+                    dataset={dataset}
+                    isAddingToCollection={isAddingToCollection}
+                    onAddToCollection={handleAddToCollection}
+                  />
                 </Grid>
               ))}
             </Grid>

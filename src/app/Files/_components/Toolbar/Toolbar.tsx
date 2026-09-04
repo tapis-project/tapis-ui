@@ -17,6 +17,7 @@ import CreatePostitModal from './CreatePostitModal';
 const VtkModal = lazy(() => import('./VtkModal'));
 import TransferModal from './TransferModal';
 import ShareModal from './ShareModal';
+import RegisterDatasetModal from './RegisterDatasetModal';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import {
@@ -72,7 +73,8 @@ type Op =
   | 'folder'
   | 'delete'
   | 'transfers'
-  | 'visualize';
+  | 'visualize'
+  | 'dataset';
 
 type ToolbarProps = {
   systemId: string;
@@ -216,6 +218,20 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 }
                 onClick={() => setModal('visualize')}
                 aria-label="Visualize file"
+              />
+            )}
+            {show('dataset', buttons) && (
+              <ToolbarButton
+                text="Dataset"
+                icon="data-files"
+                disabled={
+                  selectedFiles.length !== 1 ||
+                  ![Files.FileTypeEnum.File, Files.FileTypeEnum.Dir].includes(
+                    selectedFiles[0].type!
+                  )
+                }
+                onClick={() => setModal('dataset')}
+                aria-label="Register as dataset"
               />
             )}
             {show('rename', buttons) && (
@@ -390,6 +406,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
             )}
             {modal === 'share' && (
               <ShareModal
+                toggle={toggle}
+                systemId={systemId}
+                path={currentPath}
+              />
+            )}
+            {modal === 'dataset' && (
+              <RegisterDatasetModal
                 toggle={toggle}
                 systemId={systemId}
                 path={currentPath}

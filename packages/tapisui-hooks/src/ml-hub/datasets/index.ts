@@ -1,5 +1,12 @@
-export { default as useListDatasets } from './useListDatasets';
+export { default as useListOwnedDatasets } from './useListOwnedDatasets';
+export type { ListOwnedDatasetsParams } from './useListOwnedDatasets';
+export { default as useListSharedDatasets } from './useListSharedDatasets';
+export type { ListSharedDatasetsParams } from './useListSharedDatasets';
 export { default as useListGlobalDatasets } from './useListGlobalDatasets';
 export type { ListGlobalDatasetsParams } from './useListGlobalDatasets';
 export { default as useGetDataset } from './useGetDataset';
+export { default as useRegisterDataset } from './useRegisterDataset';
+export type { RegisterDatasetParams } from './useRegisterDataset';
+export { default as useForkDataset } from './useForkDataset';
+export type { ForkDatasetParams } from './useForkDataset';
 export { default as queryKeys } from './queryKeys';
