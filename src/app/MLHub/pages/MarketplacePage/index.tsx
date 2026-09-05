@@ -26,7 +26,7 @@ const marketplaces = [
   {
     title: 'Datasets Marketplace',
     description:
-      'Explore global datasets contributed to MLHub from connected data platforms.',
+      'Explore datasets curated by MLHub from external dataset registries.',
     icon: <DatasetIcon />,
     color: '#d97706',
     path: '/marketplaces/datasets',

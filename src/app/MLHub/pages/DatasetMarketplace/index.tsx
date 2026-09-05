@@ -434,8 +434,7 @@ export default function DatasetsMarketplacePage() {
           </Typography>
         </Stack>
         <Typography variant="body1" color="text.secondary">
-          Discover public datasets contributed to MLHub from connected data
-          platforms.
+          Discover datasets curated by MLHub from external data registries
         </Typography>
       </Box>
 
