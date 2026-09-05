@@ -389,6 +389,7 @@ export default function MLHubAppBar() {
       settingsService={settingsService}
       barTitle="MLHub"
       barDescription="Centralized AI Control Plane"
+      onHomeClick={dashboardService.onClick}
       popoverTitle="All services"
       popoverDescription="Choose a service to get started"
     />

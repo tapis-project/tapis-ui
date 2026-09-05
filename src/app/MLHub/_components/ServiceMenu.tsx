@@ -2,6 +2,7 @@ import { useState, type ComponentType, type MouseEvent } from 'react';
 import AppsIcon from '@mui/icons-material/Apps';
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import {
@@ -177,6 +178,7 @@ type ServiceMenuProps = {
   settingsService?: Service;
   barTitle: string;
   barDescription?: string;
+  onHomeClick?: () => void;
   popoverTitle: string;
   popoverDescription?: string;
 };
@@ -186,6 +188,7 @@ export default function ServiceMenu({
   settingsService,
   barTitle,
   barDescription,
+  onHomeClick,
   popoverTitle,
   popoverDescription,
 }: ServiceMenuProps) {
@@ -269,20 +272,77 @@ export default function ServiceMenu({
           >
             {open ? <CloseRoundedIcon /> : <AppsIcon />}
           </IconButton>
-          <Box sx={{ ml: 1.5, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 750, letterSpacing: '-0.02em' }}>
-              {barTitle}
-            </Typography>
-            {barDescription && (
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block', lineHeight: 1.2 }}
-              >
-                {barDescription}
-              </Typography>
-            )}
-          </Box>
+          <ButtonBase
+            component="button"
+            aria-label={`Go to ${barTitle} home`}
+            disabled={!onHomeClick}
+            onClick={() => {
+              handleClose();
+              onHomeClick?.();
+            }}
+            sx={{
+              ml: 1.5,
+              minWidth: 0,
+              borderRadius: 1,
+              textAlign: 'left',
+              '&:not(.Mui-disabled):hover': {
+                '& .service-menu-home-icon': {
+                  width: 18,
+                  mr: 0.75,
+                  opacity: 1,
+                  transform: 'translateX(0)',
+                },
+                '& .service-menu-title': {
+                  color: 'primary.main',
+                  transform: 'translateX(2px)',
+                },
+              },
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: 2,
+              },
+            }}
+          >
+            <Box sx={{ minWidth: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+                <HomeRoundedIcon
+                  className="service-menu-home-icon"
+                  sx={{
+                    color: 'primary.main',
+                    flexShrink: 0,
+                    fontSize: 18,
+                    width: 0,
+                    mr: 0,
+                    opacity: 0,
+                    overflow: 'hidden',
+                    transform: 'translateX(-8px)',
+                    transition:
+                      'width 180ms ease, margin 180ms ease, opacity 140ms ease, transform 180ms ease',
+                  }}
+                />
+                <Typography
+                  className="service-menu-title"
+                  sx={{
+                    fontWeight: 750,
+                    letterSpacing: '-0.02em',
+                    transition: 'color 160ms ease, transform 180ms ease',
+                  }}
+                >
+                  {barTitle}
+                </Typography>
+              </Box>
+              {barDescription && (
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', lineHeight: 1.2 }}
+                >
+                  {barDescription}
+                </Typography>
+              )}
+            </Box>
+          </ButtonBase>
           {settingsService && (
             <IconButton
               aria-label="Open user menu"

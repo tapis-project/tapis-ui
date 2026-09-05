@@ -1,22 +1,22 @@
-import * as React from 'react';
 import DatasetIcon from '@mui/icons-material/Dataset';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import KpiCard from './KpiCard';
-import { mockDatasets } from '../../../../data/mockData';
 
 export default function DatasetsCard() {
-  const totalDatasets = React.useMemo(() => mockDatasets.length, []);
+  const { data, isLoading, error } = Hooks.Datasets.useListAllOwnedDatasets();
 
   return (
     <KpiCard
       title="Datasets"
-      value={totalDatasets}
+      value={data?.length ?? 0}
       icon={<DatasetIcon />}
       color="secondary"
-      trend="+5"
-      trendUp
+      trend=""
+      trendUp={false}
       subtitle="Registered datasets"
       navigateTo="/datasets"
-      loading={false}
+      loading={isLoading}
+      error={error}
     />
   );
 }

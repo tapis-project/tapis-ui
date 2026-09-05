@@ -1,5 +1,6 @@
 export { default as useListOwnedDatasets } from './useListOwnedDatasets';
 export type { ListOwnedDatasetsParams } from './useListOwnedDatasets';
+export { default as useListAllOwnedDatasets } from './useListAllOwnedDatasets';
 export { default as useListSharedDatasets } from './useListSharedDatasets';
 export type { ListSharedDatasetsParams } from './useListSharedDatasets';
 export { default as useListGlobalDatasets } from './useListGlobalDatasets';
