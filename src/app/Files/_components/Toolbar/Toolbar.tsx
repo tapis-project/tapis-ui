@@ -1,5 +1,5 @@
 import { Files, Systems } from '@tapis/tapis-typescript';
-import React, { useState, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from 'reactstrap';
 import {
   HostEvalNavigationButton,
@@ -7,17 +7,7 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from './Toolbar.module.scss';
-import CreateDirModal from './CreateDirModal';
-import MoveCopyModal from './MoveCopyModal';
-import RenameModal from './RenameModal';
-import UploadModal from './UploadModal';
-import PermissionsModal from './PermissionsModal';
-import DeleteModal from './DeleteModal';
-import CreatePostitModal from './CreatePostitModal';
-const VtkModal = lazy(() => import('./VtkModal'));
-import TransferModal from './TransferModal';
-import ShareModal from './ShareModal';
-import RegisterDatasetModal from './RegisterDatasetModal';
+import ToolbarModalHost, { FileToolbarModal } from './ToolbarModalHost';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import {
@@ -87,7 +77,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   currentPath,
   buttons = [],
 }) => {
-  const [modal, setModal] = useState<string | undefined>(undefined);
+  const [modal, setModal] = useState<FileToolbarModal | undefined>(undefined);
   const { selectedFiles } = useFilesSelect();
   const { pathname } = useLocation();
 
@@ -330,94 +320,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 aria-label="Delete"
               />
             )}
-            {modal === 'createdir' && (
-              <CreateDirModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'copy' && (
-              <MoveCopyModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-                operation={Files.MoveCopyRequestOperationEnum.Copy}
-              />
-            )}
-            {modal === 'move' && (
-              <MoveCopyModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-                operation={Files.MoveCopyRequestOperationEnum.Move}
-              />
-            )}
-            {modal === 'rename' && (
-              <RenameModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'transfer' && (
-              <TransferModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'upload' && (
-              <UploadModal
-                toggle={toggle}
-                path={currentPath}
-                systemId={systemId}
-              />
-            )}
-            {modal === 'permissions' && (
-              <PermissionsModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'delete' && (
-              <DeleteModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'postit' && (
-              <CreatePostitModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'visualize' && (
-              <Suspense fallback={null}>
-                <VtkModal
-                  toggle={toggle}
-                  systemId={systemId}
-                  path={currentPath}
-                />
-              </Suspense>
-            )}
-            {modal === 'share' && (
-              <ShareModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'dataset' && (
-              <RegisterDatasetModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
+            <ToolbarModalHost
+              modal={modal}
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
           </div>
         )}
       </div>
