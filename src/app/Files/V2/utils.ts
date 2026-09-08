@@ -54,7 +54,7 @@ export const toFileExplorerItem = (
     name,
     type: file.type === Files.FileTypeEnum.Dir ? 'directory' : 'file',
     parentId: normalizeFilePath(parentPath),
-    size: (file.size || 0) * 1024,
+    size: file.size || 0,
     mimeType: file.mimeType,
     extension,
     createdAt: file.lastModified?.toISOString?.() || new Date(0).toISOString(),

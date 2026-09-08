@@ -1096,6 +1096,8 @@ const TransferModal: React.FC<ToolbarModalProps> = ({
       toggle={toggle}
       title="Transfer Files"
       size="xl"
+      scrollable
+      contentClassName={styles['modal-content']}
       body={body}
     />
   );

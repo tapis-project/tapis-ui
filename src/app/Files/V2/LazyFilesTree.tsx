@@ -194,7 +194,7 @@ function TreeDirectory({
                   noWrap
                   sx={{ ml: 'auto', flexShrink: 0 }}
                 >
-                  {formatFileExplorerBytes(child.size * 1024)}
+                  {formatFileExplorerBytes(child.size)}
                 </Typography>
               )}
             </ListItemButton>

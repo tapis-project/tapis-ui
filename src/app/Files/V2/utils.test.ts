@@ -16,24 +16,24 @@ describe('Files V2 route and item adapters', () => {
     );
   });
 
-  it('maps Tapis directories and converts kilobytes to bytes', () => {
+  it('maps Tapis files and preserves byte sizes', () => {
     const item = toFileExplorerItem(
       {
-        type: Files.FileTypeEnum.Dir,
-        name: 'results',
-        path: '/project/results',
-        size: 2,
+        type: Files.FileTypeEnum.File,
+        name: 'model-00027-of-00029.safetensors',
+        path: '/project/model-00027-of-00029.safetensors',
+        size: 3986152184,
         lastModified: new Date('2026-09-05T12:00:00Z'),
       },
       '/project'
     );
 
     expect(item).toMatchObject({
-      id: '/project/results',
-      name: 'results',
-      type: 'directory',
+      id: '/project/model-00027-of-00029.safetensors',
+      name: 'model-00027-of-00029.safetensors',
+      type: 'file',
       parentId: '/project',
-      size: 2048,
+      size: 3986152184,
       updatedAt: '2026-09-05T12:00:00.000Z',
     });
   });

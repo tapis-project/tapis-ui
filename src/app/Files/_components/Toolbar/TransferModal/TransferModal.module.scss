@@ -3,6 +3,17 @@
   padding-bottom: 10px;
 }
 
+.modal-content {
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+
+  :global(.modal-body) {
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
 .file-list {
   /* icon */
   tr > *:nth-child(1) {

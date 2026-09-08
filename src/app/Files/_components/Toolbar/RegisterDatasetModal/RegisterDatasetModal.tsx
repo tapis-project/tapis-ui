@@ -29,7 +29,7 @@ type DatasetFormValues = {
   visibility: Datasets.Visibility;
 };
 
-const bytesFromKilobytes = (size?: number) => (size ?? 0) * 1024;
+const fileSizeInBytes = (size?: number) => size ?? 0;
 
 const registrationSchema = Yup.object({
   name: Yup.string().trim().required('A dataset name is required'),
@@ -92,14 +92,14 @@ const RegisterDatasetModal: React.FC<ToolbarModalProps> = ({
 
     return (directoryEntries ?? []).flatMap((entry) => {
       if (!entry.path) return [];
-      return [{ path: entry.path, size: bytesFromKilobytes(entry.size) }];
+      return [{ path: entry.path, size: fileSizeInBytes(entry.size) }];
     });
   }, [directoryEntries, isDirectory]);
   const directoryIsLoading =
     isDirectory && (isLoadingDirectory || isFetchingNextPage || hasNextPage);
   const totalSize = isDirectory
     ? items.reduce((total, item) => total + item.size, 0)
-    : bytesFromKilobytes(selectedFile?.size);
+    : fileSizeInBytes(selectedFile?.size);
 
   const initialValues: DatasetFormValues = {
     name: selectedFile?.name ?? '',
