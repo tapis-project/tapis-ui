@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   Chip,
   FormControl,
@@ -23,8 +24,6 @@ import {
   Typography,
 } from '@mui/material';
 import DatasetIcon from '@mui/icons-material/Dataset';
-import CloudOutlinedIcon from '@mui/icons-material/CloudOutlined';
-import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import PublicIcon from '@mui/icons-material/Public';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -39,6 +38,8 @@ import * as Datasets from '@mlhub/datasets-ts-sdk';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { useNavigate } from '../_context/NavContext';
 import DatasetEmptyState from './DatasetEmptyState';
+import { DatasetDetailDrawer } from './DatasetDetailDrawer';
+import { DatasetProviderIcon } from '../_components';
 
 type DatasetScope = 'owned' | 'shared';
 type ViewMode = 'grid' | 'table';
@@ -66,12 +67,22 @@ const providerConfig: Record<
 > = {
   [Datasets.DatasetProvider.HuggingFace]: {
     color: '#b7791f',
-    icon: <CloudOutlinedIcon fontSize="small" />,
+    icon: (
+      <DatasetProviderIcon
+        provider={Datasets.DatasetProvider.HuggingFace}
+        size={18}
+      />
+    ),
     label: 'Hugging Face',
   },
   [Datasets.DatasetProvider.Tapis]: {
     color: '#1976d2',
-    icon: <StorageOutlinedIcon fontSize="small" />,
+    icon: (
+      <DatasetProviderIcon
+        provider={Datasets.DatasetProvider.Tapis}
+        size={18}
+      />
+    ),
     label: 'Tapis',
   },
 };
@@ -175,7 +186,13 @@ function VisibilityChip({ dataset }: { dataset: Datasets.Dataset }) {
   );
 }
 
-function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
+function DatasetCard({
+  dataset,
+  onOpen,
+}: {
+  dataset: Datasets.Dataset;
+  onOpen: (datasetId: string) => void;
+}) {
   const provider = providerConfig[dataset.provider];
 
   return (
@@ -195,107 +212,122 @@ function DatasetCard({ dataset }: { dataset: Datasets.Dataset }) {
         },
       }}
     >
-      <CardContent
+      <CardActionArea
+        onClick={() => onOpen(dataset.id)}
+        aria-label={`View details for ${getDatasetLabel(dataset)}`}
         sx={{
           height: '100%',
-          p: 2.5,
-          '&:last-child': { pb: 2.5 },
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'stretch',
+          textAlign: 'left',
         }}
       >
-        <Stack direction="row" sx={{ justifyContent: 'space-between', gap: 1 }}>
-          <ProviderChip dataset={dataset} />
-          <VisibilityChip dataset={dataset} />
-        </Stack>
-
-        <Typography
-          variant="subtitle1"
-          title={getDatasetLabel(dataset)}
+        <CardContent
           sx={{
-            fontWeight: 700,
-            lineHeight: 1.35,
-            mt: 2,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            height: '100%',
+            p: 2.5,
+            '&:last-child': { pb: 2.5 },
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {getDatasetLabel(dataset)}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-          Dataset ID: {dataset.id}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1.5 }}>
-          by {getDatasetAuthor(dataset)} &middot; from {provider.label}
-        </Typography>
-        {dataset.description && (
+          <Stack
+            direction="row"
+            sx={{ justifyContent: 'space-between', gap: 1 }}
+          >
+            <ProviderChip dataset={dataset} />
+            <VisibilityChip dataset={dataset} />
+          </Stack>
+
           <Typography
-            variant="caption"
-            color="text.secondary"
+            variant="subtitle1"
+            title={getDatasetLabel(dataset)}
             sx={{
-              display: '-webkit-box',
-              lineHeight: 1.5,
-              mt: 1.25,
+              fontWeight: 700,
+              lineHeight: 1.35,
+              mt: 2,
               overflow: 'hidden',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 2,
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
             }}
           >
-            {dataset.description}
+            {getDatasetLabel(dataset)}
           </Typography>
-        )}
-        <Stack
-          direction="row"
-          sx={{ flexWrap: 'wrap', gap: 0.5, mt: 2, minHeight: 22 }}
-        >
-          {dataset.tags.slice(0, 4).map((tag) => (
-            <Chip
-              key={tag}
-              label={`#${tag}`}
-              size="small"
-              variant="outlined"
-              sx={{ fontSize: '0.65rem', height: 20, borderColor: 'divider' }}
-            />
-          ))}
-          {dataset.tags.length > 4 && (
-            <Chip
-              label={`+${dataset.tags.length - 4}`}
-              size="small"
-              variant="outlined"
-              sx={{ fontSize: '0.65rem', height: 20, borderColor: 'divider' }}
-            />
-          )}
-        </Stack>
-        <Box sx={{ flex: 1 }} />
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: 'center',
-            gap: 1.5,
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            mt: 2,
-            pt: 1.5,
-          }}
-        >
-          <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-            <FolderOutlinedIcon
-              sx={{ color: 'text.secondary', fontSize: 17 }}
-            />
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+            Dataset ID: {dataset.id}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 1.5 }}>
+            by {getDatasetAuthor(dataset)} &middot; from {provider.label}
+          </Typography>
+          {dataset.description && (
             <Typography
               variant="caption"
-              sx={{ color: 'text.secondary', fontWeight: 600 }}
+              color="text.secondary"
+              sx={{
+                display: '-webkit-box',
+                lineHeight: 1.5,
+                mt: 1.25,
+                overflow: 'hidden',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
+              }}
             >
-              {dataset.item_count.toLocaleString()} item
-              {dataset.item_count === 1 ? '' : 's'}
+              {dataset.description}
+            </Typography>
+          )}
+          <Stack
+            direction="row"
+            sx={{ flexWrap: 'wrap', gap: 0.5, mt: 2, minHeight: 22 }}
+          >
+            {dataset.tags.slice(0, 4).map((tag) => (
+              <Chip
+                key={tag}
+                label={`#${tag}`}
+                size="small"
+                variant="outlined"
+                sx={{ fontSize: '0.65rem', height: 20, borderColor: 'divider' }}
+              />
+            ))}
+            {dataset.tags.length > 4 && (
+              <Chip
+                label={`+${dataset.tags.length - 4}`}
+                size="small"
+                variant="outlined"
+                sx={{ fontSize: '0.65rem', height: 20, borderColor: 'divider' }}
+              />
+            )}
+          </Stack>
+          <Box sx={{ flex: 1 }} />
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              gap: 1.5,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+              mt: 2,
+              pt: 1.5,
+            }}
+          >
+            <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
+              <FolderOutlinedIcon
+                sx={{ color: 'text.secondary', fontSize: 17 }}
+              />
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                {dataset.item_count.toLocaleString()} item
+                {dataset.item_count === 1 ? '' : 's'}
+              </Typography>
+            </Stack>
+            <Typography variant="caption" color="text.secondary">
+              {formatBytes(dataset.size)}
             </Typography>
           </Stack>
-          <Typography variant="caption" color="text.secondary">
-            {formatBytes(dataset.size)}
-          </Typography>
-        </Stack>
-      </CardContent>
+        </CardContent>
+      </CardActionArea>
     </Card>
   );
 }
@@ -358,6 +390,9 @@ function PaginationControls({
 export default function DatasetCollectionPage() {
   const { navigate } = useNavigate();
   const [activeScope, setActiveScope] = React.useState<DatasetScope>('owned');
+  const [selectedDatasetId, setSelectedDatasetId] = React.useState<
+    string | null
+  >(null);
   const [scopeState, setScopeState] = React.useState<
     Record<DatasetScope, ScopeState>
   >({ owned: initialScopeState(), shared: initialScopeState() });
@@ -682,12 +717,18 @@ export default function DatasetCollectionPage() {
             <Grid container spacing={2}>
               {filteredDatasets.map((dataset) => (
                 <Grid key={dataset.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-                  <DatasetCard dataset={dataset} />
+                  <DatasetCard
+                    dataset={dataset}
+                    onOpen={setSelectedDatasetId}
+                  />
                 </Grid>
               ))}
             </Grid>
           ) : (
-            <DatasetTable datasets={filteredDatasets} />
+            <DatasetTable
+              datasets={filteredDatasets}
+              onOpen={setSelectedDatasetId}
+            />
           )}
           <Box sx={{ mt: 3 }}>
             <PaginationControls
@@ -700,11 +741,21 @@ export default function DatasetCollectionPage() {
           </Box>
         </>
       )}
+      <DatasetDetailDrawer
+        selectedId={selectedDatasetId}
+        onClose={() => setSelectedDatasetId(null)}
+      />
     </Box>
   );
 }
 
-function DatasetTable({ datasets }: { datasets: Datasets.Dataset[] }) {
+function DatasetTable({
+  datasets,
+  onOpen,
+}: {
+  datasets: Datasets.Dataset[];
+  onOpen: (datasetId: string) => void;
+}) {
   return (
     <Box
       sx={{
@@ -737,6 +788,14 @@ function DatasetTable({ datasets }: { datasets: Datasets.Dataset[] }) {
             verticalAlign: 'top',
           },
           '& tbody tr:last-of-type td': { borderBottom: 0 },
+          '& tbody tr': {
+            cursor: 'pointer',
+            transition: 'background-color 120ms ease',
+          },
+          '& tbody tr:hover, & tbody tr:focus-visible': {
+            bgcolor: 'action.hover',
+            outline: 'none',
+          },
         }}
       >
         <thead>
@@ -751,7 +810,18 @@ function DatasetTable({ datasets }: { datasets: Datasets.Dataset[] }) {
         </thead>
         <tbody>
           {datasets.map((dataset) => (
-            <tr key={dataset.id}>
+            <tr
+              key={dataset.id}
+              tabIndex={0}
+              aria-label={`View details for ${getDatasetLabel(dataset)}`}
+              onClick={() => onOpen(dataset.id)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onOpen(dataset.id);
+                }
+              }}
+            >
               <td>
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>
                   {getDatasetLabel(dataset)}

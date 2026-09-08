@@ -47,6 +47,8 @@ import ServiceMenu, {
   Service,
   ServiceCategory,
 } from '../../_components/ServiceMenu';
+import GeneratePersonaModal from '../../_components/GeneratePersonaModal';
+import SettingsDrawer from '../../_components/SettingsDrawer';
 
 function getActiveTabIndex(root: string, pathname: string): number {
   if (pathname === root) return 0;
@@ -63,6 +65,8 @@ function getActiveTabIndex(root: string, pathname: string): number {
 export default function MLHubAppBar() {
   const { navigate, root } = useNavigate();
   const location = useLocation();
+  const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false);
+  const [personaModalOpen, setPersonaModalOpen] = React.useState(false);
 
   const activeTab = getActiveTabIndex(root, location.pathname);
 
@@ -84,7 +88,7 @@ export default function MLHubAppBar() {
     icon: SettingsRounded,
     color: '#64748b',
     tags: ['settings', 'preferences', 'user', 'account'],
-    onClick: () => navigate('/settings'),
+    onClick: () => setSettingsDrawerOpen(true),
   };
 
   const categories: ServiceCategory[] = [
@@ -384,15 +388,26 @@ export default function MLHubAppBar() {
     //     </Tabs>
     //   </Toolbar>
     // </AppBar>
-    <ServiceMenu
-      categories={categories}
-      settingsService={settingsService}
-      barTitle="MLHub"
-      barDescription="Centralized AI Control Plane"
-      onHomeClick={dashboardService.onClick}
-      popoverTitle="All services"
-      popoverDescription="Choose a service to get started"
-    />
+    <>
+      <ServiceMenu
+        categories={categories}
+        settingsService={settingsService}
+        barTitle="MLHub"
+        barDescription="Centralized AI Control Plane"
+        onHomeClick={dashboardService.onClick}
+        popoverTitle="All services"
+        popoverDescription="Choose a service to get started"
+      />
+      <SettingsDrawer
+        open={settingsDrawerOpen}
+        onClose={() => setSettingsDrawerOpen(false)}
+        onConfigureWorkspace={() => setPersonaModalOpen(true)}
+      />
+      <GeneratePersonaModal
+        open={personaModalOpen}
+        onClose={() => setPersonaModalOpen(false)}
+      />
+    </>
   );
 }
 

@@ -17,8 +17,6 @@ import {
   Typography,
 } from '@mui/material';
 import StorefrontIcon from '@mui/icons-material/Storefront';
-import CloudOutlinedIcon from '@mui/icons-material/CloudOutlined';
-import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import PublicIcon from '@mui/icons-material/Public';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -34,6 +32,7 @@ import type { ReactElement } from 'react';
 import DatasetEmptyState from '../DatasetEmptyState';
 import { useToast } from '../../_context/ToastsContext/useToast';
 import { useNavigate } from '../../_context/NavContext';
+import { DatasetProviderIcon } from '../../_components';
 
 const providerConfig: Record<
   Datasets.DatasetProvider,
@@ -41,13 +40,23 @@ const providerConfig: Record<
 > = {
   [Datasets.DatasetProvider.HuggingFace]: {
     color: '#b7791f',
-    icon: <CloudOutlinedIcon fontSize="small" />,
+    icon: (
+      <DatasetProviderIcon
+        provider={Datasets.DatasetProvider.HuggingFace}
+        size={18}
+      />
+    ),
     label: 'Hugging Face',
   },
 
   [Datasets.DatasetProvider.Tapis]: {
     color: '#1976d2',
-    icon: <StorageOutlinedIcon fontSize="small" />,
+    icon: (
+      <DatasetProviderIcon
+        provider={Datasets.DatasetProvider.Tapis}
+        size={18}
+      />
+    ),
     label: 'Tapis',
   },
 };
