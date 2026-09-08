@@ -24,33 +24,29 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import SearchIcon from '@mui/icons-material/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
-import type { Model, InferenceBackend } from '../../types';
-import ModelFormDialog from '../../_components/ModelFormDialog';
-import DeploymentDialog from '../../_components/DeploymentDialog';
+import type { InferenceBackend } from '../../types';
 import {
-  modelStatusColorMap,
   frameworkIconMap as inferenceBackendIconMap,
   frameworkLabelMap as inferenceBackendLabelMap,
 } from '../../_components/constants';
-import { useNavigate } from '../../_context/NavContext';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import * as Models from '@mlhub/models-ts-sdk';
+import { DatasetProviderIcon } from '../../_components';
+import DeploymentDialog from '../../_components/DeploymentDialog';
+import { ModelDetailDrawer } from '../ModelDetailDrawer';
 
 type ModelViewMode = 'list' | 'grid' | 'compact';
 type OwnedModel = Models.ModelMetadata & {
   id?: string;
-  last_modified?: string;
-  status?: Model['status'];
 };
 
 const modelKey = (model: OwnedModel) => `${model.author}/${model.name}`;
@@ -68,6 +64,11 @@ const filterModels = (models: OwnedModel[], query: string) => {
       model.license ?? '',
       ...(model.libraries ?? []),
       ...(model.tags ?? []),
+      ...(model.deployment_strategy_refs ?? []).flatMap((strategy) => [
+        strategy.name,
+        strategy.platform,
+        strategy.description ?? '',
+      ]),
     ]
       .join(' ')
       .toLowerCase()
@@ -84,17 +85,87 @@ interface ModelViewItemProps {
   ) => void;
 }
 
+function DeploymentStrategyChips({
+  strategies,
+  limit = 2,
+}: {
+  strategies: Models.DeploymentStrategyReference[];
+  limit?: number;
+}) {
+  if (!strategies.length) {
+    return (
+      <Typography variant="caption" color="text.disabled">
+        None
+      </Typography>
+    );
+  }
+
+  const visibleStrategies = strategies.slice(0, limit);
+
+  return (
+    <Stack
+      direction="row"
+      sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.5 }}
+    >
+      {visibleStrategies.map((strategy, index) => (
+        <Tooltip
+          key={`${strategy.platform}:${strategy.name}:${index}`}
+          title={
+            strategy.description
+              ? `${strategy.platform} — ${strategy.description}`
+              : strategy.platform
+          }
+        >
+          <Chip
+            icon={
+              <DatasetProviderIcon provider={strategy.platform} size={16} />
+            }
+            label={strategy.name}
+            size="small"
+            variant="outlined"
+            sx={{
+              height: 24,
+              maxWidth: 180,
+              fontSize: '0.7rem',
+              '& .MuiChip-icon': { fontSize: 15 },
+            }}
+          />
+        </Tooltip>
+      ))}
+      {strategies.length > limit && (
+        <Tooltip
+          title={strategies
+            .slice(limit)
+            .map((strategy) => strategy.name)
+            .join(', ')}
+        >
+          <Chip
+            label={`+${strategies.length - limit}`}
+            size="small"
+            sx={{ height: 24, fontSize: '0.7rem' }}
+          />
+        </Tooltip>
+      )}
+    </Stack>
+  );
+}
+
 function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
   const libraries = model.libraries ?? [];
   const tags = model.tags ?? [];
-  const deployable = model.deployment_strategy_refs?.length > 0;
+  const strategies = model.deployment_strategy_refs ?? [];
 
   return (
     <Card
       elevation={0}
       onClick={() => onOpen(model)}
-      onKeyDown={(event) => event.key === 'Enter' && onOpen(model)}
-      role="link"
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(model);
+        }
+      }}
+      role="button"
       tabIndex={0}
       sx={{
         height: '100%',
@@ -186,9 +257,7 @@ function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
         )}
 
         <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75, mt: 2 }}>
-          {deployable && (
-            <Chip label="Deployable" color="success" size="small" />
-          )}
+          <DeploymentStrategyChips strategies={strategies} />
           {model.model_type && (
             <Chip label={model.model_type} size="small" variant="outlined" />
           )}
@@ -231,13 +300,19 @@ function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
 
 function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
   const libraries = model.libraries ?? [];
+  const strategies = model.deployment_strategy_refs ?? [];
 
   return (
     <Card
       elevation={0}
       onClick={() => onOpen(model)}
-      onKeyDown={(event) => event.key === 'Enter' && onOpen(model)}
-      role="link"
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(model);
+        }
+      }}
+      role="button"
       tabIndex={0}
       sx={{
         border: '1px solid',
@@ -286,15 +361,9 @@ function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
             />
           ))}
         </Stack>
-        <Chip
-          label={
-            model.deployment_strategy_refs?.length ? 'Deployable' : 'Model'
-          }
-          size="small"
-          color={model.deployment_strategy_refs?.length ? 'success' : 'default'}
-          variant="outlined"
-          sx={{ display: { xs: 'none', sm: 'flex' } }}
-        />
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <DeploymentStrategyChips strategies={strategies} limit={1} />
+        </Box>
         <IconButton
           size="small"
           aria-label={`Actions for ${model.name}`}
@@ -318,29 +387,23 @@ export default function ModelsTab() {
   const models = (data?.result ?? []) as OwnedModel[];
   const [viewMode, setViewMode] = React.useState<ModelViewMode>('list');
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [dialog, setDialog] = React.useState<string | undefined>(undefined);
   const [selectedModel, setSelectedModel] = React.useState<OwnedModel | null>(
     null
   );
+  const [deploymentModel, setDeploymentModel] =
+    React.useState<OwnedModel | null>(null);
   const [actionsAnchor, setActionsAnchor] = React.useState<HTMLElement | null>(
     null
   );
   const [actionsRow, setActionsRow] = React.useState<OwnedModel | null>(null);
-  const { navigate } = useNavigate();
   const filteredModels = React.useMemo(
     () => filterModels(models, searchQuery),
     [models, searchQuery]
   );
 
-  const openModel = React.useCallback(
-    (model: OwnedModel) =>
-      navigate(
-        `/models/${encodeURIComponent(model.author)}/${encodeURIComponent(
-          model.name
-        )}`
-      ),
-    [navigate]
-  );
+  const openModel = React.useCallback((model: OwnedModel) => {
+    setSelectedModel(model);
+  }, []);
 
   const openModelActions = React.useCallback(
     (event: React.MouseEvent<HTMLElement>, model: OwnedModel) => {
@@ -349,40 +412,6 @@ export default function ModelsTab() {
     },
     []
   );
-
-  const handleCreate = () => {
-    setSelectedModel(null);
-    setDialog(undefined);
-  };
-
-  const handleEdit = (model: OwnedModel) => {
-    setSelectedModel(model);
-    setDialog(undefined);
-  };
-
-  const handleSave = (
-    data: Omit<Models.ModelMetadata, 'id' | 'createdAt' | 'updatedAt'>
-  ) => {
-    if (selectedModel) {
-      // Edit existing
-      // onModelsChange(
-      //   models.map((m) =>
-      //     m.id === selectedModel.id
-      //       ? { ...m, ...data, updatedAt: new Date().toISOString() }
-      //       : m
-      //   )
-      // );
-    } else {
-      // // Create new
-      // const newModel: Model = {
-      //   id: `model-${String(models.length + 1).padStart(3, '0')}`,
-      //   ...data,
-      //   createdAt: new Date().toISOString(),
-      //   updatedAt: new Date().toISOString(),
-      // };
-      // onModelsChange([...models, newModel]);
-    }
-  };
 
   const handleDelete = (id: string) => {
     // onModelsChange(models.filter((m) => m.id !== id));
@@ -396,11 +425,20 @@ export default function ModelsTab() {
       minWidth: 200,
       renderCell: (params) => (
         <Box
+          component="button"
+          type="button"
+          aria-label={`View details for ${params.row.name}`}
           sx={{
             display: 'flex',
             alignItems: 'center',
             gap: 1,
             cursor: 'pointer',
+            bgcolor: 'transparent',
+            border: 0,
+            color: 'inherit',
+            font: 'inherit',
+            p: 0,
+            textAlign: 'left',
             '&:hover': {
               '& .MuiTypography-root': {
                 color: 'primary.main',
@@ -446,22 +484,15 @@ export default function ModelsTab() {
       ),
     },
     {
-      field: 'status',
-      headerName: 'Status',
-      width: 120,
+      field: 'deployment_strategy_refs',
+      headerName: 'Deployment Strategy References',
+      minWidth: 280,
+      flex: 1,
       renderCell: (params) => (
-        <Chip
-          label={
-            params.value ||
-            (params.row.deployment_strategy_refs?.length
-              ? 'deployable'
-              : 'registered')
+        <DeploymentStrategyChips
+          strategies={
+            (params.value ?? []) as Models.DeploymentStrategyReference[]
           }
-          size="small"
-          color={
-            modelStatusColorMap[params.value as Model['status']] || 'default'
-          }
-          sx={{ textTransform: 'capitalize', fontWeight: 500 }}
         />
       ),
     },
@@ -488,15 +519,6 @@ export default function ModelsTab() {
           )}
         </Box>
       ),
-    },
-    {
-      field: 'updatedAt',
-      headerName: 'Updated',
-      width: 120,
-      valueGetter: (_value, row) =>
-        row.last_modified
-          ? new Date(row.last_modified).toLocaleDateString()
-          : '—',
     },
     {
       field: 'actions',
@@ -815,21 +837,23 @@ export default function ModelsTab() {
               primaryTypographyProps={{ variant: 'body2' }}
             />
           </ListItemButton>
-          <ListItemButton
-            onClick={() => {
-              if (actionsRow) handleEdit(actionsRow);
-              setActionsAnchor(null);
-              setActionsRow(null);
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <EditIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary="Edit"
-              primaryTypographyProps={{ variant: 'body2' }}
-            />
-          </ListItemButton>
+          {Boolean(actionsRow?.deployment_strategy_refs?.length) && (
+            <ListItemButton
+              onClick={() => {
+                if (actionsRow) setDeploymentModel(actionsRow);
+                setActionsAnchor(null);
+                setActionsRow(null);
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <RocketLaunchIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Deploy"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+          )}
           <ListItemButton
             onClick={() => {
               if (actionsRow) handleDelete(modelKey(actionsRow));
@@ -849,12 +873,18 @@ export default function ModelsTab() {
         </List>
       </Popover>
 
-      {/* <ModelFormDialog
-        open={dialogOpen}
+      <ModelDetailDrawer
         model={selectedModel}
-        onClose={() => setDialog(false)}
-        onSave={handleSave}
-      /> */}
+        onClose={() => setSelectedModel(null)}
+      />
+      {deploymentModel && (
+        <DeploymentDialog
+          open
+          defaultModel={deploymentModel}
+          onClose={() => setDeploymentModel(null)}
+          author={deploymentModel.author}
+        />
+      )}
     </Box>
   );
 }

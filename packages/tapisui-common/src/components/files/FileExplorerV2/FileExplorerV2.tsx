@@ -29,6 +29,7 @@ export interface FileExplorerV2Props {
     items: FileExplorerItem[]
   ) => void;
   onNavigatePath: (path: string) => void;
+  onOpenNavigateDialog?: () => void;
   onOpenItem: (item: FileExplorerItem) => void;
   onNewFolder?: () => void;
   onUploadFile?: () => void;
@@ -55,6 +56,7 @@ export function FileExplorerV2({
   getActionsForItems,
   onExecuteAction,
   onNavigatePath,
+  onOpenNavigateDialog,
   onOpenItem,
   onNewFolder,
   onUploadFile,
@@ -220,6 +222,7 @@ export function FileExplorerV2({
         onSearchChange={onSearchChange}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        onOpenNavigateDialog={onOpenNavigateDialog}
         loading={loading || searchLoading}
       />
       <Box sx={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>

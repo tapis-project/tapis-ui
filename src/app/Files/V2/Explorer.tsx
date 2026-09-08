@@ -1,4 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
 import { Files, Systems } from '@tapis/tapis-typescript';
 import {
   FileExplorerV2,
@@ -20,6 +30,7 @@ import LazyFilesTree from './LazyFilesTree';
 import {
   fileInfoPath,
   filesV2Breadcrumbs,
+  normalizeFilePath,
   toFileExplorerItem,
   toFilesV2Route,
 } from './utils';
@@ -37,6 +48,8 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
   const [modal, setModal] = useState<FileToolbarModal>();
   const [modalPath, setModalPath] = useState(path);
   const [searchQuery, setSearchQuery] = useState('');
+  const [navigateDialogOpen, setNavigateDialogOpen] = useState(false);
+  const [navigatePathInput, setNavigatePathInput] = useState(path);
   const listing = FilesHooks.useList({ systemId, path }, { retry: 0 });
   const permissions = FilesHooks.usePermissions({ systemId, path });
   const rootPermissions = FilesHooks.usePermissions({ systemId, path: '/' });
@@ -90,6 +103,25 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
   const navigate = useCallback(
     (nextPath: string) => history.push(toFilesV2Route(systemId, nextPath)),
     [history, systemId]
+  );
+
+  const openNavigateDialog = useCallback(() => {
+    setNavigatePathInput(path);
+    setNavigateDialogOpen(true);
+  }, [path]);
+
+  const navigateFromDialog = useCallback(() => {
+    if (!navigatePathInput.trim()) return;
+    setNavigateDialogOpen(false);
+    navigate(normalizeFilePath(navigatePathInput));
+  }, [navigate, navigatePathInput]);
+
+  const navigateFromHostVariable = useCallback(
+    (nextPath: string) => {
+      setNavigateDialogOpen(false);
+      navigate(nextPath);
+    },
+    [navigate]
   );
 
   const setSelection = useCallback(
@@ -207,6 +239,7 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
         getActionsForItems={getActionsForItems}
         onExecuteAction={executeAction}
         onNavigatePath={navigate}
+        onOpenNavigateDialog={openNavigateDialog}
         onOpenItem={openItem}
         onNewFolder={
           canModify ? () => openDirectoryModal('createdir') : undefined
@@ -215,16 +248,6 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
           canModify ? () => openDirectoryModal('upload') : undefined
         }
         onTransfers={() => openDirectoryModal('transfer')}
-        toolbarExtras={
-          showHostEvalButton ? (
-            <HostEvalNavigationButton
-              systemId={systemId}
-              isAuthenticated={!permissions.isLoading && !permissions.error}
-              variant="v2"
-              onNavigate={navigate}
-            />
-          ) : undefined
-        }
         sidebar={
           <LazyFilesTree
             systemId={systemId}
@@ -267,6 +290,55 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
         systemId={systemId}
         path={modalPath}
       />
+      <Dialog
+        open={navigateDialogOpen}
+        onClose={() => setNavigateDialogOpen(false)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            navigateFromDialog();
+          },
+        }}
+      >
+        <DialogTitle>Navigate to directory</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Enter an absolute path on {systemId}.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Directory path"
+            placeholder="/path/to/directory"
+            value={navigatePathInput}
+            onChange={(event) => setNavigatePathInput(event.target.value)}
+            helperText="Paths are resolved from the system root."
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          {showHostEvalButton && (
+            <Box sx={{ mr: 'auto' }}>
+              <HostEvalNavigationButton
+                systemId={systemId}
+                isAuthenticated={!permissions.isLoading && !permissions.error}
+                variant="v2"
+                onNavigate={navigateFromHostVariable}
+              />
+            </Box>
+          )}
+          <Button onClick={() => setNavigateDialogOpen(false)}>Cancel</Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={!navigatePathInput.trim()}
+          >
+            Navigate
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

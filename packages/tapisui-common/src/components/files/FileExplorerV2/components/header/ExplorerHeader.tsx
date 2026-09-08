@@ -8,6 +8,7 @@ import {
   Link,
   TextField,
   InputAdornment,
+  Button,
   IconButton,
   Tooltip,
   LinearProgress,
@@ -21,6 +22,7 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import HelpIcon from '@mui/icons-material/Help';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import NavigationOutlinedIcon from '@mui/icons-material/NavigationOutlined';
 import type { ViewMode } from '../../types/file-system';
 
 export interface ExplorerHeaderProps {
@@ -32,6 +34,7 @@ export interface ExplorerHeaderProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onOpenHelp?: () => void;
+  onOpenNavigateDialog?: () => void;
   loading?: boolean;
 }
 
@@ -44,6 +47,7 @@ export function ExplorerHeader({
   viewMode,
   onViewModeChange,
   onOpenHelp,
+  onOpenNavigateDialog,
   loading = false,
 }: ExplorerHeaderProps) {
   return (
@@ -222,6 +226,25 @@ export function ExplorerHeader({
             })}
           </Breadcrumbs>
         </Box>
+
+        {onOpenNavigateDialog && (
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<NavigationOutlinedIcon fontSize="small" />}
+            onClick={onOpenNavigateDialog}
+            sx={{
+              borderColor: 'divider',
+              borderRadius: 1.5,
+              color: 'text.primary',
+              fontWeight: 600,
+              textTransform: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Navigate To
+          </Button>
+        )}
 
         {/* Global Search Bar */}
         <Box sx={{ width: { xs: 160, sm: 240, md: 320 } }}>
