@@ -33,6 +33,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import type { InferenceBackend } from '../../types';
 import {
   frameworkIconMap as inferenceBackendIconMap,
@@ -43,6 +44,8 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { DatasetProviderIcon } from '../../_components';
 import DeploymentDialog from '../../_components/DeploymentDialog';
 import { ModelDetailDrawer } from '../ModelDetailDrawer';
+import { useNavigate } from '../../_context/NavContext';
+import ModelEmptyState from './ModelEmptyState';
 
 type ModelViewMode = 'list' | 'grid' | 'compact';
 type OwnedModel = Models.ModelMetadata & {
@@ -380,6 +383,7 @@ function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
 }
 
 export default function ModelsTab() {
+  const { navigate } = useNavigate();
   const { username } = useTapisConfig();
   const { data, isLoading, error } = Hooks.Models.useListByAuthor({
     author: username,
@@ -563,14 +567,33 @@ export default function ModelsTab() {
     <Box>
       {/* ─── Header ─────────────────────────────────────── */}
       <Box sx={{ mb: 3 }}>
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <SmartToyIcon sx={{ fontSize: 28, color: 'primary.main' }} />
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 1.25,
+            mb: 0.5,
+          }}
+        >
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
+            <SmartToyIcon sx={{ fontSize: 28, color: 'primary.main' }} />
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+            >
+              Models
+            </Typography>
+          </Stack>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<StorefrontIcon />}
+            onClick={() => navigate('/marketplaces/models')}
+            sx={{ textTransform: 'none' }}
           >
-            Models
-          </Typography>
+            Explore Marketplace
+          </Button>
         </Stack>
         <Typography variant="body1" color="text.secondary">
           Manage your ML models — track versions, performance metrics, and
@@ -723,6 +746,10 @@ export default function ModelsTab() {
         <Alert severity="error">
           {error instanceof Error ? error.message : 'Unable to load models.'}
         </Alert>
+      ) : models.length === 0 ? (
+        <ModelEmptyState
+          onExploreMarketplace={() => navigate('/marketplaces/models')}
+        />
       ) : filteredModels.length === 0 ? (
         <Card
           elevation={0}
@@ -737,13 +764,11 @@ export default function ModelsTab() {
         >
           <SmartToyIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary">
-            {models.length ? 'No models match your search' : 'No models found'}
+            No models match your search
           </Typography>
-          {searchQuery && (
-            <Button onClick={() => setSearchQuery('')} sx={{ mt: 1 }}>
-              Clear search
-            </Button>
-          )}
+          <Button onClick={() => setSearchQuery('')} sx={{ mt: 1 }}>
+            Clear search
+          </Button>
         </Card>
       ) : viewMode === 'grid' ? (
         <Grid container spacing={2}>
