@@ -34,6 +34,14 @@ export interface FileExplorerBreadcrumb {
   path: string;
 }
 
+export interface FileExplorerHistoryControls {
+  canGoBack: boolean;
+  canGoForward: boolean;
+  onGoBack: () => void;
+  onGoForward: () => void;
+  onOpenHistory: () => void;
+}
+
 export type ViewMode = 'grid' | 'table' | 'compact';
 
 export type SortField = 'name' | 'updatedAt' | 'size' | 'type';

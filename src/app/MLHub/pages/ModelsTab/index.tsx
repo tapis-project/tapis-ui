@@ -485,7 +485,7 @@ export default function ModelsTab() {
     },
     {
       field: 'deployment_strategy_refs',
-      headerName: 'Deployment Strategy References',
+      headerName: 'Deployment Strategies',
       minWidth: 280,
       flex: 1,
       renderCell: (params) => (

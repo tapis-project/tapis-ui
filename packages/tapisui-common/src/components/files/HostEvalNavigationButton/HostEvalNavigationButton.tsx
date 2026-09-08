@@ -39,6 +39,7 @@ export type HostEvalNavigationButtonProps = {
   options?: EnvVarOption[];
   variant?: 'default' | 'toolbar' | 'v2';
   onNavigate?: (path: string) => void;
+  onBusyChange?: (busy: boolean) => void;
 };
 
 const normalizeEnvVarInput = (value: string) =>
@@ -107,6 +108,7 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
   options = defaultEnvVarOptions,
   variant = 'default',
   onNavigate,
+  onBusyChange,
 }) => {
   const [open, setOpen] = useState(false);
   const [selectedEnvVar, setSelectedEnvVar] = useState(
@@ -186,6 +188,7 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
     setSelectedEnvVar(option.envVar);
     setStatus('idle');
     setOpen(false);
+    setPendingRefetch(true);
   };
 
   const applyCustomEnvVar = () => {
@@ -200,7 +203,19 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
   const selectedLabel =
     options.find((o) => o.envVar === selectedEnvVar)?.label ??
     `Go to $${selectedEnvVar}`;
-  const busy = isLoading || status === 'navigating';
+  const busy = isLoading || status !== 'idle' || pendingRefetch;
+
+  React.useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
+
+  React.useEffect(
+    () => () => {
+      onBusyChange?.(false);
+    },
+    [onBusyChange]
+  );
+
   const isToolbarVariant = variant === 'toolbar';
   const isV2Variant = variant === 'v2';
   const buttonSx = isToolbarVariant

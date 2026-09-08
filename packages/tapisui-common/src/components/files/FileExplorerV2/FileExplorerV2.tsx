@@ -1,5 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Box, Button, CircularProgress } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { ExplorerHeader } from './components/header/ExplorerHeader';
 import { ExplorerToolbar } from './components/toolbar/ExplorerToolbar';
 import { SelectionActionBar } from './components/toolbar/SelectionActionBar';
@@ -9,11 +22,17 @@ import { CompactView } from './components/views/CompactView';
 import { FileContextMenu } from './components/context-menu/FileContextMenu';
 import type {
   FileExplorerBreadcrumb,
+  FileExplorerHistoryControls,
   FileExplorerItem,
   SortConfig,
   ViewMode,
 } from './types/file-system';
 import type { FileExplorerAction } from './types/actions';
+
+const DEFAULT_SIDEBAR_WIDTH = 280;
+const MIN_SIDEBAR_WIDTH = 220;
+const MAX_SIDEBAR_WIDTH = 560;
+const SIDEBAR_KEYBOARD_STEP = 16;
 
 export interface FileExplorerV2Props {
   systemId: string;
@@ -29,10 +48,13 @@ export interface FileExplorerV2Props {
     items: FileExplorerItem[]
   ) => void;
   onNavigatePath: (path: string) => void;
+  historyControls?: FileExplorerHistoryControls;
   onOpenNavigateDialog?: () => void;
   onOpenItem: (item: FileExplorerItem) => void;
   onNewFolder?: () => void;
   onUploadFile?: () => void;
+  onNewRootFolder?: () => void;
+  onUploadRootFile?: () => void;
   onTransfers?: () => void;
   toolbarExtras?: React.ReactNode;
   sidebar?: React.ReactNode;
@@ -56,10 +78,13 @@ export function FileExplorerV2({
   getActionsForItems,
   onExecuteAction,
   onNavigatePath,
+  historyControls,
   onOpenNavigateDialog,
   onOpenItem,
   onNewFolder,
   onUploadFile,
+  onNewRootFolder,
+  onUploadRootFile,
   onTransfers,
   toolbarExtras,
   sidebar,
@@ -77,12 +102,29 @@ export function FileExplorerV2({
     field: 'name',
     order: 'asc',
   });
+  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
     targets: FileExplorerItem[];
   } | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const explorerBodyRef = useRef<HTMLDivElement | null>(null);
+
+  const maximumSidebarWidth = () => {
+    const availableWidth = explorerBodyRef.current?.clientWidth;
+    return availableWidth
+      ? Math.max(
+          MIN_SIDEBAR_WIDTH,
+          Math.min(MAX_SIDEBAR_WIDTH, availableWidth * 0.6)
+        )
+      : MAX_SIDEBAR_WIDTH;
+  };
+
+  const clampSidebarWidth = (width: number) =>
+    Math.min(maximumSidebarWidth(), Math.max(MIN_SIDEBAR_WIDTH, width));
 
   useEffect(() => {
     const node = loadMoreRef.current;
@@ -213,6 +255,7 @@ export function FileExplorerV2({
       <ExplorerHeader
         breadcrumbs={breadcrumbs}
         systemHost={systemHost}
+        historyControls={historyControls}
         onNavigateBreadcrumb={(id) =>
           onNavigatePath(
             breadcrumbs.find((breadcrumb) => breadcrumb.id === id)?.path || '/'
@@ -225,8 +268,244 @@ export function FileExplorerV2({
         onOpenNavigateDialog={onOpenNavigateDialog}
         loading={loading || searchLoading}
       />
-      <Box sx={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-        {sidebar}
+      <Box
+        ref={explorerBodyRef}
+        sx={{
+          display: 'flex',
+          flex: 1,
+          minHeight: 0,
+          overflow: 'hidden',
+          userSelect: isResizingSidebar ? 'none' : undefined,
+        }}
+      >
+        {sidebar && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexShrink: 0,
+              height: '100%',
+              position: 'relative',
+              flexDirection: 'column',
+              width: sidebarCollapsed ? 44 : sidebarWidth,
+              transition: isResizingSidebar ? 'none' : 'width 160ms ease',
+              bgcolor: 'background.paper',
+              borderRight: sidebarCollapsed ? '2px solid' : undefined,
+              borderColor: 'divider',
+            }}
+          >
+            <Box
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 3,
+                height: 44,
+                minHeight: 44,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: sidebarCollapsed ? 'center' : 'space-between',
+                gap: 1,
+                px: sidebarCollapsed ? 0.5 : 1.25,
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                bgcolor: 'background.paper',
+                overflow: 'hidden',
+              }}
+            >
+              {!sidebarCollapsed && (
+                <Box
+                  component="span"
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Files & folders
+                </Box>
+              )}
+              <Tooltip
+                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                placement="right"
+              >
+                <IconButton
+                  size="small"
+                  aria-label={
+                    sidebarCollapsed
+                      ? 'Expand file explorer sidebar'
+                      : 'Collapse file explorer sidebar'
+                  }
+                  aria-expanded={!sidebarCollapsed}
+                  onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+                  sx={{ flexShrink: 0 }}
+                >
+                  {sidebarCollapsed ? (
+                    <MenuIcon fontSize="small" />
+                  ) : (
+                    <ChevronLeftIcon fontSize="small" />
+                  )}
+                </IconButton>
+              </Tooltip>
+            </Box>
+            {sidebarCollapsed && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  py: 1,
+                }}
+              >
+                {onNewRootFolder && (
+                  <Tooltip title="New folder" placement="right">
+                    <IconButton
+                      size="small"
+                      aria-label="Create folder in root directory"
+                      onClick={onNewRootFolder}
+                    >
+                      <CreateNewFolderOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {onUploadRootFile && (
+                  <Tooltip title="Upload file" placement="right">
+                    <IconButton
+                      size="small"
+                      aria-label="Upload file to root directory"
+                      onClick={onUploadRootFile}
+                    >
+                      <UploadFileOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                <Tooltip title="Root directory" placement="right">
+                  <IconButton
+                    size="small"
+                    aria-label="Go to root directory"
+                    onClick={() => onNavigatePath('/')}
+                  >
+                    <HomeOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+            <Box
+              aria-hidden={sidebarCollapsed}
+              sx={{
+                flex: '1 1 auto',
+                minWidth: 0,
+                minHeight: 0,
+                overflow: 'hidden',
+                visibility: sidebarCollapsed ? 'hidden' : 'visible',
+              }}
+            >
+              {sidebar}
+            </Box>
+            <Box
+              role="separator"
+              aria-label="Resize file explorer sidebar"
+              aria-orientation="vertical"
+              aria-valuemin={MIN_SIDEBAR_WIDTH}
+              aria-valuemax={MAX_SIDEBAR_WIDTH}
+              aria-valuenow={Math.round(sidebarWidth)}
+              tabIndex={sidebarCollapsed ? -1 : 0}
+              onDoubleClick={() => setSidebarWidth(DEFAULT_SIDEBAR_WIDTH)}
+              onKeyDown={(event) => {
+                if (event.key === 'ArrowLeft') {
+                  event.preventDefault();
+                  setSidebarWidth((width) =>
+                    clampSidebarWidth(width - SIDEBAR_KEYBOARD_STEP)
+                  );
+                } else if (event.key === 'ArrowRight') {
+                  event.preventDefault();
+                  setSidebarWidth((width) =>
+                    clampSidebarWidth(width + SIDEBAR_KEYBOARD_STEP)
+                  );
+                } else if (event.key === 'Home') {
+                  event.preventDefault();
+                  setSidebarWidth(MIN_SIDEBAR_WIDTH);
+                } else if (event.key === 'End') {
+                  event.preventDefault();
+                  setSidebarWidth(maximumSidebarWidth());
+                }
+              }}
+              onPointerDown={(event) => {
+                event.preventDefault();
+                event.currentTarget.setPointerCapture(event.pointerId);
+                setIsResizingSidebar(true);
+              }}
+              onPointerMove={(event) => {
+                if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+                  return;
+                }
+                const bodyLeft =
+                  explorerBodyRef.current?.getBoundingClientRect().left ?? 0;
+                setSidebarWidth(clampSidebarWidth(event.clientX - bodyLeft));
+              }}
+              onPointerUp={(event) => {
+                if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                  event.currentTarget.releasePointerCapture(event.pointerId);
+                }
+                setIsResizingSidebar(false);
+              }}
+              onPointerCancel={() => setIsResizingSidebar(false)}
+              sx={{
+                display: sidebarCollapsed ? 'none' : 'block',
+                position: 'absolute',
+                right: -6,
+                top: 0,
+                bottom: 0,
+                width: 12,
+                cursor: 'col-resize',
+                touchAction: 'none',
+                zIndex: 2,
+                outline: 0,
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: 5,
+                  width: isResizingSidebar ? 3 : 2,
+                  bgcolor: isResizingSidebar ? 'primary.main' : 'divider',
+                },
+                '&:hover::after, &:focus-visible::after': {
+                  width: 3,
+                  bgcolor: 'primary.main',
+                },
+                '&:hover .FileExplorerV2-resizeGrip, &:focus-visible .FileExplorerV2-resizeGrip':
+                  {
+                    bgcolor: 'primary.main',
+                    borderColor: 'primary.main',
+                    color: 'primary.contrastText',
+                  },
+              }}
+            >
+              <MoreVertIcon
+                className="FileExplorerV2-resizeGrip"
+                sx={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 18,
+                  height: 30,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  borderRadius: 1,
+                  color: 'text.secondary',
+                  pointerEvents: 'none',
+                  transition:
+                    'background-color 120ms ease, border-color 120ms ease, color 120ms ease',
+                }}
+              />
+            </Box>
+          </Box>
+        )}
         <Box sx={{ flex: 1, minWidth: 0, overflowY: 'auto', p: 2.5 }}>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>

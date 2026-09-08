@@ -19,6 +19,7 @@ import {
 import {
   Files as FilesHooks,
   Systems as SystemsHooks,
+  useTapisConfig,
 } from '@tapis/tapisui-hooks';
 import { useHistory } from 'react-router-dom';
 import { useNotifications } from 'app/_components/Notifications';
@@ -27,6 +28,8 @@ import ToolbarModalHost, {
   type FileToolbarModal,
 } from '../_components/Toolbar/ToolbarModalHost';
 import LazyFilesTree from './LazyFilesTree';
+import NavigationHistoryDialog from './NavigationHistoryDialog';
+import useFileNavigationHistory from './useFileNavigationHistory';
 import {
   fileInfoPath,
   filesV2Breadcrumbs,
@@ -43,6 +46,7 @@ export interface FilesV2ExplorerProps {
 
 export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
   const history = useHistory();
+  const { basePath, username } = useTapisConfig();
   const { add } = useNotifications();
   const { selectedFiles, setSelectedFiles } = useFilesSelect();
   const [modal, setModal] = useState<FileToolbarModal>();
@@ -50,6 +54,8 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [navigateDialogOpen, setNavigateDialogOpen] = useState(false);
   const [navigatePathInput, setNavigatePathInput] = useState(path);
+  const [hostNavigationBusy, setHostNavigationBusy] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const listing = FilesHooks.useList({ systemId, path }, { retry: 0 });
   const permissions = FilesHooks.usePermissions({ systemId, path });
   const rootPermissions = FilesHooks.usePermissions({ systemId, path: '/' });
@@ -104,9 +110,17 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
     (nextPath: string) => history.push(toFilesV2Route(systemId, nextPath)),
     [history, systemId]
   );
+  const fileHistory = useFileNavigationHistory({
+    basePath,
+    username,
+    systemId,
+    path,
+    onNavigate: navigate,
+  });
 
   const openNavigateDialog = useCallback(() => {
     setNavigatePathInput(path);
+    setHostNavigationBusy(false);
     setNavigateDialogOpen(true);
   }, [path]);
 
@@ -239,6 +253,13 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
         getActionsForItems={getActionsForItems}
         onExecuteAction={executeAction}
         onNavigatePath={navigate}
+        historyControls={{
+          canGoBack: fileHistory.canGoBack,
+          canGoForward: fileHistory.canGoForward,
+          onGoBack: fileHistory.goBack,
+          onGoForward: fileHistory.goForward,
+          onOpenHistory: () => setHistoryDialogOpen(true),
+        }}
         onOpenNavigateDialog={openNavigateDialog}
         onOpenItem={openItem}
         onNewFolder={
@@ -246,6 +267,12 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
         }
         onUploadFile={
           canModify ? () => openDirectoryModal('upload') : undefined
+        }
+        onNewRootFolder={
+          canModifyRoot ? () => openDirectoryModal('createdir', '/') : undefined
+        }
+        onUploadRootFile={
+          canModifyRoot ? () => openDirectoryModal('upload', '/') : undefined
         }
         onTransfers={() => openDirectoryModal('transfer')}
         sidebar={
@@ -290,6 +317,15 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
         systemId={systemId}
         path={modalPath}
       />
+      <NavigationHistoryDialog
+        open={historyDialogOpen}
+        options={fileHistory.recentOptions}
+        onClose={() => setHistoryDialogOpen(false)}
+        onSelect={(option) => {
+          setHistoryDialogOpen(false);
+          fileHistory.goToIndex(option.index);
+        }}
+      />
       <Dialog
         open={navigateDialogOpen}
         onClose={() => setNavigateDialogOpen(false)}
@@ -326,6 +362,7 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
                 isAuthenticated={!permissions.isLoading && !permissions.error}
                 variant="v2"
                 onNavigate={navigateFromHostVariable}
+                onBusyChange={setHostNavigationBusy}
               />
             </Box>
           )}
@@ -333,7 +370,7 @@ export default function Explorer({ systemId, path }: FilesV2ExplorerProps) {
           <Button
             type="submit"
             variant="contained"
-            disabled={!navigatePathInput.trim()}
+            disabled={!navigatePathInput.trim() || hostNavigationBusy}
           >
             Navigate
           </Button>

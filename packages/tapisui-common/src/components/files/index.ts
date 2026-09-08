@@ -10,6 +10,7 @@ export {
   default as FileExplorerV2,
   type FileExplorerV2Props,
   type FileExplorerBreadcrumb,
+  type FileExplorerHistoryControls,
   type FileExplorerItem,
   type FileExplorerAction,
   type SortConfig as FileExplorerSortConfig,

@@ -232,13 +232,11 @@ export default function LazyFilesTree({
   return (
     <Box
       sx={{
-        width: 280,
-        flexShrink: 0,
+        width: '100%',
+        minWidth: 0,
         height: '100%',
         overflowY: 'auto',
         bgcolor: 'background.paper',
-        borderRight: '1px solid',
-        borderColor: 'divider',
         p: 1,
       }}
     >
@@ -255,7 +253,7 @@ export default function LazyFilesTree({
               startIcon={<CreateNewFolderIcon sx={{ fontSize: 16 }} />}
               onClick={onNewRootFolder}
             >
-              New Folder
+              Folder
             </Button>
           )}
           {onNewRootFile && (
@@ -263,26 +261,11 @@ export default function LazyFilesTree({
               startIcon={<NoteAddIcon sx={{ fontSize: 16 }} />}
               onClick={onNewRootFile}
             >
-              New File
+              File
             </Button>
           )}
         </ButtonGroup>
       )}
-      <Typography
-        component="div"
-        variant="overline"
-        color="text.secondary"
-        sx={{
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          fontWeight: 700,
-          mb: 0.5,
-          px: 1,
-          pb: 0.5,
-        }}
-      >
-        Files & folders
-      </Typography>
       <List dense disablePadding>
         <TreeDirectory
           {...treeProps}

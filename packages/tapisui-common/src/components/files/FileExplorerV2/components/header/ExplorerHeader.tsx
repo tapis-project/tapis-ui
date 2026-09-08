@@ -23,11 +23,18 @@ import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import HelpIcon from '@mui/icons-material/Help';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
 import NavigationOutlinedIcon from '@mui/icons-material/NavigationOutlined';
-import type { ViewMode } from '../../types/file-system';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import HistoryIcon from '@mui/icons-material/History';
+import type {
+  FileExplorerHistoryControls,
+  ViewMode,
+} from '../../types/file-system';
 
 export interface ExplorerHeaderProps {
   breadcrumbs: { id: string | null; name: string }[];
   systemHost?: string;
+  historyControls?: FileExplorerHistoryControls;
   onNavigateBreadcrumb: (folderId: string | null) => void;
   searchQuery: string;
   onSearchChange: (val: string) => void;
@@ -41,6 +48,7 @@ export interface ExplorerHeaderProps {
 export function ExplorerHeader({
   breadcrumbs,
   systemHost,
+  historyControls,
   onNavigateBreadcrumb,
   searchQuery,
   onSearchChange,
@@ -64,6 +72,53 @@ export function ExplorerHeader({
       }}
     >
       <Toolbar sx={{ px: { xs: 1.5, sm: 2.5 }, gap: 1.5, minHeight: 64 }}>
+        {historyControls && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              flexShrink: 0,
+              p: 0.25,
+              borderRadius: 1.5,
+              bgcolor: 'action.hover',
+            }}
+          >
+            <Tooltip title="Back">
+              <span>
+                <IconButton
+                  size="small"
+                  aria-label="Go back in file navigation history"
+                  disabled={!historyControls.canGoBack}
+                  onClick={historyControls.onGoBack}
+                >
+                  <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="Navigation history">
+              <IconButton
+                size="small"
+                aria-label="Open file navigation history"
+                onClick={historyControls.onOpenHistory}
+              >
+                <HistoryIcon sx={{ fontSize: 19 }} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Forward">
+              <span>
+                <IconButton
+                  size="small"
+                  aria-label="Go forward in file navigation history"
+                  disabled={!historyControls.canGoForward}
+                  onClick={historyControls.onGoForward}
+                >
+                  <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+        )}
+
         {/* Global Breadcrumbs Navigation */}
         <Box
           sx={{

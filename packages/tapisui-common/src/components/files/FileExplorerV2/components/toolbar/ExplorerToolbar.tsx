@@ -230,7 +230,7 @@ export function ExplorerToolbar({
             onClick={onNewFolder}
             sx={{ fontWeight: 600, fontSize: '0.8125rem' }}
           >
-            New Folder
+            Folder
           </Button>
         )}
 
@@ -242,7 +242,7 @@ export function ExplorerToolbar({
             onClick={onNewFile}
             sx={{ fontWeight: 600, fontSize: '0.8125rem' }}
           >
-            New File
+            File
           </Button>
         )}
 

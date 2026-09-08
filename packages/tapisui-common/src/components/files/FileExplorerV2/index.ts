@@ -2,6 +2,7 @@ export { default, default as FileExplorerV2 } from './FileExplorerV2';
 export type { FileExplorerV2Props } from './FileExplorerV2';
 export type {
   FileExplorerBreadcrumb,
+  FileExplorerHistoryControls,
   FileExplorerItem,
   SortConfig,
   SortField,
