@@ -4,15 +4,15 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 
-const useShareSystem = () => {
+const useUnShareSystem = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, Systems.ShareSystemRequest>(
-      [QueryKeys.shareSystem, basePath, jwt],
-      (params) => API.shareSystem(params, basePath, jwt)
+    useMutation<Systems.RespBasic, Error, Systems.UnShareSystemRequest>(
+      [QueryKeys.unShareSystem, basePath, jwt],
+      (params) => API.unShareSystem(params, basePath, jwt)
     );
 
   const invalidate = () => {
@@ -23,7 +23,6 @@ const useShareSystem = () => {
     queryClient.invalidateQueries(QueryKeys.userPermsMap);
   };
 
-  // Return hook object with loading states and login function
   return {
     isLoading,
     isError,
@@ -32,13 +31,13 @@ const useShareSystem = () => {
     error,
     reset,
     invalidate,
-    share: (
-      params: Systems.ShareSystemRequest,
+    unShare: (
+      params: Systems.UnShareSystemRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
         Systems.RespBasic,
         Error,
-        Systems.ShareSystemRequest
+        Systems.UnShareSystemRequest
       >
     ) => {
       return mutate(params, options);
@@ -46,4 +45,4 @@ const useShareSystem = () => {
   };
 };
 
-export default useShareSystem;
+export default useUnShareSystem;

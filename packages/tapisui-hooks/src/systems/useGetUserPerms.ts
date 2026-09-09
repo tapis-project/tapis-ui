@@ -3,6 +3,7 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { detailPolicy } from '../utils/cachePolicy';
 
 const useGetUserPerms = (
   params: Omit<Systems.GetUserPermsRequest, 'userName'>,
@@ -23,8 +24,9 @@ const useGetUserPerms = (
         accessToken?.access_token || ''
       ),
     {
+      ...detailPolicy(),
       ...options,
-      enabled: !!accessToken,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;

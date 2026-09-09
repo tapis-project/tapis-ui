@@ -4,26 +4,27 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 
-const useShareSystem = () => {
+const useUnlinkFromParent = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Systems.RespBasic, Error, Systems.ShareSystemRequest>(
-      [QueryKeys.shareSystem, basePath, jwt],
-      (params) => API.shareSystem(params, basePath, jwt)
+    useMutation<
+      Systems.RespChangeCount,
+      Error,
+      Systems.UnlinkFromParentRequest
+    >([QueryKeys.unlinkFromParent, basePath, jwt], (params) =>
+      API.unlinkFromParent(params, basePath, jwt)
     );
 
   const invalidate = () => {
-    // sharedWithUsers lives on the system record — every reader of it
+    // parentId lives on the record — every reader of it
     queryClient.invalidateQueries(QueryKeys.details);
     queryClient.invalidateQueries(QueryKeys.list);
     queryClient.invalidateQueries(QueryKeys.listWindow);
-    queryClient.invalidateQueries(QueryKeys.userPermsMap);
   };
 
-  // Return hook object with loading states and login function
   return {
     isLoading,
     isError,
@@ -32,13 +33,13 @@ const useShareSystem = () => {
     error,
     reset,
     invalidate,
-    share: (
-      params: Systems.ShareSystemRequest,
+    unlink: (
+      params: Systems.UnlinkFromParentRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Systems.RespBasic,
+        Systems.RespChangeCount,
         Error,
-        Systems.ShareSystemRequest
+        Systems.UnlinkFromParentRequest
       >
     ) => {
       return mutate(params, options);
@@ -46,4 +47,4 @@ const useShareSystem = () => {
   };
 };
 
-export default useShareSystem;
+export default useUnlinkFromParent;

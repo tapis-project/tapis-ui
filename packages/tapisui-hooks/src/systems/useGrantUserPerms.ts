@@ -11,12 +11,14 @@ const useGrantUserPerms = () => {
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespBasic, Error, Systems.GrantUserPermsRequest>(
-      [QueryKeys.createUserCredential, basePath, jwt],
+      [QueryKeys.grantUserPerms, basePath, jwt],
       (params) => API.grantUserPerms(params, basePath, jwt)
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries([QueryKeys.details]);
+    queryClient.invalidateQueries(QueryKeys.details);
+    queryClient.invalidateQueries(QueryKeys.getUserPerms);
+    queryClient.invalidateQueries(QueryKeys.userPermsMap);
   };
 
   // Return hook object with loading states and login function

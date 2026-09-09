@@ -3,6 +3,7 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { detailPolicy } from '../utils/cachePolicy';
 
 const useDetails = (
   params: Systems.GetSystemRequest,
@@ -15,8 +16,9 @@ const useDetails = (
     // which is expected behavior for not having a token
     () => API.details(params, basePath, accessToken?.access_token ?? ''),
     {
-      enabled: !!accessToken,
+      ...detailPolicy(),
       ...options,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;

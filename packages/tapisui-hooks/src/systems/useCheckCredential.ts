@@ -4,11 +4,13 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '..';
 import QueryKeys from './queryKeys';
 
+// POST /v3/systems/credential/{systemId}/user/{userName}/check — a REAL
+// connection attempt to the host (LINUX and S3 systems only), not a registry
+// lookup. Ship it disabled and call refetch() on demand: this is an expensive
+// server-side action that must never run because a component mounted.
 const useCheckCredential = (
   params: Omit<Systems.CheckUserCredentialRequest, 'userName'>,
-  options: QueryObserverOptions<Systems.RespBasic, Error> = {
-    retry: 0,
-  }
+  options: QueryObserverOptions<Systems.RespBasic, Error> = {}
 ) => {
   const { accessToken, basePath, claims } = useTapisConfig();
   const result = useQuery<Systems.RespBasic, Error>(
@@ -23,8 +25,16 @@ const useCheckCredential = (
         accessToken?.access_token || ''
       ),
     {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
       ...options,
-      enabled: !!accessToken,
+      // caller's enabled is honored, but never without a token — the old
+      // version spread options first and silently overrode enabled:false
+      enabled: !!accessToken && (options.enabled ?? true),
     }
   );
   return result;

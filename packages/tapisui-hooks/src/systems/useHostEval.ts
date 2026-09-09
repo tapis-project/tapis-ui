@@ -3,6 +3,7 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { detailPolicy } from '../utils/cachePolicy';
 
 const useHostEval = (
   params: Systems.HostEvalRequest,
@@ -13,6 +14,7 @@ const useHostEval = (
     [QueryKeys.hostEval, params, accessToken],
     () => API.hostEval(params, basePath, accessToken?.access_token ?? ''),
     {
+      ...detailPolicy(),
       ...options,
       enabled:
         (options.enabled ?? true) &&
