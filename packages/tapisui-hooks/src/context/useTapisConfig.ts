@@ -1,9 +1,38 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
 import { useQuery } from 'react-query';
 import Cookies from 'js-cookie';
 import { Authenticator } from '@tapis/tapis-typescript';
 import jwt_decode from 'jwt-decode';
 import TapisContext from './TapisContext';
+
+/**
+ * Has the JWT passed its `exp`? Tokens without an `exp` claim are treated as
+ * live — the caller has already rejected undecodable tokens by then.
+ * `now` is injectable so the boundary is testable.
+ */
+export const isJwtExpired = (
+  claims: { exp?: number },
+  now: number = Date.now()
+): boolean => {
+  if (!claims?.exp) return false;
+  return now >= claims.exp * 1000;
+};
+
+/**
+ * Does a token's tenant match the host we are pointed at? A mismatch signs
+ * the user out, so a false negative locks people out of a working session.
+ *
+ * The trailing dot matters: without it tenant "tacc" would match the host
+ * "taccdev.tapis.io", and every tenant whose id prefixes another's host would
+ * silently accept the wrong token.
+ */
+export const tenantMatchesHost = (
+  basePath: string | undefined,
+  tokenTenantId: string | undefined
+): boolean => {
+  if (!basePath || !tokenTenantId) return false;
+  return basePath.toLowerCase().includes(tokenTenantId.toLowerCase() + '.');
+};
 
 const useTapisConfig = () => {
   const { basePath, mlHubBasePath } = useContext(TapisContext);
@@ -25,12 +54,17 @@ const useTapisConfig = () => {
   const setAccessToken = async (
     resp: Authenticator.NewAccessTokenResponse | null | undefined
   ): Promise<void> => {
+    // Need to create wildcard path from current basePath
+    // basePath:   https://scoped.tapis.io, must turn into .scoped.tapis.io
+    // basePath can be undefined when VITE_TAPIS_BASE_URL is unset on localhost —
+    // don't crash auth flows over a cookie domain we can't compute.
+    const cookieDomain = basePath
+      ? basePath.replace('https://', '.').replace('http://', '.')
+      : undefined;
     if (!resp) {
       Cookies.remove('tapis-token');
       // Requires the correct domain as the cookie is set to the domain to remove
-      Cookies.remove('X-Tapis-Token', {
-        domain: basePath.replace('https://', '.').replace('http://', '.'),
-      });
+      Cookies.remove('X-Tapis-Token', { domain: cookieDomain });
       await refetch();
       return;
     }
@@ -38,35 +72,43 @@ const useTapisConfig = () => {
     const expires = new Date(resp.expires_at ?? 0);
 
     Cookies.set('tapis-token', JSON.stringify(resp), { expires });
-    // Need to create wildcard path from current basePath
-    // basePath:   https://scoped.tapis.io, must turn into .scoped.tapis.io
+    // The tenant-wide `domain` here is DELIBERATE, not an oversight: pods are
+    // served from subdomains of the tenant host and authenticate by reading
+    // this header (tapis_auth), so the cookie has to reach them. The tradeoff
+    // is that visiting any pod hands that pod a token acting as you, and that
+    // logout only clears the tenant you are currently on. Both are written up
+    // in docs/AUTH_AND_PERF_BACKLOG.md §A2 (the vector) and §A4 (multi-tenant)
+    // — read those before widening the scope or reusing this pattern.
     Cookies.set('X-Tapis-Token', resp.access_token ?? '', {
       expires,
-      domain: basePath.replace('https://', '.').replace('http://', '.'),
+      domain: cookieDomain,
       secure: true,
     });
     await refetch();
   };
-  console.debug(
-    `useTapisConfig: basePath: ${basePath}, data.access_token exists:`,
-    JSON.stringify(data?.access_token ? true : false, null, 2)
-  );
-
-  // Safely decode JWT — garbage tokens won't crash the app
-  let claims: { [key: string]: any } = {};
-  let jwtDecodeFailed = false;
-  try {
-    claims = data?.access_token ? jwt_decode(data.access_token) : {};
-  } catch (e) {
-    console.error('Failed to decode access token JWT:', e);
-    jwtDecodeFailed = true;
-  }
+  // Decoding is memoized on the token string, which matters more than it looks:
+  // ~280 modules call this hook, so an unmemoized decode ran on every render of
+  // every consumer. A CPU profile of the expanded pod overview put 806 ms in
+  // jwt-decode alone — the single largest identified cost under the hooks
+  // package, ahead of react-query (225 ms). The token changes at login and
+  // logout; the claims cannot change without it changing.
+  const { claims, jwtDecodeFailed } = useMemo((): {
+    claims: { [key: string]: any };
+    jwtDecodeFailed: boolean;
+  } => {
+    const token = data?.access_token;
+    if (!token) return { claims: {}, jwtDecodeFailed: false };
+    try {
+      // Safely decode JWT — garbage tokens won't crash the app
+      return { claims: jwt_decode(token) as any, jwtDecodeFailed: false };
+    } catch (e) {
+      console.error('Failed to decode access token JWT:', e);
+      return { claims: {}, jwtDecodeFailed: true };
+    }
+  }, [data?.access_token]);
 
   // Check if the JWT has expired based on the `exp` claim (seconds since epoch)
-  const isTokenExpired = (() => {
-    if (!claims.exp) return false;
-    return Date.now() >= claims.exp * 1000;
-  })();
+  const isTokenExpired = isJwtExpired(claims as { exp?: number });
 
   const pathTenantId = basePath
     ? basePath.replace('https://', '').replace('http://', '').split('.')[0]
@@ -118,11 +160,21 @@ const useTapisConfig = () => {
   const tokenTenantId: string | undefined =
     claims['tapis/tenant_id'] ?? undefined;
 
+  // A localhost/dev basePath can't encode a tenant in its domain. In that case the Tapis service
+  // resolves the tenant from the token claim server-side (tapisservice's local-dev path in
+  // resolve_tenant_id_for_request), so this is NOT a real mismatch — don't log the user out.
+  // This is what makes the dev-only Pods proxy (VITE_PODS_BASE_URL) work: pods calls go same-origin
+  // to localhost, and the service trusts the token's tenant.
+  const isLocalDevBasePath =
+    !!basePath &&
+    /\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|172\.17\.0\.1)(:|\/|$)/i.test(
+      basePath
+    );
+
   // Inline logic for domainsMatched
-  const domainsMatched =
-    basePath && tokenTenantId
-      ? basePath.toLowerCase().includes(tokenTenantId.toLowerCase() + '.')
-      : false;
+  const domainsMatched = isLocalDevBasePath
+    ? true
+    : tenantMatchesHost(basePath, tokenTenantId);
 
   // Use a ref to avoid re-triggering the effect when setAccessToken identity changes
   const setAccessTokenRef = useRef(setAccessToken);
