@@ -10,6 +10,16 @@
 
 1.
 
-## UI Photos:
+## UI Photos
+
+- [ ] No UI changes — skip photo requirement
+
+**Before:**
+
+<!-- drag-and-drop or paste a screenshot here -->
+
+**After:**
+
+<!-- drag-and-drop or paste a screenshot here -->
 
 ## Notes:

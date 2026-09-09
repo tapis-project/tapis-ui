@@ -1,0 +1,45 @@
+name: PR Photos Required
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches: [dev, staging, test, release-**]
+
+jobs:
+  check-photos:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Require before/after screenshots
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body ?? '';
+
+            // Skip check if the "No UI changes" box is ticked
+            if (/- \[x\] No UI changes/i.test(body)) {
+              console.log('No UI changes declared — skipping photo check.');
+              return;
+            }
+
+            const IMAGE_RE = /!\[.*?\]\(https?:\/\/\S+\)|<img\s/i;
+
+            // Split on the Before/After markers to find each section's content
+            const beforeMatch = body.match(/\*\*Before:\*\*\s*([\s\S]*?)(?=\*\*After:\*\*|$)/i);
+            const afterMatch  = body.match(/\*\*After:\*\*\s*([\s\S]*?)(?=^##|\z|$)/im);
+
+            const hasBeforeImage = beforeMatch && IMAGE_RE.test(beforeMatch[1]);
+            const hasAfterImage  = afterMatch  && IMAGE_RE.test(afterMatch[1]);
+
+            const missing = [];
+            if (!hasBeforeImage) missing.push('**Before** screenshot');
+            if (!hasAfterImage)  missing.push('**After** screenshot');
+
+            if (missing.length) {
+              core.setFailed(
+                `PR is missing required UI photos: ${missing.join(' and ')}.\n` +
+                `Add screenshots under the Before/After headings in "UI Photos", ` +
+                `or tick "No UI changes" to skip.`
+              );
+            } else {
+              console.log('Before and after screenshots found — photo check passed.');
+            }
