@@ -6,7 +6,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import JobDetail from '../JobDetail';
-import { SectionMessage } from '@tapis/tapisui-common';
+import JobsDashboard from '../_components/JobsDashboard';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -14,11 +14,7 @@ const Router: React.FC = () => {
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <div style={{ padding: '16px' }}>
-          <SectionMessage type="info">
-            Select a job from the list.
-          </SectionMessage>
-        </div>
+        <JobsDashboard />
       </Route>
 
       <Route
