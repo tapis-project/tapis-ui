@@ -48,6 +48,53 @@ type ThemeConfig = {
 
 const h = (el: React.MouseEvent) => el.currentTarget as HTMLButtonElement;
 
+// ── the primary action ────────────────────────────────────────────────────────
+//
+// Every theme here is a quiet button, which is right for a bar of eight of
+// them and wrong for the one press the page exists for. `accent` opts a
+// single button out: filled Tapis blue, white text, the same size and
+// spacing as its neighbours so the row still lines up. It ignores the theme
+// on purpose — "the primary action" should not change meaning when someone
+// switches button styles.
+//
+// Use it once per view. A bar where everything is blue is a bar where
+// nothing is.
+const ACCENT = '#1565c0';
+const ACCENT_HOVER = '#0d47a1';
+
+const ACCENT_THEME: ThemeConfig = {
+  style: () => ({
+    ...BASE,
+    padding: '0.34em 0.85em',
+    border: `1px solid ${ACCENT}`,
+    borderRadius: 4,
+    background: ACCENT,
+    color: '#fff',
+    fontWeight: 600,
+    boxShadow: '0 1px 2px rgba(21,101,192,0.35)',
+    transition: 'background 0.07s, box-shadow 0.07s, transform 0.07s',
+  }),
+  onMouseEnter: (e) => {
+    const el = h(e);
+    el.style.background = ACCENT_HOVER;
+    el.style.borderColor = ACCENT_HOVER;
+    el.style.boxShadow = '0 2px 5px rgba(21,101,192,0.45)';
+  },
+  onMouseLeave: (e) => {
+    const el = h(e);
+    el.style.background = ACCENT;
+    el.style.borderColor = ACCENT;
+    el.style.boxShadow = '0 1px 2px rgba(21,101,192,0.35)';
+    el.style.transform = 'none';
+  },
+  onMouseDown: (e) => {
+    h(e).style.transform = 'translateY(1px)';
+  },
+  onMouseUp: (e) => {
+    h(e).style.transform = 'none';
+  },
+};
+
 const THEMES: Record<ButtonThemeName, ThemeConfig> = {
   clean: {
     style: (active) => ({
@@ -579,6 +626,12 @@ export interface PodBarButtonProps {
     | 'true';
   'aria-expanded'?: boolean;
   'aria-controls'?: string;
+  /**
+   * The one press this view is for: filled blue instead of the theme's
+   * quiet outline. See ACCENT_THEME — one per view, or it stops meaning
+   * anything.
+   */
+  accent?: boolean;
   /** Merged on top of theme styles — use for split-button border-radius adjustments */
   style?: React.CSSProperties;
   prefix?: string;
@@ -596,13 +649,14 @@ const PodBarButton: React.FC<PodBarButtonProps> = ({
   'aria-haspopup': ariaHaspopup,
   'aria-expanded': ariaExpanded,
   'aria-controls': ariaControls,
+  accent = false,
   style: styleOverride,
 }) => {
   const theme = useSyncExternalStore(
     subscribePodsButtonTheme,
     getPodsButtonTheme
   );
-  const cfg = THEMES[theme];
+  const cfg = accent ? ACCENT_THEME : THEMES[theme];
   const isDisabled = disabled || loading;
 
   return (
