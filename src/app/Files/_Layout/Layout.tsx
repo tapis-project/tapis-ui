@@ -10,7 +10,7 @@ import { SystemsNav } from '../_components';
 import { Router } from '../_Router';
 import Toolbar from '../_components/Toolbar';
 import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import { FolderOpen } from '@mui/icons-material';
 import { breadcrumbsFromPathname } from '@tapis/tapisui-common';
 import { FilesProvider } from '../_components/FilesContext';
@@ -36,15 +36,34 @@ const Layout: React.FC = () => {
         </span>
       </span>
       <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <Button
-          component={Link}
-          to={filesV2Url}
-          variant="outlined"
-          size="small"
-          startIcon={<FolderOpen />}
-        >
-          File Explorer V2
-        </Button>
+        {/* Same weight as the file-operation toolbar it sits beside: an
+            outlined Button next to those icon buttons made the escape
+            hatch the loudest control in the header. */}
+        <Tooltip arrow title="Open this path in the V2 file explorer">
+          <IconButton
+            component={Link}
+            to={filesV2Url}
+            size="small"
+            aria-label="Explorer V2"
+            sx={{
+              p: '3px',
+              px: '6px',
+              gap: 0.4,
+              borderRadius: '5px',
+              color: 'rgba(0,0,0,0.62)',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.06)' },
+              '& .MuiSvgIcon-root': { fontSize: 17 },
+            }}
+          >
+            <FolderOpen />
+            <Box
+              component="span"
+              sx={{ fontSize: '0.7rem', lineHeight: 1, whiteSpace: 'nowrap' }}
+            >
+              Explorer V2
+            </Box>
+          </IconButton>
+        </Tooltip>
         {systemId && <Toolbar systemId={systemId} currentPath={currentPath} />}
       </span>
     </LayoutHeader>
