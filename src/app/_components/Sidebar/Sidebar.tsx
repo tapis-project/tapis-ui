@@ -22,7 +22,13 @@ import {
   ChatBubbleOutline,
   PersonOutline,
   HomeRounded,
+  Tune,
 } from '@mui/icons-material';
+
+// Settings panel loads on first open only — the Sidebar mounts on every page.
+const SettingsDialogLazy = React.lazy(
+  () => import('app/Settings/_components/SettingsDialog/SettingsDialog')
+);
 import { LoadingButton as Button } from '@mui/lab';
 import {
   Menu,
@@ -83,6 +89,9 @@ const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [modal, setModal] = useState<string | undefined>(undefined);
+  // Latched: once opened, keep the panel mounted so reopening skips the remount
+  // and its react-query caches survive between opens.
+  const [settingsEverOpened, setSettingsEverOpened] = useState(false);
   const [sectionOpenStates, setSectionOpenStates] = useState<{
     [key: string]: boolean;
   }>({});
@@ -910,6 +919,18 @@ const Sidebar: React.FC = () => {
           </ListItemIcon>
           <ListItemText>Manage Secrets</ListItemText>
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setSettingsEverOpened(true);
+            setModal('settings');
+          }}
+          disabled={!(claims && claims['sub'])}
+        >
+          <ListItemIcon>
+            <Tune fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Settings</ListItemText>
+        </MenuItem>
         {((extension !== undefined && extension.allowMultiTenant) ||
           extension === undefined ||
           (extension !== undefined && extension.allowMultiTenant)) && (
@@ -1285,6 +1306,17 @@ const Sidebar: React.FC = () => {
           <Button onClick={() => setModal(undefined)}>Cancel</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Mounted only after the first open, and kept mounted after that, so
+          reopening does not remount the panel or drop its query caches. */}
+      {settingsEverOpened && (
+        <React.Suspense fallback={null}>
+          <SettingsDialogLazy
+            open={modal === 'settings'}
+            onClose={() => setModal(undefined)}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 };
