@@ -183,3 +183,32 @@ export const jobGlyphStyle = makeChoiceStore<string>(
   ['classic', 'rebuilt'],
   'rebuilt'
 );
+
+/**
+ * Where the job launcher shows what the job says so far.
+ *
+ * 'nav' folds it into the section list, so the list doubles as the overview
+ * and the form keeps the width; 'pane' gives it a third column; 'off' is
+ * neither. It used to be a three-way switch in the launcher's own head line,
+ * which is a lot of chrome for a choice nobody changes twice, and the head
+ * line is the scarcest strip in that dialog.
+ */
+export type LauncherSummaryMode = 'nav' | 'pane' | 'off';
+
+export const launcherSummary = makeChoiceStore<LauncherSummaryMode>(
+  'launcher.summary',
+  ['nav', 'pane', 'off'] as const,
+  'nav'
+);
+
+/**
+ * Whether the launcher's Basics page opens with its "Using the launcher" card.
+ * Open for everyone to start with, and "Got it" is remembered: the
+ * explanation is there on the first launch and one press away on every one
+ * after.
+ */
+export const launcherIntro = makeChoiceStore<'show' | 'hidden'>(
+  'launcher.intro',
+  ['show', 'hidden'] as const,
+  'show'
+);

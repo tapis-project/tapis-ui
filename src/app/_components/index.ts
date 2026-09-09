@@ -1,5 +1,6 @@
 export { default as Sidebar } from './Sidebar';
 export { default as PreloginBanner } from './PreloginBanner';
+export { default as WaveText } from './WaveText';
 export {
   MUIStepper,
   useStepperState,

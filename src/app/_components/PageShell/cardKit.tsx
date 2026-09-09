@@ -203,7 +203,36 @@ export const UserChip: React.FC<{ user: string }> = ({ user }) => (
   />
 );
 
+/**
+ * A field's value as the record says it (`true`, `-1`, `SINGULARITY`),
+ * then, muted, what that means: the row reads as the JSON does, plus the
+ * one thing the JSON cannot say. The gloss is never a substitute for the
+ * value: a reader holding the record must find the same word in it.
+ */
+export const RecordValue: React.FC<{
+  value: React.ReactNode;
+  gloss?: React.ReactNode;
+}> = ({ value, gloss }) => (
+  <>
+    <Typography component="span" sx={{ ...MONO_SX, color: 'text.primary' }}>
+      {value}
+    </Typography>
+    {gloss && (
+      <Typography
+        component="span"
+        sx={{ fontSize: '0.7rem', color: 'text.secondary', minWidth: 0 }}
+      >
+        · {gloss}
+      </Typography>
+    )}
+  </>
+);
+
 /** one row of an inner box: small-caps label, value beside it.
+ *  The label is the house word for the record's field: the key itself
+ *  where it is a plain word (owner, enabled), a short name where it is a
+ *  compound (auth for defaultAuthnMethod), and never a word for a
+ *  different idea (editable for locked, listed for deleted).
  *  `stack` is the jobs-card convention (its Execution/Archive rows) for
  *  list values: the label sits level with the FIRST line instead of
  *  centred on the whole block, and the value stacks as a column. */
@@ -360,12 +389,11 @@ export const CardMosaic: React.FC<
   // A stretched box reports ITS stretched height, which would feed back
   // into the packing that stretched it. Its natural height is remembered
   // instead, and its own measurements ignored while it is the one growing.
-  const stretched = React.useMemo(() => {
-    if (!plan.match) return new Set<number>();
-    return new Set(
-      plan.cols.map((col) => col[col.length - 1]).filter((i) => i != null)
-    );
-  }, [plan]);
+  // Nothing stretches any more. Levelling the columns by growing each
+  // one's last box read as odd, a short box drawn tall around nothing
+  // (user, 2026-09-10); the packing still deals shortest-column-first, so
+  // the columns come out near level on their own.
+  const stretched = React.useMemo(() => new Set<number>(), []);
   shownRef.current = known ? plan.cols : undefined;
 
   const stretchedRef = React.useRef(stretched);
@@ -508,31 +536,24 @@ export const CardMosaic: React.FC<
             gap: `${MOSAIC_GAP}px`,
           }}
         >
-          {col.map((index, at) => {
-            const grows = plan.match && at === col.length - 1;
-            return (
-              <Box
-                key={index}
-                data-cell={index}
-                ref={(el: HTMLDivElement | null) => {
-                  cellRefs.current[index] = el;
-                }}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  minWidth: 0,
-                  ...(grows
-                    ? // the slack goes into the last box, and the box's own
-                      // content stays where it was — a taller frame, not
-                      // re-centred contents
-                      { flexGrow: 1, '& > *': { flex: '1 1 auto' } }
-                    : { flexGrow: 0 }),
-                }}
-              >
-                {items[index]}
-              </Box>
-            );
-          })}
+          {col.map((index) => (
+            <Box
+              key={index}
+              data-cell={index}
+              ref={(el: HTMLDivElement | null) => {
+                cellRefs.current[index] = el;
+              }}
+              // each box its own height: none grows to level the columns
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                minWidth: 0,
+                flexGrow: 0,
+              }}
+            >
+              {items[index]}
+            </Box>
+          ))}
         </Box>
       ))}
     </Box>
