@@ -19,8 +19,13 @@ const useList = (
     // which is expected behavior for not having a token
     () => API.list(params, basePath, accessToken?.access_token ?? ''),
     {
-      ...options,
       enabled: !!accessToken,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      ...options,
     }
   );
   return result;

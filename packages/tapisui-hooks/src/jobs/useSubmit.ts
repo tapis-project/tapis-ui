@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Jobs as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
@@ -7,6 +7,7 @@ import QueryKeys from './queryKeys';
 
 const useSubmit = (appId: string, appVersion: string) => {
   const { basePath, accessToken } = useTapisConfig();
+  const queryClient = useQueryClient();
   const jwt = accessToken?.access_token || '';
 
   // The useMutation react-query hook is used to call operations that make server-side changes
@@ -16,7 +17,16 @@ const useSubmit = (appId: string, appVersion: string) => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Jobs.RespSubmitJob, Error, Jobs.ReqSubmitJob>(
       [QueryKeys.submit, appId, appVersion, basePath, jwt],
-      (request: Jobs.ReqSubmitJob) => API.submit(request, basePath, jwt)
+      (request: Jobs.ReqSubmitJob) => API.submit(request, basePath, jwt),
+      {
+        onSuccess: () => {
+          // freshness doorway: the list hooks turn all automatic refetches
+          // off, so mutations must announce the change themselves
+          queryClient.invalidateQueries(QueryKeys.list);
+          queryClient.invalidateQueries(QueryKeys.listWindow);
+          queryClient.invalidateQueries(QueryKeys.details);
+        },
+      }
     );
 
   // We want this hook to automatically reset if a different appId or appVersion

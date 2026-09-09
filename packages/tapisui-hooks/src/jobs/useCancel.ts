@@ -1,4 +1,4 @@
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Jobs as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
@@ -6,6 +6,7 @@ import QueryKeys from './queryKeys';
 
 const useCancel = () => {
   const { basePath, accessToken } = useTapisConfig();
+  const queryClient = useQueryClient();
   const jwt = accessToken?.access_token || '';
 
   // The useMutation react-query hook is used to call operations that make server-side changes
@@ -23,7 +24,16 @@ const useCancel = () => {
     reset,
   } = useMutation<Jobs.RespCancelJob, Error, Jobs.CancelJobRequest>(
     [QueryKeys.cancel, basePath, jwt],
-    (jobCancelReq) => API.cancel(jobCancelReq, basePath, jwt)
+    (jobCancelReq) => API.cancel(jobCancelReq, basePath, jwt),
+    {
+      onSuccess: () => {
+        // freshness doorway: the list hooks turn all automatic refetches
+        // off, so mutations must announce the change themselves
+        queryClient.invalidateQueries(QueryKeys.list);
+        queryClient.invalidateQueries(QueryKeys.listWindow);
+        queryClient.invalidateQueries(QueryKeys.details);
+      },
+    }
   );
 
   // Return hook object with loading states and login function

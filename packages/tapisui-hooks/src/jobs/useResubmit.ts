@@ -1,4 +1,4 @@
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Jobs as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../';
@@ -6,12 +6,22 @@ import QueryKeys from './queryKeys';
 
 const useResubmit = (params: Jobs.ResubmitJobRequest) => {
   const { basePath, accessToken } = useTapisConfig();
+  const queryClient = useQueryClient();
   const jwt = accessToken?.access_token || '';
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Jobs.RespSubmitJob, Error, Jobs.ResubmitJobRequest>(
       [QueryKeys.resubmit, basePath, jwt],
-      () => API.resubmit(params, basePath, jwt)
+      () => API.resubmit(params, basePath, jwt),
+      {
+        onSuccess: () => {
+          // freshness doorway: the list hooks turn all automatic refetches
+          // off, so mutations must announce the change themselves
+          queryClient.invalidateQueries(QueryKeys.list);
+          queryClient.invalidateQueries(QueryKeys.listWindow);
+          queryClient.invalidateQueries(QueryKeys.details);
+        },
+      }
     );
 
   // // We want this hook to automatically reset if a different appId or appVersion
