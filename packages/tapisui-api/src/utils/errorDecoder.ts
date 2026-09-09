@@ -1,22 +1,59 @@
+/**
+ * errorDecoder
+ *
+ * Wraps an API call and extracts a human-readable message from the response body
+ * when the call fails.
+ *
+ * Handles two error shapes thrown by different openapi-generator SDK versions:
+ *
+ *  1. Old pattern — SDK throws the raw `Response` object directly:
+ *       error.json()  →  { message: "..." }
+ *
+ *  2. New pattern — SDK throws `ResponseError(response, genericMsg)`:
+ *       error.response.json()  →  { message: "..." }
+ *       error.message  →  "Response returned an error code"  (ignored)
+ *
+ * In both cases we parse the JSON body and surface `body.message` so callers
+ * receive the actual API error detail rather than the generic SDK wrapper string.
+ */
+
 interface DecodableError {
   json: () => Promise<{ message?: string }>;
 }
 
+interface ResponseError {
+  response: Response;
+  message: string;
+}
+
 const errorDecoder = async <T>(func: () => Promise<T>): Promise<T> => {
   try {
-    // Call the specified function and await its result
-    const result: T = await func();
-    return result;
-  } catch (error) {
-    // Check if the error has a 'json' method to handle specific API errors
-    if ((error as DecodableError).json) {
+    return await func();
+  } catch (error: unknown) {
+    // Pattern 1: error IS the Response (has .json() directly)
+    if (typeof (error as DecodableError).json === 'function') {
       const decoded = await (error as DecodableError).json();
-      const message = decoded.message || 'An unexpected error occurred';
-      throw new Error(message); // Throw the decoded error message
-    } else {
-      // Rethrow the error if it's not decodable
-      throw error;
+      throw new Error(decoded.message || 'An unexpected error occurred');
     }
+
+    // Pattern 2: ResponseError — actual body is at error.response
+    const responseError = error as ResponseError;
+    if (responseError?.response instanceof Response) {
+      try {
+        const decoded = (await responseError.response.clone().json()) as {
+          message?: string;
+        };
+        if (decoded?.message) {
+          throw new Error(decoded.message);
+        }
+      } catch (jsonErr) {
+        // If the inner throw is our new Error, propagate it
+        if (jsonErr instanceof Error && jsonErr !== error) throw jsonErr;
+      }
+      // JSON parse failed or no message field — fall through to rethrow
+    }
+
+    throw error;
   }
 };
 
