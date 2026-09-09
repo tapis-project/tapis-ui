@@ -7,7 +7,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import FileListing from '../FileListing';
-import { SectionMessage } from '@tapis/tapisui-common';
+import FilesOverview from '../_components/FilesOverview';
 
 export const backLocation = (
   systemPath: string | undefined,
@@ -22,11 +22,7 @@ const Router: React.FC = () => {
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
-          <SectionMessage type="info">
-            Select a system from the list or create a system.
-          </SectionMessage>
-        </div>
+        <FilesOverview />
       </Route>
 
       <Route
@@ -38,8 +34,12 @@ const Router: React.FC = () => {
         }: RouteComponentProps<{ systemId: string; systemPath?: string }>) => {
           return (
             <div
+              // No top or side inset: the shell's right-pane margin is the
+              // page's, the same as the overview and every Pods page. This
+              // had a margin of its own on top of that, so the explorer sat
+              // half a rem further in than the page it belongs to.
               style={{
-                margin: '.5rem',
+                paddingBottom: '16px',
                 flex: 1,
                 minHeight: 0,
                 display: 'flex',

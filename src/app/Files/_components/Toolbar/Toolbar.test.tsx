@@ -4,9 +4,8 @@ import Toolbar from './Toolbar';
 import { Files } from '@tapis/tapis-typescript';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'app/Files/_components/FilesContext';
-import { Files as Hooks } from '@tapis/tapisui-hooks';
+import { Files as Hooks, Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import RenameModal from 'app/Files/_components/Toolbar/RenameModal';
-import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@tapis/tapisui-hooks');
 jest.mock('app/Files/_components/FilesContext');
@@ -24,6 +23,11 @@ describe('Toolbar', () => {
           permission: Files.PermEnum.Modify,
         },
       },
+      isLoading: false,
+      error: null,
+    });
+    (SystemsHooks.useDetails as jest.Mock).mockReturnValue({
+      data: null,
       isLoading: false,
       error: null,
     });
@@ -52,7 +56,7 @@ describe('Toolbar', () => {
 
   it('enables the move, copy, download and delete buttons', async () => {
     (useFilesSelect as jest.Mock).mockReturnValue({
-      selectedFiles: [fileInfo, { ...fileInfo, type: 'dir' }],
+      selectedFiles: [fileInfo],
     });
 
     const { getByLabelText } = renderComponent(

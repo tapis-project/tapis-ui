@@ -42,8 +42,8 @@ describe('RenameModal', () => {
     });
 
     await waitFor(() => {
-      expect(moveMock).toBeCalledTimes(1);
-      expect(resetMock).toBeCalledTimes(1);
+      expect(moveMock).toHaveBeenCalledTimes(1);
+      expect(resetMock).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -80,8 +80,8 @@ describe('RenameModal', () => {
     });
 
     await waitFor(() => {
-      expect(moveMock).toBeCalledTimes(0);
-      expect(resetMock).toBeCalledTimes(1);
+      expect(moveMock).toHaveBeenCalledTimes(0);
+      expect(resetMock).toHaveBeenCalledTimes(1);
     });
   });
 });

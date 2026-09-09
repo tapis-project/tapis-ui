@@ -8,7 +8,6 @@ import { FileOperationStatus } from '../_components';
 import { FileExplorer } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { useLocation } from 'react-router-dom';
-import { focusManager } from 'react-query';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import { Column } from 'react-table';
@@ -45,11 +44,13 @@ const MoveCopyModal: React.FC<MoveCopyModalProps> = ({
       ? copyAsync
       : moveAsync;
 
+  // BOTH ends change: the source loses the file, the destination gains
+  // it. Invalidating by system rather than by path covers the pair —
+  // this modal browses destinations within the same system.
+  const invalidateFiles = Hooks.useInvalidateFiles();
   const onComplete = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    invalidateFiles(systemId);
+  }, [invalidateFiles, systemId]);
 
   const onNavigate = useCallback(
     (_: string | null, path: string | null) => {
