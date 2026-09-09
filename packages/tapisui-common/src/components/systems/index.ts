@@ -1,4 +1,5 @@
 export { default as SystemDetail } from './SystemDetail';
 export { default as SystemListing } from './SystemListing';
-export { default as AuthModal } from './Modals/AuthModal';
-export { default as GlobusAuthModal } from './Modals/GlobusAuthModal';
+// every system modal, so app-level detail pages can compose their own
+// settings menus instead of being stuck with SystemDetail's
+export * from './Modals';
