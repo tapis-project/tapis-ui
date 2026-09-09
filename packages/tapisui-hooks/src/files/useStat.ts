@@ -3,6 +3,7 @@ import { Files as API } from '@tapis/tapisui-api';
 import { Files } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { detailPolicy } from '../utils/cachePolicy';
 
 const useStat = (params: Files.GetStatInfoRequest) => {
   const { accessToken, basePath } = useTapisConfig();
@@ -12,6 +13,7 @@ const useStat = (params: Files.GetStatInfoRequest) => {
     // which is expected behavior for not having a token
     () => API.stat(params, basePath, accessToken?.access_token ?? ''),
     {
+      ...detailPolicy(),
       enabled: !!accessToken,
     }
   );
