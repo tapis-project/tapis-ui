@@ -6,18 +6,14 @@ import {
   Switch,
 } from 'react-router-dom';
 import SystemDetail from '../SystemDetail';
-import { SectionMessage } from '@tapis/tapisui-common';
+import SystemsOverview from '../_components/SystemsOverview';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <div style={{ margin: '1rem', flex: 1, overflow: 'auto' }}>
-          <SectionMessage type="info">
-            Select a system from the list or create a system.
-          </SectionMessage>
-        </div>
+        <SystemsOverview />
       </Route>
 
       <Route

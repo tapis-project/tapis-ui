@@ -1,5 +1,4 @@
 import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'testing/utils';
 import SystemsNav from './SystemsNav';
 import { tapisSystem } from 'fixtures/systems.fixtures';
@@ -12,8 +11,14 @@ describe('SystemsNav', () => {
   it('renders SystemNav component', () => {
     (Hooks.useList as jest.Mock).mockReturnValue({
       data: {
-        result: [tapisSystem],
+        // isPublic:true puts the system in the open group so it renders in the DOM
+        result: [{ ...tapisSystem, isPublic: true }],
       },
+      isLoading: false,
+      error: null,
+    });
+    (Hooks.useDeletedList as jest.Mock).mockReturnValue({
+      data: { result: [] },
       isLoading: false,
       error: null,
     });
