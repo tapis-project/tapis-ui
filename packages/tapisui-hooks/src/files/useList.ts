@@ -16,22 +16,31 @@ const useList = (
   params.limit = params.limit ?? 100;
 
   const result = useInfiniteQuery<Files.FileListingResponse, Error>(
-    [QueryKeys.list, params.systemId, params.path, accessToken],
-    // Default to no token. This will generate a 403 when calling the list function
-    // which is expected behavior for not having a token
+    // limit is part of the key: a limit-1 access probe and a limit-100
+    // listing of the same path must not share a cache entry
+    [QueryKeys.list, params.systemId, params.path, params.limit, accessToken],
+    // No token gives an empty string, which produces the expected 403
     ({ pageParam = params }) =>
       API.list(pageParam, basePath, accessToken?.access_token ?? ''),
     {
+      // No background refetching. Freshness after a change comes from
+      // useInvalidateFiles; callers can pass their own polling options.
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
       ...options,
-      // getNextPageParam function computes offset, with guarantee that
-      // params.limit is set to default of 100
+      // computes the next offset; params.limit is always set above
       getNextPageParam: (lastPage, allPages) =>
         tapisNextPageParam<Files.FileListingResponse>(
           lastPage,
           allPages,
           params
         ),
-      enabled: !!accessToken && options.enabled !== false,
+      // A caller's `enabled: false` must win over the token check, so this
+      // follows the spread.
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
 
