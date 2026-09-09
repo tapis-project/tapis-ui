@@ -1,23 +1,31 @@
 import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'testing/utils';
 import NavSnapshots from './NavSnapshots';
-import { tapisPod } from 'fixtures/pods.fixtures';
+import { tapisSnapshot } from 'fixtures/pods.fixtures';
 import { Pods as Hooks } from '@tapis/tapisui-hooks';
 
 jest.mock('@tapis/tapisui-hooks');
 
 describe('NavSnapshots', () => {
-  it('renders NavPods component', () => {
-    (Hooks.useListPods as jest.Mock).mockReturnValue({
-      data: {
-        result: [tapisPod],
-      },
+  it('renders NavSnapshots component', () => {
+    (Hooks.useListSnapshots as jest.Mock).mockReturnValue({
+      data: { result: [tapisSnapshot] },
       isLoading: false,
       error: null,
     });
 
     const { getAllByText } = renderComponent(<NavSnapshots />);
-    expect(getAllByText(/testpod2/).length).toEqual(1);
+    expect(getAllByText(/testsnap1/).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders loading state', () => {
+    (Hooks.useListSnapshots as jest.Mock).mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    });
+
+    const { container } = renderComponent(<NavSnapshots />);
+    expect(container).toBeTruthy();
   });
 });

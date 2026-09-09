@@ -203,17 +203,32 @@
     }
   },
   "jest": {
-    "globals": {
-      "Uint8Array": "Uint8Array"
-    },
     "preset": "ts-jest/presets/js-with-ts",
     "testEnvironment": "jest-environment-jsdom",
     "testPathIgnorePatterns": [
-      "lib"
+      "lib",
+      "/node_modules/",
+      "/packages/",
+      "/dist/"
+    ],
+    "setupFiles": [
+      "<rootDir>/src/testing/jest.setup.js"
+    ],
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-dom"
     ],
     "moduleNameMapper": {
+      "^@redux$": "<rootDir>/src/redux/index.tsx",
+      "^@redux/(.*)$": "<rootDir>/src/redux/$1",
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy"
+      ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy",
+      "^react-markdown$": "<rootDir>/__mocks__/react-markdown.js",
+      "^pixi.js$": "<rootDir>/__mocks__/pixiMock.js",
+      "^d3-force$": "<rootDir>/__mocks__/pixiMock.js",
+      "^utils/resolveBasePath$": "<rootDir>/__mocks__/utils/resolveBasePath.js",
+      "^utils/resolvePodsBasePath$": "<rootDir>/__mocks__/utils/resolvePodsBasePath.js",
+      "^utils/settingsAdmins$": "<rootDir>/__mocks__/utils/settingsAdmins.js",
+      "^@mlhub/(.*)$": "<rootDir>/__mocks__/mlhub-sdk.js"
     },
     "modulePaths": [
       "<rootDir>/src"
