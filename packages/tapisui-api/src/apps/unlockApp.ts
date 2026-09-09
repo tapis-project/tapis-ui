@@ -1,0 +1,18 @@
+import { Apps } from '@tapis/tapis-typescript';
+import { apiGenerator, errorDecoder } from '../utils';
+
+const unlockApp = (
+  params: Apps.UnlockAppRequest,
+  basePath: string,
+  jwt: string
+) => {
+  const api: Apps.ApplicationsApi = apiGenerator<Apps.ApplicationsApi>(
+    Apps,
+    Apps.ApplicationsApi,
+    basePath,
+    jwt
+  );
+  return errorDecoder<Apps.RespChangeCount>(() => api.unlockApp(params));
+};
+
+export default unlockApp;
