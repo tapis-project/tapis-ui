@@ -29,6 +29,12 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.list);
+    // the rebuilt nav renders from the WINDOW key — without this, the row
+    // flip (deleted <-> live) waits for a manual refresh
+    queryClient.invalidateQueries(Hooks.queryKeys.listWindow);
+    // the open detail page must learn too — its stale live record is what
+    // the deleted banner has to replace
+    queryClient.invalidateQueries(Hooks.queryKeys.details);
   }, [queryClient]);
 
   const { deleteSystem, isLoading, error, isSuccess, reset } =
@@ -46,8 +52,11 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
     systemId: '',
   };
 
-  const onSubmit = ({ systemId }: { systemId: string }) => {
-    deleteSystem(systemId, { onSuccess });
+  const onSubmit = ({ systemId: systemToSubmit }: { systemId: string }) => {
+    // preselected (opened from a system's page), the select is disabled and
+    // the form value stays '' — the prop is the id to act on, the same
+    // guard the undelete modal always had
+    deleteSystem(systemToSubmit ? systemToSubmit : systemId!, { onSuccess });
   };
 
   return (
