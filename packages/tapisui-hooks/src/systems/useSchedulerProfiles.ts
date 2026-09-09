@@ -3,6 +3,7 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { detailPolicy } from '../utils/cachePolicy';
 
 const useSchedulerProfiles = (
   options: QueryObserverOptions<Systems.RespSchedulerProfiles, Error> = {}
@@ -14,8 +15,9 @@ const useSchedulerProfiles = (
     // which is expected behavior for not having a token
     () => API.listSchedulerProfiles(basePath, accessToken?.access_token || ''),
     {
+      ...detailPolicy(),
       ...options,
-      enabled: !!accessToken,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;

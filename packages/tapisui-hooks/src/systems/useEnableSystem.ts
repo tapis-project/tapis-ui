@@ -12,11 +12,26 @@ const useEnableSystem = (params: Systems.EnableSystemRequest) => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespChangeCount, Error, Systems.EnableSystemRequest>(
       [QueryKeys.enableSystem, basePath, jwt],
-      (params) => API.enableSystem(params, basePath, jwt)
+      (params) => API.enableSystem(params, basePath, jwt),
+      {
+        // The response is only a count, so patch the cached record NOW —
+        // the card flips, the detail layout's spine write-through flips
+        // the nav row and landing with it — then let the refetches confirm.
+        onSuccess: (_data, params) => {
+          queryClient.setQueriesData(QueryKeys.details, (old: any) =>
+            old?.result?.id === params.systemId
+              ? { ...old, result: { ...old.result, enabled: true } }
+              : old
+          );
+          queryClient.invalidateQueries(QueryKeys.details);
+          queryClient.invalidateQueries(QueryKeys.list);
+          queryClient.invalidateQueries(QueryKeys.listWindow);
+        },
+      }
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries([QueryKeys.details]);
+    queryClient.invalidateQueries(QueryKeys.details);
   };
 
   // Return hook object with loading states and login function
@@ -37,7 +52,7 @@ const useEnableSystem = (params: Systems.EnableSystemRequest) => {
         Systems.EnableSystemRequest
       >
     ) => {
-      return mutate(params);
+      return mutate(params, options);
     },
   };
 };
