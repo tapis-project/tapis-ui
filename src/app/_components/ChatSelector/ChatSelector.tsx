@@ -28,28 +28,30 @@ const ChatSelector: React.FC = () => {
         displayEmpty
         disableUnderline
         sx={{
-          fontSize: '1rem',
-          fontWeight: 700,
+          fontSize: '0.8rem',
+          fontWeight: 600,
           color: 'primary.main',
-          bgcolor: 'primary.50',
+          bgcolor: 'rgba(25, 118, 210, 0.06)',
+          border: '1px solid rgba(25, 118, 210, 0.25)',
           borderRadius: 1,
-          px: 1,
+          px: 0.75,
           '& .MuiSelect-select': {
-            py: 0.5,
-            pr: '28px !important',
-            pl: 0.5,
+            py: 0.3,
+            pr: '24px !important',
+            pl: 0.25,
           },
           '& .MuiSelect-icon': {
             color: 'primary.main',
             right: 4,
+            fontSize: '1.1rem',
           },
           '&:hover': {
-            bgcolor: 'primary.100',
+            bgcolor: 'rgba(25, 118, 210, 0.12)',
           },
         }}
       >
         {allChats.map((chat) => (
-          <MenuItem key={chat.id} value={chat.id}>
+          <MenuItem key={chat.id} value={chat.id} sx={{ fontSize: '0.8rem' }}>
             {chat.title}
           </MenuItem>
         ))}
