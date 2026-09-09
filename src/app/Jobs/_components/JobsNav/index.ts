@@ -1,3 +1,3 @@
-import JobsNav from './JobsNav';
+import JobsNavV2 from './JobsNavV2';
 
-export default JobsNav;
+export default JobsNavV2;

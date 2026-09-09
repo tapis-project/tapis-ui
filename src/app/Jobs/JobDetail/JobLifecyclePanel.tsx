@@ -39,7 +39,7 @@ import {
   VisibilityRounded,
   WarningAmberRounded,
 } from '@mui/icons-material';
-import { jobTerminalStatuses } from '@tapis/tapisui-common';
+import { isTerminal } from '../_components/jobsData';
 import ErrorDetail from 'app/_components/ErrorDetail/ErrorDetail';
 import { explainJobStatus } from '../_components/jobMessages';
 import { reachedItsWallClock, spell } from '../_components/jobVerdict';
@@ -84,7 +84,7 @@ const JobLifecyclePanel: React.FC<{
   const hidden = job.visible === false;
   const busy = hideQ.isLoading || unhideQ.isLoading;
   const error = hideQ.error ?? unhideQ.error ?? null;
-  const over = jobTerminalStatuses.includes(job.status as never);
+  const over = isTerminal(job.status);
   const gloss = explainJobStatus(job.status);
   // live, and already at the wall clock it asked for — the record cannot
   // say this yet, because the status only moves once Tapis notices

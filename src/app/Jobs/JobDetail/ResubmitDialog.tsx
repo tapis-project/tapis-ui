@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { ReplayRounded, TuneRounded } from '@mui/icons-material';
-import { jobTerminalStatuses } from '@tapis/tapisui-common';
+import { isTerminal } from '../_components/jobsData';
 import { parseAvailableProjects } from '../_components/knownAllocations';
 import ErrorDetail from 'app/_components/ErrorDetail/ErrorDetail';
 
@@ -59,7 +59,7 @@ const ResubmitDialog: React.FC<{
           Resubmitting re-runs the definition this job was created from: same
           app, same inputs, same scheduler flags. The definition cannot be
           changed on this path.
-          {!jobTerminalStatuses.includes(job.status!) &&
+          {!isTerminal(job.status) &&
             ' This run is still going: resubmitting starts a second, independent run and does not touch this one.'}
         </Typography>
 
