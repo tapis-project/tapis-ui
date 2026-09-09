@@ -9,7 +9,6 @@ import {
   FormikCheck,
 } from '../../../ui-formik/FieldWrapperFormik';
 import { SubmitWrapper } from '../../../wrappers';
-import { focusManager } from 'react-query';
 import * as Yup from 'yup';
 
 type FileOperationProps = {
@@ -23,9 +22,13 @@ const FileOperation: React.FC<FileOperationProps> = ({
   path,
   className = '',
 }) => {
+  // a native op (chmod, chown) changes what the listing reports about a
+  // file, so the listing has to be re-read — directly, rather than by
+  // faking a window focus for every query in the app
+  const invalidateFiles = Hooks.useInvalidateFiles();
   const onSuccess = useCallback(() => {
-    focusManager.setFocused(true);
-  }, []);
+    invalidateFiles(systemId);
+  }, [invalidateFiles, systemId]);
 
   const { nativeOp, isLoading, error, isSuccess, reset } = Hooks.useNativeOp();
 

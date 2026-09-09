@@ -4,7 +4,7 @@ import { Input, InputGroup, Button } from 'reactstrap';
 import { FieldInputProps, useField } from 'formik';
 import { FormikInputProps } from '.';
 import { Files } from '@tapis/tapis-typescript';
-import { FileSelectModal } from '../../../components/files';
+import { useFileSelectModal } from '../../../components/files';
 import { InputProps } from 'reactstrap';
 import { useModal } from '../../../ui';
 import { SelectMode } from '../../../components/files/FileListing';
@@ -68,6 +68,8 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
   const { setValue } = helpers;
   const { value } = field;
   const { modal, open, close } = useModal();
+  // V1, unless an ancestor hands pickers another modal (the launcher's V2)
+  const SelectModal = useFileSelectModal();
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       if (allowSystemChange) {
@@ -113,7 +115,7 @@ export const FormikTapisFileInput: React.FC<FormikTapisFileInputProps> = ({
         <Input disabled={disabled} {...props} bsSize="sm" />
       </InputGroup>
       {modal && (
-        <FileSelectModal
+        <SelectModal
           toggle={close}
           onSelect={onSelect}
           systemId={parsedSystemId ?? systemId}

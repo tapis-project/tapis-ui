@@ -20,6 +20,11 @@ export {
   getFileIcon as getFileExplorerIcon,
   formatBytes as formatFileExplorerBytes,
 } from './FileExplorerV2';
-export { default as FileSelectModal } from './FileSelectModal';
+export {
+  default as FileSelectModal,
+  FileSelectModalProvider,
+  useFileSelectModal,
+  type FileSelectModalProps,
+} from './FileSelectModal';
 export { default as HostEvalNavigationButton } from './HostEvalNavigationButton';
 export type { HostEvalNavigationButtonProps } from './HostEvalNavigationButton';
