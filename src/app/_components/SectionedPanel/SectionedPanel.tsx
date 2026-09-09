@@ -8,6 +8,8 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
@@ -18,12 +20,22 @@ import {
 } from '@mui/icons-material';
 import {
   ACCENT,
+  HEAD_BTN_SX,
   PAGE_BG,
   PanelGroup,
   PanelSection,
   SectionBadge,
   SectionHeader,
 } from './panelKit';
+import StepPager from './StepPager';
+import {
+  PagerCountdown,
+  PagerFlashHandle,
+  WHEEL_STREAK_RESET_MS,
+  chargeOf,
+  countdownOf,
+  usePagerGlow,
+} from './pagerGlow';
 
 export type { PanelGroup, PanelSection } from './panelKit';
 
@@ -33,7 +45,8 @@ export type { PanelGroup, PanelSection } from './panelKit';
 // sections from anywhere inside, and wheeling past a section's scroll edge
 // pages into the neighbor — with nested scrollers (e.g. a bounded audit
 // list) respected: the panel only pages once the inner scroller is itself
-// out of room.
+// out of room. A guided walk (the creators) adds a pager of its own: see
+// `walk`.
 
 // Wheel paging: once every scroller under the cursor sits at its edge, this
 // much additional wheel delta counts as one flick toward the neighboring
@@ -45,67 +58,25 @@ const WHEEL_PAGE_THRESHOLD = 90;
 // would have to earn a fresh count, and then the full set again, to page twice.
 // Anything longer reads as the panel having frozen on arrival.
 const WHEEL_COOLDOWN_MS = 140;
-const GLOW_FADE_MS = 300;
 // A flick ends when the wheel goes quiet for this long. Trackpad momentum
 // keeps firing for a few hundred ms after the fingers lift, so anything
 // shorter would score one flick as several.
 const WHEEL_GESTURE_GAP_MS = 260;
-// Walk away mid-charge and the panel forgets — a flick from a minute ago is
-// not part of the intent you are expressing now.
-const WHEEL_STREAK_RESET_MS = 1400;
+// (WHEEL_STREAK_RESET_MS lives in pagerGlow: the countdown holds as long.)
 // One unbroken scroll never goes quiet, so it would otherwise score a single
 // flick and stall. Keep pushing and this much further delta counts as the next
 // one — more travel than a deliberate flick asks for, so momentum alone is
 // unlikely to spend the whole streak.
 const WHEEL_CONTINUOUS_THRESHOLD = 200;
 
-interface PagerArrowsHandle {
-  /**
-   * @param strength 0..1 charge toward the page
-   * @param remaining flicks still needed; drives the countdown caption
-   */
-  flash: (dir: 'up' | 'down', strength: number, remaining?: number) => void;
-}
-
-// The ↑↓ affordance pair owns its glow state behind an imperative handle, so
-// per-wheel-tick feedback never re-renders the panel (or the section body).
+// The plain ↑↓ pair, for every panel that is not a walk. Its glow state lives
+// behind an imperative handle (see pagerGlow), so per-wheel-tick feedback
+// never re-renders the panel (or the section body).
 const PagerArrows = React.forwardRef<
-  PagerArrowsHandle,
+  PagerFlashHandle,
   { arrowAccent: string; onStep: (delta: number) => void }
 >(({ arrowAccent, onStep }, ref) => {
-  const [glow, setGlow] = useState<{
-    dir: 'up' | 'down';
-    strength: number;
-    remaining?: number;
-  } | null>(null);
-  const timer = useRef<number | undefined>(undefined);
-  React.useImperativeHandle(
-    ref,
-    () => ({
-      flash: (dir, strength, remaining) => {
-        // quantized so a stream of wheel events with the same effective
-        // strength returns the same state object and React skips the render
-        const q = Math.round(strength * 20) / 20;
-        setGlow((prev) =>
-          prev &&
-          prev.dir === dir &&
-          prev.strength === q &&
-          prev.remaining === remaining
-            ? prev
-            : { dir, strength: q, remaining }
-        );
-        window.clearTimeout(timer.current);
-        // The countdown has to outlive a pause between flicks, or "2 more"
-        // vanishes exactly while the user is deciding whether to do it.
-        timer.current = window.setTimeout(
-          () => setGlow(null),
-          remaining ? WHEEL_STREAK_RESET_MS : GLOW_FADE_MS
-        );
-      },
-    }),
-    []
-  );
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const glow = usePagerGlow(ref);
 
   // Color lives on the glyph only, ramping with strength — no halos/scale:
   // filters repaint on every wheel tick and stutter. The one exception is the
@@ -122,14 +93,7 @@ const PagerArrows = React.forwardRef<
     };
   };
 
-  const countdown =
-    glow?.remaining && glow.remaining > 0
-      ? `${glow.remaining} more scroll${glow.remaining > 1 ? 's' : ''}`
-      : undefined;
-  // 0..1 across the streak, reused by the countdown box's glow
-  const charge = glow
-    ? Math.min(1, Math.max(0, (glow.strength - 0.35) / 0.6))
-    : 0;
+  const countdown = countdownOf(glow);
 
   return (
     <Stack
@@ -153,39 +117,12 @@ const PagerArrows = React.forwardRef<
         </IconButton>
       </Tooltip>
       {countdown ? (
-        // Charging reads as a thing that is happening: a rounded box that
-        // brightens and glows with the charge, so the countdown is noticed
-        // without the arrows having to shout.
-        <Box
-          sx={{
-            ml: 0.5,
-            px: 0.6,
-            py: 0,
-            lineHeight: 1.5,
-            borderRadius: '5px',
-            border: '1px solid',
-            borderColor: alpha(arrowAccent, 0.35 + 0.5 * charge),
-            bgcolor: alpha(arrowAccent, 0.08 + 0.12 * charge),
-            boxShadow: `0 0 ${4 + 8 * charge}px ${alpha(
-              arrowAccent,
-              0.25 + 0.45 * charge
-            )}`,
-            transition:
-              'box-shadow 160ms, background-color 160ms, border-color 160ms',
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: arrowAccent,
-              fontWeight: 600,
-              fontSize: 10,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {countdown}
-          </Typography>
-        </Box>
+        <PagerCountdown
+          text={countdown}
+          charge={chargeOf(glow)}
+          accent={arrowAccent}
+          ml={0.5}
+        />
       ) : (
         <Typography variant="caption" color="text.disabled" sx={{ pl: 0.5 }}>
           wheel / ↑↓ page sections
@@ -278,12 +215,50 @@ export interface SectionedPanelProps {
    */
   navDetailsToggle?: boolean;
   /**
+   * Whether the toggle starts on, for a panel whose nav is meant to double as
+   * the overview from the first paint. Only the FIRST visit obeys it: once
+   * someone has pressed the toggle, their answer is the one that is
+   * remembered, which is the point of a toggle.
+   */
+  navDetailsDefault?: boolean;
+  /**
+   * Bumped by a host that wants the nav's problem badges noticed: every
+   * change glows each red or amber count once, so "where are the problems"
+   * is answered by the list itself.
+   */
+  badgePulse?: number;
+  /**
    * How many separate wheel flicks at a section's edge page into the neighbour.
    * 1 (the default) is the original single-flick feel; a panel that is easy to
    * page through by accident — a long form you scroll to the bottom of — asks
    * for more, and the arrows count the flicks down as they land.
    */
   pageGestures?: number;
+  /**
+   * A guided walk (the creators): the sections are steps, taken in order.
+   *
+   * The shell's ↑↓ pair grows into the walk's pager, pinned under the nav
+   * list: ▲ Back beside a blue ▼ Continue, then the panel's view switches,
+   * the step and the skip in one row beneath. The wheel and the arrow keys
+   * page exactly as in any other panel, and charge its presses as they go.
+   */
+  walk?: {
+    /** grey "skip to …" under Continue: where it lands, and what it says */
+    skipTo?: { id: string; label: string };
+    /**
+     * The host's own switches for that row, e.g. the launcher's in-nav
+     * summary. The shell's ⓘ details toggle moves down there too, so a
+     * guided creator keeps its view switches beside its pager rather than
+     * in the head line.
+     */
+    tools?: React.ReactNode;
+    /**
+     * The host's own press for the pager's second row, instead of the
+     * default skip: the launcher's Review & submit, which also rings the
+     * button that submits.
+     */
+    action?: React.ReactNode;
+  };
 }
 
 // True when the consuming section is the one on screen AND the host is open.
@@ -309,9 +284,12 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
   footer,
   open = true,
   pageGestures = 1,
+  walk,
   aside,
   navWidth = 190,
   navDetailsToggle = true,
+  navDetailsDefault = false,
+  badgePulse = 0,
 }) => {
   const visibleGroups = groups.filter((g) => g.items.length > 0);
   const visibleSections = visibleGroups.flatMap((g) => g.items);
@@ -319,9 +297,10 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
   const detailsKey = `sectioned-nav-details:${title}`;
   const [showNavDetails, setShowNavDetails] = useState<boolean>(() => {
     try {
-      return localStorage.getItem(detailsKey) === '1';
+      const stored = localStorage.getItem(detailsKey);
+      return stored === null ? navDetailsDefault : stored === '1';
     } catch {
-      return false;
+      return navDetailsDefault;
     }
   });
   const detailsOn = navDetailsToggle ? showNavDetails : true;
@@ -339,6 +318,10 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
   // show keeps the default compact column everyone is used to.
   const effectiveNavWidth =
     detailsOn && hasDetails ? Math.max(navWidth, 250) : navWidth;
+  const theme = useTheme();
+  // The nav column is CSS-hidden below sm and a walk's pager lives in it, so
+  // the pager has to know when to come out and sit under the form instead.
+  const narrow = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Selection is instant — one section mounted at a time. selectedId may
   // point at a section not currently present; derive with a fallback instead
@@ -363,7 +346,7 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
   // their last render — which is what hidden means; anything that must keep
   // moving reads useSectionActive() and is active by definition.
   const frozenRef = useRef<Map<string, React.ReactNode>>(new Map());
-  const arrowsRef = useRef<PagerArrowsHandle>(null);
+  const arrowsRef = useRef<PagerFlashHandle>(null);
   // Where the incoming section's content pane should land: 'bottom' when the
   // user pages upward with the wheel, so the flow reads as one continuous
   // scroll; everything else arrives at the top.
@@ -397,6 +380,8 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
   const onPanelKeyDown = (e: React.KeyboardEvent) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const target = e.target as HTMLElement;
+    // keys pressed in a portaled overlay are that overlay's (see the wheel)
+    if (!e.currentTarget.contains(target)) return;
     if (
       /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) ||
       target.isContentEditable
@@ -446,6 +431,11 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
   const onContentWheel = (e: React.WheelEvent) => {
     const el = contentRef.current;
     if (!el) return;
+    // A modal or menu opened from a section lives in a portal: its events
+    // bubble up the React tree to here, but it is not inside the pane. Paging
+    // on them turned a scroll in a file browser into a page turn, which
+    // unmounted the section and closed the browser with it.
+    if (!el.contains(e.target as Node)) return;
     const now = performance.now();
     if (now < wheelCooldownUntil.current) return;
     if (nestedScrollBlocks(e.target as HTMLElement, el, e.deltaY)) {
@@ -535,6 +525,84 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
     rootRef.current?.focus({ preventScroll: true });
   }, []);
 
+  // The ⓘ switch for the nav's detail lines. In the head line normally; a
+  // walk carries it in the row under its pager instead.
+  const detailsToggle = hasDetails && navDetailsToggle && (
+    <Tooltip
+      title={
+        detailsOn
+          ? 'Hide the section descriptions in the nav'
+          : 'What does each section do? Show a line under every nav item'
+      }
+    >
+      <IconButton
+        size="small"
+        onClick={toggleNavDetails}
+        aria-label="Toggle section descriptions"
+        sx={{ color: detailsOn ? accent : 'text.disabled' }}
+      >
+        <InfoOutlined sx={{ fontSize: 16 }} />
+      </IconButton>
+    </Tooltip>
+  );
+
+  // The walk's pager, read off the same list the nav draws, so Back and
+  // Continue cannot disagree with the order on screen. It takes the plain
+  // pair's place and its handle, so the wheel and the keys charge and flash
+  // its presses. The switches ride in its second row wherever there is a nav
+  // for them to act on; under the form on a phone there is not.
+  const walkPager = () => {
+    if (!walk || !selected) return null;
+    const index = visibleSections.findIndex((s) => s.id === selected.id);
+    const previous = visibleSections[index - 1];
+    const following = visibleSections[index + 1];
+    const skip =
+      walk.skipTo &&
+      walk.skipTo.id !== selected.id &&
+      visibleSections.some((s) => s.id === walk.skipTo?.id)
+        ? walk.skipTo
+        : undefined;
+    const switches =
+      !narrow && (detailsToggle || walk.tools) ? (
+        <>
+          {detailsToggle}
+          {walk.tools}
+        </>
+      ) : undefined;
+    return (
+      <Box
+        sx={{
+          flexShrink: 0,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          px: 1.25,
+          pt: 1,
+          pb: 0.75,
+        }}
+      >
+        <StepPager
+          ref={arrowsRef}
+          stepOf={index + 1}
+          total={visibleSections.length}
+          // through step(), so a press flashes the way a key or a flick does
+          back={previous && { label: previous.label, onGo: () => step(-1) }}
+          next={following && { label: following.label, onGo: () => step(1) }}
+          skip={
+            skip && {
+              label: skip.label,
+              onGo: () => {
+                arrowsRef.current?.flash('down', 1);
+                select(skip.id);
+              },
+            }
+          }
+          tools={switches}
+          action={walk.action}
+        />
+      </Box>
+    );
+  };
+
   const navItem = (s: PanelSection) => {
     const active = selected?.id === s.id;
     return (
@@ -584,7 +652,7 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
           >
             {s.label}
           </Typography>
-          {s.badge && <SectionBadge badge={s.badge} />}
+          {s.badge && <SectionBadge badge={s.badge} pulse={badgePulse} />}
         </Box>
         {s.detail && detailsOn && (
           <Box sx={{ pl: 3, pb: 0.25, width: '100%' }}>
@@ -619,14 +687,18 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
         alignItems="center"
         spacing={1.5}
         sx={{
-          px: 2.5,
-          py: 1.25,
+          // the panel lives in a dialog: header padding is form you cannot see
+          px: 2,
+          py: 0.9,
           borderBottom: '1px solid',
           borderColor: 'divider',
+          // the same tint the nav column wears, so the chrome reads as one
+          // L around the content rather than as two unrelated strips
+          bgcolor: PAGE_BG,
           flexShrink: 0,
         }}
       >
-        <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{title}</Typography>
+        <Typography sx={{ fontSize: 15, fontWeight: 600 }}>{title}</Typography>
         <Typography
           variant="caption"
           color="text.secondary"
@@ -635,33 +707,24 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
         >
           {caption ?? ''}
         </Typography>
-        {hasDetails && navDetailsToggle && (
-          <Tooltip
-            title={
-              detailsOn
-                ? 'Hide the section descriptions in the nav'
-                : 'What does each section do? Show a line under every nav item'
-            }
-          >
-            <IconButton
-              size="small"
-              onClick={toggleNavDetails}
-              aria-label="Toggle section descriptions"
-              sx={{ color: detailsOn ? accent : 'text.disabled' }}
-            >
-              <InfoOutlined sx={{ fontSize: 16 }} />
-            </IconButton>
-          </Tooltip>
-        )}
+        {/* a walk keeps this under its pager, beside its other switches */}
+        {!walk && detailsToggle}
         {headerExtras}
         {onClose && (
-          <IconButton
-            size="small"
-            onClick={onClose}
-            aria-label={`Close ${title}`}
-          >
-            <CloseRounded fontSize="small" />
-          </IconButton>
+          <>
+            {/* the panel's own close sits apart from the host's presses */}
+            {headerExtras && (
+              <Divider orientation="vertical" flexItem sx={{ my: 0.5 }} />
+            )}
+            <IconButton
+              size="small"
+              onClick={onClose}
+              aria-label={`Close ${title}`}
+              sx={{ ...HEAD_BTN_SX, width: 28, px: 0 }}
+            >
+              <CloseRounded sx={{ fontSize: 17 }} />
+            </IconButton>
+          </>
         )}
       </Stack>
 
@@ -677,38 +740,57 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
             borderRight: '1px solid',
             borderColor: 'divider',
             bgcolor: PAGE_BG,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            py: 0.5,
+            // the LIST scrolls, not the column: whatever sits under it (the
+            // arrows, a walk's pager, the footer) stays where it was however
+            // long the list grows
+            overflow: 'hidden',
             display: { xs: 'none', sm: 'flex' },
             flexDirection: 'column',
           }}
         >
-          <Box sx={{ flex: 1 }}>
-            {visibleGroups.map((group) => (
-              <Box key={group.label} sx={{ mb: 0.5 }}>
-                <Typography
-                  sx={{
-                    fontSize: 10,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    color: 'text.disabled',
-                    px: 1.25,
-                    pt: 1,
-                    pb: 0.5,
-                  }}
-                >
-                  {group.label}
-                </Typography>
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              py: 0.5,
+            }}
+          >
+            {visibleGroups.map((group, index) => (
+              <Box
+                key={group.label || `group-${index}`}
+                sx={{ mb: 0.5, pt: group.label ? 0 : 0.5 }}
+              >
+                {/* an empty label draws no heading: a first group needs none */}
+                {group.label && (
+                  <Typography
+                    sx={{
+                      fontSize: 10,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      color: 'text.disabled',
+                      px: 1.25,
+                      pt: 1,
+                      pb: 0.5,
+                    }}
+                  >
+                    {group.label}
+                  </Typography>
+                )}
                 {group.items.map(navItem)}
               </Box>
             ))}
           </Box>
-          <PagerArrows
-            ref={arrowsRef}
-            arrowAccent={arrowAccent}
-            onStep={(d) => step(d)}
-          />
+          {walk ? (
+            !narrow && walkPager()
+          ) : (
+            <PagerArrows
+              ref={arrowsRef}
+              arrowAccent={arrowAccent}
+              onStep={(d) => step(d)}
+            />
+          )}
           {footer}
         </Box>
 
@@ -787,8 +869,8 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
                           flex: 1,
                           minHeight: 0,
                           overflowY: 'auto',
-                          px: 2.5,
-                          py: 2,
+                          px: 2,
+                          py: 1.5,
                           display: active ? 'block' : 'none',
                         }}
                       >
@@ -806,8 +888,8 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
                     flex: 1,
                     minHeight: 0,
                     overflowY: 'auto',
-                    px: 2.5,
-                    py: 2,
+                    px: 2,
+                    py: 1.5,
                   }}
                 >
                   <SectionActiveContext.Provider value={open}>
@@ -817,6 +899,8 @@ const SectionedPanel: React.FC<SectionedPanelProps> = ({
               )}
             </>
           )}
+          {/* a phone has no nav column, so the walk sits under the form */}
+          {narrow && walkPager()}
         </Box>
 
         {aside && (

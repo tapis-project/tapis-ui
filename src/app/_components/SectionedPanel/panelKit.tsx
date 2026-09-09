@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Chip, Typography } from '@mui/material';
+import { Box, Chip, Tooltip, Typography } from '@mui/material';
+import { fadeGlowSx } from 'app/_components/PageShell/glow';
 
 // Shared visual kit for SectionedPanel-based modals (Settings, Pods Admin).
 // House accent (matches .btn-primary purple in Layout.scss) — panels can
@@ -17,6 +18,30 @@ export const WELL_SX = {
   borderRadius: 1,
 } as const;
 
+/**
+ * The head line's own small presses (a panel's JSON, its close): one height,
+ * one border, one radius, so they read as a set rather than as whatever each
+ * button happened to default to.
+ */
+export const HEAD_BTN_SX = {
+  height: 28,
+  minWidth: 28,
+  px: 0.9,
+  borderRadius: '6px',
+  border: '1px solid',
+  borderColor: 'divider',
+  bgcolor: 'background.paper',
+  color: 'text.secondary',
+  textTransform: 'none',
+  fontSize: 11.5,
+  fontWeight: 600,
+  '&:hover': {
+    bgcolor: 'background.paper',
+    borderColor: 'text.disabled',
+    color: 'text.primary',
+  },
+} as const;
+
 export type SectionTone =
   | 'live'
   | 'instant'
@@ -27,6 +52,12 @@ export type SectionTone =
 export interface SectionState {
   label: string;
   tone: SectionTone;
+  /**
+   * What the label is short for. "frontera" and "3 flags" are answers to
+   * questions the chip does not ask, and a reader who has not just written
+   * them has no way to tell which question.
+   */
+  hint?: string;
 }
 
 // "Say which settings apply how": every section carries its state chip, so
@@ -68,6 +99,7 @@ export interface PanelSection {
 }
 
 export interface PanelGroup {
+  /** the small-caps heading over the group; empty draws none */
   label: string;
   items: PanelSection[];
 }
@@ -87,9 +119,18 @@ export const NavDetail: React.FC<{ children: React.ReactNode }> = ({
   </Typography>
 );
 
-// Header strip for the selected section in the content pane — same grammar
-// everywhere: icon pairs with the nav item, subtitle states the thesis, the
-// state chip says how the section applies.
+/**
+ * Header strip for the selected section in the content pane.
+ *
+ * Same grammar everywhere: icon pairs with the nav item, subtitle states the
+ * thesis, the state chip says how the section applies.
+ *
+ * The only thing in the strip that changes while you type is the state chip
+ * ("2 to fix" one keystroke, "frontera" the next), so it sits at the end of
+ * the flexible middle, where the title absorbs the change. The strip's
+ * height is fixed for the same reason: a chip arriving or leaving used to
+ * grow it, and the whole body twitched down a row.
+ */
 export const SectionHeader: React.FC<{
   icon: React.ReactNode;
   title: string;
@@ -99,8 +140,9 @@ export const SectionHeader: React.FC<{
 }> = ({ icon, title, subtitle, state, accent = ACCENT }) => (
   <Box
     sx={{
-      px: 2.5,
-      py: 1.25,
+      px: 2,
+      py: 1,
+      minHeight: 52,
       borderBottom: '1px solid',
       borderColor: 'divider',
       display: 'flex',
@@ -112,37 +154,62 @@ export const SectionHeader: React.FC<{
     <Box sx={{ color: accent, display: 'flex', alignItems: 'center' }}>
       {icon}
     </Box>
-    <Box sx={{ flex: 1, minWidth: 0 }}>
-      <Typography sx={{ fontSize: 14, fontWeight: 600, lineHeight: 1.3 }}>
-        {title}
-      </Typography>
-      {subtitle && (
+    <Box
+      sx={{
+        flex: 1,
+        minWidth: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.25,
+      }}
+    >
+      {/* the title takes the slack, so the chip is pushed to the same place
+          in every section instead of landing wherever that section's title
+          happened to end */}
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        {/* both lines truncate rather than wrap: a long subtitle used to
+            take a second line on some sections and not others, which moved
+            the strip's whole bottom edge as you walked through them */}
         <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ display: 'block', lineHeight: 1.4 }}
+          noWrap
+          sx={{ fontSize: 14, fontWeight: 600, lineHeight: 1.3 }}
         >
-          {subtitle}
+          {title}
         </Typography>
+        {subtitle && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            noWrap
+            sx={{ display: 'block', lineHeight: 1.4 }}
+          >
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+      {state && (
+        <Tooltip title={state.hint ?? ''}>
+          <Chip
+            label={state.label}
+            size="small"
+            sx={{
+              fontSize: '0.65rem',
+              height: 20,
+              flexShrink: 0,
+              // an exec system id is not a short word, and this must not be
+              // allowed to squeeze the title out of its own header
+              maxWidth: 160,
+              ...(state.tone === 'planned' && {
+                bgcolor: 'transparent',
+                border: '1px solid',
+                borderColor: 'divider',
+              }),
+              ...TONE_SX[state.tone],
+            }}
+          />
+        </Tooltip>
       )}
     </Box>
-    {state && (
-      <Chip
-        label={state.label}
-        size="small"
-        sx={{
-          fontSize: '0.65rem',
-          height: 20,
-          flexShrink: 0,
-          ...(state.tone === 'planned' && {
-            bgcolor: 'transparent',
-            border: '1px solid',
-            borderColor: 'divider',
-          }),
-          ...TONE_SX[state.tone],
-        }}
-      />
-    )}
   </Box>
 );
 
@@ -150,28 +217,48 @@ export const SectionHeader: React.FC<{
 // tone, or a quiet count. Same tone vocabulary as the header chip, sized to sit
 // at the end of a 190px row without pushing the label out. Rectangular-rounded
 // like every chip in the panel — the shell sets that radius globally.
-export const SectionBadge: React.FC<{ badge: SectionState }> = ({ badge }) => (
-  <Chip
-    label={badge.label}
-    size="small"
-    sx={{
-      ml: 'auto',
-      height: 16,
-      fontSize: '0.6rem',
-      fontWeight: badge.tone === 'blocking' ? 700 : 500,
-      flexShrink: 0,
-      maxWidth: '5.5rem',
-      '& .MuiChip-label': {
-        px: 0.6,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      },
-      ...(badge.tone === 'planned' && {
-        bgcolor: 'transparent',
-        border: '1px solid',
-        borderColor: 'divider',
-      }),
-      ...TONE_SX[badge.tone],
-    }}
-  />
-);
+//
+// `pulse` is a host's "show me where the problems are": every new value glows
+// each red or amber badge once, a slow swell, so the list itself answers the
+// question. Quiet badges (counts, ids) never glow.
+export const SectionBadge: React.FC<{
+  badge: SectionState;
+  pulse?: number;
+}> = ({ badge, pulse = 0 }) => {
+  const ring =
+    pulse > 0 && badge.tone === 'blocking'
+      ? '#b3261e'
+      : pulse > 0 && badge.tone === 'pending'
+      ? '#c89a00'
+      : undefined;
+  return (
+    <Chip
+      // a new key per request restarts the animation
+      key={ring ? `pulse-${pulse}` : 'still'}
+      data-pulse={ring ? pulse : undefined}
+      label={badge.label}
+      size="small"
+      sx={{
+        ml: 'auto',
+        height: 16,
+        fontSize: '0.6rem',
+        fontWeight: badge.tone === 'blocking' ? 700 : 500,
+        flexShrink: 0,
+        maxWidth: '5.5rem',
+        '& .MuiChip-label': {
+          px: 0.6,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        ...(badge.tone === 'planned' && {
+          bgcolor: 'transparent',
+          border: '1px solid',
+          borderColor: 'divider',
+        }),
+        ...TONE_SX[badge.tone],
+        // the new key per pulse is what replays it (see fadeGlowSx)
+        ...(ring && fadeGlowSx(ring, 'fadeGlow', 3)),
+      }}
+    />
+  );
+};

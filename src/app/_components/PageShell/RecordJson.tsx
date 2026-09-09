@@ -12,9 +12,13 @@
  * on two pages and instead of it on a third. The record is a second
  * subject, so it gets a second card — and reading it never costs you the
  * page you were on.
+ *
+ * The card folds to its top bar (a press on the bar, or on the title), and
+ * "raw JSON" swaps the tree for the JSON text itself, quotes and all, for
+ * reading or selecting as JSON. "copy JSON" always copies the text.
  */
 import React, { useMemo, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import { KeyboardArrowDownRounded } from '@mui/icons-material';
 import {
   MICRO_BTN_SX,
@@ -35,6 +39,9 @@ const MONO = {
   fontSize: '0.72rem',
   lineHeight: 1.6,
 } as const;
+
+/** a micro press that is switched on */
+const PRESSED = { color: 'text.primary', bgcolor: 'rgba(0,0,0,0.05)' } as const;
 
 const isObj = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -109,6 +116,93 @@ const Leaf: React.FC<{ value: unknown }> = ({ value }) => {
   );
 };
 
+/** a string (with the colon after it when it is a key), a literal, a number */
+const JSON_TOKEN =
+  /("(?:\\.|[^"\\])*")(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+
+/**
+ * The JSON text itself, in the tree's colours. What is on screen is exactly
+ * what selects and copies: keys quoted, braces, commas and all.
+ */
+const JsonText: React.FC<{ text: string }> = ({ text }) => {
+  const parts: Array<React.ReactNode> = [];
+  // a fresh regex per render: a /g regex carries its position between runs
+  const token = new RegExp(JSON_TOKEN);
+  let last = 0;
+  let key = 0;
+  for (let match = token.exec(text); match; match = token.exec(text)) {
+    const [whole, string, colon] = match;
+    if (match.index > last) {
+      parts.push(text.slice(last, match.index));
+    }
+    let color: string = TYPE_COLOR.number;
+    if (string) {
+      color = colon ? KEY_COLOR : TYPE_COLOR.string;
+    } else if (whole === 'null') {
+      color = 'text.disabled';
+    } else if (whole === 'true' || whole === 'false') {
+      color = TYPE_COLOR.boolean;
+    }
+    parts.push(
+      <Box component="span" key={key++} sx={{ color }}>
+        {string ?? whole}
+      </Box>
+    );
+    if (colon) {
+      parts.push(colon);
+    }
+    last = match.index + whole.length;
+  }
+  if (last < text.length) {
+    parts.push(text.slice(last));
+  }
+  return (
+    <Box
+      component="pre"
+      sx={{
+        ...MONO,
+        m: 0,
+        color: 'text.secondary',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+      }}
+    >
+      {parts}
+    </Box>
+  );
+};
+
+/**
+ * How far down the tree opens itself.
+ *
+ * It used to be the record's own fields only, and only when there were eight
+ * or fewer of them, which meant reading one scheduler option cost two presses
+ * before the first character of it was on screen. Three levels reaches the
+ * inside of a list of objects (record -> parameterSet -> appArgs -> the arg),
+ * which is where the answer usually is. The row cap is what keeps a 300-entry
+ * array from unrolling: it stays shut, still saying how much is in it.
+ */
+const OPEN_DEPTH = 3;
+const OPEN_ROWS = 40;
+
+/**
+ * The depth the whole tree is currently set to, from the collapse menu.
+ *
+ * A node still owns whether IT is open — every branch is its own press. This
+ * is only the answer it starts from, and choosing a new one re-keys the tree
+ * so every node takes the new default. Infinity means "open it all", and is
+ * the one case that ignores the row cap, because it was asked for.
+ */
+const OpenToContext = React.createContext(OPEN_DEPTH);
+
+export const DEPTH_CHOICES: Array<{ label: string; value: number }> = [
+  { label: 'collapse all', value: 0 },
+  { label: 'top level', value: 1 },
+  { label: '2 levels', value: 2 },
+  { label: '3 levels', value: OPEN_DEPTH },
+  { label: 'expand all', value: Infinity },
+];
+
 /**
  * One key and its value. A branch is a press: shut, it says what is inside
  * it so a closed row is still an answer ("4 items", "12 keys").
@@ -118,11 +212,12 @@ const Node: React.FC<{ name: string; value: unknown; depth: number }> = ({
   value,
   depth,
 }) => {
+  const openTo = React.useContext(OpenToContext);
   const branch = isBranch(value);
   const rows = branch ? entriesOf(value) : [];
-  // open the small and shallow: a record's own fields, not every nested
-  // parameterSet three levels down
-  const [open, setOpen] = useState(depth < 1 && rows.length <= 8);
+  const [open, setOpen] = useState(
+    depth < openTo && (openTo === Infinity || rows.length <= OPEN_ROWS)
+  );
 
   const summary = Array.isArray(value)
     ? `[ ${rows.length} ]`
@@ -202,9 +297,36 @@ const RecordJson: React.FC<{
   json: unknown;
   /** the press that closes it, mirroring the head line's JSON toggle */
   onClose?: () => void;
-}> = ({ title, json, onClose }) => {
-  const [showEmpty, setShowEmpty] = useState(false);
+  /**
+   * Start with the unset fields showing. A server record is mostly nulls and
+   * hiding them is the whole point; a request body a page promises to send
+   * verbatim is the other case, and there a hidden field is a lie.
+   */
+  defaultEmpty?: boolean;
+  /**
+   * How far the tree opens itself to start with. Three levels reads into a
+   * record's lists without a press; a request body shown in full next to
+   * its Submit can start at two and be read at a glance.
+   */
+  defaultDepth?: number;
+}> = ({
+  title,
+  json,
+  onClose,
+  defaultEmpty = false,
+  defaultDepth = OPEN_DEPTH,
+}) => {
+  const [showEmpty, setShowEmpty] = useState(defaultEmpty);
   const [copied, setCopied] = useState(false);
+  const [openTo, setOpenTo] = useState(defaultDepth);
+  const [depthMenu, setDepthMenu] = useState<HTMLElement | null>(null);
+  // choosing a depth re-keys the tree, so every node takes the new default
+  // while a branch you opened by hand afterwards still holds its own answer
+  const [depthNonce, setDepthNonce] = useState(0);
+  // folded to its top bar, by a press on the bar or its title
+  const [folded, setFolded] = useState(false);
+  // the tree is the easier read; the text is the JSON itself
+  const [asText, setAsText] = useState(false);
   const shown = useMemo(() => {
     const cleaned = plain(json);
     return showEmpty ? cleaned : prune(cleaned);
@@ -224,41 +346,142 @@ const RecordJson: React.FC<{
       }}
     >
       <Box
+        // The whole bar folds the card, bar the presses on it. The depth
+        // menu is a portal but still a React child here, so a pick in it
+        // bubbles up too: only clicks inside the bar's own box count.
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          if (
+            !event.currentTarget.contains(target) ||
+            target.closest('button')
+          ) {
+            return;
+          }
+          setFolded((f) => !f);
+        }}
         sx={{
           display: 'flex',
           alignItems: 'center',
           gap: 0.75,
           flexWrap: 'wrap',
-          mb: 1,
+          mb: folded ? 0 : 1,
+          cursor: 'pointer',
         }}
       >
-        <Typography sx={{ fontSize: '0.85rem', fontWeight: 700 }}>
-          {title}
-        </Typography>
+        <Box
+          component="button"
+          type="button"
+          aria-expanded={!folded}
+          onClick={() => setFolded((f) => !f)}
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.25,
+            ml: -0.5,
+            p: 0,
+            border: 'none',
+            background: 'none',
+            font: 'inherit',
+            color: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
+          <KeyboardArrowDownRounded
+            sx={{
+              fontSize: 18,
+              color: 'text.secondary',
+              transform: folded ? 'rotate(-90deg)' : 'none',
+              transition: 'transform 120ms',
+            }}
+          />
+          <Typography
+            component="span"
+            sx={{ fontSize: '0.85rem', fontWeight: 700 }}
+          >
+            {title}
+          </Typography>
+        </Box>
         <Typography sx={{ ...LABEL_SX, pt: 0 }}>
           {rows.length} fields
         </Typography>
         <Box sx={{ flex: 1 }} />
-        <QuietTip
-          title={
-            showEmpty
-              ? 'Hide the fields this record leaves unset'
-              : 'Show every field, including the ones left unset'
-          }
-        >
-          <Button
-            size="small"
-            onClick={() => setShowEmpty((s) => !s)}
-            sx={{
-              ...MICRO_BTN_SX,
-              ...(showEmpty
-                ? { color: 'text.primary', bgcolor: 'rgba(0,0,0,0.05)' }
-                : {}),
-            }}
-          >
-            empty fields
-          </Button>
-        </QuietTip>
+        {!folded && (
+          <>
+            <QuietTip
+              title={
+                showEmpty
+                  ? 'Hide the fields this record leaves unset'
+                  : 'Show every field, including the ones left unset'
+              }
+            >
+              <Button
+                size="small"
+                onClick={() => setShowEmpty((s) => !s)}
+                sx={{ ...MICRO_BTN_SX, ...(showEmpty ? PRESSED : {}) }}
+              >
+                empty fields
+              </Button>
+            </QuietTip>
+            <QuietTip
+              title={
+                asText
+                  ? 'Back to the tree'
+                  : 'Show it as JSON text, quotes and all'
+              }
+            >
+              <Button
+                size="small"
+                aria-pressed={asText}
+                onClick={() => setAsText((t) => !t)}
+                sx={{ ...MICRO_BTN_SX, ...(asText ? PRESSED : {}) }}
+              >
+                raw JSON
+              </Button>
+            </QuietTip>
+            {!asText && (
+              <>
+                <QuietTip title="How far the tree opens itself">
+                  <Button
+                    size="small"
+                    onClick={(event) => setDepthMenu(event.currentTarget)}
+                    endIcon={
+                      <KeyboardArrowDownRounded
+                        sx={{ fontSize: 14, ml: -0.4 }}
+                      />
+                    }
+                    sx={MICRO_BTN_SX}
+                  >
+                    {DEPTH_CHOICES.find((choice) => choice.value === openTo)
+                      ?.label ?? 'collapse'}
+                  </Button>
+                </QuietTip>
+                <Menu
+                  anchorEl={depthMenu}
+                  open={!!depthMenu}
+                  onClose={() => setDepthMenu(null)}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                  {DEPTH_CHOICES.map((choice) => (
+                    <MenuItem
+                      key={choice.label}
+                      dense
+                      selected={choice.value === openTo}
+                      onClick={() => {
+                        setOpenTo(choice.value);
+                        setDepthNonce((nonce) => nonce + 1);
+                        setDepthMenu(null);
+                      }}
+                      sx={{ fontSize: '0.75rem' }}
+                    >
+                      {choice.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
+            )}
+          </>
+        )}
         <Button
           size="small"
           onClick={() => {
@@ -271,7 +494,7 @@ const RecordJson: React.FC<{
             ...(copied ? { color: '#1b7f3b', borderColor: '#1b7f3b55' } : {}),
           }}
         >
-          {copied ? 'copied' : 'copy'}
+          {copied ? 'copied' : 'copy JSON'}
         </Button>
         {onClose && (
           <Button size="small" onClick={onClose} sx={MICRO_BTN_SX}>
@@ -280,27 +503,37 @@ const RecordJson: React.FC<{
         )}
       </Box>
 
-      <Box
-        sx={{
-          bgcolor: SECTION_BG,
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 1,
-          p: 1,
-          maxHeight: '60vh',
-          overflow: 'auto',
-          minWidth: 0,
-        }}
-      >
-        {rows.length === 0 ? (
-          <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>
-            Nothing set on this record — press <b>empty fields</b> to see the
-            ones it leaves unset.
-          </Typography>
-        ) : (
-          rows.map(([k, v]) => <Node key={k} name={k} value={v} depth={0} />)
-        )}
-      </Box>
+      {!folded && (
+        <Box
+          sx={{
+            bgcolor: SECTION_BG,
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 1,
+            p: 1,
+            maxHeight: '60vh',
+            overflow: 'auto',
+            minWidth: 0,
+          }}
+        >
+          {rows.length === 0 ? (
+            <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>
+              Nothing set on this record — press <b>empty fields</b> to see the
+              ones it leaves unset.
+            </Typography>
+          ) : asText ? (
+            <JsonText text={text} />
+          ) : (
+            <OpenToContext.Provider value={openTo}>
+              <React.Fragment key={depthNonce}>
+                {rows.map(([k, v]) => (
+                  <Node key={k} name={k} value={v} depth={0} />
+                ))}
+              </React.Fragment>
+            </OpenToContext.Provider>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
