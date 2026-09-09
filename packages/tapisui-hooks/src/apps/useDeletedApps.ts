@@ -1,22 +1,22 @@
 import { useQuery, QueryObserverOptions } from 'react-query';
-import { Apps as API } from '@tapis/tapisui-api';
 import { Apps } from '@tapis/tapis-typescript';
-import { useTapisConfig } from '../';
+import { Apps as API } from '@tapis/tapisui-api';
+import { useTapisConfig } from '../context';
 import QueryKeys from './queryKeys';
 
-export const defaultParams: Apps.GetAppsRequest = {
-  select: 'jobAttributes,version',
-};
-
-const useList = (
-  params: Apps.GetAppsRequest = defaultParams,
+// Soft-deleted apps, which the ordinary list cannot see. Mirrors
+// Systems.useDeletedList — the door that makes undelete reachable at all.
+const useDeletedApps = (
   options: QueryObserverOptions<Apps.RespApps, Error> = {}
 ) => {
   const { accessToken, basePath } = useTapisConfig();
-  const result = useQuery<Apps.RespApps, Error>(
-    [QueryKeys.list, params, accessToken],
-    // Default to no token. This will generate a 403 when calling the list function
-    // which is expected behavior for not having a token
+  const params: Apps.GetAppsRequest = {
+    search: 'deleted.eq.true',
+    showDeleted: true,
+    select: 'allAttributes',
+  };
+  return useQuery<Apps.RespApps, Error>(
+    [QueryKeys.deletedList, accessToken],
     () => API.list(params, basePath, accessToken?.access_token ?? ''),
     {
       enabled: !!accessToken,
@@ -28,7 +28,6 @@ const useList = (
       ...options,
     }
   );
-  return result;
 };
 
-export default useList;
+export default useDeletedApps;
