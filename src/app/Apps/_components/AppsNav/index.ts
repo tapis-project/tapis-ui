@@ -1,2 +1,3 @@
-import AppsNav from './AppsNav';
-export default AppsNav;
+import AppsNavV2 from './AppsNavV2';
+
+export default AppsNavV2;
