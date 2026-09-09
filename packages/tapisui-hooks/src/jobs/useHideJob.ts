@@ -1,4 +1,4 @@
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Jobs } from '@tapis/tapis-typescript';
 import { Jobs as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
@@ -10,6 +10,7 @@ type HideJobHookParams = {
 
 const useHideJob = () => {
   const { basePath, accessToken } = useTapisConfig();
+  const queryClient = useQueryClient();
   const jwt = accessToken?.access_token || '';
 
   // The useMutation react-query hook is used to call operations that make server-side changes
@@ -19,7 +20,18 @@ const useHideJob = () => {
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Jobs.RespHideJob, Error, HideJobHookParams>(
       [QueryKeys.hideJob, basePath, jwt],
-      ({ jobUuid }) => API.hideJob(jobUuid, basePath, jwt)
+      ({ jobUuid }) => API.hideJob(jobUuid, basePath, jwt),
+      {
+        onSuccess: () => {
+          // hiding is a LISTING act — the whole point is that the run stops
+          // appearing — and the list hooks turn every automatic refetch off,
+          // so without this the job you just hid sat in the nav and the
+          // dashboard until a reload, which is what "it does nothing" was
+          queryClient.invalidateQueries(QueryKeys.list);
+          queryClient.invalidateQueries(QueryKeys.listWindow);
+          queryClient.invalidateQueries(QueryKeys.details);
+        },
+      }
     );
 
   // Return hook object with loading states and login function

@@ -3,6 +3,7 @@ import { Jobs as API } from '@tapis/tapisui-api';
 import { Jobs } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { detailPolicy } from '../utils/cachePolicy';
 
 const useGetJobOutputList = (
   params: Jobs.GetJobOutputListRequest,
@@ -14,8 +15,9 @@ const useGetJobOutputList = (
     () =>
       API.getJobOutputList(params, basePath, accessToken?.access_token ?? ''),
     {
+      ...detailPolicy(),
       ...options,
-      enabled: !!accessToken,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;
