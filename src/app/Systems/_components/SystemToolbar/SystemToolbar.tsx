@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Icon } from '@tapis/tapisui-common';
 import styles from './SystemToolbar.module.scss';
 import { useLocation } from 'react-router-dom';
-import CreateSystemModal from './CreateSystemModal';
+import NewSystemDialog from './NewSystemDialog';
 import DeleteSystemModal from './DeleteSystemModal';
 import UndeleteSystemModal from './UndeleteSystemModal';
 import { Button } from '@mui/material';
@@ -63,7 +63,7 @@ const SystemToolbar: React.FC = () => {
             onClick={() => setModal('createsystem')}
             aria-label="createSystem"
           />
-          <CreateSystemModal toggle={toggle} open={modal === 'createsystem'} />
+          <NewSystemDialog toggle={toggle} open={modal === 'createsystem'} />
         </div>
       )}
     </div>

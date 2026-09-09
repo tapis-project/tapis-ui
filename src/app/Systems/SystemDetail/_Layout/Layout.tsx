@@ -296,7 +296,7 @@ const Layout: React.FC<{ systemId: string }> = ({ systemId }) => {
         )}
         {system && showJSON && (
           <RecordJson
-            title="System record"
+            title="System Record"
             json={system}
             onClose={() => setShowJSON(false)}
           />
