@@ -1,18 +1,39 @@
+import renderComponent from 'testing/utils';
 import PermissionsModal from './PermissionsModal';
-import { Files as Hooks } from '@tapis/tapisui-hooks';
+import { Files as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { useFilesSelect } from 'app/Files/_components/FilesContext';
-import { FileStat, FileOperation } from '@tapis/tapisui-common';
+import {
+  FileStat,
+  FileOperation,
+  GenericModal,
+  QueryWrapper,
+  Tabs,
+} from '@tapis/tapisui-common';
 import { Files } from '@tapis/tapis-typescript';
 
 jest.mock('@tapis/tapisui-hooks');
 jest.mock('@tapis/tapisui-common');
 jest.mock('app/Files/_components/FilesContext');
 
-const { renderComponent } = jest.requireActual('@tapis/tapisui-common');
-
 describe('Permissions Modal', () => {
   it('submits with valid inputs', async () => {
+    // Make container components render their children so inner mocks get called
+    (GenericModal as jest.Mock).mockImplementation(({ body }: any) => (
+      <>{body}</>
+    ));
+    (QueryWrapper as jest.Mock).mockImplementation(({ children }: any) => (
+      <>{children}</>
+    ));
+    (Tabs as jest.Mock).mockImplementation(({ tabs }: any) => (
+      <>{Object.values(tabs)}</>
+    ));
+    (FileStat as jest.Mock).mockReturnValue(<div data-testid="file-stat" />);
+    (FileOperation as jest.Mock).mockReturnValue(<div data-testid="file-op" />);
+
+    (useTapisConfig as jest.Mock).mockReturnValue({
+      claims: { 'tapis/username': 'testuser' },
+    });
     (useFilesSelect as jest.Mock).mockReturnValue({
       selectedFiles: [fileInfo],
     });
@@ -25,8 +46,6 @@ describe('Permissions Modal', () => {
       isLoading: false,
       error: null,
     });
-    (FileStat as jest.Mock).mockReturnValue(<div></div>);
-    (FileOperation as jest.Mock).mockReturnValue(<div></div>);
 
     renderComponent(
       <PermissionsModal toggle={() => {}} systemId={'mockSystem'} path={'/'} />

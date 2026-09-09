@@ -6,7 +6,6 @@ import { ToolbarModalProps } from '../Toolbar';
 import { Form, Formik } from 'formik';
 import { FormikInput } from '@tapis/tapisui-common';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 import * as Yup from 'yup';
 
@@ -15,11 +14,13 @@ const CreateDirModal: React.FC<ToolbarModalProps> = ({
   systemId,
   path,
 }) => {
+  // refresh the listing this directory just appeared in — a targeted
+  // invalidation, where this used to fake a window focus and re-run every
+  // focus-refetching query in the app
+  const invalidateFiles = Hooks.useInvalidateFiles();
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    invalidateFiles(systemId);
+  }, [invalidateFiles, systemId]);
 
   const { mkdir, isLoading, error, isSuccess, reset } = Hooks.useMkdir();
 

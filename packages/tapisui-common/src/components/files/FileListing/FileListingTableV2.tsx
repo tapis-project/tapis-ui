@@ -722,7 +722,11 @@ const FileRow: React.FC<RowProps> = React.memo(
           event.preventDefault();
           // a directory has a page of its own, so it can have a tab of its
           // own; a file's contents live behind a one-use link and cannot
-          window.open(`/#${location}/${file.name ?? ''}`, '_blank', 'noopener');
+          window.open(
+            `/#${location}/${encodeURIComponent(file.name ?? '')}`,
+            '_blank',
+            'noopener'
+          );
         }}
       >
         <td className="tfl-mark">
@@ -971,7 +975,9 @@ const FileListingTableV2: React.FC<FileListingTableV2Props> = ({
         return;
       }
       if (onNavigate) onNavigate(file);
-      else if (location) history.push(`${location}/${file.name ?? ''}`);
+      // encoded to match the breadcrumbs — see the NavLink in FileListing
+      else if (location)
+        history.push(`${location}/${encodeURIComponent(file.name ?? '')}`);
     },
     [onNavigate, onView, location, history]
   );
