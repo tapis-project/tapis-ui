@@ -3,6 +3,7 @@ import { Tenants as API } from '@tapis/tapisui-api';
 import { Tenants } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { noBackgroundRefetch } from '../utils/cachePolicy';
 
 export const defaultParams: Tenants.ListTenantsRequest = {};
 
@@ -17,8 +18,10 @@ const useList = (
     // which is expected behavior for not having a token
     () => API.list(params, basePath, accessToken?.access_token || ''),
     {
+      ...noBackgroundRefetch,
+      refetchOnMount: false,
       ...options,
-      enabled: !!accessToken,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;
