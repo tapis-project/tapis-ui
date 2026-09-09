@@ -5,12 +5,13 @@ import { Files as Hooks, utils } from '@tapis/tapisui-hooks';
 import { fileInfo } from 'fixtures/files.fixtures';
 import { Files } from '@tapis/tapis-typescript';
 import { useFilesSelect } from 'app/Files/_components/FilesContext';
-import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@tapis/tapisui-hooks');
 jest.mock('app/Files/_components/FilesContext');
 
 describe('MoveCopyModal', () => {
+  beforeEach(() => jest.clearAllMocks());
+
   it('performs copy operations', async () => {
     (Hooks.useList as jest.Mock).mockReturnValue({
       concatenatedResults: [{ ...fileInfo, type: 'dir' }],
@@ -108,7 +109,7 @@ describe('MoveCopyModal', () => {
       fireEvent.click(button);
     });
 
-    expect((utils.useMutations as jest.Mock).mock.calls[0][0].fn).toEqual(
+    expect((utils.useMutations as jest.Mock).mock.calls[0][0].fn).toBe(
       mockMoveAsync
     );
     expect(mockRun.mock.calls[0][0][0].path).toEqual('/file1.txt');

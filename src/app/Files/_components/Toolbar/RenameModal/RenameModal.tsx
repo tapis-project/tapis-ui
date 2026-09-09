@@ -6,7 +6,6 @@ import { ToolbarModalProps } from '../Toolbar';
 import { Form, Formik } from 'formik';
 import { FormikInput } from '@tapis/tapisui-common';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { focusManager } from 'react-query';
 import { useEffect } from 'react';
 import { useFilesSelect } from '../../FilesContext';
 import * as Yup from 'yup';
@@ -20,12 +19,13 @@ const RenameModal: React.FC<ToolbarModalProps> = ({
   const [inputName, setInputName] = useState<string>();
   const file = selectedFiles ? selectedFiles[0] : undefined;
 
+  // the renamed file is a different file as far as the selection is
+  // concerned, and the listing that held it needs re-reading
+  const invalidateFiles = Hooks.useInvalidateFiles();
   const onSuccess = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
     clear();
-    focusManager.setFocused(true);
-  }, [clear]);
+    invalidateFiles(systemId);
+  }, [clear, invalidateFiles, systemId]);
 
   const { move, isLoading, error, isSuccess, reset } = Hooks.useMove();
 

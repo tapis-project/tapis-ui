@@ -82,7 +82,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const { pathname } = useLocation();
 
   const { download } = FilesHooks.useDownload();
-  const { add } = useNotifications();
+  const { addNotification: add } = useNotifications();
 
   const {
     data,
@@ -147,19 +147,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
       if (isZip) {
         params.zip = true;
         params.destination = `${params.destination}.zip`;
-        add({ icon: 'data-files', message: 'Preparing download' });
+        add('Preparing download', 'Preparing download');
         params.onStart = () => {
-          add({ icon: 'data-files', message: 'Starting download' });
+          add('Starting download', 'Starting download');
         };
       }
       download(params, {
         onError: isZip
           ? () => {
-              add({
-                icon: 'data-files',
-                status: 'ERROR',
-                message: 'Download failed',
-              });
+              add('Download failed', 'Download failed', 'error');
             }
           : undefined,
       });

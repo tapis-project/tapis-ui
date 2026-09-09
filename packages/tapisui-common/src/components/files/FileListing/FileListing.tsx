@@ -67,7 +67,14 @@ const FileListingDir: React.FC<FileListingDirProps> = ({
 }) => {
   if (location) {
     return (
-      <NavLink to={`${location}/${file.name ?? ''}`} className={styles.dir}>
+      <NavLink
+        // encoded, because the rest of the URL is: the breadcrumbs build
+        // these routes with encodeURIComponent, and a row that appended the
+        // raw name gave the same directory two different spellings, only one
+        // of which survived the round trip back out of the router.
+        to={`${location}/${encodeURIComponent(file.name ?? '')}`}
+        className={styles.dir}
+      >
         {file.name}/
       </NavLink>
     );
@@ -284,6 +291,12 @@ interface FileListingProps {
   /** `single` for a picker — see FileListingTableV2 */
   openOn?: 'single' | 'double';
   /**
+   * What opening a FILE does, instead of showing it in the viewer. A
+   * picker hands in its own choose: a preview is the one thing a click in
+   * a picker should not open.
+   */
+  onOpenFile?: (file: Files.FileInfo) => void;
+  /**
    * Whether dropping files here uploads them.
    *
    * False in a picker: you are choosing a destination for something that
@@ -329,6 +342,7 @@ const FileListing: React.FC<FileListingProps> = ({
   selectedFiles = [],
   selectMode,
   openOn,
+  onOpenFile,
   dropToUpload = true,
   onBack,
   onUp,
@@ -717,7 +731,7 @@ const FileListing: React.FC<FileListingProps> = ({
             location={location}
             openOn={openOn}
             onNavigate={onNavigate}
-            onView={setViewing}
+            onView={onOpenFile ?? setViewing}
             viewingPath={viewing?.path}
             onOrderChange={setOrder}
             onBack={onBack}

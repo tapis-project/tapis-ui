@@ -1,3 +1,3 @@
-import SystemsNav from './SystemsNav';
+import SystemsNavV2 from './SystemsNavV2';
 
-export default SystemsNav;
+export default SystemsNavV2;

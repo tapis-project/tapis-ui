@@ -371,8 +371,7 @@ const FilesErrorPanel: React.FC<{
                 {explanation.method
                   ? ` using ${readable(explanation.method)}`
                   : ''}
-                . The host may be down or refusing the key — nothing here is
-                wrong with your files.
+                . The host may be down or refusing the key.
               </>
             )}
           </Typography>
@@ -471,7 +470,7 @@ const FilesErrorPanel: React.FC<{
                 href={systemPage}
                 sx={houseBtnSx}
               >
-                {credentials ? 'Set up creds' : 'Check creds'}
+                {credentials ? 'Set up credentials' : 'Check credentials'}
               </Button>
             )}
             <Button
