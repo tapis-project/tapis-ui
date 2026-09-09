@@ -121,6 +121,10 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
             systemId={currentSystem}
             path={currentPath ?? '/'}
             onNavigate={onFileNavigate}
+            // a picker: you are choosing a destination, so one click enters
+            openOn="single"
+            // and choosing a destination is not an invitation to upload
+            dropToUpload={false}
             onSelect={onSelect}
             onUnselect={onUnselect}
             selectedFiles={selectedFiles}
