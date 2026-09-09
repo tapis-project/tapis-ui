@@ -4,18 +4,16 @@ import { Tenants } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
 
-export const defaultParams: Tenants.ListTenantsRequest = {};
+export const defaultParams: Tenants.ListOwnersRequest = {};
 
-const useList = (
-  params: Tenants.ListTenantsRequest = defaultParams,
-  options: QueryObserverOptions<Tenants.RespListTenants, Error> = {}
+const useListOwners = (
+  params: Tenants.ListOwnersRequest = defaultParams,
+  options: QueryObserverOptions<Tenants.RespListOwners, Error> = {}
 ) => {
   const { accessToken, basePath } = useTapisConfig();
-  const result = useQuery<Tenants.RespListTenants, Error>(
-    [QueryKeys.list, params, accessToken],
-    // Default to no token. This will generate a 403 when calling the list function
-    // which is expected behavior for not having a token
-    () => API.list(params, basePath, accessToken?.access_token || ''),
+  const result = useQuery<Tenants.RespListOwners, Error>(
+    [QueryKeys.listOwners, params, accessToken],
+    () => API.listOwners(params, basePath, accessToken?.access_token || ''),
     {
       enabled: !!accessToken,
       refetchOnWindowFocus: false,
@@ -29,4 +27,4 @@ const useList = (
   return result;
 };
 
-export default useList;
+export default useListOwners;
