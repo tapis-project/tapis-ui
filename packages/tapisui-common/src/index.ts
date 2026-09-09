@@ -67,6 +67,83 @@ import {
   FormikTapisFileInput,
 } from './ui-formik/FieldWrapperFormik/fields';
 import {
+  explainFilesError,
+  filesErrorSummary,
+  tapisErrorMessage,
+} from './components/files/FileListing/FilesError';
+import {
+  useBackKeys,
+  keyboardIsBusy,
+} from './components/files/FileListing/keyboardNav';
+import {
+  getListingVariant,
+  setListingVariant,
+  getListingDensity,
+  setListingDensity,
+  getListingDetails,
+  setListingDetails,
+  getViewerWrap,
+  setViewerWrap,
+  getViewerLineNumbers,
+  setViewerLineNumbers,
+  getViewerAnsi,
+  setViewerAnsi,
+  ANSI_MODES,
+  ANSI_LABEL,
+  getViewerBinaryView,
+  setViewerBinaryView,
+  BINARY_VIEWS,
+  BINARY_VIEW_LABEL,
+  subscribeListingPrefs,
+  resetListingPrefs,
+} from './components/files/FileListing/listingPrefs';
+import {
+  isElf,
+  parseElf,
+  binaryStrings,
+  imageFormat,
+} from './components/files/FileListing/elf';
+import BinaryView, {
+  elfSummary,
+} from './components/files/FileListing/BinaryView';
+import {
+  stripAnsi,
+  parseAnsi,
+  splitAnsiLines,
+  hasAnsi,
+} from './components/files/FileListing/ansi';
+import FilesDropZone, {
+  dragHasFiles,
+  droppedFiles,
+  dropLabel,
+} from './components/files/FileListing/FilesDropZone';
+import FileViewerPanel, {
+  viewerMode,
+  looksBinary,
+  clampGeometry,
+  defaultGeometry,
+  fitGeometry,
+  noteGeometry,
+} from './components/files/FileListing/FileViewerPanel';
+import FileListingTableV2, {
+  sortFiles,
+  modifiedLabel,
+  summarize,
+  visibleWindow,
+  VIRTUALIZE_ABOVE,
+  MARK_COLUMN,
+  PAGE_JUMP,
+  scrollTopFor,
+  canSelectFile,
+} from './components/files/FileListing/FileListingTableV2';
+import {
+  fileKind,
+  fileExtension,
+  isDirLike,
+  linkTarget,
+  effectiveType,
+} from './components/files/FileListing/fileKind';
+import {
   FileListing,
   FileListingTable,
   FileStat,
@@ -103,6 +180,17 @@ import {
   SystemListing,
   AuthModal,
   GlobusAuthModal,
+  DeleteSystemModal,
+  CreateChildSystemModal,
+  ShareSystemPublicModal,
+  UnShareSystemPublicModal,
+  SharingModal,
+  PermissionsModal,
+  ChangeOwnerModal,
+  DisableSystemModal,
+  EnableSystemModal,
+  UpdateSystemModal,
+  RemoveCredentialModal,
   Archive,
   Args,
   EnvVariables,
@@ -111,6 +199,32 @@ import {
   FileInputs,
   SchedulerOptions,
 } from './components';
+// Job launcher toolkit — the pieces an app-side launcher needs to reuse the
+// wizard's context, defaults and validation without forking them.
+import {
+  useJobLauncher,
+  JobLauncherProvider,
+} from './components/jobs/JobLauncher/components';
+import { ArgField } from './components/jobs/JobLauncher/steps/AppArgs';
+// NOTE the names: components/apps/AppCreate exports Archive/FileInputs/
+// FileInputArrays too, but those edit an APP DEFINITION (jobAttributes.*).
+// These are the job-launcher steps, bound to the job itself.
+import { Archive as JobLauncherArchive } from './components/jobs/JobLauncher/steps/Archive';
+import { FileInputs as JobLauncherFileInputs } from './components/jobs/JobLauncher/steps/FileInputs';
+import { FileInputArrays as JobLauncherFileInputArrays } from './components/jobs/JobLauncher/steps/FileInputArrays';
+import generateJobDefaults from './utils/jobDefaults';
+import { getArgMode } from './utils/jobArgs';
+import {
+  computeDefaultJobType,
+  computeDefaultQueue,
+  computeDefaultSystem,
+  validateExecSystem,
+  ValidateExecSystemResult,
+} from './utils/jobExecSystem';
+import { fileInputsComplete } from './utils/jobFileInputs';
+import { fileInputArraysComplete } from './utils/jobFileInputArrays';
+import { jobRequiredFieldsComplete } from './utils/jobRequiredFields';
+
 import {
   SystemProvider,
   SystemContext,
@@ -187,6 +301,67 @@ export {
   FormikTapisFile,
   FormikTapisFileInput,
   // Tapis File Components
+  explainFilesError,
+  filesErrorSummary,
+  tapisErrorMessage,
+  useBackKeys,
+  keyboardIsBusy,
+  FileListingTableV2,
+  FileViewerPanel,
+  FilesDropZone,
+  dragHasFiles,
+  droppedFiles,
+  dropLabel,
+  viewerMode,
+  looksBinary,
+  BinaryView,
+  elfSummary,
+  isElf,
+  parseElf,
+  binaryStrings,
+  imageFormat,
+  clampGeometry,
+  defaultGeometry,
+  fitGeometry,
+  noteGeometry,
+  getListingVariant,
+  setListingVariant,
+  getListingDensity,
+  setListingDensity,
+  getListingDetails,
+  setListingDetails,
+  getViewerWrap,
+  setViewerWrap,
+  getViewerLineNumbers,
+  setViewerLineNumbers,
+  getViewerAnsi,
+  setViewerAnsi,
+  ANSI_MODES,
+  ANSI_LABEL,
+  getViewerBinaryView,
+  setViewerBinaryView,
+  BINARY_VIEWS,
+  BINARY_VIEW_LABEL,
+  stripAnsi,
+  parseAnsi,
+  splitAnsiLines,
+  hasAnsi,
+  subscribeListingPrefs,
+  resetListingPrefs,
+  sortFiles,
+  modifiedLabel,
+  summarize,
+  visibleWindow,
+  VIRTUALIZE_ABOVE,
+  MARK_COLUMN,
+  PAGE_JUMP,
+  scrollTopFor,
+  fileKind,
+  fileExtension,
+  isDirLike,
+  linkTarget,
+  effectiveType,
+  canSelectFile,
   FileListing,
   FileListingTable,
   FileStat,
@@ -224,6 +399,17 @@ export {
   SystemListing,
   AuthModal,
   GlobusAuthModal,
+  DeleteSystemModal,
+  CreateChildSystemModal,
+  ShareSystemPublicModal,
+  UnShareSystemPublicModal,
+  SharingModal,
+  PermissionsModal,
+  ChangeOwnerModal,
+  DisableSystemModal,
+  EnableSystemModal,
+  UpdateSystemModal,
+  RemoveCredentialModal,
   Archive,
   Args,
   EnvVariables,
@@ -231,6 +417,23 @@ export {
   FileInputArrays,
   FileInputs,
   SchedulerOptions,
+  // Job launcher toolkit
+  JobLauncherArchive,
+  JobLauncherFileInputs,
+  JobLauncherFileInputArrays,
+  useJobLauncher,
+  JobLauncherProvider,
+  ArgField,
+  generateJobDefaults,
+  getArgMode,
+  computeDefaultJobType,
+  computeDefaultQueue,
+  computeDefaultSystem,
+  validateExecSystem,
+  ValidateExecSystemResult,
+  fileInputsComplete,
+  fileInputArraysComplete,
+  jobRequiredFieldsComplete,
   Help,
   HelpSection,
   // Tapis context
@@ -243,3 +446,8 @@ export {
   type OrderBy,
   filterObjects,
 };
+// Location-state contract for the pre-login login modal (see the module doc).
+export {
+  loginPromptState,
+  type LoginPromptState,
+} from './ui/ProtectedRoute/loginPromptState';
