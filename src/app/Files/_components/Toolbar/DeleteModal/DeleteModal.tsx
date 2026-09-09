@@ -4,7 +4,6 @@ import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
 import { FileListingTable } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
-import { focusManager } from 'react-query';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Column } from 'react-table';
 import styles from './DeleteModal.module.scss';
@@ -30,11 +29,12 @@ const DeleteModal: React.FC<ToolbarModalProps> = ({
     reset();
   }, [reset]);
 
+  // what was deleted has to leave the listing — a targeted invalidation,
+  // where this used to fake a window focus for every query in the app
+  const invalidateFiles = Hooks.useInvalidateFiles();
   const onComplete = useCallback(() => {
-    // Calling the focus manager triggers react-query's
-    // automatic refetch on window focus
-    focusManager.setFocused(true);
-  }, []);
+    invalidateFiles(systemId);
+  }, [invalidateFiles, systemId]);
 
   const { run, state, isLoading, isSuccess, error } = useFileOperations<
     DeleteHookParams,

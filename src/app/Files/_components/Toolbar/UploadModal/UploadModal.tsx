@@ -4,7 +4,6 @@ import { GenericModal } from '@tapis/tapisui-common';
 import { SubmitWrapper } from '@tapis/tapisui-common';
 import { ToolbarModalProps } from '../Toolbar';
 import { Files as Hooks } from '@tapis/tapisui-hooks';
-import { focusManager } from 'react-query';
 import { useDropzone } from 'react-dropzone';
 import styles from './UploadModal.module.scss';
 import { FileListingTable } from '@tapis/tapisui-common';
@@ -30,6 +29,15 @@ export type FileProgressState = {
 
 type UploadModalProps = ToolbarModalProps & {
   maxFileSizeBytes?: number;
+  /**
+   * Files the modal opens with already in its list.
+   *
+   * Dropping files on the listing opens this rather than uploading them —
+   * a drop is one gesture, and the same gesture starts a drag you meant to
+   * cancel. They arrive here staged, and Upload is still the press that
+   * writes them.
+   */
+  initialFiles?: Array<File>;
 };
 
 const UploadModal: React.FC<UploadModalProps> = ({
@@ -37,8 +45,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
   path,
   systemId,
   maxFileSizeBytes = 5000000000,
+  initialFiles,
 }) => {
-  const [files, setFiles] = useState<Array<File>>([]);
+  const [files, setFiles] = useState<Array<File>>(initialFiles ?? []);
 
   const reducer = (
     state: FileProgressState,
@@ -99,9 +108,12 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const { uploadAsync, reset } = Hooks.useUpload();
 
   const key = (params: Hooks.InsertHookParams) => params.file.name;
+  // the uploaded files belong in the listing now — refresh it directly
+  // rather than faking a window focus for the whole app
+  const invalidateFiles = Hooks.useInvalidateFiles();
   const onComplete = useCallback(() => {
-    focusManager.setFocused(true);
-  }, []);
+    invalidateFiles(systemId);
+  }, [invalidateFiles, systemId]);
 
   const { state, run, isLoading, isSuccess, error } = useFileOperations<
     Hooks.InsertHookParams,
@@ -119,7 +131,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const onSubmit = useCallback(() => {
     const operations: Array<Hooks.InsertHookParams> = files.map((file) => ({
       systemId: systemId!,
-      path: (path! + '/').replace('//', '/'),
+      // the API joins the path and the name itself now; this used to have to
+      // hand over a trailing slash or the two ran together
+      path: path!,
       file,
       progressCallback: onProgress,
     }));
