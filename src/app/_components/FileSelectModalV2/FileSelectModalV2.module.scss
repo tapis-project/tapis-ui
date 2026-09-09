@@ -1,0 +1,14 @@
+// The listing's own frame at a steady height. The table inside scrolls
+// itself, so opening a directory of two files or two thousand never resizes
+// the dialog. The root has to be a flex column for the table's scroller to
+// get a height at all: without one it grows with its rows, and the next page
+// of a long directory never loads.
+.listing {
+  height: min(56vh, 480px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 0.5rem;
+  // the system list, shown before a system is picked, scrolls here too
+  overflow: auto;
+}

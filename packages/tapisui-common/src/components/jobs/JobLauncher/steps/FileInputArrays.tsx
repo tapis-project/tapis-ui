@@ -9,7 +9,7 @@ import {
 } from '../../../../utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper } from '../../../../ui';
 import { useModal } from '../../../../ui';
-import { FileSelectModal } from '../../../../components/files';
+import { useFileSelectModal } from '../../../../components/files';
 import {
   FieldArray,
   useFormikContext,
@@ -51,6 +51,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
   );
   const { push } = arrayHelpers;
   const { modal, open, close } = useModal();
+  const SelectModal = useFileSelectModal();
   const onSelect = useCallback(
     (systemId: string | null, files: Array<Files.FileInfo>) => {
       files.forEach((file) => {
@@ -109,7 +110,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
           + Browse for Files
         </Button>
       </div>
-      {modal && <FileSelectModal toggle={close} onSelect={onSelect} />}
+      {modal && <SelectModal toggle={close} onSelect={onSelect} />}
     </FormGroup>
   );
 };

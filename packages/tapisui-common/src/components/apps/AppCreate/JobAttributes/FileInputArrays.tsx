@@ -3,7 +3,7 @@ import { Apps, Files, Jobs } from '@tapis/tapis-typescript';
 import { Input, Button, FormGroup } from 'reactstrap';
 import { generateFileInputArrayFromAppInput } from '../../../../utils/jobFileInputArrays';
 import { Collapse, Icon, FieldWrapper, useModal } from '../../../../ui';
-import { FileSelectModal } from '../../../../components';
+import { useFileSelectModal } from '../../../../components';
 import {
   FieldArray,
   useFormikContext,
@@ -34,6 +34,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
     useFormikContext<Partial<Apps.ReqPostApp>>();
 
   const { modal, open, close } = useModal();
+  const SelectModal = useFileSelectModal();
   const { push } = arrayHelpers;
 
   const sourceUrls: Array<string> = useMemo(
@@ -119,7 +120,7 @@ const SourceUrlsField: React.FC<FieldWrapperProps> = ({
           + Browse for Files
         </Button>
       </div>
-      {modal && <FileSelectModal toggle={close} onSelect={onSelect} />}
+      {modal && <SelectModal toggle={close} onSelect={onSelect} />}
     </FormGroup>
   );
 };
