@@ -282,11 +282,19 @@ const Sidebar: React.FC = () => {
 
   const chipLabel = expanded ? (
     <ExpandLessRounded
-      style={{ transform: 'rotate(-90deg) translateY(-40%) translateX(-10%)' }}
+      sx={{
+        fontSize: 15,
+        transform: 'rotate(-90deg)',
+        color: 'rgba(0, 0, 0, 0.87)',
+      }}
     />
   ) : (
     <ExpandMoreRounded
-      style={{ transform: 'rotate(-90deg) translateY(-40%) translateX(-10%)' }}
+      sx={{
+        fontSize: 15,
+        transform: 'rotate(-90deg)',
+        color: 'rgba(0, 0, 0, 0.87)',
+      }}
     />
   );
 
@@ -346,7 +354,17 @@ const Sidebar: React.FC = () => {
     );
   };
   return (
-    <div className={styles.root} style={{ position: 'relative' }}>
+    <div
+      className={styles.root}
+      // Width is content-driven, so a near-empty expanded sidebar (pre-login:
+      // just the Login item) would shrink to logo width and park the edge
+      // collapse tab on top of the logo — the floor keeps clearance.
+      // Collapsed stays its natural thin rail.
+      style={{
+        position: 'relative',
+        minWidth: expanded ? '10rem' : undefined,
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -394,23 +412,35 @@ const Sidebar: React.FC = () => {
         </Link>
       </div>
 
+      {/* Flush on the pane's edge (it used to hang off it, over the
+          page content), rounded toward the pane — a taller, thinner grab-tab
+          so the minimized logo stays clear of it. */}
       <Chip
         label={chipLabel}
         variant="outlined"
         size="small"
-        style={{
-          borderRadius: '8px',
-          borderTopLeftRadius: '0px',
-          borderBottomLeftRadius: '0px',
+        sx={{
+          borderRadius: '5px 0 0 5px',
+          // open right side — the pane's own edge is the tab's fourth wall
+          borderRight: 'none',
           backgroundColor: 'white',
-          height: '1.5rem',
-          width: '1.5rem',
+          height: '1.8rem',
+          width: '0.95rem',
           position: 'absolute',
-          right: '-1.5rem',
-          top: '.6rem',
-          paddingBottom: '.2rem',
+          right: 0,
+          // logo box: .6rem margin + 50px logo → center ≈ .6rem + 25px; put
+          // the tab's midpoint (0.9rem into its 1.8rem) on the same line
+          top: 'calc(.6rem + 25px - 0.9rem)',
+          zIndex: 2,
+          cursor: 'pointer',
+          '& .MuiChip-label': {
+            p: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          '&:hover': { backgroundColor: '#f2f2f2' },
         }}
-        className={styles.hideButton} // Add a custom class for styling
         onClick={() => {
           setExpanded(!expanded);
         }}
