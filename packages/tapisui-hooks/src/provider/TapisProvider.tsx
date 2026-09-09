@@ -11,19 +11,28 @@ interface TapisProviderProps {
 }
 
 /**
- * Check if an error looks like a 401 Unauthorized response.
- * Tapis API errors often include the status code in the message.
+ * Does this error mean THE SESSION is dead — the service refusing this
+ * request's own JWT? Ordinary expiry is already handled client-side
+ * (useTapisConfig checks the exp claim), so this is only the backstop for
+ * a token the server rejects while the client still believes in it.
+ *
+ * It must never match a remote host's refusal. A Files listing of an SSH
+ * system with no registered credential comes back
+ * "FILES_REMOTE_LIST_ERROR ...: 401" — that 401 belongs to the remote
+ * machine, and logging out for it turns one system's missing credential
+ * into a session death. So: known remote/credential error families bail
+ * first, then only explicitly JWT-shaped messages count.
  */
-const is401 = (error: unknown): boolean => {
+const REMOTE_FAULT =
+  /FILES_REMOTE_|SSH_POOL_|FILES_CLIENT_SSH|SYSLIB_|CRED_NOT_FOUND/i;
+const JWT_FAULT =
+  /TAPIS_SECURITY_JWT|\bjwt\b|token (?:is |has |was )?(?:expired|invalid|revoked)|(?:expired|invalid|bad|revoked) (?:tapis |access )?token|invalid_credentials/i;
+
+export const is401 = (error: unknown): boolean => {
   if (!error) return false;
-  const msg = String((error as any)?.message ?? error).toLowerCase();
-  return (
-    msg.includes('401') ||
-    msg.includes('unauthorized') ||
-    msg.includes('unauthenticated') ||
-    msg.includes('invalid_credentials') ||
-    msg.includes('token')
-  );
+  const msg = String((error as any)?.message ?? error);
+  if (REMOTE_FAULT.test(msg)) return false;
+  return JWT_FAULT.test(msg);
 };
 
 const TapisProvider: React.FC<React.PropsWithChildren<TapisProviderProps>> = ({
