@@ -1,5 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { SectionHeader, LoadingSpinner, Icon } from '@tapis/tapisui-common';
 import {
   Card,
@@ -67,29 +67,11 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 };
 
 const Dashboard: React.FC = () => {
-  const { accessToken, claims, basePath, setAccessToken } = useTapisConfig();
-  const navigate = useHistory();
+  const { accessToken, claims, basePath } = useTapisConfig();
   // TODO All tenant-specific functionality must be refactored into their respective
   // extenstions
   const { extension } = useExtension();
 
-  // Hidden dev token input — revealed by long-pressing "TAPIS" for 3s
-  const isDevHost =
-    location.hostname === 'localhost' ||
-    location.hostname === 'icicleai.tapis.io' ||
-    location.hostname === 'public.tapis.io';
-  const [showDevInput, setShowDevInput] = useState(false);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const onTapisPointerDown = useCallback(() => {
-    if (!isDevHost) return;
-    longPressTimer.current = setTimeout(() => setShowDevInput((v) => !v), 3000);
-  }, [isDevHost]);
-  const onTapisPointerUp = useCallback(() => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }, []);
   const systems = SystemsHooks.useList({
     listType: Systems.ListTypeEnum.All,
     select: 'allAttributes',
@@ -121,7 +103,9 @@ const Dashboard: React.FC = () => {
       <SectionHeader>
         <div style={{ marginLeft: '1.2rem' }}>
           Dashboard for{' '}
-          {basePath.replace('https://', '').replace('http://', '')}
+          {basePath
+            ? basePath.replace('https://', '').replace('http://', '')
+            : '⚠ no base URL — set VITE_TAPIS_BASE_URL in .env'}
         </div>
       </SectionHeader>
       <div className={styles.cards}>
@@ -250,21 +234,10 @@ const Dashboard: React.FC = () => {
                 </div>
               </CardHeader>
               <CardBody>
-                <CardTitle>
-                  Please log in to use{' '}
-                  <span
-                    onPointerDown={onTapisPointerDown}
-                    onPointerUp={onTapisPointerUp}
-                    onPointerLeave={onTapisPointerUp}
-                    style={{ userSelect: 'none' }}
-                  >
-                    TAPIS
-                  </span>
-                </CardTitle>
+                <CardTitle>Please log in to use TAPIS</CardTitle>
               </CardBody>
               <CardFooter
                 className={styles['card-footer']}
-                onClick={() => navigate.push('/login')}
                 style={{ cursor: 'pointer', alignItems: 'center' }}
               >
                 <Link to="/login" style={{ lineHeight: 1 }}>
@@ -277,36 +250,6 @@ const Dashboard: React.FC = () => {
                 </span>
               </CardFooter>
             </Card>
-            {isDevHost && showDevInput && (
-              <input
-                type="text"
-                placeholder="Paste JWT access_token"
-                autoFocus
-                style={{
-                  width: '100%',
-                  fontFamily: 'monospace',
-                  fontSize: '0.7rem',
-                  padding: '4px',
-                  marginTop: '0.5rem',
-                  opacity: 0.6,
-                }}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === 'Enter') {
-                    const jwt = (e.target as HTMLInputElement).value.trim();
-                    if (jwt) {
-                      setAccessToken({
-                        access_token: jwt,
-                        expires_at: new Date(
-                          Date.now() + 14400 * 1000
-                        ).toISOString(),
-                        expires_in: 14400,
-                      });
-                      navigate.push('/');
-                    }
-                  }
-                }}
-              />
-            )}
           </>
         )}
       </div>

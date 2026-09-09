@@ -457,3 +457,18 @@ export {
   loginPromptState,
   type LoginPromptState,
 } from './ui/ProtectedRoute/loginPromptState';
+// ...and the one safe way to send it: see useLoginPrompt for why.
+export { useLoginPrompt } from './ui/ProtectedRoute/useLoginPrompt';
+// The thin bar: one component behind the pre-login banner, the docs
+// drawer header and the per-route top bar (see InfoStrip.tsx).
+export {
+  InfoStrip,
+  STRIP_TONES,
+  resolveStripBase,
+  stripPalette,
+  type InfoStripAction,
+  type InfoStripProps,
+  type StripIntensity,
+  type StripPalette,
+  type StripTone,
+} from './ui/InfoStrip';

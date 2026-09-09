@@ -4,9 +4,14 @@ import {
   EnumTapisCoreService,
   Logo,
   Icon,
+  LoginPageConfig,
+  PreloginConfig,
+  TopBarStrip,
 } from './core';
-import { Implicit } from './oauth2';
+import { AuthMethod, Implicit } from './oauth2';
 import { WorkflowsCustomizations } from './workflows';
+import { McpServerEntry } from './mcp';
+import { HostedEndpointEntry } from './hosted';
 
 type RegisteredService = Service & {
   route: string;
@@ -50,8 +55,10 @@ const defaultServiceCustomizations = {
 };
 
 export class Extension {
-  public mainSidebarServices = [];
-  public authMethods = [];
+  public mainSidebarServices: Array<string> = [];
+  public hideBreadcrumbRoutes: Array<string> = [];
+  public topBar: Array<TopBarStrip> = [];
+  public authMethods: Array<AuthMethod> = [];
   public allowMultiTenant: boolean = true;
   public showMLHub: boolean = true;
   public showMLEdge: boolean = true;
@@ -62,6 +69,10 @@ export class Extension {
   public logo: Logo;
   public icon: Icon;
   public betaSidebar?: BetaSidebarConfig;
+  public mcpServers: McpServerEntry[] = [];
+  public hostedEndpoints: HostedEndpointEntry[] = [];
+  public loginPage?: LoginPageConfig;
+  public prelogin?: PreloginConfig;
 
   constructor(config: Configuration) {
     this.setConfiguration(config);
@@ -74,22 +85,44 @@ export class Extension {
     this.showMLEdge = config.showMLEdge;
     this.showSecondarySideBar = config.showSecondarySideBar;
     this.mainSidebarServices = config.mainSidebarServices || [];
+    this.hideBreadcrumbRoutes = config.hideBreadcrumbRoutes || [];
+    this.topBar = config.topBar || [];
     this.setAuthentication();
     this.setServiceCustomizations();
     this.logo = config.logo;
     this.icon = config.icon;
     this.betaSidebar = config.betaSidebar;
+    this.mcpServers = config.mcpServers || [];
+    this.hostedEndpoints = config.hostedEndpoints || [];
+    this.loginPage = config.loginPage;
+    this.prelogin = config.prelogin;
+  }
+
+  /** True when this service renders without authentication — i.e. the
+   *  extension lists it in prelogin.sidebarServices ('login' is the Login
+   *  nav item, not a service). */
+  public isPublicService(serviceId: string): boolean {
+    return (
+      serviceId !== 'login' &&
+      (this.prelogin?.sidebarServices ?? []).includes(serviceId)
+    );
   }
 
   private setAuthentication(): void {
     this.authMethods = this.config.authMethods || [];
-    let modifiedAuthPath =
-      this.config?.authentication?.implicit?.authorizationPath;
-    if (modifiedAuthPath !== undefined) {
-      modifiedAuthPath.replace(/\/{2,}/g, '/').replace('/', '');
-      this.config!.authentication!.implicit!.authorizationPath =
-        modifiedAuthPath;
-    }
+  }
+
+  /** The access-token sign-in: undefined = on for every tenant, false =
+   *  off, a list = only those tenant ids. */
+  public getJwtBypass(): boolean | string[] | undefined {
+    return this.config.authentication?.jwtBypass;
+  }
+
+  /** Hostnames where the login page's JWT-bypass affordance is active.
+   *  undefined = extension doesn't care (app default list applies);
+   *  [] = explicitly disabled for this deployment. */
+  public getJwtBypassHosts(): string[] | undefined {
+    return this.config.authentication?.jwtBypassHosts;
   }
 
   public getAuthByType(
@@ -133,7 +166,7 @@ export class Extension {
     // Checking uniqueness of service id
     if (
       service.id in this.serviceMap ||
-      service.id in Object.values(EnumTapisCoreService)
+      (Object.values(EnumTapisCoreService) as string[]).includes(service.id)
     ) {
       throw new Error(
         `service.id, '${service.id}', conflicts with an existing service.id.`

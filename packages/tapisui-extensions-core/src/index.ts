@@ -11,3 +11,16 @@ export {
   Component,
   tasks,
 };
+export type { McpServerEntry, McpAuth, McpTransport, McpStatus } from './mcp';
+export type {
+  LoginPageConfig,
+  LoginPageLink,
+  PreloginConfig,
+  TopBarAction,
+  TopBarStrip,
+} from './core';
+export type {
+  HostedEndpointEntry,
+  HostedEndpointFlavor,
+  HostedRecipeKind,
+} from './hosted';

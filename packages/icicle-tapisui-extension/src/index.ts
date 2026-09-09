@@ -1,6 +1,5 @@
 import {
   createExtension,
-  EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
 import {
@@ -35,16 +34,20 @@ import {
   AutoOptTabular,
   FNAS_LCD,
   ScienceAgents,
+  SmartDetection,
+  SmartSegmentation,
+  NoCodeImageLab,
+  WorkflowStudio,
+  EarthDataHub,
+  VideoSegmentationTracking,
 } from './pages';
-import { SmartDetection } from './pages/SmartDetection';
-import { SmartSegmentation } from './pages/SmartSegmentation';
-import { NoCodeImageLab } from './pages/NoCodeImageLab';
-import { WorkflowStudio } from './pages/WorkflowStudio';
-import { EarthDataHub } from './pages/EarthDataHub';
-import { VideoSegmentationTracking } from './pages/VideoSegmentationTracking';
+import { portalStrips } from './portalStrips';
 
 const extension = createExtension({
   allowMultiTenant: false,
+  // SSO only: the IdP enforces MFA and a password form would bypass it. Add
+  // 'password' to authMethods to restore the backup form. Login.tsx always
+  // shows it on localhost, where the implicit redirectURI cannot return.
   authentication: {
     password: true,
     implicit: {
@@ -54,7 +57,31 @@ const extension = createExtension({
       responseType: 'token',
     },
   },
-  removeServices: [EnumTapisCoreService.Apps],
+  loginPage: {
+    title: 'ICICLE',
+    tagline:
+      'Intelligent Cyberinfrastructure with Computational Learning in the Environment',
+    description:
+      'The web portal for the ICICLE AI Institute on Tapis: launch pods, ' +
+      'host AI services and notebooks, and manage data on TACC systems ' +
+      'with your institutional login.',
+    links: [
+      { label: 'ICICLE AI Institute', url: 'https://icicle.osu.edu' },
+      { label: 'Tapis Project', url: 'https://tapis-project.org' },
+      { label: 'Documentation', url: 'https://tapis.readthedocs.io' },
+    ],
+  },
+  // Signed-out visitors land on the Services Board. Protected links open the
+  // login modal over it, and the banner marks the signed-out state.
+  prelogin: {
+    // I-SAW needs a session; Insights renders public content
+    sidebarServices: ['home', 'login', 'training-catalog', 'insights'],
+    mainRoute: '/home',
+    banner: {},
+  },
+  // The Services Board draws its own header
+  hideBreadcrumbRoutes: ['/home'],
+  topBar: portalStrips(),
   mainSidebarServices: [
     'workflows',
     'pods',
@@ -186,7 +213,7 @@ const extension = createExtension({
       secondaryServices: [],
     },
   },
-  authMethods: ['implicit', 'password'],
+  authMethods: ['implicit'],
   logo: {
     filePath: './logo_icicle.png',
     text: 'ICICLE AI',
@@ -203,6 +230,32 @@ const extension = createExtension({
       dagDefaultView: true,
     },
   },
+  // Merged over the app's base entries by id, field by field. hpc-mcp-server
+  // runs in this tenant; the live probe decides its status chip.
+  mcpServers: [
+    {
+      id: 'hpc-mcp-server',
+      name: 'HPC MCP Server',
+      description:
+        'Distributed training-time prediction for HPC systems (Vista, Perlmutter).',
+      stack: 'Python / Uvicorn',
+      auth: 'none',
+      transport: 'http',
+      endpointUrl: 'https://hpcmcpservercpu.pods.icicleai.tapis.io/mcp/',
+      status: 'available',
+      tenant: 'icicleai',
+      defaultActive: true,
+      notes:
+        'Hosted on this tenant (icicleai Pods). The status chip shows the ' +
+        'live probe of reachability and the MCP handshake.',
+      adminNotes: [
+        'Probe 2026-07-14 found the pod serving plain FastAPI (/health, ' +
+          '/chat, /predict-gpu-time) with no MCP endpoint at /mcp/. If the ' +
+          'live probe shows it down, contact the owner (Molang Wu) about ' +
+          'redeploying the MCP server.',
+      ],
+    },
+  ],
 });
 
 // Order of registration determines sidebar order!!
@@ -441,7 +494,8 @@ extension.registerService({
 extension.registerService({
   id: 'insights',
   sidebarDisplayName: 'Insights',
-  iconName: 'insights',
+  // the TACC icon font has no 'insights' glyph
+  iconName: 'bar-graph',
   component: Insights,
 });
 
@@ -455,6 +509,7 @@ extension.registerService({
 extension.registerService({
   id: 'fnas-lcd',
   sidebarDisplayName: 'FNAS-LCD',
+  // no fnas glyph in the TACC icon font; globe for land-cover data
   iconName: 'globe',
   component: FNAS_LCD,
 });

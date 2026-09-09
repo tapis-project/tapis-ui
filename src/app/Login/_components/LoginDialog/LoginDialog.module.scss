@@ -1,0 +1,89 @@
+@use '../../loginTokens' as t;
+
+/* The login page in a dialog: the page's own blocks (head, sign-in card,
+   links row, from ../../_Layout/Layout.module.scss) with a one-line
+   "X needs your account" where the page has its description. Only the
+   frame is the dialog's own, and its padding is a token too. Cancel is the
+   ✕ / backdrop / Esc. */
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: t.$dialog-pad-top t.$dialog-pad-side t.$dialog-pad-bottom;
+}
+
+/* "Open the full login page", styled as one of the page's links, and
+   underlined so it reads as the one thing to press under the card. */
+.fullPageLink button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: rgba(0, 0, 0, 0.52);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.78);
+  }
+}
+
+/* Post-login beat. Same blocks, new words: the title says who signed in,
+   the locked form stays where it was, the link row names the destination,
+   and a hairline along the card's foot fills for as long as the beat lasts. */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* the sent form, left in place and faded so it reads as done */
+.locked {
+  opacity: 0.45;
+  filter: grayscale(1);
+  pointer-events: none;
+  user-select: none;
+}
+
+.successTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.successMark {
+  font-size: 1.05rem !important;
+  color: #2f9e5b;
+}
+
+.successDetail {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.successBar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: #2f9e5b;
+  transform-origin: left;
+  animation: success-fill linear forwards;
+}
+
+@keyframes success-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .successBar {
+    animation: none;
+  }
+}
