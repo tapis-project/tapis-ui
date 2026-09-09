@@ -5,32 +5,15 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
-import { SectionMessage } from '@tapis/tapisui-common';
-import AppsToolbar from '../_components/AppsToolbar';
 import AppDetails from '../AppDetails';
+import AppsOverview from '../_components/AppsOverview';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
   return (
     <Switch>
       <Route path={`${path}`} exact>
-        <div
-          style={{
-            margin: '1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            overflow: 'auto',
-            gap: '8px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'right' }}>
-            <AppsToolbar />
-          </div>
-          <SectionMessage type="info">
-            Select an app from the list.
-          </SectionMessage>
-        </div>
+        <AppsOverview />
       </Route>
 
       <Route

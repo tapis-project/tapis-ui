@@ -10,6 +10,7 @@ import * as Yup from 'yup';
 import { useQueryClient } from 'react-query';
 import { Apps as Hooks } from '@tapis/tapisui-hooks';
 import AdvancedSettings from './Settings/AdvancedSettings';
+import NewAppGuidedDialog from './NewAppGuidedDialog';
 import { LoadingButton } from '@mui/lab';
 import { JSONEditor } from '@tapis/tapisui-common';
 import {
@@ -50,6 +51,8 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
 
   const [simplified, setSimplified] = useState(false);
   const [withJson, setWithJson] = useState(false);
+  // the third door: sectioned, launcher-v2 style — it owns its own dialog
+  const [guided, setGuided] = useState(false);
   const onChange = useCallback(() => {
     setSimplified(!simplified);
   }, [setSimplified, simplified]);
@@ -393,6 +396,10 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
     );
   };
 
+  if (guided) {
+    return <NewAppGuidedDialog onClose={toggle} />;
+  }
+
   return (
     <Dialog
       open={true}
@@ -411,6 +418,16 @@ const CreateAppModal: React.FC<ToolbarModalProps> = ({ toggle }) => {
       >
         <div>Create App</div>
         <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+          <LoadingButton
+            onClick={() => {
+              setGuided(true);
+            }}
+            variant="outlined"
+            color="info"
+            size="small"
+          >
+            guided
+          </LoadingButton>
           <LoadingButton
             onClick={() => {
               setWithJson(false);

@@ -1,9 +1,5 @@
-import { useEffect, useCallback, useState } from 'react';
-import * as Yup from 'yup';
-import { useQueryClient } from 'react-query';
-import { Jobs as Hooks } from '@tapis/tapisui-hooks';
-import { Apps, Jobs } from '@tapis/tapis-typescript';
-import { JSONEditor } from '@tapis/tapisui-common';
+import { useState } from 'react';
+import { Apps } from '@tapis/tapis-typescript';
 import {
   Button,
   Dialog,
@@ -12,29 +8,44 @@ import {
   IconButton,
 } from '@mui/material';
 import { JobLauncher } from '@tapis/tapisui-common';
+import JobLauncherV2Dialog from 'app/Apps/JobLauncherV2';
 
 export type ToolbarModalProps = {
   toggle: () => void;
   app: Apps.TapisApp;
 };
 
-import { Close, DataObject, RocketLaunch } from '@mui/icons-material';
+import {
+  Close,
+  DataObject,
+  RocketLaunch,
+  ViewSidebar,
+} from '@mui/icons-material';
 
+// This modal is a chooser and nothing else now: each launcher owns its own
+// submission, including the JSON one, which is the launcher's Review pane.
 const JobLaunchModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
-  const { isLoading, isSuccess, error, reset, submit } = Hooks.useSubmit(
-    app.id!,
-    app.version!
-  );
+  // 'panel' is the V2 launcher, 'wizard' the original step-by-step one, 'json'
+  // is the V2 launcher opened straight onto its JSON editor. The V2 panel has
+  // its own header, close and Submit, so it REPLACES this dialog rather than
+  // rendering inside it — nesting the two put a "Submit Job" title bar and a
+  // second ✕ around a panel that has both.
+  type LaunchMode = 'panel' | 'wizard' | 'json';
+  const [mode, setMode] = useState<LaunchMode | undefined>(undefined);
 
-  const [guided, setGuided] = useState<boolean | undefined>(undefined);
-
-  const onSuccess = useCallback(() => {
-    // invalidate()
-  }, []);
-
-  useEffect(() => {
-    reset();
-  }, [reset]);
+  if (mode === 'panel' || mode === 'json') {
+    return (
+      <JobLauncherV2Dialog
+        appId={app.id!}
+        appVersion={app.version!}
+        onClose={toggle}
+        // 'Submit with JSON' lands on the launcher's own JSON pane: same
+        // editor, but what you paste is measured by the same blockers before
+        // it can be submitted, and the rest of the job is one click away
+        initialJson={mode === 'json'}
+      />
+    );
+  }
 
   return (
     <Dialog
@@ -66,96 +77,54 @@ const JobLaunchModal: React.FC<ToolbarModalProps> = ({ toggle, app }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        {guided === undefined && (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+        {mode === undefined && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              minWidth: '22rem',
+            }}
+          >
             <Button
               variant={'outlined'}
               onClick={() => {
-                setGuided(true);
+                setMode('panel');
               }}
               size="large"
-              startIcon={<RocketLaunch />}
+              startIcon={<ViewSidebar />}
+              sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
             >
-              Use guided job launcher
+              Guided job launcher (v2)
             </Button>
             <Button
               variant={'outlined'}
               onClick={() => {
-                setGuided(false);
+                setMode('wizard');
+              }}
+              size="large"
+              startIcon={<RocketLaunch />}
+              sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+            >
+              Use guided job launcher (v1)
+            </Button>
+            <Button
+              variant={'outlined'}
+              onClick={() => {
+                setMode('json');
               }}
               size="large"
               startIcon={<DataObject />}
+              sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
             >
               Submit with JSON
             </Button>
           </div>
         )}
-        {guided === true && (
+        {mode === 'wizard' && (
           <div style={{ display: 'block', width: '80vw' }}>
             <JobLauncher appId={app.id!} appVersion={app.version!} />
           </div>
-        )}
-        {guided === false && (
-          <JSONEditor
-            style={{ width: '800px', marginTop: '8px', maxHeight: '500px' }}
-            renderNewlinesInError
-            obj={{ appId: app.id!, appVersion: app.version! }}
-            actions={[
-              {
-                color: !isSuccess ? 'error' : 'info',
-                name: !isSuccess ? 'cancel' : 'continue',
-                actionFn: toggle,
-              },
-              {
-                name: 'submit job',
-                disableOnError: true,
-                disableOnUndefined: true,
-                disableOnIsLoading: true,
-                disableOnSuccess: true,
-                error:
-                  error !== null
-                    ? {
-                        title: 'Error',
-                        message: error.message,
-                      }
-                    : undefined,
-                result: isSuccess
-                  ? {
-                      success: isSuccess,
-                      message: 'Successfully submitted job',
-                    }
-                  : undefined,
-                isLoading,
-                isSuccess,
-                // validator: (obj:  | undefined) => {
-                //   let success: boolean = false;
-                //   let message: string = "";
-                //   try {
-                //     validationSchema.validateSync(obj, { abortEarly: false });
-                //     success = true
-                //   } catch (e) {
-                //     (e as Yup.ValidationError).errors.map((msg, i) => message = message + `#${i + 1}: ${msg}\n`)
-                //   }
-
-                //   return {
-                //     success,
-                //     message
-                //   }
-                // },
-                actionFn: (obj: Partial<Jobs.ReqSubmitJob> | undefined) => {
-                  if (obj !== undefined) {
-                    submit(obj as Jobs.ReqSubmitJob, { onSuccess });
-                  }
-                },
-              },
-            ]}
-            onCloseError={() => {
-              reset();
-            }}
-            onCloseSuccess={() => {
-              reset();
-            }}
-          />
         )}
       </DialogContent>
     </Dialog>
