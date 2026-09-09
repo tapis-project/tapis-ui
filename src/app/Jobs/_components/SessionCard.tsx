@@ -515,7 +515,13 @@ const SessionCard: React.FC<{
                     label={stopping ? 'Cancelling…' : 'Stop'}
                     busy={stopping}
                     onClick={onStop}
-                    title="Done? Stop the job - the server runs until its time limit unless you stop it. Stopping when you're done is the normal end of a session, and frees the node."
+                    // Same action as Cancel on the job header. The label is short
+                    // for the 340px column; the tooltip carries the meaning.
+                    title={
+                      stopping
+                        ? 'Cancel request sent. The scheduler may take a moment to act.'
+                        : "Stop session (cancels the job). Same action as Cancel on the job header. Ending the job is the only way to end a session. Otherwise the server runs until the job's time limit."
+                    }
                   />
                 )}
               </Box>

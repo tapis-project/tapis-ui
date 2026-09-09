@@ -356,6 +356,17 @@ describe('SessionCard — the FlexServ entry', () => {
     ).toBeInTheDocument();
   });
 
+  it('says out loud that Stop is a cancel, not a server shutdown', async () => {
+    mockOutput(READY);
+    renderComponent(<SessionCard job={job()} onStop={jest.fn()} />);
+    const stop = await screen.findByRole('button', { name: /Stop/ });
+    fireEvent.mouseOver(stop);
+    // "Stop" is the job cancel, the same action as Cancel on the job header
+    const tip = await screen.findByText(/cancels the job/);
+    expect(tip).toHaveTextContent(/same action as Cancel on the job header/i);
+    expect(tip).toHaveTextContent(/only way to end a session/i);
+  });
+
   it('never offers to stop a job that is already over', () => {
     mockOutput(READY);
     renderComponent(
