@@ -1,12 +1,13 @@
 import React from 'react';
 import { NotificationsContextType } from '.';
 
-export const notificationsContext: NotificationsContextType = {
+const NotificationsContext = React.createContext<NotificationsContextType>({
   notifications: [],
-  dispatch: () => {},
-};
-
-const NotificationsContext: React.Context<NotificationsContextType> =
-  React.createContext<NotificationsContextType>(notificationsContext);
+  addNotification: () => '',
+  dismiss: () => {},
+  dismissAll: () => {},
+  remove: () => {},
+  clear: () => {},
+});
 
 export default NotificationsContext;
