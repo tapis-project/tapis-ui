@@ -14,8 +14,6 @@ import {
   FileListing,
   SystemProvider,
   QueryWrapper,
-  jobTerminalStatuses,
-  jobRunningStatuses,
 } from '@tapis/tapisui-common';
 import { Replay, Dangerous } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
@@ -36,6 +34,7 @@ import { usePinnedCap } from 'app/_components/PageShell/tableShell';
 import shellStyles from 'app/_components/PageShell/PageShell.module.scss';
 import { useCancelledJobs } from '../_components/JobsLayoutToolbar/CancelledJobsContext';
 import { useSpineWriter } from 'app/_components/NavSpine';
+import { isTerminal, pollIntervalMs } from '../_components/jobsData';
 import SessionCard from '../_components/SessionCard';
 import JobSummaryCard from './JobSummaryCard';
 import ResubmitDialog from './ResubmitDialog';
@@ -283,27 +282,25 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   // the adjust-first path: the launcher, seeded from this job
   const [adjusting, setAdjusting] = useState(false);
   const [showJSON, setShowJSON] = useState(false);
-  const [refetchInterval, setRefetchInterval] = useState(5);
+  // responses seen so far, and the count when polling last went back to fast
+  const pollCount = useRef(0);
+  const pollBase = useRef(0);
   const {
     data,
     isLoading,
     error,
     refetch: refetchJob,
   } = Hooks.useDetails(jobUuid, {
-    // A finished job cannot change again, so the poll STOPS rather than
-    // settling at its last backoff. It used to keep asking for the whole
-    // record every 5–30s forever: the backoff effect below returns early
-    // on a terminal status, which left whatever interval it had reached
-    // still running. The page people leave open longest was the one that
-    // never stopped fetching.
-    //
-    // The function form because the answer depends on the data this very
-    // query returns — the same shape the jobs listing uses to stop
-    // polling once nothing is RUNNING.
-    refetchInterval: ((latest?: Jobs.RespGetJob) =>
-      jobTerminalStatuses.includes(latest?.result?.status as never)
-        ? false
-        : refetchInterval * 1000) as never,
+    // A finished job cannot change again, so the poll stops. The backoff
+    // counts responses (dataUpdateCount), not data changes: an unchanged
+    // record keeps its identity but still counts as a poll.
+    refetchInterval: (latest, query) => {
+      pollCount.current = query?.state.dataUpdateCount ?? 0;
+      return pollIntervalMs(
+        latest?.result?.status,
+        pollCount.current - pollBase.current
+      );
+    },
   });
   const job: Jobs.Job | undefined = useMemo(() => data?.result, [data]);
   const {
@@ -326,13 +323,13 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   // is "cancelling" — never a premature "cancelled". The ledger lives
   // session-wide because this page outlives navigation.
   const cancelRequested = cancelledUuids.has(jobUuid);
-  const cancelling =
-    cancelRequested && !!job && !jobTerminalStatuses.includes(job.status!);
+  const cancelling = cancelRequested && !!job && !isTerminal(job.status);
   // A page that outlives navigation: the mutation's success latch must start
   // clean for every job — it used to leak, leaving every next job's Cancel
   // button dead until a reload.
   useEffect(() => {
     cancelReset();
+    pollBase.current = 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobUuid]);
   // Write-through to the nav spine: this page's poll sees a status change
@@ -391,27 +388,6 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
     [move]
   );
 
-  useEffect(() => {
-    if (jobTerminalStatuses.includes(job?.status!)) {
-      return;
-    }
-
-    if (
-      refetchInterval === 5 &&
-      job?.status &&
-      !jobRunningStatuses.includes(job?.status)
-    ) {
-      setRefetchInterval(10);
-      return;
-    }
-
-    if (jobRunningStatuses.includes(job?.status!)) {
-      // backs off, but CAPS: unbounded 1.5x growth left long runs polling
-      // every few minutes, and the card lagged far behind a refreshed nav
-      setRefetchInterval(Math.min(refetchInterval * 1.5, 30));
-    }
-  }, [data]);
-
   // One cancel path for both doors — the head-line Cancel button and the
   // FlexServ card's Stop, which says so in its tooltip.
   const requestCancel = () => {
@@ -423,7 +399,9 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
       { jobUuid: uuid },
       {
         // poll fast while the scheduler works, so the real end lands soon
-        onSuccess: () => setRefetchInterval(5),
+        onSuccess: () => {
+          pollBase.current = pollCount.current;
+        },
         // the service refused — take the request mark back off
         onError: () => unmarkCancelled(uuid),
       }
@@ -437,7 +415,7 @@ const JobDetail: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
   // an allocation while you look for the press — so it alone stays a
   // visible button. Resubmit is never urgent and rides the cog with the
   // rest, the way the systems card has always kept its acts.
-  const actions = job && !jobTerminalStatuses.includes(job.status!) && (
+  const actions = job && !isTerminal(job.status) && (
     <HeadAction
       danger
       label={cancelling ? 'Cancelling…' : 'Cancel'}

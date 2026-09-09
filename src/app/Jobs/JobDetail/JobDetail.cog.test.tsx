@@ -161,6 +161,18 @@ describe('polling', () => {
     expect(intervalFor({ status: 'RUNNING' })).toBeGreaterThan(0);
     expect(intervalFor({ status: 'QUEUED' })).toBeGreaterThan(0);
   });
+
+  it('backs off with responses seen, up to the cap', () => {
+    mountWith({ status: 'RUNNING' });
+    const { refetchInterval } = (Hooks.useDetails as jest.Mock).mock
+      .calls[0][1];
+    const latest = { result: job({ status: 'RUNNING' }) };
+    const after = (count: number) =>
+      refetchInterval(latest, { state: { dataUpdateCount: count } });
+    expect(after(0)).toBe(5000);
+    expect(after(1)).toBe(7500);
+    expect(after(20)).toBe(30000);
+  });
 });
 
 describe('hiding', () => {

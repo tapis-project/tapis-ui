@@ -6,6 +6,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { ConfirmModal } from '@tapis/tapisui-common';
 import { Jobs as Hooks } from '@tapis/tapisui-hooks';
 import { Jobs } from '@tapis/tapis-typescript';
+import { isTerminal } from '../jobsData';
 
 type ToolbarButtonProps = {
   text: string;
@@ -59,8 +60,7 @@ const JobsToolbar: React.FC<{ jobUuid: string }> = ({ jobUuid }) => {
     }
   };
   // Check if the job is in a non-terminal state
-  const isCancelable =
-    job && !['FINISHED', 'FAILED', 'CANCELLED'].includes(job.status ?? '');
+  const isCancelable = job && !isTerminal(job.status);
 
   return (
     <div id="file-operation-toolbar">
