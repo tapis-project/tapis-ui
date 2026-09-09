@@ -1,0 +1,156 @@
+// ── Shared page shell — the Pods layout grammar for non-Pods pages ──────────
+//
+// Jobs and Apps adopt the exact structural classes Pods pages use
+// (page-root → page-header → content-row → nav + right-pane → work-toolbar +
+// work-content → container). Copied rather than imported from
+// src/app/Pods/_components/Pages.module.scss so the Pods module stays free to
+// evolve with Pods-specific quirks; if the two drift on purpose, that is a
+// decision, not an accident. Structural properties only — buttons and chips
+// are the components' business.
+
+.page-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+}
+
+.page-header {
+  padding: 0.25rem 1rem 0.25rem 0.6rem;
+  border-bottom: 1px solid rgba(112, 112, 112, 0.25);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  // x only. `overflow: auto` on a one-line bar is a trap: the moment the
+  // controls are wider than the window a horizontal scrollbar appears, eats
+  // ~15px of the bar's height, and the contents no longer fit vertically — so
+  // the bar grows a vertical scrollbar too, for a single row of buttons.
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.content-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.nav {
+  margin-top: 0.5em;
+  flex-shrink: 0;
+  width: 17rem;
+  min-width: 14rem;
+  max-width: 20rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid #cccccc;
+}
+
+.right-pane {
+  margin: 0.5rem 0.4rem 0 0.625rem;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.work-toolbar {
+  flex-shrink: 0;
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+}
+
+.work-content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+}
+
+.container {
+  // Narrower than the Pods original (40rem/72vw/56rem): these pages were
+  // forcing a horizontal scrollbar far earlier than their content needed.
+  min-width: clamp(24rem, 46vw, 40rem);
+
+  // No forced height at all.
+  //
+  // This was `height: 100%`, then `min-height: 100%`, and both make the pane
+  // exactly as tall as its scroll container — which is a promise you cannot
+  // keep. A percentage height resolves against the container's PADDING box,
+  // which does not know about a scrollbar; so the moment anything put a
+  // horizontal scrollbar on work-content, that bar took ~15px of height and
+  // the 100%-tall child no longer fitted, producing a vertical scrollbar for
+  // content that was plainly shorter than the window. Any padding a page
+  // added did the same thing.
+  //
+  // Nothing in these panes needs a full-height container: the one height:100%
+  // in the three landings is a chart bar inside a fixed-height chart box. So
+  // the container is as tall as its content, and work-content scrolls only
+  // when there is genuinely more than fits.
+  box-sizing: border-box;
+}
+
+// ── Filling, for a pane that does its own scrolling ─────────────────────────
+//
+// A file listing scrolls its own rows under a sticky header. Left to the
+// default — a content-height container inside a scrolling work-content —
+// there are two scrollers stacked: the table's, which never moves because the
+// table is as tall as its contents, and the page's, which drifts by the few
+// pixels the status line adds. One small maddening scroll.
+//
+// So the listing route pins the chain instead: work-content stops scrolling
+// (nothing may overflow it, which is also why the percentage height below is
+// safe here and was not before), and the container becomes a definite-height
+// flex column its child can fill.
+.work-content-fixed {
+  overflow: hidden;
+}
+
+.container-fill {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+// The same bridge for a FileListing pinned inside a definite-height box
+// (a job's output browser under the explorer preference): FileListing hands
+// its className to the QueryWrapper div between the box and the listing
+// table, and without these the height chain breaks there and the table
+// falls back to content height.
+.listing-fill {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// Completes the height chain from .nav down to a list that pins its own
+// header (FilterableObjectsListV2): the QueryWrapper between them is an
+// unstyled div, and without a definite height on it the list's 100% heights
+// resolve to auto — the whole column scrolls as one, search bar and all.
+// Put this on that QueryWrapper's className.
+.nav-fill {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    flex: 1;
+    min-height: 0;
+  }
+}
