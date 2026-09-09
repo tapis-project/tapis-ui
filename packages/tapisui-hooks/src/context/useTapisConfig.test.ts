@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { isJwtExpired, tenantMatchesHost } from './useTapisConfig';
+import {
+  isJwtExpired,
+  tenantMatchesHost,
+  checkAccessToken,
+} from './useTapisConfig';
 
 // These two rules decide whether a user is silently signed out. A false
 // positive on either logs somebody out of a perfectly good session, so the
@@ -78,5 +82,56 @@ describe('tenantMatchesHost', () => {
     expect(tenantMatchesHost('https://other.tapis.io/tacc.', 'tacc')).toBe(
       false
     );
+  });
+});
+
+describe('checkAccessToken', () => {
+  const now = 1_700_000_000_000;
+  const b64 = (o: object) => btoa(JSON.stringify(o));
+  const tok = (claims: object) => `${b64({ alg: 'none' })}.${b64(claims)}.sig`;
+  const live = now / 1000 + 600;
+
+  it('accepts a live token for this tenant', () => {
+    const t = tok({ exp: live, 'tapis/tenant_id': 'tacc' });
+    expect(
+      checkAccessToken(t, { basePath: 'https://tacc.tapis.io', now })
+    ).toBeUndefined();
+  });
+
+  it('refuses a token it cannot decode', () => {
+    expect(
+      checkAccessToken('nope', { basePath: 'https://tacc.tapis.io', now })
+    ).toEqual({ reason: 'unreadable' });
+  });
+
+  it('refuses an expired token', () => {
+    const t = tok({ exp: now / 1000 - 1, 'tapis/tenant_id': 'tacc' });
+    expect(
+      checkAccessToken(t, { basePath: 'https://tacc.tapis.io', now })?.reason
+    ).toBe('expired');
+  });
+
+  it('refuses another tenant and names it', () => {
+    const t = tok({ exp: live, 'tapis/tenant_id': 'cc' });
+    expect(
+      checkAccessToken(t, { basePath: 'https://tacc.tapis.io', now })
+    ).toEqual({ reason: 'tenant-mismatch', tenant: 'cc' });
+  });
+
+  it('skips the tenant check for a localhost basePath only', () => {
+    const t = tok({ exp: live, 'tapis/tenant_id': 'tacc' });
+    expect(
+      checkAccessToken(t, { basePath: 'http://localhost:8000', now })
+    ).toBeUndefined();
+    expect(checkAccessToken(t, { basePath: undefined, now })?.reason).toBe(
+      'tenant-mismatch'
+    );
+  });
+
+  it('accepts a token without a tenant claim', () => {
+    const t = tok({ exp: live });
+    expect(
+      checkAccessToken(t, { basePath: 'https://tacc.tapis.io', now })
+    ).toBeUndefined();
   });
 });

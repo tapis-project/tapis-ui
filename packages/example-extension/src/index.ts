@@ -1,6 +1,5 @@
 import {
   createExtension,
-  EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { MyNewPage } from './pages';
 
@@ -15,7 +14,6 @@ const extension = createExtension({
       responseType: 'token',
     },
   },
-  removeServices: [EnumTapisCoreService.Apps],
   mainSidebarServices: [
     'systems',
     'apps',

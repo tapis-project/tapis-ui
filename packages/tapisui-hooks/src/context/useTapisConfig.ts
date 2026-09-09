@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useRef } from 'react';
-import { useQuery } from 'react-query';
+import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import Cookies from 'js-cookie';
 import { Authenticator } from '@tapis/tapis-typescript';
 import jwt_decode from 'jwt-decode';
@@ -36,6 +36,63 @@ export const tenantMatchesHost = (
   return host.toLowerCase().split('.').includes(tokenTenantId.toLowerCase());
 };
 
+/**
+ * A localhost basePath cannot encode a tenant, so the tenant check is skipped
+ * for it: the service resolves the tenant from the token claim (dev Pods
+ * proxy, VITE_PODS_BASE_URL).
+ */
+const isLocalDevBasePath = (basePath: string | undefined): boolean =>
+  !!basePath &&
+  /\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|172\.17\.0\.1)(:|\/|$)/i.test(
+    basePath
+  );
+
+export type TokenRefusal = {
+  reason: 'unreadable' | 'expired' | 'tenant-mismatch';
+  /** The token's tenant, for 'tenant-mismatch'. */
+  tenant?: string;
+};
+
+/**
+ * Why this deployment cannot use an access token, or undefined if it can.
+ * The one rule set for the auto-logout effect, the OAuth2 callback and the
+ * token dialog: decodable, unexpired, tenant is a label of the host.
+ */
+export const checkAccessToken = (
+  token: string,
+  { basePath, now }: { basePath: string | undefined; now?: number }
+): TokenRefusal | undefined => {
+  let claims: { exp?: number; 'tapis/tenant_id'?: string };
+  try {
+    claims = jwt_decode(token);
+  } catch {
+    return { reason: 'unreadable' };
+  }
+  if (!claims || typeof claims !== 'object') return { reason: 'unreadable' };
+  if (isJwtExpired(claims, now)) return { reason: 'expired' };
+  const tenant = claims['tapis/tenant_id'];
+  if (
+    tenant &&
+    !isLocalDevBasePath(basePath) &&
+    !tenantMatchesHost(basePath, tenant)
+  ) {
+    return { reason: 'tenant-mismatch', tenant };
+  }
+  return undefined;
+};
+
+/**
+ * Cached responses outlive the session unless removed, so the next sign-in in
+ * this tab must not find the previous user's data. The token query stays: it
+ * is what tells the app the session ended.
+ */
+export const dropSessionQueries = (client: QueryClient): void => {
+  client.removeQueries({
+    predicate: (query) => query.queryHash !== '["tapis-token"]',
+  });
+  client.getMutationCache().clear();
+};
+
 const useTapisConfig = () => {
   const { basePath, mlHubBasePath } = useContext(TapisContext);
 
@@ -47,11 +104,20 @@ const useTapisConfig = () => {
     return undefined;
   };
 
+  const queryClient = useQueryClient();
   const { data, refetch } = useQuery<
     Authenticator.NewAccessTokenResponse | undefined
   >('tapis-token', getAccessToken, {
     initialData: () => getAccessToken(),
   });
+
+  // Re-read the cookie after writing it. A plain refetch can return the read
+  // already in flight (started before the token was stored), which resolves
+  // to "no token". Cancel first, then fetch.
+  const rereadToken = async () => {
+    await queryClient.cancelQueries('tapis-token');
+    await refetch();
+  };
 
   const setAccessToken = async (
     resp: Authenticator.NewAccessTokenResponse | null | undefined
@@ -67,7 +133,8 @@ const useTapisConfig = () => {
       Cookies.remove('tapis-token');
       // Requires the correct domain as the cookie is set to the domain to remove
       Cookies.remove('X-Tapis-Token', { domain: cookieDomain });
-      await refetch();
+      await rereadToken();
+      dropSessionQueries(queryClient);
       return;
     }
 
@@ -81,7 +148,7 @@ const useTapisConfig = () => {
       domain: cookieDomain,
       secure: true,
     });
-    await refetch();
+    await rereadToken();
   };
   // Memoized on the token string: many modules call this hook, and decoding
   // on every render is costly. Claims only change when the token changes.
@@ -153,17 +220,10 @@ const useTapisConfig = () => {
   const tokenTenantId: string | undefined =
     claims['tapis/tenant_id'] ?? undefined;
 
-  // A localhost basePath cannot encode a tenant, so skip the mismatch check:
-  // the service resolves the tenant from the token claim (dev Pods proxy,
-  // VITE_PODS_BASE_URL).
-  const isLocalDevBasePath =
-    !!basePath &&
-    /\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|172\.17\.0\.1)(:|\/|$)/i.test(
-      basePath
-    );
+  const isLocalDev = isLocalDevBasePath(basePath);
 
   // Inline logic for domainsMatched
-  const domainsMatched = isLocalDevBasePath
+  const domainsMatched = isLocalDev
     ? true
     : tenantMatchesHost(basePath, tokenTenantId);
 
@@ -190,20 +250,14 @@ const useTapisConfig = () => {
     }
 
     // Tenant mismatch: the token is for a different tenant than the basePath
-    if (tokenTenantId && Object.keys(claims).length > 0 && !domainsMatched) {
+    const refusal = checkAccessToken(data.access_token, { basePath });
+    if (refusal?.reason === 'tenant-mismatch') {
       console.error(
-        `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Logging user out.`
+        `The basePath ${basePath} does not match the tenant_id ${refusal.tenant}. Logging user out.`
       );
       setAccessTokenRef.current(null);
     }
-  }, [
-    data?.access_token,
-    isTokenExpired,
-    jwtDecodeFailed,
-    tokenTenantId,
-    domainsMatched,
-    basePath,
-  ]);
+  }, [data?.access_token, isTokenExpired, jwtDecodeFailed, basePath]);
 
   return {
     basePath,

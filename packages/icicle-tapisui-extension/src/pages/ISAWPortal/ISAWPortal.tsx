@@ -1,28 +1,14 @@
 import * as React from 'react';
 import { Component } from '@tapis/tapisui-extensions-core';
+import SignedInPortal from '../PortalShared/SignedInPortal';
 
-export const ISAWPortal: Component = ({ accessToken }) => {
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
-      {accessToken ? (
-        <iframe
-          style={{ flexGrow: 1, border: 'none' }}
-          src="https://isawfrontendprod.pods.icicleai.tapis.io/"
-          title="I-SAW Portal"
-        />
-      ) : (
-        <>Invalid JWT. Log out of TapisUI then log back in</>
-      )}
-    </div>
-  );
-};
+export const ISAWPortal: Component = ({ accessToken }) => (
+  <SignedInPortal
+    accessToken={accessToken}
+    src="https://isawfrontendprod.pods.icicleai.tapis.io/"
+    title="I-SAW Portal"
+    blurb="I-SAW field kits — camera-trap backpacks and drones — with live device monitoring. Sign in to open the control center."
+  />
+);
 
 export default ISAWPortal;

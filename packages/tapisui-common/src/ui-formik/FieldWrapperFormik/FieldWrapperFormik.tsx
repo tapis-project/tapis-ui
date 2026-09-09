@@ -6,8 +6,12 @@ export type FieldWrapperProps = {
   name: string;
   label: string;
   required: boolean;
-  description: string;
+  description: React.ReactNode;
   isHidden?: boolean;
+  /** Hold a field's error until it has been visited or the form submitted.
+   *  Off by default: Formik validates every field on each change, so with it
+   *  off, typing in one field shows the errors of fields not reached yet. */
+  errorsAfterTouch?: boolean;
   as: React.ComponentType<any>;
 };
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({
@@ -16,9 +20,11 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
   required,
   description,
   isHidden = false,
+  errorsAfterTouch = false,
   as: Component,
 }) => {
   const [, meta] = useField(name);
+  const error = !errorsAfterTouch || meta.touched ? meta.error : undefined;
   return (
     <FormGroup>
       <span className={isHidden ? styles['hidden'] : ''}>
@@ -36,12 +42,12 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
           ) : null}
         </Label>
         <Field name={name} as={Component} id={name} />
-        {meta.error && (
+        {error && (
           <FormText className={styles['form-field__help']} color="danger">
-            {meta.error}
+            {error}
           </FormText>
         )}
-        {description && !meta.error && (
+        {description && !error && (
           <FormText className={styles['form-field__help']} color="muted">
             {description}
           </FormText>

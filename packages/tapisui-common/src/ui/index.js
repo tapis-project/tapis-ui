@@ -46,3 +46,4 @@ export { default as JSONDisplay } from './JSONDisplay';
 export { default as TooltipModal } from './TooltipModal';
 export { default as Tabs } from './Tabs';
 export { Help, HelpSection } from './Help';
+export * from './InfoStrip';

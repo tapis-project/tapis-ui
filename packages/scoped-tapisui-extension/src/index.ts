@@ -1,6 +1,5 @@
 import {
   createExtension,
-  EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { GEO, SeismoDB } from './pages';
 
@@ -15,7 +14,6 @@ const extension = createExtension({
       responseType: 'token',
     },
   },
-  removeServices: [EnumTapisCoreService.Apps],
   mainSidebarServices: [
     'systems',
     'apps',
@@ -29,7 +27,8 @@ const extension = createExtension({
   showMLHub: false,
   showMLEdge: false,
   showSecondarySideBar: false,
-  authMethods: ['implicit', 'password'],
+  // SSO only: the IdP enforces MFA. Add 'password' to restore the backup form.
+  authMethods: ['implicit'],
   logo: {
     filePath: './logo_scoped.png',
     text: 'SCOPED',

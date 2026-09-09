@@ -1,10 +1,12 @@
+import type React from 'react';
 import { InputProps } from 'reactstrap';
 
 export type FormikInputProps = {
   name: string;
   label: string;
   required: boolean;
-  description: string;
+  description: React.ReactNode;
+  errorsAfterTouch?: boolean;
 } & InputProps;
 
 export { default as FormikInput } from './FormikInput';

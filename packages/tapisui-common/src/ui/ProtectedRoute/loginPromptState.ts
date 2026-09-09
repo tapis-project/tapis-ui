@@ -20,12 +20,12 @@ export type LoginPromptState = {
   /** Custom context line for in-page action gates (wins over route copy). */
   loginMessage?: string;
   /** Where the user was headed when they got bounced. */
-  from?: { pathname?: string };
+  from?: { pathname?: string; search?: string };
 };
 
 export const loginPromptState = (opts?: {
   message?: string;
-  from?: { pathname?: string };
+  from?: { pathname?: string; search?: string };
 }): LoginPromptState => ({
   loginModal: true,
   ...(opts?.message ? { loginMessage: opts.message } : {}),

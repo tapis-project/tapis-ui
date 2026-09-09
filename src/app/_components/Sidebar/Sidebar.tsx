@@ -2,62 +2,44 @@
 import React, {
   useEffect,
   useState,
+  useRef,
   useContext,
   useSyncExternalStore,
 } from 'react';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useQueryClient } from 'react-query';
+import { subscribePanelRequests } from 'app/_components/SectionedPanel/panelSwitch';
 import styles from './Sidebar.module.scss';
-import { Navbar, NavItem } from '@tapis/tapisui-common';
+import { Navbar, NavItem, loginPromptState } from '@tapis/tapisui-common';
+import { LOGIN_RETURN_KEY } from 'app/Login/_components/Login/Login';
 import { useExtension } from 'extensions';
 import {
   ExpandLessRounded,
   ExpandMoreRounded,
   Login,
-  Logout,
   SettingsRounded,
-  Key,
-  Visibility,
-  ContentCopy,
   ChatBubbleOutline,
-  PersonOutline,
   HomeRounded,
-  Tune,
 } from '@mui/icons-material';
-
-// Settings panel loads on first open only — the Sidebar mounts on every page.
-const SettingsDialogLazy = React.lazy(
-  () => import('app/Settings/_components/SettingsDialog/SettingsDialog')
-);
 import { LoadingButton as Button } from '@mui/lab';
 import {
-  Menu,
   Collapse,
   ListItemButton,
-  ListItemText,
-  ListItemIcon,
-  Divider,
   // Button,
-  MenuItem,
   Chip,
+  ListItemText,
   Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
   Tooltip,
 } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import { EditorView } from 'codemirror';
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
-import { vscodeDarkInit } from '@uiw/codemirror-theme-vscode';
-import {
-  Tenants as Hooks,
-  Authenticator as AuthHooks,
-} from '@tapis/tapisui-hooks';
-import { Link, useHistory } from 'react-router-dom';
+import JsonViewerLazy from './JsonViewerLazy';
+
+// Settings modal loads on first open only — the Sidebar mounts on every page.
+const SettingsDialogLazy = React.lazy(
+  () => import('app/Settings/_components/SettingsDialog/SettingsDialog')
+);
+import { Tenants as Hooks } from '@tapis/tapisui-hooks';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import { QueryWrapper } from '@tapis/tapisui-common';
 import { FloatingChatButton } from 'app/_components';
@@ -73,7 +55,8 @@ type SidebarItems = {
 };
 
 const Sidebar: React.FC = () => {
-  const { accessToken, claims, domainsMatched, basePath } = useTapisConfig();
+  const { accessToken, claims, domainsMatched, basePath, setAccessToken } =
+    useTapisConfig();
   const isAuthenticated = Boolean(accessToken?.access_token);
   const { extension } = useExtension();
   const chatContextValue = useContext(ChatContext);
@@ -82,52 +65,54 @@ const Sidebar: React.FC = () => {
     subscribePodsAdminMode,
     getPodsAdminMode
   );
+  // Long-press on Pods toggles pods admin mode (the tier check that asks
+  // the server first arrives with the pods client).
+  const togglePodsAdminMode = () => {
+    setPodsAdminMode(!podsAdminMode);
+    queryClient.invalidateQueries({
+      predicate: (q) =>
+        typeof q.queryKey[0] === 'string' && q.queryKey[0].startsWith('pods/'),
+    });
+  };
   const landingServiceId =
     extension?.serviceMap && 'home' in extension.serviceMap
       ? 'home'
       : undefined;
+  // Pre-login sidebar (extensions with a public landing): a flat, config-
+  // ordered list of public services plus the Login item (special id 'login';
+  // appended last when the config doesn't place it). Without a prelogin
+  // config the classic Dashboard+Login pair renders.
+  const prelogin = extension?.prelogin;
+  const preloginSidebarActive = !accessToken && !!prelogin;
+  const preloginSidebarIds = prelogin
+    ? prelogin.sidebarServices.includes('login')
+      ? prelogin.sidebarServices
+      : [...prelogin.sidebarServices, 'login']
+    : [];
   const [expanded, setExpanded] = useState(true);
   const [openSecondary, setOpenSecondary] = useState(false); //Added openSecondary state to manage the visibility of the secondary sidebar items.
   const [modal, setModal] = useState<string | undefined>(undefined);
-  // Latched: once opened, keep the panel mounted so reopening skips the remount
-  // and its react-query caches survive between opens.
   const [settingsEverOpened, setSettingsEverOpened] = useState(false);
+  // Another panel's footer switcher asked for Settings — this is its host.
+  useEffect(
+    () =>
+      subscribePanelRequests(['settings'], () => {
+        setSettingsEverOpened(true);
+        setModal('settings');
+      }),
+    []
+  );
   const [sectionOpenStates, setSectionOpenStates] = useState<{
     [key: string]: boolean;
   }>({});
   const [moreOpenStates, setMoreOpenStates] = useState<{
     [key: string]: boolean;
   }>({});
-  const [profileUsername, setProfileUsername] = useState('');
-  const [profileLookup, setProfileLookup] = useState('');
-  const [profileInitialized, setProfileInitialized] = useState(false);
-
-  const {
-    data: profileData,
-    isLoading: profileLoading,
-    error: profileError,
-  } = AuthHooks.useGetProfile(
-    { username: profileLookup },
-    { enabled: !!profileLookup }
-  );
-
-  // When the Profiles modal opens, initialize with the current user's username
-  useEffect(() => {
-    if (modal === 'profiles' && !profileInitialized && claims?.['sub']) {
-      const currentUser = (claims['sub'] as string).split('@')[0];
-      setProfileUsername(currentUser);
-      setProfileLookup(currentUser);
-      setProfileInitialized(true);
-    }
-    if (modal !== 'profiles') {
-      setProfileInitialized(false);
-    }
-  }, [modal, claims, profileInitialized]);
-
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;
   const history = useHistory();
+  const location = useLocation();
 
   const valueBlockStyle = {
     display: 'inline-block',
@@ -227,14 +212,7 @@ const Sidebar: React.FC = () => {
         key="pods-nav"
         accentLeft={podsAdminMode}
         accentLeftColor="#F69723"
-        onLongPress={() => {
-          setPodsAdminMode(!podsAdminMode);
-          queryClient.invalidateQueries({
-            predicate: (q) =>
-              typeof q.queryKey[0] === 'string' &&
-              q.queryKey[0].startsWith('pods/'),
-          });
-        }}
+        onLongPress={togglePodsAdminMode}
         longPressMs={1200}
       >
         {expanded ? 'Pods' : ''}
@@ -242,6 +220,7 @@ const Sidebar: React.FC = () => {
     ),
     mlhub: renderSidebarItem('/mlhub', 'share', 'ML Hub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
+    security: renderSidebarItem('/security', 'lock', 'Security'),
     // Only added when an extension's config actually places 'dashboard'
     // somewhere — see the comment on `dashboardPlacedInSidebar` above.
     ...(dashboardPlacedInSidebar && {
@@ -307,22 +286,44 @@ const Sidebar: React.FC = () => {
     />
   );
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleModal = () => {
-    setModal('delete');
-  };
-
-  const handleCopyAccessToken = () => {
-    if (accessToken?.access_token) {
-      navigator.clipboard.writeText(accessToken.access_token);
+  // The account chip used to open a menu whose every item now lives in the
+  // settings panel — JWT + copy in Session's token well, tenants in Tenants,
+  // secrets as a Session quick link, Log out in the panel footer. So the chip
+  // opens the panel itself: one click instead of click-menu-click.
+  // The panel is lazy, so a cold first click paid for its chunk. Warm it when
+  // the browser is idle (and again on hover, for anyone who clicks before idle
+  // fires) — by click time the module graph is already there. Prefetch only:
+  // nothing mounts and no query runs until the panel actually opens.
+  const warmSettingsChunk = React.useCallback(() => {
+    import('app/Settings/_components/SettingsDialog/SettingsDialog');
+  }, []);
+  // Hover goes one step further and MOUNTS the dialog closed, so the click
+  // only has to flip `open`. Cheap: a closed panel prunes to a single section
+  // (keepAlive + open=false) and its tenants query is the one the sidebar has
+  // already fetched, so this shares a cache entry rather than adding a request.
+  const warmSettingsMount = React.useCallback(() => {
+    warmSettingsChunk();
+    setSettingsEverOpened(true);
+  }, [warmSettingsChunk]);
+  useEffect(() => {
+    const ric = (window as any).requestIdleCallback as
+      | ((cb: () => void, opts?: { timeout: number }) => number)
+      | undefined;
+    if (ric) {
+      const id = ric(warmSettingsChunk, { timeout: 3000 });
+      return () => (window as any).cancelIdleCallback?.(id);
     }
+    const t = window.setTimeout(warmSettingsChunk, 1500);
+    return () => window.clearTimeout(t);
+  }, [warmSettingsChunk]);
+
+  const openAccountPanel = () => {
+    if (!(claims && claims['sub'])) {
+      history.push('/login');
+      return;
+    }
+    setSettingsEverOpened(true);
+    setModal('settings');
   };
 
   const useCountdown = (targetTime: number) => {
@@ -367,8 +368,8 @@ const Sidebar: React.FC = () => {
       className={styles.root}
       // Width is content-driven, so a near-empty expanded sidebar (pre-login:
       // just the Login item) would shrink to logo width and park the edge
-      // collapse tab on top of the logo — the floor keeps clearance.
-      // Collapsed stays its natural thin rail.
+      // collapse tab on top of the logo — the floor keeps clearance. Collapsed
+      // stays its natural thin rail.
       style={{
         position: 'relative',
         minWidth: expanded ? '10rem' : undefined,
@@ -387,41 +388,45 @@ const Sidebar: React.FC = () => {
         }}
       >
         <Link to={'/'}>
+          {/* Both images are always in the DOM so they stay preloaded; only one is visible at a time */}
           <img
-            style={
-              expanded
-                ? {
-                    maxHeight: '50px',
-                    maxWidth: '9rem',
-                    borderRadius: '6px',
-                    marginLeft: '.5rem',
-                    marginRight: '.5rem',
-                  }
-                : {
-                    height: '50px',
-                    maxWidth: '4.2rem',
-                    borderRadius: '6px',
-                    marginLeft: '.2rem',
-                    marginRight: '.2rem',
-                  }
-            }
+            style={{
+              display: expanded ? 'block' : 'none',
+              maxHeight: '50px',
+              maxWidth: '9rem',
+              borderRadius: '6px',
+              marginLeft: '.5rem',
+              marginRight: '.5rem',
+            }}
             className="logo"
             src={
-              expanded
-                ? extension?.logo?.filePath ||
-                  extension?.logo?.url ||
-                  extension?.logo?.text ||
-                  './logo_tapis.png'
-                : extension?.icon?.filePath ||
-                  extension?.icon?.url ||
-                  extension?.logo?.text ||
-                  './icon_tapis.png'
+              extension?.logo?.filePath ||
+              extension?.logo?.url ||
+              extension?.logo?.text ||
+              './logo_tapis.png'
+            }
+          />
+          <img
+            style={{
+              display: expanded ? 'none' : 'block',
+              height: '50px',
+              maxWidth: '4.2rem',
+              borderRadius: '6px',
+              marginLeft: '.2rem',
+              marginRight: '.2rem',
+            }}
+            className="logo"
+            src={
+              extension?.icon?.filePath ||
+              extension?.icon?.url ||
+              extension?.icon?.text ||
+              './icon_tapis.png'
             }
           />
         </Link>
       </div>
 
-      {/* Flush on the pane's edge (it used to hang off it, over the
+      {/* Collapse/expand tab: rides ON the pane's top-right edge (never over
           page content), rounded toward the pane — a taller, thinner grab-tab
           so the minimized logo stays clear of it. */}
       <Chip
@@ -470,14 +475,68 @@ const Sidebar: React.FC = () => {
             minHeight: '100%',
           }}
         >
-          {landingServiceId && accessToken && sidebarItems[landingServiceId]}
-          {!dashboardPlacedInSidebar &&
-            renderSidebarItem(
-              landingServiceId ? '/dashboard' : '/',
-              'dashboard',
-              'Dashboard'
-            )}
-          {!accessToken && renderSidebarItem('/login', 'user', 'Login')}
+          {preloginSidebarActive ? (
+            <>
+              {preloginSidebarIds.map((serviceId) =>
+                serviceId === 'login' ? (
+                  // Same door as the banner's Sign in: raise the dialog over
+                  // the public page instead of navigating to /login, which on
+                  // an implicit-auth deployment leaves the app entirely and
+                  // bounces back to the landing route with stale chrome.
+                  <NavItem
+                    to={{
+                      pathname: location.pathname,
+                      search: location.search,
+                      state: loginPromptState(),
+                    }}
+                    icon="user"
+                    key="login-nav"
+                  >
+                    {expanded ? 'Login' : ''}
+                  </NavItem>
+                ) : (
+                  sidebarItems[serviceId]
+                )
+              )}
+            </>
+          ) : (
+            <>
+              {landingServiceId &&
+                accessToken &&
+                sidebarItems[landingServiceId]}
+              {/* Only while logged in: pre-login the Dashboard item just
+                  bounced to /login (its '/' target redirects there when
+                  unauthenticated), so the classic pre-login sidebar is the
+                  Login item alone. Deployments that want real pre-login pages
+                  declare a prelogin config instead. */}
+              {Boolean(accessToken) &&
+                !dashboardPlacedInSidebar &&
+                renderSidebarItem(
+                  landingServiceId ? '/dashboard' : '/',
+                  'dashboard',
+                  'Dashboard'
+                )}
+              {/* JWT Bypass moved to the login page itself (hold the page
+                  header 3 s) — see src/app/Login/_components/JwtBypassDialog. */}
+              {!accessToken && (
+                // Record where Login was pressed, for the OAuth2 callback.
+                <NavItem
+                  to="/login"
+                  icon="user"
+                  key="login-nav"
+                  onClick={() => {
+                    if (location.pathname.startsWith('/login')) return;
+                    sessionStorage.setItem(
+                      LOGIN_RETURN_KEY,
+                      location.pathname + location.search
+                    );
+                  }}
+                >
+                  {expanded ? 'Login' : ''}
+                </NavItem>
+              )}
+            </>
+          )}
           {accessToken && (
             <>
               {extension?.betaSidebar?.enabled ? (
@@ -841,7 +900,10 @@ const Sidebar: React.FC = () => {
               </div>
             )
           }
-          onClick={handleClick} // Move the click handler here to make the entire div clickable
+          aria-label="Account and settings"
+          onClick={openAccountPanel} // one click straight into the panel
+          onMouseEnter={warmSettingsMount}
+          onFocus={warmSettingsMount}
           sx={{
             height: '2rem',
             display: 'flex',
@@ -859,456 +921,9 @@ const Sidebar: React.FC = () => {
         />
       </div>
 
-      <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            maxHeight: 'calc(100vh - 100px)',
-            overflow: 'auto',
-            filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.52))',
-            mt: 0.5,
-            ml: 1.2,
-            '& .MuiMenuItem-root': {
-              minHeight: 'auto',
-            },
-          },
-        }}
-        transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <MenuItem
-          disabled={!(claims && claims['sub'])}
-          onClick={() => setModal('viewJWT')}
-        >
-          <ListItemIcon>
-            <Visibility fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>View JWT</ListItemText>
-        </MenuItem>
-        <MenuItem
-          disabled={!(claims && claims['sub']) || !accessToken?.access_token}
-          onClick={handleCopyAccessToken}
-        >
-          <ListItemIcon>
-            <ContentCopy fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Copy Access Token</ListItemText>
-        </MenuItem>
-        <MenuItem
-          disabled={!(claims && claims['sub'])}
-          onClick={() => setModal('profiles')}
-        >
-          <ListItemIcon>
-            <PersonOutline fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Profiles</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            history.push('/workflows/secrets');
-          }}
-          disabled={!(claims && claims['sub'])}
-        >
-          <ListItemIcon>
-            <Key fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Manage Secrets</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setSettingsEverOpened(true);
-            setModal('settings');
-          }}
-          disabled={!(claims && claims['sub'])}
-        >
-          <ListItemIcon>
-            <Tune fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
-        </MenuItem>
-        {((extension !== undefined && extension.allowMultiTenant) ||
-          extension === undefined ||
-          (extension !== undefined && extension.allowMultiTenant)) && (
-          <MenuItem
-            onClick={() => setModal('changeTenant')}
-            disabled={!(claims && claims['sub'])}
-          >
-            <ListItemIcon>
-              <SettingsRounded fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Change Tenant</ListItemText>
-          </MenuItem>
-        )}
-        <Divider />
-        {claims && claims['sub'] ? (
-          <MenuItem onClick={() => history.push('/logout')}>
-            <ListItemIcon>
-              <Logout fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Logout</ListItemText>
-          </MenuItem>
-        ) : (
-          <MenuItem onClick={() => history.push('/login')}>
-            <ListItemIcon>
-              <Login />
-            </ListItemIcon>
-            Login
-          </MenuItem>
-        )}
-      </Menu>
-
-      <Dialog
-        fullWidth
-        open={modal === 'viewJWT'}
-        onClose={() => setModal(undefined)}
-        aria-labelledby="jwt-dialog-title"
-        PaperProps={{
-          style: { maxHeight: '95%', width: '60rem', maxWidth: '80%' },
-        }}
-      >
-        <DialogContent>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '8px',
-            }}
-          >
-            <Typography variant="h6">Access Token Object</Typography>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<ContentCopy />}
-                onClick={handleCopyAccessToken}
-                disabled={!domainsMatched || !accessToken?.access_token}
-              >
-                Copy Access Token
-              </Button>
-            </div>
-          </div>
-          <CodeMirror
-            value={
-              domainsMatched
-                ? JSON.stringify(accessToken, null, 2)
-                : 'Access token tenant_id and current domain are out-of-sync. Please log-in again.'
-            }
-            editable={false}
-            readOnly={true}
-            basicSetup={{
-              lineNumbers: false,
-              tabSize: 2,
-              foldGutter: false,
-            }}
-            extensions={[EditorView.lineWrapping, json()]}
-            theme={vscodeDarkInit({
-              settings: {
-                caret: '#c6c6c6',
-                fontFamily: 'monospace',
-              },
-            })}
-            style={{
-              fontSize: 12,
-              backgroundColor: '#f5f5f5',
-              fontFamily:
-                'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            }}
-          />
-          <Typography variant="h6">JWT Claims</Typography>
-          <CodeMirror
-            value={JSON.stringify(claims, null, 2)}
-            editable={false}
-            readOnly={true}
-            basicSetup={{
-              lineNumbers: false,
-              tabSize: 2,
-              foldGutter: false,
-            }}
-            extensions={[EditorView.lineWrapping, json()]}
-            theme={vscodeDarkInit({
-              settings: {
-                caret: '#c6c6c6',
-                fontFamily: 'monospace',
-              },
-            })}
-            style={{
-              fontSize: 12,
-              backgroundColor: '#f5f5f5',
-              fontFamily:
-                'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            }}
-          />
-          <Typography variant="h6">Current Domain:</Typography>
-          <Typography component="div" sx={valueBlockStyle}>
-            {basePath?.replace('https://', '').replace('http://', '')}
-          </Typography>
-          <Typography variant="h6">Token Life Remaining:</Typography>
-          <Typography component="div" sx={valueBlockStyle}>
-            <CountdownDisplay expirationTime={claims['exp']} />
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setModal(undefined)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={modal === 'profiles'}
-        onClose={() => setModal(undefined)}
-        aria-labelledby="profiles-dialog-title"
-        PaperProps={{
-          style: { width: '32rem', maxWidth: '90%' },
-        }}
-      >
-        <DialogTitle id="profiles-dialog-title">User Profile</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Look up an OAuth2 profile by username. GET /v3/oauth2/profiles/
-            {'\u007B'}user{'\u007D'}
-          </Typography>
-          <div
-            style={{
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'center',
-              marginBottom: '16px',
-            }}
-          >
-            <TextField
-              size="small"
-              label="Username"
-              value={profileUsername}
-              onChange={(e) => setProfileUsername(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && profileUsername.trim()) {
-                  setProfileLookup(profileUsername.trim());
-                }
-              }}
-              sx={{ flex: 1 }}
-            />
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => setProfileLookup(profileUsername.trim())}
-              disabled={!profileUsername.trim()}
-              loading={profileLoading}
-            >
-              Submit
-            </Button>
-          </div>
-          {profileError && (
-            <Typography color="error" variant="body2" sx={{ mb: 1 }}>
-              {profileError.message}
-            </Typography>
-          )}
-          {profileData?.result &&
-            (() => {
-              const p = profileData.result as any;
-              const fields: {
-                label: string;
-                value: string | number | null | undefined;
-              }[] = [
-                { label: 'Username', value: p.username },
-                {
-                  label: 'Name',
-                  value:
-                    p.name ||
-                    [p.given_name, p.last_name].filter(Boolean).join(' ') ||
-                    null,
-                },
-                { label: 'Given Name', value: p.given_name },
-                { label: 'Last Name', value: p.last_name },
-                { label: 'Email', value: p.email },
-                { label: 'UID', value: p.uid },
-                { label: 'Phone', value: p.phone },
-                { label: 'Mobile Phone', value: p.mobile_phone },
-                { label: 'Create Time', value: p.create_time },
-              ];
-
-              // Parse LDAP Distinguished Name into readable parts
-              const dnAbbreviations: Record<string, string> = {
-                cn: 'Common Name',
-                ou: 'Org Unit',
-                dc: 'Domain',
-                o: 'Organization',
-                uid: 'User ID',
-                l: 'Locality',
-                st: 'State',
-                c: 'Country',
-              };
-              const dnParts = p.dn
-                ? p.dn.split(',').map((part: string) => {
-                    const [key, ...rest] = part.trim().split('=');
-                    const k = key.toLowerCase();
-                    return {
-                      abbr: key,
-                      full: dnAbbreviations[k] || key,
-                      value: rest.join('='),
-                    };
-                  })
-                : [];
-              return (
-                <>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <tbody>
-                      {fields.map(({ label, value }) => (
-                        <tr key={label}>
-                          <td
-                            style={{
-                              padding: '6px 12px 6px 0',
-                              fontWeight: 600,
-                              whiteSpace: 'nowrap',
-                              verticalAlign: 'top',
-                              color: '#555',
-                              borderBottom: '1px solid #eee',
-                            }}
-                          >
-                            {label}
-                          </td>
-                          <td
-                            style={{
-                              padding: '6px 0',
-                              wordBreak: 'break-all',
-                              borderBottom: '1px solid #eee',
-                            }}
-                          >
-                            {value ?? <span style={{ color: '#999' }}>—</span>}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {dnParts.length > 0 && (
-                    <>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ mt: 2, mb: 0.5, color: '#555' }}
-                      >
-                        Distinguished Name (DN)
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ display: 'block', mb: 1, color: '#888' }}
-                      >
-                        {p.dn}
-                      </Typography>
-                      <table
-                        style={{ width: '100%', borderCollapse: 'collapse' }}
-                      >
-                        <tbody>
-                          {dnParts.map(
-                            (
-                              part: {
-                                abbr: string;
-                                full: string;
-                                value: string;
-                              },
-                              i: number
-                            ) => (
-                              <tr key={i}>
-                                <td
-                                  style={{
-                                    padding: '4px 10px 4px 0',
-                                    fontWeight: 600,
-                                    whiteSpace: 'nowrap',
-                                    color: '#555',
-                                    fontSize: '0.85rem',
-                                    borderBottom: '1px solid #f0f0f0',
-                                  }}
-                                >
-                                  {part.full}
-                                  <span
-                                    style={{
-                                      fontWeight: 400,
-                                      color: '#aaa',
-                                      marginLeft: 4,
-                                    }}
-                                  >
-                                    ({part.abbr})
-                                  </span>
-                                </td>
-                                <td
-                                  style={{
-                                    padding: '4px 0',
-                                    fontSize: '0.85rem',
-                                    borderBottom: '1px solid #f0f0f0',
-                                  }}
-                                >
-                                  {part.value}
-                                </td>
-                              </tr>
-                            )
-                          )}
-                        </tbody>
-                      </table>
-                    </>
-                  )}
-                </>
-              );
-            })()}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setModal(undefined)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={modal === 'changeTenant'}
-        onClose={() => setModal(undefined)}
-        aria-labelledby="change-tenant-dialog-title"
-        PaperProps={{
-          style: { maxHeight: '70%' },
-        }}
-      >
-        <DialogTitle id="change-tenant-dialog-title">Change Tenant</DialogTitle>
-        <DialogContent>
-          <QueryWrapper isLoading={isLoading} error={error}>
-            {tenants
-              .sort((a, b) => a.tenant_id.localeCompare(b.tenant_id))
-              .map((tenant) => (
-                <MenuItem
-                  key={tenant.tenant_id}
-                  onClick={() => {
-                    window.location.href = tenant.base_url + '/';
-                    setModal(undefined);
-                  }}
-                  onAuxClick={(event) => {
-                    // Handle middle-click (button 1) to open in new tab
-                    if (event.button === 1) {
-                      event.preventDefault();
-                      window.open(tenant.base_url + '/', '_blank');
-                    }
-                  }}
-                  component="a"
-                  href={tenant.base_url + '/'}
-                  sx={{
-                    cursor: 'pointer',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    '&:hover': {
-                      textDecoration: 'none',
-                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                    },
-                  }}
-                >
-                  {tenant.tenant_id}
-                </MenuItem>
-              ))}
-          </QueryWrapper>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setModal(undefined)}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Mounted only after the first open, and kept mounted after that, so
-          reopening does not remount the panel or drop its query caches. */}
+      {/* Latched after first open (+ keepMounted inside): reopen skips the
+          full panel remount AND react-query subscriptions stay alive, so the
+          store/tenant caches stop being garbage-collected between opens. */}
       {settingsEverOpened && (
         <React.Suspense fallback={null}>
           <SettingsDialogLazy

@@ -1,0 +1,26 @@
+// Spacing and type for the login page and the login dialog, in one place.
+// Tuned 2026-10-01 against both the short Tapis copy and ICICLE's long
+// tagline + description. Change a value here, not in the stylesheets.
+
+// vertical rhythm
+$page-top: 3rem; // space above the logo
+$above-card: 0.85rem; // description → sign-in card
+$card-top: 0.9rem; // card top padding
+$card-bottom: 0.85rem; // card bottom padding
+$title-gap: 0.6rem; // "Sign in" → the form
+$field-gap: 0.5rem; // between the form's fields
+$above-links: 0.6rem; // card → footer links
+
+// horizontal
+$inset: 0.35rem; // open header and links, inside the card's edges
+$card-side: 1.05rem; // card left/right padding
+
+// the login dialog's frame (everything inside reuses the values above)
+$dialog-pad-top: 1.15rem;
+$dialog-pad-side: 1rem;
+$dialog-pad-bottom: 0.9rem;
+
+// type
+$tagline-size: 0.83rem;
+$tagline-gap: 0.4rem; // tagline → description
+$description-size: 0.83rem;

@@ -1,14 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Close, HelpOutline, MenuBookOutlined } from '@mui/icons-material';
-import {
-  Drawer,
-  Box,
-  Stack,
-  Grid,
-  Typography,
-  ButtonBase,
-  Tooltip,
-} from '@mui/material';
+import { Drawer, Box, Stack, Grid, Typography } from '@mui/material';
+import { InfoStrip } from '../InfoStrip';
 
 // The banner drawer's resize bounds: never narrower than a quarter of the
 // window, never wider than it already opens.
@@ -222,107 +215,24 @@ const Help: React.FC<React.PropsWithChildren<HelpProps>> = ({
           )}
           <Stack direction="column" sx={{ height: '100%' }}>
             {showHeader && headerStyle === 'banner' && (
-              // The PreloginBanner grammar in info blue: a hairline strip
-              // instead of a header block — the drawer is for the docs, not
-              // for announcing itself.
-              <Box
-                sx={{
-                  flexShrink: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  px: 1.75,
-                  py: '4px',
-                  minHeight: 30,
-                  bgcolor: 'rgba(21, 101, 192, 0.07)',
-                  borderBottom: '1px solid rgba(21, 101, 192, 0.28)',
-                  color: '#1c5d99',
-                  fontSize: '0.78rem',
-                  lineHeight: 1.3,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: '50%',
-                    bgcolor: '#1565c0',
-                    flexShrink: 0,
-                  }}
-                />
-                <Box
-                  component="span"
-                  sx={{
-                    flexGrow: 1,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {bannerText ??
-                    `${title} — the official docs, opened in place.`}
-                </Box>
-                {bannerAction && (
-                  <ButtonBase
-                    onClick={bannerAction.onClick}
-                    sx={{
-                      flexShrink: 0,
-                      px: 1.25,
-                      py: '2px',
-                      borderRadius: '5px',
-                      border: '1px solid rgba(21, 101, 192, 0.5)',
-                      color: '#1c5d99',
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      fontFamily: 'inherit',
-                      transition: 'background 0.06s, color 0.06s',
-                      '&:hover': { bgcolor: '#1565c0', color: '#ffffff' },
-                    }}
-                  >
-                    {bannerAction.label}
-                  </ButtonBase>
-                )}
-                {iframeUrl && (
-                  <ButtonBase
-                    onClick={() => window.open(iframeUrl, '_blank')}
-                    sx={{
-                      flexShrink: 0,
-                      px: 1.25,
-                      py: '2px',
-                      borderRadius: '5px',
-                      border: '1px solid rgba(21, 101, 192, 0.5)',
-                      color: '#1c5d99',
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      fontFamily: 'inherit',
-                      transition: 'background 0.06s, color 0.06s',
-                      '&:hover': { bgcolor: '#1565c0', color: '#ffffff' },
-                    }}
-                  >
-                    Open in tab ↗
-                  </ButtonBase>
-                )}
-                {/* the drawer closes on backdrop and Escape, but neither is
-                    obvious when it is filling the screen */}
-                <Tooltip title="Close">
-                  <ButtonBase
-                    aria-label="Close the docs"
-                    onClick={() => setOpen(false)}
-                    sx={{
-                      flexShrink: 0,
-                      width: 22,
-                      height: 22,
-                      borderRadius: '5px',
-                      border: '1px solid rgba(21, 101, 192, 0.5)',
-                      color: '#1c5d99',
-                      transition: 'background 0.06s, color 0.06s',
-                      '&:hover': { bgcolor: '#1565c0', color: '#ffffff' },
-                    }}
-                  >
-                    <Close sx={{ fontSize: 14 }} />
-                  </ButtonBase>
-                </Tooltip>
-              </Box>
+              // The thin bar in info blue: a hairline strip instead of a
+              // header block — the drawer is for the docs, not for
+              // announcing itself. ✕ closes the drawer (Escape and the
+              // backdrop do too, but neither is obvious at full width).
+              <InfoStrip
+                tone="blue"
+                text={
+                  bannerText ?? `${title} — the official docs, opened in place.`
+                }
+                actions={[
+                  ...(bannerAction ? [bannerAction] : []),
+                  ...(iframeUrl
+                    ? [{ label: 'Open in tab ↗', href: iframeUrl }]
+                    : []),
+                ]}
+                onClose={() => setOpen(false)}
+                closeLabel="Close the docs"
+              />
             )}
             {showHeader && headerStyle === 'classic' && (
               <Grid>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { is401 } from './TapisProvider';
+import { is401, shouldRetry } from './TapisProvider';
 
 // The dividing line this guards: a dead SESSION logs out; a dead SYSTEM
 // does not. The exact error that used to log people out of a job page is
@@ -70,5 +70,28 @@ describe('is401 — the request’s own JWT being refused does', () => {
 
   it('the authenticator refusing outright', () => {
     expect(is401(new Error('invalid_credentials'))).toBe(true);
+  });
+});
+
+describe('shouldRetry', () => {
+  it('stops on the first 4xx answer', () => {
+    [400, 401, 403, 404].forEach((status) =>
+      expect(shouldRetry(0, { status })).toBe(false)
+    );
+  });
+
+  it('reads the status of a raw response error', () => {
+    expect(shouldRetry(0, { response: { status: 404 } })).toBe(false);
+  });
+
+  it('retries timeouts, throttling and 5xx, three times', () => {
+    [408, 429, 500, 503].forEach((status) => {
+      expect(shouldRetry(2, { status })).toBe(true);
+      expect(shouldRetry(3, { status })).toBe(false);
+    });
+  });
+
+  it('retries a network failure, which has no status', () => {
+    expect(shouldRetry(0, new TypeError('Failed to fetch'))).toBe(true);
   });
 });

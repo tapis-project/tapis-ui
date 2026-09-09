@@ -7,7 +7,7 @@
  * it can fire gets a case, alongside the cookie read/write it all rests on.
  */
 import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react';
+import { render, renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import Cookies from 'js-cookie';
@@ -118,6 +118,30 @@ describe('useTapisConfig', () => {
 
   // Each of these ends with the user signed out. They are the reasons a
   // session can vanish without the UI ever saying why.
+  describe('signing out', () => {
+    it('removes cached responses and keeps the token query', async () => {
+      seedSession(jwt({ exp: inHours(4), 'tapis/tenant_id': 'tacc' }));
+      const client = new QueryClient();
+      const wrap = ({ children }: { children: React.ReactNode }) => (
+        <QueryClientProvider client={client}>
+          <TapisContext.Provider value={{ basePath: TACC, mlHubBasePath: '' }}>
+            {children}
+          </TapisContext.Provider>
+        </QueryClientProvider>
+      );
+      const { result } = renderHook(() => useTapisConfig(), { wrapper: wrap });
+      client.setQueryData(['jobs/list', {}, 'tok'], { result: ['private'] });
+
+      await result.current.setAccessToken(null);
+
+      await waitFor(() =>
+        expect(client.getQueryData(['jobs/list', {}, 'tok'])).toBeUndefined()
+      );
+      expect(client.getQueryCache().find('tapis-token')).toBeDefined();
+      expect(result.current.accessToken).toBeUndefined();
+    });
+  });
+
   describe('clears the session when the token is unusable', () => {
     it('drops a token that is not a decodable JWT', async () => {
       seedSession('not-a-jwt');
@@ -174,5 +198,41 @@ describe('useTapisConfig', () => {
       });
       expect(result.current.pathTenantId).toEqual('icicleai');
     });
+  });
+});
+
+// The prelogin boot order: the app chrome (sidebar, layout) mounts at the
+// OAuth2 callback and reads the token first, then the callback stores it.
+// The chrome must end up signed in without a focus change or a reload.
+describe('a token stored while the chrome is still reading', () => {
+  beforeEach(() => Cookies.remove('tapis-token'));
+
+  it('reaches every reader, not just the one that stored it', async () => {
+    const token = jwt({ exp: inHours(4), 'tapis/tenant_id': 'tacc' });
+    const seen: { chrome?: string } = {};
+    const Chrome = () => {
+      seen.chrome = useTapisConfig().accessToken?.access_token;
+      return null;
+    };
+    const Callback = () => {
+      const { setAccessToken } = useTapisConfig();
+      React.useEffect(() => {
+        setAccessToken({
+          access_token: token,
+          expires_in: 14400,
+          expires_at: new Date(Date.now() + 4 * 3600 * 1000).toISOString(),
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+      return null;
+    };
+    const Wrapper = wrapper(TACC);
+    render(
+      <Wrapper>
+        <Chrome />
+        <Callback />
+      </Wrapper>
+    );
+    await waitFor(() => expect(seen.chrome).toBe(token));
   });
 });
