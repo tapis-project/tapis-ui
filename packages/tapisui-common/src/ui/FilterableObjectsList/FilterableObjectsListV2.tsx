@@ -27,6 +27,7 @@ import {
   IconButton,
   InputAdornment,
   Badge,
+  Skeleton,
 } from '@mui/material';
 import {
   ExpandMore,
@@ -41,6 +42,7 @@ import {
   ArrowDownward,
   SwapVert,
   ViewList,
+  InfoOutlined,
 } from '@mui/icons-material';
 import type {
   FilterableObjectsListProps,
@@ -98,6 +100,33 @@ export type FilterableObjectsListV2ExtraProps<T> = {
   defaultSortBy?: string;
   /** Whether "show in groups" is on by default */
   defaultGroupsOn?: boolean;
+  /** Message shown when the objects array is empty */
+  emptyMessage?: string;
+  /** Observe the search box — lets a host page filter a sibling surface
+   *  (an overview table) from the same query. */
+  onSearchChange?: (query: string) => void;
+  /** Rendered in the pinned header, under the search/filter controls and
+   *  above the scrolling rows — where a nav's window ledger belongs. */
+  belowToolbar?: React.ReactNode;
+  /**
+   * What this search actually covers, shown only while something is
+   * typed.
+   *
+   * The box searches the rows the nav is HOLDING, not the service. That
+   * is the right behaviour — it is instant, and it filters the page's
+   * table with it — but it is invisible, and people read an empty result
+   * as "there is no such system" rather than "not in the 50 I fetched".
+   * Some records are worse than absent: a hidden job is filtered out of
+   * /jobs/list AND /jobs/search, so no query anywhere can reach it.
+   *
+   * So each nav says its own truth, in its own words, at the moment the
+   * question arises. Takes the query so the sentence can use it.
+   */
+  searchScope?: (query: string) => React.ReactNode;
+  /** The first fetch is in flight: keep the whole chrome (search, tools,
+   *  belowToolbar) and show skeleton rows where the list will be, so the
+   *  nav arrives as itself instead of popping out of a spinner. */
+  loading?: boolean;
 };
 
 export type FilterableObjectsListV2Props<
@@ -116,6 +145,13 @@ type ToolbarPanel = 'filter' | null;
 
 type V2State = {
   open: string[];
+  /**
+   * Groups the user explicitly shut. Needed because `open` supports
+   * wildcards (`field:*`, `*:*`) that keep every group in a field open by
+   * default — removing one group's entry from `open` can never beat the
+   * wildcard, which used to make those groups impossible to collapse.
+   */
+  closed: string[];
   groupedObjects: { [key: string]: ReturnType<typeof filterObjects> };
   orderBy: OrderBy;
   sortBy: string;
@@ -130,6 +166,7 @@ type V2State = {
 const STATUS_COLORS: Record<string, { bg: string; fg: string; dot: string }> = {
   AVAILABLE: { bg: '#e8f5e9', fg: '#2e7d32', dot: '#4caf50' },
   CREATING: { bg: '#fff3e0', fg: '#e65100', dot: '#ff9800' },
+  'SPAWNER SETUP': { bg: '#fffde7', fg: '#a07800', dot: '#c8a000' },
   REQUESTED: { bg: '#e3f2fd', fg: '#1565c0', dot: '#42a5f5' },
   ERROR: { bg: '#fbe9e7', fg: '#c62828', dot: '#ef5350' },
   STOPPED: { bg: '#f3e5f5', fg: '#6a1b9a', dot: '#ab47bc' },
@@ -143,6 +180,98 @@ export const getStatusColor = (status: string | undefined) =>
   STATUS_COLORS[status ?? ''] ?? defaultStatusColor;
 
 // ── Component ───────────────────────────────────────────────────────
+
+// ── Compact filter bar tokens ────────────────────────────────────────────────
+const TIME_RANGES = [
+  { id: 'last24h', label: '24h' },
+  { id: 'last7d', label: '7d' },
+  { id: 'last30d', label: '30d' },
+];
+
+const FILTER_LABEL_SX = {
+  fontSize: '0.68rem',
+  color: 'text.secondary',
+  flexShrink: 0,
+} as const;
+
+const FILTER_CHIP_SX = {
+  height: 20,
+  fontSize: '0.68rem',
+  '& .MuiChip-label': { px: 0.75 },
+  '& .MuiChip-icon': { fontSize: 13, ml: 0.5 },
+  '& .MuiChip-deleteIcon': { fontSize: 13 },
+} as const;
+
+const FILTER_DATE_SX = {
+  flex: 1,
+  '& .MuiInputBase-root': { height: 26, fontSize: '0.68rem' },
+} as const;
+
+// ── Search + tool cluster tokens ─────────────────────────────────────────────
+//
+// The bar is a search field and four switches. It read as five separate
+// controls at even spacing, which made the switches look like more of a
+// decision than they are: they qualify the field beside them. So the
+// switches abut into one cluster, with a single gap between the two halves.
+// The field keeps its plain outlined colouring — a fill was tried and read
+// as disabled — and only gets tighter: shorter, a smaller radius, and an
+// adornment that stops eating a quarter of the field.
+
+const SEARCH_SX = {
+  flex: 1,
+  minWidth: 0,
+  '& .MuiInputBase-root': {
+    height: 28,
+    fontSize: '0.78rem',
+    // a touch tighter than the buttons' 5px — the field is the long shape in
+    // the row, and a soft corner on a long shape reads as rounder than it is
+    borderRadius: '4px',
+    pl: 1,
+    pr: 0.5,
+  },
+  // the magnifier is a hint, not a control: it should not take a whole
+  // 8px gutter out of a 28px field
+  '& .MuiInputAdornment-positionStart': { mr: 0.75, color: 'text.disabled' },
+  '& .MuiInputBase-input': { py: '4px', '&::placeholder': { opacity: 0.7 } },
+} as const;
+
+/** Buttons abut — the gap between them would otherwise read as a boundary. */
+const TOOL_CLUSTER_SX = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 0,
+  flexShrink: 0,
+} as const;
+
+const TOOL_ICON_SX = { fontSize: 17 } as const;
+
+/**
+ * "On" is ink and a grey fill, matching the ? and width toggles in the page
+ * header directly above. Not primary blue: blue in this app means 'a link'
+ * and 'public', and on a switch that is on most of the time it only ever says
+ * 'notice me'.
+ */
+const toolButtonSx = (on: boolean) =>
+  ({
+    p: '3px',
+    borderRadius: '5px',
+    color: on ? 'text.primary' : 'text.secondary',
+    bgcolor: on ? 'rgba(0,0,0,0.07)' : 'transparent',
+    '&:hover': { bgcolor: on ? 'rgba(0,0,0,0.10)' : 'rgba(0,0,0,0.05)' },
+  } as const);
+
+/** Small enough to sit on a 17px glyph without becoming the glyph. */
+const FILTER_BADGE_SX = {
+  '& .MuiBadge-badge': {
+    height: 12,
+    minWidth: 12,
+    fontSize: '0.58rem',
+    fontWeight: 700,
+    px: '3px',
+    top: -1,
+    right: -1,
+  },
+} as const;
 
 const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
   [key: string]: any;
@@ -191,6 +320,11 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
   sortOptions,
   defaultSortBy,
   defaultGroupsOn = false,
+  emptyMessage,
+  onSearchChange,
+  belowToolbar,
+  searchScope,
+  loading = false,
 }) => {
   // ── Memoised initial open state ─────────────────────────────────
 
@@ -212,6 +346,7 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
 
   const [state, setState] = useState<V2State>({
     open: initialOpen,
+    closed: [],
     groupedObjects: {},
     orderBy: initialSortOpt?.defaultOrder ?? orderGroupsBy,
     sortBy: initialSortId,
@@ -223,11 +358,18 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
   });
 
   const [searchQuery, setSearchQuery] = useState('');
+  useEffect(() => {
+    onSearchChange?.(searchQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
   const [currentFilterValue, setCurrentFilterValue] = useState('');
-  const [showDuplicateMessage, setShowDuplicateMessage] = useState(false);
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   const [toolbarPanel, setToolbarPanel] = useState<ToolbarPanel>(null);
+
+  // With the panel closed, an active filter left no trace on the bar — the
+  // list was just short, for no visible reason. This is what the badge counts.
+  const activeFilterCount = state.activeFilters?.length ?? 0;
   const [sortAnchorEl, setSortAnchorEl] = useState<HTMLElement | null>(null);
 
   const isCustomDateRangeValid = (): boolean => {
@@ -319,12 +461,30 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
 
   // ── Helpers ────────────────────────────────────────────────────
 
+  const isGroupOpen = (field: string, fieldValue: string) => {
+    const target = `${field}:${fieldValue}`;
+    return (
+      !state.closed.includes(target) &&
+      (state.open.includes(target) || state.open.includes(`${field}:*`))
+    );
+  };
+
   const toggleDropdown = (field: string, fieldValue: string) => {
     const target = `${field}:${fieldValue}`;
-    if (state.open.includes(target)) {
-      setState({ ...state, open: state.open.filter((s) => s !== target) });
+    if (isGroupOpen(field, fieldValue)) {
+      // record the shut explicitly — a wildcard in `open` would otherwise
+      // reopen the group no matter what is removed from that list
+      setState({
+        ...state,
+        open: state.open.filter((s) => s !== target),
+        closed: [...state.closed, target],
+      });
     } else {
-      setState({ ...state, open: [...state.open, target] });
+      setState({
+        ...state,
+        open: [...state.open, target],
+        closed: state.closed.filter((s) => s !== target),
+      });
     }
   };
 
@@ -339,54 +499,99 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
     }, objects);
   };
 
-  const addFilter = (filter: Filter) => {
-    if (!filterable || !state.activeFilters) return;
-    const isDuplicate = state.activeFilters.some((ef) => {
-      if (ef.type !== filter.type) return false;
-      if (filter.type === 'timeRange' && ef.type === 'timeRange') {
-        const fr = filter.value?.range;
-        const er = ef.value?.range;
-        if (fr === 'custom' && er === 'custom') {
-          return (
-            ef.field === filter.field &&
-            ef.value?.customStart === filter.value?.customStart &&
-            ef.value?.customEnd === filter.value?.customEnd
-          );
-        }
-        return ef.field === filter.field && er === fr;
-      }
-      return false;
-    });
-
-    if (!isDuplicate) {
-      const newFilters = [...state.activeFilters, filter];
-      setState({ ...state, activeFilters: newFilters });
-      onFiltersChange?.(newFilters);
-    } else {
-      setShowDuplicateMessage(true);
-      setTimeout(() => setShowDuplicateMessage(false), 2000);
-    }
+  /**
+   * One writer for the filter set. The old panel added filters one at a time
+   * and refused duplicates with a warning; the chips below toggle instead, so
+   * every change is 'here is the new set' and a duplicate cannot be built.
+   */
+  const setFilters = (next: Array<Filter>) => {
+    if (!filterable) return;
+    setState({ ...state, activeFilters: next });
+    onFiltersChange?.(next);
   };
 
   const removeFilter = (i: number) => {
     if (!filterable || !state.activeFilters) return;
-    const newFilters = state.activeFilters.filter((_, idx) => idx !== i);
-    setState({ ...state, activeFilters: newFilters });
+    setFilters(state.activeFilters.filter((_, idx) => idx !== i));
     setCurrentFilterValue('');
-    onFiltersChange?.(newFilters);
   };
 
   const clearAllFilters = () => {
-    if (!filterable) return;
-    setState({ ...state, activeFilters: [] });
+    setFilters([]);
     setCurrentFilterValue('');
-    onFiltersChange?.([]);
+    setCustomStartDate('');
+    setCustomEndDate('');
   };
 
-  const applyFilterPreset = (preset: FilterPreset) => {
-    if (!filterable) return;
-    addFilter(preset.filter);
+  /** Ranges on one field are alternatives, so a new one replaces the old. */
+  const toggleTimeRange = (field: string, range: string, label: string) => {
+    const on = (state.activeFilters ?? []).some(
+      (f) =>
+        f.field === field && f.type === 'timeRange' && f.value?.range === range
+    );
+    const rest = (state.activeFilters ?? []).filter(
+      (f) => !(f.field === field && f.type === 'timeRange')
+    );
+    setFilters(
+      on
+        ? rest
+        : [
+            ...rest,
+            {
+              id: `time-${field}-${range}`,
+              field,
+              type: 'timeRange',
+              value: { range },
+              label: `${getFieldLabel(field)}: ${label}`,
+            },
+          ]
+    );
+    setCurrentFilterValue('');
   };
+
+  const togglePreset = (preset: FilterPreset) => {
+    const filters = state.activeFilters ?? [];
+    const i = filters.findIndex((f) => f.id === preset.filter.id);
+    setFilters(
+      i >= 0
+        ? filters.filter((_, idx) => idx !== i)
+        : [...filters, preset.filter]
+    );
+  };
+
+  const applyCustomRange = (field: string) => {
+    if (!isCustomDateRangeValid()) return;
+    const start = new Date(customStartDate);
+    const end = customEndDate ? new Date(customEndDate) : new Date();
+    const fmt = (d: Date) =>
+      d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    setFilters([
+      ...(state.activeFilters ?? []).filter(
+        (f) => !(f.field === field && f.type === 'timeRange')
+      ),
+      {
+        id: `time-${field}-custom`,
+        field,
+        type: 'timeRange',
+        value: { range: 'custom', customStart: start, customEnd: end },
+        label: `${getFieldLabel(field)}: ${fmt(start)}–${fmt(end)}`,
+      },
+    ]);
+    setCurrentFilterValue('');
+    setCustomStartDate('');
+    setCustomEndDate('');
+  };
+
+  // Every field's presets in one row — a preset you only see after picking
+  // its field is a preset nobody uses.
+  const quickPresets: Array<FilterPreset> = (
+    filterConfig?.filterableFields ?? []
+  ).flatMap((f) => f.presets ?? []);
+  const timeFields = (filterConfig?.filterableFields ?? []).filter(
+    (f) => f.filterType === 'timeRange'
+  );
+  const activeTimeField = state.selectedField || timeFields[0]?.field;
+  const customRangeOpen = currentFilterValue === 'custom';
 
   const getFieldConfig = (field: string) =>
     filterConfig?.filterableFields.find((f) => f.field === field);
@@ -497,10 +702,6 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
       object,
       ''
     );
-    // Sort-context label from active sort option
-    const activeSortOpt = sortOptions?.find((s) => s.id === state.sortBy);
-    const sortLabel = activeSortOpt?.itemLabel?.(object);
-
     const ellipsis: React.CSSProperties = {
       display: 'inline-block',
       maxWidth: '100%',
@@ -511,34 +712,6 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
       fontSize: '0.75rem',
       lineHeight: 1.3,
     };
-
-    if (sortLabel) {
-      return (
-        <span
-          style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            gap: 4,
-            maxWidth: '100%',
-          }}
-        >
-          <span style={{ ...ellipsis, flex: '1 1 0', minWidth: 0 }}>
-            {secondaryText}
-          </span>
-          <span
-            style={{
-              flexShrink: 0,
-              fontSize: '0.62rem',
-              color: 'rgba(0,0,0,0.45)',
-              whiteSpace: 'nowrap',
-              fontWeight: 500,
-            }}
-          >
-            {sortLabel}
-          </span>
-        </span>
-      );
-    }
 
     return tertiaryText ? (
       <>
@@ -551,54 +724,161 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
     );
   };
 
-  const renderItemBadges = (object: any) => {
-    if (!itemBadges) return null;
-    const badges = itemBadges(object);
-    if (!badges || badges.length === 0) return null;
+  /**
+   * Row content as two INDEPENDENT lines.
+   *
+   * The first right-rail design was one flex column beside the text, sized by
+   * its widest line — so a long bottom line (condition + sort label) reserved
+   * that width on the NAME's line too, stranding dead space between a
+   * truncated name and a short status chip. Now each line settles its own
+   * economy: line 1 = primary text vs top badges, line 2 = secondary text vs
+   * bottom badges + sort label. The name only yields to what actually sits
+   * beside it.
+   */
+  const wrapBadge = (badge: ItemBadge, i: number) => {
+    const node = (
+      <span
+        key={i}
+        style={{
+          lineHeight: 1,
+          display: 'inline-block',
+          // a text badge (a job condition, say) ellipsizes instead of
+          // eating the line — the tooltip carries the full words
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {badge.content}
+      </span>
+    );
+    return badge.tooltip ? (
+      <Tooltip key={i} title={badge.tooltip} placement="left" arrow>
+        {node}
+      </Tooltip>
+    ) : (
+      node
+    );
+  };
 
-    const posStyle = (pos: ItemBadge['position']): React.CSSProperties => {
-      const base: React.CSSProperties = {
-        position: 'absolute',
-        zIndex: 1,
-        pointerEvents: 'auto',
-        lineHeight: 1,
-      };
-      switch (pos) {
-        case 'top-right':
-          return { ...base, top: 2, right: 4 };
-        case 'bottom-right':
-          return { ...base, bottom: 2, right: 4 };
-        case 'top-left':
-          return { ...base, top: 2, left: 4 };
-        case 'bottom-left':
-          return { ...base, bottom: 2, left: 4 };
-      }
-    };
+  const badgeRow = (badges: ItemBadge[], extra?: React.ReactNode) =>
+    badges.length > 0 || extra ? (
+      <span
+        style={{
+          display: 'inline-flex',
+          gap: 3,
+          alignItems: 'center',
+          flexShrink: 1,
+          minWidth: 0,
+          // never more than half a line — the text always keeps the floor
+          maxWidth: '50%',
+        }}
+      >
+        {badges.map(wrapBadge)}
+        {extra}
+      </span>
+    ) : null;
+
+  const renderRowContent = (renderGroup: any, fieldValue: any, object: any) => {
+    const primary = resolveItemValue(
+      renderGroup,
+      'primaryItemText',
+      fieldValue,
+      object
+    );
+    const secondary = renderSecondary(renderGroup, fieldValue, object);
+    const badges = itemBadges ? itemBadges(object) ?? [] : [];
+    const activeSortOpt = sortOptions?.find((s) => s.id === state.sortBy);
+    const sortLabel = activeSortOpt?.itemLabel?.(object);
+    const top = badges.filter((b) => b.position.startsWith('top'));
+    const bottom = badges.filter((b) => b.position.startsWith('bottom'));
+    const label = sortLabel ? (
+      <span
+        style={{
+          fontSize: '0.62rem',
+          color: 'rgba(0,0,0,0.45)',
+          whiteSpace: 'nowrap',
+          fontWeight: 500,
+          flexShrink: 0,
+        }}
+      >
+        {sortLabel}
+      </span>
+    ) : undefined;
 
     return (
-      <>
-        {badges.map((badge, i) => {
-          const node = (
-            <span key={i} style={posStyle(badge.position)}>
-              {badge.content}
+      <span
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          // ListItemText carried 4px vertical margins; replacing it silently
+          // dropped them and the rows closed up. Restored here — the row
+          // height comes from this margin, not from padding tweaks per nav.
+          margin: '4px 0',
+        }}
+      >
+        <span
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            minWidth: 0,
+            justifyContent: 'space-between',
+          }}
+        >
+          <span
+            style={{
+              flex: '1 1 0',
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              fontSize: (fontSize as string) ?? '0.85rem',
+              fontWeight: 500,
+              lineHeight: 1.3,
+            }}
+          >
+            {primary}
+          </span>
+          {badgeRow(top)}
+        </span>
+        {(secondary || bottom.length > 0 || label) && (
+          <span
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              minWidth: 0,
+              justifyContent: 'space-between',
+            }}
+          >
+            <span
+              style={{
+                flex: '1 1 0',
+                minWidth: 0,
+                overflow: 'hidden',
+                fontSize: '0.72rem',
+                lineHeight: 1.3,
+                color: 'rgba(0, 0, 0, 0.6)',
+              }}
+            >
+              {secondary}
             </span>
-          );
-          return badge.tooltip ? (
-            <Tooltip key={i} title={badge.tooltip} placement="left" arrow>
-              {node}
-            </Tooltip>
-          ) : (
-            node
-          );
-        })}
-      </>
+            {badgeRow(bottom, label)}
+          </span>
+        )}
+      </span>
     );
   };
 
   // ── Compact style values ──────────────────────────────────────
 
-  const rowPy = compact ? '1px' : '4px';
-  const groupHeaderPy = compact ? '2px' : undefined;
+  const rowPy = compact ? '0px' : '3px';
+  const groupHeaderPy = compact ? '1px' : undefined;
   const fontSize = compact ? '0.82rem' : undefined;
 
   // ── Derived group field ───────────────────────────────────────
@@ -612,848 +892,854 @@ const FilterableObjectsListV2: FilterableObjectsListV2ComponentProps<{
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div style={{ maxHeight: '100%', minHeight: '100%', minWidth: '200px' }}>
-      {/* Title */}
-      {title && (
-        <>
-          <List
-            dense={compact}
-            style={{ padding: 0 }}
-            subheader={
-              <ListSubheader
-                style={{
-                  lineHeight: compact ? '32px' : undefined,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                {titleIcon}
-                <span style={{ fontWeight: 'bold' }}>{title}</span>
-              </ListSubheader>
-            }
-          />
-          <Divider />
-        </>
-      )}
-
-      {childrenPlacement === 'top' && children}
-
-      {/* ── Search + toolbar ───────────────────────────────────── */}
-      <Box
-        sx={{
-          px: 1,
-          pt: 0.75,
-          pb: 0.5,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.5,
-        }}
-      >
-        {searchable && (
-          <TextField
-            size="small"
-            placeholder="Search…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{
-              flex: 1,
-              '& .MuiInputBase-root': {
-                height: 30,
-                fontSize: '0.8rem',
-                borderRadius: '6px',
-              },
-              '& .MuiInputBase-input': {
-                py: '4px',
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ fontSize: 16, color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-              endAdornment: searchQuery ? (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => setSearchQuery('')}
-                    sx={{ p: 0.25 }}
-                  >
-                    <Clear sx={{ fontSize: 14 }} />
-                  </IconButton>
-                </InputAdornment>
-              ) : undefined,
-            }}
-          />
-        )}
-
-        {/* Icon-only toolbar buttons */}
-        {filterable && (
-          <Tooltip title="Filter" arrow>
-            <IconButton
-              size="small"
-              color={toolbarPanel === 'filter' ? 'primary' : 'default'}
-              onClick={() =>
-                setToolbarPanel(toolbarPanel === 'filter' ? null : 'filter')
+    // A column of two parts: a pinned header (title, search, filters, and
+    // whatever rides in belowToolbar) over the rows in their own scroller.
+    // The controls used to scroll away with the list; now only the rows
+    // move, and the group subheaders stick to the top of the row scroller —
+    // which is exactly the underside of the pinned controls.
+    <div
+      style={{
+        maxHeight: '100%',
+        minHeight: '100%',
+        minWidth: '13rem',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ flexShrink: 0 }}>
+        {/* Title */}
+        {title && (
+          <>
+            <List
+              dense={compact}
+              style={{ padding: 0 }}
+              subheader={
+                <ListSubheader
+                  style={{
+                    lineHeight: compact ? '32px' : undefined,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  {titleIcon}
+                  <span style={{ fontWeight: 'bold' }}>{title}</span>
+                </ListSubheader>
               }
-              sx={{ p: 0.5 }}
-            >
-              <FilterAlt sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
+            />
+            <Divider />
+          </>
         )}
-        {sortOptions && sortOptions.length > 0 && (
-          <Tooltip
-            title={`Sort: ${
-              sortOptions.find((s) => s.id === state.sortBy)?.label ?? '—'
-            }`}
-            arrow
-            disableHoverListener={Boolean(sortAnchorEl)}
-            enterDelay={300}
-            enterNextDelay={300}
-          >
-            <IconButton
-              size="small"
-              color={sortAnchorEl ? 'primary' : 'default'}
-              onClick={(e) => setSortAnchorEl(e.currentTarget)}
-              sx={{ p: 0.5 }}
-            >
-              <SwapVert sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
-        )}
-        {groupable && sortOptions && sortOptions.some((s) => s.groupField) && (
-          <Tooltip
-            title={state.groupsOn ? 'Groups: On' : 'Groups: Off'}
-            arrow
-            enterDelay={300}
-            enterNextDelay={300}
-          >
-            <IconButton
-              size="small"
-              color={state.groupsOn ? 'primary' : 'default'}
-              onClick={() => setState({ ...state, groupsOn: !state.groupsOn })}
-              sx={{ p: 0.5 }}
-            >
-              {state.groupsOn ? (
-                <Category sx={{ fontSize: 18 }} />
-              ) : (
-                <ViewList sx={{ fontSize: 18 }} />
-              )}
-            </IconButton>
-          </Tooltip>
-        )}
-        {orderable && (
-          <Tooltip
-            title={state.orderBy === 'ASC' ? 'Ascending' : 'Descending'}
-            arrow
-          >
-            <IconButton
-              size="small"
-              color="default"
-              onClick={() =>
-                setState({
-                  ...state,
-                  orderBy: state.orderBy === 'ASC' ? 'DESC' : 'ASC',
-                })
-              }
-              sx={{ p: 0.5 }}
-            >
-              {state.orderBy === 'ASC' ? (
-                <ArrowUpward sx={{ fontSize: 18 }} />
-              ) : (
-                <ArrowDownward sx={{ fontSize: 18 }} />
-              )}
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>
 
-      {/* ── Sort menu (auto-closing popover) ─────────────────── */}
-      <Menu
-        anchorEl={sortAnchorEl}
-        open={Boolean(sortAnchorEl)}
-        onClose={() => setSortAnchorEl(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transitionDuration={{ enter: 120, exit: 80 }}
-        slotProps={{
-          paper: { sx: { minWidth: 140, mt: 0.5, py: 0.25 } },
-          list: { dense: true },
-        }}
-      >
-        {sortOptions?.map((opt) => {
-          const active = state.sortBy === opt.id;
-          return (
-            <MenuItem
-              key={opt.id}
-              dense
-              selected={active}
-              onClick={() => {
-                setState({
-                  ...state,
-                  sortBy: opt.id,
-                  orderBy: opt.defaultOrder ?? 'ASC',
-                });
-                setSortAnchorEl(null);
-              }}
-              sx={{
-                py: 0.25,
-                minHeight: 28,
-                ...(active && {
-                  backgroundColor: 'rgba(0,0,0,0.12) !important',
-                  fontWeight: 600,
-                }),
-              }}
-            >
-              <ListItemText
-                primary={opt.label}
-                primaryTypographyProps={{
-                  fontSize: '0.8rem',
-                  fontWeight: active ? 600 : 400,
-                }}
-              />
-              {opt.intraGroupOrder === 'alpha' && (
-                <SortByAlpha
-                  sx={{ fontSize: 14, ml: 1, color: 'rgba(0,0,0,0.28)' }}
-                />
-              )}
-            </MenuItem>
-          );
-        })}
-      </Menu>
+        {childrenPlacement === 'top' && children}
 
-      {toolbarPanel === 'filter' && filterable && (
-        <Box sx={{ px: 1, pb: 1 }}>
-          {/* Active filters chips */}
-          {state.activeFilters && state.activeFilters.length > 0 && (
-            <Box sx={{ mb: 1 }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  mb: 0.5,
-                }}
+        {/* ── Search + toolbar ───────────────────────────────────── */}
+        <Box
+          sx={{
+            px: 1,
+            pt: 0.75,
+            pb: 0.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.75,
+          }}
+        >
+          {searchable && (
+            <TextField
+              size="small"
+              placeholder="Search…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={SEARCH_SX}
+              inputProps={{ 'aria-label': 'Search' }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ fontSize: 15 }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery ? (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      aria-label="Clear search"
+                      onClick={() => setSearchQuery('')}
+                      sx={{ p: '2px', color: 'text.secondary' }}
+                    >
+                      <Clear sx={{ fontSize: 14 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ) : undefined,
+              }}
+            />
+          )}
+
+          {/* Filter · sort with its direction · groups. Direction moved to sit
+            beside sort: they are two halves of one answer, and it used to be
+            stranded on the far side of the groups switch. */}
+          <Box sx={TOOL_CLUSTER_SX}>
+            {filterable && (
+              <Tooltip
+                title={
+                  activeFilterCount > 0
+                    ? `Filters · ${activeFilterCount} on`
+                    : 'Filter'
+                }
+                arrow
               >
-                <Typography variant="caption" color="text.secondary">
-                  Active ({state.activeFilters.length})
-                </Typography>
                 <IconButton
                   size="small"
-                  onClick={clearAllFilters}
-                  sx={{ p: 0.25 }}
+                  aria-label="Filter"
+                  aria-pressed={toolbarPanel === 'filter'}
+                  onClick={() =>
+                    setToolbarPanel(toolbarPanel === 'filter' ? null : 'filter')
+                  }
+                  sx={toolButtonSx(
+                    toolbarPanel === 'filter' || activeFilterCount > 0
+                  )}
                 >
-                  <Clear sx={{ fontSize: 14, color: 'error.main' }} />
+                  {/* closed panel + active filters used to look exactly like
+                    no filters at all, which is how you lose a list */}
+                  <Badge
+                    badgeContent={activeFilterCount}
+                    color="primary"
+                    overlap="circular"
+                    sx={FILTER_BADGE_SX}
+                  >
+                    <FilterAlt sx={TOOL_ICON_SX} />
+                  </Badge>
                 </IconButton>
-              </Box>
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
-                {state.activeFilters.map((f, i) => (
-                  <Chip
-                    key={i}
-                    label={getFilterLabel(f)}
-                    onDelete={() => removeFilter(i)}
+              </Tooltip>
+            )}
+            {sortOptions && sortOptions.length > 0 && (
+              <Tooltip
+                title={`Sort · ${
+                  sortOptions.find((s) => s.id === state.sortBy)?.label ?? '—'
+                }`}
+                arrow
+                disableHoverListener={Boolean(sortAnchorEl)}
+                enterDelay={300}
+                enterNextDelay={300}
+              >
+                <IconButton
+                  size="small"
+                  aria-label="Sort"
+                  aria-pressed={Boolean(sortAnchorEl)}
+                  onClick={(e) => setSortAnchorEl(e.currentTarget)}
+                  sx={toolButtonSx(Boolean(sortAnchorEl))}
+                >
+                  <SwapVert sx={TOOL_ICON_SX} />
+                </IconButton>
+              </Tooltip>
+            )}
+            {orderable && (
+              <Tooltip
+                title={
+                  state.orderBy === 'ASC'
+                    ? 'Ascending · click to reverse'
+                    : 'Descending · click to reverse'
+                }
+                arrow
+              >
+                <IconButton
+                  size="small"
+                  aria-label={
+                    state.orderBy === 'ASC' ? 'Ascending' : 'Descending'
+                  }
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      orderBy: state.orderBy === 'ASC' ? 'DESC' : 'ASC',
+                    })
+                  }
+                  sx={toolButtonSx(false)}
+                >
+                  {state.orderBy === 'ASC' ? (
+                    <ArrowUpward sx={TOOL_ICON_SX} />
+                  ) : (
+                    <ArrowDownward sx={TOOL_ICON_SX} />
+                  )}
+                </IconButton>
+              </Tooltip>
+            )}
+            {groupable &&
+              sortOptions &&
+              sortOptions.some((s) => s.groupField) && (
+                <Tooltip
+                  title={
+                    state.groupsOn ? 'Grouped · click to flatten' : 'Group'
+                  }
+                  arrow
+                  enterDelay={300}
+                  enterNextDelay={300}
+                >
+                  <IconButton
                     size="small"
-                    variant="filled"
-                    sx={{ height: 22, fontSize: '0.7rem' }}
-                  />
-                ))}
-              </Stack>
-            </Box>
-          )}
-          {showDuplicateMessage && (
-            <Typography
-              variant="caption"
-              color="warning.main"
-              sx={{ mb: 0.5, display: 'block' }}
-            >
-              Filter already active
-            </Typography>
-          )}
-          <FormControl fullWidth size="small" sx={{ mb: 1 }}>
-            <InputLabel sx={{ fontSize: '0.8rem' }}>Field</InputLabel>
-            <Select
-              value={state.selectedField || ''}
-              label="Field"
-              onChange={(e) => {
-                setState({ ...state, selectedField: e.target.value });
-                setCurrentFilterValue('');
-                setCustomStartDate('');
-                setCustomEndDate('');
-              }}
-              sx={{ fontSize: '0.8rem', height: 32 }}
-            >
-              <MenuItem value="" dense>
-                Select field…
-              </MenuItem>
-              {filterConfig?.filterableFields.map((field) => (
-                <MenuItem key={field.field} value={field.field} dense>
-                  {field.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                    aria-label="Group"
+                    aria-pressed={state.groupsOn}
+                    onClick={() =>
+                      setState({ ...state, groupsOn: !state.groupsOn })
+                    }
+                    sx={toolButtonSx(state.groupsOn)}
+                  >
+                    {state.groupsOn ? (
+                      <Category sx={TOOL_ICON_SX} />
+                    ) : (
+                      <ViewList sx={TOOL_ICON_SX} />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              )}
+          </Box>
+        </Box>
 
-          {state.selectedField &&
-            getFieldPresets(state.selectedField).length > 0 && (
+        {/* ── Sort menu (auto-closing popover) ─────────────────── */}
+        <Menu
+          anchorEl={sortAnchorEl}
+          open={Boolean(sortAnchorEl)}
+          onClose={() => setSortAnchorEl(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+          transitionDuration={{ enter: 120, exit: 80 }}
+          slotProps={{
+            paper: { sx: { minWidth: 140, mt: 0.5, py: 0.25 } },
+            list: { dense: true },
+          }}
+        >
+          {sortOptions?.map((opt) => {
+            const active = state.sortBy === opt.id;
+            return (
+              <MenuItem
+                key={opt.id}
+                dense
+                selected={active}
+                onClick={() => {
+                  setState({
+                    ...state,
+                    sortBy: opt.id,
+                    orderBy: opt.defaultOrder ?? 'ASC',
+                  });
+                  setSortAnchorEl(null);
+                }}
+                sx={{
+                  py: 0.25,
+                  minHeight: 28,
+                  ...(active && {
+                    backgroundColor: 'rgba(0,0,0,0.12) !important',
+                    fontWeight: 600,
+                  }),
+                }}
+              >
+                <ListItemText
+                  primary={opt.label}
+                  primaryTypographyProps={{
+                    fontSize: '0.8rem',
+                    fontWeight: active ? 600 : 400,
+                  }}
+                />
+                {opt.intraGroupOrder === 'alpha' && (
+                  <SortByAlpha
+                    sx={{ fontSize: 14, ml: 1, color: 'rgba(0,0,0,0.28)' }}
+                  />
+                )}
+              </MenuItem>
+            );
+          })}
+        </Menu>
+
+        {toolbarPanel === 'filter' && filterable && (
+          /**
+           * The compact filter bar.
+           *
+           * The old panel was three stacked full-width form controls — pick a
+           * field, pick a range, then a pair of datetime inputs — in a 240px
+           * column, and it showed a field's presets only after you had chosen
+           * that field. Nobody found them.
+           *
+           * Now the chips ARE the state: outlined is off, filled is on, and
+           * pressing an active one clears it. No 'Active (2)' list to keep in
+           * sync with the controls that produced it, and the whole thing is two
+           * short rows. Only a custom range still needs a form, and it stays
+           * folded until asked for.
+           */
+          <Box sx={{ px: 1, pb: 0.75, display: 'grid', gap: 0.5 }}>
+            {quickPresets.length > 0 && (
               <Stack
                 direction="row"
                 spacing={0.5}
                 flexWrap="wrap"
                 useFlexGap
-                sx={{ mb: 1 }}
+                alignItems="center"
               >
-                {getFieldPresets(state.selectedField).map((preset) => (
-                  <Chip
-                    key={preset.id}
-                    label={preset.label}
-                    icon={preset.icon}
-                    color={preset.color || 'default'}
-                    size="small"
-                    onClick={() => applyFilterPreset(preset)}
-                    variant="outlined"
-                    sx={{ height: 22, fontSize: '0.7rem' }}
-                  />
-                ))}
+                <Typography sx={FILTER_LABEL_SX}>Quick</Typography>
+                {quickPresets.map((preset) => {
+                  const on = (state.activeFilters ?? []).some(
+                    (f) => f.id === preset.filter.id
+                  );
+                  return (
+                    <Chip
+                      key={preset.id}
+                      label={preset.label}
+                      icon={preset.icon}
+                      size="small"
+                      color={on ? preset.color ?? 'primary' : 'default'}
+                      variant={on ? 'filled' : 'outlined'}
+                      onClick={() => togglePreset(preset)}
+                      sx={FILTER_CHIP_SX}
+                    />
+                  );
+                })}
               </Stack>
             )}
 
-          {state.selectedField &&
-            getFieldConfig(state.selectedField)?.filterType === 'timeRange' && (
-              <Box>
-                <FormControl fullWidth size="small" sx={{ mb: 1 }}>
-                  <InputLabel sx={{ fontSize: '0.8rem' }}>
-                    Time Range
-                  </InputLabel>
-                  <Select
-                    value={currentFilterValue}
-                    label="Time Range"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value && value.startsWith('timeRange:')) {
-                        const range = value.split(
-                          ':'
-                        )[1] as TimeRangeFilter['range'];
-                        if (range === 'custom') {
-                          setCurrentFilterValue(value);
-                        } else {
-                          addFilter({
-                            id: `filter-${Date.now()}`,
-                            field: state.selectedField!,
-                            type: 'timeRange',
-                            value: { range },
-                            label: `${getFieldLabel(state.selectedField!)}: ${
-                              range === 'last24h'
-                                ? 'Last 24h'
-                                : range === 'last7d'
-                                ? 'Last 7d'
-                                : 'Last 30d'
-                            }`,
-                          });
-                          setCurrentFilterValue('');
-                        }
+            {timeFields.length > 0 && activeTimeField && (
+              <Stack
+                direction="row"
+                spacing={0.5}
+                flexWrap="wrap"
+                useFlexGap
+                alignItems="center"
+              >
+                {/* one date field names itself; several become the row's switch */}
+                {timeFields.length === 1 ? (
+                  <Typography sx={FILTER_LABEL_SX}>
+                    {timeFields[0].label}
+                  </Typography>
+                ) : (
+                  timeFields.map((f) => (
+                    <Chip
+                      key={f.field}
+                      label={f.label}
+                      size="small"
+                      variant={
+                        activeTimeField === f.field ? 'filled' : 'outlined'
                       }
-                    }}
-                    sx={{ fontSize: '0.8rem', height: 32 }}
-                  >
-                    <MenuItem value="" dense>
-                      Select…
-                    </MenuItem>
-                    <MenuItem value="timeRange:last24h" dense>
-                      Last 24h
-                    </MenuItem>
-                    <MenuItem value="timeRange:last7d" dense>
-                      Last 7d
-                    </MenuItem>
-                    <MenuItem value="timeRange:last30d" dense>
-                      Last 30d
-                    </MenuItem>
-                    <MenuItem value="timeRange:custom" dense>
-                      Custom
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-                {currentFilterValue === 'timeRange:custom' && (
-                  <Box>
-                    <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                      <TextField
-                        label="Start"
-                        type="datetime-local"
-                        value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        size="small"
-                        fullWidth
-                        error={Boolean(
-                          customStartDate &&
-                            customEndDate &&
-                            !isCustomDateRangeValid()
-                        )}
-                        InputLabelProps={{ shrink: true }}
-                        sx={{
-                          '& .MuiInputBase-root': {
-                            height: 32,
-                            fontSize: '0.75rem',
-                          },
-                        }}
-                      />
-                      <TextField
-                        label="End"
-                        type="datetime-local"
-                        value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        size="small"
-                        fullWidth
-                        error={Boolean(
-                          customStartDate &&
-                            customEndDate &&
-                            !isCustomDateRangeValid()
-                        )}
-                        InputLabelProps={{ shrink: true }}
-                        sx={{
-                          '& .MuiInputBase-root': {
-                            height: 32,
-                            fontSize: '0.75rem',
-                          },
-                        }}
-                      />
-                    </Stack>
-                    {customStartDate &&
-                      customEndDate &&
-                      !isCustomDateRangeValid() && (
-                        <Typography
-                          variant="caption"
-                          color="error"
-                          sx={{ mb: 0.5, display: 'block' }}
-                        >
-                          Start must be before end
-                        </Typography>
-                      )}
-                    <Stack direction="row" spacing={0.5}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        sx={{
-                          height: 26,
-                          fontSize: '0.75rem',
-                          textTransform: 'none',
-                        }}
-                        disabled={!isCustomDateRangeValid()}
-                        onClick={() => {
-                          if (isCustomDateRangeValid()) {
-                            const s = new Date(customStartDate);
-                            const e = customEndDate
-                              ? new Date(customEndDate)
-                              : new Date();
-                            addFilter({
-                              id: `filter-${Date.now()}`,
-                              field: state.selectedField!,
-                              type: 'timeRange',
-                              value: {
-                                range: 'custom',
-                                customStart: s,
-                                customEnd: e,
-                              },
-                              label: `${getFieldLabel(
-                                state.selectedField!
-                              )}: ${s.toLocaleDateString()}–${e.toLocaleDateString()}`,
-                            });
-                            setCurrentFilterValue('');
-                            setCustomStartDate('');
-                            setCustomEndDate('');
-                          }
-                        }}
-                      >
-                        Apply
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        sx={{
-                          height: 26,
-                          fontSize: '0.75rem',
-                          textTransform: 'none',
-                        }}
-                        onClick={() => {
-                          setCurrentFilterValue('');
-                          setCustomStartDate('');
-                          setCustomEndDate('');
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </Stack>
-                  </Box>
+                      onClick={() =>
+                        setState({ ...state, selectedField: f.field })
+                      }
+                      sx={{ ...FILTER_CHIP_SX, fontWeight: 600 }}
+                    />
+                  ))
                 )}
-              </Box>
-            )}
-        </Box>
-      )}
-
-      <Divider />
-
-      {/* ── Item list ─────────────────────────────────────────── */}
-      <List dense={compact} style={{ padding: 0 }}>
-        {activeGroupField === 'none'
-          ? /* ── Flat list (no grouping) ──────────────────────── */
-            (() => {
-              const flatObjects = state.groupedObjects['none']?.[0]?.[1] ?? [];
-              // Pick first non-includeAll group for rendering config, or fall back
-              const renderGroup = groups[0] ?? allGroups[0];
-              if (!renderGroup) return null;
-              return flatObjects.length > 0 ? (
-                flatObjects.map((object: any) => {
-                  const groupItemIcon = resolveItemValue(
-                    renderGroup,
-                    'groupItemIcon',
-                    undefined,
-                    object,
-                    defaultGroupIcon
+                {TIME_RANGES.map((range) => {
+                  const on = (state.activeFilters ?? []).some(
+                    (f) =>
+                      f.field === activeTimeField &&
+                      f.type === 'timeRange' &&
+                      f.value?.range === range.id
                   );
-                  const mcLink = middleClickLink
-                    ? middleClickLink(object)
-                    : undefined;
-                  const isSelected = isSelectedItem({ object, selectedField });
-
                   return (
-                    <ListItem
-                      key={
-                        object.id ??
-                        object.pod_id ??
-                        JSON.stringify(object).slice(0, 40)
+                    <Chip
+                      key={range.id}
+                      label={range.label}
+                      size="small"
+                      color={on ? 'primary' : 'default'}
+                      variant={on ? 'filled' : 'outlined'}
+                      onClick={() =>
+                        toggleTimeRange(activeTimeField, range.id, range.label)
                       }
-                      disablePadding
-                      sx={{ position: 'relative' }}
-                    >
-                      {renderItemBadges(object)}
-                      <ListItemButton
-                        sx={{
-                          py: rowPy,
-                          pl: 2,
-                          pr: 1,
-                          minHeight: compact ? 36 : 48,
-                          backgroundColor: isSelected
-                            ? 'rgba(157, 133, 239, 0.18)'
-                            : undefined,
-                          '&:hover': {
-                            backgroundColor: isSelected
-                              ? 'rgba(157, 133, 239, 0.25)'
-                              : 'rgba(0,0,0,0.04)',
-                          },
-                          ...(itemStyle ? itemStyle(object) : {}),
-                        }}
-                        selected={isSelected}
-                        onClick={() => {
-                          renderGroup.onClickItem
-                            ? renderGroup.onClickItem(object)
-                            : defaultOnClickItem(object);
-                        }}
-                        onMouseDown={(event) => {
-                          if (event.button === 1) {
-                            event.preventDefault();
-                            if (mcLink) window.open(mcLink, '_blank');
-                          }
-                        }}
-                      >
-                        <ListItemIcon
-                          sx={{
-                            minWidth: listItemIconStyle?.minWidth ?? 36,
-                            ...listItemIconStyle,
-                            '& .MuiSvgIcon-root': {
-                              fontSize: compact ? 18 : 22,
-                            },
-                          }}
-                        >
-                          {groupItemIcon ?? defaultGroupIcon}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={resolveItemValue(
-                            renderGroup,
-                            'primaryItemText',
-                            undefined,
-                            object
-                          )}
-                          secondary={renderSecondary(
-                            renderGroup,
-                            undefined,
-                            object
-                          )}
-                          primaryTypographyProps={{
-                            fontSize: fontSize ?? '0.85rem',
-                            lineHeight: 1.3,
-                            noWrap: true,
-                            fontWeight: 500,
-                          }}
-                          secondaryTypographyProps={{
-                            component: 'div' as any,
-                            fontSize: '0.72rem',
-                            lineHeight: 1.3,
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
+                      sx={FILTER_CHIP_SX}
+                    />
                   );
-                })
-              ) : (
-                <Typography
-                  variant="caption"
+                })}
+                <Chip
+                  label="Custom…"
+                  size="small"
+                  variant={customRangeOpen ? 'filled' : 'outlined'}
+                  onClick={() =>
+                    setCurrentFilterValue(customRangeOpen ? '' : 'custom')
+                  }
+                  sx={FILTER_CHIP_SX}
+                />
+                {/* a custom range is not one of the chips, so it shows itself */}
+                {(state.activeFilters ?? []).map((f, i) =>
+                  f.type === 'timeRange' && f.value?.range === 'custom' ? (
+                    <Chip
+                      key={f.id}
+                      label={getFilterLabel(f)}
+                      size="small"
+                      color="primary"
+                      onDelete={() => removeFilter(i)}
+                      sx={FILTER_CHIP_SX}
+                    />
+                  ) : null
+                )}
+                {(state.activeFilters?.length ?? 0) > 0 && (
+                  <>
+                    <Box sx={{ flex: 1 }} />
+                    <Typography
+                      component="button"
+                      type="button"
+                      onClick={clearAllFilters}
+                      sx={{
+                        p: 0,
+                        border: 'none',
+                        background: 'none',
+                        font: 'inherit',
+                        fontSize: '0.68rem',
+                        cursor: 'pointer',
+                        color: 'text.secondary',
+                        '&:hover': { color: 'error.main' },
+                      }}
+                    >
+                      clear
+                    </Typography>
+                  </>
+                )}
+              </Stack>
+            )}
+
+            {customRangeOpen && activeTimeField && (
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <TextField
+                  type="datetime-local"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  size="small"
+                  sx={FILTER_DATE_SX}
+                />
+                <Typography sx={FILTER_LABEL_SX}>to</Typography>
+                <TextField
+                  type="datetime-local"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  size="small"
+                  sx={FILTER_DATE_SX}
+                />
+                <Button
+                  size="small"
+                  variant="contained"
+                  disabled={!isCustomDateRangeValid()}
+                  onClick={() => applyCustomRange(activeTimeField)}
                   sx={{
-                    px: 2,
-                    py: 1,
-                    display: 'block',
-                    color: 'text.secondary',
-                    fontStyle: 'italic',
+                    height: 24,
+                    fontSize: '0.68rem',
+                    textTransform: 'none',
                   }}
                 >
-                  No items
-                </Typography>
-              );
-            })()
-          : /* ── Grouped list ─────────────────────────────────── */
-            Object.keys(state.groupedObjects).map((field) => {
-              const group = allGroups.find((g) => g.field === field);
-              if (!group) return null;
-              const objectGroups = state.groupedObjects[field];
-              return (
-                <React.Fragment key={field}>
-                  {activeGroupField === field &&
-                    objectGroups &&
-                    objectGroups.map((objectGroup: any) => {
-                      const [fieldValue, groupObjects] = objectGroup;
-                      const isOpen =
-                        state.open.includes(`${field}:${fieldValue}`) ||
-                        state.open.includes(`${field}:*`);
+                  Apply
+                </Button>
+              </Stack>
+            )}
+          </Box>
+        )}
 
-                      const label = resolveGroupValue(
-                        group,
-                        'groupLabel',
-                        fieldValue,
-                        fieldValue
-                      );
-                      const tooltip = resolveGroupValue(
-                        group,
-                        'tooltip',
-                        fieldValue,
-                        fieldValue
-                      );
-                      const groupIcon = resolveGroupValue(
-                        group,
-                        'groupIcon',
-                        fieldValue,
+        {/* What the query reached, said only while there IS a query. It
+            sits between the box and the rows because that is where the
+            eye goes when a search comes back thinner than expected. */}
+        {searchable && searchQuery.trim() !== '' && searchScope && (
+          <Box
+            sx={{
+              px: 1,
+              py: '3px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 0.4,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'rgba(0,0,0,0.015)',
+              fontSize: '0.61rem',
+              lineHeight: 1.4,
+              color: 'text.secondary',
+            }}
+          >
+            <InfoOutlined
+              sx={{ fontSize: 11, mt: '2px', flexShrink: 0, opacity: 0.7 }}
+            />
+            <Box sx={{ minWidth: 0 }}>{searchScope(searchQuery.trim())}</Box>
+          </Box>
+        )}
+
+        <Divider />
+        {belowToolbar}
+      </div>
+
+      {/* ── Item list (the only part that scrolls) ───────────── */}
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+        }}
+      >
+        {loading ? (
+          // rows-to-be, in the rows' own metrics — the varying widths come
+          // from the index so the column doesn't strobe as one shape
+          <Box sx={{ px: 2, py: 0.75 }} data-navskeleton="">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  py: '5px',
+                }}
+              >
+                <Skeleton variant="circular" width={18} height={18} />
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Skeleton
+                    variant="text"
+                    width={`${82 - ((i * 17) % 38)}%`}
+                    sx={{ fontSize: '0.8rem' }}
+                  />
+                  <Skeleton
+                    variant="text"
+                    width={`${58 - ((i * 11) % 28)}%`}
+                    sx={{ fontSize: '0.62rem' }}
+                  />
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        ) : objects.length === 0 ? (
+          <Typography
+            variant="body2"
+            sx={{
+              px: 2,
+              py: 4,
+              textAlign: 'center',
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              // a nav column is narrow, and a third line of italic reads as a
+              // paragraph — messages are written to fit two, this holds them to it
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {emptyMessage ?? 'No items'}
+          </Typography>
+        ) : (
+          <List dense={compact} style={{ padding: 0 }}>
+            {activeGroupField === 'none'
+              ? /* ── Flat list (no grouping) ──────────────────────── */
+                (() => {
+                  const flatObjects =
+                    state.groupedObjects['none']?.[0]?.[1] ?? [];
+                  // Pick first non-includeAll group for rendering config, or fall back
+                  const renderGroup = groups[0] ?? allGroups[0];
+                  if (!renderGroup) return null;
+                  return flatObjects.length > 0 ? (
+                    flatObjects.map((object: any) => {
+                      const groupItemIcon = resolveItemValue(
+                        renderGroup,
+                        'groupItemIcon',
+                        undefined,
+                        object,
                         defaultGroupIcon
                       );
-
-                      const statusColor =
-                        field === 'status'
-                          ? getStatusColor(fieldValue)
-                          : undefined;
+                      const mcLink = middleClickLink
+                        ? middleClickLink(object)
+                        : undefined;
+                      const isSelected = isSelectedItem({
+                        object,
+                        selectedField,
+                      });
 
                       return (
-                        <React.Fragment key={`${field}:${fieldValue}`}>
-                          {/* Group header */}
-                          {(group.showDropdown ?? true) && (
-                            <ListSubheader
+                        <ListItem
+                          key={
+                            object.id ??
+                            object.pod_id ??
+                            JSON.stringify(object).slice(0, 40)
+                          }
+                          disablePadding
+                          sx={{ position: 'relative' }}
+                          data-navrow=""
+                        >
+                          <ListItemButton
+                            sx={{
+                              py: rowPy,
+                              pl: 2,
+                              pr: 1,
+                              minHeight: compact ? 28 : 44,
+                              backgroundColor: isSelected
+                                ? 'rgba(157, 133, 239, 0.18)'
+                                : undefined,
+                              '&:hover': {
+                                backgroundColor: isSelected
+                                  ? 'rgba(157, 133, 239, 0.25)'
+                                  : 'rgba(0,0,0,0.04)',
+                              },
+                              ...(itemStyle ? itemStyle(object) : {}),
+                            }}
+                            selected={isSelected}
+                            onClick={() => {
+                              renderGroup.onClickItem
+                                ? renderGroup.onClickItem(object)
+                                : defaultOnClickItem(object);
+                            }}
+                            onMouseDown={(event) => {
+                              if (event.button === 1) {
+                                event.preventDefault();
+                                if (mcLink) window.open(mcLink, '_blank');
+                              }
+                            }}
+                          >
+                            <ListItemIcon
                               sx={{
-                                cursor: 'pointer',
-                                userSelect: 'none',
-                                display: 'flex',
-                                alignItems: 'center',
-                                overflow: 'hidden',
-                                py: groupHeaderPy,
-                                lineHeight: compact ? '28px' : '36px',
-                                minHeight: compact ? 28 : 36,
-                                fontSize: compact ? '0.78rem' : '0.85rem',
-                                borderTop: '1px solid rgba(0,0,0,0.06)',
-                                ...(statusColor
-                                  ? {
-                                      borderLeft: `3px solid ${statusColor.dot}`,
-                                      pl: 1.5,
-                                    }
-                                  : {}),
+                                minWidth: listItemIconStyle?.minWidth ?? 36,
+                                ...listItemIconStyle,
+                                '& .MuiSvgIcon-root': {
+                                  fontSize: compact ? 18 : 22,
+                                },
                               }}
-                              onClick={() => toggleDropdown(field, fieldValue)}
                             >
-                              {groupIcon && (
-                                <span
-                                  style={{
-                                    display: 'inline-flex',
+                              {groupItemIcon ?? defaultGroupIcon}
+                            </ListItemIcon>
+                            {renderRowContent(renderGroup, undefined, object)}
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })
+                  ) : (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        display: 'block',
+                        color: 'text.secondary',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      No items
+                    </Typography>
+                  );
+                })()
+              : /* ── Grouped list ─────────────────────────────────── */
+                Object.keys(state.groupedObjects).map((field) => {
+                  const group = allGroups.find((g) => g.field === field);
+                  if (!group) return null;
+                  const objectGroups = state.groupedObjects[field];
+                  return (
+                    <React.Fragment key={field}>
+                      {activeGroupField === field &&
+                        objectGroups &&
+                        objectGroups.map((objectGroup: any) => {
+                          const [fieldValue, groupObjects] = objectGroup;
+                          const isOpen = isGroupOpen(field, fieldValue);
+
+                          const label = resolveGroupValue(
+                            group,
+                            'groupLabel',
+                            fieldValue,
+                            fieldValue
+                          );
+                          const tooltip = resolveGroupValue(
+                            group,
+                            'tooltip',
+                            fieldValue,
+                            fieldValue
+                          );
+                          const groupIcon = resolveGroupValue(
+                            group,
+                            'groupIcon',
+                            fieldValue,
+                            defaultGroupIcon
+                          );
+
+                          const statusColor =
+                            field === 'status'
+                              ? getStatusColor(fieldValue)
+                              : undefined;
+
+                          return (
+                            <React.Fragment key={`${field}:${fieldValue}`}>
+                              {/* Group header */}
+                              {(group.showDropdown ?? true) && (
+                                <ListSubheader
+                                  sx={{
+                                    cursor: 'pointer',
+                                    userSelect: 'none',
+                                    display: 'flex',
                                     alignItems: 'center',
-                                    marginRight: 6,
-                                    fontSize: compact ? 16 : 20,
-                                  }}
-                                >
-                                  {groupIcon}
-                                </span>
-                              )}
-                              <Tooltip title={tooltip} placement="left">
-                                <span
-                                  style={{
                                     overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                    flex: '1 1 auto',
-                                    minWidth: 0,
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {label && label.length <= 20
-                                    ? label
-                                    : label?.slice(0, 18) + '…'}
-                                </span>
-                              </Tooltip>
-                              <Typography
-                                component="span"
-                                variant="caption"
-                                sx={{
-                                  ml: 0.5,
-                                  flexShrink: 0,
-                                  color: 'text.secondary',
-                                  fontSize: '0.7rem',
-                                }}
-                              >
-                                {groupObjects.length}
-                              </Typography>
-                              <span
-                                style={{
-                                  marginLeft: 4,
-                                  display: 'inline-flex',
-                                  flexShrink: 0,
-                                }}
-                              >
-                                {isOpen ? (
-                                  <ExpandMore sx={{ fontSize: 18 }} />
-                                ) : (
-                                  <ExpandLess sx={{ fontSize: 18 }} />
-                                )}
-                              </span>
-                            </ListSubheader>
-                          )}
-
-                          <Divider />
-
-                          {/* Items */}
-                          {groupObjects.length > 0
-                            ? isOpen &&
-                              groupObjects.map((object: any) => {
-                                const groupItemIcon = resolveItemValue(
-                                  group,
-                                  'groupItemIcon',
-                                  fieldValue,
-                                  object,
-                                  groupIcon
-                                );
-                                const mcLink = middleClickLink
-                                  ? middleClickLink(object)
-                                  : undefined;
-                                const isSelected = isSelectedItem({
-                                  object,
-                                  selectedField,
-                                });
-
-                                return (
-                                  <ListItem
-                                    key={
-                                      object.id ??
-                                      object.pod_id ??
-                                      JSON.stringify(object).slice(0, 40)
-                                    }
-                                    disablePadding
-                                    sx={{ position: 'relative' }}
-                                  >
-                                    {renderItemBadges(object)}
-
-                                    <ListItemButton
-                                      sx={{
-                                        py: rowPy,
-                                        pl: 2,
-                                        pr: 1,
-                                        minHeight: compact ? 36 : 48,
-                                        backgroundColor: isSelected
-                                          ? 'rgba(157, 133, 239, 0.18)'
-                                          : undefined,
-                                        '&:hover': {
-                                          backgroundColor: isSelected
-                                            ? 'rgba(157, 133, 239, 0.25)'
-                                            : 'rgba(0,0,0,0.04)',
-                                        },
-                                        ...(itemStyle ? itemStyle(object) : {}),
-                                      }}
-                                      selected={isSelected}
-                                      onClick={() => {
-                                        group.onClickItem
-                                          ? group.onClickItem(object)
-                                          : defaultOnClickItem(object);
-                                      }}
-                                      onMouseDown={(event) => {
-                                        if (event.button === 1) {
-                                          event.preventDefault();
-                                          if (mcLink)
-                                            window.open(mcLink, '_blank');
+                                    py: groupHeaderPy,
+                                    lineHeight: compact ? '28px' : '36px',
+                                    minHeight: compact ? 22 : 30,
+                                    fontSize: compact ? '0.78rem' : '0.85rem',
+                                    borderTop: '1px solid rgba(0,0,0,0.06)',
+                                    ...(statusColor
+                                      ? {
+                                          borderLeft: `3px solid ${statusColor.dot}`,
+                                          pl: 1.5,
                                         }
+                                      : {}),
+                                  }}
+                                  onClick={() =>
+                                    toggleDropdown(field, fieldValue)
+                                  }
+                                >
+                                  {groupIcon && (
+                                    <span
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        marginRight: 6,
+                                        fontSize: compact ? 16 : 20,
                                       }}
                                     >
-                                      <ListItemIcon
-                                        sx={{
-                                          minWidth:
-                                            listItemIconStyle?.minWidth ?? 36,
-                                          ...listItemIconStyle,
-                                          '& .MuiSvgIcon-root': {
-                                            fontSize: compact ? 18 : 22,
-                                          },
-                                        }}
-                                      >
-                                        {groupItemIcon ?? groupIcon}
-                                      </ListItemIcon>
-                                      <ListItemText
-                                        primary={resolveItemValue(
-                                          group,
-                                          'primaryItemText',
-                                          fieldValue,
-                                          object
-                                        )}
-                                        secondary={renderSecondary(
-                                          group,
-                                          fieldValue,
-                                          object
-                                        )}
-                                        primaryTypographyProps={{
-                                          fontSize: fontSize ?? '0.85rem',
-                                          lineHeight: 1.3,
-                                          noWrap: true,
-                                          fontWeight: 500,
-                                        }}
-                                        secondaryTypographyProps={{
-                                          component: 'div' as any,
-                                          fontSize: '0.72rem',
-                                          lineHeight: 1.3,
-                                        }}
-                                      />
-                                    </ListItemButton>
-                                  </ListItem>
-                                );
-                              })
-                            : isOpen && (
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    px: 2,
-                                    py: 1,
-                                    display: 'block',
-                                    color: 'text.secondary',
-                                    fontStyle: 'italic',
-                                  }}
-                                >
-                                  No items
-                                </Typography>
+                                      {groupIcon}
+                                    </span>
+                                  )}
+                                  <Tooltip title={tooltip} placement="left">
+                                    <span
+                                      style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        flex: '1 1 auto',
+                                        minWidth: 0,
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {label && label.length <= 20
+                                        ? label
+                                        : label?.slice(0, 18) + '…'}
+                                    </span>
+                                  </Tooltip>
+                                  <Typography
+                                    component="span"
+                                    variant="caption"
+                                    sx={{
+                                      ml: 0.5,
+                                      flexShrink: 0,
+                                      color: 'text.secondary',
+                                      fontSize: '0.7rem',
+                                    }}
+                                  >
+                                    {groupObjects.length}
+                                  </Typography>
+                                  <span
+                                    style={{
+                                      marginLeft: 4,
+                                      display: 'inline-flex',
+                                      flexShrink: 0,
+                                    }}
+                                  >
+                                    {isOpen ? (
+                                      <ExpandMore sx={{ fontSize: 18 }} />
+                                    ) : (
+                                      <ExpandLess sx={{ fontSize: 18 }} />
+                                    )}
+                                  </span>
+                                </ListSubheader>
                               )}
-                        </React.Fragment>
-                      );
-                    })}
-                </React.Fragment>
-              );
-            })}
-      </List>
-      {childrenPlacement === 'bottom' && children}
+
+                              <Divider />
+
+                              {/* Items */}
+                              {groupObjects.length > 0
+                                ? isOpen &&
+                                  groupObjects.map((object: any) => {
+                                    const groupItemIcon = resolveItemValue(
+                                      group,
+                                      'groupItemIcon',
+                                      fieldValue,
+                                      object,
+                                      groupIcon
+                                    );
+                                    const mcLink = middleClickLink
+                                      ? middleClickLink(object)
+                                      : undefined;
+                                    const isSelected = isSelectedItem({
+                                      object,
+                                      selectedField,
+                                    });
+
+                                    return (
+                                      <ListItem
+                                        key={
+                                          object.id ??
+                                          object.pod_id ??
+                                          JSON.stringify(object).slice(0, 40)
+                                        }
+                                        disablePadding
+                                        sx={{ position: 'relative' }}
+                                        data-navrow=""
+                                      >
+                                        <ListItemButton
+                                          sx={{
+                                            py: rowPy,
+                                            pl: 2,
+                                            pr: 1,
+                                            minHeight: compact ? 28 : 44,
+                                            backgroundColor: isSelected
+                                              ? 'rgba(157, 133, 239, 0.18)'
+                                              : undefined,
+                                            '&:hover': {
+                                              backgroundColor: isSelected
+                                                ? 'rgba(157, 133, 239, 0.25)'
+                                                : 'rgba(0,0,0,0.04)',
+                                            },
+                                            ...(itemStyle
+                                              ? itemStyle(object)
+                                              : {}),
+                                          }}
+                                          selected={isSelected}
+                                          onClick={() => {
+                                            group.onClickItem
+                                              ? group.onClickItem(object)
+                                              : defaultOnClickItem(object);
+                                          }}
+                                          onMouseDown={(event) => {
+                                            if (event.button === 1) {
+                                              event.preventDefault();
+                                              if (mcLink)
+                                                window.open(mcLink, '_blank');
+                                            }
+                                          }}
+                                        >
+                                          <ListItemIcon
+                                            sx={{
+                                              minWidth:
+                                                listItemIconStyle?.minWidth ??
+                                                36,
+                                              ...listItemIconStyle,
+                                              '& .MuiSvgIcon-root': {
+                                                fontSize: compact ? 18 : 22,
+                                              },
+                                            }}
+                                          >
+                                            {groupItemIcon ?? groupIcon}
+                                          </ListItemIcon>
+                                          {renderRowContent(
+                                            group,
+                                            fieldValue,
+                                            object
+                                          )}
+                                        </ListItemButton>
+                                      </ListItem>
+                                    );
+                                  })
+                                : isOpen && (
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        px: 2,
+                                        py: 1,
+                                        display: 'block',
+                                        color: 'text.secondary',
+                                        fontStyle: 'italic',
+                                      }}
+                                    >
+                                      No items
+                                    </Typography>
+                                  )}
+                            </React.Fragment>
+                          );
+                        })}
+                    </React.Fragment>
+                  );
+                })}
+          </List>
+        )}
+        {childrenPlacement === 'bottom' && children}
+      </div>
     </div>
   );
 };
