@@ -22,6 +22,11 @@ const GenericModal: React.FC<GenericModalProps> = ({
       keyboard={true}
       isOpen={true}
       toggle={toggle}
+      // Bootstrap's default (1050) sits UNDER MUI's modal layer (1300), so a
+      // reactstrap modal opened from a MUI dialog — the launcher's file
+      // picker — rendered behind the thing that opened it. 1350 clears MUI
+      // dialogs while staying under its snackbar (1400) and tooltip (1500).
+      zIndex={1350}
       {...props}
     >
       <ModalHeader toggle={toggle} charCode="&#x2715;">

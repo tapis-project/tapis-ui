@@ -36,7 +36,7 @@ type Action<T> = {
   result?: ActionResult;
 };
 
-type JSONEditorProps<T = any> = {
+export type JSONEditorProps<T = any> = {
   obj?: T | undefined;
   actions?: Array<Action<T>>;
   style?: React.CSSProperties;
@@ -54,6 +54,16 @@ const JSONEditor = <T,>({
   renderNewlinesInError = false,
 }: PropsWithChildren<JSONEditorProps<T>>): React.ReactElement => {
   const [value, setValue] = useState<T | undefined>(undefined);
+  // The document text. CodeMirror only re-dispatches when this differs from
+  // what it already holds, so echoing edits back costs nothing and does not
+  // move the cursor — but Format can rewrite the doc.
+  const [text, setText] = useState<string>(() => {
+    try {
+      return JSON.stringify(obj, null, 2);
+    } catch {
+      return '';
+    }
+  });
   const [error, setError] = useState<ActionError | undefined>(undefined);
   const [result, setResult] = useState<ActionResult | undefined>(undefined);
 
@@ -117,62 +127,34 @@ const JSONEditor = <T,>({
           {result.message}
         </Alert>
       )}
+      {/* Above the editor, not below it: the buttons keep one position no
+          matter how long the document is, so a job that needs scrolling does
+          not hide its own Apply. */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
-          fontFamily: 'monospace',
-          width: '100%',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '8px',
         }}
       >
-        <CodeMirror
-          value={JSON.stringify(obj, null, 2)}
-          editable
-          extensions={[json()]}
-          theme={vscodeDark}
-          placeholder={`Please enter valid json`}
-          onChange={(value) => {
-            if (value === '') {
-              setValue(undefined);
-              setError(undefined);
-              return;
-            }
-
+        <LoadingButton
+          variant="text"
+          size="small"
+          disabled={value === undefined || error !== undefined}
+          onClick={() => {
             try {
-              let json = JSON.parse(value) as T;
-              setValue(json);
+              setText(JSON.stringify(JSON.parse(text), null, 2));
               setError(undefined);
             } catch (e) {
-              setError({
-                title: 'ParseError',
-                message: (e as Error).message,
-              });
+              setError({ title: 'ParseError', message: (e as Error).message });
             }
           }}
-          color="black"
-          style={{
-            width: '100%',
-            overflow: 'visible',
-            whiteSpace: 'pre',
-            fontSize: 16,
-            lineHeight: 1.5,
-            backgroundColor: '#f5f5f5',
-            color: 'black',
-            fontFamily:
-              'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            ...style,
-          }}
-        />
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'right',
-          gap: '8px',
-          marginTop: '8px',
-        }}
-      >
+        >
+          format
+        </LoadingButton>
+        <div style={{ flex: 1 }} />
         {actions.map((action) => {
           if (action.error !== undefined && error === undefined) {
             setError(action.error);
@@ -215,6 +197,54 @@ const JSONEditor = <T,>({
             </LoadingButton>
           );
         })}
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          fontFamily: 'monospace',
+          width: '100%',
+        }}
+      >
+        <CodeMirror
+          value={text}
+          editable
+          extensions={[json()]}
+          theme={vscodeDark}
+          placeholder={`Please enter valid json`}
+          onChange={(value) => {
+            setText(value);
+            if (value === '') {
+              setValue(undefined);
+              setError(undefined);
+              return;
+            }
+
+            try {
+              let json = JSON.parse(value) as T;
+              setValue(json);
+              setError(undefined);
+            } catch (e) {
+              setError({
+                title: 'ParseError',
+                message: (e as Error).message,
+              });
+            }
+          }}
+          color="black"
+          style={{
+            width: '100%',
+            overflow: 'visible',
+            whiteSpace: 'pre',
+            fontSize: 13,
+            lineHeight: 1.45,
+            backgroundColor: '#f5f5f5',
+            color: 'black',
+            fontFamily:
+              'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+            ...style,
+          }}
+        />
       </div>
     </div>
   );

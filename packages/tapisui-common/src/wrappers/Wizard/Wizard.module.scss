@@ -1,9 +1,22 @@
+/* The step column and the summary column are flex siblings, so each used to
+   stretch to the height of the taller one: on a two-field step you scrolled
+   past the form into a screen of nothing, because the summary (every step at
+   once) or the JSON preview on the last step set the height for all of them.
+   Cap the pair and let each column scroll on its own. */
 .container {
   display: flex;
+  align-items: flex-start;
+  max-height: 70vh;
 }
 
 .container > * {
   flex: 50%;
+  /* No align-self: stretch — that would defeat the container's flex-start and
+     pull a two-field step down to the summary's height, leaving a tall empty
+     box you scroll through. Each column is as tall as its own content, up to
+     the cap, and only then scrolls. */
+  max-height: 70vh;
+  overflow-y: auto;
   background-color: var(--global-color-primary--x-light);
   border: 1px solid var(--global-color-primary--light);
   margin-right: 1em;
@@ -42,4 +55,24 @@
   border-bottom: 1px solid var(--global-color-primary--normal);
   padding-bottom: 0.5em;
   margin-bottom: 0.5em;
+}
+
+/* react-step-wizard keeps every step mounted and takes the inactive ones out of
+   flow (.rsw_2f is position: absolute; opacity: 0). Out-of-flow elements still
+   count toward the scrollable area of an ancestor that scrolls, so this column
+   scrolled to the height of the TALLEST step — the JSON preview on the last
+   page — whichever step you were actually on. Clipping them at the wizard's own
+   wrapper drops them from the calculation; the active step is in flow, so it
+   still sets the height and still scrolls here when it is genuinely long.
+
+   .steps only exists as a class because this rule defines it: Wizard.tsx
+   already passes className={styles.steps}, which resolved to undefined while
+   the stylesheet had nothing to say about it. */
+.steps {
+  position: relative;
+}
+
+.steps > div {
+  position: relative;
+  overflow: hidden;
 }
