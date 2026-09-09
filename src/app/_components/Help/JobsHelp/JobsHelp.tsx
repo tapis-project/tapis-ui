@@ -1,13 +1,6 @@
 import React from 'react';
-import { Help } from '@tapis/tapisui-common';
+import ServiceDocs from '../ServiceDocs';
 
-const JobsHelp: React.FC = () => {
-  return (
-    <Help
-      title="Tapis Jobs"
-      iframeUrl="https://tapis.readthedocs.io/en/latest/technical/jobs.html"
-    />
-  );
-};
+const JobsHelp: React.FC = () => <ServiceDocs service="jobs" />;
 
 export default JobsHelp;

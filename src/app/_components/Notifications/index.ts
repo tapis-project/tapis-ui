@@ -1,25 +1,28 @@
-export { default } from './NotificationToast';
 export { default as useNotifications } from './useNotifications';
-export { default as NotificationToast } from './NotificationToast';
 export { default as NotificationsProvider } from './NotificationsProvider';
 
-export type Notification = {
-  icon?: string;
-  status?: string;
-  message: string;
-};
+export type NotificationSeverity = 'error' | 'warning' | 'success' | 'info';
 
-export type NotificationRecord = {
+export interface AppNotification {
   id: string;
-  read: boolean;
-  notification: Notification;
-};
+  title: string;
+  message: string;
+  severity: NotificationSeverity;
+  timestamp: number;
+  dismissed: boolean;
+  autoDismissMs?: number;
+  statusCode?: number;
+}
 
-export type NotificationsContextType = {
-  notifications: Array<NotificationRecord>;
-  dispatch: React.Dispatch<{
-    operation: 'add' | 'markread' | 'remove' | 'set';
-    notification?: Notification | undefined;
-    id: string;
-  }>;
-};
+export interface NotificationsContextType {
+  notifications: AppNotification[];
+  addNotification: (
+    title: string,
+    message: unknown,
+    severity?: NotificationSeverity
+  ) => string;
+  dismiss: (id: string) => void;
+  dismissAll: () => void;
+  remove: (id: string) => void;
+  clear: () => void;
+}

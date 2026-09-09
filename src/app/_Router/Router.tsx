@@ -19,6 +19,8 @@ const Workflows = lazy(() => import('../Workflows'));
 const MLHub = lazy(() => import('../MLHub'));
 const Authenticator = lazy(() => import('../Authenticator'));
 const UIPatterns = lazy(() => import('../UIPatterns'));
+const Settings = lazy(() => import('../Settings'));
+const ComponentsCatalog = lazy(() => import('../Components'));
 
 import { useExtension } from 'extensions';
 
@@ -49,6 +51,19 @@ const Router: React.FC = () => {
       <Route path="/oauth2">
         <OAuth2 />
       </Route>
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/settings">
+        <Suspense fallback={<RouteLoader />}>
+          <Settings />
+        </Suspense>
+      </ProtectedRoute>
+      <ProtectedRoute
+        accessToken={accessToken?.access_token}
+        path="/components"
+      >
+        <Suspense fallback={<RouteLoader />}>
+          <ComponentsCatalog />
+        </Suspense>
+      </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/systems">
         <Suspense fallback={<RouteLoader />}>
           <Systems />

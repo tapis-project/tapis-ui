@@ -37,6 +37,7 @@ import 'app/Apps/_context/registerAppsChat';
 import 'app/Jobs/_context/registerJobsChat';
 import 'app/Workflows/_context/registerWorkflowsChat';
 import 'app/Pods/_context/registerPodsChat';
+import { shouldHideBreadcrumbs } from './breadcrumbRoutes';
 
 function parseAssistantStream(raw: string) {
   const thinkStartToken = '<think>';
@@ -75,6 +76,9 @@ const LayoutContent: React.FC = () => {
   const tenants = result;
   const { pathname } = useLocation();
   const crumbs = breadcrumbsFromPathname(pathname);
+  // Pages with their own top navigation opt out of the global breadcrumb bar
+  // — see breadcrumbRoutes.ts for the list and the reasoning.
+  const hideCrumbs = shouldHideBreadcrumbs(pathname);
 
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -416,7 +420,9 @@ const LayoutContent: React.FC = () => {
           left={<Sidebar />}
           right={
             <div style={{ height: '100%' }}>
-              <div>{crumbs && crumbs.length == 0 ? null : header}</div>
+              <div>
+                {hideCrumbs || (crumbs && crumbs.length == 0) ? null : header}
+              </div>
               <div className="body">
                 <Router />
               </div>
