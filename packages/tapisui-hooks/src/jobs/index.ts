@@ -1,10 +1,16 @@
 export { default as queryKeys } from './queryKeys';
 export { default as useList } from './useList';
+export { default as useListWindow } from './useListWindow';
 export { default as useDetails } from './useDetails';
 export { default as useSubmit } from './useSubmit';
 export { default as useCancel } from './useCancel';
 export { default as useHideJob } from './useHideJob';
 export { default as useUnhideJob } from './useUnhideJob';
 export { default as useGetJobOutputList } from './useGetJobOutputList';
+export { default as useGetJobOutputText } from './useGetJobOutputText';
 export { default as useResubmit } from './useResubmit';
 export { default as useSearchSQL } from './useSearchSQL';
+export { default as useJobShare } from './useJobShare';
+export { default as useShareJob } from './useShareJob';
+export { default as useDeleteJobShare } from './useDeleteJobShare';
+export { default as useJobHistory } from './useJobHistory';
