@@ -1,5 +1,4 @@
 import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'testing/utils';
 import Sidebar from 'app/_components/Sidebar';
 
