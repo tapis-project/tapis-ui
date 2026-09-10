@@ -163,3 +163,17 @@ dist
 # Local dev overrides — never commit
 .pnpmfile.cjs
 .pnpm-store
+*.timestamp-*.mjs
+
+# pnpm cross-mount fallback store created by container installs — never commit
+.pnpm-store/
+.playwright-mcp/
+
+# Local UI screenshots
+screenshots/
+
+# Benchmark results
+scripts/bench/results/
+
+# rollup-plugin-visualizer output from `pnpm build-dev`
+bundle-stats.html
