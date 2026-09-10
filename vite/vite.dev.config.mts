@@ -91,6 +91,34 @@ export default defineConfig({
     cssCodeSplit: true,
     rollupOptions: {
       external: ['packages'],
+      output: {
+        // Mirrors vite.config.mts. Without this the dev build emits ONE eager
+        // 4.22 MB chunk, which costs twice: the browser cannot cache vendor
+        // code separately from app code across deploys, and a CPU profile of
+        // the built app attributes everything to a single `chunk:index` with
+        // no way to tell react-dom from MUI from our own code.
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'mui-vendor': [
+            '@mui/material',
+            '@mui/icons-material',
+            '@mui/lab',
+            '@mui/x-data-grid',
+            '@mui/x-tree-view',
+          ],
+          'tapis-vendor': [
+            '@tapis/tapis-typescript',
+            '@tapis/tapis-typescript-apps',
+            '@tapis/tapis-typescript-systems',
+          ],
+          'utils-vendor': ['lodash', 'date-fns', 'formik', 'yup'],
+          'editor-vendor': [
+            '@codemirror/lang-json',
+            '@codemirror/lang-python',
+            '@uiw/react-codemirror',
+          ],
+        },
+      },
       plugins: [
         visualizer({
           template: 'treemap', // sunburst, treemap(default), network, raw-data, list

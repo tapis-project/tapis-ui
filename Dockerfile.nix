@@ -19,7 +19,8 @@ COPY packages/demo-tapisui-extension/package.json packages/demo-tapisui-extensio
 COPY packages/example-extension/package.json packages/example-extension/
 COPY packages/icicle-tapisui-extension/package.json packages/icicle-tapisui-extension/
 COPY packages/scoped-tapisui-extension/package.json packages/scoped-tapisui-extension/
-RUN nix --extra-experimental-features 'nix-command flakes' develop --command pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    nix --extra-experimental-features 'nix-command flakes' develop --command pnpm install --frozen-lockfile
 
 # ── Layer 3: Source + build (only this reruns on code changes) ──
 COPY \
@@ -33,7 +34,8 @@ COPY \
   --exclude=./build \
   --exclude=./deploy \
   ./ ./
-RUN nix --extra-experimental-features 'nix-command flakes' develop --command bash -c 'pnpm -r build && pnpm build'
+RUN --mount=type=cache,target=/tapisui/node_modules/.cache \
+    nix --extra-experimental-features 'nix-command flakes' develop --command bash -c 'pnpm -r build && pnpm build'
 
 FROM nginx:alpine as production-stage
 COPY --from=build-stage /tapisui/dist /usr/share/nginx/html

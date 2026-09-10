@@ -146,7 +146,7 @@ interface KeyValueRowProps {
 export function KeyValueRow({ label, value, formatValue }: KeyValueRowProps) {
   const displayValue =
     value === null || value === undefined
-      ? '—'
+      ? '-'
       : value === true
       ? 'Yes'
       : value === false
