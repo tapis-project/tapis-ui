@@ -42,7 +42,6 @@ export default function NavigationHistoryDialog({
         <Autocomplete
           key={open ? 'open' : 'closed'}
           autoHighlight
-          openOnFocus
           options={options}
           getOptionKey={(option) => option.id}
           getOptionLabel={(option) => option.path}

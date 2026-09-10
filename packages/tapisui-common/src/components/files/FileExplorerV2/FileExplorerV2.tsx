@@ -359,6 +359,15 @@ export function FileExplorerV2({
                   py: 1,
                 }}
               >
+                <Tooltip title="Root directory" placement="right">
+                  <IconButton
+                    size="small"
+                    aria-label="Go to root directory"
+                    onClick={() => onNavigatePath('/')}
+                  >
+                    <HomeOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
                 {onNewRootFolder && (
                   <Tooltip title="New folder" placement="right">
                     <IconButton
@@ -381,15 +390,6 @@ export function FileExplorerV2({
                     </IconButton>
                   </Tooltip>
                 )}
-                <Tooltip title="Root directory" placement="right">
-                  <IconButton
-                    size="small"
-                    aria-label="Go to root directory"
-                    onClick={() => onNavigatePath('/')}
-                  >
-                    <HomeOutlinedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
               </Box>
             )}
             <Box

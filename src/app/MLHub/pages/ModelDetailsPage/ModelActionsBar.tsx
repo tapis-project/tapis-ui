@@ -6,11 +6,11 @@ import Tooltip from '@mui/material/Tooltip';
 
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
-import { ModelMetadata } from '@mlhub/models-ts-sdk';
+import { Model } from '@mlhub/models-ts-sdk';
 import DeploymentDialog from '../../_components/DeploymentDialog';
 
 interface ModelActionsBarProps {
-  model: ModelMetadata;
+  model: Model;
 }
 
 type ActionDialog = 'deploy' | null;

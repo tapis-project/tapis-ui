@@ -20,16 +20,20 @@ import {
   inferenceBackendColorMap,
   inferenceBackendLabelMap,
 } from '../../../enums';
-import { Download, Favorite, ForkRight, OpenInNew } from '@mui/icons-material';
+import {
+  Download,
+  Favorite,
+  LibraryAddOutlined,
+  OpenInNew,
+} from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { formatCount } from '../../../_utils';
-import { ForkPopover } from '../../../_components/ForkPopover';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
 import { useNavigate } from '../../../_context/NavContext';
 
 type ModelMarketplaceListingProps = {
-  models: Array<Models.ModelMetadata>;
+  models: Array<Models.Model>;
   count?: number;
   previous?: () => void;
   next?: () => void;
@@ -41,10 +45,10 @@ export const ModelMarketplaceListing: React.FC<
 > = ({ models, count, next, previous, isLoading }) => {
   // ----- Hooks
   const { navigate } = useNavigate();
-  const { fork } = Hooks.Models.useForkModel();
+  const { fork, isLoading: isAddingToCollection } = Hooks.Models.useForkModel();
   const { username } = useTapisConfig();
 
-  const appropriateModels: Models.ModelMetadata[] = useMemo(() => {
+  const appropriateModels: Models.Model[] = useMemo(() => {
     return models.filter((m) => {
       return (
         !m.tags?.includes('not-for-all-audiences') &&
@@ -334,7 +338,7 @@ export const ModelMarketplaceListing: React.FC<
                       />
                     </Box>
 
-                    {/* Footer: stats + Fork button */}
+                    {/* Footer: stats + collection action */}
                     <Box
                       sx={{
                         display: 'flex',
@@ -383,10 +387,11 @@ export const ModelMarketplaceListing: React.FC<
                         </Stack>
                       </Stack>
 
-                      {/* Fork Button — bottom right */}
-                      <ForkPopover
-                        isLoading={isLoading}
-                        onFork={() => {
+                      <Button
+                        size="small"
+                        startIcon={<LibraryAddOutlined />}
+                        disabled={isAddingToCollection}
+                        onClick={() => {
                           fork(
                             {
                               author: model.author,
@@ -399,10 +404,10 @@ export const ModelMarketplaceListing: React.FC<
                             }
                           );
                         }}
-                        onForkAndDeploy={() => {
-                          alert('Disabled');
-                        }}
-                      />
+                        sx={{ flexShrink: 0, textTransform: 'none' }}
+                      >
+                        Add to collection
+                      </Button>
                     </Box>
                   </CardContent>
                 </Card>

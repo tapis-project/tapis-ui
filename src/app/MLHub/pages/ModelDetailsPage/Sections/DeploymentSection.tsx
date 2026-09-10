@@ -8,16 +8,13 @@ import Typography from '@mui/material/Typography';
 
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
-import {
-  DeploymentStrategyReference,
-  ModelMetadata,
-} from '@mlhub/models-ts-sdk';
+import { DeploymentStrategyReference, Model } from '@mlhub/models-ts-sdk';
 import DeploymentDialog from '../../../_components/DeploymentDialog';
 import { InfoSection } from './InfoSection';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 
 interface DeploymentSectionProps {
-  model: ModelMetadata;
+  model: Model;
 }
 
 export function DeploymentSection({ model }: DeploymentSectionProps) {

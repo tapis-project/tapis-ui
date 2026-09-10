@@ -25,7 +25,7 @@ import { SettingsSection } from './ModelDetailsPage/Sections/SettingsSection';
 import { ExpandableTagCloud } from './ModelDetailsPage/utils';
 
 export interface ModelDetailDrawerProps {
-  model: Models.ModelMetadata | null;
+  model: Models.Model | null;
   onClose: () => void;
 }
 
@@ -33,7 +33,7 @@ function ModelDetailContent({
   summary,
   onClose,
 }: {
-  summary: Models.ModelMetadata;
+  summary: Models.Model;
   onClose: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<SectionTab>('general');

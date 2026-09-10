@@ -22,7 +22,7 @@ import * as Models from '@mlhub/models-ts-sdk';
 
 interface ModelFormDialogProps {
   open: boolean;
-  model: Models.ModelMetadata | null;
+  model: Models.Model | null;
   onClose: () => void;
 }
 

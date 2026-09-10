@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -238,11 +237,11 @@ export function ExplorerToolbar({
           <Button
             size="small"
             variant="outlined"
-            startIcon={<NoteAddIcon fontSize="small" />}
+            startIcon={<UploadFileIcon fontSize="small" />}
             onClick={onNewFile}
             sx={{ fontWeight: 600, fontSize: '0.8125rem' }}
           >
-            File
+            Upload
           </Button>
         )}
 

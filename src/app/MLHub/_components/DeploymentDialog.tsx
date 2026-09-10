@@ -49,7 +49,7 @@ import { SectionHeader } from './SectionHeader';
 import { useToast } from '../_context/ToastsContext/useToast';
 
 interface DeploymentDialogProps {
-  defaultModel?: Models.ModelMetadata;
+  defaultModel?: Models.Model;
   defaultStratRef?: Models.DeploymentStrategyReference;
   open: boolean;
   onClose: () => void;
@@ -59,7 +59,7 @@ interface DeploymentDialogProps {
 type FormInput = {
   name: string;
   description: string | null;
-  model: Models.ModelMetadata | null;
+  model: Models.Model | null;
   strategy: Deployments.Strategy | null;
   deploymentModality: Deployments.DeploymentModality | null;
   parameters: DeploymentParameterInput[];
@@ -102,7 +102,7 @@ type AdvancedSettingsProps = {
   strategy: Deployments.Strategy;
 };
 type DeploymentSummaryProps = {
-  model: Models.ModelMetadata | null;
+  model: Models.Model | null;
   name: string;
   description: string | null;
   detailsConfirmed: boolean;
@@ -125,7 +125,7 @@ type DeploymentModalityMenuItemProps = {
   deploymentModality: Deployments.DeploymentModality;
 };
 type ModelMenuItemProps = {
-  model: Models.ModelMetadata;
+  model: Models.Model;
   replicas?: FormInput['replicas'];
 };
 type DeploymentStrategyMenuItemProps = {

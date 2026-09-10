@@ -1,9 +1,9 @@
-import { ModelMetadata } from '@mlhub/models-ts-sdk';
+import { Model } from '@mlhub/models-ts-sdk';
 import { Box } from '@mui/material';
 import { SettingsZone, SettingsAction } from '../../../_components';
 
 interface SettingsSection {
-  model: ModelMetadata;
+  model: Model;
 }
 
 export function SettingsSection({ model }: SettingsSection) {

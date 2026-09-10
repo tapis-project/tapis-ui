@@ -2,7 +2,7 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 const create = (
-  request: Models.CreateModelMetadataRequest,
+  request: Models.CreateModelRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -12,8 +12,8 @@ const create = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.CreateModelMetadataResponse>(() =>
-    api.createModelMetadata(request)
+  return errorDecoder<Models.CreateModelResponse>(() =>
+    api.createModel(request)
   );
 };
 

@@ -98,7 +98,7 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
 };
 
 export default function ModelMarketplace() {
-  const tags: Models.ModelMetadata['tags'] = [];
+  const tags: Models.Model['tags'] = [];
   const [state, dispatch] = React.useReducer(reducer, initialReducerState);
 
   // ─── Filter state ───────────────────────────────

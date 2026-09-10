@@ -48,7 +48,7 @@ import { useNavigate } from '../../_context/NavContext';
 import ModelEmptyState from './ModelEmptyState';
 
 type ModelViewMode = 'list' | 'grid' | 'compact';
-type OwnedModel = Models.ModelMetadata & {
+type OwnedModel = Models.Model & {
   id?: string;
 };
 

@@ -2,12 +2,12 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
-import { ModelMetadata } from '@mlhub/models-ts-sdk';
+import { Model } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { TagCloud } from '../utils';
 
 interface ComplianceSectionProps {
-  model: ModelMetadata;
+  model: Model;
 }
 
 export function ComplianceSection({ model }: ComplianceSectionProps) {

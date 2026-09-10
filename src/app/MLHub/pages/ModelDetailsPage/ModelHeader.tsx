@@ -14,7 +14,7 @@ import { ModelActionsBar } from './ModelActionsBar';
 import { ExpandableTagCloud } from './utils';
 
 interface ModelHeaderProps {
-  model: Models.ModelMetadata;
+  model: Models.Model;
 }
 
 export function ModelHeader({ model }: ModelHeaderProps) {

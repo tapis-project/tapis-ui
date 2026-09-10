@@ -10,12 +10,9 @@ const useCreateModel = () => {
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<
-      Models.CreateModelMetadataResponse,
-      Error,
-      Models.CreateModelMetadataRequest
-    >([QueryKeys.create, mlHubBasePath, jwt], (params) =>
-      API.Models.create(params, mlHubBasePath, jwt)
+    useMutation<Models.CreateModelResponse, Error, Models.CreateModelRequest>(
+      [QueryKeys.create, mlHubBasePath, jwt],
+      (params) => API.Models.create(params, mlHubBasePath, jwt)
     );
 
   const invalidate = () => {
@@ -32,12 +29,12 @@ const useCreateModel = () => {
     reset,
     invalidate,
     create: (
-      params: Models.CreateModelMetadataRequest,
+      params: Models.CreateModelRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Models.CreateModelMetadataResponse,
+        Models.CreateModelResponse,
         Error,
-        Models.CreateModelMetadataRequest
+        Models.CreateModelRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation

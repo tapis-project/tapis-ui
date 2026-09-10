@@ -17,7 +17,6 @@ import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { Files as FilesHooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
 import {
@@ -25,6 +24,7 @@ import {
   getFileExplorerIcon,
 } from '@tapis/tapisui-common';
 import { fileInfoPath } from './utils';
+import { UploadFile } from '@mui/icons-material';
 
 interface TreeDirectoryProps {
   systemId: string;
@@ -258,10 +258,10 @@ export default function LazyFilesTree({
           )}
           {onNewRootFile && (
             <Button
-              startIcon={<NoteAddIcon sx={{ fontSize: 16 }} />}
+              startIcon={<UploadFile sx={{ fontSize: 16 }} />}
               onClick={onNewRootFile}
             >
-              File
+              Upload
             </Button>
           )}
         </ButtonGroup>

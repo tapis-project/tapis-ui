@@ -2,12 +2,12 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
-import { ModelMetadata } from '@mlhub/models-ts-sdk';
+import { Model } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { KeyValueGrid, TagCloud, formatDuration } from '../utils';
 
 interface GeneralSectionProps {
-  model: ModelMetadata;
+  model: Model;
 }
 
 export function GeneralSection({ model }: GeneralSectionProps) {
