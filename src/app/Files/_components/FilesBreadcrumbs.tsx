@@ -1,16 +1,7 @@
 /**
- * The path bar above a file listing: where you are, and one press to leave.
- *
- * The app-level breadcrumb bar used to carry this, but /files opted out of it
- * when the page moved onto the pods-style shell — correct for the bar (it was
- * a second stacked header) and wrong for the path, which is the one piece of
- * that bar a file browser cannot do without. There was no way up a directory
- * at all except editing the URL.
- *
- * So it comes back next to the thing it describes rather than at the top of
- * the window, and reads as a path: monospace segments, dimmed separators, and
- * a hover fill instead of link-blue. A long path collapses in the middle —
- * the two ends are the parts anyone reads.
+ * Path bar above a file listing: breadcrumb segments, copy buttons, history
+ * and up navigation, and a text field for typing a path. Long paths collapse
+ * in the middle.
  */
 import React, {
   useCallback,
@@ -42,6 +33,7 @@ import {
 import { useHistory, useLocation } from 'react-router-dom';
 import { Systems as SystemsHooks } from '@tapis/tapisui-hooks';
 import HostEvalRailButton from './Toolbar/HostEvalRailButton';
+import PlacesRailButton, { type Landmarks } from './Toolbar/PlacesRailButton';
 import { PAPER_TOOLTIP } from './Toolbar/ToolbarV2';
 import { canHostEval, describeSystemRoot, hostEvalBlocker } from './hostEval';
 import { timeAgo } from 'app/_components/NavV2Kit/navKit';
@@ -64,7 +56,7 @@ const SEGMENT_SX = {
   whiteSpace: 'nowrap',
 } as const;
 
-/** `/files/frontera/scratch/01/cgarcia` for the first n segments. */
+/** `/files/frontera/scratch/01/jdoe` for the first n segments. */
 export const filesRoute = (systemId: string, segments: string[]): string =>
   [
     '/files',
@@ -76,26 +68,19 @@ export const pathSegments = (path?: string): string[] =>
   (path ?? '').split('/').filter(Boolean);
 
 /**
- * The inverse of filesRoute, and it lives here so the two cannot drift.
+ * Inverse of filesRoute. filesRoute percent-encodes each segment, and
+ * react-router 5 returns route parameters still encoded. The Files client
+ * encodes `path` again, so decode here to avoid double encoding
+ * (`my folder` would be requested as `my%2520folder`).
  *
- * filesRoute percent-encodes each segment on the way into the URL, and
- * react-router 5 hands the parameter back STILL ENCODED (v6 decodes; v5 does
- * not). Passing that straight to the Files API means it gets encoded a second
- * time by the generated client, which encodes `path` itself — so a directory
- * called `my folder` was requested as `my%2520folder` and the service was
- * asked for a directory literally named `my%20folder`.
- *
- * Per segment rather than on the whole string: a decoded segment may contain
- * a `/`, and decoding the joined path would turn that into a directory
- * boundary that is not there.
+ * Decoded per segment: a decoded segment may contain `/`, and decoding the
+ * joined path would create a directory boundary that does not exist.
  */
-const decodeSegment = (segment: string): string => {
+export const decodeSegment = (segment: string): string => {
   try {
     return decodeURIComponent(segment);
   } catch {
-    // A literal `%` that is not an escape — `100%done` — makes
-    // decodeURIComponent throw URIError, which would take the page down for
-    // a filename that is merely unusual. The raw segment is the better guess.
+    // a `%` that is not an escape (`100%done`) makes decodeURIComponent throw; keep the raw segment
     return segment;
   }
 };
@@ -104,11 +89,10 @@ export const pathFromRoute = (systemPath?: string): string =>
   pathSegments(systemPath).map(decodeSegment).join('/') || '/';
 
 /**
- * The folder a /files/<system>/<path> URL stands in, decoded, for the write
+ * The folder a /files/<system>/<path> URL is in, decoded, for write
  * operations (new folder, upload, rename, move, delete). The root is '' so
- * `${path}/${name}` stays a single leading slash. It goes through
- * pathFromRoute for the same reason the listing does: a raw route segment is
- * still percent-encoded, and the Files client encodes it again.
+ * `${path}/${name}` has a single leading slash. Goes through pathFromRoute
+ * because route segments are still percent-encoded.
  */
 export const folderFromPathname = (pathname: string): string => {
   const folder = pathFromRoute(pathname.split('/').slice(3).join('/'));
@@ -116,13 +100,11 @@ export const folderFromPathname = (pathname: string): string => {
 };
 
 /**
- * What someone typed into the path bar, resolved to a destination.
- *
- * Three spellings, the ones a path already travels as: an absolute
- * `/scratch/01`, a full `tapis://frontera/scratch/01` (system included —
- * the same address the copy button hands out), and a relative `data/run7`
- * or `../logs` resolved against where you stand. Dot-dots above the top
- * just stay at the top; empty input is not a destination.
+ * Resolves text typed into the path bar to a destination. Accepts an absolute
+ * `/scratch/01`, a full `tapis://frontera/scratch/01` (system included, as
+ * the copy button produces), or a relative `data/run7` or `../logs`
+ * resolved against the current directory. `..` above the top stays at the
+ * top; empty input is not a destination.
  */
 export const parsePathInput = (
   raw: string,
@@ -162,7 +144,7 @@ export const parsePathInput = (
   return { systemId: targetSystem, segments: resolved };
 };
 
-/** the two copy buttons and the edit toggle — quieter than the nav arrows */
+/** the two copy buttons and the edit toggle (quieter than the nav arrows) */
 const BAR_ICON_BTN_SX = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -184,8 +166,6 @@ const CopyButton: React.FC<
 > = ({ label, text, children }) => {
   const [copied, setCopied] = useState(false);
   return (
-    // the tooltip carries the exact text the press will hand over — an
-    // address you can read before you take it
     <Tooltip title={copied ? 'copied' : label}>
       <Box
         component="button"
@@ -205,13 +185,10 @@ const CopyButton: React.FC<
 };
 
 /**
- * A real anchor so middle-click and ⌘-click open a tab, with the left click
- * handed to the router — the same bargain the landing tables' links make.
- *
- * forwardRef + prop spread because the system crumb sits inside a Tooltip:
- * MUI clones its child with a ref and hover listeners, and a plain function
- * component swallowed both — a console warning, and a tooltip that never
- * actually opened on this branch.
+ * A real anchor so middle-click and cmd-click open a tab; left click goes
+ * to the router. forwardRef and prop spread are required because the system
+ * crumb is inside a Tooltip, which clones its child with a ref and hover
+ * listeners.
  */
 const Crumb = React.forwardRef<
   HTMLAnchorElement,
@@ -224,8 +201,7 @@ const Crumb = React.forwardRef<
       component="a"
       ref={ref}
       {...tooltipProps}
-      // even in-place, the crumb keeps its href: ⌘-click and middle-click open
-      // the same directory on the Files page, which is what an address does
+      // keep the href even in place: cmd-click and middle-click open the directory on the Files page
       href={`/#${to}`}
       onClick={(event: React.MouseEvent) => {
         if (
@@ -248,8 +224,7 @@ const Crumb = React.forwardRef<
         px: 0.4,
         py: '1px',
         borderRadius: '3px',
-        // a fill rather than an underline: a path is already a row of small
-        // words, and five underlines in it read as damage
+        // fill instead of underline
         '&:hover': { color: 'text.primary', bgcolor: 'rgba(0,0,0,0.06)' },
       }}
     >
@@ -264,9 +239,7 @@ const NAV_BUTTON_SX = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  // a fixed height, shared with the go-to pill beside them: left to their
-  // padding they came out a pixel shorter, which reads as the pill sitting
-  // low rather than as the arrows sitting high
+  // fixed height, shared with the go-to button beside them
   height: 22,
   boxSizing: 'border-box',
   px: '3px',
@@ -283,8 +256,7 @@ const NAV_BUTTON_SX = {
     color: 'text.disabled',
     borderColor: 'rgba(0,0,0,0.06)',
   },
-  // block, not the default inline: an inline svg sits on a text baseline and
-  // reserves room under itself for a descender that is not there
+  // block, not inline: an inline svg reserves descender space below it
   '& svg': { fontSize: 15, display: 'block' },
 } as const;
 
@@ -298,9 +270,7 @@ const NavButton: React.FC<
   }>
 > = ({ label, title, disabled, onClick, sx, children }) => (
   <Tooltip title={title}>
-    {/* a disabled button cannot hold a tooltip, so the span takes it —
-        inline-flex so the span hugs the button instead of leaving baseline
-        space under it and pushing everything a pixel out of line */}
+    {/* a disabled button cannot hold a tooltip, so the span does */}
     <span style={{ display: 'inline-flex' }}>
       <Box
         component="button"
@@ -325,11 +295,8 @@ export const describeFilesLocation = (location: string): string => {
 };
 
 /**
- * Moving around a file browser, wherever the controls for it happen to be.
- *
- * The path bar owns the buttons, but the listing wants the same moves off the
- * keyboard — and two copies of "go back" is how the button and the key end up
- * disagreeing about where back is. So the moves live here and both use them.
+ * Navigation moves (back, forward, up, go to) shared by the path bar buttons
+ * and the listing's keyboard handlers, so both use the same logic.
  */
 export const useFilesNavigation = (
   systemId: string,
@@ -351,9 +318,7 @@ export const useFilesNavigation = (
         history.push(route);
         return;
       }
-      // the system travels with the path: a trail can cross systems (the
-      // job page browses its archive directory on another one), and a path
-      // handed over without its system lands on the wrong machine
+      // include the system: a trail can cross systems (a job page browses an archive directory on another one)
       const parts = route.split('/');
       onNavigate(
         `/${parts.slice(3).map(decodeSegment).join('/')}`,
@@ -374,18 +339,10 @@ export const useFilesNavigation = (
   const segments = pathSegments(path);
 
   /**
-   * Back, and then up.
-   *
-   * With a trail behind you, back is the trail. With none — the first
-   * directory of a session, or one opened straight from a URL — the button
-   * and the key did nothing at all, which is a poor answer to someone
-   * standing four levels down. So it climbs instead, one directory per
-   * press, until it reaches the top of the system and genuinely has nowhere
-   * to go.
-   *
-   * The climb replaces the trail's current entry rather than appending: put
-   * the parent after the child and the next back walks you straight back
-   * down, oscillating between two directories forever.
+   * Back, then up. With no trail behind, back climbs one directory per
+   * press until the top of the system. The climb replaces the trail's
+   * current entry instead of appending; appending would make the next back
+   * return to the child.
    */
   const back = useCallback(() => {
     if (canGoBack(trailKey)) {
@@ -395,7 +352,7 @@ export const useFilesNavigation = (
     if (!segments.length) return;
     replaceNextVisit(trailKey);
     goToRoute(filesRoute(systemId, segments.slice(0, -1)));
-    // segments is rebuilt each render from a string, so compare by content
+    // segments is rebuilt each render, so compare by content
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trailKey, step, goToRoute, systemId, segments.join('/')]);
 
@@ -406,19 +363,14 @@ export const useFilesNavigation = (
   );
 
   /**
-   * One directory up, with no reference to the trail.
-   *
-   * back climbs too, but only once it has run out of history; this is the
-   * move on its own, for the places that only ever want that one. It
-   * replaces the trail's current entry for the same reason back's climb
-   * does: put the parent after the child and the next back walks you
-   * straight back down into the directory you just left.
+   * One directory up, independent of the trail. Replaces the trail's current
+   * entry for the same reason back's climb does.
    */
   const up = useCallback(() => {
     if (!segments.length) return;
     replaceNextVisit(trailKey);
     goToRoute(filesRoute(systemId, segments.slice(0, -1)));
-    // segments is rebuilt each render from a string, so compare by content
+    // segments is rebuilt each render, so compare by content
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trailKey, goToRoute, systemId, segments.join('/')]);
 
@@ -439,16 +391,18 @@ const FilesBreadcrumbs: React.FC<{
   systemId: string;
   path?: string;
   /**
-   * Browse in place instead of routing to /files.
-   *
-   * A job's output listing is a file browser too, and sending someone to
-   * another page for every directory press loses the job they were reading.
-   * With this it walks the tree where it stands, and everything else about
-   * the bar — up, back, forward, the trail — behaves identically.
+   * Browse in place instead of routing to /files (for example a job's output
+   * listing). Up, back, forward and the trail work the same.
    */
   onNavigate?: (path: string, systemId: string) => void;
   /** which trail this bar keeps; separate browsers keep separate ones */
   trail?: string;
+  /**
+   * A tree with known landmarks instead of a Tapis system (for example a
+   * pod container: root, mounts, config files). The Go To rail offers
+   * these and the bar makes no Systems service request.
+   */
+  landmarks?: Landmarks;
   /** anything that should sit at the right end of the bar */
   children?: React.ReactNode;
 }> = ({
@@ -456,6 +410,7 @@ const FilesBreadcrumbs: React.FC<{
   path,
   onNavigate,
   trail: trailKey = FILES_TRAIL,
+  landmarks,
   children,
 }) => {
   const history = useHistory();
@@ -469,9 +424,7 @@ const FilesBreadcrumbs: React.FC<{
   } = useFilesNavigation(systemId, trailKey, onNavigate, path);
   const [trailAnchor, setTrailAnchor] = useState<HTMLElement | null>(null);
 
-  // The Dolphin move: the crumbs give way to a text field holding the same
-  // path, Enter goes there, Escape (or leaving the field) puts the crumbs
-  // back. Entered from the pencil, or by clicking the bar's empty tail.
+  // Edit mode: the crumbs become a text field holding the path. Enter goes there, Escape or blur cancels. Started from the pencil or by clicking the bar's empty tail.
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const plainPath = pathSegments(path).length
@@ -491,21 +444,21 @@ const FilesBreadcrumbs: React.FC<{
     goToRoute(filesRoute(target.systemId, target.segments));
   };
 
-  // The same rule the file rail uses, from the same place: $HOME only means
-  // something on a Linux system with a per-user effective id that is not
-  // rooted below /. Greyed rather than absent, so the bar does not change
-  // shape as you move between systems.
-  const { data: systemData } = SystemsHooks.useDetails({
-    systemId,
-    select: 'allAttributes',
-  });
+  // Same rule as the file rail: $HOME applies only to a Linux system with a per-user effective id not rooted below /. Disabled, not hidden, so the bar keeps its shape.
+  const { data: systemData } = SystemsHooks.useDetails(
+    {
+      systemId,
+      select: 'allAttributes',
+    },
+    // a tree with its own landmarks is not a system; asking would 404
+    { enabled: !landmarks }
+  );
   const system = systemData?.result ?? undefined;
   const segments = pathSegments(path);
   const parent = segments.slice(0, -1);
   const atRoot = segments.length === 0;
 
-  // In place, the props ARE the location; on the Files page the URL is. Both
-  // are recorded as the same kind of route so one trail model serves both.
+  // In place, the props are the location; on the Files page the URL is. Both are recorded as routes so one trail model serves both.
   const here = onNavigate ? filesRoute(systemId, segments) : pathname;
   const browsing = Boolean(onNavigate) || pathname.startsWith('/files/');
 
@@ -521,30 +474,34 @@ const FilesBreadcrumbs: React.FC<{
         alignItems: 'center',
         gap: 0.5,
         minWidth: 0,
-        // it sits above a pane that takes the remaining height; it must not
-        // be the thing that gives way
+        // sits above a pane that takes the remaining height, so it must not shrink
         flexShrink: 0,
-        // no top inset: the shell's right-pane margin is the page's, and the
-        // path bar is this page's first row the way the About block is the
-        // landings' — they should start on the same line
+        // no top inset: the shell's right-pane margin is the page's
         pt: 0,
-        // the table's header starts immediately below, and a row of buttons
-        // touching a row of column names reads as one crowded strip
+        // space above the table header
         pb: 0.75,
       }}
     >
-      {/* Landmarks on this system, in one control: $HOME when the system
-          can resolve it, and the top of the tree either way — which is the
-          only answer on a system that cannot, so there it becomes the
-          button rather than a greyed one that never works. */}
-      <HostEvalRailButton
-        systemId={systemId}
-        isAuthenticated={canHostEval(system)}
-        disabledReason={hostEvalBlocker(system)}
-        onNavigate={onNavigate}
-        onTop={() => goToRoute(filesRoute(systemId, []))}
-        atTop={atRoot}
-      />
+      {/* Landmarks: $HOME when the system can resolve it, and the top of the tree. On a system that cannot resolve $HOME, the top is the only action and is enabled. */}
+      {landmarks ? (
+        <PlacesRailButton
+          systemId={systemId}
+          landmarks={landmarks}
+          onNavigate={(target, sys) =>
+            goToRoute(filesRoute(sys, pathSegments(target)))
+          }
+          atTop={atRoot}
+        />
+      ) : (
+        <HostEvalRailButton
+          systemId={systemId}
+          isAuthenticated={canHostEval(system)}
+          disabledReason={hostEvalBlocker(system)}
+          onNavigate={onNavigate}
+          onTop={() => goToRoute(filesRoute(systemId, []))}
+          atTop={atRoot}
+        />
+      )}
       <Divider orientation="vertical" flexItem sx={{ mx: 0.25, my: 0.5 }} />
 
       {browsing && (
@@ -557,7 +514,7 @@ const FilesBreadcrumbs: React.FC<{
                     trail.entries[trail.index - 1].location
                   )}`
                 : backAvailable
-                ? 'Nothing behind you — up a directory instead'
+                ? 'No history. Goes up a directory instead'
                 : 'Nowhere to go back to'
             }
             disabled={!backAvailable}
@@ -609,7 +566,7 @@ const FilesBreadcrumbs: React.FC<{
               Recent locations
             </Typography>
             <Divider />
-            {/* newest first: the place you want is nearly always near now */}
+            {/* newest first */}
             {trail.entries
               .map((entry, index) => ({ entry, index }))
               .reverse()
@@ -630,8 +587,7 @@ const FilesBreadcrumbs: React.FC<{
                     }}
                     sx={{ py: 0.5, gap: 1.25, alignItems: 'baseline' }}
                   >
-                    {/* the system, then the path under it: two facts, and
-                        the path is the one you are scanning for */}
+                    {/* system, then the path under it */}
                     <Box sx={{ minWidth: 0, flex: 1 }}>
                       <Typography
                         sx={{
@@ -645,8 +601,7 @@ const FilesBreadcrumbs: React.FC<{
                           textAlign: 'left',
                         }}
                       >
-                        {/* rtl so a long path truncates at the FRONT, where
-                            the uninformative part is */}
+                        {/* rtl so a long path truncates at the front */}
                         {rest.length ? `/${rest.join(' /')}` : '/'}
                       </Typography>
                       <Typography
@@ -681,7 +636,9 @@ const FilesBreadcrumbs: React.FC<{
         label="Up one directory"
         title={
           atRoot
-            ? `${systemId} is the top of this system`
+            ? landmarks
+              ? `This is the root of ${systemId}`
+              : `${systemId} is the top of this system`
             : `Up to ${parent.length ? `/${parent.join('/')}` : systemId}`
         }
         disabled={atRoot}
@@ -703,8 +660,7 @@ const FilesBreadcrumbs: React.FC<{
               setEditing(false);
             }
           }}
-          // leaving the field abandons the edit — the crumbs come back and
-          // nothing navigates, the same bargain Escape makes
+          // blur cancels the edit; nothing navigates (same as Escape)
           onBlur={() => setEditing(false)}
           inputProps={{ 'aria-label': 'Path', spellCheck: false }}
           sx={{
@@ -724,7 +680,7 @@ const FilesBreadcrumbs: React.FC<{
       ) : (
         <>
           <Breadcrumbs
-            // the two ends are what anyone reads; a deep scratch path is middle
+            // keep the two ends; collapse the middle of deep paths
             maxItems={5}
             itemsBeforeCollapse={1}
             itemsAfterCollapse={2}
@@ -746,12 +702,9 @@ const FilesBreadcrumbs: React.FC<{
               '& .MuiBreadcrumbs-li': { minWidth: 0 },
             }}
           >
-            {/* at the top of a system, the system IS the current directory, and
-            it should read like one — a deep path bolds where you are, and a
-            shallow one was leaving that off */}
-            {/* The system crumb is where "top of this system" gets a path.
-            It is a Tapis word everywhere else in the bar, and a system
-            rooted at /work/01234 does not put you at / when you press it. */}
+            {/* At the top of a system the system is the current directory and
+            reads like one. The system crumb is where "top of this system"
+            gets a path; a system rooted at /work/01234 does not put you at /. */}
             <Tooltip
               arrow
               disableInteractive
@@ -759,9 +712,12 @@ const FilesBreadcrumbs: React.FC<{
               title={
                 <Box sx={{ maxWidth: 260 }}>
                   <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>
-                    Top of {systemId}
+                    {landmarks ? landmarks.title : `Top of ${systemId}`}
                   </Typography>
-                  {describeSystemRoot(systemId, system).map((line) => (
+                  {(landmarks
+                    ? landmarks.rootLines
+                    : describeSystemRoot(systemId, system)
+                  ).map((line) => (
                     <Typography
                       key={line}
                       sx={{ fontSize: '0.68rem', color: 'text.secondary' }}
@@ -829,16 +785,16 @@ const FilesBreadcrumbs: React.FC<{
             )}
           </Breadcrumbs>
 
-          {/* the path as a thing you can take with you: the bare path for a
-          shell on that machine, the tapis:// address when the system has
-          to travel too — and the pencil for typing one instead */}
+          {/* copy the bare path, or the tapis:// address (includes the system); the pencil starts typing a path */}
           <CopyButton label={`Copy ${plainPath}`} text={plainPath}>
             <ContentCopyRounded />
           </CopyButton>
-          <CopyButton label={`Copy ${tapisAddress}`} text={tapisAddress}>
-            <LinkRounded />
-          </CopyButton>
-          <Tooltip title="Type a path — Enter goes there, and tapis://system/path jumps systems">
+          {!landmarks?.noAddress && (
+            <CopyButton label={`Copy ${tapisAddress}`} text={tapisAddress}>
+              <LinkRounded />
+            </CopyButton>
+          )}
+          <Tooltip title="Type a path. Enter goes there. tapis://system/path jumps systems">
             <Box
               component="button"
               type="button"
@@ -849,8 +805,7 @@ const FilesBreadcrumbs: React.FC<{
               <EditRounded sx={{ fontSize: 12 }} />
             </Box>
           </Tooltip>
-          {/* the bar's empty tail is the path bar too — clicking it starts
-          typing, the way Dolphin's does */}
+          {/* the empty tail of the bar also starts editing */}
           <Box
             onClick={startEditing}
             sx={{ flex: 1, alignSelf: 'stretch', cursor: 'text' }}

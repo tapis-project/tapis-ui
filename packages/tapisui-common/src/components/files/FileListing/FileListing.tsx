@@ -7,8 +7,8 @@ import React, {
   useSyncExternalStore,
 } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Files as Hooks } from '@tapis/tapisui-hooks';
 import { Files } from '@tapis/tapis-typescript';
+import { useFileListingSource } from './listingSource';
 import { InfiniteScrollTable } from '../../../ui';
 import { QueryWrapper } from '../../../wrappers';
 import FilesErrorPanel, {
@@ -439,6 +439,9 @@ const FileListing: React.FC<FileListingProps> = ({
     getListingDetails
   );
 
+  // the Tapis Files service unless a provider says otherwise (a pod's
+  // container files come from the pods service through the same table)
+  const source = useFileListingSource();
   const {
     hasNextPage,
     isLoading,
@@ -447,7 +450,10 @@ const FileListing: React.FC<FileListingProps> = ({
     concatenatedResults,
     isFetchingNextPage,
     data,
-  } = Hooks.useList({ systemId, path, limit: LISTING_PAGE_SIZE }, { retry: 0 });
+  } = source.useList(
+    { systemId, path, limit: LISTING_PAGE_SIZE },
+    { retry: 0 }
+  );
 
   // Tapis returns this untyped, and for Files it is usually absent or -1 —
   // there is no computeTotal on the listing call. Read it when a deployment

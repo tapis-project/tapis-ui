@@ -472,3 +472,16 @@ export {
   type StripPalette,
   type StripTone,
 } from './ui/InfoStrip';
+
+// Where a file listing's files come from: the Tapis Files service unless a
+// provider says otherwise (a pod's container files use the same listing)
+export {
+  FileListingSourceProvider,
+  useFileListingSource,
+  TAPIS_FILES_SOURCE,
+} from './components/files/FileListing/listingSource';
+export type {
+  FileListingSource,
+  ListingResult,
+  ListingParams,
+} from './components/files/FileListing/listingSource';

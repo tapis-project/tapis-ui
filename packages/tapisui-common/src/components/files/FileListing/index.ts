@@ -8,6 +8,16 @@ export {
   summarize,
   canSelectFile,
 } from './FileListingTableV2';
+export {
+  FileListingSourceProvider,
+  useFileListingSource,
+  TAPIS_FILES_SOURCE,
+} from './listingSource';
+export type {
+  FileListingSource,
+  ListingResult,
+  ListingParams,
+} from './listingSource';
 export { fileKind, fileExtension, effectiveType } from './fileKind';
 export type { FileKind } from './fileKind';
 export {

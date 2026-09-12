@@ -62,6 +62,7 @@ import {
   filesErrorSummary,
   tapisErrorMessage,
 } from './FilesError';
+import { useFileListingSource } from './listingSource';
 
 /** The service does not serve more than this through a PostIt. */
 export const MAX_VIEWABLE_BYTES = 50_000_000;
@@ -370,6 +371,8 @@ const FileViewerPanel: React.FC<{
 
   const { create, isLoading, isError, error } = Hooks.PostIts.useCreate();
   const { move, isLoading: renameLoading } = Hooks.useMove();
+  // source of the bytes and the allowed file operations
+  const source = useFileListingSource();
 
   const kind = fileKind(file);
   const mode = viewerMode(file);
@@ -396,7 +399,17 @@ const FileViewerPanel: React.FC<{
     Boolean(textError);
   const shown = note ? noteGeometry(geometry) : geometry;
 
+  // counts mints; a result from an older mint is dropped
+  const mintSeq = useRef(0);
+  useEffect(
+    () => () => {
+      mintSeq.current += 1;
+    },
+    []
+  );
+
   const mint = useCallback(() => {
+    const seq = ++mintSeq.current;
     if (!file.path || tooBig || empty) return;
     setUrl(undefined);
     setText(undefined);
@@ -404,6 +417,19 @@ const FileViewerPanel: React.FC<{
     setSniffedImage(false);
     setTextError(undefined);
     setTextErrorTitle(undefined);
+    // a backend with no PostIts reads the bytes itself and returns a URL
+    if (source.readUrl) {
+      source.readUrl(systemId, file).then(
+        (value) => {
+          if (seq === mintSeq.current) setUrl(value);
+        },
+        (problem: Error) => {
+          if (seq === mintSeq.current)
+            setTextError(problem.message || 'The file could not be read');
+        }
+      );
+      return;
+    }
     create(
       {
         systemId,
@@ -414,11 +440,15 @@ const FileViewerPanel: React.FC<{
           validSeconds: 300,
         },
       },
-      { onSuccess: (value) => setUrl(value.result?.redeemUrl) }
+      {
+        onSuccess: (value) => {
+          if (seq === mintSeq.current) setUrl(value.result?.redeemUrl);
+        },
+      }
     );
     // create changes identity every render, so it is not a dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [systemId, file.path, tooBig, empty]);
+  }, [systemId, file.path, tooBig, empty, source]);
 
   // switching files in the listing swaps the contents in place
   useEffect(() => {
@@ -437,12 +467,15 @@ const FileViewerPanel: React.FC<{
    * failure the error panel already explains (for example a unix permission
    * refusal), the window defers to the caller via onUnavailable.
    */
+  // the caller's callback may change every render; that must not restart a read
+  const onUnavailableRef = useRef(onUnavailable);
+  onUnavailableRef.current = onUnavailable;
   const report = useCallback(
     (body: string | undefined, fallback: string) => {
       const message = body ? tapisErrorMessage(body) : undefined;
       const explanation = explainFilesError(message);
       if (explanation && message) {
-        onUnavailable?.({ explanation, message });
+        onUnavailableRef.current?.({ explanation, message });
         // also shown here, for callers without a place for the notice
         const said = filesErrorSummary(
           explanation,
@@ -456,7 +489,7 @@ const FileViewerPanel: React.FC<{
       setTextErrorTitle(undefined);
       setTextError(message ?? fallback);
     },
-    [onUnavailable, file.name, systemId]
+    [file.name, systemId]
   );
 
   /**
@@ -466,7 +499,9 @@ const FileViewerPanel: React.FC<{
   useEffect(() => {
     if (!url || (mode !== 'text' && mode !== 'binary')) return;
     let live = true;
-    fetch(url)
+    // aborted on file change and unmount so a stepped-past download stops
+    const controller = new AbortController();
+    fetch(url, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) {
           const body = await response.text().catch(() => undefined);
@@ -499,10 +534,12 @@ const FileViewerPanel: React.FC<{
         );
       })
       .catch((problem: Error) => {
-        if (live) report(undefined, problem.message);
+        if (live && problem.name !== 'AbortError')
+          report(undefined, problem.message);
       });
     return () => {
       live = false;
+      controller.abort();
     };
   }, [url, mode, report]);
 
@@ -512,10 +549,14 @@ const FileViewerPanel: React.FC<{
    */
   const readFailure = useCallback(() => {
     if (!url) return;
+    const seq = mintSeq.current;
+    const fail = (body?: string) => {
+      if (seq === mintSeq.current) report(body, 'The file could not be read');
+    };
     fetch(url)
       .then((response) => response.text())
-      .then((body) => report(body, 'The file could not be read'))
-      .catch(() => report(undefined, 'The file could not be read'));
+      .then(fail)
+      .catch(() => fail());
   }, [url, report]);
 
   // Keep the window on screen when the viewport shrinks. Not persisted, so
@@ -721,8 +762,7 @@ const FileViewerPanel: React.FC<{
             Verified empty
           </Typography>
           <Typography sx={{ fontSize: '0.74rem', color: 'text.secondary' }}>
-            Read just now — the file really is zero bytes on the host, not a
-            stale listing and not a refused read.
+            Read now. The file is 0 bytes on the host.
           </Typography>
         </Box>
       );
@@ -1175,24 +1215,29 @@ const FileViewerPanel: React.FC<{
             </BarButton>
           </Box>
         )}
-        {renaming ? (
-          <BarButton
-            label="Confirm rename"
-            title="Rename (Enter)"
-            onClick={commitRename}
-            disabled={renameLoading}
-          >
-            {renameLoading ? <CircularProgress size={13} /> : <CheckRounded />}
-          </BarButton>
-        ) : (
-          <BarButton
-            label="Rename file"
-            title="Rename this file"
-            onClick={() => setRenaming(true)}
-          >
-            <DriveFileRenameOutlineRounded />
-          </BarButton>
-        )}
+        {source.can.rename &&
+          (renaming ? (
+            <BarButton
+              label="Confirm rename"
+              title="Rename (Enter)"
+              onClick={commitRename}
+              disabled={renameLoading}
+            >
+              {renameLoading ? (
+                <CircularProgress size={13} />
+              ) : (
+                <CheckRounded />
+              )}
+            </BarButton>
+          ) : (
+            <BarButton
+              label="Rename file"
+              title="Rename this file"
+              onClick={() => setRenaming(true)}
+            >
+              <DriveFileRenameOutlineRounded />
+            </BarButton>
+          ))}
         <BarButton
           label="Download file"
           title={url ? 'Download this file' : 'Waiting for a link'}
