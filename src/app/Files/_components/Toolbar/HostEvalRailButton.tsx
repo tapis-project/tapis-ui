@@ -49,14 +49,62 @@ const OPTIONS: EnvVarOption[] = [
   { label: 'Go to $SCRATCH', envVar: 'SCRATCH' },
 ];
 
-const MENU_ITEM_SX = {
+export const MENU_ITEM_SX = {
   fontSize: '0.78rem',
   minHeight: '1.9rem',
   py: 0.4,
   gap: 1,
 } as const;
 
-const MENU_ICON_SX = { fontSize: 15, color: 'text.disabled' } as const;
+export const MENU_ICON_SX = { fontSize: 15, color: 'text.disabled' } as const;
+
+/**
+ * The rail's pill: one control with a caret, not two buttons that happen
+ * to touch. Shared with the places rail (a pod's landmarks), so the two
+ * "take me somewhere" controls cannot drift apart in shape.
+ */
+export const RAIL_PILL_SX = {
+  display: 'inline-flex',
+  // centre, not stretch: the buttons are sized to their glyph and the
+  // 20px of content box is exactly two of them, so centring puts the
+  // glyph on the pill's midline instead of leaving it to whatever a
+  // stretched box does with the space
+  alignItems: 'center',
+  height: 22,
+  boxSizing: 'border-box',
+  border: '1px solid',
+  borderColor: 'divider',
+  borderRadius: '5px',
+  '& .MuiIconButton-root': {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // block, not the default inline: an inline svg sits on a text
+  // baseline and reserves room under itself for a descender that is
+  // not there, and the tooltip's wrapper span is the same trap one
+  // level up. Between them the glyph was riding low, and then high.
+  '& .MuiSvgIcon-root': { display: 'block' },
+  '& > span': { display: 'inline-flex', alignItems: 'center' },
+} as const;
+
+export const RAIL_PRIMARY_SX = {
+  // symmetric: 16px of glyph in 20px of content box
+  p: '2px',
+  borderRadius: '5px 0 0 5px',
+  color: 'rgba(0,0,0,0.62)',
+  '&:hover': { bgcolor: 'rgba(0,0,0,0.06)' },
+  '&.Mui-disabled': { color: 'rgba(0,0,0,0.22)' },
+  '& .MuiSvgIcon-root': { fontSize: 16 },
+} as const;
+
+export const RAIL_CARET_SX = {
+  p: 0,
+  pr: '1px',
+  borderRadius: '0 5px 5px 0',
+  color: 'rgba(0,0,0,0.45)',
+  '& .MuiSvgIcon-root': { fontSize: 15 },
+} as const;
 
 const normalizeEnvVarInput = (value: string) =>
   value.trim().replace(/^\$+/, '').replace(/\s+/g, '');
@@ -159,34 +207,7 @@ const HostEvalRailButton: React.FC<{
   const primaryDisabled = topOnly ? Boolean(atTop) : !isAuthenticated || busy;
 
   return (
-    <Box
-      ref={anchorRef}
-      sx={{
-        display: 'inline-flex',
-        // centre, not stretch: the buttons are sized to their glyph and the
-        // 20px of content box is exactly two of them, so centring puts the
-        // glyph on the pill's midline instead of leaving it to whatever a
-        // stretched box does with the space
-        alignItems: 'center',
-        height: 22,
-        boxSizing: 'border-box',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: '5px',
-        // one control with a caret, not two buttons that happen to touch
-        '& .MuiIconButton-root': {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        // block, not the default inline: an inline svg sits on a text
-        // baseline and reserves room under itself for a descender that is
-        // not there, and the tooltip's wrapper span is the same trap one
-        // level up. Between them the glyph was riding low, and then high.
-        '& .MuiSvgIcon-root': { display: 'block' },
-        '& > span': { display: 'inline-flex', alignItems: 'center' },
-      }}
-    >
+    <Box ref={anchorRef} sx={RAIL_PILL_SX}>
       <Tooltip
         arrow
         disableInteractive
@@ -231,15 +252,7 @@ const HostEvalRailButton: React.FC<{
               refetch();
             }}
             aria-label={label}
-            sx={{
-              // symmetric: 16px of glyph in 20px of content box
-              p: '2px',
-              borderRadius: '5px 0 0 5px',
-              color: 'rgba(0,0,0,0.62)',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.06)' },
-              '&.Mui-disabled': { color: 'rgba(0,0,0,0.22)' },
-              '& .MuiSvgIcon-root': { fontSize: 16 },
-            }}
+            sx={RAIL_PRIMARY_SX}
           >
             {isLoading ? (
               <CircularProgress size={15} />
@@ -256,13 +269,7 @@ const HostEvalRailButton: React.FC<{
         disabled={busy}
         onClick={() => setOpen((prev) => !prev)}
         aria-label="select environment variable"
-        sx={{
-          p: 0,
-          pr: '1px',
-          borderRadius: '0 5px 5px 0',
-          color: 'rgba(0,0,0,0.45)',
-          '& .MuiSvgIcon-root': { fontSize: 15 },
-        }}
+        sx={RAIL_CARET_SX}
       >
         <ArrowDropDown />
       </IconButton>
