@@ -10,10 +10,10 @@ import {
 import {
   getBoundedWidth,
   getPageWide,
-  NAV_COLUMN_WIDTH,
   setPageWide,
   subscribePageWide,
 } from './pageWidth';
+import { useNavWidth } from './navWidth';
 
 /**
  * The page title in a header bar — and the way back to the page's landing.
@@ -198,12 +198,21 @@ export const PageWidthToggle: React.FC = () => {
  *
  * The header sits ABOVE the nav rather than beside it, so the matching bound
  * is nav + column, not the column alone.
+ *
+ * The nav's width is the reader's now (they drag it), so the bound follows
+ * it live rather than trusting a constant. `navWidth` overrides that for a
+ * shell whose column carries extra chrome of its own: pods adds its border
+ * and pane margin. Passing the wrong number is not a crash, it is a header
+ * whose right edge misses the content's by exactly the difference, which is
+ * the thing this exists to prevent.
  */
-export const PageHeaderRow: React.FC<React.PropsWithChildren> = ({
-  children,
-}) => {
+export const PageHeaderRow: React.FC<
+  React.PropsWithChildren<{ navWidth?: number }>
+> = ({ navWidth, children }) => {
+  const live = useNavWidth();
   const wide = useSyncExternalStore(subscribePageWide, getPageWide);
   const bounded = useSyncExternalStore(subscribePageWide, getBoundedWidth);
+  const column = navWidth ?? live;
   return (
     <Box
       sx={{
@@ -213,7 +222,7 @@ export const PageHeaderRow: React.FC<React.PropsWithChildren> = ({
         gap: 1,
         width: '100%',
         minWidth: 0,
-        maxWidth: wide ? 'none' : bounded + NAV_COLUMN_WIDTH,
+        maxWidth: wide ? 'none' : bounded + column,
       }}
     >
       {children}

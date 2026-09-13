@@ -18,6 +18,7 @@ import styles from 'app/_components/PageShell/PageShell.module.scss';
 import JobsNavV2 from '../_components/JobsNav/JobsNavV2';
 import { Router } from '../_Router';
 import { countsByClass } from '../_components/jobsData';
+import NavPane from 'app/_components/PageShell/NavPane';
 
 /**
  * Jobs page on the pods shell: page-header (title · live counts · refresh),
@@ -90,9 +91,9 @@ const Layout: React.FC = () => {
         </PageHeaderRow>
       </div>
       <div className={styles['content-row']}>
-        <div className={styles['nav']}>
+        <NavPane>
           <JobsNavV2 />
-        </div>
+        </NavPane>
         <div className={styles['right-pane']}>
           <div className={styles['work-content']}>
             <div

@@ -26,6 +26,7 @@ import { recordRecentSystem } from '../_components/recentSystems';
 import { useSystemsSource } from '../_components/systemsSource';
 import { Router } from '../_Router';
 import FilesV2 from '../V2';
+import NavPane from 'app/_components/PageShell/NavPane';
 
 /**
  * Files page on the pods shell — header with the file-op toolbar for the
@@ -157,9 +158,9 @@ const Layout: React.FC = () => {
             </PageHeaderRow>
           </div>
           <div className={styles['content-row']}>
-            <div className={styles['nav']}>
+            <NavPane>
               <SystemsNavV2 />
-            </div>
+            </NavPane>
             <div className={styles['right-pane']}>
               <div
                 className={`${styles['work-content']} ${

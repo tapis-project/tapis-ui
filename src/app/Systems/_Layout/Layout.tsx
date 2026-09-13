@@ -18,6 +18,7 @@ import { useSystemsSource } from 'app/Files/_components/systemsSource';
 import SystemsPageNav from '../_components/SystemsPageNav/SystemsPageNav';
 import NewSystemDialog from '../_components/SystemToolbar/NewSystemDialog';
 import { Router } from '../_Router';
+import NavPane from 'app/_components/PageShell/NavPane';
 
 /**
  * Systems page on the pods shell — header with live counts and the create
@@ -79,9 +80,9 @@ const Layout: React.FC = () => {
         </PageHeaderRow>
       </div>
       <div className={styles['content-row']}>
-        <div className={styles['nav']}>
+        <NavPane>
           <SystemsPageNav />
-        </div>
+        </NavPane>
         <div className={styles['right-pane']}>
           <div className={styles['work-content']}>
             <div
