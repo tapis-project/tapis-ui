@@ -1,0 +1,72 @@
+// The JSON blob's colours, as plain classes.
+//
+// Deliberately NOT `sx`/emotion: there is one span per token here and a
+// styled component per span was the thing that made a large record slow to
+// draw. A class name costs nothing to apply and the browser matches it once.
+//
+// The dark palette is the default because this is a slab of monospace text,
+// which is the one surface in the app that reads better dark, and because it
+// is what replaced an editor that was already dark.
+
+.blob {
+  margin: 0;
+  padding: 8px 10px;
+  overflow: auto;
+  font-family: monospace;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  tab-size: 2;
+  white-space: pre;
+  border-radius: 4px;
+  background: #10141a;
+  color: #c6ccd6;
+
+  .key {
+    color: #a5b4fc;
+  }
+  .string {
+    color: #7ee2a8;
+  }
+  .number {
+    color: #7cc4ff;
+  }
+  .boolean {
+    color: #e0a3ff;
+  }
+  .null {
+    color: #6b7686;
+    font-style: italic;
+  }
+}
+
+// The light reading, for printing and for anyone who wants the page to be
+// one colour. Same hues, darkened until they hold against white.
+.light {
+  background: #fcfcfc;
+  color: #333333;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  .key {
+    color: #5f4bb5;
+  }
+  .string {
+    color: #1b7f3b;
+  }
+  .number {
+    color: #1565c0;
+  }
+  .boolean {
+    color: #6a1b9a;
+  }
+  .null {
+    color: #8a8a8a;
+  }
+}
+
+// Wrapping is off by default: a JSON line is a unit and reading it wrapped
+// is worse than scrolling. It is a press, for the one line that is a mile
+// of base64.
+.wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
