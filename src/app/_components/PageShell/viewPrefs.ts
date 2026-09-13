@@ -202,6 +202,21 @@ export const launcherSummary = makeChoiceStore<LauncherSummaryMode>(
 );
 
 /**
+ * Which way a JSON blob reads.
+ *
+ * Dark to start with: a record is a slab of monospace rather than a page of
+ * cards, it is the one surface in the app that reads better dark, and the
+ * editor these blobs replaced was dark already. The press on any blob
+ * changes it for every blob, because a reader who wants one light wants
+ * them all light.
+ */
+export const jsonBlobTheme = makeChoiceStore<'dark' | 'light'>(
+  'json.blobTheme',
+  ['dark', 'light'] as const,
+  'dark'
+);
+
+/**
  * Whether the launcher's Basics page opens with its "Using the launcher" card.
  * Open for everyone to start with, and "Got it" is remembered: the
  * explanation is there on the first launch and one press away on every one

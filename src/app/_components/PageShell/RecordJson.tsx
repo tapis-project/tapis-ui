@@ -20,6 +20,7 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import { KeyboardArrowDownRounded } from '@mui/icons-material';
+import JsonBlob from './JsonBlob';
 import {
   MICRO_BTN_SX,
   SECTION_BG,
@@ -112,62 +113,6 @@ const Leaf: React.FC<{ value: unknown }> = ({ value }) => {
       }}
     >
       {type === 'string' ? `"${value}"` : String(value)}
-    </Box>
-  );
-};
-
-/** a string (with the colon after it when it is a key), a literal, a number */
-const JSON_TOKEN =
-  /("(?:\\.|[^"\\])*")(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
-
-/**
- * The JSON text itself, in the tree's colours. What is on screen is exactly
- * what selects and copies: keys quoted, braces, commas and all.
- */
-const JsonText: React.FC<{ text: string }> = ({ text }) => {
-  const parts: Array<React.ReactNode> = [];
-  // a fresh regex per render: a /g regex carries its position between runs
-  const token = new RegExp(JSON_TOKEN);
-  let last = 0;
-  let key = 0;
-  for (let match = token.exec(text); match; match = token.exec(text)) {
-    const [whole, string, colon] = match;
-    if (match.index > last) {
-      parts.push(text.slice(last, match.index));
-    }
-    let color: string = TYPE_COLOR.number;
-    if (string) {
-      color = colon ? KEY_COLOR : TYPE_COLOR.string;
-    } else if (whole === 'null') {
-      color = 'text.disabled';
-    } else if (whole === 'true' || whole === 'false') {
-      color = TYPE_COLOR.boolean;
-    }
-    parts.push(
-      <Box component="span" key={key++} sx={{ color }}>
-        {string ?? whole}
-      </Box>
-    );
-    if (colon) {
-      parts.push(colon);
-    }
-    last = match.index + whole.length;
-  }
-  if (last < text.length) {
-    parts.push(text.slice(last));
-  }
-  return (
-    <Box
-      component="pre"
-      sx={{
-        ...MONO,
-        m: 0,
-        color: 'text.secondary',
-        whiteSpace: 'pre-wrap',
-        wordBreak: 'break-word',
-      }}
-    >
-      {parts}
     </Box>
   );
 };
@@ -522,7 +467,10 @@ const RecordJson: React.FC<{
               ones it leaves unset.
             </Typography>
           ) : asText ? (
-            <JsonText text={text} />
+            // the same blob the pods record pages draw: one span per
+            // coloured run with a class rather than a styled component
+            // per token
+            <JsonBlob text={text} height="auto" />
           ) : (
             <OpenToContext.Provider value={openTo}>
               <React.Fragment key={depthNonce}>
