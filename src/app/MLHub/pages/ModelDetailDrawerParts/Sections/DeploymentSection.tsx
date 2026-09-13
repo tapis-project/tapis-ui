@@ -12,13 +12,14 @@ import { DeploymentStrategyReference, Model } from '@mlhub/models-ts-sdk';
 import DeploymentDialog from '../../../_components/DeploymentDialog';
 import { InfoSection } from './InfoSection';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
+import { derivedMetadataFor } from '../../../modelMetadata';
 
 interface DeploymentSectionProps {
   model: Model;
 }
 
 export function DeploymentSection({ model }: DeploymentSectionProps) {
-  const strategies = model.deployment_strategy_refs;
+  const strategies = derivedMetadataFor(model).deployment_strategies;
   const [strat, setStrat] = useState<DeploymentStrategyReference | undefined>(
     undefined
   );

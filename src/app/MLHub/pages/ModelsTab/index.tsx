@@ -24,6 +24,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { useHistory, useLocation } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
@@ -46,37 +47,36 @@ import DeploymentDialog from '../../_components/DeploymentDialog';
 import { ModelDetailDrawer } from '../ModelDetailDrawer';
 import { useNavigate } from '../../_context/NavContext';
 import ModelEmptyState from './ModelEmptyState';
+import { derivedMetadataFor, modelAuthorFor } from '../../modelMetadata';
 
 type ModelViewMode = 'list' | 'grid' | 'compact';
-type OwnedModel = Models.Model & {
-  id?: string;
-};
+type OwnedModel = Models.Model;
 
-const modelKey = (model: OwnedModel) => `${model.author}/${model.name}`;
+const modelKey = (model: OwnedModel) => model.id;
 
 const filterModels = (models: OwnedModel[], query: string) => {
   const normalizedQuery = query.trim().toLowerCase();
   if (!normalizedQuery) return models;
 
-  return models.filter((model) =>
-    [
+  return models.filter((model) => {
+    const derived = derivedMetadataFor(model);
+    return [
       model.name,
-      model.author,
+      modelAuthorFor(model),
       model.description ?? '',
-      model.model_type ?? '',
-      model.license ?? '',
-      ...(model.libraries ?? []),
-      ...(model.tags ?? []),
-      ...(model.deployment_strategy_refs ?? []).flatMap((strategy) => [
+      model.external_model.provider,
+      derived.license ?? '',
+      ...derived.inference_runtimes,
+      ...derived.tags,
+      ...derived.deployment_strategies.flatMap((strategy) => [
         strategy.name,
         strategy.platform,
-        strategy.description ?? '',
       ]),
     ]
       .join(' ')
       .toLowerCase()
-      .includes(normalizedQuery)
-  );
+      .includes(normalizedQuery);
+  });
 };
 
 interface ModelViewItemProps {
@@ -113,11 +113,7 @@ function DeploymentStrategyChips({
       {visibleStrategies.map((strategy, index) => (
         <Tooltip
           key={`${strategy.platform}:${strategy.name}:${index}`}
-          title={
-            strategy.description
-              ? `${strategy.platform} — ${strategy.description}`
-              : strategy.platform
-          }
+          title={strategy.platform}
         >
           <Chip
             icon={
@@ -154,9 +150,10 @@ function DeploymentStrategyChips({
 }
 
 function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
-  const libraries = model.libraries ?? [];
-  const tags = model.tags ?? [];
-  const strategies = model.deployment_strategy_refs ?? [];
+  const derived = derivedMetadataFor(model);
+  const libraries = derived.inference_runtimes;
+  const tags = derived.tags;
+  const strategies = derived.deployment_strategies;
 
   return (
     <Card
@@ -224,7 +221,7 @@ function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
               {model.name}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              by {model.author}
+              by {modelAuthorFor(model)}
             </Typography>
           </Box>
           <Tooltip title="Model actions">
@@ -261,9 +258,11 @@ function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
 
         <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75, mt: 2 }}>
           <DeploymentStrategyChips strategies={strategies} />
-          {model.model_type && (
-            <Chip label={model.model_type} size="small" variant="outlined" />
-          )}
+          <Chip
+            label={model.external_model.provider}
+            size="small"
+            variant="outlined"
+          />
           {libraries.slice(0, 2).map((library) => (
             <Chip
               key={library}
@@ -302,8 +301,9 @@ function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
 }
 
 function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
-  const libraries = model.libraries ?? [];
-  const strategies = model.deployment_strategy_refs ?? [];
+  const derived = derivedMetadataFor(model);
+  const libraries = derived.inference_runtimes;
+  const strategies = derived.deployment_strategies;
 
   return (
     <Card
@@ -340,7 +340,7 @@ function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
             {model.name}
           </Typography>
           <Typography variant="caption" color="text.secondary" noWrap>
-            {model.author}
+            {modelAuthorFor(model)}
           </Typography>
         </Box>
         <Stack
@@ -384,6 +384,8 @@ function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
 
 export default function ModelsTab() {
   const { navigate } = useNavigate();
+  const history = useHistory();
+  const location = useLocation();
   const { username } = useTapisConfig();
   const { data, isLoading, error } = Hooks.Models.useListByAuthor({
     author: username,
@@ -400,6 +402,7 @@ export default function ModelsTab() {
     null
   );
   const [actionsRow, setActionsRow] = React.useState<OwnedModel | null>(null);
+  const requestedModelId = new URLSearchParams(location.search).get('model');
   const filteredModels = React.useMemo(
     () => filterModels(models, searchQuery),
     [models, searchQuery]
@@ -408,6 +411,15 @@ export default function ModelsTab() {
   const openModel = React.useCallback((model: OwnedModel) => {
     setSelectedModel(model);
   }, []);
+
+  React.useEffect(() => {
+    if (!requestedModelId) return;
+
+    const requestedModel = models.find(
+      (model) => model.id === requestedModelId
+    );
+    if (requestedModel) setSelectedModel(requestedModel);
+  }, [models, requestedModelId]);
 
   const openModelActions = React.useCallback(
     (event: React.MouseEvent<HTMLElement>, model: OwnedModel) => {
@@ -460,63 +472,67 @@ export default function ModelsTab() {
       ),
     },
     {
-      field: 'author',
+      field: 'owner',
       headerName: 'Author',
       width: 130,
+      valueGetter: (_, row) => modelAuthorFor(row),
     },
     {
-      field: 'libraries',
+      field: 'external_model',
       headerName: 'Inference Backend',
       width: 200,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {((params.value ?? []) as InferenceBackend[]).map((lib) => (
-            <Chip
-              key={lib}
-              label={inferenceBackendLabelMap[lib] ?? lib}
-              size="small"
-              variant="outlined"
-              icon={<span>{inferenceBackendIconMap[lib] || ''}</span>}
-              sx={{
-                textTransform: 'capitalize',
-                height: 24,
-                fontSize: '0.7rem',
-              }}
-            />
-          ))}
+          {derivedMetadataFor(params.row).inference_runtimes.map((lib) => {
+            const backend = lib as InferenceBackend;
+            return (
+              <Chip
+                key={lib}
+                label={inferenceBackendLabelMap[backend] ?? lib}
+                size="small"
+                variant="outlined"
+                icon={<span>{inferenceBackendIconMap[backend] || ''}</span>}
+                sx={{
+                  textTransform: 'capitalize',
+                  height: 24,
+                  fontSize: '0.7rem',
+                }}
+              />
+            );
+          })}
         </Box>
       ),
     },
     {
-      field: 'deployment_strategy_refs',
+      field: 'updated_at',
       headerName: 'Deployment Strategies',
       minWidth: 280,
       flex: 1,
       renderCell: (params) => (
         <DeploymentStrategyChips
-          strategies={
-            (params.value ?? []) as Models.DeploymentStrategyReference[]
-          }
+          strategies={derivedMetadataFor(params.row).deployment_strategies}
         />
       ),
     },
     {
-      field: 'tags',
+      field: 'created_at',
       headerName: 'Tags',
       width: 320,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {((params.value ?? []) as string[]).slice(0, 3).map((tag: string) => (
+          {derivedMetadataFor(params.row)
+            .tags.slice(0, 3)
+            .map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                size="small"
+                sx={{ height: 22, fontSize: '0.7rem' }}
+              />
+            ))}
+          {derivedMetadataFor(params.row).tags.length > 3 && (
             <Chip
-              key={tag}
-              label={tag}
-              size="small"
-              sx={{ height: 22, fontSize: '0.7rem' }}
-            />
-          ))}
-          {((params.value ?? []) as string[]).length > 3 && (
-            <Chip
-              label={`+${((params.value ?? []) as string[]).length - 3}`}
+              label={`+${derivedMetadataFor(params.row).tags.length - 3}`}
               size="small"
               sx={{ height: 22, fontSize: '0.7rem' }}
             />
@@ -544,24 +560,6 @@ export default function ModelsTab() {
       ),
     },
   ];
-
-  const statusCounts = React.useMemo(() => {
-    const counts: Record<string, number> = {
-      deployable: 0,
-      ready: 0,
-      draft: 0,
-      pub: 0,
-      priv: 0,
-    };
-
-    models.forEach((m) => {
-      const strats = m.deployment_strategy_refs ?? [];
-      if (strats.length > 0) {
-        counts['deployable'] += 1;
-      }
-    });
-    return counts;
-  }, [models]);
 
   return (
     <Box>
@@ -600,66 +598,6 @@ export default function ModelsTab() {
           deployment readiness across the full lifecycle.
         </Typography>
       </Box>
-
-      {/* Summary Cards */}
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ mb: 3, flexWrap: 'wrap' }}
-        useFlexGap
-      >
-        {[
-          {
-            label: 'Total',
-            count: models.length,
-            color: 'primary' as const,
-          },
-          {
-            label: '🚀  Deployable',
-            count: statusCounts['deployable'] || 0,
-            color: 'success' as const,
-          },
-          {
-            label: '🌎  Public',
-            count: statusCounts['pub'] || 0,
-            color: 'info' as const,
-          },
-          {
-            label: '🔒  Private',
-            count: statusCounts['priv'] || 0,
-            color: 'secondary' as const,
-          },
-        ].map((stat) => (
-          <Card
-            key={stat.label}
-            sx={{
-              flex: '1 1 180px',
-              minWidth: 160,
-              background: (theme) =>
-                alpha(theme.palette[stat.color].main, 0.08),
-              borderLeft: '4px solid',
-              borderColor: `${stat.color}.main`,
-            }}
-          >
-            <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontWeight: 500 }}
-              >
-                {stat.label}
-              </Typography>
-              <Typography
-                variant="h4"
-                color={`${stat.color}.main`}
-                sx={{ fontWeight: 700 }}
-              >
-                {stat.count}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Stack>
 
       {/* Model collection controls */}
       <Card
@@ -862,7 +800,10 @@ export default function ModelsTab() {
               primaryTypographyProps={{ variant: 'body2' }}
             />
           </ListItemButton>
-          {Boolean(actionsRow?.deployment_strategy_refs?.length) && (
+          {Boolean(
+            actionsRow &&
+              derivedMetadataFor(actionsRow).deployment_strategies.length
+          ) && (
             <ListItemButton
               onClick={() => {
                 if (actionsRow) setDeploymentModel(actionsRow);
@@ -900,14 +841,17 @@ export default function ModelsTab() {
 
       <ModelDetailDrawer
         model={selectedModel}
-        onClose={() => setSelectedModel(null)}
+        onClose={() => {
+          setSelectedModel(null);
+          if (requestedModelId) history.replace(location.pathname);
+        }}
       />
       {deploymentModel && (
         <DeploymentDialog
           open
           defaultModel={deploymentModel}
           onClose={() => setDeploymentModel(null)}
-          author={deploymentModel.author}
+          author={modelAuthorFor(deploymentModel)}
         />
       )}
     </Box>

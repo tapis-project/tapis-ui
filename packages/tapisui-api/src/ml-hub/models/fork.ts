@@ -2,7 +2,7 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 const fork = (
-  request: Models.ForkModelRequest,
+  request: Models.CreateModelRequest,
   basePath: string,
   jwt: string
 ) => {
@@ -12,7 +12,9 @@ const fork = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.ForkModelResponse>(() => api.forkModel(request));
+  return errorDecoder<Models.CreateModelResponse>(async () => {
+    return api.createModel(request);
+  });
 };
 
 export default fork;

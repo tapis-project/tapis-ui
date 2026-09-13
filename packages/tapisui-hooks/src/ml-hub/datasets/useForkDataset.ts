@@ -7,7 +7,7 @@ import QueryKeys from './queryKeys';
 export type ForkDatasetParams = {
   /** The registered dataset to copy into the current user's collection. */
   dataset: Datasets.Dataset;
-  /** Defaults to "Fork of <source name>". */
+  /** Defaults to the source dataset name. */
   name?: string;
   /** Defaults to Private so a fork is not published unintentionally. */
   visibility?: Datasets.Visibility;
@@ -28,7 +28,7 @@ const useForkDataset = () => {
               description: dataset.description,
               huggingface_repo_locator: dataset.huggingface_repo_locator,
               items: dataset.items,
-              name: name ?? `Fork of ${dataset.name}`,
+              name: name ?? dataset.name,
               provider: dataset.provider,
               size: dataset.size,
               tags: dataset.tags,

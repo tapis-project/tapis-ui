@@ -1,5 +1,3 @@
-import * as React from 'react';
-import PublicIcon from '@mui/icons-material/Public';
 import KpiCard from './KpiCard';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { Storefront } from '@mui/icons-material';
@@ -13,9 +11,7 @@ export default function ModelsMarketplaceCard() {
   const { data, isLoading, error } = Hooks.Models.useDiscoverModels({
     options: {
       autoRunParams: {
-        discoveryCriteria: {
-          criteria: [{ author: 'mlhub' }],
-        },
+        discoverExternalModelsBody: {},
         limit: 1,
         includeCount: true,
       },

@@ -15,14 +15,15 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import * as Models from '@mlhub/models-ts-sdk';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { DatasetProviderIcon } from '../_components';
-import { ModelActionsBar } from './ModelDetailsPage/ModelActionsBar';
-import { ModelTabs, TabPanel } from './ModelDetailsPage/ModelTabs';
-import type { SectionTab } from './ModelDetailsPage/ModelTabs';
-import { GeneralSection } from './ModelDetailsPage/Sections/GeneralSection';
-import { ComplianceSection } from './ModelDetailsPage/Sections/ComplianceSection';
-import { DeploymentSection } from './ModelDetailsPage/Sections/DeploymentSection';
-import { SettingsSection } from './ModelDetailsPage/Sections/SettingsSection';
-import { ExpandableTagCloud } from './ModelDetailsPage/utils';
+import { ModelActionsBar } from './ModelDetailDrawerParts/ModelActionsBar';
+import { ModelTabs, TabPanel } from './ModelDetailDrawerParts/ModelTabs';
+import type { SectionTab } from './ModelDetailDrawerParts/ModelTabs';
+import { GeneralSection } from './ModelDetailDrawerParts/Sections/GeneralSection';
+import { ComplianceSection } from './ModelDetailDrawerParts/Sections/ComplianceSection';
+import { DeploymentSection } from './ModelDetailDrawerParts/Sections/DeploymentSection';
+import { SettingsSection } from './ModelDetailDrawerParts/Sections/SettingsSection';
+import { ExpandableTagCloud } from './ModelDetailDrawerParts/utils';
+import { derivedMetadataFor, modelAuthorFor } from '../modelMetadata';
 
 export interface ModelDetailDrawerProps {
   model: Models.Model | null;
@@ -38,12 +39,12 @@ function ModelDetailContent({
 }) {
   const [activeTab, setActiveTab] = useState<SectionTab>('general');
   const query = Hooks.Models.useGetModel({
-    author: summary.author,
-    name: summary.name,
+    modelId: summary.id,
   });
   const model = query.data?.result;
   const displayedModel = model ?? summary;
-  const platform = displayedModel.canonical?.platform;
+  const derived = derivedMetadataFor(displayedModel);
+  const platform = derived.deployment_strategies[0]?.platform;
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -87,7 +88,7 @@ function ModelDetailContent({
               {displayedModel.name}
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap>
-              by {displayedModel.author}
+              by {modelAuthorFor(displayedModel)}
               {displayedModel.tenant_id
                 ? ` · tenant ${displayedModel.tenant_id}`
                 : ''}
@@ -131,8 +132,11 @@ function ModelDetailContent({
                 }}
               >
                 <Box sx={{ minWidth: 0 }}>
-                  {model.tags?.length ? (
-                    <ExpandableTagCloud tags={model.tags} showCount={4} />
+                  {derivedMetadataFor(model).tags.length ? (
+                    <ExpandableTagCloud
+                      tags={derivedMetadataFor(model).tags}
+                      showCount={4}
+                    />
                   ) : null}
                 </Box>
                 <ModelActionsBar model={model} />
@@ -179,11 +183,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
       }}
     >
       {model && (
-        <ModelDetailContent
-          key={`${model.author}/${model.name}`}
-          summary={model}
-          onClose={onClose}
-        />
+        <ModelDetailContent key={model.id} summary={model} onClose={onClose} />
       )}
     </Drawer>
   );

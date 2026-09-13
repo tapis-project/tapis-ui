@@ -25,7 +25,6 @@ import MLHubLayout from '../Layouts/MLHubLayout';
 import ModelsTab from '../pages/ModelsTab';
 import DeploymentsTab from '../pages/DeploymentsPage';
 import ArtifactsTab from '../pages/ArtifactsTab';
-import ModelDetailsPage from '../pages/ModelDetailsPage';
 import DatasetDetailsPage from '../pages/DatasetDetailsPage';
 import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
 import DashboardOverview from '../pages/DashboardOverview';
@@ -163,13 +162,6 @@ export default function Router() {
             models={modelSummary}
             datasets={datasetSummary}
           />
-        </MLHubLayout>
-      </Route>
-
-      {/* Model Detail Page */}
-      <Route path="/mlhub/models/:author/:name">
-        <MLHubLayout>
-          <ModelDetailsPage />
         </MLHubLayout>
       </Route>
 

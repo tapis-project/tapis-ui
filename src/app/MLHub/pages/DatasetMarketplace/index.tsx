@@ -107,13 +107,6 @@ function DatasetCard({
         borderRadius: '8px',
         border: '1px solid',
         borderColor: 'divider',
-        transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
-        '&:hover': {
-          transform: 'translateY(-3px)',
-          boxShadow: (theme) =>
-            `0 12px 28px ${alpha(theme.palette.primary.main, 0.1)}`,
-          borderColor: (theme) => alpha(theme.palette.primary.main, 0.25),
-        },
       }}
     >
       <CardContent

@@ -8,7 +8,7 @@ interface MetaItemProps {
 }
 
 /**
- * Reusable metadata row used by ModelDetailsPage and DatasetDetailsPage.
+ * Reusable metadata row used by model details drawers and DatasetDetailsPage.
  * Renders an icon, label, and value in a horizontal flex layout.
  */
 export default function MetaItem({ icon, label, value }: MetaItemProps) {

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 
 type DiscoverModelsHookParams = {
   options?: {
-    autoRunParams?: Models.DiscoverModelsRequest;
+    autoRunParams?: Models.DiscoverExternalModelsRequest;
   };
 };
 
@@ -22,9 +22,9 @@ const useDiscoverModels = ({ options }: DiscoverModelsHookParams) => {
   // In this case, create helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<
-      Models.DiscoverModelsResponse,
+      Models.DiscoverExternalModelsResponse,
       Error,
-      Models.DiscoverModelsRequest
+      Models.DiscoverExternalModelsRequest
     >([QueryKeys.discover, mlHubBasePath, jwt], (params) =>
       API.Models.discover(params, mlHubBasePath, jwt)
     );
@@ -49,12 +49,12 @@ const useDiscoverModels = ({ options }: DiscoverModelsHookParams) => {
     reset,
     invalidate,
     discover: (
-      params: Models.DiscoverModelsRequest,
+      params: Models.DiscoverExternalModelsRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Models.DiscoverModelsResponse,
+        Models.DiscoverExternalModelsResponse,
         Error,
-        Models.DiscoverModelsRequest
+        Models.DiscoverExternalModelsRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation

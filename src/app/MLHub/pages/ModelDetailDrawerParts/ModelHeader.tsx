@@ -12,6 +12,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import * as Models from '@mlhub/models-ts-sdk';
 import { ModelActionsBar } from './ModelActionsBar';
 import { ExpandableTagCloud } from './utils';
+import { derivedMetadataFor, modelAuthorFor } from '../../modelMetadata';
 
 interface ModelHeaderProps {
   model: Models.Model;
@@ -19,6 +20,8 @@ interface ModelHeaderProps {
 
 export function ModelHeader({ model }: ModelHeaderProps) {
   const annotationCount = [].length; // TODO
+  const derived = derivedMetadataFor(model);
+  const author = modelAuthorFor(model);
 
   return (
     <Box
@@ -41,7 +44,7 @@ export function ModelHeader({ model }: ModelHeaderProps) {
           color="inherit"
           sx={{ cursor: 'pointer', color: 'text.secondary' }}
         >
-          {model.author}
+          {author}
         </Link>
         <Typography color="text.primary" sx={{ fontWeight: 600 }}>
           {model.name}
@@ -84,9 +87,9 @@ export function ModelHeader({ model }: ModelHeaderProps) {
             </Typography>
           )}
 
-          {model.tags && model.tags.length > 0 && (
+          {derived.tags.length > 0 && (
             <ExpandableTagCloud
-              tags={model.tags}
+              tags={derived.tags}
               showCount={1}
               sx={{ mt: 2 }}
             />

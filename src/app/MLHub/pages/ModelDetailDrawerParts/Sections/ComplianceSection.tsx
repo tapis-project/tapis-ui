@@ -5,12 +5,14 @@ import Typography from '@mui/material/Typography';
 import { Model } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { TagCloud } from '../utils';
+import { derivedMetadataFor } from '../../../modelMetadata';
 
 interface ComplianceSectionProps {
   model: Model;
 }
 
 export function ComplianceSection({ model }: ComplianceSectionProps) {
+  const derived = derivedMetadataFor(model);
   // const biasScore = model.bias_evaluation_score;
 
   // let biasColor: 'success' | 'info' | 'warning' | 'error' = 'info';
@@ -86,22 +88,10 @@ export function ComplianceSection({ model }: ComplianceSectionProps) {
         >
           License
         </Typography>
-        <TagCloud tags={[model.license ?? 'Unknown']} />
+        <TagCloud tags={[derived.license ?? 'Unknown']} />
       </Box>
 
       {/* Regulatory Tags */}
-      {model.regulatory && model.regulatory.length > 0 && (
-        <Box>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ mb: 0.5, display: 'block' }}
-          >
-            Regulatory Standards
-          </Typography>
-          <TagCloud tags={model.regulatory} />
-        </Box>
-      )}
     </InfoSection>
   );
 }

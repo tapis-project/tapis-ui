@@ -13,9 +13,16 @@ import {
   IconButton,
   Tooltip,
   Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  InputLabel,
   Select,
   MenuItem,
+  Paper,
+  Slider,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
@@ -28,16 +35,30 @@ import {
 import { ALL_INFERENCE_BACKENDS } from '../../enums';
 import { TASKS_BY_CATEGORY, CATEGORY_COLOR_MAP } from '../../data/taskTypes';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import MemoryOutlinedIcon from '@mui/icons-material/MemoryOutlined';
 import * as Models from '@mlhub/models-ts-sdk';
 import { useModelFilter } from '../../_context/ModelFilterContext/ModelFilterContext';
 import { Check, Storefront } from '@mui/icons-material';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ModelMarketplaceListing } from './_components/ModelMarketplaceListing';
+import {
+  derivedMetadataFor,
+  modelAuthorFor,
+  modelNameFor,
+} from '../../modelMetadata';
 
 type DiscoverModelsResponseMetadata = {
   count?: number;
   cursor?: string;
 };
+
+const MAX_SIZE_GIB = 1024;
+const BYTES_PER_GIB = 1024 ** 3;
+const DEFAULT_SIZE_RANGE: [number, number] = [0, MAX_SIZE_GIB];
+const DEFAULT_LIMIT = 10;
+
+const formatSize = (gib: number) =>
+  gib === 0 ? '0 B' : gib >= MAX_SIZE_GIB ? '1 TiB+' : `${gib} GiB`;
 
 const initialReducerState: ReducerState = {
   cursors: [undefined],
@@ -98,7 +119,6 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
 };
 
 export default function ModelMarketplace() {
-  const tags: Models.Model['tags'] = [];
   const [state, dispatch] = React.useReducer(reducer, initialReducerState);
 
   // ─── Filter state ───────────────────────────────
@@ -113,15 +133,28 @@ export default function ModelMarketplace() {
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showFilters, setShowFilters] = React.useState(false);
+  const [provider, setProvider] = React.useState<Models.ModelProvider | 'all'>(
+    'all'
+  );
+  const [sizeRange, setSizeRange] =
+    React.useState<[number, number]>(DEFAULT_SIZE_RANGE);
 
   // ─── Model discovery ───────────────────────────────
   const { data, discover, isLoading, isError, error } =
-    Hooks.Models.useDiscoverModels({});
+    Hooks.Models.useDiscoverModels({
+      options: {
+        autoRunParams: {
+          limit,
+          includeCount: true,
+          discoverExternalModelsBody: {},
+        },
+      },
+    });
 
   const models = data?.result ?? [];
   const respMetadata = (data?.metadata as DiscoverModelsResponseMetadata) ?? {};
 
-  const onSuccessSearch = (result: Models.DiscoverModelsResponse) => {
+  const onSuccessSearch = (result: Models.DiscoverExternalModelsResponse) => {
     let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
     if (!!cursor) {
       dispatch({
@@ -131,7 +164,7 @@ export default function ModelMarketplace() {
     }
   };
 
-  const onSuccessNext = (result: Models.DiscoverModelsResponse) => {
+  const onSuccessNext = (result: Models.DiscoverExternalModelsResponse) => {
     let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
     dispatch({
       type: 'push',
@@ -139,7 +172,7 @@ export default function ModelMarketplace() {
     });
   };
 
-  const onSuccessPrevious = (result: Models.DiscoverModelsResponse) => {
+  const onSuccessPrevious = (result: Models.DiscoverExternalModelsResponse) => {
     let cursor = (result.metadata as DiscoverModelsResponseMetadata).cursor;
     dispatch({
       type: 'pop',
@@ -147,25 +180,34 @@ export default function ModelMarketplace() {
     });
   };
 
-  const handleDiscover = () => {
-    let criterion: Models.DiscoveryCriterion = {};
+  const buildDiscoveryCriterion = (): Models.DiscoveryCriterion => {
+    const criterion: Models.DiscoveryCriterion = {};
 
     if (selectedBackends.length > 0) {
-      criterion['libraries'] = selectedBackends;
+      criterion['inference_runtimes'] = selectedBackends;
     }
 
     if (selectedTasks.length > 0) {
       criterion['task_types'] = selectedTasks;
     }
 
-    console.log({ criterion });
+    if (provider !== 'all') criterion['provider'] = provider;
+    if (sizeRange[0] > 0) criterion['min_size'] = sizeRange[0] * BYTES_PER_GIB;
+    if (sizeRange[1] < MAX_SIZE_GIB)
+      criterion['max_size'] = sizeRange[1] * BYTES_PER_GIB;
+
+    return criterion;
+  };
+
+  const handleDiscover = () => {
+    const criterion = buildDiscoveryCriterion();
 
     dispatch({ type: 'clear' });
     discover(
       {
         limit: limit ?? 10,
         includeCount: true,
-        discoveryCriteria: {
+        discoverExternalModelsBody: {
           criteria: [criterion],
         },
       },
@@ -178,17 +220,17 @@ export default function ModelMarketplace() {
   // ─── Filtering logic ────────────────────────────
   const filteredModels = React.useMemo(() => {
     return models.filter((model) => {
-      const taskTypes = model.task_types || [];
-      const libraries = model.libraries || [];
+      const derived = derivedMetadataFor(model);
+      const taskTypes = derived.task_types;
+      const libraries = derived.inference_runtimes;
       // Search filter (name, description, task, author, tags)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const searchable = [
-          model.name,
-          // model.description,
+          modelNameFor(model),
           ...taskTypes,
-          model.author,
-          ...tags,
+          modelAuthorFor(model),
+          ...derived.tags,
           ...libraries,
         ]
           .join(' ')
@@ -227,11 +269,46 @@ export default function ModelMarketplace() {
     setSearchQuery('');
     setSelectedTasks([]);
     setSelectedBackends([]);
+    setProvider('all');
+    setSizeRange(DEFAULT_SIZE_RANGE);
+    setLimit(DEFAULT_LIMIT);
   };
 
   const hasActiveFilters =
-    selectedTasks.length > 0 || selectedBackends.length > 0;
-  const canApply = hasActiveFilters || !!searchQuery.trim();
+    selectedTasks.length > 0 ||
+    selectedBackends.length > 0 ||
+    provider !== 'all' ||
+    sizeRange[0] > 0 ||
+    sizeRange[1] < MAX_SIZE_GIB ||
+    limit !== DEFAULT_LIMIT;
+  // Applying the default limit is meaningful after a user changes it back
+  // from a larger page size, so a clean/default filter state is still valid.
+  const canApply = true;
+  const hasSizeFilter = sizeRange[0] > 0 || sizeRange[1] < MAX_SIZE_GIB;
+  const activeFilterCount =
+    selectedTasks.length +
+    selectedBackends.length +
+    (provider !== 'all' ? 1 : 0) +
+    (hasSizeFilter ? 1 : 0) +
+    (limit !== DEFAULT_LIMIT ? 1 : 0);
+  const taskLabel = (value: Models.Task) =>
+    TASKS_BY_CATEGORY.flatMap((group) => group.tasks).find(
+      (task) => task.value === value
+    )?.label ?? String(value);
+  const setSizeBound = (bound: 'min' | 'max', rawValue: number) => {
+    if (!Number.isFinite(rawValue)) return;
+
+    const value = Math.min(Math.max(rawValue, 0), MAX_SIZE_GIB);
+    setSizeRange(([currentMin, currentMax]) =>
+      bound === 'min'
+        ? [Math.min(value, currentMax), currentMax]
+        : [currentMin, Math.max(value, currentMin)]
+    );
+  };
+  const applyFilters = () => {
+    setShowFilters(false);
+    handleDiscover();
+  };
 
   return (
     <Box>
@@ -301,51 +378,11 @@ export default function ModelMarketplace() {
               }}
             />
 
-            <Stack
-              direction="row"
-              sx={{ alignItems: 'center', gap: 1, flexShrink: 0 }}
-            >
-              <Typography
-                variant="caption"
-                sx={{
-                  fontWeight: 600,
-                  color: 'text.secondary',
-                  fontSize: '0.75rem',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                Limit
-              </Typography>
-              <FormControl size="small">
-                <Select
-                  value={limit}
-                  onChange={(e) => setLimit(Number(e.target.value))}
-                  sx={{ minWidth: 76, borderRadius: '8px' }}
-                  MenuProps={{
-                    slotProps: {
-                      paper: {
-                        sx: { borderRadius: 2, mt: 0.5 },
-                      },
-                    },
-                  }}
-                >
-                  {[10, 25, 50, 100].map((v) => (
-                    <MenuItem
-                      value={v}
-                      sx={{ fontSize: '0.8rem', fontWeight: 500 }}
-                    >
-                      {v}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Stack>
-
-            <Tooltip title={showFilters ? 'Hide filters' : 'Show filters'}>
+            <Tooltip title="Show filters">
               <Button
-                variant={showFilters ? 'contained' : 'outlined'}
+                variant="outlined"
                 startIcon={<FilterListIcon />}
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={() => setShowFilters(true)}
                 sx={{
                   whiteSpace: 'nowrap',
                   textTransform: 'none',
@@ -355,11 +392,7 @@ export default function ModelMarketplace() {
                 Filters
                 {hasActiveFilters && (
                   <Chip
-                    label={
-                      (searchQuery ? 1 : 0) +
-                      selectedTasks.length +
-                      selectedBackends.length
-                    }
+                    label={activeFilterCount}
                     size="small"
                     color="primary"
                     sx={{
@@ -384,171 +417,581 @@ export default function ModelMarketplace() {
             )}
           </Stack>
 
-          {/* ── Expanded Filters ───────────────────────── */}
-          {showFilters && (
-            <Box sx={{ mt: 2 }}>
-              <Divider sx={{ mb: 2 }} />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              flexWrap: 'wrap',
+              gap: 0.75,
+              minHeight: 52,
+              mt: 1.5,
+              pt: 1.5,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                lineHeight: '28px',
+                mr: 0.25,
+                textTransform: 'uppercase',
+              }}
+            >
+              Applied filters
+            </Typography>
+            {hasActiveFilters ? (
+              <>
+                {selectedBackends.map((backend) => {
+                  const backendColor =
+                    (inferenceBackendColorMap as Record<string, string>)[
+                      backend
+                    ] ?? 'primary.main';
+                  const backendLabel =
+                    (inferenceBackendLabelMap as Record<string, string>)[
+                      backend
+                    ] ?? backend;
 
-              {/* ── Inference Backend (top) ──────────────── */}
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="subtitle2"
-                  sx={{ fontWeight: 600, mb: 1, color: 'text.secondary' }}
-                >
-                  Inference Backend
-                </Typography>
-                <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
-                  {ALL_INFERENCE_BACKENDS.map((ib) => {
-                    const isSelected = selectedBackends.includes(ib);
-                    return (
-                      <Chip
-                        key={ib}
-                        label={inferenceBackendLabelMap[ib] ?? ib}
-                        icon={isSelected ? <Check /> : undefined}
-                        onClick={() => toggleBackend(ib)}
-                        variant={isSelected ? 'filled' : 'outlined'}
-                        sx={{
-                          bgcolor: isSelected
-                            ? alpha(inferenceBackendColorMap[ib], 0.12)
-                            : undefined,
-                          color: isSelected
-                            ? inferenceBackendColorMap[ib]
-                            : undefined,
-                          borderColor: isSelected ? undefined : 'divider',
-                          '& .MuiChip-label': { fontWeight: 500 },
-                          textTransform: 'capitalize',
-                        }}
-                      />
-                    );
-                  })}
-                </Stack>
-              </Box>
-
-              <Divider sx={{ my: 2, opacity: 0.6 }} />
-
-              {/* ── Task Types (grouped by category) ─────── */}
-              <Box sx={{ mb: 2 }}>
-                <Stack
-                  direction="row"
-                  sx={{ alignItems: 'center', gap: 1, mb: 1.5 }}
-                >
-                  <TaskAltIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 700, letterSpacing: '-0.01em' }}
-                  >
-                    Task Types
-                  </Typography>
-                </Stack>
-
-                {TASKS_BY_CATEGORY.map((group) => {
-                  const catColor = CATEGORY_COLOR_MAP[group.category];
                   return (
-                    <Box key={group.category} sx={{ mb: 2.5 }}>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{
-                          fontWeight: 650,
-                          mb: 1,
-                          color: catColor,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.75,
-                        }}
-                      >
-                        <Box
-                          component="span"
-                          sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            bgcolor: catColor,
-                            display: 'inline-block',
-                            flexShrink: 0,
-                          }}
-                        />
-                        {group.category}
-                      </Typography>
-                      <Stack
-                        direction="row"
-                        sx={{ flexWrap: 'wrap', gap: 0.75 }}
-                      >
-                        {group.tasks.map((task) => {
-                          const isSelected = selectedTasks.includes(task.value);
-                          return (
-                            <Chip
-                              key={String(task.value)}
-                              label={task.label}
-                              icon={
-                                isSelected ? (
-                                  <Check sx={{ color: catColor }} />
-                                ) : undefined
-                              }
-                              onClick={() => toggleTask(task.value)}
-                              variant={isSelected ? 'filled' : 'outlined'}
-                              size="small"
-                              sx={{
-                                ...(isSelected
-                                  ? {
-                                      bgcolor: alpha(catColor, 0.14),
-                                      color: catColor,
-                                      borderColor: catColor,
-                                    }
-                                  : {
-                                      borderColor: alpha(catColor, 0.35),
-                                      color: alpha(catColor, 0.85),
-                                    }),
-                                '& .MuiChip-label': { fontWeight: 500 },
-                                textTransform: 'none',
-                                fontSize: '0.78rem',
-                                transition: 'all 0.15s ease-in-out',
-                              }}
-                            />
-                          );
-                        })}
-                      </Stack>
-                    </Box>
+                    <Chip
+                      key={backend}
+                      size="small"
+                      label={backendLabel}
+                      onDelete={() => toggleBackend(backend)}
+                      sx={{
+                        bgcolor: alpha(backendColor, 0.12),
+                        border: '1px solid',
+                        borderColor: alpha(backendColor, 0.35),
+                        color: 'text.primary',
+                        fontWeight: 600,
+                        '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                      }}
+                    />
                   );
                 })}
-              </Box>
-
-              <Divider sx={{ opacity: 0.6 }} />
-
-              {/* ── Action Buttons ───────────────────────── */}
-              <Stack
-                direction="row"
-                sx={{ justifyContent: 'flex-end', gap: 1, mt: 2 }}
+                {selectedTasks.map((task) => (
+                  <Chip
+                    key={String(task)}
+                    size="small"
+                    label={taskLabel(task)}
+                    onDelete={() => toggleTask(task)}
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                ))}
+                {provider !== 'all' && (
+                  <Chip
+                    size="small"
+                    label={`Provider: ${
+                      provider === Models.ModelProvider.HuggingFace
+                        ? 'Hugging Face'
+                        : 'Tapis'
+                    }`}
+                    onDelete={() => setProvider('all')}
+                    sx={{
+                      bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.info.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                )}
+                {hasSizeFilter && (
+                  <Chip
+                    size="small"
+                    label={`Size: ${formatSize(sizeRange[0])} – ${formatSize(
+                      sizeRange[1]
+                    )}`}
+                    onDelete={() => setSizeRange(DEFAULT_SIZE_RANGE)}
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.secondary.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.secondary.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                )}
+                {limit !== DEFAULT_LIMIT && (
+                  <Chip
+                    size="small"
+                    label={`Limit: ${limit}`}
+                    onDelete={() => setLimit(DEFAULT_LIMIT)}
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.warning.main, 0.1),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.warning.main, 0.3),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ lineHeight: '28px' }}
               >
+                None selected
+              </Typography>
+            )}
+          </Box>
+
+          {/* ── Filter dialog ─────────────────────────── */}
+          {showFilters && (
+            <Dialog
+              open={showFilters}
+              onClose={() => setShowFilters(false)}
+              fullWidth
+              maxWidth="lg"
+            >
+              <DialogTitle sx={{ pb: 1 }}>Model filters</DialogTitle>
+              <DialogContent dividers sx={{ py: 2.5 }}>
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  sx={{
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    justifyContent: 'space-between',
+                    gap: 1.5,
+                    mb: 1.5,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 750 }}>
+                      Refine models
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Choose one or more backends and task types, then update
+                      results.
+                    </Typography>
+                  </Box>
+                  <Stack direction="row" sx={{ gap: 1, flexShrink: 0 }}>
+                    <FormControl size="small" sx={{ minWidth: 118 }}>
+                      <InputLabel id="model-limit-filter-label">
+                        Limit
+                      </InputLabel>
+                      <Select
+                        labelId="model-limit-filter-label"
+                        label="Limit"
+                        value={limit}
+                        onChange={(event) =>
+                          setLimit(Number(event.target.value))
+                        }
+                      >
+                        {[10, 25, 50, 100].map((value) => (
+                          <MenuItem key={value} value={value}>
+                            {value} models
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={clearAllFilters}
+                      disabled={!hasActiveFilters && !searchQuery.trim()}
+                      sx={{
+                        color: 'text.primary',
+                        borderColor: 'divider',
+                        bgcolor: 'background.paper',
+                        textTransform: 'none',
+                        fontWeight: 650,
+                        '&:hover': {
+                          borderColor: 'text.secondary',
+                          bgcolor: 'action.hover',
+                        },
+                      }}
+                    >
+                      Clear all
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={applyFilters}
+                      disabled={!canApply}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 700,
+                        color: 'primary.contrastText',
+                        boxShadow: 'none',
+                        '&:hover': { boxShadow: 'none' },
+                      }}
+                    >
+                      Apply filters
+                    </Button>
+                  </Stack>
+                </Stack>
+
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                      xs: '1fr',
+                      lg: 'minmax(220px, 0.8fr) minmax(0, 2fr)',
+                    },
+                    gap: 2,
+                  }}
+                >
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      gridColumn: { xs: 'auto', lg: '1 / -1' },
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: 'background.default',
+                    }}
+                  >
+                    <Stack sx={{ gap: 2 }}>
+                      <Box sx={{ px: { xs: 0.5, md: 1 } }}>
+                        <Stack
+                          direction="row"
+                          sx={{
+                            justifyContent: 'space-between',
+                            gap: 1,
+                            mb: 0.5,
+                          }}
+                        >
+                          <Box>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontWeight: 700 }}
+                            >
+                              Model size
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Type an exact value or drag the range handles.
+                            </Typography>
+                          </Box>
+                          {hasSizeFilter && (
+                            <Button
+                              size="small"
+                              onClick={() => setSizeRange(DEFAULT_SIZE_RANGE)}
+                              sx={{
+                                alignSelf: 'center',
+                                textTransform: 'none',
+                              }}
+                            >
+                              Reset size
+                            </Button>
+                          )}
+                        </Stack>
+                        <Stack
+                          direction={{ xs: 'column', sm: 'row' }}
+                          sx={{ gap: 1, mb: 0.5 }}
+                        >
+                          <TextField
+                            label="Min size"
+                            size="small"
+                            type="number"
+                            value={sizeRange[0]}
+                            onChange={(event) =>
+                              setSizeBound('min', Number(event.target.value))
+                            }
+                            slotProps={{
+                              htmlInput: { min: 0, max: MAX_SIZE_GIB },
+                              input: {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    GiB
+                                  </InputAdornment>
+                                ),
+                              },
+                            }}
+                            sx={{ flex: 1 }}
+                          />
+                          <TextField
+                            label="Max size"
+                            size="small"
+                            type="number"
+                            value={sizeRange[1]}
+                            onChange={(event) =>
+                              setSizeBound('max', Number(event.target.value))
+                            }
+                            slotProps={{
+                              htmlInput: { min: 0, max: MAX_SIZE_GIB },
+                              input: {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    GiB
+                                  </InputAdornment>
+                                ),
+                              },
+                            }}
+                            sx={{ flex: 1 }}
+                          />
+                        </Stack>
+                        <Slider
+                          key={sizeRange.join('-')}
+                          defaultValue={sizeRange}
+                          min={0}
+                          max={MAX_SIZE_GIB}
+                          step={10}
+                          marks={[
+                            { value: 0, label: '0 B' },
+                            { value: 100, label: '100 GiB' },
+                            { value: MAX_SIZE_GIB, label: '1 TiB+' },
+                          ]}
+                          valueLabelDisplay="auto"
+                          valueLabelFormat={formatSize}
+                          onChangeCommitted={(_event, nextValue) => {
+                            if (Array.isArray(nextValue)) {
+                              setSizeRange(nextValue as [number, number]);
+                            }
+                          }}
+                          aria-label="Model size range"
+                        />
+                      </Box>
+                      <FormControl
+                        size="small"
+                        sx={{ width: { xs: '100%', sm: 240 } }}
+                      >
+                        <InputLabel id="model-provider-filter-label">
+                          Provider
+                        </InputLabel>
+                        <Select
+                          labelId="model-provider-filter-label"
+                          label="Provider"
+                          value={provider}
+                          onChange={(event) =>
+                            setProvider(
+                              event.target.value as Models.ModelProvider | 'all'
+                            )
+                          }
+                        >
+                          <MenuItem value="all">All providers</MenuItem>
+                          <MenuItem value={Models.ModelProvider.HuggingFace}>
+                            Hugging Face
+                          </MenuItem>
+                          <MenuItem value={Models.ModelProvider.Tapis}>
+                            Tapis
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Paper>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: 'background.default',
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: 'center', gap: 1, mb: 1.5 }}
+                    >
+                      <MemoryOutlinedIcon color="primary" fontSize="small" />
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: 700 }}
+                        >
+                          Inference backends
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Runtime or framework support
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
+                      {ALL_INFERENCE_BACKENDS.map((backend) => {
+                        const isSelected = selectedBackends.includes(backend);
+                        const color = inferenceBackendColorMap[backend];
+                        return (
+                          <Chip
+                            key={backend}
+                            label={inferenceBackendLabelMap[backend] ?? backend}
+                            icon={isSelected ? <Check /> : undefined}
+                            onClick={() => toggleBackend(backend)}
+                            variant="outlined"
+                            sx={{
+                              bgcolor: isSelected
+                                ? alpha(color, 0.14)
+                                : 'background.paper',
+                              color: 'text.primary',
+                              borderColor: isSelected ? color : 'divider',
+                              '& .MuiChip-icon': {
+                                color: `${color} !important`,
+                              },
+                              '& .MuiChip-label': {
+                                fontWeight: isSelected ? 700 : 500,
+                              },
+                            }}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Paper>
+
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: 'background.default',
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: 'center', gap: 1, mb: 1.5 }}
+                    >
+                      <TaskAltIcon color="primary" fontSize="small" />
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: 700 }}
+                        >
+                          Task types
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          The kind of work a model is designed to perform
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                          xs: '1fr',
+                          sm: 'repeat(2, minmax(0, 1fr))',
+                        },
+                        gap: 1.5,
+                      }}
+                    >
+                      {TASKS_BY_CATEGORY.map((group) => {
+                        const catColor = CATEGORY_COLOR_MAP[group.category];
+                        return (
+                          <Box key={group.category}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontWeight: 800,
+                                mb: 0.75,
+                                color: 'text.primary',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.75,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                              }}
+                            >
+                              <Box
+                                component="span"
+                                sx={{
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: '50%',
+                                  bgcolor: catColor,
+                                }}
+                              />
+                              {group.category}
+                            </Typography>
+                            <Stack
+                              direction="row"
+                              sx={{ flexWrap: 'wrap', gap: 0.75 }}
+                            >
+                              {group.tasks.map((task) => {
+                                const isSelected = selectedTasks.includes(
+                                  task.value
+                                );
+                                return (
+                                  <Chip
+                                    key={String(task.value)}
+                                    label={task.label}
+                                    icon={isSelected ? <Check /> : undefined}
+                                    onClick={() => toggleTask(task.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                      bgcolor: isSelected
+                                        ? alpha(catColor, 0.13)
+                                        : 'background.paper',
+                                      color: 'text.primary',
+                                      borderColor: isSelected
+                                        ? catColor
+                                        : 'divider',
+                                      '& .MuiChip-icon': {
+                                        color: `${catColor} !important`,
+                                      },
+                                      '& .MuiChip-label': {
+                                        fontWeight: isSelected ? 700 : 500,
+                                      },
+                                      transition:
+                                        'background-color 0.15s ease, border-color 0.15s ease',
+                                    }}
+                                  />
+                                );
+                              })}
+                            </Stack>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Paper>
+                </Box>
+              </DialogContent>
+              <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
                 <Button
+                  variant="outlined"
                   size="small"
                   onClick={clearAllFilters}
                   disabled={!hasActiveFilters && !searchQuery.trim()}
-                  sx={{ textTransform: 'none' }}
+                  sx={{
+                    color: 'text.primary',
+                    borderColor: 'divider',
+                    bgcolor: 'background.paper',
+                    textTransform: 'none',
+                    fontWeight: 650,
+                    '&:hover': {
+                      borderColor: 'text.secondary',
+                      bgcolor: 'action.hover',
+                    },
+                  }}
                 >
                   Clear all
                 </Button>
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() => {
-                    setShowFilters(false);
-                    handleDiscover();
-                  }}
+                  onClick={applyFilters}
                   disabled={!canApply}
                   sx={{
                     textTransform: 'none',
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    color: 'primary.contrastText',
                     boxShadow: 'none',
-                    '&:hover': {
-                      boxShadow: (theme) =>
-                        `0 2px 8px ${alpha(theme.palette.primary.main, 0.3)}`,
-                    },
+                    '&:hover': { boxShadow: 'none' },
                   }}
                 >
-                  Apply
+                  Apply filters
                 </Button>
-              </Stack>
-            </Box>
+              </DialogActions>
+            </Dialog>
           )}
         </CardContent>
       </Card>
@@ -598,21 +1041,13 @@ export default function ModelMarketplace() {
             state.prevCursor === undefined && state.currentCursor === undefined
               ? undefined
               : () => {
-                  let criterion: Models.DiscoveryCriterion = {};
-
-                  if (selectedBackends.length > 0) {
-                    criterion['libraries'] = selectedBackends;
-                  }
-
-                  if (selectedTasks.length > 0) {
-                    criterion['task_types'] = selectedTasks;
-                  }
+                  const criterion = buildDiscoveryCriterion();
                   discover(
                     {
                       limit,
                       includeCount: true,
                       cursor: state.prevCursor,
-                      discoveryCriteria: {
+                      discoverExternalModelsBody: {
                         criteria: [criterion],
                       },
                     },
@@ -627,22 +1062,14 @@ export default function ModelMarketplace() {
             state.cursors.length < 0 || state.nextCursor === undefined
               ? undefined
               : () => {
-                  let criterion: Models.DiscoveryCriterion = {};
-
-                  if (selectedBackends.length > 0) {
-                    criterion['libraries'] = selectedBackends;
-                  }
-
-                  if (selectedTasks.length > 0) {
-                    criterion['task_types'] = selectedTasks;
-                  }
+                  const criterion = buildDiscoveryCriterion();
 
                   discover(
                     {
                       limit,
                       includeCount: true,
                       cursor: state.cursors.at(-1),
-                      discoveryCriteria: {
+                      discoverExternalModelsBody: {
                         criteria: [criterion],
                       },
                     },

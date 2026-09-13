@@ -4,8 +4,10 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
 
+type ListModelsByAuthorParams = Models.ListModelsRequest & { author?: string };
+
 const useListByAuthor = (
-  params: Models.ListModelsByAuthorRequest,
+  params: ListModelsByAuthorParams = {},
   options: QueryObserverOptions<Models.ListModelsResponse, Error> = {}
 ) => {
   const { accessToken, mlHubBasePath } = useTapisConfig();

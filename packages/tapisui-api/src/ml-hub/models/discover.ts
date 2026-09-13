@@ -2,19 +2,19 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
 const discover = (
-  request: Models.DiscoverModelsRequest,
+  request: Models.DiscoverExternalModelsRequest,
   basePath: string,
   jwt: string
 ) => {
-  const api: Models.ModelsApi = apiGenerator<Models.ModelsApi>(
+  const api: Models.ExternalModelsApi = apiGenerator<Models.ExternalModelsApi>(
     Models,
-    Models.ModelsApi,
+    Models.ExternalModelsApi,
     basePath,
     jwt
   );
-  return errorDecoder<Models.DiscoverModelsResponse>(() =>
-    api.discoverModels(request)
-  );
+  return errorDecoder<Models.DiscoverExternalModelsResponse>(async () => {
+    return api.discoverExternalModels(request);
+  });
 };
 
 export default discover;

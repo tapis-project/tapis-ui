@@ -19,6 +19,7 @@ import {
   inferenceBackendLabelMap,
 } from '../enums';
 import * as Models from '@mlhub/models-ts-sdk';
+import { derivedMetadataFor } from '../modelMetadata';
 
 interface ModelFormDialogProps {
   open: boolean;
@@ -42,8 +43,8 @@ export default function ModelFormDialog({
   const [tagInput, setTagInput] = React.useState('');
 
   React.useEffect(() => {
-    const libraries = model?.libraries ?? [];
-    const tags = model?.tags ?? [];
+    const libraries = model ? derivedMetadataFor(model).inference_runtimes : [];
+    const tags = model ? derivedMetadataFor(model).tags : [];
     if (model) {
       setForm({
         name: model.name,

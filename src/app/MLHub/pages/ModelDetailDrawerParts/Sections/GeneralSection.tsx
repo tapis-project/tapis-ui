@@ -5,30 +5,32 @@ import Typography from '@mui/material/Typography';
 import { Model } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
 import { KeyValueGrid, TagCloud, formatDuration } from '../utils';
+import { derivedMetadataFor, modelAuthorFor } from '../../../modelMetadata';
 
 interface GeneralSectionProps {
   model: Model;
 }
 
 export function GeneralSection({ model }: GeneralSectionProps) {
+  const derived = derivedMetadataFor(model);
   const infoRows = [
-    { label: 'Author', value: model.author },
+    { label: 'Author', value: modelAuthorFor(model) },
     { label: 'Tenant', value: model.tenant_id },
-    { label: 'Model Type', value: model.model_type },
-    { label: 'License', value: model.license },
+    { label: 'Provider', value: model.external_model.provider },
+    { label: 'License', value: derived.license },
   ];
 
   return (
     <InfoSection>
       <KeyValueGrid rows={infoRows} />
 
-      {model.task_types && model.task_types.length > 0 && (
+      {derived.task_types.length > 0 && (
         <Box>
           <Divider sx={{ my: 2 }} />
           <Typography variant="caption" color="text.secondary">
             Task Types
           </Typography>
-          <TagCloud tags={model.task_types} sx={{ mt: 0.5 }} />
+          <TagCloud tags={derived.task_types} sx={{ mt: 0.5 }} />
         </Box>
       )}
     </InfoSection>

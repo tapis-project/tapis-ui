@@ -16,7 +16,6 @@ import { useMemo } from 'react';
 import * as Models from '@mlhub/models-ts-sdk';
 import {
   InferenceBackend,
-  getPlatformConfig,
   inferenceBackendColorMap,
   inferenceBackendLabelMap,
 } from '../../../enums';
@@ -25,19 +24,38 @@ import {
   Favorite,
   LibraryAddOutlined,
   OpenInNew,
+  StorageOutlined,
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { formatCount } from '../../../_utils';
-import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { useNavigate } from '../../../_context/NavContext';
+import { useToast } from '../../../_context/ToastsContext/useToast';
+import {
+  derivedMetadataFor,
+  modelAuthorFor,
+  modelNameFor,
+} from '../../../modelMetadata';
 
 type ModelMarketplaceListingProps = {
-  models: Array<Models.Model>;
+  models: Array<Models.ExternalModel>;
   count?: number;
   previous?: () => void;
   next?: () => void;
   isLoading?: boolean;
+};
+
+const formatBytes = (bytes: number) => {
+  if (bytes === 0) return '0 B';
+
+  const unitIndex = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), 4);
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const value = bytes / 1024 ** unitIndex;
+
+  return `${
+    value >= 10 || unitIndex === 0 ? value.toFixed(0) : value.toFixed(1)
+  } ${units[unitIndex]}`;
 };
 
 export const ModelMarketplaceListing: React.FC<
@@ -45,14 +63,14 @@ export const ModelMarketplaceListing: React.FC<
 > = ({ models, count, next, previous, isLoading }) => {
   // ----- Hooks
   const { navigate } = useNavigate();
+  const toast = useToast();
   const { fork, isLoading: isAddingToCollection } = Hooks.Models.useForkModel();
-  const { username } = useTapisConfig();
 
-  const appropriateModels: Models.Model[] = useMemo(() => {
+  const appropriateModels: Models.ExternalModel[] = useMemo(() => {
     return models.filter((m) => {
       return (
-        !m.tags?.includes('not-for-all-audiences') &&
-        !m.tags?.includes('roleplay')
+        !derivedMetadataFor(m).tags.includes('not-for-all-audiences') &&
+        !derivedMetadataFor(m).tags.includes('roleplay')
       );
     });
   }, [models, count]);
@@ -126,15 +144,21 @@ export const ModelMarketplaceListing: React.FC<
       ) : (
         <Grid container spacing={2}>
           {appropriateModels.map((model) => {
-            const libraries = model.libraries || [];
-            const tags = model.tags || [];
-            const platCfg = getPlatformConfig(model.canonical?.platform);
+            const derived = derivedMetadataFor(model);
+            const libraries = derived.inference_runtimes;
+            const tags = derived.tags;
+            const provider =
+              model.provider === Models.ModelProvider.HuggingFace
+                ? {
+                    color: '#ff9d00',
+                    icon: '🤗',
+                    label: 'Hugging Face',
+                  }
+                : { color: '#7c3aed', icon: '◈', label: 'Tapis' };
+            const name = modelNameFor(model);
 
             return (
-              <Grid
-                size={{ xs: 12, sm: 6, lg: 4 }}
-                key={model.author + model.name}
-              >
+              <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={model.id}>
                 <Card
                   elevation={0}
                   sx={{
@@ -142,17 +166,8 @@ export const ModelMarketplaceListing: React.FC<
                     borderRadius: '8px',
                     border: '1px solid',
                     borderColor: 'divider',
-                    transition:
-                      'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
                     display: 'flex',
                     flexDirection: 'column',
-                    '&:hover': {
-                      transform: 'translateY(-3px)',
-                      boxShadow: (theme) =>
-                        `0 12px 28px ${alpha(theme.palette.primary.main, 0.1)}`,
-                      borderColor: (theme) =>
-                        alpha(theme.palette.primary.main, 0.25),
-                    },
                   }}
                 >
                   {/* Card Header with platform badge */}
@@ -167,21 +182,23 @@ export const ModelMarketplaceListing: React.FC<
                     }}
                   >
                     <Chip
-                      label={`${platCfg.icon} ${platCfg.label}`}
+                      label={`${provider.icon} ${provider.label}`}
                       size="small"
                       variant="outlined"
                       sx={{
                         fontWeight: 600,
                         fontSize: '0.72rem',
-                        borderColor: (theme) => alpha(platCfg.color, 0.4),
+                        borderColor: (theme) => alpha(provider.color, 0.4),
                         color: 'text.primary',
                         textTransform: 'none',
                       }}
                     />
-                    <Tooltip title={`Open on ${platCfg.label}`}>
+                    <Tooltip title={`Open on ${provider.label}`}>
                       <IconButton
                         size="small"
-                        href={model.canonical?.locator.url!} // TODO Check for undefined
+                        href={`https://huggingface.co/${
+                          model.huggingface_repo_locator?.id ?? model.id
+                        }`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
@@ -203,7 +220,7 @@ export const ModelMarketplaceListing: React.FC<
                     }}
                   >
                     {/* Task badges */}
-                    {model.task_types?.map((t) => (
+                    {derived.task_types.map((t) => (
                       <Chip
                         label={t}
                         size="small"
@@ -225,7 +242,7 @@ export const ModelMarketplaceListing: React.FC<
                       variant="subtitle1"
                       sx={{ fontWeight: 700, lineHeight: 1.35, mb: 0.25 }}
                     >
-                      {model.name}
+                      {name}
                     </Typography>
 
                     {/* Author info */}
@@ -234,28 +251,11 @@ export const ModelMarketplaceListing: React.FC<
                       color="text.disabled"
                       sx={{ display: 'block', mb: 0.75 }}
                     >
-                      by {model.canonical?.author} &middot; from {platCfg.label}{' '}
+                      by {modelAuthorFor(model)} &middot; from {model.provider}{' '}
                       &middot; curated by MLHub
                     </Typography>
 
                     {/* Description */}
-                    {model.description && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          lineHeight: 1.55,
-                          mb: 1.5,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          minHeight: 44,
-                        }}
-                      >
-                        {model.description}
-                      </Typography>
-                    )}
 
                     {/* Spacer */}
                     <Box sx={{ flex: 1 }} />
@@ -267,21 +267,22 @@ export const ModelMarketplaceListing: React.FC<
                     >
                       {libraries.map((lib) => {
                         const library = lib as InferenceBackend;
+                        const libraryColor =
+                          inferenceBackendColorMap[library] ?? '#64748b';
+                        const libraryLabel =
+                          inferenceBackendLabelMap[library] ?? lib;
                         return (
                           <Chip
                             key={lib}
-                            label={inferenceBackendLabelMap[library]}
+                            label={libraryLabel}
                             size="small"
                             variant="outlined"
                             sx={{
                               fontSize: '0.65rem',
                               height: 20,
                               textTransform: 'capitalize',
-                              borderColor: alpha(
-                                inferenceBackendColorMap[library],
-                                0.35
-                              ),
-                              color: inferenceBackendColorMap[library],
+                              borderColor: alpha(libraryColor, 0.35),
+                              color: libraryColor,
                               fontWeight: 600,
                               '& .MuiChip-label': { px: 0.75 },
                             }}
@@ -322,7 +323,7 @@ export const ModelMarketplaceListing: React.FC<
                       </Stack>
                       <Chip
                         icon={<span style={{ fontSize: 10 }}>⚖</span>}
-                        label={model.license ?? 'unknown'}
+                        label={derived.license ?? 'unknown'}
                         size="small"
                         variant="outlined"
                         sx={{
@@ -355,7 +356,7 @@ export const ModelMarketplaceListing: React.FC<
                         sx={{ gap: 1.5, alignItems: 'center' }}
                       >
                         {/* Downloads */}
-                        {model.canonical?.downloads && (
+                        {derived.downloads && (
                           <Stack
                             direction="row"
                             sx={{ gap: 0.35, alignItems: 'center' }}
@@ -367,7 +368,7 @@ export const ModelMarketplaceListing: React.FC<
                               variant="caption"
                               sx={{ fontWeight: 600, color: 'text.secondary' }}
                             >
-                              {formatCount(model.canonical.downloads)}
+                              {formatCount(derived.downloads)}
                             </Typography>
                           </Stack>
                         )}
@@ -381,10 +382,26 @@ export const ModelMarketplaceListing: React.FC<
                             variant="caption"
                             sx={{ fontWeight: 600, color: 'text.secondary' }}
                           >
-                            {formatCount(model.canonical?.likes!)}{' '}
+                            {formatCount(derived.likes ?? 0)}{' '}
                             {/** TODO check for undefined */}
                           </Typography>
                         </Stack>
+                        {derived.size !== undefined && (
+                          <Stack
+                            direction="row"
+                            sx={{ gap: 0.35, alignItems: 'center' }}
+                          >
+                            <StorageOutlined
+                              sx={{ fontSize: 15, color: 'text.secondary' }}
+                            />
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: 600, color: 'text.secondary' }}
+                            >
+                              {formatBytes(derived.size)}
+                            </Typography>
+                          </Stack>
+                        )}
                       </Stack>
 
                       <Button
@@ -394,12 +411,21 @@ export const ModelMarketplaceListing: React.FC<
                         onClick={() => {
                           fork(
                             {
-                              author: model.author,
-                              name: model.name,
+                              createModelBody: {
+                                external_model_id: model.id,
+                                name,
+                              },
                             },
                             {
-                              onSuccess: () => {
-                                navigate(`/models/${username}/${model.name}`);
+                              onSuccess: (response) => {
+                                toast.success(
+                                  `${name} was added to your collection.`
+                                );
+                                navigate(
+                                  `/models?model=${encodeURIComponent(
+                                    response.result.id
+                                  )}`
+                                );
                               },
                             }
                           );

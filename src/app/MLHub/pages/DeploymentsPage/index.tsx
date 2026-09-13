@@ -99,7 +99,7 @@ export default function DeploymentsPage() {
           }}
           onClick={() =>
             navigate(
-              `/models/${params.row.model.author}/${params.row.model.name}`
+              `/models?model=${encodeURIComponent(params.row.model.model_id)}`
             )
           }
         >

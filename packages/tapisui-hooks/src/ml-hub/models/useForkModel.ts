@@ -10,7 +10,7 @@ const useForkModel = () => {
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
-    useMutation<Models.ForkModelResponse, Error, Models.ForkModelRequest>(
+    useMutation<Models.CreateModelResponse, Error, Models.CreateModelRequest>(
       [QueryKeys.fork, mlHubBasePath, jwt],
       (params) => API.Models.fork(params, mlHubBasePath, jwt)
     );
@@ -31,12 +31,12 @@ const useForkModel = () => {
     reset,
     invalidate,
     fork: (
-      params: Models.ForkModelRequest,
+      params: Models.CreateModelRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Models.ForkModelResponse,
+        Models.CreateModelResponse,
         Error,
-        Models.ForkModelRequest
+        Models.CreateModelRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation

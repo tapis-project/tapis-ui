@@ -1,8 +1,12 @@
 import * as Models from '@mlhub/models-ts-sdk';
 import { apiGenerator, errorDecoder } from '../../utils';
 
+export type ListModelsByAuthorParams = Models.ListModelsRequest & {
+  author?: string;
+};
+
 const listByAuthor = (
-  params: Models.ListModelsByAuthorRequest,
+  params: ListModelsByAuthorParams,
   basePath: string,
   jwt: string
 ) => {
@@ -12,9 +16,14 @@ const listByAuthor = (
     basePath,
     jwt
   );
-  return errorDecoder<Models.ListModelsResponse>(() =>
-    api.listModelsByAuthor(params)
-  );
+  return errorDecoder<Models.ListModelsResponse>(async () => {
+    const { author: _author, ...listParams } = params;
+    const response = await api.listModels({
+      ...listParams,
+      scope: Models.ListModelsScopeEnum.Owned,
+    });
+    return response;
+  });
 };
 
 export default listByAuthor;

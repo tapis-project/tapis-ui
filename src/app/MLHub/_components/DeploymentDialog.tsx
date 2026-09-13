@@ -47,6 +47,7 @@ import DiscreteIntegerSlider from './DiscreteIntegerSlider';
 import { MarketplaceButton } from './MarketplaceButton';
 import { SectionHeader } from './SectionHeader';
 import { useToast } from '../_context/ToastsContext/useToast';
+import { derivedMetadataFor, modelAuthorFor } from '../modelMetadata';
 
 interface DeploymentDialogProps {
   defaultModel?: Models.Model;
@@ -164,6 +165,15 @@ const DeploymentDialog = ({
   const { data: modelsData } = Hooks.Models.useListByAuthor({ author });
   const { data: strategiesData } = Hooks.Deployments.Strategies.useList();
   const models = modelsData?.result ?? [];
+  const deployableModels = models.filter(
+    (item) => derivedMetadataFor(item).deployment_strategies.length > 0
+  );
+  const hasDeployableModel =
+    deployableModels.length > 0 ||
+    Boolean(
+      defaultModel &&
+        derivedMetadataFor(defaultModel).deployment_strategies.length
+    );
   const strategies = strategiesData?.result ?? [];
   const {
     deploy,
@@ -231,7 +241,7 @@ const DeploymentDialog = ({
   const availableStrategies = useMemo(() => {
     if (!model || !modality) return [];
     const allowedStrategyKeys = new Set(
-      model.deployment_strategy_refs.map(
+      derivedMetadataFor(model).deployment_strategies.map(
         ({ name, platform }) => `${platform}:${name}`
       )
     );
@@ -260,6 +270,9 @@ const DeploymentDialog = ({
       requiredParametersHaveValues &&
       !isDeploying
   );
+  const selectedModelIsDeployable = Boolean(
+    model && derivedMetadataFor(model).deployment_strategies.length
+  );
 
   const clearFrom = (field: 'model' | 'modality' | 'strategy') => {
     if (field === 'model') resetField('model');
@@ -285,8 +298,7 @@ const DeploymentDialog = ({
         deployModelWithStrategyBody: {
           name: data.name,
           description: data.description || null,
-          model_author: data.model.author,
-          model_name: data.model.name,
+          model_id: data.model.id,
           arguments: data.parameters.map(({ definition, value }) => ({
             parameter_name: definition.name,
             value: value!, // TODO Handle null/undefined values
@@ -302,9 +314,7 @@ const DeploymentDialog = ({
           toast.success(
             <p>
               Deployment request <b>({data.result.name})</b> for model{' '}
-              <b>
-                {data.result.model.author}/{data.result.model.name}
-              </b>{' '}
+              <b>{data.result.model.model_id}</b>{' '}
             </p>
           );
         },
@@ -323,11 +333,12 @@ const DeploymentDialog = ({
     >
       <DialogTitle sx={{ typography: 'h6' }}>Deploy Model</DialogTitle>
 
-      {models.length === 0 ? (
+      {!hasDeployableModel ? (
         <DialogContent dividers sx={contentSx}>
           <Alert severity="warning">
-            <AlertTitle>You have no models that we can deploy!</AlertTitle>
-            Search the Model Marketplace for deployable models.
+            <AlertTitle>No deployable models are available</AlertTitle>
+            Add a model with at least one compatible deployment strategy from
+            the Model Marketplace.
           </Alert>
           <MarketplaceButton marketplace="model" />
         </DialogContent>
@@ -384,12 +395,8 @@ const DeploymentDialog = ({
                     );
                   }}
                 >
-                  {models.map((item) => (
-                    <MenuItem
-                      key={item.name}
-                      value={item.name}
-                      disabled={!item.deployment_strategy_refs.length}
-                    >
+                  {deployableModels.map((item) => (
+                    <MenuItem key={item.name} value={item.name}>
                       <ModelMenuItem model={item} />
                     </MenuItem>
                   ))}
@@ -398,37 +405,51 @@ const DeploymentDialog = ({
             />
           )}
 
-          {model && !detailsConfirmed && (
+          {model && !selectedModelIsDeployable && (
+            <Alert severity="warning">
+              This model has no compatible deployment strategy and cannot be
+              deployed.
+            </Alert>
+          )}
+
+          {model && selectedModelIsDeployable && !detailsConfirmed && (
             <DeploymentDetails control={control} />
           )}
 
-          {model && detailsConfirmed && !modality && (
-            <Controller
-              name="deploymentModality"
-              control={control}
-              rules={{ required: 'Must select a deployment modality' }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Deployment Modality"
-                  {...field}
-                  value={field.value ?? ''}
-                  error={Boolean(fieldState.error)}
-                  helperText={fieldState.error?.message}
-                >
-                  {Object.values(Deployments.DeploymentModality).map((item) => (
-                    <MenuItem key={item} value={item}>
-                      <DeploymentModalityMenuItem deploymentModality={item} />
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
-          )}
+          {model &&
+            selectedModelIsDeployable &&
+            detailsConfirmed &&
+            !modality && (
+              <Controller
+                name="deploymentModality"
+                control={control}
+                rules={{ required: 'Must select a deployment modality' }}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    select
+                    fullWidth
+                    required
+                    label="Deployment Modality"
+                    {...field}
+                    value={field.value ?? ''}
+                    error={Boolean(fieldState.error)}
+                    helperText={fieldState.error?.message}
+                  >
+                    {Object.values(Deployments.DeploymentModality).map(
+                      (item) => (
+                        <MenuItem key={item} value={item}>
+                          <DeploymentModalityMenuItem
+                            deploymentModality={item}
+                          />
+                        </MenuItem>
+                      )
+                    )}
+                  </TextField>
+                )}
+              />
+            )}
 
-          {model && modality && !strategy && (
+          {model && selectedModelIsDeployable && modality && !strategy && (
             <StrategyPicker
               control={control}
               strategies={availableStrategies}
@@ -440,7 +461,7 @@ const DeploymentDialog = ({
             />
           )}
 
-          {strategy && detailsConfirmed && (
+          {selectedModelIsDeployable && strategy && detailsConfirmed && (
             <ParametersAccordion
               control={control}
               parameters={parameters}
@@ -448,9 +469,13 @@ const DeploymentDialog = ({
               requiredCount={requiredParameterCount}
             />
           )}
-          {model && detailsConfirmed && modality && strategy && (
-            <AdvancedSettings control={control} strategy={strategy} />
-          )}
+          {selectedModelIsDeployable &&
+            model &&
+            detailsConfirmed &&
+            modality &&
+            strategy && (
+              <AdvancedSettings control={control} strategy={strategy} />
+            )}
         </DialogContent>
       )}
 
@@ -470,7 +495,7 @@ const DeploymentDialog = ({
         ) : (
           <Button
             type="button"
-            disabled={!name?.trim()}
+            disabled={!name?.trim() || !selectedModelIsDeployable}
             onClick={() => {
               setDetailsConfirmed(true);
             }}
@@ -948,7 +973,7 @@ const ModelMenuItem = ({ model, replicas }: ModelMenuItemProps) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
       <Typography>
-        {model.deployment_strategy_refs.length ? '🤖' : '🚫'}
+        {derivedMetadataFor(model).deployment_strategies.length ? '🤖' : '🚫'}
       </Typography>
       <Box>
         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
@@ -956,7 +981,7 @@ const ModelMenuItem = ({ model, replicas }: ModelMenuItemProps) => {
           {replicas ? ` × ${replicas}` : ''}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          {model.author}
+          {modelAuthorFor(model)}
         </Typography>
       </Box>
     </Box>

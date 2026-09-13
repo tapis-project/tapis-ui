@@ -4,15 +4,19 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { useTapisConfig } from '../..';
 import QueryKeys from './queryKeys';
 
+type GetModelParams =
+  | Models.GetModelRequest
+  | { author?: string; name?: string };
+
 const useGetModel = (
-  params: Models.GetModelByAuthorAndNameRequest,
+  params: GetModelParams,
   options: QueryObserverOptions<Models.GetModelResponse, Error> = {}
 ) => {
   const { accessToken, mlHubBasePath } = useTapisConfig();
   const result = useQuery<Models.GetModelResponse, Error>(
     [QueryKeys.getByAuthorAndName, params, accessToken],
     () =>
-      API.Models.getByAuthorAndName(
+      API.Models.getModel(
         params,
         mlHubBasePath,
         accessToken?.access_token ?? ''
