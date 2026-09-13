@@ -38,9 +38,10 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import MemoryOutlinedIcon from '@mui/icons-material/MemoryOutlined';
 import * as Models from '@mlhub/models-ts-sdk';
 import { useModelFilter } from '../../_context/ModelFilterContext/ModelFilterContext';
-import { Check, Storefront } from '@mui/icons-material';
+import { Check, Inventory2Outlined, Storefront } from '@mui/icons-material';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ModelMarketplaceListing } from './_components/ModelMarketplaceListing';
+import { useNavigate } from '../../_context/NavContext';
 import {
   derivedMetadataFor,
   modelAuthorFor,
@@ -119,6 +120,7 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
 };
 
 export default function ModelMarketplace() {
+  const { navigate } = useNavigate();
   const [state, dispatch] = React.useReducer(reducer, initialReducerState);
 
   // ─── Filter state ───────────────────────────────
@@ -314,14 +316,33 @@ export default function ModelMarketplace() {
     <Box>
       {/* ─── Header ─────────────────────────────────────── */}
       <Box sx={{ mb: 3 }}>
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <Storefront sx={{ fontSize: 28, color: 'info.main' }} />
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 1,
+            mb: 0.5,
+          }}
+        >
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
+            <Storefront sx={{ fontSize: 28, color: 'info.main' }} />
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+            >
+              Model Marketplace
+            </Typography>
+          </Stack>
+          <Button
+            size="small"
+            startIcon={<Inventory2Outlined />}
+            variant="outlined"
+            onClick={() => navigate('/models')}
+            sx={{ textTransform: 'none' }}
           >
-            Model Marketplace
-          </Typography>
+            View My Models
+          </Button>
         </Stack>
         <Typography variant="body1" color="text.secondary">
           Discover and explore curated models from leading ML platforms —

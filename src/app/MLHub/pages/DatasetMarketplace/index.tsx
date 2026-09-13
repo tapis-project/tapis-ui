@@ -426,14 +426,33 @@ export default function DatasetsMarketplacePage() {
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <StorefrontIcon sx={{ fontSize: 28, color: 'info.main' }} />
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 1,
+            mb: 0.5,
+          }}
+        >
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
+            <StorefrontIcon sx={{ fontSize: 28, color: 'info.main' }} />
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+            >
+              Datasets Marketplace
+            </Typography>
+          </Stack>
+          <Button
+            size="small"
+            startIcon={<FolderOutlinedIcon />}
+            variant="outlined"
+            onClick={() => navigate('/datasets')}
+            sx={{ textTransform: 'none' }}
           >
-            Datasets Marketplace
-          </Typography>
+            View My Datasets
+          </Button>
         </Stack>
         <Typography variant="body1" color="text.secondary">
           Discover datasets curated by MLHub from external data registries

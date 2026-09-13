@@ -22,6 +22,8 @@ import {
 import {
   Download,
   Favorite,
+  GavelOutlined,
+  Inventory2Outlined,
   LibraryAddOutlined,
   OpenInNew,
   StorageOutlined,
@@ -37,6 +39,7 @@ import {
   modelAuthorFor,
   modelNameFor,
 } from '../../../modelMetadata';
+import { ExpandableTagCloud } from '../../ModelDetailDrawerParts/utils';
 
 type ModelMarketplaceListingProps = {
   models: Array<Models.ExternalModel>;
@@ -65,6 +68,17 @@ export const ModelMarketplaceListing: React.FC<
   const { navigate } = useNavigate();
   const toast = useToast();
   const { fork, isLoading: isAddingToCollection } = Hooks.Models.useForkModel();
+  const { data: ownedModelsData } = Hooks.Models.useListByAuthor();
+  const ownedModelsByExternalId = useMemo(
+    () =>
+      new Map(
+        (ownedModelsData?.result ?? []).map((ownedModel) => [
+          ownedModel.external_model_id,
+          ownedModel,
+        ])
+      ),
+    [ownedModelsData?.result]
+  );
 
   const appropriateModels: Models.ExternalModel[] = useMemo(() => {
     return models.filter((m) => {
@@ -156,6 +170,7 @@ export const ModelMarketplaceListing: React.FC<
                   }
                 : { color: '#7c3aed', icon: '◈', label: 'Tapis' };
             const name = modelNameFor(model);
+            const ownedModel = ownedModelsByExternalId.get(model.id);
 
             return (
               <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={model.id}>
@@ -168,31 +183,21 @@ export const ModelMarketplaceListing: React.FC<
                     borderColor: 'divider',
                     display: 'flex',
                     flexDirection: 'column',
+                    position: 'relative',
                   }}
                 >
-                  {/* Card Header with platform badge */}
+                  {/* Card header */}
                   <Box
                     sx={{
-                      px: 2.5,
-                      pt: 2.25,
-                      pb: 1,
+                      position: 'absolute',
+                      right: 12,
+                      top: 10,
                       display: 'flex',
-                      justifyContent: 'space-between',
+                      justifyContent: 'flex-end',
                       alignItems: 'flex-start',
+                      zIndex: 1,
                     }}
                   >
-                    <Chip
-                      label={`${provider.icon} ${provider.label}`}
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: '0.72rem',
-                        borderColor: (theme) => alpha(provider.color, 0.4),
-                        color: 'text.primary',
-                        textTransform: 'none',
-                      }}
-                    />
                     <Tooltip title={`Open on ${provider.label}`}>
                       <IconButton
                         size="small"
@@ -213,34 +218,20 @@ export const ModelMarketplaceListing: React.FC<
                     sx={{
                       flex: 1,
                       p: 2.5,
-                      pt: 0.5,
                       '&:last-child': { pb: 2.5 },
                       display: 'flex',
                       flexDirection: 'column',
                     }}
                   >
-                    {/* Task badges */}
-                    {derived.task_types.map((t) => (
-                      <Chip
-                        label={t}
-                        size="small"
-                        color="primary"
-                        variant="filled"
-                        sx={{
-                          alignSelf: 'flex-start',
-                          fontWeight: 600,
-                          fontSize: '0.68rem',
-                          height: 22,
-                          mb: 1.25,
-                          textTransform: 'none',
-                        }}
-                      />
-                    ))}
-
                     {/* Name */}
                     <Typography
                       variant="subtitle1"
-                      sx={{ fontWeight: 700, lineHeight: 1.35, mb: 0.25 }}
+                      sx={{
+                        fontWeight: 700,
+                        lineHeight: 1.35,
+                        mb: 0.25,
+                        pr: 4,
+                      }}
                     >
                       {name}
                     </Typography>
@@ -255,7 +246,53 @@ export const ModelMarketplaceListing: React.FC<
                       &middot; curated by MLHub
                     </Typography>
 
-                    {/* Description */}
+                    <Stack
+                      direction="row"
+                      sx={{
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: 0.75,
+                        mb: 1.5,
+                      }}
+                    >
+                      <Chip
+                        label={`${provider.icon} ${provider.label}`}
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.72rem',
+                          borderColor: (theme) => alpha(provider.color, 0.4),
+                          color: 'text.primary',
+                          textTransform: 'none',
+                        }}
+                      />
+                      {ownedModel && (
+                        <Chip
+                          icon={<Inventory2Outlined />}
+                          label="In your collection"
+                          color="success"
+                          size="small"
+                          variant="outlined"
+                          sx={{ fontWeight: 600, fontSize: '0.72rem' }}
+                        />
+                      )}
+                      {derived.task_types.map((taskType) => (
+                        <Chip
+                          key={taskType}
+                          label={taskType}
+                          size="small"
+                          color="primary"
+                          variant="filled"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.68rem',
+                            height: 22,
+                            textTransform: 'none',
+                          }}
+                        />
+                      ))}
+                    </Stack>
 
                     {/* Spacer */}
                     <Box sx={{ flex: 1 }} />
@@ -302,39 +339,26 @@ export const ModelMarketplaceListing: React.FC<
                         mb: 1.75,
                       }}
                     >
-                      <Stack
-                        direction="row"
-                        sx={{ flexWrap: 'wrap', gap: 0.4 }}
-                      >
-                        {tags.map((tag) => (
-                          <Chip
-                            key={tag}
-                            label={`#${tag}`}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              fontSize: '0.62rem',
-                              height: 18,
-                              borderColor: 'divider',
-                              textTransform: 'none',
-                            }}
-                          />
-                        ))}
-                      </Stack>
+                      <ExpandableTagCloud tags={tags} showCount={5} />
                       <Chip
-                        icon={<span style={{ fontSize: 10 }}>⚖</span>}
+                        icon={<GavelOutlined />}
                         label={derived.license ?? 'unknown'}
                         size="small"
                         variant="outlined"
                         sx={{
-                          textAlign: 'center',
-                          // fontSize: '0.65rem',
-                          // height: 20,
-                          // borderColor: 'divider',
-                          // color: 'text.disabled',
+                          bgcolor: 'action.hover',
+                          borderColor: 'divider',
+                          color: 'text.secondary',
+                          fontSize: '0.68rem',
+                          fontWeight: 600,
+                          height: 24,
                           textTransform: 'uppercase',
-                          // letterSpacing: '0.03em',
-                          '& .MuiChip-label': { fontWeight: 500 },
+                          '& .MuiChip-icon': {
+                            color: 'text.secondary',
+                            fontSize: 16,
+                            ml: 0.75,
+                          },
+                          '& .MuiChip-label': { px: 0.9 },
                         }}
                       />
                     </Box>
@@ -404,36 +428,70 @@ export const ModelMarketplaceListing: React.FC<
                         )}
                       </Stack>
 
-                      <Button
-                        size="small"
-                        startIcon={<LibraryAddOutlined />}
-                        disabled={isAddingToCollection}
-                        onClick={() => {
-                          fork(
-                            {
-                              createModelBody: {
-                                external_model_id: model.id,
-                                name,
+                      {ownedModel ? (
+                        <Button
+                          size="small"
+                          color="success"
+                          startIcon={<Inventory2Outlined />}
+                          onClick={() =>
+                            navigate(
+                              `/models?model=${encodeURIComponent(
+                                ownedModel.id
+                              )}`
+                            )
+                          }
+                          sx={{ flexShrink: 0, textTransform: 'none' }}
+                        >
+                          View In Collection
+                        </Button>
+                      ) : (
+                        <Button
+                          size="small"
+                          startIcon={<LibraryAddOutlined />}
+                          disabled={isAddingToCollection}
+                          onClick={() => {
+                            fork(
+                              {
+                                createModelBody: {
+                                  external_model_id: model.id,
+                                  name,
+                                },
                               },
-                            },
-                            {
-                              onSuccess: (response) => {
-                                toast.success(
-                                  `${name} was added to your collection.`
-                                );
-                                navigate(
-                                  `/models?model=${encodeURIComponent(
-                                    response.result.id
-                                  )}`
-                                );
-                              },
-                            }
-                          );
-                        }}
-                        sx={{ flexShrink: 0, textTransform: 'none' }}
-                      >
-                        Add to collection
-                      </Button>
+                              {
+                                onSuccess: (response) => {
+                                  toast.success(
+                                    `${name} was added to your collection.`
+                                  );
+                                  navigate(
+                                    `/models?model=${encodeURIComponent(
+                                      response.result.id
+                                    )}`
+                                  );
+                                },
+                                onError: (error) => {
+                                  if (
+                                    (error as Error & { status?: number })
+                                      .status === 409
+                                  ) {
+                                    toast.warning(
+                                      `${name} is already in your collection.`
+                                    );
+                                    return;
+                                  }
+
+                                  toast.error(
+                                    error.message ||
+                                      'Unable to add this model to your collection.'
+                                  );
+                                },
+                              }
+                            );
+                          }}
+                          sx={{ flexShrink: 0, textTransform: 'none' }}
+                        >
+                          Add to collection
+                        </Button>
+                      )}
                     </Box>
                   </CardContent>
                 </Card>
