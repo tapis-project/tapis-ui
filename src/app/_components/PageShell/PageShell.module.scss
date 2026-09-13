@@ -40,12 +40,14 @@
   overflow: hidden;
 }
 
+// The width here is only the answer before the reader has one: NavPane
+// sets it from the saved preference, and the grip beside the column is what
+// changes it. The old 14rem floor and 20rem cap live in navWidth.ts now,
+// widened, because they were a guess that the content pane paid for.
 .nav {
   margin-top: 0.5em;
   flex-shrink: 0;
   width: 17rem;
-  min-width: 14rem;
-  max-width: 20rem;
   overflow-x: hidden;
   overflow-y: auto;
   border-right: 1px solid #cccccc;

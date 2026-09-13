@@ -15,6 +15,7 @@ import {
 import AppsNavV2 from '../_components/AppsNav/AppsNavV2';
 import { useAppsSource } from '../_components/appsSource';
 import { Router } from '../_Router';
+import NavPane from 'app/_components/PageShell/NavPane';
 
 /**
  * Apps page on the pods shell — header with live counts, V2 nav beside the
@@ -49,9 +50,9 @@ const Layout: React.FC = () => {
         </PageHeaderRow>
       </div>
       <div className={styles['content-row']}>
-        <div className={styles['nav']}>
+        <NavPane>
           <AppsNavV2 />
-        </div>
+        </NavPane>
         <div className={styles['right-pane']}>
           <div className={styles['work-content']}>
             <div

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { NAV_COLUMN_WIDTH } from './pageWidth';
+import { NAV_MAX, NAV_MIN } from './navWidth';
 
 /**
  * The shell's geometry, pinned.
@@ -105,9 +106,13 @@ describe('width: the header bounds against the real nav', () => {
     expect(rem(shell['.nav'].width)).toBe(NAV_COLUMN_WIDTH);
   });
 
-  it('keeps the nav resizable around that width', () => {
-    expect(rem(shell['.nav']['min-width'])).toBeLessThan(NAV_COLUMN_WIDTH);
-    expect(rem(shell['.nav']['max-width'])).toBeGreaterThan(NAV_COLUMN_WIDTH);
+  it('leaves the bounds to the preference, not the stylesheet', () => {
+    // NavPane sets the width inline from navWidth.ts and the grip changes
+    // it; a min/max here would silently cap a drag the store allowed
+    expect(shell['.nav']['min-width']).toBeUndefined();
+    expect(shell['.nav']['max-width']).toBeUndefined();
+    expect(NAV_MIN).toBeLessThan(NAV_COLUMN_WIDTH);
+    expect(NAV_MAX).toBeGreaterThan(NAV_COLUMN_WIDTH);
   });
 
   it('holds a content floor low enough not to force sideways scrolling', () => {
