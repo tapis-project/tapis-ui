@@ -390,7 +390,12 @@ const DetailHead: React.FC<{
         page, which is a page-wide preference about the app's OWN prose —
         it should never have governed what the record itself says. */}
     {description && (
+      // div, not the default p: a description is a ReactNode, and callers
+      // pass block content into it (the pod card's inline editor is a flex
+      // Box around a TextField). A <div> inside a <p> is invalid, and React
+      // says so on every render.
       <Typography
+        component="div"
         sx={{ fontSize: '0.76rem', color: 'text.secondary', mt: 0.5 }}
       >
         {description}
