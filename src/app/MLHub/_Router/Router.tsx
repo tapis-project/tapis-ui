@@ -36,6 +36,8 @@ import NotFound404 from '../pages/NotFound404';
 import ComingSoon from '../pages/ComingSoonPage';
 import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterContext';
 import { AgentControlPlane } from '../pages/AgentControlPlane';
+import HpcClustersPage from '../pages/HpcClustersPage';
+import HpcClusterDetailsPage from '../pages/HpcClusterDetailsPage';
 
 /* ─── App Root ────────────────────────────────────────────────── */
 export default function Router() {
@@ -46,9 +48,6 @@ export default function Router() {
   const [datasets, setDatasets] = React.useState<Dataset[]>(mockDatasets);
   const [datasetArtifacts, setDatasetArtifacts] =
     React.useState<DatasetArtifact[]>(mockDatasetArtifacts);
-
-  // Model creation / edit dialog
-  const [modelFormOpen, setModelFormOpen] = React.useState(false);
 
   // Derived data passed to child tabs
   const modelSummary = React.useMemo(
@@ -79,12 +78,7 @@ export default function Router() {
       <Route path="/mlhub" exact>
         <MLHubLayout>
           <Box>
-            <DashboardOverview
-              models={models}
-              artifacts={artifacts}
-              datasets={datasets}
-              onRegisterModel={() => setModelFormOpen(true)}
-            />
+            <DashboardOverview />
           </Box>
         </MLHubLayout>
       </Route>
@@ -133,7 +127,26 @@ export default function Router() {
         </MLHubLayout>
       </Route>
 
-      {/* Deployments */}
+      {/* HPC Cluster detail */}
+      <Route path="/mlhub/hpc-clusters/:clusterId">
+        <MLHubLayout>
+          <HpcClusterDetailsPage />
+        </MLHubLayout>
+      </Route>
+
+      {/* HPC Clusters */}
+      <Route path="/mlhub/hpc-clusters" exact>
+        <MLHubLayout>
+          <HpcClustersPage />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/data-centers">
+        <MLHubLayout>
+          <ComingSoon />
+        </MLHubLayout>
+      </Route>
+
       <Route path="/mlhub/deployments">
         <MLHubLayout>
           <DeploymentsTab />

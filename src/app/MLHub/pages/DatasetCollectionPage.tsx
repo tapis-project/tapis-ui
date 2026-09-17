@@ -40,6 +40,7 @@ import { useNavigate } from '../_context/NavContext';
 import DatasetEmptyState from './DatasetEmptyState';
 import { DatasetDetailDrawer } from './DatasetDetailDrawer';
 import { DatasetProviderIcon } from '../_components';
+import { useHistory, useLocation } from 'react-router-dom';
 
 type DatasetScope = 'owned' | 'shared';
 type ViewMode = 'grid' | 'table';
@@ -389,6 +390,8 @@ function PaginationControls({
 
 export default function DatasetCollectionPage() {
   const { navigate } = useNavigate();
+  const history = useHistory();
+  const location = useLocation();
   const [activeScope, setActiveScope] = React.useState<DatasetScope>('owned');
   const [selectedDatasetId, setSelectedDatasetId] = React.useState<
     string | null
@@ -416,6 +419,9 @@ export default function DatasetCollectionPage() {
   );
   const query = activeScope === 'owned' ? ownedQuery : sharedQuery;
   const datasets = query.data?.result ?? [];
+  const requestedDatasetId = new URLSearchParams(location.search).get(
+    'dataset'
+  );
   const metadata = (query.data?.metadata ?? {}) as PaginationMetadata;
   const nextCursor = metadata.cursor ?? metadata.next_cursor;
   const previousCursor = metadata.prev_cursor;
@@ -423,6 +429,15 @@ export default function DatasetCollectionPage() {
     () => filterDatasets(datasets, activeState.searchQuery),
     [activeState.searchQuery, datasets]
   );
+
+  React.useEffect(() => {
+    if (!requestedDatasetId) return;
+
+    const requestedDataset = datasets.find(
+      (dataset) => dataset.id === requestedDatasetId
+    );
+    if (requestedDataset) setSelectedDatasetId(requestedDataset.id);
+  }, [datasets, requestedDatasetId]);
 
   const updateActiveState = (update: (current: ScopeState) => ScopeState) => {
     setScopeState((current) => ({
@@ -743,7 +758,10 @@ export default function DatasetCollectionPage() {
       )}
       <DatasetDetailDrawer
         selectedId={selectedDatasetId}
-        onClose={() => setSelectedDatasetId(null)}
+        onClose={() => {
+          setSelectedDatasetId(null);
+          if (requestedDatasetId) history.replace(location.pathname);
+        }}
       />
     </Box>
   );

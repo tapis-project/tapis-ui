@@ -1,4 +1,10 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import {
+  type FormEvent,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -12,6 +18,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   FormHelperText,
   IconButton,
@@ -21,15 +28,13 @@ import {
   OutlinedInput,
   Select,
   Stack,
+  Step,
+  StepLabel,
+  Stepper,
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  ExpandMore,
-  Undo,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
+import { ExpandMore, Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import * as Deployments from '@mlhub/deployments-ts-sdk';
@@ -102,26 +107,16 @@ type AdvancedSettingsProps = {
   control: Control<FormInput>;
   strategy: Deployments.Strategy;
 };
-type DeploymentSummaryProps = {
+type DeploymentReviewProps = {
   model: Models.Model | null;
   name: string;
   description: string | null;
-  detailsConfirmed: boolean;
   modality: Deployments.DeploymentModality | null;
   strategy: Deployments.Strategy | null;
   replicas: FormInput['replicas'];
   parallelism: Deployments.ParallelismStrategy[];
-  canUndoModel: boolean;
-  canUndoStrategy: boolean;
-  onClearModel: () => void;
-  onClearDetails: () => void;
-  onClearModality: () => void;
-  onClearStrategy: () => void;
+  parameters: DeploymentParameterInput[];
 };
-type SummaryItemProps = PropsWithChildren<{
-  canUndo?: boolean;
-  onClear: () => void;
-}>;
 type DeploymentModalityMenuItemProps = {
   deploymentModality: Deployments.DeploymentModality;
 };
@@ -132,8 +127,6 @@ type ModelMenuItemProps = {
 type DeploymentStrategyMenuItemProps = {
   strat: Pick<Deployments.Strategy, 'platform' | 'name' | 'description'>;
 };
-type DetailsSummaryItemProps = { name: string; description?: string };
-
 const deploymentNameFor = (modelName: string) => `${modelName} Deployment`;
 const hasParameterValue = (value: unknown) =>
   value !== null &&
@@ -142,6 +135,16 @@ const hasParameterValue = (value: unknown) =>
 const strategyKey = (
   strategy: Pick<Deployments.Strategy, 'platform' | 'name'>
 ) => `${strategy.platform}:${strategy.name}`;
+
+const wizardSteps = [
+  'Model',
+  'Details',
+  'Modality',
+  'Configuration',
+  'Review',
+] as const;
+
+const initialStepFor = (defaultModel?: Models.Model) => (defaultModel ? 1 : 0);
 
 const emptyValues: FormInput = {
   name: '',
@@ -161,7 +164,9 @@ const DeploymentDialog = ({
   defaultModel,
   defaultStratRef,
 }: DeploymentDialogProps) => {
-  const [detailsConfirmed, setDetailsConfirmed] = useState(false);
+  const [activeStep, setActiveStep] = useState(() =>
+    initialStepFor(defaultModel)
+  );
   const { data: modelsData } = Hooks.Models.useListByAuthor({ author });
   const { data: strategiesData } = Hooks.Deployments.Strategies.useList();
   const models = modelsData?.result ?? [];
@@ -210,8 +215,8 @@ const DeploymentDialog = ({
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-    resetField,
     setValue,
+    trigger,
   } = useForm<FormInput>({ defaultValues: initialValues, mode: 'onChange' });
   const { fields: parameters, replace: replaceParameters } = useFieldArray({
     control,
@@ -235,8 +240,12 @@ const DeploymentDialog = ({
 
   // Async model/strategy data can arrive after the form mounts. Do not overwrite edits.
   useEffect(() => {
-    if (!isDirty) reset(initialValues);
-  }, [initialValues, isDirty, reset]);
+    if (open && !isDirty) reset(initialValues);
+  }, [initialValues, isDirty, open, reset]);
+
+  useEffect(() => {
+    if (open) setActiveStep(initialStepFor(defaultModel));
+  }, [defaultModel, open]);
 
   const availableStrategies = useMemo(() => {
     if (!model || !modality) return [];
@@ -259,12 +268,8 @@ const DeploymentDialog = ({
       !parameter.definition.required ||
       hasParameterValue(parameterValues?.[index]?.value)
   );
-  const hasSummary = Boolean(
-    model || name || description || modality || strategy
-  );
   const canSubmit = Boolean(
-    detailsConfirmed &&
-      model &&
+    model &&
       modality &&
       strategy &&
       requiredParametersHaveValues &&
@@ -274,19 +279,35 @@ const DeploymentDialog = ({
     model && derivedMetadataFor(model).deployment_strategies.length
   );
 
-  const clearFrom = (field: 'model' | 'modality' | 'strategy') => {
-    if (field === 'model') resetField('model');
-    if (field === 'model' || field === 'modality')
-      resetField('deploymentModality');
-    resetField('strategy');
-    replaceParameters([]);
-  };
-
   const close = () => {
     reset(emptyValues);
     resetDeploy();
-    setDetailsConfirmed(false);
+    setActiveStep(initialStepFor(defaultModel));
     onClose();
+  };
+
+  const goNext = async () => {
+    let valid = false;
+    switch (activeStep) {
+      case 0:
+        valid = (await trigger('model')) && Boolean(selectedModelIsDeployable);
+        break;
+      case 1:
+        valid = await trigger(['name', 'description']);
+        break;
+      case 2:
+        valid = await trigger('deploymentModality');
+        break;
+      case 3:
+        valid = await trigger(['strategy', 'parameters']);
+        break;
+      default:
+        valid = true;
+    }
+
+    if (valid) {
+      setActiveStep((current) => Math.min(current + 1, wizardSteps.length - 1));
+    }
   };
 
   const submit = (data: FormInput) => {
@@ -322,16 +343,30 @@ const DeploymentDialog = ({
     );
   };
 
+  const handleFormSubmit = (event: FormEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (activeStep === wizardSteps.length - 1) {
+      void handleSubmit(submit)(event);
+      return;
+    }
+    void goNext();
+  };
+
   return (
     <Dialog
       open={open}
       onClose={close}
-      onSubmit={handleSubmit(submit)}
+      onSubmit={handleFormSubmit}
       component="form"
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
     >
-      <DialogTitle sx={{ typography: 'h6' }}>Deploy Model</DialogTitle>
+      <DialogTitle sx={{ pb: 1 }}>
+        <Typography variant="h6">Model Deployment Wizard</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Configure and review a model deployment in five guided steps.
+        </Typography>
+      </DialogTitle>
 
       {!hasDeployableModel ? (
         <DialogContent dividers sx={contentSx}>
@@ -345,137 +380,176 @@ const DeploymentDialog = ({
       ) : (
         <DialogContent dividers sx={contentSx}>
           {deploymentError && <ErrorAlert error={deploymentError} />}
-          {hasSummary && (
-            <DeploymentSummary
-              model={model}
-              name={name}
-              description={description}
-              detailsConfirmed={detailsConfirmed}
-              modality={modality}
-              strategy={strategy}
-              replicas={replicas}
-              parallelism={parallelism}
-              canUndoModel={Boolean(defaultModel)}
-              canUndoStrategy={Boolean(defaultStratRef)}
-              onClearModel={() => clearFrom('model')}
-              onClearDetails={() => {
-                resetField('name');
-                resetField('description');
-                setDetailsConfirmed(false);
-              }}
-              onClearModality={() => clearFrom('modality')}
-              onClearStrategy={() => clearFrom('strategy')}
-            />
-          )}
+          <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 1 }}>
+            {wizardSteps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
 
-          {!model && (
-            <Controller
-              name="model"
-              control={control}
-              rules={{ required: 'Must select a model' }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Select Model"
-                  value={field.value?.name ?? ''}
-                  error={Boolean(fieldState.error)}
-                  helperText={fieldState.error?.message}
-                  onBlur={field.onBlur}
-                  onChange={(event) => {
-                    const selected =
-                      models.find(({ name }) => name === event.target.value) ??
-                      null;
-                    field.onChange(selected);
-                    setValue(
-                      'name',
-                      selected ? deploymentNameFor(selected.name) : '',
-                      { shouldValidate: true }
-                    );
-                  }}
-                >
-                  {deployableModels.map((item) => (
-                    <MenuItem key={item.name} value={item.name}>
-                      <ModelMenuItem model={item} />
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
-          )}
-
-          {model && !selectedModelIsDeployable && (
-            <Alert severity="warning">
-              This model has no compatible deployment strategy and cannot be
-              deployed.
-            </Alert>
-          )}
-
-          {model && selectedModelIsDeployable && !detailsConfirmed && (
-            <DeploymentDetails control={control} />
-          )}
-
-          {model &&
-            selectedModelIsDeployable &&
-            detailsConfirmed &&
-            !modality && (
-              <Controller
-                name="deploymentModality"
-                control={control}
-                rules={{ required: 'Must select a deployment modality' }}
-                render={({ field, fieldState }) => (
-                  <TextField
-                    select
-                    fullWidth
-                    required
-                    label="Deployment Modality"
-                    {...field}
-                    value={field.value ?? ''}
-                    error={Boolean(fieldState.error)}
-                    helperText={fieldState.error?.message}
-                  >
-                    {Object.values(Deployments.DeploymentModality).map(
-                      (item) => (
-                        <MenuItem key={item} value={item}>
-                          <DeploymentModalityMenuItem
-                            deploymentModality={item}
-                          />
+          <Box sx={{ minHeight: 320 }}>
+            {activeStep === 0 && (
+              <WizardStep
+                title="Choose a model"
+                description="Select the model that you want to deploy. Only models with compatible deployment strategies are available."
+              >
+                <Controller
+                  name="model"
+                  control={control}
+                  rules={{ required: 'Must select a model' }}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      select
+                      fullWidth
+                      required
+                      label="Select Model"
+                      value={field.value?.id ?? ''}
+                      error={Boolean(fieldState.error)}
+                      helperText={fieldState.error?.message}
+                      onBlur={field.onBlur}
+                      onChange={(event) => {
+                        const selected =
+                          deployableModels.find(
+                            ({ id }) => id === event.target.value
+                          ) ?? null;
+                        field.onChange(selected);
+                        setValue(
+                          'name',
+                          selected ? deploymentNameFor(selected.name) : '',
+                          { shouldValidate: true }
+                        );
+                        setValue('deploymentModality', null);
+                        setValue('strategy', null);
+                        replaceParameters([]);
+                      }}
+                    >
+                      {deployableModels.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          <ModelMenuItem model={item} />
                         </MenuItem>
-                      )
-                    )}
-                  </TextField>
+                      ))}
+                    </TextField>
+                  )}
+                />
+                {model && !selectedModelIsDeployable && (
+                  <Alert severity="warning">
+                    This model has no compatible deployment strategy and cannot
+                    be deployed.
+                  </Alert>
                 )}
-              />
+              </WizardStep>
             )}
 
-          {model && selectedModelIsDeployable && modality && !strategy && (
-            <StrategyPicker
-              control={control}
-              strategies={availableStrategies}
-              onSelect={(selected) =>
-                replaceParameters(
-                  parameterInputsFor(selected?.parameters ?? [])
-                )
-              }
-            />
-          )}
-
-          {selectedModelIsDeployable && strategy && detailsConfirmed && (
-            <ParametersAccordion
-              control={control}
-              parameters={parameters}
-              errors={errors}
-              requiredCount={requiredParameterCount}
-            />
-          )}
-          {selectedModelIsDeployable &&
-            model &&
-            detailsConfirmed &&
-            modality &&
-            strategy && (
-              <AdvancedSettings control={control} strategy={strategy} />
+            {activeStep === 1 && (
+              <WizardStep
+                title="Deployment details"
+                description="Give this deployment a recognizable name and optional description."
+              >
+                <DeploymentDetails control={control} />
+              </WizardStep>
             )}
+
+            {activeStep === 2 && (
+              <WizardStep
+                title="Choose a deployment modality"
+                description="Select whether this model runs as a persistent service or a batch workload."
+              >
+                <Controller
+                  name="deploymentModality"
+                  control={control}
+                  rules={{ required: 'Must select a deployment modality' }}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      select
+                      fullWidth
+                      required
+                      label="Deployment Modality"
+                      value={field.value ?? ''}
+                      error={Boolean(fieldState.error)}
+                      helperText={fieldState.error?.message}
+                      onBlur={field.onBlur}
+                      onChange={(event) => {
+                        const selected = event.target
+                          .value as Deployments.DeploymentModality;
+                        field.onChange(selected);
+                        if (
+                          strategy &&
+                          !strategy.config.supported_deployment_modalities.includes(
+                            selected
+                          )
+                        ) {
+                          setValue('strategy', null);
+                          replaceParameters([]);
+                        }
+                      }}
+                    >
+                      {Object.values(Deployments.DeploymentModality).map(
+                        (item) => (
+                          <MenuItem key={item} value={item}>
+                            <DeploymentModalityMenuItem
+                              deploymentModality={item}
+                            />
+                          </MenuItem>
+                        )
+                      )}
+                    </TextField>
+                  )}
+                />
+              </WizardStep>
+            )}
+
+            {activeStep === 3 && (
+              <WizardStep
+                title="Configure the deployment"
+                description="Choose a compatible strategy, provide its parameters, and adjust optional scaling settings."
+              >
+                <StrategyPicker
+                  control={control}
+                  strategies={availableStrategies}
+                  onSelect={(selected) =>
+                    replaceParameters(
+                      parameterInputsFor(selected?.parameters ?? [])
+                    )
+                  }
+                />
+                {availableStrategies.length === 0 && (
+                  <Alert severity="warning">
+                    No deployment strategies support the selected modality.
+                  </Alert>
+                )}
+                {strategy && (
+                  <>
+                    <ParametersAccordion
+                      control={control}
+                      parameters={parameters}
+                      errors={errors}
+                      requiredCount={requiredParameterCount}
+                    />
+                    <AdvancedSettings control={control} strategy={strategy} />
+                  </>
+                )}
+              </WizardStep>
+            )}
+
+            {activeStep === 4 && (
+              <WizardStep
+                title="Review deployment"
+                description="Confirm the configuration below before submitting the deployment request."
+              >
+                <DeploymentReview
+                  model={model}
+                  name={name}
+                  description={description}
+                  modality={modality}
+                  strategy={strategy}
+                  replicas={replicas}
+                  parallelism={parallelism}
+                  parameters={parameterValues ?? []}
+                />
+              </WizardStep>
+            )}
+          </Box>
         </DialogContent>
       )}
 
@@ -483,7 +557,18 @@ const DeploymentDialog = ({
         <Button type="button" onClick={close} color="inherit">
           Cancel
         </Button>
-        {detailsConfirmed ? (
+        <Box sx={{ flex: 1 }} />
+        {hasDeployableModel && activeStep > 0 && (
+          <Button
+            type="button"
+            color="inherit"
+            disabled={isDeploying}
+            onClick={() => setActiveStep((current) => current - 1)}
+          >
+            Back
+          </Button>
+        )}
+        {hasDeployableModel && activeStep === wizardSteps.length - 1 ? (
           <LoadingButton
             loading={isDeploying}
             type="submit"
@@ -492,17 +577,16 @@ const DeploymentDialog = ({
           >
             🚀 Deploy
           </LoadingButton>
-        ) : (
+        ) : hasDeployableModel ? (
           <Button
             type="button"
-            disabled={!name?.trim() || !selectedModelIsDeployable}
-            onClick={() => {
-              setDetailsConfirmed(true);
-            }}
+            variant="contained"
+            disabled={isDeploying}
+            onClick={goNext}
           >
             Next
           </Button>
-        )}
+        ) : null}
       </DialogActions>
     </Dialog>
   );
@@ -526,6 +610,28 @@ const ErrorAlert = ({ error }: ErrorAlertProps) => {
     </Alert>
   );
 };
+
+const WizardStep = ({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) => (
+  <Stack spacing={2.5}>
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {description}
+      </Typography>
+    </Box>
+    {children}
+  </Stack>
+);
 
 const DeploymentDetails = ({ control }: DeploymentDetailsProps) => {
   return (
@@ -866,86 +972,117 @@ const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
   );
 };
 
-const DeploymentSummary = ({
+const DeploymentReview = ({
   model,
   name,
   description,
-  detailsConfirmed,
   modality,
   strategy,
   replicas,
   parallelism,
-  canUndoModel,
-  canUndoStrategy,
-  onClearModel,
-  onClearDetails,
-  onClearModality,
-  onClearStrategy,
-}: DeploymentSummaryProps) => {
-  const check = (value: unknown) => (value ? '✅' : '');
+  parameters,
+}: DeploymentReviewProps) => {
   return (
-    <Accordion sx={accordionSx}>
-      <AccordionSummary expandIcon={<ExpandMore />}>
+    <Stack
+      divider={<Divider flexItem />}
+      sx={{
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        bgcolor: 'background.paper',
+        px: 2.5,
+      }}
+    >
+      <ReviewRow label="Model">
+        {model ? <ModelMenuItem model={model} replicas={replicas} /> : '—'}
+      </ReviewRow>
+      <ReviewRow label="Deployment">
         <Box>
-          <Typography sx={{ fontWeight: 600 }}>Deployment Summary</Typography>
-          <Typography variant="caption">
-            {check(model)} model · {check(detailsConfirmed)} name &amp;
-            description · {check(modality)} modality · {check(strategy)}{' '}
-            strategy · {check(replicas)} replicas · {check(parallelism?.length)}{' '}
-            sharding
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            {name}
           </Typography>
+          {description && (
+            <Typography variant="caption" color="text.secondary">
+              {description}
+            </Typography>
+          )}
         </Box>
-      </AccordionSummary>
-      <AccordionDetails>
-        {model && (
-          <SummaryItem canUndo={canUndoModel} onClear={onClearModel}>
-            <ModelMenuItem model={model} replicas={replicas} />
-          </SummaryItem>
+      </ReviewRow>
+      <ReviewRow label="Modality">
+        {modality ? (
+          <DeploymentModalityMenuItem deploymentModality={modality} />
+        ) : (
+          '—'
         )}
-        {detailsConfirmed && (
-          <SummaryItem onClear={onClearDetails}>
-            <DetailsSummaryItem
-              name={name}
-              description={description ?? undefined}
-            />
-          </SummaryItem>
-        )}
-        {modality && (
-          <SummaryItem canUndo={canUndoStrategy} onClear={onClearModality}>
-            <DeploymentModalityMenuItem deploymentModality={modality} />
-          </SummaryItem>
-        )}
-        {strategy && (
-          <SummaryItem canUndo={canUndoStrategy} onClear={onClearStrategy}>
-            <DeploymentStrategyMenuItem strat={strategy} />
-          </SummaryItem>
-        )}
-      </AccordionDetails>
-    </Accordion>
+      </ReviewRow>
+      <ReviewRow label="Strategy">
+        {strategy ? <DeploymentStrategyMenuItem strat={strategy} /> : '—'}
+      </ReviewRow>
+      <ReviewRow label="Parameters">
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
+          {parameters.length ? (
+            parameters.map(({ definition, value }) => (
+              <Chip
+                key={definition.name}
+                size="small"
+                variant="outlined"
+                label={`${definition.name}: ${
+                  definition.secret
+                    ? hasParameterValue(value)
+                      ? 'Configured'
+                      : 'Not set'
+                    : String(value ?? 'Not set')
+                }`}
+              />
+            ))
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No parameters
+            </Typography>
+          )}
+        </Stack>
+      </ReviewRow>
+      <ReviewRow label="Scaling">
+        <Typography variant="body2">
+          {replicas} replica{replicas === 1 ? '' : 's'}
+          {parallelism.length
+            ? ` · ${parallelism.join(', ')}`
+            : ' · No sharding'}
+        </Typography>
+      </ReviewRow>
+    </Stack>
   );
 };
 
-const SummaryItem = ({ children, canUndo, onClear }: SummaryItemProps) => {
-  return (
-    <Box
+const ReviewRow = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) => (
+  <Box
+    sx={{
+      display: 'grid',
+      gridTemplateColumns: { xs: '1fr', sm: '140px 1fr' },
+      gap: 1.5,
+      py: 1.75,
+      alignItems: 'center',
+    }}
+  >
+    <Typography
+      variant="caption"
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-        borderTop: '1px solid #CCCCCC',
-        p: 1,
+        color: 'text.secondary',
+        fontWeight: 700,
+        textTransform: 'uppercase',
       }}
     >
-      {children}
-      {!canUndo && (
-        <IconButton size="small" color="error" onClick={onClear}>
-          <Undo fontSize="small" />
-        </IconButton>
-      )}
-    </Box>
-  );
-};
+      {label}
+    </Typography>
+    <Box>{children}</Box>
+  </Box>
+);
 
 const DeploymentModalityMenuItem = ({
   deploymentModality,
@@ -1002,22 +1139,6 @@ const DeploymentStrategyMenuItem = ({
         </Typography>
         <Typography variant="caption" color="text.secondary">
           {strat.description}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
-
-const DetailsSummaryItem = ({ name, description }: DetailsSummaryItemProps) => {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-      📖
-      <Box>
-        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-          {name}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {description}
         </Typography>
       </Box>
     </Box>
