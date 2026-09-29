@@ -37,6 +37,7 @@ import { TASKS_BY_CATEGORY, CATEGORY_COLOR_MAP } from '../../data/taskTypes';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import MemoryOutlinedIcon from '@mui/icons-material/MemoryOutlined';
 import * as Models from '@mlhub/models-ts-sdk';
+import * as Deployments from '@mlhub/deployments-ts-sdk';
 import { useModelFilter } from '../../_context/ModelFilterContext/ModelFilterContext';
 import { Check, Inventory2Outlined, Storefront } from '@mui/icons-material';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
@@ -140,6 +141,44 @@ export default function ModelMarketplace() {
   );
   const [sizeRange, setSizeRange] =
     React.useState<[number, number]>(DEFAULT_SIZE_RANGE);
+  const [dataCenter, setDataCenter] = React.useState<
+    Deployments.ListHpcClustersDataCenterEnum | ''
+  >('');
+  const [hpcClusterId, setHpcClusterId] = React.useState('');
+  const [batchSchedulerQueueId, setBatchSchedulerQueueId] = React.useState('');
+  const [deploymentModalities, setDeploymentModalities] = React.useState<
+    Models.DeploymentModality[]
+  >([]);
+  const [servingRuntimes, setServingRuntimes] = React.useState<
+    Models.ServingRuntime[]
+  >([]);
+  const [hasDeploymentOptions, setHasDeploymentOptions] = React.useState<
+    'any' | 'yes' | 'no'
+  >('any');
+  const clustersQuery = Hooks.Deployments.Targets.useListHpcClusters(
+    {
+      dataCenter: dataCenter || Deployments.ListHpcClustersDataCenterEnum.Tacc,
+      limit: 50,
+    },
+    { enabled: !!dataCenter }
+  );
+  const clusterOptions = clustersQuery.data?.result ?? [];
+  const selectedCluster = clusterOptions.find(
+    (cluster) => cluster.id === hpcClusterId
+  );
+  const clusterDetailsQuery = Hooks.Deployments.Targets.useGetHpcCluster(
+    dataCenter && hpcClusterId
+      ? {
+          dataCenter:
+            dataCenter as unknown as Deployments.GetHpcClusterDataCenterEnum,
+          hpcClusterId,
+        }
+      : undefined
+  );
+  const queueOptions = clusterDetailsQuery.data?.result?.queues ?? [];
+  const selectedQueue = queueOptions.find(
+    (queue) => queue.id === batchSchedulerQueueId
+  );
 
   // ─── Model discovery ───────────────────────────────
   const { data, discover, isLoading, isError, error } =
@@ -197,6 +236,21 @@ export default function ModelMarketplace() {
     if (sizeRange[0] > 0) criterion['min_size'] = sizeRange[0] * BYTES_PER_GIB;
     if (sizeRange[1] < MAX_SIZE_GIB)
       criterion['max_size'] = sizeRange[1] * BYTES_PER_GIB;
+    if (hpcClusterId) {
+      criterion.hpc_cluster_ids = [hpcClusterId];
+    }
+    if (batchSchedulerQueueId) {
+      criterion.batch_scheduler_queue_ids = [batchSchedulerQueueId];
+    }
+    if (deploymentModalities.length) {
+      criterion.supported_deployment_modalities = deploymentModalities;
+    }
+    if (servingRuntimes.length) {
+      criterion.serving_runtimes = servingRuntimes;
+    }
+    if (hasDeploymentOptions !== 'any') {
+      criterion.has_deployment_options = hasDeploymentOptions === 'yes';
+    }
 
     return criterion;
   };
@@ -273,6 +327,12 @@ export default function ModelMarketplace() {
     setSelectedBackends([]);
     setProvider('all');
     setSizeRange(DEFAULT_SIZE_RANGE);
+    setDataCenter('');
+    setHpcClusterId('');
+    setBatchSchedulerQueueId('');
+    setDeploymentModalities([]);
+    setServingRuntimes([]);
+    setHasDeploymentOptions('any');
     setLimit(DEFAULT_LIMIT);
   };
 
@@ -282,6 +342,11 @@ export default function ModelMarketplace() {
     provider !== 'all' ||
     sizeRange[0] > 0 ||
     sizeRange[1] < MAX_SIZE_GIB ||
+    !!hpcClusterId ||
+    !!batchSchedulerQueueId ||
+    deploymentModalities.length > 0 ||
+    servingRuntimes.length > 0 ||
+    hasDeploymentOptions !== 'any' ||
     limit !== DEFAULT_LIMIT;
   // Applying the default limit is meaningful after a user changes it back
   // from a larger page size, so a clean/default filter state is still valid.
@@ -292,6 +357,11 @@ export default function ModelMarketplace() {
     selectedBackends.length +
     (provider !== 'all' ? 1 : 0) +
     (hasSizeFilter ? 1 : 0) +
+    (hpcClusterId ? 1 : 0) +
+    (batchSchedulerQueueId ? 1 : 0) +
+    deploymentModalities.length +
+    servingRuntimes.length +
+    (hasDeploymentOptions !== 'any' ? 1 : 0) +
     (limit !== DEFAULT_LIMIT ? 1 : 0);
   const taskLabel = (value: Models.Task) =>
     TASKS_BY_CATEGORY.flatMap((group) => group.tasks).find(
@@ -550,6 +620,111 @@ export default function ModelMarketplace() {
                     }}
                   />
                 )}
+                {hpcClusterId && (
+                  <Chip
+                    size="small"
+                    label={`HPC cluster: ${
+                      selectedCluster?.name ?? hpcClusterId
+                    }`}
+                    onDelete={() => {
+                      setHpcClusterId('');
+                      setBatchSchedulerQueueId('');
+                    }}
+                    sx={{
+                      bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.info.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                )}
+                {batchSchedulerQueueId && (
+                  <Chip
+                    size="small"
+                    label={`Scheduler queue: ${
+                      selectedQueue?.name ?? batchSchedulerQueueId
+                    }`}
+                    onDelete={() => setBatchSchedulerQueueId('')}
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.secondary.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.secondary.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                )}
+                {deploymentModalities.map((modality) => (
+                  <Chip
+                    key={modality}
+                    size="small"
+                    label={`Modality: ${modality}`}
+                    onDelete={() =>
+                      setDeploymentModalities((current) =>
+                        current.filter((value) => value !== modality)
+                      )
+                    }
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.success.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.success.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                ))}
+                {servingRuntimes.map((runtime) => (
+                  <Chip
+                    key={runtime}
+                    size="small"
+                    label={`Runtime: ${runtime}`}
+                    onDelete={() =>
+                      setServingRuntimes((current) =>
+                        current.filter((value) => value !== runtime)
+                      )
+                    }
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.08),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.28),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                ))}
+                {hasDeploymentOptions !== 'any' && (
+                  <Chip
+                    size="small"
+                    label={
+                      hasDeploymentOptions === 'yes'
+                        ? 'Deployment options: available'
+                        : 'Deployment options: none'
+                    }
+                    onDelete={() => setHasDeploymentOptions('any')}
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.warning.main, 0.1),
+                      border: '1px solid',
+                      borderColor: (theme) =>
+                        alpha(theme.palette.warning.main, 0.3),
+                      color: 'text.primary',
+                      fontWeight: 600,
+                      '& .MuiChip-deleteIcon': { color: 'text.secondary' },
+                    }}
+                  />
+                )}
                 {limit !== DEFAULT_LIMIT && (
                   <Chip
                     size="small"
@@ -620,7 +795,7 @@ export default function ModelMarketplace() {
                           setLimit(Number(event.target.value))
                         }
                       >
-                        {[10, 25, 50, 100].map((value) => (
+                        {[10, 25, 50].map((value) => (
                           <MenuItem key={value} value={value}>
                             {value} models
                           </MenuItem>
@@ -972,6 +1147,195 @@ export default function ModelMarketplace() {
                           </Box>
                         );
                       })}
+                    </Box>
+                  </Paper>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      gridColumn: { xs: 'auto', lg: '1 / -1' },
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: 'background.default',
+                    }}
+                  >
+                    <Typography
+                      sx={{ fontWeight: 700, mb: 0.5 }}
+                      variant="subtitle2"
+                    >
+                      Deployment options
+                    </Typography>
+                    <Typography
+                      color="text.secondary"
+                      sx={{ mb: 2.5 }}
+                      variant="caption"
+                    >
+                      Filter models by compatible HPC targets, scheduler queues,
+                      runtimes, and deployment modalities.
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gap: 1.5,
+                        gridTemplateColumns: {
+                          xs: '1fr',
+                          md: 'repeat(2, minmax(0, 1fr))',
+                        },
+                      }}
+                    >
+                      <FormControl size="small">
+                        <InputLabel id="data-center-filter-label">
+                          Data center
+                        </InputLabel>
+                        <Select
+                          label="Data center"
+                          labelId="data-center-filter-label"
+                          onChange={(event) => {
+                            setDataCenter(
+                              event.target.value as
+                                | Deployments.ListHpcClustersDataCenterEnum
+                                | ''
+                            );
+                            setHpcClusterId('');
+                            setBatchSchedulerQueueId('');
+                          }}
+                          value={dataCenter}
+                        >
+                          <MenuItem value="">Select a data center</MenuItem>
+                          {Object.values(
+                            Deployments.ListHpcClustersDataCenterEnum
+                          ).map((center) => (
+                            <MenuItem key={center} value={center}>
+                              {center}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl disabled={!dataCenter} size="small">
+                        <InputLabel id="hpc-cluster-filter-label">
+                          HPC cluster
+                        </InputLabel>
+                        <Select
+                          label="HPC cluster"
+                          labelId="hpc-cluster-filter-label"
+                          onChange={(event) => {
+                            setHpcClusterId(event.target.value);
+                            setBatchSchedulerQueueId('');
+                          }}
+                          value={hpcClusterId}
+                        >
+                          <MenuItem value="">
+                            {clustersQuery.isLoading
+                              ? 'Loading clusters…'
+                              : 'Select an HPC cluster'}
+                          </MenuItem>
+                          {clusterOptions.map((cluster) => (
+                            <MenuItem key={cluster.id} value={cluster.id}>
+                              {cluster.name}
+                              {cluster.enabled ? '' : ' (disabled)'}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl disabled={!hpcClusterId} size="small">
+                        <InputLabel id="batch-scheduler-queue-filter-label">
+                          Scheduler queue
+                        </InputLabel>
+                        <Select
+                          label="Scheduler queue"
+                          labelId="batch-scheduler-queue-filter-label"
+                          onChange={(event) =>
+                            setBatchSchedulerQueueId(event.target.value)
+                          }
+                          value={batchSchedulerQueueId}
+                        >
+                          <MenuItem value="">
+                            {clusterDetailsQuery.isLoading
+                              ? 'Loading queues…'
+                              : 'Select a scheduler queue'}
+                          </MenuItem>
+                          {queueOptions.map((queue) => (
+                            <MenuItem key={queue.id} value={queue.id}>
+                              {queue.name}
+                              {queue.enabled ? '' : ' (disabled)'}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl size="small">
+                        <InputLabel id="deployment-modalities-filter-label">
+                          Deployment modalities
+                        </InputLabel>
+                        <Select
+                          label="Deployment modalities"
+                          labelId="deployment-modalities-filter-label"
+                          multiple
+                          onChange={(event) =>
+                            setDeploymentModalities(
+                              event.target.value as Models.DeploymentModality[]
+                            )
+                          }
+                          renderValue={(selected) =>
+                            (selected as Models.DeploymentModality[]).join(', ')
+                          }
+                          value={deploymentModalities}
+                        >
+                          {Object.values(Models.DeploymentModality).map(
+                            (modality) => (
+                              <MenuItem key={modality} value={modality}>
+                                {modality}
+                              </MenuItem>
+                            )
+                          )}
+                        </Select>
+                      </FormControl>
+                      <FormControl size="small">
+                        <InputLabel id="serving-runtimes-filter-label">
+                          Serving runtimes
+                        </InputLabel>
+                        <Select
+                          label="Serving runtimes"
+                          labelId="serving-runtimes-filter-label"
+                          multiple
+                          onChange={(event) =>
+                            setServingRuntimes(
+                              event.target.value as Models.ServingRuntime[]
+                            )
+                          }
+                          renderValue={(selected) =>
+                            (selected as Models.ServingRuntime[]).join(', ')
+                          }
+                          value={servingRuntimes}
+                        >
+                          {Object.values(Models.ServingRuntime).map(
+                            (runtime) => (
+                              <MenuItem key={runtime} value={runtime}>
+                                {runtime}
+                              </MenuItem>
+                            )
+                          )}
+                        </Select>
+                      </FormControl>
+                      <FormControl size="small">
+                        <InputLabel id="has-deployment-options-filter-label">
+                          Deployment options
+                        </InputLabel>
+                        <Select
+                          label="Deployment options"
+                          labelId="has-deployment-options-filter-label"
+                          onChange={(event) =>
+                            setHasDeploymentOptions(
+                              event.target.value as 'any' | 'yes' | 'no'
+                            )
+                          }
+                          value={hasDeploymentOptions}
+                        >
+                          <MenuItem value="any">Any availability</MenuItem>
+                          <MenuItem value="yes">
+                            Has deployment options
+                          </MenuItem>
+                          <MenuItem value="no">No deployment options</MenuItem>
+                        </Select>
+                      </FormControl>
                     </Box>
                   </Paper>
                 </Box>

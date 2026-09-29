@@ -21,6 +21,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import MemoryRoundedIcon from '@mui/icons-material/MemoryRounded';
 import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
 import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
+import ViewInArRoundedIcon from '@mui/icons-material/ViewInArRounded';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from '../../_context/NavContext';
 
@@ -56,6 +57,7 @@ export default function HpcClusterDetailsPage() {
   const cluster = clusterQuery.data?.result;
   const availableQueueCount =
     cluster?.queues.filter((queue) => queue.enabled).length ?? 0;
+  const containerRuntimes = cluster?.container_runtimes ?? [];
 
   return (
     <Box>
@@ -110,6 +112,14 @@ export default function HpcClusterDetailsPage() {
                 size="small"
                 variant="outlined"
               />
+              <Chip
+                icon={<ViewInArRoundedIcon />}
+                label={`${containerRuntimes.length} container runtime${
+                  containerRuntimes.length === 1 ? '' : 's'
+                }`}
+                size="small"
+                variant="outlined"
+              />
             </Stack>
             {cluster.documentation_url && (
               <Link
@@ -139,13 +149,63 @@ export default function HpcClusterDetailsPage() {
           <Divider />
 
           <Box>
+            <Stack
+              direction="row"
+              sx={{ alignItems: 'center', gap: 1, mb: 1.5 }}
+            >
+              <ViewInArRoundedIcon color="primary" />
+              <Typography sx={{ fontWeight: 700 }} variant="h6">
+                Supported container runtimes
+              </Typography>
+            </Stack>
+            {containerRuntimes.length ? (
+              <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
+                {containerRuntimes.map((runtime) => (
+                  <Chip
+                    key={runtime}
+                    icon={<ViewInArRoundedIcon />}
+                    label={runtime}
+                    size="small"
+                    variant="outlined"
+                  />
+                ))}
+              </Stack>
+            ) : (
+              <Typography color="text.secondary" variant="body2">
+                No container runtimes have been configured for this cluster.
+              </Typography>
+            )}
+          </Box>
+
+          <Divider />
+
+          <Box>
             <Typography sx={{ fontWeight: 700, mb: 1.5 }} variant="h6">
               Scheduler queues ({availableQueueCount} available)
             </Typography>
-            <Stack spacing={1.5}>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  md: 'repeat(2, minmax(0, 1fr))',
+                  lg: 'repeat(3, minmax(0, 1fr))',
+                },
+              }}
+            >
               {cluster.queues.map((queue) => (
-                <Card key={queue.id} variant="outlined">
-                  <CardContent sx={{ '&:last-child': { pb: 2 }, p: 2 }}>
+                <Card key={queue.id} variant="outlined" sx={{ height: '100%' }}>
+                  <CardContent
+                    sx={{
+                      '&:last-child': { pb: 2 },
+                      boxSizing: 'border-box',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                      p: 2,
+                    }}
+                  >
                     <Stack
                       direction="row"
                       sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
@@ -221,7 +281,7 @@ export default function HpcClusterDetailsPage() {
                   </CardContent>
                 </Card>
               ))}
-            </Stack>
+            </Box>
           </Box>
         </Stack>
       )}

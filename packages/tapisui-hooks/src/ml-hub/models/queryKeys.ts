@@ -4,6 +4,8 @@ const QueryKeys = {
   list: 'mlhub/models/list',
   fork: 'mlhub/models/fork',
   discover: 'mlhub/models/discover',
+  listExternalModelDeploymentOptions:
+    'mlhub/models/listExternalModelDeploymentOptions',
   details: 'mlhub/models/details',
   listDownloadLinks: 'mlhub/models/listDownloadLinks',
   listByAuthor: 'mlhub/models/listByAuthor',

@@ -33,7 +33,7 @@ export const ModelFilterProvider: React.FC<PropsWithChildren> = ({
   };
 
   const setLimitInternal = (lim: number) => {
-    setLimit(lim);
+    setLimit(Math.min(lim, 50));
   };
 
   // Pass both state and updater into the value object

@@ -1,5 +1,9 @@
 export { default as list } from './list';
 export { default as discover } from './discover';
+export {
+  default as listExternalModelDeploymentOptions,
+  type ListExternalModelDeploymentOptionsParams,
+} from './listExternalModelDeploymentOptions';
 export { default as details } from './getByAuthorAndName';
 export { default as inferenceServerDetails } from './inference/inferenceServerDetails';
 export { default as listDownloadLinks } from './listDownloadLinks';
