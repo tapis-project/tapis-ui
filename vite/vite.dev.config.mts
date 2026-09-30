@@ -11,13 +11,15 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default defineConfig({
   // depending on your application, base can also be "/"
   base: '',
+  // Flat, not nested. These were once inside a second `define: {}`, which
+  // defined an identifier literally named `define` and left process.platform
+  // and process.version untouched, so any dependency that read either at load
+  // threw "process is not defined" in the browser.
   define: {
     global: 'window',
-    define: {
-      'process.platform': null,
-      'process.version': null,
-      // 'process.env.NODE_ENV': 'production',
-    },
+    'process.platform': null,
+    'process.version': null,
+    // 'process.env.NODE_ENV': 'production',
   },
   css: {
     preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
