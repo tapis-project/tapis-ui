@@ -61,7 +61,7 @@ export function TabPanel({ value, currentTab, children }: TabPanelProps) {
 interface ModelTabsProps {
   currentTab: SectionTab;
   onChange: (tab: SectionTab) => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function ModelTabs({ currentTab, onChange, children }: ModelTabsProps) {
@@ -70,7 +70,7 @@ export function ModelTabs({ currentTab, onChange, children }: ModelTabsProps) {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ my: -0.75, width: '100%' }}>
       <Tabs
         value={currentTab}
         onChange={handleChange}
@@ -81,7 +81,7 @@ export function ModelTabs({ currentTab, onChange, children }: ModelTabsProps) {
           '& .MuiTabs-indicator': {
             height: 2,
           },
-          minHeight: 48,
+          minHeight: 40,
         }}
       >
         {TABS.map((tab) => (
@@ -94,7 +94,10 @@ export function ModelTabs({ currentTab, onChange, children }: ModelTabsProps) {
             icon={tab.icon}
             iconPosition="start"
             sx={{
-              minWidth: 120,
+              minHeight: 40,
+              minWidth: { xs: 96, sm: 108 },
+              px: 1,
+              py: 0.5,
               fontWeight: 500,
               textTransform: 'none',
             }}

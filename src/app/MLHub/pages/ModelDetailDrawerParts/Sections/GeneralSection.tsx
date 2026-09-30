@@ -4,7 +4,12 @@ import Typography from '@mui/material/Typography';
 
 import { Model } from '@mlhub/models-ts-sdk';
 import { InfoSection } from './InfoSection';
-import { KeyValueGrid, TagCloud, formatDuration } from '../utils';
+import {
+  ExpandableTagCloud,
+  KeyValueGrid,
+  TagCloud,
+  formatDuration,
+} from '../utils';
 import { derivedMetadataFor, modelAuthorFor } from '../../../modelMetadata';
 
 interface GeneralSectionProps {
@@ -23,6 +28,20 @@ export function GeneralSection({ model }: GeneralSectionProps) {
   return (
     <InfoSection>
       <KeyValueGrid rows={infoRows} />
+
+      {derived.tags.length > 0 && (
+        <Box>
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="caption" color="text.secondary">
+            Tags
+          </Typography>
+          <ExpandableTagCloud
+            tags={derived.tags}
+            showCount={5}
+            sx={{ mt: 0.5 }}
+          />
+        </Box>
+      )}
 
       {derived.task_types.length > 0 && (
         <Box>

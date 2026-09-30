@@ -22,7 +22,6 @@ import { GeneralSection } from './ModelDetailDrawerParts/Sections/GeneralSection
 import { ComplianceSection } from './ModelDetailDrawerParts/Sections/ComplianceSection';
 import { DeploymentSection } from './ModelDetailDrawerParts/Sections/DeploymentSection';
 import { SettingsSection } from './ModelDetailDrawerParts/Sections/SettingsSection';
-import { ExpandableTagCloud } from './ModelDetailDrawerParts/utils';
 import { derivedMetadataFor, modelAuthorFor } from '../modelMetadata';
 
 export interface ModelDetailDrawerProps {
@@ -131,33 +130,26 @@ function ModelDetailContent({
                   gap: 2,
                 }}
               >
-                <Box sx={{ minWidth: 0 }}>
-                  {derivedMetadataFor(model).tags.length ? (
-                    <ExpandableTagCloud
-                      tags={derivedMetadataFor(model).tags}
-                      showCount={4}
-                    />
-                  ) : null}
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <ModelTabs currentTab={activeTab} onChange={setActiveTab} />
                 </Box>
                 <ModelActionsBar model={model} />
               </Stack>
             </Box>
             <Divider />
             <Box sx={{ px: { xs: 2, sm: 3 } }}>
-              <ModelTabs currentTab={activeTab} onChange={setActiveTab}>
-                <TabPanel value="general" currentTab={activeTab}>
-                  <GeneralSection model={model} />
-                </TabPanel>
-                <TabPanel value="compliance" currentTab={activeTab}>
-                  <ComplianceSection model={model} />
-                </TabPanel>
-                <TabPanel value="deployment" currentTab={activeTab}>
-                  <DeploymentSection model={model} />
-                </TabPanel>
-                <TabPanel value="settings" currentTab={activeTab}>
-                  <SettingsSection model={model} />
-                </TabPanel>
-              </ModelTabs>
+              <TabPanel value="general" currentTab={activeTab}>
+                <GeneralSection model={model} />
+              </TabPanel>
+              <TabPanel value="compliance" currentTab={activeTab}>
+                <ComplianceSection model={model} />
+              </TabPanel>
+              <TabPanel value="deployment" currentTab={activeTab}>
+                <DeploymentSection model={model} />
+              </TabPanel>
+              <TabPanel value="settings" currentTab={activeTab}>
+                <SettingsSection model={model} />
+              </TabPanel>
             </Box>
           </>
         )}
