@@ -11,7 +11,7 @@ import { useQueryClient } from 'react-query';
 import { subscribePanelRequests } from 'app/_components/SectionedPanel/panelSwitch';
 import styles from './Sidebar.module.scss';
 import { Navbar, NavItem, loginPromptState } from '@tapis/tapisui-common';
-import { LOGIN_RETURN_KEY } from 'app/Login/_components/Login/Login';
+import { rememberLoginReturn } from 'app/Login/loginReturn';
 import { useExtension } from 'extensions';
 import {
   ExpandLessRounded,
@@ -218,7 +218,7 @@ const Sidebar: React.FC = () => {
         {expanded ? 'Pods' : ''}
       </NavItem>
     ),
-    mlhub: renderSidebarItem('/mlhub', 'share', 'ML Hub'),
+    mlhub: renderSidebarItem('/mlhub', 'share', 'MLHub'),
     authenticator: renderSidebarItem('/authenticator', 'gear', 'Authenticator'),
     security: renderSidebarItem('/security', 'lock', 'Security'),
     // Only added when an extension's config actually places 'dashboard'
@@ -526,10 +526,7 @@ const Sidebar: React.FC = () => {
                   key="login-nav"
                   onClick={() => {
                     if (location.pathname.startsWith('/login')) return;
-                    sessionStorage.setItem(
-                      LOGIN_RETURN_KEY,
-                      location.pathname + location.search
-                    );
+                    rememberLoginReturn(location.pathname + location.search);
                   }}
                 >
                   {expanded ? 'Login' : ''}

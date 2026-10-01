@@ -204,7 +204,7 @@ const Dashboard: React.FC = () => {
             {extension !== undefined && extension.showMLHub != false && (
               <DashboardCard
                 icon="share"
-                name="ML Hub"
+                name="MLHub"
                 text="View available models and datasets, run inference and training on ML models"
                 link="/mlhub"
                 counter={`${4} services`}
