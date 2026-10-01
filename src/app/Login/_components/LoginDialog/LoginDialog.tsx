@@ -42,7 +42,7 @@ type LoginDialogProps = {
 const ROUTE_WORDS: { [word: string]: string } = {
   ai: 'AI',
   ml: 'ML',
-  mlhub: 'ML Hub',
+  mlhub: 'MLHub',
   ui: 'UI',
   mcp: 'MCP',
 };

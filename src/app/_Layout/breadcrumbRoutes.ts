@@ -10,9 +10,10 @@
 //   /files     src/app/Files/*       page shell owns the header
 //   /jobs      src/app/Jobs/*        page shell owns the header
 //   /dashboard src/app/Dashboard/*   its own "Dashboard for <tenant>" header
+//   /mlhub     src/app/MLHub/*       its own app bar (MLHubAppBar)
 //   /login     src/app/Login/*       the landing page; its brand block is the header
 //
-// Pods, MLHub, Workflows and the rest still use the global bar — they have not
+// Pods, Workflows and the rest still use the global bar — they have not
 // moved to a shell, and taking their breadcrumbs away would leave them with
 // no header at all.
 //
@@ -29,6 +30,7 @@ export const HIDE_BREADCRUMB_ROUTES: string[] = [
   '/files',
   '/jobs',
   '/dashboard',
+  '/mlhub',
   '/login',
 ];
 

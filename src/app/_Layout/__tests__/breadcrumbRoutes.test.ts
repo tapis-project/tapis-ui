@@ -14,15 +14,20 @@ import {
 } from '../breadcrumbRoutes';
 
 describe('the app-level breadcrumb opt-out', () => {
-  it.each(['/systems', '/apps', '/files', '/jobs', '/dashboard', '/login'])(
-    'hides on %s and below',
-    (route) => {
-      expect(shouldHideBreadcrumbs(route)).toBe(true);
-      expect(shouldHideBreadcrumbs(`${route}/some-id`)).toBe(true);
-    }
-  );
+  it.each([
+    '/systems',
+    '/apps',
+    '/files',
+    '/jobs',
+    '/dashboard',
+    '/mlhub',
+    '/login',
+  ])('hides on %s and below', (route) => {
+    expect(shouldHideBreadcrumbs(route)).toBe(true);
+    expect(shouldHideBreadcrumbs(`${route}/some-id`)).toBe(true);
+  });
 
-  it.each(['/pods', '/mlhub', '/workflows', '/'])(
+  it.each(['/pods', '/workflows', '/'])(
     'leaves %s alone — no shell header of its own to replace it',
     (route) => {
       expect(shouldHideBreadcrumbs(route)).toBe(false);
