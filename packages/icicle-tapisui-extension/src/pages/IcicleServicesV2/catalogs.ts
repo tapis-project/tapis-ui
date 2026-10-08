@@ -114,6 +114,21 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
+        label:
+          'Video Segmentation and Tracking : Intelligent AI pipeline for Zero and Few shot video segmentation and tracking',
+        description:
+          'Pixel-level segmentation and annotation without a hand-labeled corpus, via zero- and few-shot models.',
+        name: 'Video Segmentation and Tracking',
+        href: '/video-segmentation-tracking',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/smart_labeler',
+          },
+        ],
+        status: 'live',
+      },
+      {
         label: 'No-Code Workflow Studio',
         description:
           'A no-code workflow studio for building and executing workflows without programming.',
