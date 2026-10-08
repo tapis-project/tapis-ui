@@ -37,6 +37,7 @@ import { SmartSegmentation } from './pages/SmartSegmentation';
 import { NoCodeImageLab } from './pages/NoCodeImageLab';
 import { WorkflowStudio } from './pages/WorkflowStudio';
 import { EarthDataHub } from './pages/EarthDataHub';
+import { VideoSegmentationTracking } from './pages/VideoSegmentationTracking';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -75,6 +76,7 @@ const extension = createExtension({
     'patra',
     'smart-labeler',
     'smart-segmentation',
+    'video-segmentation-tracking',
     'no-code-image-lab',
     'no-code-workflow-studio',
     'earth-data-hub',
@@ -168,7 +170,38 @@ const extension = createExtension({
     ],
     noSection: {
       mainServices: ['home'],
-      secondaryServices: [],
+      secondaryServices: [
+        'workflows',
+        'pods',
+        'ml-hub',
+        'ml-edge',
+        'open-web-ui',
+        'jupyter-lab',
+        'analytics',
+        'training-catalog',
+        'domain-agnostic-ai',
+        'icicle-chatbook',
+        'domain-agnostic-ci',
+        'domain-specific-services',
+        'digital-ag-aaas',
+        'animal-ecology-aaas',
+        'food-logistics-aaas',
+        'food-flow-portal',
+        'feast',
+        'food-security-sandbox',
+        'component-catalog',
+        'ckn-dashboard',
+        'openpass',
+        'systems',
+        'jobs',
+        'files',
+        'apps',
+        'harvest',
+        'patra',
+        'smart-labeler',
+        'smart-segmentation',
+        'video-segmentation-tracking',
+      ],
     },
   },
   authMethods: ['implicit', 'password'],
@@ -374,6 +407,13 @@ extension.registerService({
   sidebarDisplayName: 'Earth Data Hub',
   iconName: 'globe',
   component: EarthDataHub,
+});
+
+extension.registerService({
+  id: 'video-segmentation-tracking',
+  sidebarDisplayName: 'Video Segmentation and Tracking',
+  iconName: 'globe',
+  component: VideoSegmentationTracking,
 });
 
 extension.registerService({
