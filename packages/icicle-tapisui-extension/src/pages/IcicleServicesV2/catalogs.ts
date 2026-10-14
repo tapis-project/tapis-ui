@@ -167,12 +167,6 @@ export const CATALOGS: Catalog[] = [
         ],
       },
       {
-        label: 'Semi Supervised and Fully Supervised High-Performance Training',
-        description:
-          'High-performance training pipelines spanning semi-supervised and fully-supervised regimes.',
-        status: 'soon',
-      },
-      {
         label:
           'Flexible Multi-model Server: Unified interface for serving multiple ML models across different inference engines',
         description:
@@ -204,18 +198,6 @@ export const CATALOGS: Catalog[] = [
         status: 'live',
       },
       {
-        label: 'Accelerated Data Annotation',
-        description:
-          'For an ecologist or animal-sciences researcher creating an annotated/labeled dataset for downstream ecological studies.',
-        status: 'soon',
-      },
-      {
-        label: 'Generic Chatbot Creator for Domains',
-        description:
-          'For a domain researcher creating a domain-specific chatbot for an agronomist, farm service provider, or a farmer.',
-        status: 'soon',
-      },
-      {
         label: 'ICICLE MCP: Allowing other tools to access ICICLE knowledge',
         description:
           'Exposes the ICICLE AI component catalog over MCP so external agents and tools can query it.',
@@ -229,12 +211,6 @@ export const CATALOGS: Catalog[] = [
           'Science-driven natural language support for data analysis (Science Agents)',
         description:
           'Science Agents: natural-language support that drives data analysis from a scientific question.',
-        status: 'soon',
-      },
-      {
-        label: 'Authentic dataset augmentation for video datasets',
-        description:
-          'Dataset augmentation techniques tailored to video, preserving authenticity.',
         status: 'soon',
       },
     ],
@@ -288,18 +264,6 @@ export const CATALOGS: Catalog[] = [
         status: 'ext',
       },
       {
-        label: 'Camera-Trap Backpacks Linked to Drones & Acoustic Sensors',
-        description:
-          'Custom camera-trap backpacks linked to drones and/or acoustic sensors.',
-        status: 'soon',
-      },
-      {
-        label: 'Data Preprocessing',
-        description:
-          'Shared preprocessing steps ahead of model training and inference.',
-        status: 'soon',
-      },
-      {
         label:
           'Data Movement, Accelerated Edge to Cloud/HPC and Cloud/HPC to Cloud/HPC Data Movement',
         description:
@@ -307,17 +271,6 @@ export const CATALOGS: Catalog[] = [
         name: 'ArrayMorph',
         href: 'https://github.com/ICICLE-ai/ArrayMorph/blob/v0.1.1/README.md',
         status: 'ext',
-      },
-      {
-        label: 'Model Inference to Heatmap Generation and Visualization',
-        description:
-          'Turn model inference into heatmaps with built-in visualization.',
-        status: 'soon',
-      },
-      {
-        label: 'Shapefile Generation and Visualizations',
-        description: 'Generate and visualize geospatial shapefiles.',
-        status: 'soon',
       },
       {
         label: 'HPC Job Submission Optimizer',
@@ -388,40 +341,6 @@ export const CATALOGS: Catalog[] = [
         ],
         status: 'live',
       },
-      {
-        label: 'Drone-based Field Analysis',
-        description:
-          'Analyze fields from drone imagery to inform agronomic decisions.',
-        status: 'soon',
-      },
-      {
-        label: 'Drone-based Spot & Variable Rate Spraying',
-        description:
-          'Targeted, variable-rate spraying planned and executed from drones.',
-        status: 'soon',
-      },
-      {
-        label: 'Tractor-based Spot & Variable Rate Spraying',
-        description:
-          'The same targeted, variable-rate spraying delivered from tractors.',
-        status: 'soon',
-      },
-      {
-        label: 'Post-Tillage Soil Aggregate Size Analysis',
-        description: 'Measure soil aggregate size distribution after tillage.',
-        status: 'soon',
-      },
-      {
-        label: 'Post-Tillage Crop Residue Cover Analysis',
-        description: 'Quantify crop residue cover remaining after tillage.',
-        status: 'soon',
-      },
-      {
-        label: 'Cultural Practice and Geography Specific Chatbot Creator',
-        description:
-          'Build chatbots adapted to local cultural practice and geography.',
-        status: 'soon',
-      },
     ],
   },
   {
@@ -443,26 +362,6 @@ export const CATALOGS: Catalog[] = [
         name: 'I-SAW Portal',
         href: '/isaw-portal',
         status: 'live',
-      },
-      {
-        label:
-          'Design custom camera-trap hardware & software (ML-driven Planner for Ecologists)',
-        description:
-          'Design custom camera-trap hardware and software with an ML-driven planner built for ecologists.',
-        status: 'soon',
-      },
-      {
-        label:
-          'Conduct Multi-modal Wildlife Monitoring using Commodity Devices',
-        description:
-          'Conduct multi-modal wildlife monitoring using commodity hardware.',
-        status: 'soon',
-      },
-      {
-        label: 'Citizen Science Applications with Custom Camera-Trap Backpacks',
-        description:
-          'Citizen-science applications powered by custom camera-trap backpacks.',
-        status: 'soon',
       },
     ],
   },
