@@ -26,3 +26,4 @@ export { Patra } from './Patra';
 export { IntelligentEdgeManagementService } from './IntelligentEdgeManagementService';
 export { ISAWPortal } from './ISAWPortal';
 export { Insights } from './Insights';
+export { FNAS_LCD } from './FNAS_LCD';
