@@ -16,7 +16,7 @@ const Systems = lazy(() => import('../Systems'));
 const Pods = lazy(() => import('../Pods'));
 const Files = lazy(() => import('../Files'));
 const Workflows = lazy(() => import('../Workflows'));
-const MlHub = lazy(() => import('../MlHub'));
+const MLHub = lazy(() => import('../MLHub'));
 const Authenticator = lazy(() => import('../Authenticator'));
 const UIPatterns = lazy(() => import('../UIPatterns'));
 
@@ -25,16 +25,13 @@ import { useExtension } from 'extensions';
 const Router: React.FC = () => {
   const { accessToken } = useTapisConfig();
   const { logout } = Auth.useLogin();
-  const { extension, extensionName } = useExtension();
+  const { extension } = useExtension();
+  const landingRoute = extension?.serviceMap?.['home']?.route;
 
   return (
     <Switch>
       <Route exact path="/">
-        {extensionName === '@icicle/tapisui-extension' ? (
-          <Redirect to="/home" />
-        ) : (
-          <Dashboard />
-        )}
+        {landingRoute ? <Redirect to={landingRoute} /> : <Dashboard />}
       </Route>
       <Route exact path="/dashboard">
         <Dashboard />
@@ -77,9 +74,9 @@ const Router: React.FC = () => {
           <Workflows />
         </Suspense>
       </ProtectedRoute>
-      <ProtectedRoute accessToken={accessToken?.access_token} path="/ml-hub">
+      <ProtectedRoute accessToken={accessToken?.access_token} path="/mlhub">
         <Suspense fallback={<RouteLoader />}>
-          <MlHub />
+          <MLHub />
         </Suspense>
       </ProtectedRoute>
       <ProtectedRoute accessToken={accessToken?.access_token} path="/pods">

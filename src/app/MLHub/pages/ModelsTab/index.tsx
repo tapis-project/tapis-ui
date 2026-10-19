@@ -1,0 +1,859 @@
+import * as React from 'react';
+import {
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Typography,
+  Stack,
+  alpha,
+  Button,
+  Popover,
+  ListItemIcon,
+  ListItemText,
+  List,
+  ListItemButton,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+} from '@mui/material';
+import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { useHistory, useLocation } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import SearchIcon from '@mui/icons-material/Search';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import type { InferenceBackend } from '../../types';
+import {
+  frameworkIconMap as inferenceBackendIconMap,
+  frameworkLabelMap as inferenceBackendLabelMap,
+} from '../../_components/constants';
+import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
+import * as Models from '@mlhub/models-ts-sdk';
+import { DatasetProviderIcon } from '../../_components';
+import DeploymentDialog from '../../_components/DeploymentDialog';
+import { ModelDetailDrawer } from '../ModelDetailDrawer';
+import { useNavigate } from '../../_context/NavContext';
+import ModelEmptyState from './ModelEmptyState';
+import { derivedMetadataFor, modelAuthorFor } from '../../modelMetadata';
+
+type ModelViewMode = 'list' | 'grid' | 'compact';
+type OwnedModel = Models.Model;
+
+const modelKey = (model: OwnedModel) => model.id;
+
+const filterModels = (models: OwnedModel[], query: string) => {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return models;
+
+  return models.filter((model) => {
+    const derived = derivedMetadataFor(model);
+    return [
+      model.name,
+      modelAuthorFor(model),
+      model.description ?? '',
+      model.external_model.provider,
+      derived.license ?? '',
+      ...derived.inference_runtimes,
+      ...derived.tags,
+      ...derived.deployment_strategies.flatMap((strategy) => [
+        strategy.name,
+        strategy.platform,
+      ]),
+    ]
+      .join(' ')
+      .toLowerCase()
+      .includes(normalizedQuery);
+  });
+};
+
+interface ModelViewItemProps {
+  model: OwnedModel;
+  onOpen: (model: OwnedModel) => void;
+  onOpenActions: (
+    event: React.MouseEvent<HTMLElement>,
+    model: OwnedModel
+  ) => void;
+}
+
+function DeploymentStrategyChips({
+  strategies,
+  limit = 2,
+}: {
+  strategies: Models.DeploymentStrategyReference[];
+  limit?: number;
+}) {
+  if (!strategies.length) {
+    return (
+      <Typography variant="caption" color="text.disabled">
+        None
+      </Typography>
+    );
+  }
+
+  const visibleStrategies = strategies.slice(0, limit);
+
+  return (
+    <Stack
+      direction="row"
+      sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.5 }}
+    >
+      {visibleStrategies.map((strategy, index) => (
+        <Tooltip
+          key={`${strategy.platform}:${strategy.name}:${index}`}
+          title={strategy.platform}
+        >
+          <Chip
+            icon={
+              <DatasetProviderIcon provider={strategy.platform} size={16} />
+            }
+            label={strategy.name}
+            size="small"
+            variant="outlined"
+            sx={{
+              height: 24,
+              maxWidth: 180,
+              fontSize: '0.7rem',
+              '& .MuiChip-icon': { fontSize: 15 },
+            }}
+          />
+        </Tooltip>
+      ))}
+      {strategies.length > limit && (
+        <Tooltip
+          title={strategies
+            .slice(limit)
+            .map((strategy) => strategy.name)
+            .join(', ')}
+        >
+          <Chip
+            label={`+${strategies.length - limit}`}
+            size="small"
+            sx={{ height: 24, fontSize: '0.7rem' }}
+          />
+        </Tooltip>
+      )}
+    </Stack>
+  );
+}
+
+function ModelGridCard({ model, onOpen, onOpenActions }: ModelViewItemProps) {
+  const derived = derivedMetadataFor(model);
+  const libraries = derived.inference_runtimes;
+  const tags = derived.tags;
+  const strategies = derived.deployment_strategies;
+
+  return (
+    <Card
+      elevation={0}
+      onClick={() => onOpen(model)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(model);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      sx={{
+        height: '100%',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        cursor: 'pointer',
+        transition: 'transform 0.18s, box-shadow 0.18s, border-color 0.18s',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          borderColor: 'primary.light',
+          boxShadow: (theme) =>
+            `0 10px 24px ${alpha(theme.palette.primary.main, 0.1)}`,
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: 2,
+        },
+      }}
+    >
+      <CardContent
+        sx={{
+          height: '100%',
+          p: 2.5,
+          '&:last-child': { pb: 2.5 },
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Stack direction="row" sx={{ alignItems: 'flex-start', gap: 1.5 }}>
+          <Box
+            sx={{
+              width: 42,
+              height: 42,
+              borderRadius: 2,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <SmartToyIcon />
+          </Box>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Typography
+              variant="subtitle1"
+              noWrap
+              sx={{ fontWeight: 700, lineHeight: 1.3 }}
+            >
+              {model.name}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              by {modelAuthorFor(model)}
+            </Typography>
+          </Box>
+          <Tooltip title="Model actions">
+            <IconButton
+              size="small"
+              aria-label={`Actions for ${model.name}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenActions(event, model);
+              }}
+            >
+              <MoreVertIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+
+        {model.description && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mt: 2,
+              lineHeight: 1.55,
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              overflow: 'hidden',
+              minHeight: 44,
+            }}
+          >
+            {model.description}
+          </Typography>
+        )}
+
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75, mt: 2 }}>
+          <DeploymentStrategyChips strategies={strategies} />
+          <Chip
+            label={model.external_model.provider}
+            size="small"
+            variant="outlined"
+          />
+          {libraries.slice(0, 2).map((library) => (
+            <Chip
+              key={library}
+              label={
+                inferenceBackendLabelMap[library as InferenceBackend] ?? library
+              }
+              size="small"
+              variant="outlined"
+            />
+          ))}
+        </Stack>
+
+        <Box sx={{ flex: 1 }} />
+        {tags.length > 0 && (
+          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.5, mt: 2 }}>
+            {tags.slice(0, 4).map((tag) => (
+              <Chip
+                key={tag}
+                label={`#${tag}`}
+                size="small"
+                sx={{ height: 21, fontSize: '0.66rem' }}
+              />
+            ))}
+            {tags.length > 4 && (
+              <Chip
+                label={`+${tags.length - 4}`}
+                size="small"
+                sx={{ height: 21, fontSize: '0.66rem' }}
+              />
+            )}
+          </Stack>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ModelCompactRow({ model, onOpen, onOpenActions }: ModelViewItemProps) {
+  const derived = derivedMetadataFor(model);
+  const libraries = derived.inference_runtimes;
+  const strategies = derived.deployment_strategies;
+
+  return (
+    <Card
+      elevation={0}
+      onClick={() => onOpen(model)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(model);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      sx={{
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1.5,
+        cursor: 'pointer',
+        '&:hover': { bgcolor: 'action.hover', borderColor: 'primary.light' },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: 2,
+        },
+      }}
+    >
+      <Stack
+        direction="row"
+        sx={{ alignItems: 'center', gap: 1.5, px: 1.5, py: 1 }}
+      >
+        <SmartToyIcon sx={{ color: 'primary.main', fontSize: 21 }} />
+        <Box sx={{ minWidth: 0, flex: '1 1 240px' }}>
+          <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+            {model.name}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {modelAuthorFor(model)}
+          </Typography>
+        </Box>
+        <Stack
+          direction="row"
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+            gap: 0.5,
+            flex: '1 1 220px',
+          }}
+        >
+          {libraries.slice(0, 2).map((library) => (
+            <Chip
+              key={library}
+              label={
+                inferenceBackendLabelMap[library as InferenceBackend] ?? library
+              }
+              size="small"
+              variant="outlined"
+              sx={{ height: 22, fontSize: '0.68rem' }}
+            />
+          ))}
+        </Stack>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <DeploymentStrategyChips strategies={strategies} limit={1} />
+        </Box>
+        <IconButton
+          size="small"
+          aria-label={`Actions for ${model.name}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenActions(event, model);
+          }}
+        >
+          <MoreVertIcon fontSize="small" />
+        </IconButton>
+      </Stack>
+    </Card>
+  );
+}
+
+export default function ModelsTab() {
+  const { navigate } = useNavigate();
+  const history = useHistory();
+  const location = useLocation();
+  const { username } = useTapisConfig();
+  const { data, isLoading, error } = Hooks.Models.useListByAuthor({
+    author: username,
+  });
+  const models = (data?.result ?? []) as OwnedModel[];
+  const [viewMode, setViewMode] = React.useState<ModelViewMode>('list');
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [selectedModel, setSelectedModel] = React.useState<OwnedModel | null>(
+    null
+  );
+  const [deploymentModel, setDeploymentModel] =
+    React.useState<OwnedModel | null>(null);
+  const [actionsAnchor, setActionsAnchor] = React.useState<HTMLElement | null>(
+    null
+  );
+  const [actionsRow, setActionsRow] = React.useState<OwnedModel | null>(null);
+  const requestedModelId = new URLSearchParams(location.search).get('model');
+  const filteredModels = React.useMemo(
+    () => filterModels(models, searchQuery),
+    [models, searchQuery]
+  );
+
+  const openModel = React.useCallback((model: OwnedModel) => {
+    setSelectedModel(model);
+  }, []);
+
+  React.useEffect(() => {
+    if (!requestedModelId) return;
+
+    const requestedModel = models.find(
+      (model) => model.id === requestedModelId
+    );
+    if (requestedModel) setSelectedModel(requestedModel);
+  }, [models, requestedModelId]);
+
+  const openModelActions = React.useCallback(
+    (event: React.MouseEvent<HTMLElement>, model: OwnedModel) => {
+      setActionsAnchor(event.currentTarget);
+      setActionsRow(model);
+    },
+    []
+  );
+
+  const handleDelete = (id: string) => {
+    // onModelsChange(models.filter((m) => m.id !== id));
+  };
+
+  const columns: GridColDef<OwnedModel>[] = [
+    {
+      field: 'name',
+      headerName: 'Model Name',
+      flex: 1.5,
+      minWidth: 200,
+      renderCell: (params) => (
+        <Box
+          component="button"
+          type="button"
+          aria-label={`View details for ${params.row.name}`}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            bgcolor: 'transparent',
+            border: 0,
+            color: 'inherit',
+            font: 'inherit',
+            p: 0,
+            textAlign: 'left',
+            '&:hover': {
+              '& .MuiTypography-root': {
+                color: 'primary.main',
+                textDecoration: 'underline',
+              },
+            },
+          }}
+          onClick={() => openModel(params.row)}
+        >
+          <SmartToyIcon sx={{ color: 'primary.main', fontSize: 20 }} />
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {params.value}
+          </Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'owner',
+      headerName: 'Author',
+      width: 130,
+      valueGetter: (_, row) => modelAuthorFor(row),
+    },
+    {
+      field: 'external_model',
+      headerName: 'Inference Backend',
+      width: 200,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {derivedMetadataFor(params.row).inference_runtimes.map((lib) => {
+            const backend = lib as InferenceBackend;
+            return (
+              <Chip
+                key={lib}
+                label={inferenceBackendLabelMap[backend] ?? lib}
+                size="small"
+                variant="outlined"
+                icon={<span>{inferenceBackendIconMap[backend] || ''}</span>}
+                sx={{
+                  textTransform: 'capitalize',
+                  height: 24,
+                  fontSize: '0.7rem',
+                }}
+              />
+            );
+          })}
+        </Box>
+      ),
+    },
+    {
+      field: 'updated_at',
+      headerName: 'Deployment Strategies',
+      minWidth: 280,
+      flex: 1,
+      renderCell: (params) => (
+        <DeploymentStrategyChips
+          strategies={derivedMetadataFor(params.row).deployment_strategies}
+        />
+      ),
+    },
+    {
+      field: 'created_at',
+      headerName: 'Tags',
+      width: 320,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {derivedMetadataFor(params.row)
+            .tags.slice(0, 3)
+            .map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                size="small"
+                sx={{ height: 22, fontSize: '0.7rem' }}
+              />
+            ))}
+          {derivedMetadataFor(params.row).tags.length > 3 && (
+            <Chip
+              label={`+${derivedMetadataFor(params.row).tags.length - 3}`}
+              size="small"
+              sx={{ height: 22, fontSize: '0.7rem' }}
+            />
+          )}
+        </Box>
+      ),
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              openModelActions(e, params.row);
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <Box>
+      {/* ─── Header ─────────────────────────────────────── */}
+      <Box sx={{ mb: 3 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 1.25,
+            mb: 0.5,
+          }}
+        >
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
+            <SmartToyIcon sx={{ fontSize: 28, color: 'primary.main' }} />
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
+            >
+              Models
+            </Typography>
+          </Stack>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<StorefrontIcon />}
+            onClick={() => navigate('/marketplaces/models')}
+            sx={{ textTransform: 'none' }}
+          >
+            Explore Marketplace
+          </Button>
+        </Stack>
+        <Typography variant="body1" color="text.secondary">
+          Manage your ML models — track versions, performance metrics, and
+          deployment readiness across the full lifecycle.
+        </Typography>
+      </Box>
+
+      {/* Model collection controls */}
+      <Card
+        elevation={0}
+        sx={{
+          mb: 2.5,
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'stretch', md: 'center' },
+            gap: 2,
+            p: 2,
+          }}
+        >
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Model Registry
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {filteredModels.length} of {models.length} model
+              {models.length === 1 ? '' : 's'}
+            </Typography>
+          </Box>
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', gap: 1.25, flex: '1 1 520px' }}
+          >
+            <TextField
+              fullWidth
+              size="small"
+              value={searchQuery}
+              placeholder="Search your models..."
+              onChange={(event) => setSearchQuery(event.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ maxWidth: { md: 420 } }}
+            />
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={viewMode}
+              onChange={(_, nextView: ModelViewMode | null) =>
+                nextView && setViewMode(nextView)
+              }
+              aria-label="Model view"
+              sx={{ flexShrink: 0 }}
+            >
+              <ToggleButton value="list" aria-label="List view">
+                <ViewListIcon fontSize="small" />
+              </ToggleButton>
+              <ToggleButton value="grid" aria-label="Grid view">
+                <ViewModuleIcon fontSize="small" />
+              </ToggleButton>
+              <ToggleButton value="compact" aria-label="Compact view">
+                <ViewCompactIcon fontSize="small" />
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Stack>
+        </Box>
+      </Card>
+
+      {isLoading ? (
+        <Card
+          variant="outlined"
+          sx={{ py: 9, display: 'flex', justifyContent: 'center' }}
+        >
+          <CircularProgress />
+        </Card>
+      ) : error ? (
+        <Alert severity="error">
+          {error instanceof Error ? error.message : 'Unable to load models.'}
+        </Alert>
+      ) : models.length === 0 ? (
+        <ModelEmptyState
+          onExploreMarketplace={() => navigate('/marketplaces/models')}
+        />
+      ) : filteredModels.length === 0 ? (
+        <Card
+          elevation={0}
+          sx={{
+            py: 8,
+            px: 3,
+            textAlign: 'center',
+            border: '1px dashed',
+            borderColor: 'divider',
+            borderRadius: 2,
+          }}
+        >
+          <SmartToyIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+          <Typography variant="h6" color="text.secondary">
+            No models match your search
+          </Typography>
+          <Button onClick={() => setSearchQuery('')} sx={{ mt: 1 }}>
+            Clear search
+          </Button>
+        </Card>
+      ) : viewMode === 'grid' ? (
+        <Grid container spacing={2}>
+          {filteredModels.map((model) => (
+            <Grid key={modelKey(model)} size={{ xs: 12, sm: 6, lg: 4 }}>
+              <ModelGridCard
+                model={model}
+                onOpen={openModel}
+                onOpenActions={openModelActions}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      ) : viewMode === 'compact' ? (
+        <Stack spacing={1}>
+          {filteredModels.map((model) => (
+            <ModelCompactRow
+              key={modelKey(model)}
+              model={model}
+              onOpen={openModel}
+              onOpenActions={openModelActions}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <Card sx={{ '& .MuiDataGrid-root': { border: 'none' } }}>
+          <DataGrid
+            getRowId={modelKey}
+            rows={filteredModels}
+            columns={columns}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 8 } },
+            }}
+            pageSizeOptions={[8, 15, 25]}
+            disableRowSelectionOnClick
+            autoHeight
+            sx={{
+              border: 'none',
+              '& .MuiDataGrid-cell': { display: 'flex', alignItems: 'center' },
+              '& .MuiDataGrid-cellContent': {
+                display: 'flex',
+                alignItems: 'center',
+                overflow: 'visible',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
+              },
+              '& .MuiDataGrid-columnHeader': {
+                color: 'text.primary',
+                '& .MuiDataGrid-columnHeaderTitle': {
+                  fontWeight: 600,
+                  color: 'text.primary',
+                },
+              },
+              '& .MuiDataGrid-iconButtonContainer': {
+                color: 'text.secondary',
+              },
+              '& .MuiDataGrid-menuIconButton': { color: 'text.secondary' },
+            }}
+          />
+        </Card>
+      )}
+
+      <Popover
+        open={Boolean(actionsAnchor)}
+        anchorEl={actionsAnchor}
+        onClose={() => {
+          setActionsAnchor(null);
+          setActionsRow(null);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: { sx: { width: 180, mt: 0.5 } },
+        }}
+      >
+        <List dense disablePadding>
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) openModel(actionsRow);
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              <VisibilityIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="View Details"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+          {Boolean(
+            actionsRow &&
+              derivedMetadataFor(actionsRow).deployment_strategies.length
+          ) && (
+            <ListItemButton
+              onClick={() => {
+                if (actionsRow) setDeploymentModel(actionsRow);
+                setActionsAnchor(null);
+                setActionsRow(null);
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <RocketLaunchIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Deploy"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+          )}
+          <ListItemButton
+            onClick={() => {
+              if (actionsRow) handleDelete(modelKey(actionsRow));
+              setActionsAnchor(null);
+              setActionsRow(null);
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: 'error.main' }}>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Delete"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </ListItemButton>
+        </List>
+      </Popover>
+
+      <ModelDetailDrawer
+        model={selectedModel}
+        onClose={() => {
+          setSelectedModel(null);
+          if (requestedModelId) history.replace(location.pathname);
+        }}
+      />
+      {deploymentModel && (
+        <DeploymentDialog
+          open
+          defaultModel={deploymentModel}
+          onClose={() => setDeploymentModel(null)}
+          author={modelAuthorFor(deploymentModel)}
+        />
+      )}
+    </Box>
+  );
+}

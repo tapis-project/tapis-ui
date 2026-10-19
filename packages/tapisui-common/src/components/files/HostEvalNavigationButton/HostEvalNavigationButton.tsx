@@ -37,7 +37,9 @@ export type HostEvalNavigationButtonProps = {
   systemId: string;
   isAuthenticated: boolean;
   options?: EnvVarOption[];
-  variant?: 'default' | 'toolbar';
+  variant?: 'default' | 'toolbar' | 'v2';
+  onNavigate?: (path: string) => void;
+  onBusyChange?: (busy: boolean) => void;
 };
 
 const normalizeEnvVarInput = (value: string) =>
@@ -73,11 +75,40 @@ const toolbarButtonGroupSx: SxProps<Theme> = {
   },
 };
 
+const v2ButtonSx: SxProps<Theme> = {
+  height: 32,
+  px: 1.25,
+  minWidth: 'auto',
+  borderColor: 'divider',
+  bgcolor: 'background.paper',
+  color: 'text.primary',
+  fontSize: '0.8125rem',
+  fontWeight: 600,
+  lineHeight: 1,
+  textTransform: 'none',
+  whiteSpace: 'nowrap',
+  '&:hover': {
+    borderColor: 'primary.light',
+    bgcolor: 'action.hover',
+  },
+};
+
+const v2ButtonGroupSx: SxProps<Theme> = {
+  flexShrink: 0,
+  borderRadius: 1.5,
+  boxShadow: '0 1px 2px rgba(15, 23, 42, 0.06)',
+  '& .MuiButtonGroup-grouped': {
+    borderColor: 'divider',
+  },
+};
+
 const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
   systemId,
   isAuthenticated,
   options = defaultEnvVarOptions,
   variant = 'default',
+  onNavigate,
+  onBusyChange,
 }) => {
   const [open, setOpen] = useState(false);
   const [selectedEnvVar, setSelectedEnvVar] = useState(
@@ -115,13 +146,14 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
       setStatus('navigating');
       timerRef.current = setTimeout(() => {
         timerRef.current = null;
-        history.push(`/files/${systemId}${path}`);
+        if (onNavigate) onNavigate(path);
+        else history.push(`/files/${systemId}${path}`);
         setStatus('idle');
         // 1400ms gives the user a moment to read "Going to /path..." before the
         // route changes — long enough to register, short enough to feel snappy.
       }, 1400);
     }
-  }, [status, path, isError, history, systemId]);
+  }, [status, path, isError, history, systemId, onNavigate]);
 
   const cancelTimer = () => {
     if (timerRef.current) {
@@ -156,6 +188,7 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
     setSelectedEnvVar(option.envVar);
     setStatus('idle');
     setOpen(false);
+    setPendingRefetch(true);
   };
 
   const applyCustomEnvVar = () => {
@@ -170,17 +203,41 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
   const selectedLabel =
     options.find((o) => o.envVar === selectedEnvVar)?.label ??
     `Go to $${selectedEnvVar}`;
-  const busy = isLoading || status === 'navigating';
+  const busy = isLoading || status !== 'idle' || pendingRefetch;
+
+  React.useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
+
+  React.useEffect(
+    () => () => {
+      onBusyChange?.(false);
+    },
+    [onBusyChange]
+  );
+
   const isToolbarVariant = variant === 'toolbar';
+  const isV2Variant = variant === 'v2';
+  const buttonSx = isToolbarVariant
+    ? toolbarButtonSx
+    : isV2Variant
+    ? v2ButtonSx
+    : undefined;
 
   return (
     <>
       <ButtonGroup
-        variant={isToolbarVariant ? 'outlined' : 'text'}
+        variant={isToolbarVariant || isV2Variant ? 'outlined' : 'text'}
         size="small"
         ref={anchorRef}
         disabled={!isAuthenticated}
-        sx={isToolbarVariant ? toolbarButtonGroupSx : undefined}
+        sx={
+          isToolbarVariant
+            ? toolbarButtonGroupSx
+            : isV2Variant
+            ? v2ButtonGroupSx
+            : undefined
+        }
       >
         <Button
           onClick={handleHostVarButtonClick}
@@ -188,7 +245,7 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
           startIcon={
             isLoading ? <CircularProgress size={16} /> : <HomeOutlined />
           }
-          sx={isToolbarVariant ? toolbarButtonSx : undefined}
+          sx={buttonSx}
         >
           {isLoading
             ? 'Resolving...'
@@ -201,9 +258,9 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
           aria-label="select environment variable"
           disabled={busy}
           sx={{
-            ...(isToolbarVariant ? (toolbarButtonSx as object) : {}),
-            px: 0.25,
-            minWidth: '24px !important',
+            ...(buttonSx ? (buttonSx as object) : {}),
+            px: isV2Variant ? 0.5 : 0.25,
+            minWidth: isV2Variant ? '30px !important' : '24px !important',
           }}
         >
           <ArrowDropDown fontSize="small" />
@@ -215,8 +272,8 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
         anchorEl={anchorRef.current}
         placement="bottom-start"
         transition
-        disablePortal
-        sx={{ zIndex: 1 }}
+        disablePortal={!isV2Variant}
+        sx={{ zIndex: isV2Variant ? 1300 : 1 }}
         modifiers={[{ name: 'flip', enabled: false }]}
       >
         {({ TransitionProps, placement }) => (
@@ -227,7 +284,21 @@ const HostEvalNavigationButton: React.FC<HostEvalNavigationButtonProps> = ({
                 placement === 'bottom' ? 'center top' : 'center bottom',
             }}
           >
-            <Paper>
+            <Paper
+              sx={
+                isV2Variant
+                  ? {
+                      mt: 0.75,
+                      minWidth: 210,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      boxShadow: '0 10px 30px rgba(15, 23, 42, 0.14)',
+                      overflow: 'hidden',
+                    }
+                  : undefined
+              }
+            >
               <ClickAwayListener onClickAway={() => setOpen(false)}>
                 <MenuList autoFocusItem dense sx={{ py: 0.5 }}>
                   {options.map((option) => (

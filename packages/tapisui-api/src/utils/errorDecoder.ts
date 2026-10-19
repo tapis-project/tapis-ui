@@ -1,5 +1,16 @@
 interface DecodableError {
   json: () => Promise<{ message?: string }>;
+  status?: number;
+}
+
+export class ApiError extends Error {
+  readonly status?: number;
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
 }
 
 const errorDecoder = async <T>(func: () => Promise<T>): Promise<T> => {
@@ -12,7 +23,7 @@ const errorDecoder = async <T>(func: () => Promise<T>): Promise<T> => {
     if ((error as DecodableError).json) {
       const decoded = await (error as DecodableError).json();
       const message = decoded.message || 'An unexpected error occurred';
-      throw new Error(message); // Throw the decoded error message
+      throw new ApiError(message, (error as DecodableError).status);
     } else {
       // Rethrow the error if it's not decodable
       throw error;

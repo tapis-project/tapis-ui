@@ -47,6 +47,7 @@ const useFilesSelect = () => {
     select,
     unselect,
     clear,
+    setSelectedFiles,
   };
 };
 

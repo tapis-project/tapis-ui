@@ -31,7 +31,7 @@ const useList = (
           allPages,
           params
         ),
-      enabled: !!accessToken,
+      enabled: !!accessToken && options.enabled !== false,
     }
   );
 
