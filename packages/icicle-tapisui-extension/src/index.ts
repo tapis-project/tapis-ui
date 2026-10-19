@@ -83,7 +83,7 @@ const extension = createExtension({
     'earth-data-hub',
     'isaw-portal',
     'insights',
-    'fnas_lcd',
+    'fnas-lcd',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -125,7 +125,7 @@ const extension = createExtension({
           'intelligent-edge-management-service',
           'isaw-portal',
           'insights',
-          'fnas_lcd',
+          'fnas-lcd',
         ],
         secondaryServices: [],
       },
@@ -424,9 +424,9 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'fnas_lcd',
+  id: 'fnas-lcd',
   sidebarDisplayName: 'FNAS-LCD',
-  iconName: 'fnas_lcd',
+  iconName: 'globe',
   component: FNAS_LCD,
 });
 
