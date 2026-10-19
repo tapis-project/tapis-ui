@@ -25,4 +25,4 @@ export const FNAS_LCD: Component = ({ accessToken }) => {
   );
 };
 
-export default Insights;
+export default FNAS_LCD;
