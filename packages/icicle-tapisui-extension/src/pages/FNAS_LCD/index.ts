@@ -1,1 +1,1 @@
-export { default as FNAS_LCD } from  './FNAS_LCD';
+export { default as FNAS_LCD } from './FNAS_LCD';
