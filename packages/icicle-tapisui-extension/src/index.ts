@@ -32,6 +32,7 @@ import {
   ISAWPortal,
   Insights,
   FNAS_LCD,
+  ScienceAgent,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -84,6 +85,7 @@ const extension = createExtension({
     'isaw-portal',
     'insights',
     'fnas_lcd',
+    'science-agent',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -126,6 +128,7 @@ const extension = createExtension({
           'isaw-portal',
           'insights',
           'fnas_lcd',
+          'science-agent'
         ],
         secondaryServices: [],
       },
@@ -428,6 +431,13 @@ extension.registerService({
   sidebarDisplayName: 'FNAS-LCD',
   iconName: 'fnas_lcd',
   component: FNAS_LCD,
+});
+
+extension.registerService({
+  id: 'science-agent',
+  sidebarDisplayName: 'Science Agent',
+  iconName: 'robot_2',
+  component: ScienceAgent,
 });
 
 // extension.registerService({
