@@ -35,7 +35,6 @@ import {
 const STATUS_COLOR: Record<ServiceStatus, string> = {
   live: '#2f9e5b',
   ext: '#6a5cd6',
-  soon: '#8b97a4',
 };
 
 const BORDER = '1px solid rgba(112, 122, 134, 0.24)';
@@ -54,22 +53,11 @@ const firstLineSx = {
 const StatusDot: React.FC<{ status: ServiceStatus; size?: number }> = ({
   status,
   size = 8,
-}) =>
-  status === 'soon' ? (
-    <Box
-      sx={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        border: `1.5px solid ${STATUS_COLOR.soon}`,
-        flexShrink: 0,
-      }}
-    />
-  ) : (
-    <CircleRounded
-      sx={{ fontSize: size, color: STATUS_COLOR[status], flexShrink: 0 }}
-    />
-  );
+}) => (
+  <CircleRounded
+    sx={{ fontSize: size, color: STATUS_COLOR[status], flexShrink: 0 }}
+  />
+);
 
 // Compact destination link. The name truncates (capped width, tighter on
 // mobile) so a long name can never blow out the row; the icon never shrinks.
@@ -108,7 +96,7 @@ const codeChipSx = {
 } as const;
 
 // Same shape as codeChipSx, but neutral grey — for board-wide actions
-// (Expand all, View upcoming) that aren't tied to any one catalog's color.
+// (Expand all) that aren't tied to any one catalog's color.
 const actionChipSx = {
   ...codeChipSx,
   color: 'text.secondary',
@@ -442,7 +430,7 @@ const IconLegendTile: React.FC = () => (
 );
 
 /**
- * One service row (ready or upcoming). Collapsed it stays a single tidy line
+ * One service row. Collapsed it stays a single tidy line
  * (label ellipsis-truncated) with a strip of glanceable destination glyphs
  * on the right — one tiny button per link. Clicking the row toggles the FULL
  * label + description + labeled link buttons open beneath it — state is
@@ -596,8 +584,7 @@ const CountPill: React.FC<{
   n: number;
   color: string;
   label: string;
-  hollow?: boolean;
-}> = ({ n, color, label, hollow }) => (
+}> = ({ n, color, label }) => (
   // useFlexGap: margin-based Stack spacing skips text nodes, which let the
   // number sit on top of the dot; CSS gap spaces every flex item.
   <Stack
@@ -622,9 +609,7 @@ const CountPill: React.FC<{
         height: 6,
         borderRadius: '50%',
         flexShrink: 0,
-        ...(hollow
-          ? { border: `1px solid ${color}` }
-          : { backgroundColor: color }),
+        backgroundColor: color,
       }}
     />
     <Box component="span">
@@ -635,9 +620,6 @@ const CountPill: React.FC<{
 
 const CatalogPanel: React.FC<{
   catalog: Catalog;
-  /** shared across all panels — open one 'upcoming' section, open them all */
-  soonOpen: boolean;
-  onToggleSoon: () => void;
   /** briefly glow — set when a header jump chip lands on this panel */
   flash?: boolean;
   /** the panel's own code chip calls this instead of navigating away — glows
@@ -645,27 +627,10 @@ const CatalogPanel: React.FC<{
   onGlow: () => void;
   glowTip: string;
   /** the header "Expand/Collapse all" button — applies to every row's own
-   * detail toggle, never to the "N upcoming" accordion itself */
+   * detail toggle */
   expandAllSignal?: ExpandAllSignal;
-}> = ({
-  catalog,
-  soonOpen,
-  onToggleSoon,
-  flash,
-  onGlow,
-  glowTip,
-  expandAllSignal,
-}) => {
+}> = ({ catalog, flash, onGlow, glowTip, expandAllSignal }) => {
   const counts = statusCounts(catalog.items);
-  const ready = catalog.items.filter((i) => i.status !== 'soon');
-  const soon = catalog.items.filter((i) => i.status === 'soon');
-  // A catalog with nothing ready yet would render as an empty shell with every
-  // row hidden behind the accordion — those open by default instead, with a
-  // local toggle (the shared open-all toggle would mislabel them).
-  const allUpcoming = ready.length === 0;
-  const [emptyOpen, setEmptyOpen] = useState(allUpcoming);
-  const isOpen = allUpcoming ? emptyOpen : soonOpen;
-  const toggleOpen = allUpcoming ? () => setEmptyOpen((v) => !v) : onToggleSoon;
 
   return (
     <Paper
@@ -693,7 +658,9 @@ const CatalogPanel: React.FC<{
           : {}),
       }}
     >
-      <Box sx={{ p: 1.25, borderBottom: ready.length ? BORDER : 'none' }}>
+      <Box
+        sx={{ p: 1.25, borderBottom: catalog.items.length ? BORDER : 'none' }}
+      >
         <Stack
           direction="row"
           alignItems="center"
@@ -722,14 +689,6 @@ const CatalogPanel: React.FC<{
                 label="live"
               />
             )}
-            {counts.soon > 0 && (
-              <CountPill
-                n={counts.soon}
-                color={STATUS_COLOR.soon}
-                label="soon"
-                hollow
-              />
-            )}
           </Stack>
         </Stack>
         {/* the boilerplate "Welcome to the ICICLE-X-as-a-Service (ICICLE-XaaS)
@@ -751,9 +710,9 @@ const CatalogPanel: React.FC<{
         </Typography>
       </Box>
 
-      {/* ready services — always visible; click a row to expand its subtext */}
+      {/* click a row to expand its subtext */}
       <Box>
-        {ready.map((item) => (
+        {catalog.items.map((item) => (
           <ServiceRow
             key={item.label + item.name}
             item={item}
@@ -761,51 +720,6 @@ const CatalogPanel: React.FC<{
           />
         ))}
       </Box>
-
-      {/* upcoming — hidden behind an accordion; expand to read descriptions */}
-      {soon.length > 0 && (
-        <Box sx={{ mt: 'auto' }}>
-          <Stack
-            direction="row"
-            spacing={0.75}
-            alignItems="center"
-            onClick={toggleOpen}
-            sx={{
-              px: 1.5,
-              py: 0.85,
-              borderTop: BORDER,
-              cursor: 'pointer',
-              userSelect: 'none',
-              bgcolor: 'rgba(112,122,134,0.04)',
-              '&:hover': { bgcolor: 'action.hover' },
-            }}
-          >
-            <StatusDot status="soon" />
-            <Typography sx={{ ...fineSx, fontWeight: 600, flex: 1 }}>
-              {soon.length} upcoming {isOpen ? '— hide' : '— press to preview'}
-            </Typography>
-            <ExpandMoreRounded
-              sx={{
-                fontSize: '1rem',
-                color: 'text.secondary',
-                transform: isOpen ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.15s',
-              }}
-            />
-          </Stack>
-          <Collapse in={isOpen}>
-            <Box sx={{ opacity: 0.9 }}>
-              {soon.map((item) => (
-                <ServiceRow
-                  key={item.label}
-                  item={item}
-                  expandAllSignal={expandAllSignal}
-                />
-              ))}
-            </Box>
-          </Collapse>
-        </Box>
-      )}
     </Paper>
   );
 };
@@ -818,9 +732,8 @@ const MiniStat: React.FC<{
   n: number;
   label: string;
   color?: string;
-  hollow?: boolean;
   hint?: string;
-}> = ({ n, label, color, hollow, hint }) => (
+}> = ({ n, label, color, hint }) => (
   <Tooltip title={hint ?? ''} placement="bottom-start">
     <Stack
       direction="row"
@@ -842,9 +755,7 @@ const MiniStat: React.FC<{
             height: 7,
             borderRadius: '50%',
             flexShrink: 0,
-            ...(hollow
-              ? { border: `1.5px solid ${color}` }
-              : { bgcolor: color }),
+            bgcolor: color,
           }}
         />
       )}
@@ -915,14 +826,9 @@ export const IcicleServicesV2: Component = () => {
   const all = CATALOGS.flatMap((c) => c.items);
   const nLive = all.filter((i) => i.status === 'live').length;
   const nExt = all.filter((i) => i.status === 'ext').length;
-  const nSoon = all.filter((i) => i.status === 'soon').length;
   const agnostic = CATALOGS.filter((c) => c.tier === 'agnostic');
   const domain = CATALOGS.filter((c) => c.tier === 'domain');
-  // one shared toggle so opening any 'upcoming' section opens them all
-  const [soonOpen, setSoonOpen] = useState(false);
-  const toggleSoon = () => setSoonOpen((v) => !v);
-  // "Expand/Collapse all" — only ever touches each row's own detail toggle,
-  // never the "N upcoming — press to preview" accordion above (soonOpen).
+  // "Expand/Collapse all" — touches each row's own detail toggle.
   // `seq` (not just `open`) is the effect dependency down in ServiceRow, so
   // clicking Expand All twice in a row (e.g. after manually re-collapsing a
   // couple of rows) still re-applies instead of being a no-op repeat value.
@@ -1061,13 +967,6 @@ export const IcicleServicesV2: Component = () => {
                 color={STATUS_COLOR.ext}
                 hint="Purple dot — ready to use, but lives off-platform (GitHub or docs); opens in a new tab."
               />
-              <MiniStat
-                n={nSoon}
-                label="upcoming"
-                color={STATUS_COLOR.soon}
-                hollow
-                hint="Hollow dot — planned but not available yet; expand a catalog's 'upcoming' section to read about them."
-              />
               {/* <MiniStat
                 n={CATALOGS.length}
                 label="catalogs"
@@ -1140,23 +1039,12 @@ export const IcicleServicesV2: Component = () => {
               sx={{ mt: 1, flexWrap: 'wrap' }}
             >
               {/* Opens/closes every row's own detail toggle across every
-                  panel — never the "N upcoming" accordion below. */}
+                  panel. */}
               <Chip
                 label={expandAllSignal.open ? 'Collapse all' : 'Expand all'}
                 size="small"
                 clickable
                 onClick={toggleExpandAll}
-                sx={actionChipSx}
-              />
-              {/* The same shared toggle each panel's own "N upcoming — press
-                  to preview" strip uses, just fired for every panel at once
-                  (panels with nothing BUT upcoming items manage their own
-                  open state and are unaffected either way). */}
-              <Chip
-                label={soonOpen ? 'Close upcoming' : 'View upcoming'}
-                size="small"
-                clickable
-                onClick={toggleSoon}
                 sx={actionChipSx}
               />
             </Stack>
@@ -1181,8 +1069,6 @@ export const IcicleServicesV2: Component = () => {
               <CatalogPanel
                 key={c.code}
                 catalog={c}
-                soonOpen={soonOpen}
-                onToggleSoon={toggleSoon}
                 flash={flash === c.code}
                 onGlow={() => jumpTo(c.code)}
                 glowTip={`${c.expansion} — ${c.name}`}
@@ -1215,8 +1101,6 @@ export const IcicleServicesV2: Component = () => {
               <CatalogPanel
                 key={c.code}
                 catalog={c}
-                soonOpen={soonOpen}
-                onToggleSoon={toggleSoon}
                 flash={flash === c.code || flash === DOAAS.code}
                 onGlow={() => jumpTo(c.code)}
                 glowTip={`${c.expansion} — ${c.name}`}

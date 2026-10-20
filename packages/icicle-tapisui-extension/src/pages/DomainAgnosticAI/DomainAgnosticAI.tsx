@@ -79,9 +79,9 @@ const services: ServiceItem[] = [
   {
     label:
       'Science-driven natural language support for data analysis (Science Agents)',
-    name: 'Upcoming',
-    link: '#',
-    upcoming: true,
+    name: 'Science Agents',
+    link: '/science-agents',
+    internal: true,
   },
   {
     label: 'Authentic dataset augmentation for video datasets',

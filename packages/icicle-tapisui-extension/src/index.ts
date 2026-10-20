@@ -32,6 +32,7 @@ import {
   ISAWPortal,
   Insights,
   FNAS_LCD,
+  ScienceAgents,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -64,6 +65,7 @@ const extension = createExtension({
     'training-catalog',
     'home',
     'icicle-chatbook',
+    'science-agents',
     'food-flow-portal',
     'feast',
     'food-security-sandbox',
@@ -109,6 +111,7 @@ const extension = createExtension({
           'analytics',
           'training-catalog',
           'icicle-chatbook',
+          'science-agents',
           'food-flow-portal',
           'feast',
           'food-security-sandbox',
@@ -226,6 +229,13 @@ extension.registerService({
   sidebarDisplayName: 'ICICLE Chatbook',
   iconName: 'globe',
   component: ICICLEChatbook,
+});
+
+extension.registerService({
+  id: 'science-agents',
+  sidebarDisplayName: 'Science Agents',
+  iconName: 'globe',
+  component: ScienceAgents,
 });
 
 extension.registerService({
