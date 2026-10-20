@@ -63,7 +63,8 @@ const services: ServiceItem[] = [
   {
     label: 'HPC Job Submission Optimizer',
     name: 'HARP',
-    link: 'https://github.com/ICICLE-ai/harp',
+    link: '/harp',
+    internal: true,
   },
   {
     label: 'ML Field Deployment Planner',

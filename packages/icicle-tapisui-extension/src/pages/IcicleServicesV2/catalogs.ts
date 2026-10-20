@@ -275,10 +275,17 @@ export const CATALOGS: Catalog[] = [
       {
         label: 'HPC Job Submission Optimizer',
         description:
-          'Optimizes how HPC jobs are submitted for better throughput and turnaround.',
+          'Profiles HPC applications across systems and trains models that estimate runtime for new job configurations.',
         name: 'HARP',
-        href: 'https://github.com/ICICLE-ai/harp',
-        status: 'ext',
+        href: '/harp',
+        status: 'live',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/HARP-UI',
+            kind: 'repo',
+          },
+        ],
       },
       {
         label: 'ML Field Deployment Planner',
