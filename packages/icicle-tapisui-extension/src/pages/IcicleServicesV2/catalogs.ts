@@ -305,6 +305,13 @@ export const CATALOGS: Catalog[] = [
         href: '/no-code-image-lab',
         status: 'live',
       },
+      {
+        label: 'Cascade Configuration Service',
+        description: 'Configure and launch Cascade from a hosted web app.',
+        name: 'Cascade Configuration Service',
+        href: 'https://cascadeconfigurationservice.pods.icicleai.tapis.io/',
+        status: 'ext',
+      },
     ],
   },
   {
