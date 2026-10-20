@@ -17,6 +17,20 @@ export default defineConfig(({ mode }) => {
   const podsTarget = (env.VITE_PODS_BASE_URL || '')
     .replace(/\/+$/, '')
     .replace(/\/v3$/, '');
+  // A local Pods service only accepts tokens from the site it is configured
+  // for, so a non-develop login fails every Pods call: warn at startup.
+  if (
+    podsTarget &&
+    env.VITE_TAPIS_BASE_URL &&
+    !/\.develop\.tapis\.io/.test(env.VITE_TAPIS_BASE_URL)
+  ) {
+    console.warn(
+      `\n[pods proxy] VITE_PODS_BASE_URL (${podsTarget}) is on while VITE_TAPIS_BASE_URL is ` +
+        `${env.VITE_TAPIS_BASE_URL}. A local pods_service only accepts tokens from the site it ` +
+        `is configured for (usually develop), so Pods calls will fail with ` +
+        `'Invalid Tapis token'. Comment out VITE_PODS_BASE_URL to use that tenant's own Pods.\n`
+    );
+  }
   return {
     // depending on your application, base can also be "/"
     base: '',
