@@ -282,6 +282,11 @@ export const CATALOGS: Catalog[] = [
         links: [
           {
             label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/harp',
+            kind: 'repo',
+          },
+          {
+            label: 'UI repo',
             href: 'https://github.com/ICICLE-ai/HARP-UI',
             kind: 'repo',
           },
