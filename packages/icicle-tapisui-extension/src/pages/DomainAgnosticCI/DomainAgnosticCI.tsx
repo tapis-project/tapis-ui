@@ -84,6 +84,11 @@ const services: ServiceItem[] = [
     link: '/no-code-image-lab',
     internal: true,
   },
+  {
+    label: 'Cascade Configuration Service',
+    name: 'Cascade Configuration Service',
+    link: 'https://cascadeconfigurationservice.pods.icicleai.tapis.io/',
+  },
 ];
 
 const sortedServices = sortServices(services);
