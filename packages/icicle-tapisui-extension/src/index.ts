@@ -29,6 +29,7 @@ import {
   IcicleServicesV2,
   Patra,
   IntelligentEdgeManagementService,
+  HARP,
   ISAWPortal,
   Insights,
   FNAS_LCD,
@@ -81,6 +82,7 @@ const extension = createExtension({
     'no-code-image-lab',
     'no-code-workflow-studio',
     'earth-data-hub',
+    'harp',
     'isaw-portal',
     'insights',
     'fnas-lcd',
@@ -122,6 +124,7 @@ const extension = createExtension({
           'no-code-image-lab',
           'no-code-workflow-studio',
           'earth-data-hub',
+          'harp',
           'intelligent-edge-management-service',
           'isaw-portal',
           'insights',
@@ -401,6 +404,12 @@ extension.registerService({
   sidebarDisplayName: 'Patra',
   iconName: 'globe',
   component: Patra,
+});
+extension.registerService({
+  id: 'harp',
+  sidebarDisplayName: 'HARP',
+  iconName: 'simulation',
+  component: HARP,
 });
 extension.registerService({
   id: 'intelligent-edge-management-service',
