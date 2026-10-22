@@ -32,6 +32,7 @@ import {
   HARP,
   ISAWPortal,
   Insights,
+  AutoOptTabular,
   FNAS_LCD,
   ScienceAgents,
 } from './pages';
@@ -87,6 +88,7 @@ const extension = createExtension({
     'harp',
     'isaw-portal',
     'insights',
+    'auto-opt-tabular',
     'fnas-lcd',
     //'ckn-dashboard',
     //'data-labeler',
@@ -131,6 +133,7 @@ const extension = createExtension({
           'intelligent-edge-management-service',
           'isaw-portal',
           'insights',
+          'auto-opt-tabular',
           'fnas-lcd',
         ],
         secondaryServices: [],
@@ -440,6 +443,13 @@ extension.registerService({
   sidebarDisplayName: 'Insights',
   iconName: 'insights',
   component: Insights,
+});
+
+extension.registerService({
+  id: 'auto-opt-tabular',
+  sidebarDisplayName: 'Auto Opt Tabular',
+  iconName: 'globe',
+  component: AutoOptTabular,
 });
 
 extension.registerService({

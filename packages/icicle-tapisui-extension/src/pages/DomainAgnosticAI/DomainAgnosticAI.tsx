@@ -77,6 +77,12 @@ const services: ServiceItem[] = [
     link: 'https://github.com/ICICLE-ai/catalog_mcp',
   },
   {
+    label: 'Auto Opt Tabular: automated deep learning for tabular datasets',
+    name: 'Auto Opt Tabular',
+    link: '/auto-opt-tabular',
+    internal: true,
+  },
+  {
     label:
       'Science-driven natural language support for data analysis (Science Agents)',
     name: 'Science Agents',

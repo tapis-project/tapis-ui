@@ -27,5 +27,6 @@ export { IntelligentEdgeManagementService } from './IntelligentEdgeManagementSer
 export { HARP } from './HARP';
 export { ISAWPortal } from './ISAWPortal';
 export { Insights } from './Insights';
+export { AutoOptTabular } from './AutoOptTabular';
 export { FNAS_LCD } from './FNAS_LCD';
 export { ScienceAgents } from './ScienceAgents';
