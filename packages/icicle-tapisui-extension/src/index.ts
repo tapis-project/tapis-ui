@@ -31,6 +31,7 @@ import {
   IntelligentEdgeManagementService,
   ISAWPortal,
   Insights,
+  AutoOptTabular,
   FNAS_LCD,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
@@ -83,6 +84,7 @@ const extension = createExtension({
     'earth-data-hub',
     'isaw-portal',
     'insights',
+    'auto-opt-tabular',
     'fnas-lcd',
     //'ckn-dashboard',
     //'data-labeler',
@@ -125,7 +127,8 @@ const extension = createExtension({
           'intelligent-edge-management-service',
           'isaw-portal',
           'insights',
-          'fnas-lcd',
+          'auto-opt-tabular',
+          'fnas_lcd',
         ],
         secondaryServices: [],
       },
@@ -424,11 +427,20 @@ extension.registerService({
 });
 
 extension.registerService({
+  id: 'auto-opt-tabular',
+  sidebarDisplayName: 'Auto Opt Tabular',
+  iconName: 'globe',
+  component: AutoOptTabular,
+});
+
+extension.registerService({
   id: 'fnas-lcd',
   sidebarDisplayName: 'FNAS-LCD',
   iconName: 'globe',
   component: FNAS_LCD,
 });
+
+extension;
 
 // extension.registerService({
 //   id: 'analytics',

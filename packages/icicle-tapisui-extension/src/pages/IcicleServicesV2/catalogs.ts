@@ -207,6 +207,19 @@ export const CATALOGS: Catalog[] = [
         links: [{ label: 'AI Hub · MCP', href: '/ai-hub', kind: 'portal' }],
       },
       {
+        label: 'Auto Opt Tabular',
+        description: 'An automated deeplearning framework for tabular datasets',
+        name: 'Auto Opt Tabular',
+        href: '/auto-opt-tabular',
+        links: [
+          {
+            label: 'AutoOpt python package',
+            href: 'https://pypi.org/project/auto-opt/',
+          },
+        ],
+        status: 'live',
+      },
+      {
         label:
           'Science-driven natural language support for data analysis (Science Agents)',
         description:
