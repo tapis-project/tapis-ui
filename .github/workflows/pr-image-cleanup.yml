@@ -1,0 +1,56 @@
+name: PR Image Cleanup
+
+# Reaps the per-PR test image published by main.yml's Build_Push_PR_Image.
+# Its own workflow rather than a job in main.yml, because adding `closed` to
+# that workflow's pull_request types would also fire the build/lint/test jobs
+# on every close.
+on:
+  pull_request:
+    types: [closed]
+    branches: [dev, staging, test, release-**]
+
+jobs:
+  Delete_PR_Image:
+    # Only same-repo PRs ever published a pr-<N> tag — fork PRs get no secrets,
+    # so there is nothing to reap and no credential to reap it with.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Delete pr-<number> tag from Docker Hub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.TAPIS_DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
+          TAG: pr-${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          # The login endpoint accepts an access token in the password field.
+          JWT=$(curl -sS -X POST https://hub.docker.com/v2/users/login/ \
+            -H 'Content-Type: application/json' \
+            -d "{\"username\":\"${DOCKERHUB_USERNAME}\",\"password\":\"${DOCKERHUB_TOKEN}\"}" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X DELETE \
+            -H "Authorization: JWT ${JWT}" \
+            "https://hub.docker.com/v2/repositories/tapis/tapisui/tags/${TAG}/")
+
+          case "$CODE" in
+            204|202)
+              echo "Deleted tapis/tapisui:${TAG}"
+              echo "Deleted \`tapis/tapisui:${TAG}\`" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            404)
+              # Normal: the PR closed without ever publishing an image
+              # (draft, closed-unmerged before CI, or a fork PR).
+              echo "No tapis/tapisui:${TAG} to delete — nothing to do"
+              ;;
+            401|403)
+              # The token can push but not delete tags. Warn instead of failing
+              # every closed PR; the tag can be deleted by hand.
+              echo "::warning::No permission to delete tapis/tapisui:${TAG} (HTTP ${CODE})"
+              ;;
+            *)
+              echo "Unexpected HTTP ${CODE} deleting ${TAG}"
+              exit 1
+              ;;
+          esac

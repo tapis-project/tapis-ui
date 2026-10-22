@@ -44,6 +44,29 @@ jobs:
       - name: Client Side Linting
         run: pnpm run lint
 
+  # The compile gate. Runs the same build the image does
+  # (Dockerfile.nix: `pnpm -r build && pnpm build`) without Docker or secrets,
+  # so it also works on fork PRs. Without this, nothing in CI typechecks:
+  # unit tests only cover packages/tapisui-{hooks,api}, and `pnpm lint` is
+  # eslint (which ignores src/ and packages/) plus prettier over src/.
+  Client_Side_Build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.4.x
+          cache: 'pnpm'
+      - name: install packages
+        run: pnpm install --frozen-lockfile
+      - name: build workspace packages
+        run: pnpm -r build
+      - name: typecheck + bundle the app
+        run: pnpm run build
+
   Resolve_Image_Tag:
     runs-on: ubuntu-latest
     outputs:
@@ -90,26 +113,63 @@ jobs:
         id: set_image_tag
 
   Build_Push_Image:
+    # Publication, not verification: never from a pull_request. This job's own
+    # tag logic rewrites a PR ref to `dev` and then `docker push --all-tags`,
+    # so leaving it enabled on PRs let unreviewed code overwrite
+    # tapis/tapisui:dev on Docker Hub. Compile coverage for PRs now lives in
+    # Client_Side_Build above.
+    if: github.event_name != 'pull_request'
     needs:
       - Resolve_Image_Tag
       - Client_Side_Linting
       - Client_Side_Unit_Tests
+      - Client_Side_Build
     runs-on: ubuntu-latest
     name: Build_Push_Image
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.TAPIS_DOCKERHUB_USERNAME }}
           password: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
       - name: Build_Tapis_UI_Image
         run: |
           BRANCH="${{ needs.Resolve_Image_Tag.outputs.image_tag }}"
-          if [ "${{ contains(needs.Resolve_Image_Tag.outputs.image_tag, 'refs/pull/') }}" == true ]; then
-            BRANCH=dev
-          fi
           docker build -f Dockerfile.nix -t tapis/tapisui:$BRANCH .
-      - name: Push_All_Tags
-        run: docker push --all-tags tapis/tapisui
+      - name: Push_Image
+        run: docker push tapis/tapisui:${{ needs.Resolve_Image_Tag.outputs.image_tag }}
+
+  # Per-PR test image: tapis/tapisui:pr-<number>. Never overwrites a branch
+  # tag, so reviewers get something runnable without `dev` being touched.
+  #
+  # Same-repo PRs only: GitHub withholds secrets from fork PRs, so the Docker
+  # login would fail there. Deliberately NOT using pull_request_target, which
+  # would hand repo secrets to unreviewed fork code.
+  Build_Push_PR_Image:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    needs:
+      - Client_Side_Linting
+      - Client_Side_Unit_Tests
+      - Client_Side_Build
+    runs-on: ubuntu-latest
+    name: Build_Push_PR_Image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.TAPIS_DOCKERHUB_USERNAME }}
+          password: ${{ secrets.TAPIS_DOCKERHUB_ACCESS_TOKEN }}
+      - name: Build_And_Push_PR_Image
+        run: |
+          TAG=pr-${{ github.event.pull_request.number }}
+          docker build -f Dockerfile.nix -t tapis/tapisui:$TAG .
+          docker push tapis/tapisui:$TAG
+      - name: Summarize
+        run: |
+          echo "Test image: \`docker run -p 8080:80 tapis/tapisui:pr-${{ github.event.pull_request.number }}\`" >> "$GITHUB_STEP_SUMMARY"
