@@ -1,8 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Cookies from 'js-cookie';
-import TapisContext from '@tapis/tapisui-hooks/dist/context/TapisContext';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import {
   Box,
@@ -94,15 +92,10 @@ const numericFields = new Set([
 ]);
 
 const AutoOptTabularForm: React.FC = () => {
-  // Read straight from the cookie TapisProvider itself manages —
-  // confirmed by TapisProvider.tsx removing 'X-Tapis-Token' on a 401.
-  const { basePath, accessToken } = useTapisConfig();
+  const { accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
-
-  // mlHubBasePath comes from TapisContext, set up by TapisProvider.
-  // Verify this is indeed meant for ML job submission before relying on it.
-  const { mlHubBasePath } = useContext(TapisContext);
-  const submitEndpoint = `https://autoopttabularservice.pods.icicleai.tapis.io/run_job`; // adjust path segment as needed
+  const submitEndpoint =
+    'https://autoopttabularservice.pods.icicleai.tapis.io/run_job';
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);

@@ -208,7 +208,8 @@ export const CATALOGS: Catalog[] = [
       },
       {
         label: 'Auto Opt Tabular',
-        description: 'An automated deeplearning framework for tabular datasets',
+        description:
+          'An automated deep learning framework for tabular datasets.',
         name: 'Auto Opt Tabular',
         href: '/auto-opt-tabular',
         links: [

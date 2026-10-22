@@ -128,7 +128,7 @@ const extension = createExtension({
           'isaw-portal',
           'insights',
           'auto-opt-tabular',
-          'fnas_lcd',
+          'fnas-lcd',
         ],
         secondaryServices: [],
       },
@@ -439,8 +439,6 @@ extension.registerService({
   iconName: 'globe',
   component: FNAS_LCD,
 });
-
-extension;
 
 // extension.registerService({
 //   id: 'analytics',
