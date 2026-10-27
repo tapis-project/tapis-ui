@@ -4,6 +4,10 @@ export {
   default as listExternalModelDeploymentOptions,
   type ListExternalModelDeploymentOptionsParams,
 } from './listExternalModelDeploymentOptions';
+export {
+  default as getExternalModelDeploymentOption,
+  type GetExternalModelDeploymentOptionParams,
+} from './getExternalModelDeploymentOption';
 export { default as details } from './getByAuthorAndName';
 export { default as inferenceServerDetails } from './inference/inferenceServerDetails';
 export { default as listDownloadLinks } from './listDownloadLinks';

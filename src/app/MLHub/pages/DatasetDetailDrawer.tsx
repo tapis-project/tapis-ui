@@ -12,6 +12,8 @@ import {
   ListItemText,
   LinearProgress,
   Stack,
+  Tab,
+  Tabs,
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -29,6 +31,7 @@ import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { useHistory } from 'react-router-dom';
 import { toFilesV2Route } from '../../Files/V2/utils';
 import { DatasetProviderIcon } from '../_components';
+import { JsonViewer } from '../_components/JsonViewer';
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -212,6 +215,12 @@ export function DatasetDetailDrawer({
   selectedId: string | null;
   onClose: () => void;
 }) {
+  const [activeTab, setActiveTab] = React.useState<'details' | 'json'>(
+    'details'
+  );
+  React.useEffect(() => {
+    setActiveTab('details');
+  }, [selectedId]);
   const query = Hooks.Datasets.useGetDataset(
     selectedId ? { datasetId: selectedId } : undefined
   );
@@ -305,6 +314,26 @@ export function DatasetDetailDrawer({
           </IconButton>
         </Box>
 
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            px: { xs: 2, sm: 3 },
+          }}
+        >
+          <Tabs
+            onChange={(_event, nextTab: 'details' | 'json') =>
+              setActiveTab(nextTab)
+            }
+            value={activeTab}
+            variant="scrollable"
+          >
+            <Tab label="Details" value="details" />
+            <Tab label="JSON" value="json" />
+          </Tabs>
+        </Box>
+
         {/* Body */}
         <Box sx={{ flex: 1, overflowY: 'auto' }}>
           {query.isLoading && (
@@ -326,160 +355,175 @@ export function DatasetDetailDrawer({
             </Box>
           )}
 
-          {!query.isLoading && !query.isError && dataset && (
-            <Stack spacing={3} sx={{ px: { xs: 2, sm: 3 }, py: 2.5 }}>
-              {/* Title / summary */}
-              <Box>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  useFlexGap
-                  sx={{ flexWrap: 'wrap', mb: 1.5 }}
-                >
-                  <Chip label={dataset.provider} size="small" />
-                  <Chip
-                    label={dataset.visibility}
-                    size="small"
-                    variant="outlined"
-                    color={
-                      dataset.visibility === 'Public' ? 'success' : 'default'
-                    }
-                  />
-                </Stack>
-                <Stack
-                  direction="row"
-                  spacing={0.5}
-                  useFlexGap
-                  sx={{ flexWrap: 'wrap' }}
-                >
-                  {dataset.tags.map((tag) => (
+          {!query.isLoading &&
+            !query.isError &&
+            dataset &&
+            activeTab === 'details' && (
+              <Stack spacing={3} sx={{ px: { xs: 2, sm: 3 }, py: 2.5 }}>
+                {/* Title / summary */}
+                <Box>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    useFlexGap
+                    sx={{ flexWrap: 'wrap', mb: 1.5 }}
+                  >
+                    <Chip label={dataset.provider} size="small" />
                     <Chip
-                      key={tag}
-                      label={tag}
+                      label={dataset.visibility}
                       size="small"
                       variant="outlined"
+                      color={
+                        dataset.visibility === 'Public' ? 'success' : 'default'
+                      }
                     />
-                  ))}
-                </Stack>
-                <Box sx={{ mt: 2 }}>
-                  <DatasetPlatformButton dataset={dataset} />
+                  </Stack>
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    useFlexGap
+                    sx={{ flexWrap: 'wrap' }}
+                  >
+                    {dataset.tags.map((tag) => (
+                      <Chip
+                        key={tag}
+                        label={tag}
+                        size="small"
+                        variant="outlined"
+                      />
+                    ))}
+                  </Stack>
+                  <Box sx={{ mt: 2 }}>
+                    <DatasetPlatformButton dataset={dataset} />
+                  </Box>
                 </Box>
-              </Box>
 
-              <Divider />
+                <Divider />
 
-              {/* Facts */}
-              <Box>
-                <Typography
-                  variant="overline"
-                  color="text.secondary"
-                  sx={{ fontWeight: 600 }}
-                >
-                  Details
-                </Typography>
-                <List dense disablePadding>
-                  <ListItem disableGutters>
-                    <ListItemText primary="Owner" secondary={dataset.owner} />
-                  </ListItem>
-                  <ListItem disableGutters>
-                    <ListItemText
-                      primary="Tenant"
-                      secondary={dataset.tenant_id}
-                    />
-                  </ListItem>
-                  <ListItem disableGutters>
-                    <ListItemText
-                      primary="Total size"
-                      secondary={formatBytes(dataset.size)}
-                    />
-                  </ListItem>
-                  <ListItem disableGutters>
-                    <ListItemText
-                      primary="Location"
-                      secondary={locatorSummary(dataset)}
-                    />
-                  </ListItem>
-                </List>
-              </Box>
-
-              <Divider />
-
-              {/* Repo / system locator */}
-              <Box>
-                {dataset.provider === DatasetProvider.HuggingFace ? (
-                  <>
-                    <Typography
-                      variant="overline"
-                      color="text.secondary"
-                      sx={{ fontWeight: 600 }}
-                    >
-                      Hugging Face repo
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ wordBreak: 'break-word' }}
-                    >
-                      {dataset.huggingface_repo_locator.id}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ fontFamily: 'monospace', wordBreak: 'break-all' }}
-                    >
-                      sha {dataset.huggingface_repo_locator.sha}
-                    </Typography>
-                  </>
-                ) : (
-                  <>
-                    <Typography
-                      variant="overline"
-                      color="text.secondary"
-                      sx={{ fontWeight: 600 }}
-                    >
-                      Tapis system
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ wordBreak: 'break-word' }}
-                    >
-                      site: {dataset.tapis_system_locator.site_id}
-                      <br />
-                      system: {dataset.tapis_system_locator.system_id}
-                      <br />
-                      path: {dataset.tapis_system_locator.path || '—'}
-                    </Typography>
-                  </>
-                )}
-              </Box>
-
-              <Divider />
-
-              {/* Files */}
-              <Box>
-                <Stack
-                  direction="row"
-                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                >
+                {/* Facts */}
+                <Box>
                   <Typography
                     variant="overline"
                     color="text.secondary"
                     sx={{ fontWeight: 600 }}
                   >
-                    Files
+                    Details
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {dataset.items.length} ·{' '}
-                    {formatBytes(totalItemsSize(dataset.items))}
-                  </Typography>
-                </Stack>
-                <List dense disablePadding sx={{ mt: 0.5 }}>
-                  {dataset.items.map((item) => (
-                    <DatasetItemRow key={item.path} item={item} />
-                  ))}
-                </List>
+                  <List dense disablePadding>
+                    <ListItem disableGutters>
+                      <ListItemText primary="Owner" secondary={dataset.owner} />
+                    </ListItem>
+                    <ListItem disableGutters>
+                      <ListItemText
+                        primary="Tenant"
+                        secondary={dataset.tenant_id}
+                      />
+                    </ListItem>
+                    <ListItem disableGutters>
+                      <ListItemText
+                        primary="Total size"
+                        secondary={formatBytes(dataset.size)}
+                      />
+                    </ListItem>
+                    <ListItem disableGutters>
+                      <ListItemText
+                        primary="Location"
+                        secondary={locatorSummary(dataset)}
+                      />
+                    </ListItem>
+                  </List>
+                </Box>
+
+                <Divider />
+
+                {/* Repo / system locator */}
+                <Box>
+                  {dataset.provider === DatasetProvider.HuggingFace ? (
+                    <>
+                      <Typography
+                        variant="overline"
+                        color="text.secondary"
+                        sx={{ fontWeight: 600 }}
+                      >
+                        Hugging Face repo
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ wordBreak: 'break-word' }}
+                      >
+                        {dataset.huggingface_repo_locator.id}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontFamily: 'monospace', wordBreak: 'break-all' }}
+                      >
+                        sha {dataset.huggingface_repo_locator.sha}
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
+                      <Typography
+                        variant="overline"
+                        color="text.secondary"
+                        sx={{ fontWeight: 600 }}
+                      >
+                        Tapis system
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ wordBreak: 'break-word' }}
+                      >
+                        site: {dataset.tapis_system_locator.site_id}
+                        <br />
+                        system: {dataset.tapis_system_locator.system_id}
+                        <br />
+                        path: {dataset.tapis_system_locator.path || '—'}
+                      </Typography>
+                    </>
+                  )}
+                </Box>
+
+                <Divider />
+
+                {/* Files */}
+                <Box>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      sx={{ fontWeight: 600 }}
+                    >
+                      Files
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {dataset.items.length} ·{' '}
+                      {formatBytes(totalItemsSize(dataset.items))}
+                    </Typography>
+                  </Stack>
+                  <List dense disablePadding sx={{ mt: 0.5 }}>
+                    {dataset.items.map((item) => (
+                      <DatasetItemRow key={item.path} item={item} />
+                    ))}
+                  </List>
+                </Box>
+              </Stack>
+            )}
+
+          {!query.isLoading &&
+            !query.isError &&
+            dataset &&
+            activeTab === 'json' && (
+              <Box sx={{ px: { xs: 2, sm: 3 }, py: 2.5 }}>
+                <JsonViewer value={dataset} />
               </Box>
-            </Stack>
-          )}
+            )}
         </Box>
       </Box>
     </Drawer>

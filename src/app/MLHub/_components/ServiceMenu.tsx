@@ -30,6 +30,8 @@ export type Service = {
   color?: string;
   /** Featured placement; lower values appear first. */
   featured?: number;
+  /** Optional short notice displayed beneath the service caption. */
+  bannerText?: string;
 };
 
 export type ServiceCategory = {
@@ -155,6 +157,27 @@ export function Category({ category, searchQuery, onClose }: CategoryProps) {
                 >
                   {service.caption}
                 </Typography>
+                {service.bannerText && (
+                  <Box
+                    sx={{
+                      bgcolor: '#fff3d6',
+                      border: '1px solid #f0c36d',
+                      borderRadius: 0.75,
+                      color: '#704300',
+                      display: 'inline-flex',
+                      fontSize: '0.62rem',
+                      fontWeight: 750,
+                      letterSpacing: '0.06em',
+                      lineHeight: 1,
+                      mt: 0.65,
+                      px: 0.65,
+                      py: 0.45,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {service.bannerText}
+                  </Box>
+                )}
               </Box>
               <ArrowOutwardRoundedIcon
                 sx={{

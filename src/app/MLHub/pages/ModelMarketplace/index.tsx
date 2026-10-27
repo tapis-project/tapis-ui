@@ -19,6 +19,7 @@ import {
   DialogTitle,
   FormControl,
   InputLabel,
+  ListItemIcon,
   Select,
   MenuItem,
   Paper,
@@ -28,6 +29,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
+import LocationCityOutlinedIcon from '@mui/icons-material/LocationCityOutlined';
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
+import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
+import RocketLaunchOutlinedIcon from '@mui/icons-material/RocketLaunchOutlined';
 import {
   frameworkLabelMap as inferenceBackendLabelMap,
   frameworkColorMap as inferenceBackendColorMap,
@@ -39,7 +44,12 @@ import MemoryOutlinedIcon from '@mui/icons-material/MemoryOutlined';
 import * as Models from '@mlhub/models-ts-sdk';
 import * as Deployments from '@mlhub/deployments-ts-sdk';
 import { useModelFilter } from '../../_context/ModelFilterContext/ModelFilterContext';
-import { Check, Inventory2Outlined, Storefront } from '@mui/icons-material';
+import {
+  Block,
+  Check,
+  Inventory2Outlined,
+  Storefront,
+} from '@mui/icons-material';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import { ModelMarketplaceListing } from './_components/ModelMarketplaceListing';
 import { useNavigate } from '../../_context/NavContext';
@@ -58,9 +68,52 @@ const MAX_SIZE_GIB = 1024;
 const BYTES_PER_GIB = 1024 ** 3;
 const DEFAULT_SIZE_RANGE: [number, number] = [0, MAX_SIZE_GIB];
 const DEFAULT_LIMIT = 10;
+const HPC_CLUSTER_QUERY_LIMIT = 50;
 
 const formatSize = (gib: number) =>
   gib === 0 ? '0 B' : gib >= MAX_SIZE_GIB ? '1 TiB+' : `${gib} GiB`;
+
+const pluralize = (count: number, singular: string) =>
+  `${count.toLocaleString()} ${singular}${count === 1 ? '' : 's'}`;
+
+function DeploymentOptionText({
+  primary,
+  secondary,
+}: {
+  primary: React.ReactNode;
+  secondary: React.ReactNode;
+}) {
+  return (
+    <Box sx={{ minWidth: 0, py: 0.25 }}>
+      <Typography component="div" variant="body2" sx={{ fontWeight: 650 }}>
+        {primary}
+      </Typography>
+      <Typography
+        color="text.secondary"
+        component="div"
+        variant="caption"
+        sx={{ lineHeight: 1.35, whiteSpace: 'normal' }}
+      >
+        {secondary}
+      </Typography>
+    </Box>
+  );
+}
+
+function FilterSelectValue({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: React.ReactNode;
+}) {
+  return (
+    <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+      {icon}
+      <Typography variant="body2">{label}</Typography>
+    </Stack>
+  );
+}
 
 const initialReducerState: ReducerState = {
   cursors: [undefined],
@@ -99,7 +152,7 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
         currentCursor: current,
         nextCursor: next,
       };
-    case 'pop':
+    case 'pop': {
       let stack = [...state.cursors];
       // Update the last cursor with the cursor provided by the api call
       stack.pop(); // remove the last cursor from the cursor stack
@@ -114,6 +167,7 @@ const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
         currentCursor: stack.at(-2),
         nextCursor: stack.at(-1),
       };
+    }
 
     case 'clear':
       return initialReducerState;
@@ -158,7 +212,8 @@ export default function ModelMarketplace() {
   const clustersQuery = Hooks.Deployments.Targets.useListHpcClusters(
     {
       dataCenter: dataCenter || Deployments.ListHpcClustersDataCenterEnum.Tacc,
-      limit: 50,
+      includeCount: true,
+      limit: HPC_CLUSTER_QUERY_LIMIT,
     },
     { enabled: !!dataCenter }
   );
@@ -401,7 +456,7 @@ export default function ModelMarketplace() {
               variant="h4"
               sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}
             >
-              Model Marketplace
+              Models Marketplace
             </Typography>
           </Stack>
           <Button
@@ -977,13 +1032,41 @@ export default function ModelMarketplace() {
                               event.target.value as Models.ModelProvider | 'all'
                             )
                           }
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={<Storefront fontSize="small" />}
+                              label={
+                                selected === 'all'
+                                  ? 'All providers'
+                                  : selected ===
+                                    Models.ModelProvider.HuggingFace
+                                  ? 'Hugging Face'
+                                  : 'Tapis'
+                              }
+                            />
+                          )}
                         >
-                          <MenuItem value="all">All providers</MenuItem>
+                          <MenuItem value="all">
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <Storefront fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body2">
+                              All providers
+                            </Typography>
+                          </MenuItem>
                           <MenuItem value={Models.ModelProvider.HuggingFace}>
-                            Hugging Face
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <PublicIcon fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body2">
+                              Hugging Face
+                            </Typography>
                           </MenuItem>
                           <MenuItem value={Models.ModelProvider.Tapis}>
-                            Tapis
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <Inventory2Outlined fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body2">Tapis</Typography>
                           </MenuItem>
                         </Select>
                       </FormControl>
@@ -1166,7 +1249,7 @@ export default function ModelMarketplace() {
                     </Typography>
                     <Typography
                       color="text.secondary"
-                      sx={{ mb: 2.5 }}
+                      sx={{ display: 'block', mb: 2.5 }}
                       variant="caption"
                     >
                       Filter models by compatible HPC targets, scheduler queues,
@@ -1191,21 +1274,33 @@ export default function ModelMarketplace() {
                           labelId="data-center-filter-label"
                           onChange={(event) => {
                             setDataCenter(
-                              event.target.value as
+                              (event.target.value || '') as
                                 | Deployments.ListHpcClustersDataCenterEnum
                                 | ''
                             );
                             setHpcClusterId('');
                             setBatchSchedulerQueueId('');
                           }}
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={
+                                <LocationCityOutlinedIcon fontSize="small" />
+                              }
+                              label={String(selected)}
+                            />
+                          )}
                           value={dataCenter}
                         >
-                          <MenuItem value="">Select a data center</MenuItem>
                           {Object.values(
                             Deployments.ListHpcClustersDataCenterEnum
                           ).map((center) => (
-                            <MenuItem key={center} value={center}>
-                              {center}
+                            <MenuItem
+                              key={center}
+                              sx={{ alignItems: 'center', gap: 1, py: 1 }}
+                              value={center}
+                            >
+                              <LocationCityOutlinedIcon fontSize="small" />
+                              <Typography variant="body2">{center}</Typography>
                             </MenuItem>
                           ))}
                         </Select>
@@ -1218,20 +1313,58 @@ export default function ModelMarketplace() {
                           label="HPC cluster"
                           labelId="hpc-cluster-filter-label"
                           onChange={(event) => {
-                            setHpcClusterId(event.target.value);
+                            setHpcClusterId(event.target.value || '');
                             setBatchSchedulerQueueId('');
                           }}
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={<HubOutlinedIcon fontSize="small" />}
+                              label={
+                                clusterOptions.find(
+                                  (cluster) => cluster.id === selected
+                                )?.name ?? String(selected)
+                              }
+                            />
+                          )}
                           value={hpcClusterId}
                         >
-                          <MenuItem value="">
-                            {clustersQuery.isLoading
-                              ? 'Loading clusters…'
-                              : 'Select an HPC cluster'}
-                          </MenuItem>
+                          {clustersQuery.isLoading && (
+                            <MenuItem disabled>Loading clusters…</MenuItem>
+                          )}
+                          {!clustersQuery.isLoading &&
+                            clusterOptions.length === 0 && (
+                              <MenuItem disabled>
+                                No clusters available
+                              </MenuItem>
+                            )}
                           {clusterOptions.map((cluster) => (
-                            <MenuItem key={cluster.id} value={cluster.id}>
-                              {cluster.name}
-                              {cluster.enabled ? '' : ' (disabled)'}
+                            <MenuItem
+                              disabled={!cluster.enabled}
+                              key={cluster.id}
+                              sx={{ alignItems: 'flex-start', py: 1 }}
+                              value={cluster.id}
+                            >
+                              <ListItemIcon sx={{ minWidth: 36, mt: 0.25 }}>
+                                <HubOutlinedIcon fontSize="small" />
+                              </ListItemIcon>
+                              <DeploymentOptionText
+                                primary={
+                                  <Stack
+                                    direction="row"
+                                    sx={{ alignItems: 'center', gap: 0.75 }}
+                                  >
+                                    <Box component="span">{cluster.name}</Box>
+                                    {!cluster.enabled && (
+                                      <Chip
+                                        label="Disabled"
+                                        size="small"
+                                        sx={{ height: 20 }}
+                                      />
+                                    )}
+                                  </Stack>
+                                }
+                                secondary={String(dataCenter)}
+                              />
                             </MenuItem>
                           ))}
                         </Select>
@@ -1244,19 +1377,68 @@ export default function ModelMarketplace() {
                           label="Scheduler queue"
                           labelId="batch-scheduler-queue-filter-label"
                           onChange={(event) =>
-                            setBatchSchedulerQueueId(event.target.value)
+                            setBatchSchedulerQueueId(event.target.value || '')
                           }
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={<StorageOutlinedIcon fontSize="small" />}
+                              label={
+                                queueOptions.find(
+                                  (queue) => queue.id === selected
+                                )?.name ?? String(selected)
+                              }
+                            />
+                          )}
                           value={batchSchedulerQueueId}
                         >
-                          <MenuItem value="">
-                            {clusterDetailsQuery.isLoading
-                              ? 'Loading queues…'
-                              : 'Select a scheduler queue'}
-                          </MenuItem>
+                          {clusterDetailsQuery.isLoading && (
+                            <MenuItem disabled>Loading queues…</MenuItem>
+                          )}
+                          {!clusterDetailsQuery.isLoading &&
+                            queueOptions.length === 0 && (
+                              <MenuItem disabled>No queues available</MenuItem>
+                            )}
                           {queueOptions.map((queue) => (
-                            <MenuItem key={queue.id} value={queue.id}>
-                              {queue.name}
-                              {queue.enabled ? '' : ' (disabled)'}
+                            <MenuItem
+                              disabled={!queue.enabled}
+                              key={queue.id}
+                              sx={{ alignItems: 'flex-start', py: 1 }}
+                              value={queue.id}
+                            >
+                              <ListItemIcon sx={{ minWidth: 36, mt: 0.25 }}>
+                                <StorageOutlinedIcon fontSize="small" />
+                              </ListItemIcon>
+                              <DeploymentOptionText
+                                primary={
+                                  <Stack
+                                    direction="row"
+                                    sx={{ alignItems: 'center', gap: 0.75 }}
+                                  >
+                                    <Box component="span">{queue.name}</Box>
+                                    <Chip
+                                      label={queue.scheduler_type}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{ height: 20 }}
+                                    />
+                                    {!queue.enabled && (
+                                      <Chip
+                                        label="Disabled"
+                                        size="small"
+                                        sx={{ height: 20 }}
+                                      />
+                                    )}
+                                  </Stack>
+                                }
+                                secondary={`${pluralize(
+                                  queue.hardware_profile.total_nodes,
+                                  'node'
+                                )} · ${queue.hardware_profile.cpu_cores_per_node.toLocaleString()} cores/node · ${queue.hardware_profile.memory_gb.toLocaleString()} GB/node${
+                                  queue.hardware_profile.gpu
+                                    ? ` · ${queue.hardware_profile.gpu.count_per_node} × ${queue.hardware_profile.gpu.gpu_vendor} ${queue.hardware_profile.gpu.gpu_model}`
+                                    : ' · CPU only'
+                                }`}
+                              />
                             </MenuItem>
                           ))}
                         </Select>
@@ -1274,15 +1456,27 @@ export default function ModelMarketplace() {
                               event.target.value as Models.DeploymentModality[]
                             )
                           }
-                          renderValue={(selected) =>
-                            (selected as Models.DeploymentModality[]).join(', ')
-                          }
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={
+                                <RocketLaunchOutlinedIcon fontSize="small" />
+                              }
+                              label={(
+                                selected as Models.DeploymentModality[]
+                              ).join(', ')}
+                            />
+                          )}
                           value={deploymentModalities}
                         >
                           {Object.values(Models.DeploymentModality).map(
                             (modality) => (
                               <MenuItem key={modality} value={modality}>
-                                {modality}
+                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                  <RocketLaunchOutlinedIcon fontSize="small" />
+                                </ListItemIcon>
+                                <Typography variant="body2">
+                                  {modality}
+                                </Typography>
                               </MenuItem>
                             )
                           )}
@@ -1301,15 +1495,25 @@ export default function ModelMarketplace() {
                               event.target.value as Models.ServingRuntime[]
                             )
                           }
-                          renderValue={(selected) =>
-                            (selected as Models.ServingRuntime[]).join(', ')
-                          }
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={<MemoryOutlinedIcon fontSize="small" />}
+                              label={(selected as Models.ServingRuntime[]).join(
+                                ', '
+                              )}
+                            />
+                          )}
                           value={servingRuntimes}
                         >
                           {Object.values(Models.ServingRuntime).map(
                             (runtime) => (
                               <MenuItem key={runtime} value={runtime}>
-                                {runtime}
+                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                  <MemoryOutlinedIcon fontSize="small" />
+                                </ListItemIcon>
+                                <Typography variant="body2">
+                                  {runtime}
+                                </Typography>
                               </MenuItem>
                             )
                           )}
@@ -1327,13 +1531,46 @@ export default function ModelMarketplace() {
                               event.target.value as 'any' | 'yes' | 'no'
                             )
                           }
+                          renderValue={(selected) => (
+                            <FilterSelectValue
+                              icon={
+                                <RocketLaunchOutlinedIcon fontSize="small" />
+                              }
+                              label={
+                                selected === 'yes'
+                                  ? 'Has deployment options'
+                                  : selected === 'no'
+                                  ? 'No deployment options'
+                                  : 'Any availability'
+                              }
+                            />
+                          )}
                           value={hasDeploymentOptions}
                         >
-                          <MenuItem value="any">Any availability</MenuItem>
-                          <MenuItem value="yes">
-                            Has deployment options
+                          <MenuItem value="any">
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <RocketLaunchOutlinedIcon fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body2">
+                              Any availability
+                            </Typography>
                           </MenuItem>
-                          <MenuItem value="no">No deployment options</MenuItem>
+                          <MenuItem value="yes">
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <Check fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body2">
+                              Has deployment options
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem value="no">
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <Block fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body2">
+                              No deployment options
+                            </Typography>
+                          </MenuItem>
                         </Select>
                       </FormControl>
                     </Box>

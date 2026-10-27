@@ -1,32 +1,17 @@
+import { useEffect, useMemo, useState } from 'react';
 import {
-  type FormEvent,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Alert,
-  AlertTitle,
   Box,
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
-  FormHelperText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
+  ListItemIcon,
   MenuItem,
-  OutlinedInput,
-  Select,
   Stack,
   Step,
   StepLabel,
@@ -34,29 +19,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { ExpandMore, Visibility, VisibilityOff } from '@mui/icons-material';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
+import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import { LoadingButton } from '@mui/lab';
-import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import * as Deployments from '@mlhub/deployments-ts-sdk';
 import * as Models from '@mlhub/models-ts-sdk';
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  useFieldArray,
-  useForm,
-  useWatch,
-} from 'react-hook-form';
-import { getPlatformConfig } from '../enums';
-import DiscreteIntegerSlider from './DiscreteIntegerSlider';
-import { MarketplaceButton } from './MarketplaceButton';
-import { SectionHeader } from './SectionHeader';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useToast } from '../_context/ToastsContext/useToast';
-import { derivedMetadataFor, modelAuthorFor } from '../modelMetadata';
+import { useNavigate } from '../_context/NavContext';
 
 interface DeploymentDialogProps {
   defaultModel?: Models.Model;
-  defaultStratRef?: Models.DeploymentStrategyReference;
+  defaultDeploymentOption?: Models.DeploymentOption;
   open: boolean;
   onClose: () => void;
   author: string;
@@ -64,993 +41,1139 @@ interface DeploymentDialogProps {
 
 type FormInput = {
   name: string;
-  description: string | null;
+  description: string;
   model: Models.Model | null;
-  strategy: Deployments.Strategy | null;
+  deploymentOption: Models.DeploymentOption | null;
   deploymentModality: Deployments.DeploymentModality | null;
-  parameters: DeploymentParameterInput[];
-  replicas: Deployments.ReplicaGroup['count'];
+  deploymentTargetType: Models.DeploymentTargetType | null;
+  hpcClusterId: string;
+  parameterValues: Record<string, string>;
   parallelismStrategies: Deployments.ParallelismStrategy[];
+  replicas: number;
 };
 
-type DeploymentParameterInput = {
-  definition: Deployments.Parameter;
-  value: Deployments.Parameter['_default'];
-};
-
-const parameterInputsFor = (parameters: Deployments.Parameter[]) =>
-  parameters.map((definition) => ({
-    definition,
-    value: definition._default ?? '',
-  }));
-
-type ErrorAlertProps = { error: Error };
-type DeploymentDetailsProps = { control: Control<FormInput> };
-type StrategyPickerProps = {
-  control: Control<FormInput>;
-  strategies: Deployments.Strategy[];
-  onSelect: (strategy: Deployments.Strategy | null) => void;
-};
-type ParametersAccordionProps = {
-  control: Control<FormInput>;
-  parameters: Array<DeploymentParameterInput & { id: string }>;
-  errors: FieldErrors<FormInput>;
-  requiredCount: number;
-};
-type ParameterFieldProps = {
-  parameter: DeploymentParameterInput & { id: string };
-  index: number;
-  control: Control<FormInput>;
-  error?: { message?: string };
-};
-type AdvancedSettingsProps = {
-  control: Control<FormInput>;
-  strategy: Deployments.Strategy;
-};
-type DeploymentReviewProps = {
-  model: Models.Model | null;
-  name: string;
-  description: string | null;
-  modality: Deployments.DeploymentModality | null;
-  strategy: Deployments.Strategy | null;
-  replicas: FormInput['replicas'];
-  parallelism: Deployments.ParallelismStrategy[];
-  parameters: DeploymentParameterInput[];
-};
-type DeploymentModalityMenuItemProps = {
-  deploymentModality: Deployments.DeploymentModality;
-};
-type ModelMenuItemProps = {
-  model: Models.Model;
-  replicas?: FormInput['replicas'];
-};
-type DeploymentStrategyMenuItemProps = {
-  strat: Pick<Deployments.Strategy, 'platform' | 'name' | 'description'>;
-};
-const deploymentNameFor = (modelName: string) => `${modelName} Deployment`;
-const hasParameterValue = (value: unknown) =>
-  value !== null &&
-  value !== undefined &&
-  (typeof value !== 'string' || value.trim().length > 0);
-const strategyKey = (
-  strategy: Pick<Deployments.Strategy, 'platform' | 'name'>
-) => `${strategy.platform}:${strategy.name}`;
-
-const wizardSteps = [
+const steps = [
   'Model',
-  'Details',
-  'Modality',
+  'General information',
+  'Deployment modality',
+  'Deployment target',
+  'HPC cluster',
+  'Queue',
   'Configuration',
   'Review',
-] as const;
+];
+const deploymentNameFor = (modelName: string) => `${modelName} Deployment`;
 
-const initialStepFor = (defaultModel?: Models.Model) => (defaultModel ? 1 : 0);
+const optionTitle = (option: Models.DeploymentOption) =>
+  option.hpc_cluster_queue?.batch_scheduler_queue_name ??
+  option.serving_runtime;
 
-const emptyValues: FormInput = {
-  name: '',
-  description: null,
-  model: null,
-  strategy: null,
-  deploymentModality: null,
-  parameters: [],
-  replicas: 1,
-  parallelismStrategies: [],
+const optionDescription = (option: Models.DeploymentOption) => {
+  const target = option.hpc_cluster_queue;
+  return target
+    ? `${target.data_center} · ${target.hpc_cluster_name} · ${option.serving_runtime}`
+    : `${option.deployment_target_type} · ${option.serving_runtime}`;
 };
 
+type SelectMenuItemProps = React.ComponentProps<typeof MenuItem>;
+
+function QueueMenuItem({
+  option,
+  ...menuItemProps
+}: {
+  option: Models.DeploymentOption;
+} & SelectMenuItemProps) {
+  const target = option.hpc_cluster_queue;
+  const clusterQuery = Hooks.Deployments.Targets.useGetHpcCluster(
+    target
+      ? {
+          dataCenter:
+            target.data_center as unknown as Deployments.GetHpcClusterDataCenterEnum,
+          hpcClusterId: target.hpc_cluster_id,
+        }
+      : undefined
+  );
+  const queue = clusterQuery.data?.result?.queues.find(
+    (item) => item.id === target?.batch_scheduler_queue_id
+  );
+  const hardware = queue?.hardware_profile;
+  const disabled =
+    !target?.hpc_cluster_enabled || !target.batch_scheduler_queue_enabled;
+
+  return (
+    <MenuItem
+      {...menuItemProps}
+      disabled={disabled}
+      sx={{ alignItems: 'flex-start', py: 1 }}
+      value={option.id}
+    >
+      <ListItemIcon sx={{ minWidth: 36, mt: 0.25 }}>
+        <StorageOutlinedIcon fontSize="small" />
+      </ListItemIcon>
+      <Box sx={{ minWidth: 0 }}>
+        <Stack
+          direction="row"
+          sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.5 }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            {optionTitle(option)}
+          </Typography>
+          {queue && (
+            <Chip
+              label={queue.scheduler_type}
+              size="small"
+              variant="outlined"
+            />
+          )}
+          {queue && !queue.enabled && (
+            <Chip color="warning" label="Disabled" size="small" />
+          )}
+        </Stack>
+        <Typography color="text.secondary" variant="caption">
+          {target
+            ? `${target.hpc_cluster_name} · ${target.data_center} · ${option.serving_runtime}`
+            : option.serving_runtime}
+        </Typography>
+        {hardware && (
+          <Typography component="div" color="text.secondary" variant="caption">
+            {hardware.total_nodes.toLocaleString()} nodes ·{' '}
+            {hardware.cpu_cores_per_node.toLocaleString()} cores/node ·{' '}
+            {hardware.memory_gb.toLocaleString()} GB/node
+            {hardware.gpu
+              ? ` · ${hardware.gpu.count_per_node} × ${hardware.gpu.gpu_vendor} ${hardware.gpu.gpu_model}`
+              : ''}
+          </Typography>
+        )}
+      </Box>
+    </MenuItem>
+  );
+}
+
+function HpcClusterMenuItem({
+  option,
+  ...menuItemProps
+}: {
+  option: Models.DeploymentOption;
+} & SelectMenuItemProps) {
+  const target = option.hpc_cluster_queue;
+  const disabled = !target?.hpc_cluster_enabled;
+
+  return (
+    <MenuItem
+      {...menuItemProps}
+      disabled={disabled}
+      sx={{ alignItems: 'flex-start', py: 1 }}
+      value={target?.hpc_cluster_id}
+    >
+      <ListItemIcon sx={{ minWidth: 36, mt: 0.25 }}>
+        <HubOutlinedIcon fontSize="small" />
+      </ListItemIcon>
+      <Box>
+        <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            {target?.hpc_cluster_name}
+          </Typography>
+          {disabled && <Chip color="warning" label="Disabled" size="small" />}
+        </Stack>
+        <Typography color="text.secondary" variant="caption">
+          {target?.data_center}
+        </Typography>
+      </Box>
+    </MenuItem>
+  );
+}
+
+type QueueRow = {
+  option?: Models.DeploymentOption;
+  queue: Deployments.BatchSchedulerQueue;
+};
+
+function ClusterQueueMenuItem({
+  queueRow,
+  ...menuItemProps
+}: {
+  queueRow: QueueRow;
+} & SelectMenuItemProps) {
+  const { option, queue } = queueRow;
+  const hardware = queue.hardware_profile;
+  const disabled = !queue.enabled || !option;
+
+  return (
+    <MenuItem
+      {...menuItemProps}
+      disabled={disabled}
+      sx={{ alignItems: 'flex-start', py: 1 }}
+      value={queue.id}
+    >
+      <ListItemIcon sx={{ minWidth: 36, mt: 0.25 }}>
+        <StorageOutlinedIcon fontSize="small" />
+      </ListItemIcon>
+      <Box sx={{ minWidth: 0 }}>
+        <Stack
+          direction="row"
+          sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.5 }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            {queue.name}
+          </Typography>
+          <Chip label={queue.scheduler_type} size="small" variant="outlined" />
+          {!queue.enabled && (
+            <Chip color="warning" label="Disabled" size="small" />
+          )}
+          {queue.enabled && !option && (
+            <Chip label="Not compatible" size="small" variant="outlined" />
+          )}
+        </Stack>
+        <Typography component="div" color="text.secondary" variant="caption">
+          {hardware.total_nodes.toLocaleString()} nodes ·{' '}
+          {hardware.cpu_cores_per_node.toLocaleString()} cores/node ·{' '}
+          {hardware.memory_gb.toLocaleString()} GB/node
+          {hardware.gpu
+            ? ` · ${hardware.gpu.count_per_node} × ${hardware.gpu.gpu_vendor} ${hardware.gpu.gpu_model}`
+            : ' · CPU only'}
+        </Typography>
+      </Box>
+    </MenuItem>
+  );
+}
+
+function DeployableModelMenuItem({
+  model,
+  ...menuItemProps
+}: {
+  model: Models.Model;
+} & SelectMenuItemProps) {
+  const optionsQuery = Hooks.Models.useListExternalModelDeploymentOptions({
+    externalModelId: model.external_model_id,
+    includeCount: true,
+  });
+  const hasAvailableOption = (optionsQuery.data?.result ?? []).some(
+    (option) => option.available
+  );
+  const isChecking = optionsQuery.isLoading || optionsQuery.isIdle;
+  const disabled = isChecking || !hasAvailableOption;
+
+  return (
+    <MenuItem
+      {...menuItemProps}
+      disabled={disabled}
+      sx={{ alignItems: 'flex-start', py: 1 }}
+      value={model.id}
+    >
+      <ListItemIcon sx={{ minWidth: 36, mt: 0.25 }}>
+        <SmartToyIcon fontSize="small" />
+      </ListItemIcon>
+      <Box>
+        <Typography variant="body2">{model.name}</Typography>
+        <Typography color="text.secondary" variant="caption">
+          {isChecking
+            ? 'Checking deployment options'
+            : hasAvailableOption
+            ? model.external_model.provider
+            : 'No deployment options available'}
+        </Typography>
+      </Box>
+    </MenuItem>
+  );
+}
+
 const DeploymentDialog = ({
+  defaultModel,
+  defaultDeploymentOption,
   open,
   onClose,
   author,
-  defaultModel,
-  defaultStratRef,
 }: DeploymentDialogProps) => {
-  const [activeStep, setActiveStep] = useState(() =>
-    initialStepFor(defaultModel)
-  );
-  const { data: modelsData } = Hooks.Models.useListByAuthor({ author });
-  const { data: strategiesData } = Hooks.Deployments.Strategies.useList();
+  const toast = useToast();
+  const { navigate } = useNavigate();
+  const [activeStep, setActiveStep] = useState(defaultModel ? 1 : 0);
+  const { data: modelsData, isLoading: isLoadingModels } =
+    Hooks.Models.useListByAuthor({ author });
   const models = modelsData?.result ?? [];
-  const deployableModels = models.filter(
-    (item) => derivedMetadataFor(item).deployment_strategies.length > 0
-  );
-  const hasDeployableModel =
-    deployableModels.length > 0 ||
-    Boolean(
-      defaultModel &&
-        derivedMetadataFor(defaultModel).deployment_strategies.length
+  const {
+    control,
+    formState: { errors },
+    getValues,
+    handleSubmit,
+    reset,
+    setValue,
+    trigger,
+  } = useForm<FormInput>({
+    defaultValues: {
+      name: defaultModel ? deploymentNameFor(defaultModel.name) : '',
+      description: '',
+      model: defaultModel ?? null,
+      deploymentOption: defaultDeploymentOption ?? null,
+      deploymentModality: null,
+      deploymentTargetType: null,
+      hpcClusterId: '',
+      parameterValues: {},
+      parallelismStrategies: [],
+      replicas: 1,
+    },
+  });
+  const [
+    model,
+    deploymentOption,
+    modality,
+    deploymentTargetType,
+    hpcClusterId,
+  ] = useWatch({
+    control,
+    name: [
+      'model',
+      'deploymentOption',
+      'deploymentModality',
+      'deploymentTargetType',
+      'hpcClusterId',
+    ],
+  });
+  const deploymentOptionsQuery =
+    Hooks.Models.useListExternalModelDeploymentOptions(
+      model
+        ? { externalModelId: model.external_model_id, includeCount: true }
+        : undefined
     );
-  const strategies = strategiesData?.result ?? [];
+  const availableOptions = useMemo(
+    () => deploymentOptionsQuery.data?.result ?? [],
+    [deploymentOptionsQuery.data]
+  );
+  const supportedModalities = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          availableOptions.flatMap(
+            (option) => option.supported_deployment_modalities
+          )
+        )
+      ),
+    [availableOptions]
+  );
+  const modalityOptions = useMemo(
+    () =>
+      modality
+        ? availableOptions.filter((option) =>
+            option.supported_deployment_modalities.includes(modality as never)
+          )
+        : [],
+    [availableOptions, modality]
+  );
+  const availableTargetTypes = useMemo(
+    () =>
+      Array.from(
+        new Set(modalityOptions.map((option) => option.deployment_target_type))
+      ),
+    [modalityOptions]
+  );
+  const clusterOptions = useMemo(() => {
+    const byClusterId = new Map<string, Models.DeploymentOption>();
+    modalityOptions
+      .filter(
+        (option) => option.deployment_target_type === deploymentTargetType
+      )
+      .forEach((option) => {
+        const clusterId = option.hpc_cluster_queue?.hpc_cluster_id;
+        if (clusterId && !byClusterId.has(clusterId)) {
+          byClusterId.set(clusterId, option);
+        }
+      });
+    return Array.from(byClusterId.values());
+  }, [deploymentTargetType, modalityOptions]);
+  const selectedClusterOption = clusterOptions.find(
+    (option) => option.hpc_cluster_queue?.hpc_cluster_id === hpcClusterId
+  );
+  const clusterDetailsQuery = Hooks.Deployments.Targets.useGetHpcCluster(
+    selectedClusterOption?.hpc_cluster_queue
+      ? {
+          dataCenter: selectedClusterOption.hpc_cluster_queue
+            .data_center as unknown as Deployments.GetHpcClusterDataCenterEnum,
+          hpcClusterId: selectedClusterOption.hpc_cluster_queue.hpc_cluster_id,
+        }
+      : undefined
+  );
+  const queueRows = useMemo(() => {
+    const compatibleOptions = new Map(
+      modalityOptions
+        .filter(
+          (option) =>
+            option.deployment_target_type === deploymentTargetType &&
+            option.hpc_cluster_queue?.hpc_cluster_id === hpcClusterId
+        )
+        .map((option) => [
+          option.hpc_cluster_queue?.batch_scheduler_queue_id,
+          option,
+        ])
+    );
+    return (clusterDetailsQuery.data?.result?.queues ?? [])
+      .map((queue) => ({
+        queue,
+        option: compatibleOptions.get(queue.id),
+      }))
+      .sort((left, right) => Number(!left.option) - Number(!right.option));
+  }, [
+    clusterDetailsQuery.data,
+    deploymentTargetType,
+    hpcClusterId,
+    modalityOptions,
+  ]);
+  const hasEnabledCluster = clusterOptions.some(
+    (option) => option.hpc_cluster_queue?.hpc_cluster_enabled
+  );
+  const hasEnabledQueue = queueRows.some(
+    (row) => row.queue.enabled && row.option
+  );
+  const deploymentOptionDetailQuery =
+    Hooks.Models.useGetExternalModelDeploymentOption(
+      model && deploymentOption
+        ? {
+            externalModelId: model.external_model_id,
+            deploymentOptionId: deploymentOption.id,
+          }
+        : undefined
+    );
+  const deploymentParameters =
+    deploymentOptionDetailQuery.data?.result.parameters ?? [];
   const {
     deploy,
     isLoading: isDeploying,
     error: deploymentError,
-    reset: resetDeploy,
-  } = Hooks.Deployments.useDeployWithStrategy();
-  const toast = useToast();
+    reset: resetDeployment,
+  } = Hooks.Deployments.useDeployWithOption();
 
-  const defaultStrategy = useMemo(
-    () =>
-      strategies.find(
-        ({ name, platform }) =>
-          name === defaultStratRef?.name &&
-          platform === defaultStratRef?.platform
-      ),
-    [defaultStratRef, strategies]
-  );
-
-  const initialValues = useMemo<FormInput>(
-    () => ({
-      ...emptyValues,
+  useEffect(() => {
+    if (!open) return;
+    reset({
       name: defaultModel ? deploymentNameFor(defaultModel.name) : '',
+      description: '',
       model: defaultModel ?? null,
-      strategy: defaultStrategy ?? null,
+      deploymentOption: defaultDeploymentOption ?? null,
       deploymentModality: null,
-      parameters: parameterInputsFor(defaultStrategy?.parameters ?? []),
-    }),
-    [defaultModel, defaultStrategy]
-  );
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isDirty },
-    reset,
-    setValue,
-    trigger,
-  } = useForm<FormInput>({ defaultValues: initialValues, mode: 'onChange' });
-  const { fields: parameters, replace: replaceParameters } = useFieldArray({
-    control,
-    name: 'parameters',
-  });
-
-  const [name, description, model, modality, strategy, replicas, parallelism] =
-    useWatch({
-      control,
-      name: [
-        'name',
-        'description',
-        'model',
-        'deploymentModality',
-        'strategy',
-        'replicas',
-        'parallelismStrategies',
-      ],
+      deploymentTargetType: null,
+      hpcClusterId: '',
+      parameterValues: {},
+      parallelismStrategies: [],
+      replicas: 1,
     });
-  const parameterValues = useWatch({ control, name: 'parameters' });
-
-  // Async model/strategy data can arrive after the form mounts. Do not overwrite edits.
-  useEffect(() => {
-    if (open && !isDirty) reset(initialValues);
-  }, [initialValues, isDirty, open, reset]);
+    setActiveStep(defaultModel ? 1 : 0);
+    resetDeployment();
+  }, [defaultDeploymentOption, defaultModel, open, reset, resetDeployment]);
 
   useEffect(() => {
-    if (open) setActiveStep(initialStepFor(defaultModel));
-  }, [defaultModel, open]);
+    if (!deploymentOption) return;
+    if (!deploymentOptionsQuery.isSuccess) return;
+    if (!availableOptions.some((option) => option.id === deploymentOption.id)) {
+      setValue('deploymentOption', null);
+    }
+  }, [
+    availableOptions,
+    deploymentOption,
+    deploymentOptionsQuery.isSuccess,
+    setValue,
+  ]);
 
-  const availableStrategies = useMemo(() => {
-    if (!model || !modality) return [];
-    const allowedStrategyKeys = new Set(
-      derivedMetadataFor(model).deployment_strategies.map(
-        ({ name, platform }) => `${platform}:${name}`
+  useEffect(() => {
+    if (!modality || supportedModalities.includes(modality as never)) return;
+    setValue('deploymentModality', null);
+    setValue('deploymentTargetType', null);
+    setValue('hpcClusterId', '');
+    setValue('deploymentOption', null);
+  }, [modality, setValue, supportedModalities]);
+
+  useEffect(() => {
+    if (!deploymentOptionDetailQuery.isSuccess) return;
+    setValue(
+      'parameterValues',
+      Object.fromEntries(
+        deploymentParameters.map((parameter) => [
+          parameter.name,
+          parameter._default ?? '',
+        ])
       )
     );
-    return strategies.filter(
-      (item) =>
-        item.config.supported_deployment_modalities.includes(modality) &&
-        allowedStrategyKeys.has(strategyKey(item))
-    );
-  }, [model, modality, strategies]);
+  }, [deploymentOptionDetailQuery.isSuccess, deploymentParameters, setValue]);
 
-  const requiredParameterCount =
-    strategy?.parameters.filter(({ required }) => required).length ?? 0;
-  const requiredParametersHaveValues = parameters.every(
-    (parameter, index) =>
-      !parameter.definition.required ||
-      hasParameterValue(parameterValues?.[index]?.value)
-  );
-  const canSubmit = Boolean(
-    model &&
-      modality &&
-      strategy &&
-      requiredParametersHaveValues &&
-      !isDeploying
-  );
-  const selectedModelIsDeployable = Boolean(
-    model && derivedMetadataFor(model).deployment_strategies.length
-  );
-
-  const close = () => {
-    reset(emptyValues);
-    resetDeploy();
-    setActiveStep(initialStepFor(defaultModel));
-    onClose();
-  };
-
-  const goNext = async () => {
-    let valid = false;
-    switch (activeStep) {
-      case 0:
-        valid = (await trigger('model')) && Boolean(selectedModelIsDeployable);
-        break;
-      case 1:
-        valid = await trigger(['name', 'description']);
-        break;
-      case 2:
-        valid = await trigger('deploymentModality');
-        break;
-      case 3:
-        valid = await trigger(['strategy', 'parameters']);
-        break;
-      default:
-        valid = true;
-    }
-
-    if (valid) {
-      setActiveStep((current) => Math.min(current + 1, wizardSteps.length - 1));
+  const next = async () => {
+    const fields: Array<Array<keyof FormInput>> = [
+      ['model'],
+      ['name'],
+      ['deploymentModality'],
+      ['deploymentTargetType'],
+      ['hpcClusterId'],
+      ['deploymentOption'],
+      ['replicas'],
+    ];
+    const isValid =
+      activeStep === 6
+        ? await trigger()
+        : await trigger(fields[activeStep] ?? []);
+    if (isValid) {
+      setActiveStep((step) => Math.min(step + 1, steps.length - 1));
     }
   };
 
   const submit = (data: FormInput) => {
-    if (!data.model || !data.strategy || !data.deploymentModality) return;
+    if (!data.deploymentOption || !data.deploymentModality) return;
     deploy(
       {
-        strategyName: data.strategy.name,
-        platform: data.strategy.platform,
-        deployModelWithStrategyBody: {
-          name: data.name,
-          description: data.description || null,
-          model_id: data.model.id,
-          arguments: data.parameters.map(({ definition, value }) => ({
-            parameter_name: definition.name,
-            value: value!, // TODO Handle null/undefined values
-          })),
+        deployModelWithOptionBody: {
+          deployment_option_id: data.deploymentOption.id,
           deployment_modality: data.deploymentModality,
+          name: data.name.trim(),
+          description: data.description.trim() || null,
           replicas: data.replicas,
           parallelism_strategies: data.parallelismStrategies,
+          arguments: deploymentParameters
+            .map((parameter) => ({
+              parameter_name: parameter.name,
+              value: data.parameterValues[parameter.name]?.trim() ?? '',
+            }))
+            .filter((argument) => argument.value.length > 0),
         },
       },
       {
-        onSuccess: (data) => {
-          close();
-          toast.success(
-            <p>
-              Deployment request <b>({data.result.name})</b> for model{' '}
-              <b>{data.result.model.model_id}</b>{' '}
-            </p>
-          );
+        onSuccess: () => {
+          toast.success('Deployment created successfully');
+          onClose();
+          navigate('/deployments');
         },
       }
     );
   };
 
-  const handleFormSubmit = (event: FormEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    if (activeStep === wizardSteps.length - 1) {
-      void handleSubmit(submit)(event);
-      return;
-    }
-    void goNext();
-  };
+  const selectedModelName = model?.name ?? 'the selected model';
+  const selectedOption = getValues('deploymentOption');
 
   return (
-    <Dialog
-      open={open}
-      onClose={close}
-      onSubmit={handleFormSubmit}
-      component="form"
-      maxWidth="md"
-      fullWidth
-    >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6">Model Deployment Wizard</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Configure and review a model deployment in five guided steps.
-        </Typography>
-      </DialogTitle>
-
-      {!hasDeployableModel ? (
-        <DialogContent dividers sx={contentSx}>
-          <Alert severity="warning">
-            <AlertTitle>No deployable models are available</AlertTitle>
-            Add a model with at least one compatible deployment strategy from
-            the Model Marketplace.
+    <Dialog fullWidth maxWidth="md" onClose={onClose} open={open}>
+      <DialogTitle>Deploy model</DialogTitle>
+      <DialogContent dividers>
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        {deploymentError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {deploymentError.message}
           </Alert>
-          <MarketplaceButton marketplace="model" />
-        </DialogContent>
-      ) : (
-        <DialogContent dividers sx={contentSx}>
-          {deploymentError && <ErrorAlert error={deploymentError} />}
-          <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 1 }}>
-            {wizardSteps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+        )}
+        {activeStep === 0 && (
+          <Stack spacing={2}>
+            <Typography variant="h6">Select a model</Typography>
+            <Controller
+              control={control}
+              name="model"
+              rules={{ required: 'Select a model to deploy' }}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  select
+                  fullWidth
+                  error={Boolean(fieldState.error)}
+                  helperText={
+                    fieldState.error?.message ??
+                    'Only models in your collection are shown.'
+                  }
+                  label="Model"
+                  onChange={(event) => {
+                    const nextModel =
+                      models.find((item) => item.id === event.target.value) ??
+                      null;
+                    field.onChange(nextModel);
+                    setValue(
+                      'name',
+                      nextModel ? deploymentNameFor(nextModel.name) : ''
+                    );
+                    setValue('deploymentOption', null);
+                    setValue('deploymentModality', null);
+                    setValue('deploymentTargetType', null);
+                    setValue('hpcClusterId', '');
+                  }}
+                  SelectProps={{
+                    renderValue: (selected: unknown) => {
+                      const selectedModel = models.find(
+                        (item) => item.id === selected
+                      );
+                      return (
+                        <Stack
+                          direction="row"
+                          sx={{ alignItems: 'center', gap: 1 }}
+                        >
+                          <SmartToyIcon fontSize="small" />
+                          <Typography variant="body2">
+                            {selectedModel?.name ?? String(selected)}
+                          </Typography>
+                        </Stack>
+                      );
+                    },
+                  }}
+                  value={field.value?.id ?? ''}
+                >
+                  {isLoadingModels ? (
+                    <MenuItem disabled>Loading models…</MenuItem>
+                  ) : (
+                    models.map((item) => (
+                      <DeployableModelMenuItem
+                        key={item.id}
+                        model={item}
+                        value={item.id}
+                      />
+                    ))
+                  )}
+                </TextField>
+              )}
+            />
+          </Stack>
+        )}
+        {activeStep === 1 && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6">Deployment details</Typography>
+              <Typography color="text.secondary" variant="body2">
+                Name this deployment of {selectedModelName}.
+              </Typography>
+            </Box>
+            <Controller
+              control={control}
+              name="name"
+              rules={{ required: 'Deployment name is required' }}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  autoFocus
+                  fullWidth
+                  required
+                  error={Boolean(fieldState.error)}
+                  helperText={fieldState.error?.message}
+                  label="Deployment name"
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Description"
+                  minRows={2}
+                  multiline
+                  placeholder="Optional operational context"
+                />
+              )}
+            />
+          </Stack>
+        )}
+        {activeStep === 2 && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6">Choose a deployment modality</Typography>
+              <Typography color="text.secondary" variant="body2">
+                Choose how this model will be deployed before selecting its
+                target.
+              </Typography>
+            </Box>
+            {deploymentOptionsQuery.isLoading ? (
+              <Box sx={{ py: 4, textAlign: 'center' }}>
+                <CircularProgress size={28} />
+              </Box>
+            ) : deploymentOptionsQuery.isError ? (
+              <Alert severity="error">
+                Unable to load deployment options for this model.
+              </Alert>
+            ) : supportedModalities.length === 0 ? (
+              <Alert severity="warning">
+                No available deployment options exist for this model.
+              </Alert>
+            ) : (
+              <Controller
+                control={control}
+                name="deploymentModality"
+                rules={{ required: 'Choose a deployment modality' }}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    select
+                    fullWidth
+                    required
+                    error={Boolean(fieldState.error)}
+                    helperText={fieldState.error?.message}
+                    label="Deployment modality"
+                    value={field.value ?? ''}
+                    onChange={(event) => {
+                      field.onChange(event.target.value || null);
+                      setValue('deploymentTargetType', null);
+                      setValue('hpcClusterId', '');
+                      setValue('deploymentOption', null);
+                    }}
+                    SelectProps={{
+                      renderValue: (selected: unknown) => (
+                        <Stack
+                          direction="row"
+                          sx={{ alignItems: 'center', gap: 1 }}
+                        >
+                          <RocketLaunchIcon fontSize="small" />
+                          <Typography variant="body2">
+                            {String(selected)}
+                          </Typography>
+                        </Stack>
+                      ),
+                    }}
+                  >
+                    {supportedModalities.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        <ListItemIcon sx={{ minWidth: 36 }}>
+                          <RocketLaunchIcon fontSize="small" />
+                        </ListItemIcon>
+                        <Typography variant="body2">{item}</Typography>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            )}
+          </Stack>
+        )}
+        {activeStep === 3 && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6">Choose a deployment target</Typography>
+              <Typography color="text.secondary" variant="body2">
+                HPC Cluster is the currently available deployment target.
+              </Typography>
+            </Box>
+            <Controller
+              control={control}
+              name="deploymentTargetType"
+              rules={{ required: 'Choose a deployment target' }}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  select
+                  fullWidth
+                  required
+                  error={Boolean(fieldState.error)}
+                  helperText={fieldState.error?.message}
+                  label="Deployment target"
+                  value={field.value ?? ''}
+                  onChange={(event) => {
+                    field.onChange(event.target.value || null);
+                    setValue('hpcClusterId', '');
+                    setValue('deploymentOption', null);
+                  }}
+                  SelectProps={{
+                    renderValue: (selected: unknown) => (
+                      <Stack
+                        direction="row"
+                        sx={{ alignItems: 'center', gap: 1 }}
+                      >
+                        <HubOutlinedIcon fontSize="small" />
+                        <Typography variant="body2">
+                          {selected ===
+                          Models.DeploymentTargetType.HpcClusterQueue
+                            ? 'HPC Cluster'
+                            : String(selected)}
+                        </Typography>
+                      </Stack>
+                    ),
+                  }}
+                >
+                  {availableTargetTypes.map((targetType) => (
+                    <MenuItem key={targetType} value={targetType}>
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        <HubOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <Box>
+                        <Typography variant="body2">
+                          {targetType ===
+                          Models.DeploymentTargetType.HpcClusterQueue
+                            ? 'HPC Cluster'
+                            : targetType}
+                        </Typography>
+                        <Typography color="text.secondary" variant="caption">
+                          Select an HPC scheduler queue next
+                        </Typography>
+                      </Box>
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </Stack>
+        )}
+        {activeStep === 4 && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6">Choose an HPC cluster</Typography>
+              <Typography color="text.secondary" variant="body2">
+                Select the cluster that will host this deployment.
+              </Typography>
+            </Box>
+            {clusterOptions.length === 0 ? (
+              <Alert severity="warning">
+                No HPC clusters support the selected modality and target.
+              </Alert>
+            ) : (
+              <Controller
+                control={control}
+                name="hpcClusterId"
+                rules={{ required: 'Choose an HPC cluster' }}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    select
+                    fullWidth
+                    required
+                    error={Boolean(fieldState.error)}
+                    helperText={fieldState.error?.message}
+                    label="HPC cluster"
+                    value={field.value ?? ''}
+                    onChange={(event) => {
+                      field.onChange(event.target.value || '');
+                      setValue('deploymentOption', null);
+                    }}
+                    SelectProps={{
+                      renderValue: (selected: unknown) => {
+                        const selectedCluster = clusterOptions.find(
+                          (option) =>
+                            option.hpc_cluster_queue?.hpc_cluster_id ===
+                            selected
+                        );
+                        return (
+                          <Stack
+                            direction="row"
+                            sx={{ alignItems: 'center', gap: 1 }}
+                          >
+                            <HubOutlinedIcon fontSize="small" />
+                            <Typography variant="body2">
+                              {selectedCluster
+                                ? selectedCluster.hpc_cluster_queue
+                                    ?.hpc_cluster_name
+                                : String(selected)}
+                            </Typography>
+                          </Stack>
+                        );
+                      },
+                    }}
+                  >
+                    {clusterOptions.map((option) => (
+                      <HpcClusterMenuItem
+                        key={option.id}
+                        option={option}
+                        value={option.hpc_cluster_queue?.hpc_cluster_id}
+                      />
+                    ))}
+                  </TextField>
+                )}
+              />
+            )}
+          </Stack>
+        )}
+        {activeStep === 5 && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6">Choose a queue</Typography>
+              <Typography color="text.secondary" variant="body2">
+                Select a scheduler queue on the selected HPC cluster.
+              </Typography>
+            </Box>
+            {clusterDetailsQuery.isLoading ? (
+              <Box sx={{ py: 4, textAlign: 'center' }}>
+                <CircularProgress size={28} />
+              </Box>
+            ) : queueRows.length === 0 ? (
+              <Alert severity="warning">
+                This cluster has no scheduler queues.
+              </Alert>
+            ) : (
+              <Controller
+                control={control}
+                name="deploymentOption"
+                rules={{ required: 'Choose a scheduler queue' }}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    select
+                    fullWidth
+                    required
+                    error={Boolean(fieldState.error)}
+                    helperText={fieldState.error?.message}
+                    label="Scheduler queue"
+                    value={
+                      field.value
+                        ? queueRows.find(
+                            (row) => row.option?.id === field.value?.id
+                          )?.queue.id ?? ''
+                        : ''
+                    }
+                    onChange={(event) =>
+                      field.onChange(
+                        queueRows.find(
+                          (row) => row.queue.id === event.target.value
+                        )?.option ?? null
+                      )
+                    }
+                    SelectProps={{
+                      renderValue: (selected: unknown) => {
+                        const selectedQueue = queueRows.find(
+                          (row) => row.queue.id === selected
+                        );
+                        return (
+                          <Stack
+                            direction="row"
+                            sx={{ alignItems: 'center', gap: 1 }}
+                          >
+                            <StorageOutlinedIcon fontSize="small" />
+                            <Typography variant="body2">
+                              {selectedQueue
+                                ? selectedQueue.queue.name
+                                : String(selected)}
+                            </Typography>
+                          </Stack>
+                        );
+                      },
+                    }}
+                  >
+                    {queueRows.map((queueRow) => (
+                      <ClusterQueueMenuItem
+                        key={queueRow.queue.id}
+                        queueRow={queueRow}
+                        value={queueRow.queue.id}
+                      />
+                    ))}
+                  </TextField>
+                )}
+              />
+            )}
+          </Stack>
+        )}
+        {activeStep === 6 && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography variant="h6">Configure deployment</Typography>
+              <Typography color="text.secondary" variant="body2">
+                Provide the selected option's required values and choose scaling
+                settings.
+              </Typography>
+            </Box>
+            {deploymentOptionDetailQuery.isLoading ? (
+              <Box sx={{ py: 4, textAlign: 'center' }}>
+                <CircularProgress size={28} />
+              </Box>
+            ) : deploymentOptionDetailQuery.isError ? (
+              <Alert severity="error">
+                Unable to load deployment configuration requirements.
+              </Alert>
+            ) : (
+              <>
+                {deploymentParameters.map((parameter) => (
+                  <Controller
+                    control={control}
+                    key={parameter.name}
+                    name={`parameterValues.${parameter.name}`}
+                    rules={{
+                      validate: (value) =>
+                        !parameter.required ||
+                        Boolean(value?.trim()) ||
+                        `${parameter.name} is required`,
+                    }}
+                    render={({ field, fieldState }) => {
+                      const choices =
+                        parameter.choices?.filter((choice) => choice.enabled) ??
+                        [];
+                      const isBoolean =
+                        parameter.parameter_type ===
+                        Models.DeploymentParameterType.Boolean;
+                      const isNumber =
+                        parameter.parameter_type ===
+                          Models.DeploymentParameterType.Integer ||
+                        parameter.parameter_type ===
+                          Models.DeploymentParameterType.Float;
+                      const isChoice = choices.length > 0 || isBoolean;
 
-          <Box sx={{ minHeight: 320 }}>
-            {activeStep === 0 && (
-              <WizardStep
-                title="Choose a model"
-                description="Select the model that you want to deploy. Only models with compatible deployment strategies are available."
-              >
+                      return (
+                        <TextField
+                          {...field}
+                          select={isChoice}
+                          fullWidth
+                          required={parameter.required}
+                          error={Boolean(fieldState.error)}
+                          helperText={
+                            fieldState.error?.message ?? parameter.description
+                          }
+                          label={parameter.name}
+                          type={
+                            isNumber
+                              ? 'number'
+                              : parameter.secret
+                              ? 'password'
+                              : 'text'
+                          }
+                          value={field.value ?? ''}
+                        >
+                          {isBoolean ? (
+                            <>
+                              <MenuItem value="true">True</MenuItem>
+                              <MenuItem value="false">False</MenuItem>
+                            </>
+                          ) : (
+                            choices.map((choice) => (
+                              <MenuItem key={choice.value} value={choice.value}>
+                                {choice.value}
+                                {choice.description
+                                  ? ` · ${choice.description}`
+                                  : ''}
+                              </MenuItem>
+                            ))
+                          )}
+                        </TextField>
+                      );
+                    }}
+                  />
+                ))}
                 <Controller
-                  name="model"
                   control={control}
-                  rules={{ required: 'Must select a model' }}
+                  name="replicas"
+                  rules={{
+                    required: 'Replica count is required',
+                    min: {
+                      value: 1,
+                      message: 'At least one replica is required',
+                    },
+                  }}
                   render={({ field, fieldState }) => (
                     <TextField
-                      select
+                      {...field}
                       fullWidth
                       required
-                      label="Select Model"
-                      value={field.value?.id ?? ''}
                       error={Boolean(fieldState.error)}
-                      helperText={fieldState.error?.message}
-                      onBlur={field.onBlur}
-                      onChange={(event) => {
-                        const selected =
-                          deployableModels.find(
-                            ({ id }) => id === event.target.value
-                          ) ?? null;
-                        field.onChange(selected);
-                        setValue(
-                          'name',
-                          selected ? deploymentNameFor(selected.name) : '',
-                          { shouldValidate: true }
-                        );
-                        setValue('deploymentModality', null);
-                        setValue('strategy', null);
-                        replaceParameters([]);
-                      }}
-                    >
-                      {deployableModels.map((item) => (
-                        <MenuItem key={item.id} value={item.id}>
-                          <ModelMenuItem model={item} />
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                      helperText={
+                        fieldState.error?.message ??
+                        'Number of deployment replicas.'
+                      }
+                      inputProps={{ min: 1, step: 1 }}
+                      label="Replicas"
+                      onChange={(event) =>
+                        field.onChange(Number(event.target.value))
+                      }
+                      type="number"
+                    />
                   )}
                 />
-                {model && !selectedModelIsDeployable && (
-                  <Alert severity="warning">
-                    This model has no compatible deployment strategy and cannot
-                    be deployed.
-                  </Alert>
-                )}
-              </WizardStep>
-            )}
-
-            {activeStep === 1 && (
-              <WizardStep
-                title="Deployment details"
-                description="Give this deployment a recognizable name and optional description."
-              >
-                <DeploymentDetails control={control} />
-              </WizardStep>
-            )}
-
-            {activeStep === 2 && (
-              <WizardStep
-                title="Choose a deployment modality"
-                description="Select whether this model runs as a persistent service or a batch workload."
-              >
                 <Controller
-                  name="deploymentModality"
                   control={control}
-                  rules={{ required: 'Must select a deployment modality' }}
-                  render={({ field, fieldState }) => (
+                  name="parallelismStrategies"
+                  render={({ field }) => (
                     <TextField
                       select
                       fullWidth
-                      required
-                      label="Deployment Modality"
-                      value={field.value ?? ''}
-                      error={Boolean(fieldState.error)}
-                      helperText={fieldState.error?.message}
-                      onBlur={field.onBlur}
-                      onChange={(event) => {
-                        const selected = event.target
-                          .value as Deployments.DeploymentModality;
-                        field.onChange(selected);
-                        if (
-                          strategy &&
-                          !strategy.config.supported_deployment_modalities.includes(
-                            selected
-                          )
-                        ) {
-                          setValue('strategy', null);
-                          replaceParameters([]);
-                        }
-                      }}
+                      SelectProps={{ multiple: true }}
+                      helperText="Optional strategies for parallel model execution."
+                      label="Parallelism strategies"
+                      onChange={(event) =>
+                        field.onChange(
+                          typeof event.target.value === 'string'
+                            ? event.target.value.split(',')
+                            : event.target.value
+                        )
+                      }
+                      value={field.value}
                     >
-                      {Object.values(Deployments.DeploymentModality).map(
-                        (item) => (
-                          <MenuItem key={item} value={item}>
-                            <DeploymentModalityMenuItem
-                              deploymentModality={item}
-                            />
+                      {Object.values(Deployments.ParallelismStrategy).map(
+                        (strategy) => (
+                          <MenuItem key={strategy} value={strategy}>
+                            {strategy}
                           </MenuItem>
                         )
                       )}
                     </TextField>
                   )}
                 />
-              </WizardStep>
+              </>
             )}
-
-            {activeStep === 3 && (
-              <WizardStep
-                title="Configure the deployment"
-                description="Choose a compatible strategy, provide its parameters, and adjust optional scaling settings."
-              >
-                <StrategyPicker
-                  control={control}
-                  strategies={availableStrategies}
-                  onSelect={(selected) =>
-                    replaceParameters(
-                      parameterInputsFor(selected?.parameters ?? [])
-                    )
-                  }
-                />
-                {availableStrategies.length === 0 && (
-                  <Alert severity="warning">
-                    No deployment strategies support the selected modality.
-                  </Alert>
-                )}
-                {strategy && (
-                  <>
-                    <ParametersAccordion
-                      control={control}
-                      parameters={parameters}
-                      errors={errors}
-                      requiredCount={requiredParameterCount}
-                    />
-                    <AdvancedSettings control={control} strategy={strategy} />
-                  </>
-                )}
-              </WizardStep>
-            )}
-
-            {activeStep === 4 && (
-              <WizardStep
-                title="Review deployment"
-                description="Confirm the configuration below before submitting the deployment request."
-              >
-                <DeploymentReview
-                  model={model}
-                  name={name}
-                  description={description}
-                  modality={modality}
-                  strategy={strategy}
-                  replicas={replicas}
-                  parallelism={parallelism}
-                  parameters={parameterValues ?? []}
-                />
-              </WizardStep>
-            )}
-          </Box>
-        </DialogContent>
-      )}
-
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button type="button" onClick={close} color="inherit">
-          Cancel
-        </Button>
-        <Box sx={{ flex: 1 }} />
-        {hasDeployableModel && activeStep > 0 && (
-          <Button
-            type="button"
-            color="inherit"
-            disabled={isDeploying}
-            onClick={() => setActiveStep((current) => current - 1)}
-          >
+          </Stack>
+        )}
+        {activeStep === 7 && (
+          <Stack spacing={2}>
+            <Typography variant="h6">Review deployment</Typography>
+            <ReviewRow label="Model">{selectedModelName}</ReviewRow>
+            <ReviewRow label="Name">{getValues('name')}</ReviewRow>
+            <ReviewRow label="Deployment option">
+              {selectedOption ? (
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.75 }}
+                >
+                  <Typography>{optionTitle(selectedOption)}</Typography>
+                  <Chip label={selectedOption.serving_runtime} size="small" />
+                  <Chip
+                    label={selectedOption.deployment_target_type}
+                    size="small"
+                    variant="outlined"
+                  />
+                </Stack>
+              ) : (
+                'Not selected'
+              )}
+            </ReviewRow>
+            <ReviewRow label="Modality">{modality ?? 'Not selected'}</ReviewRow>
+            <ReviewRow label="Target">
+              {deploymentTargetType ===
+              Models.DeploymentTargetType.HpcClusterQueue
+                ? 'HPC Cluster'
+                : deploymentTargetType ?? 'Not selected'}
+            </ReviewRow>
+            <ReviewRow label="HPC cluster">
+              {clusterOptions.find(
+                (option) =>
+                  option.hpc_cluster_queue?.hpc_cluster_id === hpcClusterId
+              )?.hpc_cluster_queue?.hpc_cluster_name ?? 'Not selected'}
+            </ReviewRow>
+            <ReviewRow label="Queue">
+              {selectedOption ? optionTitle(selectedOption) : 'Not selected'}
+            </ReviewRow>
+            <ReviewRow label="Replicas">{getValues('replicas')}</ReviewRow>
+          </Stack>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        {activeStep > 0 && (
+          <Button onClick={() => setActiveStep((step) => step - 1)}>
             Back
           </Button>
         )}
-        {hasDeployableModel && activeStep === wizardSteps.length - 1 ? (
+        {activeStep < steps.length - 1 ? (
+          <Button
+            disabled={
+              (activeStep === 2 &&
+                (deploymentOptionsQuery.isLoading ||
+                  supportedModalities.length === 0)) ||
+              (activeStep === 4 && !hasEnabledCluster) ||
+              (activeStep === 5 && !hasEnabledQueue) ||
+              (activeStep === 6 &&
+                (deploymentOptionDetailQuery.isLoading ||
+                  deploymentOptionDetailQuery.isError))
+            }
+            onClick={next}
+            variant="contained"
+          >
+            Continue
+          </Button>
+        ) : (
           <LoadingButton
             loading={isDeploying}
-            type="submit"
+            onClick={handleSubmit(submit)}
+            startIcon={<RocketLaunchIcon />}
             variant="contained"
-            disabled={!canSubmit}
           >
-            🚀 Deploy
+            Deploy
           </LoadingButton>
-        ) : hasDeployableModel ? (
-          <Button
-            type="button"
-            variant="contained"
-            disabled={isDeploying}
-            onClick={goNext}
-          >
-            Next
-          </Button>
-        ) : null}
+        )}
       </DialogActions>
     </Dialog>
-  );
-};
-
-export default DeploymentDialog;
-
-const contentSx = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 2.5,
-  pt: 2.5,
-};
-const accordionSx = { borderRadius: '8px', border: '1px solid #CCCCCC' };
-
-const ErrorAlert = ({ error }: ErrorAlertProps) => {
-  return (
-    <Alert severity="error">
-      <AlertTitle>Failed to Deploy</AlertTitle>
-      {error.message}
-    </Alert>
-  );
-};
-
-const WizardStep = ({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: ReactNode;
-}) => (
-  <Stack spacing={2.5}>
-    <Box>
-      <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        {description}
-      </Typography>
-    </Box>
-    {children}
-  </Stack>
-);
-
-const DeploymentDetails = ({ control }: DeploymentDetailsProps) => {
-  return (
-    <>
-      <Controller
-        name="name"
-        control={control}
-        rules={{ required: 'Deployment name is required' }}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            fullWidth
-            required
-            label="Deployment Name"
-            placeholder="e.g., My Llama Deployment - Live"
-            error={Boolean(fieldState.error)}
-            helperText={
-              fieldState.error?.message ?? 'Provide a name for this deployment.'
-            }
-          />
-        )}
-      />
-      <Controller
-        name="description"
-        control={control}
-        rules={{
-          validate: (value) =>
-            !value ||
-            value.length <= 200 ||
-            'Description cannot exceed 200 characters',
-        }}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            value={field.value ?? ''}
-            fullWidth
-            multiline
-            rows={2}
-            maxRows={6}
-            label="Description"
-            placeholder="Describe the operational scope or purpose of this deployment..."
-            error={Boolean(fieldState.error)}
-            helperText={fieldState.error?.message}
-          />
-        )}
-      />
-    </>
-  );
-};
-
-const StrategyPicker = ({
-  control,
-  strategies,
-  onSelect,
-}: StrategyPickerProps) => {
-  return (
-    <Controller
-      name="strategy"
-      control={control}
-      rules={{ required: 'Deployment strategy is required' }}
-      render={({ field, fieldState }) => (
-        <TextField
-          select
-          fullWidth
-          required
-          label="Choose deployment strategy"
-          value={field.value ? strategyKey(field.value) : ''}
-          error={Boolean(fieldState.error)}
-          helperText={fieldState.error?.message}
-          onBlur={field.onBlur}
-          onChange={(event) => {
-            const selected =
-              strategies.find(
-                (item) => strategyKey(item) === event.target.value
-              ) ?? null;
-            field.onChange(selected);
-            onSelect(selected);
-          }}
-        >
-          {strategies.map((item) => (
-            <MenuItem
-              key={strategyKey(item)}
-              value={strategyKey(item)}
-              sx={{ borderBottom: '1px solid #CCCCCC' }}
-            >
-              <DeploymentStrategyMenuItem strat={item} />
-            </MenuItem>
-          ))}
-        </TextField>
-      )}
-    />
-  );
-};
-
-const ParametersAccordion = ({
-  control,
-  parameters,
-  errors,
-  requiredCount,
-}: ParametersAccordionProps) => {
-  return (
-    <Accordion defaultExpanded sx={accordionSx}>
-      <AccordionSummary expandIcon={<ExpandMore />}>
-        <SectionHeader
-          title={`Parameters (${parameters.length})`}
-          caption={requiredCount > 0 ? `${requiredCount} required` : undefined}
-          captionColor="error"
-        />
-      </AccordionSummary>
-      <AccordionDetails>
-        <Stack spacing={2.5}>
-          {parameters.map((parameter, index) => (
-            <ParameterField
-              key={parameter.id}
-              parameter={parameter}
-              index={index}
-              control={control}
-              error={errors.parameters?.[index]?.value}
-            />
-          ))}
-        </Stack>
-      </AccordionDetails>
-    </Accordion>
-  );
-};
-
-const ParameterField = ({
-  parameter,
-  index,
-  control,
-  error,
-}: ParameterFieldProps) => {
-  const [showSecret, setShowSecret] = useState(false);
-  const definition = parameter.definition;
-  return (
-    <Controller
-      name={`parameters.${index}.value`}
-      control={control}
-      rules={{
-        validate: (value) =>
-          !definition.required ||
-          hasParameterValue(value) ||
-          'This parameter is required',
-      }}
-      render={({ field }) =>
-        definition.choices?.length ? (
-          <TextField
-            {...field}
-            select
-            fullWidth
-            label={definition.name}
-            required={definition.required}
-            error={Boolean(error)}
-            helperText={error?.message ?? definition.description}
-            autoComplete={`dont-autofill-${definition.name}`} // Prevent autofill
-            slotProps={{
-              input: {
-                sx: {
-                  '& input:-webkit-autofill': {
-                    // Adjust this to match your theme background and text color
-                    WebkitBoxShadow: '0 0 0 100px #ffffff inset !important',
-                    WebkitTextFillColor: '#000000 !important',
-                    // Fixes the transition lag when autofill triggers
-                    transition: 'background-color 5000s ease-in-out 0s',
-                  },
-                },
-              },
-            }}
-          >
-            {definition.choices.map((choice) => (
-              <MenuItem
-                key={choice.value}
-                value={choice.value}
-                disabled={!choice.enabled}
-              >
-                <Box>
-                  <Typography variant="body2">{choice.value}</Typography>
-                  {choice.description && (
-                    <Typography variant="caption" color="text.secondary">
-                      {choice.description}
-                    </Typography>
-                  )}
-                </Box>
-              </MenuItem>
-            ))}
-          </TextField>
-        ) : (
-          <TextField
-            {...field}
-            fullWidth
-            label={definition.name}
-            required={definition.required}
-            error={Boolean(error)}
-            type={definition.secret && !showSecret ? 'password' : 'text'}
-            helperText={
-              error?.message ??
-              (definition.secret
-                ? `(Secret) ${definition.description ?? ''}`
-                : definition.description)
-            }
-            autoComplete={`dont-autofill-${definition.name}`} // Prevent autofill
-            slotProps={{
-              input: {
-                sx: {
-                  '& input:-webkit-autofill': {
-                    // Adjust this to match your theme background and text color
-                    WebkitBoxShadow: '0 0 0 100px #ffffff inset !important',
-                    WebkitTextFillColor: '#000000 !important',
-                    // Fixes the transition lag when autofill triggers
-                    transition: 'background-color 5000s ease-in-out 0s',
-                  },
-                },
-                endAdornment: definition.secret ? (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={`${showSecret ? 'hide' : 'show'} ${
-                        definition.name
-                      }`}
-                      onClick={() => setShowSecret((shown) => !shown)}
-                      onMouseDown={(event) => event.preventDefault()}
-                      edge="end"
-                    >
-                      {!showSecret ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ) : undefined,
-              },
-            }}
-          />
-        )
-      }
-    />
-  );
-};
-
-const AdvancedSettings = ({ control, strategy }: AdvancedSettingsProps) => {
-  return (
-    <Accordion sx={accordionSx}>
-      <AccordionSummary expandIcon={<ExpandMore />}>
-        <SectionHeader
-          title="Advanced Settings"
-          caption="Replication & Parallelism"
-        />
-      </AccordionSummary>
-      <AccordionDetails
-        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-      >
-        <Controller
-          name="replicas"
-          control={control}
-          rules={{ required: 'Must specify replica count' }}
-          render={({ field, fieldState }) => (
-            <Box>
-              <SectionHeader
-                title="Replicas"
-                caption="Specify the total number of instances to deploy"
-              />
-              <Alert severity="info">
-                Note: This is not the same as the number of nodes this model
-                will be deployed across. A single instance (replica) may require
-                multiple nodes and sharding.
-              </Alert>
-              <DiscreteIntegerSlider
-                min={1}
-                sliderMin={0}
-                max={5}
-                value={typeof field.value === 'number' ? field.value : 1}
-                onChange={field.onChange}
-              />
-              {fieldState.error && (
-                <Typography color="error" variant="caption">
-                  {fieldState.error.message}
-                </Typography>
-              )}
-            </Box>
-          )}
-        />
-        <Controller
-          name="parallelismStrategies"
-          control={control}
-          render={({ field, fieldState }) => (
-            <>
-              <SectionHeader
-                title="Sharding"
-                caption="How the model is sharded across nodes. Applies to all replicas"
-              />
-              {strategy.config.supported_paralellism_strategies.length ===
-                0 && (
-                <Alert severity="warning">
-                  Sharding is not supported by the selected deployment strategy
-                  ({strategy.name})
-                </Alert>
-              )}
-              <FormControl fullWidth error={Boolean(fieldState.error)}>
-                <InputLabel id="parallelism-strategies-label">
-                  Parallelism Strategies
-                </InputLabel>
-                <Select
-                  {...field}
-                  labelId="parallelism-strategies-label"
-                  multiple
-                  value={Array.isArray(field.value) ? field.value : []}
-                  input={<OutlinedInput label="Parallelism Strategies" />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as string[]).map((value) => (
-                        <Chip key={value} label={value} size="small" />
-                      ))}
-                    </Box>
-                  )}
-                >
-                  {Object.values(Deployments.ParallelismStrategy).map(
-                    (item) => (
-                      <MenuItem
-                        disabled={
-                          !strategy.config.supported_paralellism_strategies.includes(
-                            item
-                          )
-                        }
-                        key={item}
-                        value={item}
-                      >
-                        {item}
-                      </MenuItem>
-                    )
-                  )}
-                </Select>
-                <FormHelperText>
-                  {fieldState.error?.message ??
-                    'Choose parallelism strategies for this deployment.'}
-                </FormHelperText>
-              </FormControl>
-            </>
-          )}
-        />
-      </AccordionDetails>
-    </Accordion>
-  );
-};
-
-const DeploymentReview = ({
-  model,
-  name,
-  description,
-  modality,
-  strategy,
-  replicas,
-  parallelism,
-  parameters,
-}: DeploymentReviewProps) => {
-  return (
-    <Stack
-      divider={<Divider flexItem />}
-      sx={{
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 2,
-        bgcolor: 'background.paper',
-        px: 2.5,
-      }}
-    >
-      <ReviewRow label="Model">
-        {model ? <ModelMenuItem model={model} replicas={replicas} /> : '—'}
-      </ReviewRow>
-      <ReviewRow label="Deployment">
-        <Box>
-          <Typography variant="body2" sx={{ fontWeight: 700 }}>
-            {name}
-          </Typography>
-          {description && (
-            <Typography variant="caption" color="text.secondary">
-              {description}
-            </Typography>
-          )}
-        </Box>
-      </ReviewRow>
-      <ReviewRow label="Modality">
-        {modality ? (
-          <DeploymentModalityMenuItem deploymentModality={modality} />
-        ) : (
-          '—'
-        )}
-      </ReviewRow>
-      <ReviewRow label="Strategy">
-        {strategy ? <DeploymentStrategyMenuItem strat={strategy} /> : '—'}
-      </ReviewRow>
-      <ReviewRow label="Parameters">
-        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
-          {parameters.length ? (
-            parameters.map(({ definition, value }) => (
-              <Chip
-                key={definition.name}
-                size="small"
-                variant="outlined"
-                label={`${definition.name}: ${
-                  definition.secret
-                    ? hasParameterValue(value)
-                      ? 'Configured'
-                      : 'Not set'
-                    : String(value ?? 'Not set')
-                }`}
-              />
-            ))
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No parameters
-            </Typography>
-          )}
-        </Stack>
-      </ReviewRow>
-      <ReviewRow label="Scaling">
-        <Typography variant="body2">
-          {replicas} replica{replicas === 1 ? '' : 's'}
-          {parallelism.length
-            ? ` · ${parallelism.join(', ')}`
-            : ' · No sharding'}
-        </Typography>
-      </ReviewRow>
-    </Stack>
   );
 };
 
@@ -1059,88 +1182,17 @@ const ReviewRow = ({
   children,
 }: {
   label: string;
-  children: ReactNode;
+  children: React.ReactNode;
 }) => (
-  <Box
-    sx={{
-      display: 'grid',
-      gridTemplateColumns: { xs: '1fr', sm: '140px 1fr' },
-      gap: 1.5,
-      py: 1.75,
-      alignItems: 'center',
-    }}
-  >
-    <Typography
-      variant="caption"
-      sx={{
-        color: 'text.secondary',
-        fontWeight: 700,
-        textTransform: 'uppercase',
-      }}
-    >
+  <Box>
+    <Typography color="text.secondary" variant="caption">
       {label}
     </Typography>
-    <Box>{children}</Box>
+    <Divider sx={{ my: 0.5 }} />
+    <Typography component="div" variant="body2">
+      {children}
+    </Typography>
   </Box>
 );
 
-const DeploymentModalityMenuItem = ({
-  deploymentModality,
-}: DeploymentModalityMenuItemProps) => {
-  const isService =
-    deploymentModality === Deployments.DeploymentModality.Service;
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-      <Typography>{isService ? '⚙️' : '🔄'}</Typography>
-      <Box>
-        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-          {isService ? 'Service' : 'Batch'}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {isService
-            ? 'Deploy this model as a persistent service'
-            : 'Deploy this model as a batch job on HPC systems'}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
-
-const ModelMenuItem = ({ model, replicas }: ModelMenuItemProps) => {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-      <Typography>
-        {derivedMetadataFor(model).deployment_strategies.length ? '🤖' : '🚫'}
-      </Typography>
-      <Box>
-        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-          {model.name}
-          {replicas ? ` × ${replicas}` : ''}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {modelAuthorFor(model)}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
-
-const DeploymentStrategyMenuItem = ({
-  strat,
-}: DeploymentStrategyMenuItemProps) => {
-  const config = getPlatformConfig(strat.platform);
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-      🚀
-      <Box>
-        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-          <Chip size="small" label={config.label} sx={{ mr: 0.5 }} />
-          {strat.name}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {strat.description}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
+export default DeploymentDialog;

@@ -14,29 +14,42 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import ClearIcon from '@mui/icons-material/Clear';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SearchIcon from '@mui/icons-material/Search';
+import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
 
-import {
-  DeploymentOption,
-  DeploymentStrategyReference,
-  Model,
-} from '@mlhub/models-ts-sdk';
+import { DeploymentOption, Model } from '@mlhub/models-ts-sdk';
+import * as Deployments from '@mlhub/deployments-ts-sdk';
 import DeploymentDialog from '../../../_components/DeploymentDialog';
+import {
+  batchOutcomePresentation,
+  canStartDeployment,
+  canStopDeployment,
+  canUndeployDeployment,
+  isDeploymentExpired,
+  isTerminalDeployment,
+  reconciliationStatusPresentation,
+} from '../../../_components/deploymentOperationalStatus';
+import { useToast } from '../../../_context/ToastsContext/useToast';
+import { useNavigate } from '../../../_context/NavContext';
 import { InfoSection } from './InfoSection';
 import { MLHub as Hooks, useTapisConfig } from '@tapis/tapisui-hooks';
-import { derivedMetadataFor } from '../../../modelMetadata';
+import { NoActiveDeployments } from '../../../_components/NoActiveDeployments';
 
 interface DeploymentSectionProps {
   model: Model;
+  view: 'deployments' | 'options';
 }
 
-export function DeploymentSection({ model }: DeploymentSectionProps) {
-  const strategies = derivedMetadataFor(model).deployment_strategies;
-  const [strat, setStrat] = useState<DeploymentStrategyReference | undefined>(
-    undefined
-  );
+export function DeploymentSection({ model, view }: DeploymentSectionProps) {
+  const toast = useToast();
+  const { navigate } = useNavigate();
+  const [selectedDeploymentOption, setSelectedDeploymentOption] = useState<
+    DeploymentOption | undefined
+  >();
   const { username } = useTapisConfig();
   const [deploymentOptionsFilter, setDeploymentOptionsFilter] = useState('');
   const [selectedServingRuntimes, setSelectedServingRuntimes] = useState<
@@ -48,7 +61,45 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
       externalModelId: model.external_model_id,
       includeCount: true,
     });
+  const deploymentsQuery = Hooks.Deployments.useList();
+  const { start, isLoading: isStarting } =
+    Hooks.Deployments.useStartModelDeployment();
+  const { stop, isLoading: isStopping } =
+    Hooks.Deployments.useStopModelDeployment();
+  const { undeploy, isLoading: isUndeploying } =
+    Hooks.Deployments.useUndeployModelDeployment();
   const deploymentOptions = deploymentOptionsQuery.data?.result ?? [];
+  const { activeDeployments, terminalDeployments } = useMemo(() => {
+    const newestFirst = (deploymentsQuery.data?.result ?? [])
+      .filter(
+        (deployment) => deployment.external_model_id === model.external_model_id
+      )
+      .sort((left, right) => {
+        const rightTimestamp = Date.parse(right.created_at);
+        const leftTimestamp = Date.parse(left.created_at);
+
+        return (
+          (Number.isNaN(rightTimestamp) ? 0 : rightTimestamp) -
+          (Number.isNaN(leftTimestamp) ? 0 : leftTimestamp)
+        );
+      });
+
+    return newestFirst.reduce<{
+      activeDeployments: Deployments.ModelDeployment[];
+      terminalDeployments: Deployments.ModelDeployment[];
+    }>(
+      (groups, deployment) => {
+        if (isTerminalDeployment(deployment)) {
+          groups.terminalDeployments.push(deployment);
+        } else {
+          groups.activeDeployments.push(deployment);
+        }
+        return groups;
+      },
+      { activeDeployments: [], terminalDeployments: [] }
+    );
+  }, [deploymentsQuery.data?.result, model.external_model_id]);
+  const isLifecycleMutating = isStarting || isStopping || isUndeploying;
   const availableServingRuntimes = useMemo(
     () =>
       Array.from(
@@ -144,263 +195,588 @@ export function DeploymentSection({ model }: DeploymentSectionProps) {
 
   return (
     <InfoSection>
-      <Typography sx={{ fontWeight: 700, mb: 0.5 }} variant="h6">
-        Deployment options
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 2 }} variant="body2">
-        Compatible runtime, target, and deployment modality combinations for
-        this model.
-      </Typography>
-      {deploymentOptionsQuery.isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
-          <CircularProgress size={24} />
-        </Box>
-      ) : deploymentOptionsQuery.isError ? (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          Unable to load deployment options.
-        </Alert>
-      ) : deploymentOptions.length ? (
+      {view === 'deployments' && (
         <>
-          <TextField
-            fullWidth
-            label="Filter deployment options"
-            onChange={(event) => setDeploymentOptionsFilter(event.target.value)}
-            placeholder="Search runtime, modality, data center, cluster, or queue…"
-            size="small"
-            sx={{ mb: 2 }}
-            value={deploymentOptionsFilter}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: deploymentOptionsFilter ? (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="Clear deployment option filter"
-                      edge="end"
-                      onClick={() => setDeploymentOptionsFilter('')}
-                      size="small"
-                    >
-                      <ClearIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ) : undefined,
-              },
-            }}
-          />
-          {(availableServingRuntimes.length > 0 ||
-            availableDataCenters.length > 0) && (
-            <Stack
-              direction="row"
-              sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1.5, mb: 2 }}
-            >
-              {availableServingRuntimes.length > 0 && (
-                <DeploymentOptionFilterChips
-                  label="Serving runtimes"
-                  onToggle={(runtime) =>
-                    setSelectedServingRuntimes((current) =>
-                      current.includes(runtime)
-                        ? current.filter((value) => value !== runtime)
-                        : [...current, runtime]
-                    )
-                  }
-                  selected={selectedServingRuntimes}
-                  values={availableServingRuntimes}
-                />
-              )}
-              {availableDataCenters.length > 0 && (
-                <DeploymentOptionFilterChips
-                  label="Data centers"
-                  onToggle={(dataCenter) =>
-                    setSelectedDataCenters((current) =>
-                      current.includes(dataCenter)
-                        ? current.filter((value) => value !== dataCenter)
-                        : [...current, dataCenter]
-                    )
-                  }
-                  selected={selectedDataCenters}
-                  values={availableDataCenters}
-                />
-              )}
-            </Stack>
-          )}
-          {filteredDeploymentOptions.length ? (
-            <Stack spacing={2.5}>
-              {hpcOptionGroups.map((dataCenterGroup) => (
-                <Box key={dataCenterGroup.dataCenter}>
-                  <Typography
-                    sx={{ fontWeight: 700, mb: 0.75 }}
-                    variant="subtitle2"
-                  >
-                    {dataCenterGroup.dataCenter}
-                  </Typography>
-                  <Divider sx={{ mb: 1.25 }} />
-                  <Stack spacing={1.5}>
-                    {dataCenterGroup.clusters.map((clusterGroup) => (
-                      <Box key={clusterGroup.clusterId}>
-                        <Stack
-                          direction="row"
-                          sx={{ alignItems: 'center', gap: 0.75, mb: 0.75 }}
-                        >
-                          <Typography sx={{ fontWeight: 600 }} variant="body2">
-                            {clusterGroup.clusterName}
-                          </Typography>
-                          <Chip
-                            label={`${clusterGroup.options.length} option${
-                              clusterGroup.options.length === 1 ? '' : 's'
-                            }`}
-                            size="small"
-                            variant="outlined"
-                          />
-                        </Stack>
-                        <Box
-                          sx={{
-                            display: 'grid',
-                            gap: 1.25,
-                            gridTemplateColumns: {
-                              xs: '1fr',
-                              sm: 'repeat(2, minmax(0, 1fr))',
-                              lg: 'repeat(3, minmax(0, 1fr))',
-                            },
-                          }}
-                        >
-                          {clusterGroup.options.map((option) => (
-                            <DeploymentOptionCard
-                              key={option.id}
-                              option={option}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Box>
-              ))}
-              {nonHpcOptions.length ? (
-                <Box>
-                  <Typography
-                    sx={{ fontWeight: 700, mb: 0.75 }}
-                    variant="subtitle2"
-                  >
-                    Other deployment targets
-                  </Typography>
-                  <Divider sx={{ mb: 1.25 }} />
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      gap: 1.25,
-                      gridTemplateColumns: {
-                        xs: '1fr',
-                        sm: 'repeat(2, minmax(0, 1fr))',
-                        lg: 'repeat(3, minmax(0, 1fr))',
-                      },
-                    }}
-                  >
-                    {nonHpcOptions.map((option) => (
-                      <DeploymentOptionCard key={option.id} option={option} />
-                    ))}
-                  </Box>
-                </Box>
-              ) : null}
-            </Stack>
+          <Typography sx={{ fontWeight: 700, mb: 0.5 }} variant="h6">
+            Model deployments
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 2 }} variant="body2">
+            Start, stop, or undeploy instances of this model.
+          </Typography>
+          {deploymentsQuery.isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : deploymentsQuery.isError ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Unable to load this model&apos;s deployments.
+            </Alert>
           ) : (
-            <Typography color="text.secondary" variant="body2">
-              No deployment options match this filter.
-            </Typography>
+            <Stack spacing={2.5} sx={{ mb: 3 }}>
+              <DeploymentListSection
+                caption="Deployments that are still running or can be managed."
+                count={activeDeployments.length}
+                deployments={activeDeployments}
+                isMutating={isLifecycleMutating}
+                onStart={(deployment) =>
+                  start(
+                    { deploymentId: deployment.id },
+                    {
+                      onError: (error) => {
+                        toast.error(
+                          error.message || 'Unable to start deployment.'
+                        );
+                      },
+                      onSuccess: () => {
+                        toast.success(`Started ${deployment.name}.`);
+                      },
+                    }
+                  )
+                }
+                onStop={(deployment) =>
+                  stop(
+                    { deploymentId: deployment.id },
+                    {
+                      onError: (error) => {
+                        toast.error(
+                          error.message || 'Unable to stop deployment.'
+                        );
+                      },
+                      onSuccess: () => {
+                        toast.success(`Stopped ${deployment.name}.`);
+                      },
+                    }
+                  )
+                }
+                onUndeploy={(deployment) =>
+                  undeploy(
+                    { deploymentId: deployment.id },
+                    {
+                      onError: (error) => {
+                        toast.error(
+                          error.message || 'Unable to undeploy deployment.'
+                        );
+                      },
+                      onSuccess: () => {
+                        toast.success(`Undeployed ${deployment.name}.`);
+                      },
+                    }
+                  )
+                }
+                onOpen={(deployment) =>
+                  navigate(`/deployments/${deployment.id}`)
+                }
+                title="Active deployments"
+              />
+              {terminalDeployments.length > 0 && (
+                <DeploymentListSection
+                  caption="Deployments that have reached a final outcome."
+                  count={terminalDeployments.length}
+                  deployments={terminalDeployments}
+                  isMutating={isLifecycleMutating}
+                  onStart={(deployment) =>
+                    start(
+                      { deploymentId: deployment.id },
+                      {
+                        onError: (error) => {
+                          toast.error(
+                            error.message || 'Unable to start deployment.'
+                          );
+                        },
+                        onSuccess: () => {
+                          toast.success(`Started ${deployment.name}.`);
+                        },
+                      }
+                    )
+                  }
+                  onStop={(deployment) =>
+                    stop(
+                      { deploymentId: deployment.id },
+                      {
+                        onError: (error) => {
+                          toast.error(
+                            error.message || 'Unable to stop deployment.'
+                          );
+                        },
+                        onSuccess: () => {
+                          toast.success(`Stopped ${deployment.name}.`);
+                        },
+                      }
+                    )
+                  }
+                  onUndeploy={(deployment) =>
+                    undeploy(
+                      { deploymentId: deployment.id },
+                      {
+                        onError: (error) => {
+                          toast.error(
+                            error.message || 'Unable to undeploy deployment.'
+                          );
+                        },
+                        onSuccess: () => {
+                          toast.success(`Undeployed ${deployment.name}.`);
+                        },
+                      }
+                    )
+                  }
+                  onOpen={(deployment) =>
+                    navigate(`/deployments/${deployment.id}`)
+                  }
+                  title="Terminal deployments"
+                />
+              )}
+            </Stack>
           )}
         </>
-      ) : (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          No deployment options are currently available for this model.
-        </Alert>
       )}
 
-      <Divider sx={{ my: 3 }} />
-
-      <Alert severity="info" sx={{ mb: 2 }}>
-        <AlertTitle>How deployment strategies are determined</AlertTitle>
-        We calculate deployment methods for models by analyzing their metadata -
-        architecture, I/O specification, and runtime requirements - against our
-        catalog of known deployment strategies. Only strategies with matching
-        capabilities are shown here.
-      </Alert>
-      {strategies && strategies.length > 0 ? (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {strategies.map((strategy, index) => (
-            <Box
-              key={strategy.name ?? index}
-              sx={{
-                p: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                cursor: 'pointer',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  boxShadow: (theme) => theme.shadows[1],
-                },
-              }}
-              onClick={() => setStrat(strategy)}
-              role="button"
-              tabIndex={0}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+      {view === 'options' && (
+        <>
+          <Typography sx={{ fontWeight: 700, mb: 0.5 }} variant="h6">
+            Deployment options
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 2 }} variant="body2">
+            Compatible runtime, target, and deployment modality combinations for
+            this model.
+          </Typography>
+          {deploymentOptionsQuery.isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : deploymentOptionsQuery.isError ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Unable to load deployment options.
+            </Alert>
+          ) : deploymentOptions.length ? (
+            <>
+              <TextField
+                fullWidth
+                label="Filter deployment options"
+                onChange={(event) =>
+                  setDeploymentOptionsFilter(event.target.value)
+                }
+                placeholder="Search runtime, modality, data center, cluster, or queue…"
+                size="small"
+                sx={{ mb: 2 }}
+                value={deploymentOptionsFilter}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon color="action" fontSize="small" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: deploymentOptionsFilter ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="Clear deployment option filter"
+                          edge="end"
+                          onClick={() => setDeploymentOptionsFilter('')}
+                          size="small"
+                        >
+                          <ClearIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : undefined,
+                  },
                 }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    {strategy.name}
-                  </Typography>
-                  {strategy.name && (
-                    <Chip
-                      label={strategy.name}
-                      size="small"
-                      sx={{ height: 20, fontSize: '0.7rem' }}
+              />
+              {(availableServingRuntimes.length > 0 ||
+                availableDataCenters.length > 0) && (
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 1.5,
+                    mb: 2,
+                  }}
+                >
+                  {availableServingRuntimes.length > 0 && (
+                    <DeploymentOptionFilterChips
+                      label="Serving runtimes"
+                      onToggle={(runtime) =>
+                        setSelectedServingRuntimes((current) =>
+                          current.includes(runtime)
+                            ? current.filter((value) => value !== runtime)
+                            : [...current, runtime]
+                        )
+                      }
+                      selected={selectedServingRuntimes}
+                      values={availableServingRuntimes}
                     />
                   )}
-                </Box>
+                  {availableDataCenters.length > 0 && (
+                    <DeploymentOptionFilterChips
+                      label="Data centers"
+                      onToggle={(dataCenter) =>
+                        setSelectedDataCenters((current) =>
+                          current.includes(dataCenter)
+                            ? current.filter((value) => value !== dataCenter)
+                            : [...current, dataCenter]
+                        )
+                      }
+                      selected={selectedDataCenters}
+                      values={availableDataCenters}
+                    />
+                  )}
+                </Stack>
+              )}
+              {filteredDeploymentOptions.length ? (
+                <Stack spacing={2.5}>
+                  {hpcOptionGroups.map((dataCenterGroup) => (
+                    <Box key={dataCenterGroup.dataCenter}>
+                      <Typography
+                        sx={{ fontWeight: 700, mb: 0.75 }}
+                        variant="subtitle2"
+                      >
+                        {dataCenterGroup.dataCenter}
+                      </Typography>
+                      <Divider sx={{ mb: 1.25 }} />
+                      <Stack spacing={1.5}>
+                        {dataCenterGroup.clusters.map((clusterGroup) => (
+                          <Box key={clusterGroup.clusterId}>
+                            <Stack
+                              direction="row"
+                              sx={{ alignItems: 'center', gap: 0.75, mb: 0.75 }}
+                            >
+                              <Typography
+                                sx={{ fontWeight: 600 }}
+                                variant="body2"
+                              >
+                                {clusterGroup.clusterName}
+                              </Typography>
+                              <Chip
+                                label={`${clusterGroup.options.length} option${
+                                  clusterGroup.options.length === 1 ? '' : 's'
+                                }`}
+                                size="small"
+                                variant="outlined"
+                              />
+                            </Stack>
+                            <Box
+                              sx={{
+                                display: 'grid',
+                                gap: 1.25,
+                                gridTemplateColumns: {
+                                  xs: '1fr',
+                                  sm: 'repeat(2, minmax(0, 1fr))',
+                                  lg: 'repeat(3, minmax(0, 1fr))',
+                                },
+                              }}
+                            >
+                              {clusterGroup.options.map((option) => (
+                                <DeploymentOptionCard
+                                  key={option.id}
+                                  onDeploy={setSelectedDeploymentOption}
+                                  option={option}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+                        ))}
+                      </Stack>
+                    </Box>
+                  ))}
+                  {nonHpcOptions.length ? (
+                    <Box>
+                      <Typography
+                        sx={{ fontWeight: 700, mb: 0.75 }}
+                        variant="subtitle2"
+                      >
+                        Other deployment targets
+                      </Typography>
+                      <Divider sx={{ mb: 1.25 }} />
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gap: 1.25,
+                          gridTemplateColumns: {
+                            xs: '1fr',
+                            sm: 'repeat(2, minmax(0, 1fr))',
+                            lg: 'repeat(3, minmax(0, 1fr))',
+                          },
+                        }}
+                      >
+                        {nonHpcOptions.map((option) => (
+                          <DeploymentOptionCard
+                            key={option.id}
+                            onDeploy={setSelectedDeploymentOption}
+                            option={option}
+                          />
+                        ))}
+                      </Box>
+                    </Box>
+                  ) : null}
+                </Stack>
+              ) : (
+                <Typography color="text.secondary" variant="body2">
+                  No deployment options match this filter.
+                </Typography>
+              )}
+            </>
+          ) : (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              No deployment options are currently available for this model.
+            </Alert>
+          )}
 
-                <Button
-                  startIcon={<RocketLaunchIcon fontSize="small" />}
-                  size="small"
-                  variant="outlined"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setStrat(strategy);
-                  }}
-                  sx={{ minWidth: 'auto' }}
-                >
-                  Deploy
-                </Button>
-              </Box>
-            </Box>
-          ))}
           <DeploymentDialog
-            open={strat !== undefined}
-            onClose={() => setStrat(undefined)}
             author={username}
+            defaultDeploymentOption={selectedDeploymentOption}
             defaultModel={model}
-            defaultStratRef={strat}
+            onClose={() => setSelectedDeploymentOption(undefined)}
+            open={selectedDeploymentOption !== undefined}
           />
-        </Box>
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          No deployment strategies configured.
-        </Typography>
+        </>
       )}
     </InfoSection>
   );
 }
 
-function DeploymentOptionCard({ option }: { option: DeploymentOption }) {
+function DeploymentListSection({
+  caption,
+  count,
+  deployments,
+  isMutating,
+  onOpen,
+  onStart,
+  onStop,
+  onUndeploy,
+  title,
+}: {
+  caption: string;
+  count: number;
+  deployments: Deployments.ModelDeployment[];
+  isMutating: boolean;
+  onOpen: (deployment: Deployments.ModelDeployment) => void;
+  onStart: (deployment: Deployments.ModelDeployment) => void;
+  onStop: (deployment: Deployments.ModelDeployment) => void;
+  onUndeploy: (deployment: Deployments.ModelDeployment) => void;
+  title: string;
+}) {
+  return (
+    <Box>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          justifyContent: 'space-between',
+          mb: 1.25,
+          pb: 0.75,
+        }}
+      >
+        <Box>
+          <Typography sx={{ fontWeight: 700 }} variant="subtitle1">
+            {title}
+          </Typography>
+          <Typography color="text.secondary" variant="caption">
+            {caption}
+          </Typography>
+        </Box>
+        <Chip label={count} size="small" variant="outlined" />
+      </Stack>
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 1.25,
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+        }}
+      >
+        {deployments.length ? (
+          deployments.map((deployment) => (
+            <ModelDeploymentCard
+              deployment={deployment}
+              isMutating={isMutating}
+              key={deployment.id}
+              onOpen={() => onOpen(deployment)}
+              onStart={() => onStart(deployment)}
+              onStop={() => onStop(deployment)}
+              onUndeploy={() => onUndeploy(deployment)}
+            />
+          ))
+        ) : (
+          <NoActiveDeployments />
+        )}
+      </Box>
+    </Box>
+  );
+}
+
+function ModelDeploymentCard({
+  deployment,
+  isMutating,
+  onOpen,
+  onStart,
+  onStop,
+  onUndeploy,
+}: {
+  deployment: Deployments.ModelDeployment;
+  isMutating: boolean;
+  onOpen: () => void;
+  onStart: () => void;
+  onStop: () => void;
+  onUndeploy: () => void;
+}) {
+  const reconciliation = reconciliationStatusPresentation(
+    deployment.reconciliation_status
+  );
+  const batchOutcome = batchOutcomePresentation(
+    deployment.batch_execution_outcome
+  );
+  const isExpired = isDeploymentExpired(deployment);
+  const isRunning =
+    !isExpired && deployment.state === Deployments.State.Running;
+
+  return (
+    <Card
+      onClick={onOpen}
+      sx={{
+        cursor: 'pointer',
+        height: '100%',
+        '&:hover': { borderColor: 'primary.main' },
+      }}
+      variant="outlined"
+    >
+      <CardContent
+        sx={{
+          '&:last-child': { pb: 1.5 },
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          p: 1.5,
+        }}
+      >
+        <Stack spacing={1.25} sx={{ flex: 1 }}>
+          <Stack
+            direction={{ sm: 'row', xs: 'column' }}
+            sx={{ alignItems: { sm: 'flex-start' }, gap: 1, width: '100%' }}
+          >
+            <Box sx={{ minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 700 }} variant="subtitle2">
+                {deployment.name}
+              </Typography>
+              <Typography color="text.secondary" variant="caption">
+                {deployment.deployment_modality} deployment
+                {deployment.target_endpoint?.base_url
+                  ? ` · ${deployment.target_endpoint.base_url}`
+                  : ''}
+              </Typography>
+              <Typography
+                color="text.secondary"
+                sx={{ display: 'block', fontFamily: 'monospace' }}
+                variant="caption"
+              >
+                Deployment ID: {deployment.id}
+              </Typography>
+            </Box>
+          </Stack>
+          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
+            <Button
+              disabled={isMutating || !canStartDeployment(deployment)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onStart();
+              }}
+              size="small"
+              startIcon={<PlayArrowIcon />}
+              variant="outlined"
+            >
+              Start
+            </Button>
+            <Button
+              color="warning"
+              disabled={isMutating || !canStopDeployment(deployment)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onStop();
+              }}
+              size="small"
+              startIcon={<StopCircleOutlinedIcon />}
+              variant="outlined"
+            >
+              Stop
+            </Button>
+            <Button
+              color="error"
+              disabled={isMutating || !canUndeployDeployment(deployment)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onUndeploy();
+              }}
+              size="small"
+              startIcon={<DeleteOutlineIcon />}
+              variant="outlined"
+            >
+              Undeploy
+            </Button>
+          </Stack>
+        </Stack>
+        {deployment.last_message && (
+          <Typography
+            color="text.secondary"
+            sx={{ display: 'block', mt: 1 }}
+            variant="caption"
+          >
+            {deployment.last_message}
+          </Typography>
+        )}
+        <Stack
+          direction="row"
+          sx={{ flexShrink: 0, flexWrap: 'wrap', gap: 0.75, mt: 1.25 }}
+        >
+          <Chip
+            color={reconciliation.color}
+            icon={
+              isRunning ? (
+                <AutorenewRoundedIcon
+                  aria-label="Deployment is running"
+                  sx={{
+                    animation: 'deployment-running 1.2s linear infinite',
+                    fontSize: 16,
+                    '@keyframes deployment-running': {
+                      from: { transform: 'rotate(0deg)' },
+                      to: { transform: 'rotate(360deg)' },
+                    },
+                  }}
+                />
+              ) : undefined
+            }
+            label={reconciliation.label}
+            size="small"
+            variant="outlined"
+          />
+          {isExpired && (
+            <Chip
+              color="warning"
+              label="Expired"
+              size="small"
+              variant="outlined"
+            />
+          )}
+          {deployment.batch_execution_outcome && (
+            <Chip
+              color={batchOutcome.color}
+              label={`Batch: ${batchOutcome.label}`}
+              size="small"
+              variant="outlined"
+            />
+          )}
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DeploymentOptionCard({
+  onDeploy,
+  option,
+}: {
+  onDeploy: (option: DeploymentOption) => void;
+  option: DeploymentOption;
+}) {
   const target = option.hpc_cluster_queue;
   const title = target?.batch_scheduler_queue_name ?? option.serving_runtime;
 
@@ -456,6 +832,15 @@ function DeploymentOptionCard({ option }: { option: DeploymentOption }) {
               : ''}
           </Typography>
         )}
+        <Button
+          disabled={!option.available}
+          onClick={() => onDeploy(option)}
+          size="small"
+          sx={{ alignSelf: 'flex-end', mt: 1 }}
+          variant="outlined"
+        >
+          Deploy
+        </Button>
       </CardContent>
     </Card>
   );

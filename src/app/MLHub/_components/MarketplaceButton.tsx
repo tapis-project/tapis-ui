@@ -9,18 +9,9 @@ function capitalizeFirstLetter(string: string) {
 
 type Marketplace = 'model' | 'dataset';
 
-const colorMap: Record<
-  Marketplace,
-  { color: string; backgroundColor: string }
-> = {
-  dataset: {
-    color: 'text.primary',
-    backgroundColor: 'secondary',
-  },
-  model: {
-    color: 'text.primary',
-    backgroundColor: 'primary',
-  },
+const colorMap: Record<Marketplace, 'primary' | 'secondary'> = {
+  dataset: 'primary',
+  model: 'secondary',
 };
 
 export const MarketplaceButton: React.FC<{
@@ -30,6 +21,7 @@ export const MarketplaceButton: React.FC<{
   return (
     <>
       <Button
+        color={colorMap[marketplace]}
         variant="outlined"
         size="large"
         startIcon={<StorefrontRounded />}
@@ -45,7 +37,7 @@ export const MarketplaceButton: React.FC<{
         }}
         fullWidth
       >
-        <Typography variant="button" sx={colorMap[marketplace]}>
+        <Typography variant="button">
           Visit <b>{capitalizeFirstLetter(marketplace)}</b> <b>Marketplace</b>
         </Typography>
       </Button>

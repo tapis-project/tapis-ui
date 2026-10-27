@@ -17,7 +17,6 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import { useNavigate } from '../../_context/NavContext';
 import {
-  AccountTreeRounded,
   AnalyticsRounded,
   AssignmentRounded,
   AutoAwesome,
@@ -31,6 +30,7 @@ import {
   HubRounded,
   InsightsRounded,
   LockRounded,
+  LinkRounded,
   ManageSearchRounded,
   ModelTrainingRounded,
   NotificationsRounded,
@@ -134,15 +134,6 @@ export default function MLHubAppBar() {
       tags: ['infrastructure', 'data centers', 'hpc', 'compute', 'scheduler'],
       services: [
         {
-          id: 'data-centers',
-          title: 'Data centers',
-          caption: 'Browse MLHub infrastructure regions and facilities',
-          icon: CorporateFare,
-          color: '#2563eb',
-          tags: ['infrastructure', 'data centers', 'regions', 'facilities'],
-          onClick: () => navigate('/data-centers'),
-        },
-        {
           id: 'hpc-clusters',
           title: 'HPC clusters',
           caption: 'Browse compute targets and scheduler queues',
@@ -150,6 +141,16 @@ export default function MLHubAppBar() {
           color: '#0f766e',
           tags: ['hpc', 'clusters', 'compute', 'queues', 'scheduler'],
           onClick: () => navigate('/hpc-clusters'),
+        },
+        {
+          id: 'data-centers',
+          title: 'Data centers',
+          caption: 'Browse MLHub infrastructure regions and facilities',
+          icon: CorporateFare,
+          color: '#2563eb',
+          tags: ['infrastructure', 'data centers', 'regions', 'facilities'],
+          bannerText: 'Coming soon',
+          onClick: () => navigate('/data-centers'),
         },
       ],
     },
@@ -197,6 +198,7 @@ export default function MLHubAppBar() {
             'operations',
           ],
           featured: 3,
+          bannerText: 'Preview',
           onClick: () => navigate('/agent-control-plane'),
         },
         {
@@ -205,6 +207,7 @@ export default function MLHubAppBar() {
           caption: 'Register and manage existing agents',
           icon: SmartToyRounded,
           color: '#9333ea',
+          bannerText: 'Preview',
           tags: ['agents', 'register', 'create', 'records', 'inventory'],
           onClick: () => navigate('/agent-control-plane/agents'),
         },
@@ -215,6 +218,7 @@ export default function MLHubAppBar() {
           icon: AssignmentRounded,
           color: '#16a34a',
           tags: ['agents', 'deploy', 'release', 'runtime'],
+          bannerText: 'Preview',
           onClick: () => navigate('/agent-control-plane/records'),
         },
       ],
@@ -230,6 +234,7 @@ export default function MLHubAppBar() {
           caption: 'Create and register MCP services',
           icon: SchemaRounded,
           color: '#0369a1',
+          bannerText: 'Coming soon',
           tags: [
             'mcp',
             'model context protocol',
@@ -245,6 +250,7 @@ export default function MLHubAppBar() {
           caption: 'Find MCP servers and ready-made integrations',
           icon: TravelExploreRounded,
           color: '#c026d3',
+          bannerText: 'Coming soon',
           tags: ['mcp', 'servers', 'discover', 'marketplace', 'integrations'],
           onClick: () => navigate('/marketplaces/mcp'),
         },
@@ -254,6 +260,7 @@ export default function MLHubAppBar() {
           caption: 'Find tools to extend your agents and services',
           icon: ManageSearchRounded,
           color: '#ca8a04',
+          bannerText: 'Coming soon',
           tags: ['tools', 'discover', 'marketplace', 'agents', 'integrations'],
           onClick: () => navigate('/marketplaces/mcp-tools'),
         },
@@ -270,6 +277,7 @@ export default function MLHubAppBar() {
           caption: 'Discover, connect to, and manage inference providers',
           icon: HubRounded,
           color: '#db2777',
+          bannerText: 'Coming soon',
           tags: ['inference', 'providers', 'runtime', 'llm'],
           onClick: () => navigate('/providers'),
         },
@@ -279,6 +287,7 @@ export default function MLHubAppBar() {
           caption: 'Discover and configure gateways for routing AI traffic',
           icon: CloudQueueRounded,
           color: '#0284c7',
+          bannerText: 'Coming soon',
           tags: ['ai', 'gateway', 'routing', 'proxy', 'inference'],
           onClick: () => navigate('/gateways'),
         },
@@ -290,22 +299,29 @@ export default function MLHubAppBar() {
       tags: ['operations', 'telemetry', 'endpoints', 'network'],
       services: [
         {
+          id: 'endpoints',
+          title: 'Endpoints',
+          caption: 'View platform-issued addresses for MLHub resources',
+          icon: LinkRounded,
+          color: '#0f766e',
+          tags: [
+            'endpoints',
+            'network',
+            'addresses',
+            'resources',
+            'operations',
+          ],
+          onClick: () => navigate('/endpoints'),
+        },
+        {
           id: 'traffic-observability',
           title: 'Network traffic & traces',
           caption: 'View traffic, traces, and spans across your domain',
           icon: TimelineRounded,
           color: '#4f46e5',
+          bannerText: 'Coming soon',
           tags: ['traffic', 'traces', 'spans', 'telemetry', 'observability'],
           onClick: () => navigate('/network'),
-        },
-        {
-          id: 'domain-endpoints',
-          title: 'Domain endpoints',
-          caption: 'Manage endpoints for network-addressable objects',
-          icon: AccountTreeRounded,
-          color: '#0f766e',
-          tags: ['endpoints', 'network', 'addresses', 'objects', 'operations'],
-          onClick: () => navigate('/endpoints'),
         },
       ],
     },
@@ -403,9 +419,9 @@ export default function MLHubAppBar() {
     //           key={item.path}
     //           icon={item.icon}
     //           iconPosition="start"
-    //           bannerText={item.comingSoon ? 'Coming Soon' : undefined}
+    //           bannerText={item.bannerText}
     //           // Set variant choice here directly: 'angled' | 'flat-top' | 'flat-bottom'
-    //           bannerVariant={item.comingSoon ? 'flat-bottom' : undefined}
+    //           bannerVariant={item.bannerText ? 'flat-bottom' : undefined}
     //           label={item.label}
     //           id={`nav-tab-${idx}`}
     //           aria-controls={`nav-tabpanel-${idx}`}
