@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Alert,
   Box,
   Button,
@@ -9,7 +12,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   ListItemIcon,
   MenuItem,
   Stack,
@@ -19,10 +21,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import SettingsSuggestOutlinedIcon from '@mui/icons-material/SettingsSuggestOutlined';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
+import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
 import { LoadingButton } from '@mui/lab';
 import * as Deployments from '@mlhub/deployments-ts-sdk';
 import * as Models from '@mlhub/models-ts-sdk';
@@ -442,14 +450,17 @@ const DeploymentDialog = ({
 
   useEffect(() => {
     if (!open) return;
+    const target = defaultDeploymentOption?.hpc_cluster_queue;
     reset({
       name: defaultModel ? deploymentNameFor(defaultModel.name) : '',
       description: '',
       model: defaultModel ?? null,
       deploymentOption: defaultDeploymentOption ?? null,
-      deploymentModality: null,
-      deploymentTargetType: null,
-      hpcClusterId: '',
+      deploymentModality:
+        defaultDeploymentOption?.supported_deployment_modalities[0] ?? null,
+      deploymentTargetType:
+        defaultDeploymentOption?.deployment_target_type ?? null,
+      hpcClusterId: target?.hpc_cluster_id ?? '',
       parameterValues: {},
       parallelismStrategies: [],
       replicas: 1,
@@ -1033,64 +1044,95 @@ const DeploymentDialog = ({
                     }}
                   />
                 ))}
-                <Controller
-                  control={control}
-                  name="replicas"
-                  rules={{
-                    required: 'Replica count is required',
-                    min: {
-                      value: 1,
-                      message: 'At least one replica is required',
-                    },
+                <Accordion
+                  disableGutters
+                  elevation={0}
+                  sx={{
+                    border: 1,
+                    borderColor: 'divider',
+                    borderRadius: '2px',
+                    '&:before': { display: 'none' },
                   }}
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      required
-                      error={Boolean(fieldState.error)}
-                      helperText={
-                        fieldState.error?.message ??
-                        'Number of deployment replicas.'
-                      }
-                      inputProps={{ min: 1, step: 1 }}
-                      label="Replicas"
-                      onChange={(event) =>
-                        field.onChange(Number(event.target.value))
-                      }
-                      type="number"
-                    />
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name="parallelismStrategies"
-                  render={({ field }) => (
-                    <TextField
-                      select
-                      fullWidth
-                      SelectProps={{ multiple: true }}
-                      helperText="Optional strategies for parallel model execution."
-                      label="Parallelism strategies"
-                      onChange={(event) =>
-                        field.onChange(
-                          typeof event.target.value === 'string'
-                            ? event.target.value.split(',')
-                            : event.target.value
-                        )
-                      }
-                      value={field.value}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: 'center', gap: 1 }}
                     >
-                      {Object.values(Deployments.ParallelismStrategy).map(
-                        (strategy) => (
-                          <MenuItem key={strategy} value={strategy}>
-                            {strategy}
-                          </MenuItem>
-                        )
-                      )}
-                    </TextField>
-                  )}
-                />
+                      <SettingsSuggestOutlinedIcon color="action" />
+                      <Box>
+                        <Typography sx={{ fontWeight: 600 }} variant="body2">
+                          Advanced settings
+                        </Typography>
+                        <Typography color="text.secondary" variant="caption">
+                          Configure replicas and parallel model execution.
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Stack spacing={2}>
+                      <Controller
+                        control={control}
+                        name="replicas"
+                        rules={{
+                          required: 'Replica count is required',
+                          min: {
+                            value: 1,
+                            message: 'At least one replica is required',
+                          },
+                        }}
+                        render={({ field, fieldState }) => (
+                          <TextField
+                            {...field}
+                            fullWidth
+                            required
+                            error={Boolean(fieldState.error)}
+                            helperText={
+                              fieldState.error?.message ??
+                              'Number of deployment replicas.'
+                            }
+                            inputProps={{ min: 1, step: 1 }}
+                            label="Replicas"
+                            onChange={(event) =>
+                              field.onChange(Number(event.target.value))
+                            }
+                            type="number"
+                          />
+                        )}
+                      />
+                      <Controller
+                        control={control}
+                        name="parallelismStrategies"
+                        render={({ field }) => (
+                          <TextField
+                            select
+                            fullWidth
+                            SelectProps={{ multiple: true }}
+                            helperText="Optional strategies for parallel model execution."
+                            label="Parallelism strategies"
+                            onChange={(event) =>
+                              field.onChange(
+                                typeof event.target.value === 'string'
+                                  ? event.target.value.split(',')
+                                  : event.target.value
+                              )
+                            }
+                            value={field.value}
+                          >
+                            {Object.values(Deployments.ParallelismStrategy).map(
+                              (strategy) => (
+                                <MenuItem key={strategy} value={strategy}>
+                                  {strategy}
+                                </MenuItem>
+                              )
+                            )}
+                          </TextField>
+                        )}
+                      />
+                    </Stack>
+                  </AccordionDetails>
+                </Accordion>
               </>
             )}
           </Stack>
@@ -1098,43 +1140,117 @@ const DeploymentDialog = ({
         {activeStep === 7 && (
           <Stack spacing={2}>
             <Typography variant="h6">Review deployment</Typography>
-            <ReviewRow label="Model">{selectedModelName}</ReviewRow>
-            <ReviewRow label="Name">{getValues('name')}</ReviewRow>
-            <ReviewRow label="Deployment option">
-              {selectedOption ? (
-                <Stack
-                  direction="row"
-                  sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.75 }}
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: {
+                  sm: 'repeat(3, minmax(0, 1fr))',
+                  xs: '1fr',
+                },
+              }}
+            >
+              <ReviewCard
+                color="secondary.main"
+                icon={<SmartToyIcon />}
+                label="Model"
+                span={3}
+              >
+                {selectedModelName}
+              </ReviewCard>
+              <ReviewCard
+                color="success.main"
+                icon={<RocketLaunchIcon />}
+                label="Deployment name"
+                span={2}
+              >
+                {getValues('name')}
+              </ReviewCard>
+              <ReviewCard
+                color="warning.main"
+                icon={<RocketLaunchIcon />}
+                label="Modality"
+              >
+                {modality ?? 'Not selected'}
+              </ReviewCard>
+              {getValues('description') && (
+                <ReviewCard
+                  color="text.secondary"
+                  icon={<DescriptionOutlinedIcon />}
+                  label="Description"
+                  span={3}
                 >
-                  <Typography>{optionTitle(selectedOption)}</Typography>
-                  <Chip label={selectedOption.serving_runtime} size="small" />
-                  <Chip
-                    label={selectedOption.deployment_target_type}
-                    size="small"
-                    variant="outlined"
-                  />
-                </Stack>
-              ) : (
-                'Not selected'
+                  {getValues('description')}
+                </ReviewCard>
               )}
-            </ReviewRow>
-            <ReviewRow label="Modality">{modality ?? 'Not selected'}</ReviewRow>
-            <ReviewRow label="Target">
-              {deploymentTargetType ===
-              Models.DeploymentTargetType.HpcClusterQueue
-                ? 'HPC Cluster'
-                : deploymentTargetType ?? 'Not selected'}
-            </ReviewRow>
-            <ReviewRow label="HPC cluster">
-              {clusterOptions.find(
-                (option) =>
-                  option.hpc_cluster_queue?.hpc_cluster_id === hpcClusterId
-              )?.hpc_cluster_queue?.hpc_cluster_name ?? 'Not selected'}
-            </ReviewRow>
-            <ReviewRow label="Queue">
-              {selectedOption ? optionTitle(selectedOption) : 'Not selected'}
-            </ReviewRow>
-            <ReviewRow label="Replicas">{getValues('replicas')}</ReviewRow>
+              <ReviewCard
+                color="primary.main"
+                icon={<SettingsSuggestOutlinedIcon />}
+                label="Deployment option"
+                span={3}
+              >
+                {selectedOption ? (
+                  <Stack
+                    direction="row"
+                    sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 0.75 }}
+                  >
+                    <Typography>{optionTitle(selectedOption)}</Typography>
+                    <Chip label={selectedOption.serving_runtime} size="small" />
+                    <Chip
+                      label={selectedOption.deployment_target_type}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Stack>
+                ) : (
+                  'Not selected'
+                )}
+              </ReviewCard>
+              <ReviewCard
+                color="info.main"
+                icon={<HubOutlinedIcon />}
+                label="Target"
+              >
+                {deploymentTargetType ===
+                Models.DeploymentTargetType.HpcClusterQueue
+                  ? 'HPC Cluster'
+                  : deploymentTargetType ?? 'Not selected'}
+              </ReviewCard>
+              <ReviewCard
+                color="secondary.main"
+                icon={<StorageOutlinedIcon />}
+                label="HPC cluster"
+              >
+                {clusterOptions.find(
+                  (option) =>
+                    option.hpc_cluster_queue?.hpc_cluster_id === hpcClusterId
+                )?.hpc_cluster_queue?.hpc_cluster_name ?? 'Not selected'}
+              </ReviewCard>
+              <ReviewCard
+                color="success.main"
+                icon={<ViewListOutlinedIcon />}
+                label="Queue"
+              >
+                {selectedOption ? optionTitle(selectedOption) : 'Not selected'}
+              </ReviewCard>
+              <ReviewCard
+                color="primary.main"
+                icon={<GroupsOutlinedIcon />}
+                label="Replicas"
+              >
+                {getValues('replicas')}
+              </ReviewCard>
+              {getValues('parallelismStrategies').length > 0 && (
+                <ReviewCard
+                  color="info.main"
+                  icon={<AccountTreeOutlinedIcon />}
+                  label="Parallelism strategies"
+                  span={2}
+                >
+                  {getValues('parallelismStrategies').join(', ')}
+                </ReviewCard>
+              )}
+            </Box>
           </Stack>
         )}
       </DialogContent>
@@ -1177,21 +1293,44 @@ const DeploymentDialog = ({
   );
 };
 
-const ReviewRow = ({
+const ReviewCard = ({
+  color,
+  icon,
   label,
+  span = 1,
   children,
 }: {
+  color: string;
+  icon: React.ReactNode;
   label: string;
+  span?: 1 | 2 | 3;
   children: React.ReactNode;
 }) => (
-  <Box>
-    <Typography color="text.secondary" variant="caption">
-      {label}
-    </Typography>
-    <Divider sx={{ my: 0.5 }} />
-    <Typography component="div" variant="body2">
-      {children}
-    </Typography>
+  <Box
+    sx={{
+      border: 1,
+      borderColor: 'divider',
+      borderRadius: '2px',
+      gridColumn: { sm: `span ${span}` },
+      minWidth: 0,
+      p: 1.5,
+    }}
+  >
+    <Stack direction="row" spacing={1.25} sx={{ alignItems: 'flex-start' }}>
+      <Box sx={{ color, display: 'flex', mt: 0.25 }}>{icon}</Box>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography color="text.secondary" variant="caption">
+          {label}
+        </Typography>
+        <Typography
+          component="div"
+          sx={{ fontWeight: 700, mt: 0.25 }}
+          variant="body2"
+        >
+          {children}
+        </Typography>
+      </Box>
+    </Stack>
   </Box>
 );
 
