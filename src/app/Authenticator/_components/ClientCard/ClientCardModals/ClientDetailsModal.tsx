@@ -16,6 +16,7 @@ import {
 } from '@tapis/tapisui-hooks/dist/authenticator';
 import { Edit, Hub, Visibility } from '@mui/icons-material';
 import { Divider } from '@mui/material';
+import LoginUrlSection from '../LoginUrlSection';
 
 type ClientDetailModal = {
   client: Authenticator.Client;
@@ -66,6 +67,14 @@ const ClientDetailModal: React.FC<ClientDetailModal> = ({ toggle, client }) => {
             <span className={styles['muted']}>Created: </span>
             <span>{client.create_time}</span>
           </div>
+
+          <Divider sx={{ my: 1.5 }} />
+
+          <LoginUrlSection
+            basePath={basePath}
+            clientId={client.client_id}
+            callbackUrl={client.callback_url}
+          />
         </div>
       }
     />
