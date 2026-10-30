@@ -23,6 +23,10 @@ type ServiceCustomizations = {
 type BetaSidebarSection = {
   name: string;
   defaultOpen: boolean;
+  // When true, the section header renders quiet and recessed (non-bold, muted,
+  // smaller) instead of the default bold group heading — for low-emphasis
+  // groups (e.g. an archive) that shouldn't invite attention.
+  minimal?: boolean;
   mainServices: string[];
   secondaryServices?: string[];
 };

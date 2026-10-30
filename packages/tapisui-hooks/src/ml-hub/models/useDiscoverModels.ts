@@ -3,8 +3,15 @@ import * as Models from '@mlhub/models-ts-sdk';
 import { MLHub as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../../';
 import QueryKeys from './queryKeys';
+import { useEffect } from 'react';
 
-const useDiscoverModels = () => {
+type DiscoverModelsHookParams = {
+  options?: {
+    autoRunParams?: Models.DiscoverExternalModelsRequest;
+  };
+};
+
+const useDiscoverModels = ({ options }: DiscoverModelsHookParams) => {
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
   const queryClient = useQueryClient();
@@ -15,12 +22,18 @@ const useDiscoverModels = () => {
   // In this case, create helper is called to perform the operation
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<
-      Models.DiscoverModelsResponse,
+      Models.DiscoverExternalModelsResponse,
       Error,
-      Models.DiscoverModelsRequest
+      Models.DiscoverExternalModelsRequest
     >([QueryKeys.discover, mlHubBasePath, jwt], (params) =>
       API.Models.discover(params, mlHubBasePath, jwt)
     );
+
+  useEffect(() => {
+    if (options?.autoRunParams !== undefined) {
+      mutate(options.autoRunParams);
+    }
+  }, []);
 
   const invalidate = () => {
     queryClient.invalidateQueries(QueryKeys.discover);
@@ -36,12 +49,12 @@ const useDiscoverModels = () => {
     reset,
     invalidate,
     discover: (
-      params: Models.DiscoverModelsRequest,
+      params: Models.DiscoverExternalModelsRequest,
       // react-query options to allow callbacks such as onSuccess
       options?: MutateOptions<
-        Models.DiscoverModelsResponse,
+        Models.DiscoverExternalModelsResponse,
         Error,
-        Models.DiscoverModelsRequest
+        Models.DiscoverExternalModelsRequest
       >
     ) => {
       // Call mutate to trigger a single post-like API operation

@@ -172,7 +172,7 @@ const useTapisConfig = () => {
     pathSiteId,
     tokenTenantId: tokenTenantId ?? "couldn't derive tenant_id",
     domainsMatched: domainsMatched,
-    username: claims['tapis/username'],
+    username: claims['tapis/username'] as string,
   };
 };
 

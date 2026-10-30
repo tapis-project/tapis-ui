@@ -1,13 +1,11 @@
 const QueryKeys = {
-  list: 'ml-hub/datasets/list',
-  details: 'ml-hub/datasets/details',
-  listDownloadLinks: 'ml-hub/datasets/listDownloadLinks',
-  listByAuthor: 'ml-hub/datasets/listByAuthor',
-  listByLanguage: 'ml-hub/datasets/listByLanguage',
-  listBySizeCategory: 'ml-hub/datasets/listBySizeCategory',
-  listByQuery: 'ml-hub/datasets/listByQuery',
-  listByTask: 'ml-hub/datasets/listByTask',
-  cardDetails: 'ml-hub/datasets/cardDetails',
+  listOwnedDatasets: 'mlhub/datasets/list-owned',
+  listAllOwnedDatasets: 'mlhub/datasets/list-all-owned',
+  listSharedDatasets: 'mlhub/datasets/list-shared',
+  listGlobalDatasets: 'mlhub/datasets/list-global',
+  getDataset: 'mlhub/datasets/get',
+  registerDataset: 'mlhub/datasets/register',
+  forkDataset: 'mlhub/datasets/fork',
 };
 
 export default QueryKeys;

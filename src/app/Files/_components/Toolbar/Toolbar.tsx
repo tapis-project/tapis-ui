@@ -7,15 +7,7 @@ import {
   QueryWrapper,
 } from '@tapis/tapisui-common';
 import styles from './Toolbar.module.scss';
-import CreateDirModal from './CreateDirModal';
-import MoveCopyModal from './MoveCopyModal';
-import RenameModal from './RenameModal';
-import UploadModal from './UploadModal';
-import PermissionsModal from './PermissionsModal';
-import DeleteModal from './DeleteModal';
-import CreatePostitModal from './CreatePostitModal';
-import TransferModal from './TransferModal';
-import ShareModal from './ShareModal';
+import ToolbarModalHost, { FileToolbarModal } from './ToolbarModalHost';
 import { useLocation } from 'react-router-dom';
 import { useFilesSelect } from '../FilesContext';
 import {
@@ -70,7 +62,9 @@ type Op =
   | 'move'
   | 'folder'
   | 'delete'
-  | 'transfers';
+  | 'transfers'
+  | 'visualize'
+  | 'dataset';
 
 type ToolbarProps = {
   systemId: string;
@@ -83,7 +77,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   currentPath,
   buttons = [],
 }) => {
-  const [modal, setModal] = useState<string | undefined>(undefined);
+  const [modal, setModal] = useState<FileToolbarModal | undefined>(undefined);
   const { selectedFiles } = useFilesSelect();
   const { pathname } = useLocation();
 
@@ -204,6 +198,32 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 aria-label="View file"
               />
             )}
+            {show('visualize', buttons) && (
+              <ToolbarButton
+                text="Visualize"
+                icon="data-files"
+                disabled={
+                  selectedFiles.length !== 1 ||
+                  selectedFiles[0].type !== Files.FileTypeEnum.File
+                }
+                onClick={() => setModal('visualize')}
+                aria-label="Visualize file"
+              />
+            )}
+            {show('dataset', buttons) && (
+              <ToolbarButton
+                text="Dataset"
+                icon="data-files"
+                disabled={
+                  selectedFiles.length !== 1 ||
+                  ![Files.FileTypeEnum.File, Files.FileTypeEnum.Dir].includes(
+                    selectedFiles[0].type!
+                  )
+                }
+                onClick={() => setModal('dataset')}
+                aria-label="Register as dataset"
+              />
+            )}
             {show('rename', buttons) && (
               <ToolbarButton
                 text="Rename"
@@ -300,78 +320,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 aria-label="Delete"
               />
             )}
-            {modal === 'createdir' && (
-              <CreateDirModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'copy' && (
-              <MoveCopyModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-                operation={Files.MoveCopyRequestOperationEnum.Copy}
-              />
-            )}
-            {modal === 'move' && (
-              <MoveCopyModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-                operation={Files.MoveCopyRequestOperationEnum.Move}
-              />
-            )}
-            {modal === 'rename' && (
-              <RenameModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'transfer' && (
-              <TransferModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'upload' && (
-              <UploadModal
-                toggle={toggle}
-                path={currentPath}
-                systemId={systemId}
-              />
-            )}
-            {modal === 'permissions' && (
-              <PermissionsModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'delete' && (
-              <DeleteModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'postit' && (
-              <CreatePostitModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
-            {modal === 'share' && (
-              <ShareModal
-                toggle={toggle}
-                systemId={systemId}
-                path={currentPath}
-              />
-            )}
+            <ToolbarModalHost
+              modal={modal}
+              toggle={toggle}
+              systemId={systemId}
+              path={currentPath}
+            />
           </div>
         )}
       </div>
