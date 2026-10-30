@@ -1,6 +1,14 @@
 export { default as list } from './list';
 export { default as discover } from './discover';
-export { default as details } from './details';
+export {
+  default as listExternalModelDeploymentOptions,
+  type ListExternalModelDeploymentOptionsParams,
+} from './listExternalModelDeploymentOptions';
+export {
+  default as getExternalModelDeploymentOption,
+  type GetExternalModelDeploymentOptionParams,
+} from './getExternalModelDeploymentOption';
+export { default as details } from './getByAuthorAndName';
 export { default as inferenceServerDetails } from './inference/inferenceServerDetails';
 export { default as listDownloadLinks } from './listDownloadLinks';
 export { default as listByAuthor } from './listByAuthor';
@@ -10,6 +18,10 @@ export { default as listByLibrary } from './listByLibrary';
 export { default as listByQuery } from './listByQuery';
 export { default as listByTask } from './listByTask';
 export { default as modelCardDetails } from './modelCardDetails';
+export { default as getModel } from './getModel';
+export { default as getByAuthorAndName } from './getByAuthorAndName';
+export { default as create } from './create';
+export { default as fork } from './fork';
 export * as Inference from './inference';
 export * as Platforms from './platforms';
 export * as Ingestions from './ingestions';

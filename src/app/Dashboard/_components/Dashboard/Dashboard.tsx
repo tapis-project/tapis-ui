@@ -71,8 +71,7 @@ const Dashboard: React.FC = () => {
   const navigate = useHistory();
   // TODO All tenant-specific functionality must be refactored into their respective
   // extenstions
-  const { extension, extensionName } = useExtension();
-  const isIcicle = extensionName === '@icicle/tapisui-extension';
+  const { extension } = useExtension();
 
   // Hidden dev token input — revealed by long-pressing "TAPIS" for 3s
   const isDevHost =
@@ -223,7 +222,7 @@ const Dashboard: React.FC = () => {
                 icon="share"
                 name="ML Hub"
                 text="View available models and datasets, run inference and training on ML models"
-                link="/ml-hub"
+                link="/mlhub"
                 counter={`${4} services`}
                 loading={apps?.isLoading}
               />

@@ -10,19 +10,26 @@ import babel from '@rollup/plugin-babel';
 export default defineConfig({
   // depending on your application, base can also be "/"
   base: '',
+  // Flat, not nested. These were once inside a second `define: {}`, which
+  // defined an identifier literally named `define` and left process.platform
+  // and process.version untouched, so any dependency that read either at load
+  // threw "process is not defined" in the browser.
   define: {
     global: 'window',
-    define: {
-      'process.platform': null,
-      'process.version': null,
-      // 'process.env.NODE_ENV': 'production',
-    },
+    'process.platform': null,
+    'process.version': null,
+    // 'process.env.NODE_ENV': 'production',
   },
   css: {
     preprocessorOptions: { scss: { api: 'modern-compiler', charset: false } },
   },
   resolve: {
+    alias: {
+      events: 'events',
+    },
     dedupe: [
+      'react',
+      'react-dom',
       '@codemirror/state',
       '@codemirror/view',
       '@codemirror/language',
@@ -54,6 +61,7 @@ export default defineConfig({
       '@codemirror/lang-python',
       'codemirror',
       '@uiw/react-codemirror',
+      '@kitware/vtk.js',
     ],
   },
   plugins: [
@@ -73,6 +81,9 @@ export default defineConfig({
         /packages\/tapisui-common\/node_modules\/react-router/,
         /packages\/tapisui-common\/node_modules\/react-is/,
         /packages\/icicle-tapisui-extension\/node_modules\/react-is/,
+        /node_modules\/globalthis/,
+        /node_modules\/xmlbuilder2/,
+          /node_modules\/@oozcitak/,
       ],
       requireReturnsDefault: false, // "preferred" | "auto" | true | false
       strictRequires: 'debug',
@@ -110,6 +121,8 @@ export default defineConfig({
           'editor-vendor': ['@codemirror/lang-json', '@codemirror/lang-python', '@uiw/react-codemirror', 'codemirror'],
           // Visualization libraries
           'viz-vendor': ['@xyflow/react', 'reactflow', 'leaflet', 'react-leaflet'],
+          // VTK.js (large scientific visualization library)
+          'vtk-vendor': ['@kitware/vtk.js'],
         },
         // Optimize chunk file naming
         chunkFileNames: (chunkInfo) => {

@@ -1,0 +1,22 @@
+// Type stubs for @kitware/vtk.js sub-path imports (no official declarations per sub-path)
+declare module '@kitware/vtk.js/Rendering/Profiles/Geometry';
+declare module '@kitware/vtk.js/Rendering/Profiles/Volume';
+declare module '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
+declare module '@kitware/vtk.js/Rendering/Misc/GenericRenderWindow';
+declare module '@kitware/vtk.js/Rendering/Core/ScalarBarActor';
+declare module '@kitware/vtk.js/Rendering/Core/Actor';
+declare module '@kitware/vtk.js/Rendering/Core/Mapper';
+declare module '@kitware/vtk.js/Rendering/Core/Volume';
+declare module '@kitware/vtk.js/Rendering/Core/VolumeMapper';
+declare module '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
+declare module '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
+declare module '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
+declare module '@kitware/vtk.js/IO/XML/XMLImageDataReader';
+declare module '@kitware/vtk.js/Rendering/Core/ImageMapper';
+declare module '@kitware/vtk.js/Rendering/Core/ImageResliceMapper';
+declare module '@kitware/vtk.js/Rendering/Core/ImageSlice';
+declare module '@kitware/vtk.js/Rendering/Core/AxesActor';
+declare module '@kitware/vtk.js/Rendering/Core/AnnotatedCubeActor';
+declare module '@kitware/vtk.js/Interaction/Widgets/OrientationMarkerWidget';
+declare module '@kitware/vtk.js/Common/DataModel/Plane';
+declare module '@kitware/vtk.js/Common/DataModel/PolyData';

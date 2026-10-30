@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Component } from '@tapis/tapisui-extensions-core';
 import PortalPageLayout from '../PortalShared/PortalPageLayout';
+import { sortServices } from '../PortalShared/sortServices';
 import styles from '../PortalShared/PortalPageLayout.module.scss';
 
 type ServiceItem = {
@@ -20,15 +21,15 @@ const services: ServiceItem[] = [
   },
   {
     label:
-      'Smart Labeler : Inteligent AI pipeline for Zero and Few shot object detection',
-    name: 'Smart Labeler : Object detection',
+      'Smart Labeling Service for Object Detection : Inteligent AI pipeline for Zero and Few shot object detection',
+    name: 'Smart Labeling Service for Object Detection',
     link: '/smart-labeler',
     internal: true,
   },
   {
     label:
-      'Smart Labeler : Inteligent AI pipeline for Zero and Few shot object detection',
-    name: 'Smart Labeler : Semantic segmentation',
+      'Intelligent Semantic Segmentation & Annotation : Inteligent AI pipeline for Zero and Few shot semantic segmentation',
+    name: 'Intelligent Semantic Segmentation & Annotation',
     link: '/smart-segmentation',
     internal: true,
   },
@@ -46,10 +47,10 @@ const services: ServiceItem[] = [
     upcoming: true,
   },
   {
-    label: 'Real Time Optimized Edge Inference',
-    name: 'ML Edge',
-    link: '/ml-edge',
-    internal: true,
+    label:
+      'Flexible Multi-model Server: Unified interface for serving multiple ML models across different inference engines',
+    name: 'FlexServ',
+    link: 'https://zhangwei217245.github.io/FlexServ/',
   },
   {
     label:
@@ -76,11 +77,17 @@ const services: ServiceItem[] = [
     link: 'https://github.com/ICICLE-ai/catalog_mcp',
   },
   {
+    label: 'Auto Opt Tabular: automated deep learning for tabular datasets',
+    name: 'Auto Opt Tabular',
+    link: '/auto-opt-tabular',
+    internal: true,
+  },
+  {
     label:
       'Science-driven natural language support for data analysis (Science Agents)',
-    name: 'Upcoming',
-    link: '#',
-    upcoming: true,
+    name: 'Science Agents',
+    link: '/science-agents',
+    internal: true,
   },
   {
     label: 'Authentic dataset augmentation for video datasets',
@@ -89,6 +96,8 @@ const services: ServiceItem[] = [
     upcoming: true,
   },
 ];
+
+const sortedServices = sortServices(services);
 
 export const DomainAgnosticAI: Component = () => {
   return (
@@ -103,7 +112,7 @@ export const DomainAgnosticAI: Component = () => {
             </p>
           </div>
           <div className={styles.serviceList}>
-            {services.map((service) => (
+            {sortedServices.map((service) => (
               <div key={service.name} className={styles.serviceRow}>
                 <div className={styles.serviceLabel}>{service.label}</div>
                 {service.upcoming ? (

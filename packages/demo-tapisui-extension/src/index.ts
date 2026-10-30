@@ -19,6 +19,9 @@ import {
   Tejas,
   Langflow,
 } from './pages';
+import { SmartDetection } from './pages/SmartDetection';
+import { SmartSegmentation } from './pages/SmartSegmentation';
+import { Patra } from './pages/Patra';
 
 const extension = createExtension({
   allowMultiTenant: true,
@@ -41,7 +44,7 @@ const extension = createExtension({
     },
     sections: [
       {
-        name: 'Core Services',
+        name: 'Tapis Services',
         defaultOpen: true,
         mainServices: ['systems', 'apps', 'jobs', 'files', 'workflows', 'pods'],
         secondaryServices: [],
@@ -51,6 +54,9 @@ const extension = createExtension({
         defaultOpen: true,
         mainServices: [
           'ml-hub',
+          'smart-detection',
+          'smart-segmentation',
+          'patra',
           // 'ml-edge',
           // 'jupyter-lab',
           // 'open-web-ui'
@@ -81,6 +87,9 @@ const extension = createExtension({
     'workflows',
     'pods',
     'ml-hub',
+    'smart-detection',
+    'smart-segmentation',
+    'patra',
     // 'ml-edge',
     // 'open-web-ui',
     // 'jupyter-lab',
@@ -114,6 +123,29 @@ const extension = createExtension({
       dagDefaultView: true,
     },
   },
+});
+
+extension.registerService({
+  id: 'smart-detection',
+  sidebarDisplayName: 'Smart Labeling Service for Object Detection',
+  iconName: 'globe',
+  component: SmartDetection,
+});
+
+extension.registerService({
+  id: 'smart-segmentation',
+  sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
+  iconName: 'globe',
+  component: SmartSegmentation,
+});
+
+// Patra (demo portal) embedded via iframe with the portal-auth postMessage
+// handshake — shown in the Workbench section on public.tapis.io.
+extension.registerService({
+  id: 'patra',
+  sidebarDisplayName: 'Patra',
+  iconName: 'globe',
+  component: Patra,
 });
 
 // Order of registration determines sidebar order!!

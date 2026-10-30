@@ -26,10 +26,22 @@ import {
   DigitalAgAaaS,
   AnimalEcologyAaaS,
   FoodLogisticsAaaS,
+  IcicleServicesV2,
   Patra,
+  IntelligentEdgeManagementService,
+  HARP,
+  ISAWPortal,
+  Insights,
+  AutoOptTabular,
+  FNAS_LCD,
+  ScienceAgents,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
+import { NoCodeImageLab } from './pages/NoCodeImageLab';
+import { WorkflowStudio } from './pages/WorkflowStudio';
+import { EarthDataHub } from './pages/EarthDataHub';
+import { VideoSegmentationTracking } from './pages/VideoSegmentationTracking';
 
 const extension = createExtension({
   allowMultiTenant: false,
@@ -46,25 +58,20 @@ const extension = createExtension({
   mainSidebarServices: [
     'workflows',
     'pods',
-    'ml-hub',
+    'ai-hub',
+    'mlhub',
     'ml-edge',
     'open-web-ui',
     'jupyter-lab',
     'analytics',
     'training-catalog',
     'home',
-    'domain-agnostic-ai',
     'icicle-chatbook',
-    'domain-agnostic-ci',
-    'domain-specific-services',
-    'digital-ag-aaas',
-    'animal-ecology-aaas',
-    'food-logistics-aaas',
+    'science-agents',
     'food-flow-portal',
     'feast',
     'food-security-sandbox',
     'component-catalog',
-    'ckn-dashboard',
     'openpass',
     'systems',
     'jobs',
@@ -74,45 +81,109 @@ const extension = createExtension({
     'patra',
     'smart-labeler',
     'smart-segmentation',
+    'video-segmentation-tracking',
+    'no-code-image-lab',
+    'no-code-workflow-studio',
+    'earth-data-hub',
+    'harp',
+    'isaw-portal',
+    'insights',
+    'auto-opt-tabular',
+    'fnas-lcd',
+    //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
   ],
   betaSidebar: {
     enabled: true,
-    sections: [],
+    // Grouped like the public extension's sidebar (named sections with real
+    // subheaders) instead of one flat noSection + "More" dump — ICICLE's own
+    // services get top billing (open by default), Tapis platform services get
+    // their own quieter group below, and the former as-a-Service pages stay
+    // tucked away in Archive at the very bottom.
+    sections: [
+      {
+        // Every ICICLE-specific service/portal not on the Services Board.
+        // Open by default — this is the group most icicleai.tapis.io users
+        // actually want on landing.
+        name: 'ICICLE Services',
+        defaultOpen: true,
+        mainServices: [
+          'ai-hub',
+          'open-web-ui',
+          'jupyter-lab',
+          'analytics',
+          'training-catalog',
+          'icicle-chatbook',
+          'science-agents',
+          'food-flow-portal',
+          'feast',
+          'food-security-sandbox',
+          'component-catalog',
+          'openpass',
+          'harvest',
+          // 'patra',
+          'smart-labeler',
+          'smart-segmentation',
+          'video-segmentation-tracking',
+          'no-code-image-lab',
+          'no-code-workflow-studio',
+          'earth-data-hub',
+          'harp',
+          'intelligent-edge-management-service',
+          'isaw-portal',
+          'insights',
+          'auto-opt-tabular',
+          'fnas-lcd',
+        ],
+        secondaryServices: [],
+      },
+      {
+        // The core Tapis platform services — same set + order as the public
+        // extension's "Tapis Services" section, plus ML Hub, ML Edge, and the
+        // generic Tapis Dashboard (normally pinned above the whole sidebar —
+        // 'dashboard' opts icicle out of that and files it in here instead).
+        name: 'Tapis Services',
+        defaultOpen: false,
+        mainServices: [
+          'systems',
+          'apps',
+          'jobs',
+          'files',
+          'workflows',
+          'pods',
+          'mlhub',
+          'ml-edge',
+          'dashboard',
+        ],
+        secondaryServices: [],
+      },
+      {
+        // The six ICICLE as-a-Service pages (plus the former Portal Home) are
+        // now indexed on the home Services Board (each catalog entry links back
+        // via its sourceRoute). Collapsed and out of the main sidebar, but the
+        // pages still render at their routes. `minimal` renders a quiet,
+        // recessed group header so Archive doesn't beckon users to open it.
+        name: 'Archive',
+        defaultOpen: false,
+        minimal: true,
+        // Listed directly (no "More" sub-group) so the whole archive is visible
+        // at a glance once expanded.
+        mainServices: [
+          'portal-home', // former ICICLE landing page
+          'domain-agnostic-ai', // AIaaS
+          'domain-agnostic-ci', // CIaaS
+          'domain-specific-services', // DOaaS
+          'digital-ag-aaas', // DAaaS
+          'animal-ecology-aaas', // AEaaS
+          'food-logistics-aaas', // FLSaaS
+        ],
+        secondaryServices: [],
+      },
+    ],
     noSection: {
       mainServices: ['home'],
-      secondaryServices: [
-        'workflows',
-        'pods',
-        'ml-hub',
-        'ml-edge',
-        'open-web-ui',
-        'jupyter-lab',
-        'analytics',
-        'training-catalog',
-        'domain-agnostic-ai',
-        'icicle-chatbook',
-        'domain-agnostic-ci',
-        'domain-specific-services',
-        'digital-ag-aaas',
-        'animal-ecology-aaas',
-        'food-logistics-aaas',
-        'food-flow-portal',
-        'feast',
-        'food-security-sandbox',
-        'component-catalog',
-        'ckn-dashboard',
-        'openpass',
-        'systems',
-        'jobs',
-        'files',
-        'apps',
-        'harvest',
-        'patra',
-        'smart-labeler',
-        'smart-segmentation',
-      ],
+      secondaryServices: [],
     },
   },
   authMethods: ['implicit', 'password'],
@@ -135,8 +206,18 @@ const extension = createExtension({
 });
 
 // Order of registration determines sidebar order!!
+// Home = the Services Board. The app router redirects '/' to the 'home' service's
+// route, so the board is now the default landing page and the top sidebar item.
 extension.registerService({
   id: 'home',
+  sidebarDisplayName: 'Home',
+  iconName: 'simulation',
+  component: IcicleServicesV2,
+});
+
+// The former Portal Home, kept accessible (no longer the landing page).
+extension.registerService({
+  id: 'portal-home',
   sidebarDisplayName: 'Portal Home',
   iconName: 'globe',
   component: PortalHome,
@@ -154,6 +235,13 @@ extension.registerService({
   sidebarDisplayName: 'ICICLE Chatbook',
   iconName: 'globe',
   component: ICICLEChatbook,
+});
+
+extension.registerService({
+  id: 'science-agents',
+  sidebarDisplayName: 'Science Agents',
+  iconName: 'globe',
+  component: ScienceAgents,
 });
 
 extension.registerService({
@@ -277,16 +365,44 @@ extension.registerService({
 
 extension.registerService({
   id: 'smart-labeler',
-  sidebarDisplayName: 'Smart Labeler : Object Detection',
+  sidebarDisplayName: 'Smart Labeling Service for Object Detection',
   iconName: 'globe',
   component: SmartDetection,
 });
 
 extension.registerService({
   id: 'smart-segmentation',
-  sidebarDisplayName: 'Smart Labeler : Semantic Segmentation',
+  sidebarDisplayName: 'Intelligent Semantic Segmentation & Annotation',
   iconName: 'globe',
   component: SmartSegmentation,
+});
+
+extension.registerService({
+  id: 'no-code-image-lab',
+  sidebarDisplayName: 'No-Code Image Lab',
+  iconName: 'globe',
+  component: NoCodeImageLab,
+});
+
+extension.registerService({
+  id: 'no-code-workflow-studio',
+  sidebarDisplayName: 'No-Code Workflow Studio',
+  iconName: 'globe',
+  component: WorkflowStudio,
+});
+
+extension.registerService({
+  id: 'earth-data-hub',
+  sidebarDisplayName: 'Earth Data Hub',
+  iconName: 'globe',
+  component: EarthDataHub,
+});
+
+extension.registerService({
+  id: 'video-segmentation-tracking',
+  sidebarDisplayName: 'Video Segmentation and Tracking',
+  iconName: 'globe',
+  component: VideoSegmentationTracking,
 });
 
 extension.registerService({
@@ -301,6 +417,46 @@ extension.registerService({
   sidebarDisplayName: 'Patra',
   iconName: 'globe',
   component: Patra,
+});
+extension.registerService({
+  id: 'harp',
+  sidebarDisplayName: 'HARP',
+  iconName: 'simulation',
+  component: HARP,
+});
+extension.registerService({
+  id: 'intelligent-edge-management-service',
+  sidebarDisplayName: 'Intelligent Edge Management Service',
+  iconName: 'globe',
+  component: IntelligentEdgeManagementService,
+});
+
+extension.registerService({
+  id: 'isaw-portal',
+  sidebarDisplayName: 'I-SAW Portal',
+  iconName: 'globe',
+  component: ISAWPortal,
+});
+
+extension.registerService({
+  id: 'insights',
+  sidebarDisplayName: 'Insights',
+  iconName: 'insights',
+  component: Insights,
+});
+
+extension.registerService({
+  id: 'auto-opt-tabular',
+  sidebarDisplayName: 'Auto Opt Tabular',
+  iconName: 'globe',
+  component: AutoOptTabular,
+});
+
+extension.registerService({
+  id: 'fnas-lcd',
+  sidebarDisplayName: 'FNAS-LCD',
+  iconName: 'globe',
+  component: FNAS_LCD,
 });
 
 // extension.registerService({

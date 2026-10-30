@@ -30,7 +30,7 @@ import {
 import { FloatingChatButton, ChatSelector } from 'app/_components';
 import type { ChatTurn } from 'app/_context/chat/agentTypes';
 // Import registrations to ensure they run at app startup
-import 'app/MlHub/_context/registerMlHubChat';
+import 'app/MLHub/_context/registerMLHubChat';
 import 'app/Systems/_context/registerSystemsChat';
 import 'app/Files/_context/registerFilesChat';
 import 'app/Apps/_context/registerAppsChat';

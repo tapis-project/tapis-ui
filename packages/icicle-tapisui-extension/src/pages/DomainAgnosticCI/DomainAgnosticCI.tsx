@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Component } from '@tapis/tapisui-extensions-core';
 import PortalPageLayout from '../PortalShared/PortalPageLayout';
+import { sortServices } from '../PortalShared/sortServices';
 import styles from '../PortalShared/PortalPageLayout.module.scss';
 
 type ServiceItem = {
@@ -62,9 +63,36 @@ const services: ServiceItem[] = [
   {
     label: 'HPC Job Submission Optimizer',
     name: 'HARP',
-    link: 'https://github.com/ICICLE-ai/harp',
+    link: '/harp',
+    internal: true,
+  },
+  {
+    label: 'ML Field Deployment Planner',
+    name: 'ML Edge',
+    link: '/ml-edge',
+    internal: true,
+  },
+  {
+    label:
+      'Intelligent Edge Management Service : Intelligent Orchestration and Controller Service for deploying and managing AI applications on edge devices.',
+    name: 'Intelligent Edge Management Service : Edge Orchestration Platform',
+    link: '/intelligent-edge-management-service',
+    internal: true,
+  },
+  {
+    label: 'No-Code Image Lab : Visualize OpenCV pre-processing operations, ',
+    name: 'No-Code Image Lab',
+    link: '/no-code-image-lab',
+    internal: true,
+  },
+  {
+    label: 'Cascade Configuration Service',
+    name: 'Cascade Configuration Service',
+    link: 'https://cascadeconfigurationservice.pods.icicleai.tapis.io/',
   },
 ];
+
+const sortedServices = sortServices(services);
 
 export const DomainAgnosticCI: Component = () => {
   return (
@@ -83,7 +111,7 @@ export const DomainAgnosticCI: Component = () => {
             </p>
           </div>
           <div className={styles.serviceList}>
-            {services.map((service) => (
+            {sortedServices.map((service) => (
               <div key={service.name} className={styles.serviceRow}>
                 <div className={styles.serviceLabel}>{service.label}</div>
                 {service.upcoming ? (
