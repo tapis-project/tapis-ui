@@ -53,6 +53,7 @@ type DisplayPlatformEndpoint = Endpoint & { gateway_url?: string };
 
 const getGatewayUrl = (endpoint: Endpoint) =>
   (endpoint as DisplayPlatformEndpoint).gateway_url ??
+  endpoint.proxy_url ??
   `https://gateway.nexus.mesh/api/v1/tenants/${endpoint.tenant_id}/endpoints/${endpoint.slug}`;
 
 export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
@@ -102,8 +103,17 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
               .replace(/[^a-z0-9]+/g, '-')}`,
             target_name: targetName,
             target_base_url: te.base_url || 'https://mesh.nexus.internal',
+            proxy_url: `https://gateway.nexus.mesh/api/v1/tenants/${
+              agent.tenant_id
+            }/endpoints/${agent.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')}-${targetName
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')}`,
             target_resource_urn: urn,
             tenant_id: agent.tenant_id,
+            owner: agent.owner,
+            available: isAlive,
           };
         });
 

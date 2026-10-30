@@ -6,6 +6,8 @@ const QueryKeys = {
   discover: 'mlhub/models/discover',
   listExternalModelDeploymentOptions:
     'mlhub/models/listExternalModelDeploymentOptions',
+  getExternalModelDeploymentOption:
+    'mlhub/models/getExternalModelDeploymentOption',
   details: 'mlhub/models/details',
   listDownloadLinks: 'mlhub/models/listDownloadLinks',
   listByAuthor: 'mlhub/models/listByAuthor',

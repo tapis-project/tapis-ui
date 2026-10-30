@@ -12,9 +12,8 @@
  * expands. `status`:
  *   'live' — routes inside this portal (e.g. /ml-hub)
  *   'ext'  — ready, but off-platform (GitHub / docs), opens in a new tab
- *   'soon' — upcoming, no destination yet
  */
-export type ServiceStatus = 'live' | 'ext' | 'soon';
+export type ServiceStatus = 'live' | 'ext';
 
 /** picks the icon on expanded-row link buttons */
 export type ServiceLinkKind =
@@ -45,7 +44,7 @@ export interface ServiceItem {
   label: string;
   /** one cleaner sentence shown on hover / when a section expands */
   description: string;
-  /** destination display name (omitted for 'soon') */
+  /** destination display name */
   name?: string;
   /** route ('live') or URL ('ext') */
   href?: string;
@@ -207,11 +206,27 @@ export const CATALOGS: Catalog[] = [
         links: [{ label: 'AI Hub · MCP', href: '/ai-hub', kind: 'portal' }],
       },
       {
+        label: 'Auto Opt Tabular',
+        description:
+          'An automated deep learning framework for tabular datasets.',
+        name: 'Auto Opt Tabular',
+        href: '/auto-opt-tabular',
+        links: [
+          {
+            label: 'AutoOpt python package',
+            href: 'https://pypi.org/project/auto-opt/',
+          },
+        ],
+        status: 'live',
+      },
+      {
         label:
           'Science-driven natural language support for data analysis (Science Agents)',
         description:
           'Science Agents: natural-language support that drives data analysis from a scientific question.',
-        status: 'soon',
+        name: 'Science Agents',
+        href: '/science-agents',
+        status: 'live',
       },
     ],
   },
@@ -275,10 +290,22 @@ export const CATALOGS: Catalog[] = [
       {
         label: 'HPC Job Submission Optimizer',
         description:
-          'Optimizes how HPC jobs are submitted for better throughput and turnaround.',
+          'Profiles HPC applications across systems and trains models that estimate runtime for new job configurations.',
         name: 'HARP',
-        href: 'https://github.com/ICICLE-ai/harp',
-        status: 'ext',
+        href: '/harp',
+        status: 'live',
+        links: [
+          {
+            label: 'Repo',
+            href: 'https://github.com/ICICLE-ai/harp',
+            kind: 'repo',
+          },
+          {
+            label: 'UI repo',
+            href: 'https://github.com/ICICLE-ai/HARP-UI',
+            kind: 'repo',
+          },
+        ],
       },
       {
         label: 'ML Field Deployment Planner',
@@ -304,6 +331,13 @@ export const CATALOGS: Catalog[] = [
         name: 'No-Code Image Lab',
         href: '/no-code-image-lab',
         status: 'live',
+      },
+      {
+        label: 'Cascade Configuration Service',
+        description: 'Configure and launch Cascade from a hosted web app.',
+        name: 'Cascade Configuration Service',
+        href: 'https://cascadeconfigurationservice.pods.icicleai.tapis.io/',
+        status: 'ext',
       },
     ],
   },
@@ -426,5 +460,4 @@ export const DOAAS = {
 export const statusCounts = (items: ServiceItem[]) => ({
   live: items.filter((i) => i.status === 'live').length,
   ext: items.filter((i) => i.status === 'ext').length,
-  soon: items.filter((i) => i.status === 'soon').length,
 });

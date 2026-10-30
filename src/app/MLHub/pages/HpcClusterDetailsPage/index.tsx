@@ -1,4 +1,5 @@
 import * as Deployments from '@mlhub/deployments-ts-sdk';
+import * as React from 'react';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
 import {
   Alert,
@@ -22,7 +23,7 @@ import MemoryRoundedIcon from '@mui/icons-material/MemoryRounded';
 import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
 import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
 import ViewInArRoundedIcon from '@mui/icons-material/ViewInArRounded';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from '../../_context/NavContext';
 
 function EnabledChip({ enabled }: { enabled: boolean }) {
@@ -45,7 +46,9 @@ function EnabledChip({ enabled }: { enabled: boolean }) {
 
 export default function HpcClusterDetailsPage() {
   const { navigate } = useNavigate();
+  const { search } = useLocation();
   const { clusterId } = useParams<{ clusterId: string }>();
+  const selectedQueueId = new URLSearchParams(search).get('queue');
   const clusterQuery = Hooks.Deployments.Targets.useGetHpcCluster(
     clusterId
       ? {
@@ -58,6 +61,14 @@ export default function HpcClusterDetailsPage() {
   const availableQueueCount =
     cluster?.queues.filter((queue) => queue.enabled).length ?? 0;
   const containerRuntimes = cluster?.container_runtimes ?? [];
+
+  React.useEffect(() => {
+    if (!selectedQueueId || !cluster) return;
+
+    document
+      .getElementById(`scheduler-queue-${selectedQueueId}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [cluster, selectedQueueId]);
 
   return (
     <Box>
@@ -195,7 +206,17 @@ export default function HpcClusterDetailsPage() {
               }}
             >
               {cluster.queues.map((queue) => (
-                <Card key={queue.id} variant="outlined" sx={{ height: '100%' }}>
+                <Card
+                  id={`scheduler-queue-${queue.id}`}
+                  key={queue.id}
+                  variant="outlined"
+                  sx={{
+                    borderColor:
+                      queue.id === selectedQueueId ? 'primary.main' : undefined,
+                    boxShadow: queue.id === selectedQueueId ? 2 : undefined,
+                    height: '100%',
+                  }}
+                >
                   <CardContent
                     sx={{
                       '&:last-child': { pb: 2 },

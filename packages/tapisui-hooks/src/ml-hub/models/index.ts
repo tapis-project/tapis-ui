@@ -4,6 +4,10 @@ export {
   default as useListExternalModelDeploymentOptions,
   type ListExternalModelDeploymentOptionsParams,
 } from './useListExternalModelDeploymentOptions';
+export {
+  default as useGetExternalModelDeploymentOption,
+  type GetExternalModelDeploymentOptionParams,
+} from './useGetExternalModelDeploymentOption';
 export { default as useDetails } from './useDetails';
 export { default as useDownloadLinks } from './useListDownloadLinks';
 export { default as useListByAuthor } from './useListByAuthor';

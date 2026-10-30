@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
   Avatar,
@@ -14,15 +14,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import * as Models from '@mlhub/models-ts-sdk';
 import { MLHub as Hooks } from '@tapis/tapisui-hooks';
-import { DatasetProviderIcon } from '../_components';
 import { ModelActionsBar } from './ModelDetailDrawerParts/ModelActionsBar';
 import { ModelTabs, TabPanel } from './ModelDetailDrawerParts/ModelTabs';
 import type { SectionTab } from './ModelDetailDrawerParts/ModelTabs';
 import { GeneralSection } from './ModelDetailDrawerParts/Sections/GeneralSection';
-import { ComplianceSection } from './ModelDetailDrawerParts/Sections/ComplianceSection';
 import { DeploymentSection } from './ModelDetailDrawerParts/Sections/DeploymentSection';
 import { SettingsSection } from './ModelDetailDrawerParts/Sections/SettingsSection';
-import { derivedMetadataFor, modelAuthorFor } from '../modelMetadata';
+import { modelAuthorFor } from '../modelMetadata';
+import { JsonViewer } from '../_components/JsonViewer';
 
 export interface ModelDetailDrawerProps {
   model: Models.Model | null;
@@ -40,10 +39,22 @@ function ModelDetailContent({
   const query = Hooks.Models.useGetModel({
     modelId: summary.id,
   });
+  const deploymentsQuery = Hooks.Deployments.useList();
+  const deploymentOptionsQuery =
+    Hooks.Models.useListExternalModelDeploymentOptions({
+      externalModelId: summary.external_model_id,
+      includeCount: true,
+    });
   const model = query.data?.result;
   const displayedModel = model ?? summary;
-  const derived = derivedMetadataFor(displayedModel);
-  const platform = derived.deployment_strategies[0]?.platform;
+  const deploymentCount = useMemo(
+    () =>
+      (deploymentsQuery.data?.result ?? []).filter(
+        (deployment) =>
+          deployment.external_model_id === summary.external_model_id
+      ).length,
+    [deploymentsQuery.data?.result, summary.external_model_id]
+  );
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -76,11 +87,7 @@ function ModelDetailContent({
               width: 42,
             }}
           >
-            {platform ? (
-              <DatasetProviderIcon provider={platform} size={27} />
-            ) : (
-              <SmartToyIcon />
-            )}
+            <SmartToyIcon />
           </Avatar>
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
@@ -116,39 +123,53 @@ function ModelDetailContent({
 
         {!query.isLoading && !query.isError && model && (
           <>
-            <Box sx={{ px: { xs: 2, sm: 3 }, py: 2.5 }}>
-              {model.description && (
-                <Typography color="text.secondary" sx={{ mb: 2 }}>
+            {model.description && (
+              <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2.5 }}>
+                <Typography color="text.secondary" sx={{ mb: 2.5 }}>
                   {model.description}
                 </Typography>
-              )}
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                sx={{
-                  alignItems: { xs: 'flex-start', sm: 'center' },
-                  justifyContent: 'space-between',
-                  gap: 2,
-                }}
-              >
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <ModelTabs currentTab={activeTab} onChange={setActiveTab} />
-                </Box>
-                <ModelActionsBar model={model} />
-              </Stack>
-            </Box>
+              </Box>
+            )}
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              sx={{
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: { xs: 0.75, sm: 2 },
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <ModelTabs
+                  currentTab={activeTab}
+                  deploymentCount={
+                    deploymentsQuery.isLoading ? undefined : deploymentCount
+                  }
+                  deploymentOptionsCount={
+                    deploymentOptionsQuery.isLoading
+                      ? undefined
+                      : (deploymentOptionsQuery.data?.result ?? []).length
+                  }
+                  onChange={setActiveTab}
+                />
+              </Box>
+              <ModelActionsBar model={model} />
+            </Stack>
             <Divider />
             <Box sx={{ px: { xs: 2, sm: 3 } }}>
               <TabPanel value="general" currentTab={activeTab}>
                 <GeneralSection model={model} />
               </TabPanel>
-              <TabPanel value="compliance" currentTab={activeTab}>
-                <ComplianceSection model={model} />
-              </TabPanel>
               <TabPanel value="deployment" currentTab={activeTab}>
-                <DeploymentSection model={model} />
+                <DeploymentSection model={model} view="deployments" />
+              </TabPanel>
+              <TabPanel value="deployment-options" currentTab={activeTab}>
+                <DeploymentSection model={model} view="options" />
               </TabPanel>
               <TabPanel value="settings" currentTab={activeTab}>
                 <SettingsSection model={model} />
+              </TabPanel>
+              <TabPanel value="json" currentTab={activeTab}>
+                <JsonViewer value={model} />
               </TabPanel>
             </Box>
           </>

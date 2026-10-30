@@ -63,7 +63,8 @@ const services: ServiceItem[] = [
   {
     label: 'HPC Job Submission Optimizer',
     name: 'HARP',
-    link: 'https://github.com/ICICLE-ai/harp',
+    link: '/harp',
+    internal: true,
   },
   {
     label: 'ML Field Deployment Planner',
@@ -83,6 +84,11 @@ const services: ServiceItem[] = [
     name: 'No-Code Image Lab',
     link: '/no-code-image-lab',
     internal: true,
+  },
+  {
+    label: 'Cascade Configuration Service',
+    name: 'Cascade Configuration Service',
+    link: 'https://cascadeconfigurationservice.pods.icicleai.tapis.io/',
   },
 ];
 

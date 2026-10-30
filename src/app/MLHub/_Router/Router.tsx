@@ -1,16 +1,9 @@
 import * as React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-import type {
-  Model,
-  Deployment,
-  Artifact,
-  Dataset,
-  DatasetArtifact,
-} from '../types';
+import type { Model, Artifact, Dataset, DatasetArtifact } from '../types';
 import {
   mockModels,
-  mockDeployments,
   mockArtifacts,
   mockDatasets,
   mockDatasetArtifacts,
@@ -27,6 +20,7 @@ import DeploymentsTab from '../pages/DeploymentsPage';
 import ArtifactsTab from '../pages/ArtifactsTab';
 import DatasetDetailsPage from '../pages/DatasetDetailsPage';
 import DeploymentDetailsPage from '../pages/DeploymentDetailsPage';
+import DeploymentNetworkPage from '../pages/DeploymentNetworkPage';
 import DashboardOverview from '../pages/DashboardOverview';
 import MarketplacePage from '../pages/MarketplacePage';
 import ModelMarketplace from '../pages/ModelMarketplace';
@@ -38,12 +32,11 @@ import { ModelFilterProvider } from '../_context/ModelFilterContext/ModelFilterC
 import { AgentControlPlane } from '../pages/AgentControlPlane';
 import HpcClustersPage from '../pages/HpcClustersPage';
 import HpcClusterDetailsPage from '../pages/HpcClusterDetailsPage';
+import EndpointsPage from '../pages/EndpointsPage';
 
 /* ─── App Root ────────────────────────────────────────────────── */
 export default function Router() {
   const [models, setModels] = React.useState<Model[]>(mockModels);
-  const [deployments, setDeployments] =
-    React.useState<Deployment[]>(mockDeployments);
   const [artifacts, setArtifacts] = React.useState<Artifact[]>(mockArtifacts);
   const [datasets, setDatasets] = React.useState<Dataset[]>(mockDatasets);
   const [datasetArtifacts, setDatasetArtifacts] =
@@ -147,22 +140,69 @@ export default function Router() {
         </MLHubLayout>
       </Route>
 
-      <Route path="/mlhub/deployments">
+      <Route path="/mlhub/mcp" exact>
         <MLHubLayout>
-          <DeploymentsTab />
+          <ComingSoon />
         </MLHubLayout>
       </Route>
 
-      {/* Deployment Detail Page */}
-      <Route path="/mlhub/deployments/*">
+      <Route path="/mlhub/marketplaces/mcp" exact>
         <MLHubLayout>
-          <DeploymentDetailsPage
-            deployments={deployments}
-            onDelete={(id) => {
-              setDeployments((prev) => prev.filter((d) => d.id !== id));
-              window.history.back();
-            }}
-          />
+          <ComingSoon />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/marketplaces/mcp-tools" exact>
+        <MLHubLayout>
+          <ComingSoon />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/providers" exact>
+        <MLHubLayout>
+          <ComingSoon />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/gateways" exact>
+        <MLHubLayout>
+          <ComingSoon />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/network" exact>
+        <MLHubLayout>
+          <ComingSoon />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/endpoints/:endpointId">
+        <MLHubLayout>
+          <EndpointsPage />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/endpoints" exact>
+        <MLHubLayout>
+          <EndpointsPage />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/deployments/:deploymentId/network" exact>
+        <MLHubLayout>
+          <DeploymentNetworkPage />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/deployments/:deploymentId" exact>
+        <MLHubLayout fullBleed>
+          <DeploymentDetailsPage />
+        </MLHubLayout>
+      </Route>
+
+      <Route path="/mlhub/deployments" exact>
+        <MLHubLayout>
+          <DeploymentsTab />
         </MLHubLayout>
       </Route>
 

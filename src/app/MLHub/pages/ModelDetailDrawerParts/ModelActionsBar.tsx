@@ -8,7 +8,8 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 import { Model } from '@mlhub/models-ts-sdk';
 import DeploymentDialog from '../../_components/DeploymentDialog';
-import { derivedMetadataFor, modelAuthorFor } from '../../modelMetadata';
+import { MLHub as Hooks } from '@tapis/tapisui-hooks';
+import { modelAuthorFor } from '../../modelMetadata';
 
 interface ModelActionsBarProps {
   model: Model;
@@ -18,7 +19,14 @@ type ActionDialog = 'deploy' | null;
 
 export function ModelActionsBar({ model }: ModelActionsBarProps) {
   const [activeDialog, setActiveDialog] = useState<ActionDialog>(null);
-  const canDeploy = derivedMetadataFor(model).deployment_strategies.length > 0;
+  const deploymentOptionsQuery =
+    Hooks.Models.useListExternalModelDeploymentOptions({
+      externalModelId: model.external_model_id,
+      includeCount: true,
+    });
+  const canDeploy = (deploymentOptionsQuery.data?.result ?? []).some(
+    (option) => option.available
+  );
 
   return (
     <>
@@ -26,13 +34,15 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={1}
-        sx={{ justifyContent: 'flex-end' }}
+        sx={{ justifyContent: 'flex-end', mr: 2 }}
       >
         <Tooltip
           title={
             canDeploy
               ? 'Deploy this model'
-              : 'No deployment strategy is available for this model'
+              : deploymentOptionsQuery.isLoading
+              ? 'Loading deployment options'
+              : 'No available deployment option is configured for this model'
           }
         >
           <span>
@@ -41,7 +51,8 @@ export function ModelActionsBar({ model }: ModelActionsBarProps) {
               onClick={() => setActiveDialog('deploy')}
               variant="outlined"
               size="small"
-              disabled={!canDeploy}
+              sx={{ borderRadius: '2px', height: 32, minHeight: 32, px: 2 }}
+              disabled={!canDeploy || deploymentOptionsQuery.isLoading}
             >
               Deploy
             </Button>

@@ -402,8 +402,11 @@ export const RegisterAgentDialog: React.FC<RegisterAgentDialogProps> = ({
           (ep.protocol === 'Stdio'
             ? 'stdio://process.pipe'
             : 'https://mesh.nexus.internal'),
+        proxy_url: `https://gateway.nexus.mesh/api/v1/tenants/${CURRENT_TENANT_ID}/endpoints/${cleanSlug}`,
         target_resource_urn: generateAgentUrn(CURRENT_TENANT_ID, agentId),
         tenant_id: CURRENT_TENANT_ID,
+        owner: data.owner.trim(),
+        available: true,
       };
     });
 

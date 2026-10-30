@@ -29,9 +29,12 @@ import {
   IcicleServicesV2,
   Patra,
   IntelligentEdgeManagementService,
+  HARP,
   ISAWPortal,
   Insights,
+  AutoOptTabular,
   FNAS_LCD,
+  ScienceAgents,
 } from './pages';
 import { SmartDetection } from './pages/SmartDetection';
 import { SmartSegmentation } from './pages/SmartSegmentation';
@@ -64,6 +67,7 @@ const extension = createExtension({
     'training-catalog',
     'home',
     'icicle-chatbook',
+    'science-agents',
     'food-flow-portal',
     'feast',
     'food-security-sandbox',
@@ -81,9 +85,11 @@ const extension = createExtension({
     'no-code-image-lab',
     'no-code-workflow-studio',
     'earth-data-hub',
+    'harp',
     'isaw-portal',
     'insights',
-    'fnas_lcd',
+    'auto-opt-tabular',
+    'fnas-lcd',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -109,6 +115,7 @@ const extension = createExtension({
           'analytics',
           'training-catalog',
           'icicle-chatbook',
+          'science-agents',
           'food-flow-portal',
           'feast',
           'food-security-sandbox',
@@ -122,10 +129,12 @@ const extension = createExtension({
           'no-code-image-lab',
           'no-code-workflow-studio',
           'earth-data-hub',
+          'harp',
           'intelligent-edge-management-service',
           'isaw-portal',
           'insights',
-          'fnas_lcd',
+          'auto-opt-tabular',
+          'fnas-lcd',
         ],
         secondaryServices: [],
       },
@@ -226,6 +235,13 @@ extension.registerService({
   sidebarDisplayName: 'ICICLE Chatbook',
   iconName: 'globe',
   component: ICICLEChatbook,
+});
+
+extension.registerService({
+  id: 'science-agents',
+  sidebarDisplayName: 'Science Agents',
+  iconName: 'globe',
+  component: ScienceAgents,
 });
 
 extension.registerService({
@@ -403,6 +419,12 @@ extension.registerService({
   component: Patra,
 });
 extension.registerService({
+  id: 'harp',
+  sidebarDisplayName: 'HARP',
+  iconName: 'simulation',
+  component: HARP,
+});
+extension.registerService({
   id: 'intelligent-edge-management-service',
   sidebarDisplayName: 'Intelligent Edge Management Service',
   iconName: 'globe',
@@ -424,9 +446,16 @@ extension.registerService({
 });
 
 extension.registerService({
-  id: 'fnas_lcd',
+  id: 'auto-opt-tabular',
+  sidebarDisplayName: 'Auto Opt Tabular',
+  iconName: 'globe',
+  component: AutoOptTabular,
+});
+
+extension.registerService({
+  id: 'fnas-lcd',
   sidebarDisplayName: 'FNAS-LCD',
-  iconName: 'fnas_lcd',
+  iconName: 'globe',
   component: FNAS_LCD,
 });
 

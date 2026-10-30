@@ -22,7 +22,6 @@ export function GeneralSection({ model }: GeneralSectionProps) {
     { label: 'Author', value: modelAuthorFor(model) },
     { label: 'Tenant', value: model.tenant_id },
     { label: 'Provider', value: model.external_model.provider },
-    { label: 'License', value: derived.license },
   ];
 
   return (
@@ -52,6 +51,14 @@ export function GeneralSection({ model }: GeneralSectionProps) {
           <TagCloud tags={derived.task_types} sx={{ mt: 0.5 }} />
         </Box>
       )}
+
+      <Box>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="caption" color="text.secondary">
+          License
+        </Typography>
+        <TagCloud tags={[derived.license ?? 'Unknown']} sx={{ mt: 0.5 }} />
+      </Box>
     </InfoSection>
   );
 }

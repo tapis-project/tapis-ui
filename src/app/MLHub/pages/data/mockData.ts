@@ -25,7 +25,7 @@ const createPlatformEndpointUrl = () => {
   return mlHubUrl.origin;
 };
 
-type MockPlatformEndpoint = Endpoint & { gateway_url: string };
+type MockPlatformEndpoint = Endpoint;
 type MockAgent = Omit<Agent, 'endpoints'> & {
   endpoints: MockPlatformEndpoint[];
 };
@@ -357,24 +357,28 @@ export const INITIAL_AGENTS: MockAgent[] = [
         slug: 'rag-query-orchestrator-prod-01-http-inbound',
         target_name: 'http-inbound',
         target_base_url: 'https://rag-prod-01.us-east-1.nexus.mesh:8443',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4001-7111-7ab3-9c88-1234567890ab'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'mlops-platform',
+        available: true,
       },
       {
         id: '71d24a02-b941-4f12-8c4d-0e91a9c35202',
         slug: 'rag-query-orchestrator-prod-01-grpc-streaming',
         target_name: 'grpc-streaming',
         target_base_url: 'grpc://rag-prod-01.us-east-1.nexus.mesh:50051',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4001-7111-7ab3-9c88-1234567890ab'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'mlops-platform',
+        available: true,
       },
     ],
     rest_http_endpoints: [
@@ -422,12 +426,14 @@ export const INITIAL_AGENTS: MockAgent[] = [
         slug: 'rag-query-orchestrator-eu-west-http-inbound',
         target_name: 'http-inbound',
         target_base_url: 'https://rag-eu-central.eu-west-1.nexus.mesh:8443',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4002-8222-7bc4-ad99-2345678901bc'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'mlops-platform',
+        available: true,
       },
     ],
     rest_http_endpoints: [
@@ -469,12 +475,14 @@ export const INITIAL_AGENTS: MockAgent[] = [
         slug: 'cyber-sentinel-global-watch-sentinel-api',
         target_name: 'sentinel-api',
         target_base_url: 'https://sentinel.internal.nexus.corp:9000',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4003-9333-7cd5-beaa-3456789012cd'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'secops-team',
+        available: true,
       },
     ],
     rest_http_endpoints: [
@@ -516,12 +524,14 @@ export const INITIAL_AGENTS: MockAgent[] = [
         slug: 'sql-copilot-dev-sandbox-rest-gateway',
         target_name: 'rest-gateway',
         target_base_url: 'https://copilot-dev.sandbox.nexus.mesh:3000',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4004-a444-7de6-cfbb-4567890123de'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'data-engineering',
+        available: true,
       },
     ],
     rest_http_endpoints: [
@@ -563,12 +573,14 @@ export const INITIAL_AGENTS: MockAgent[] = [
         slug: 'doc-extractor-batch-worker-gpu-doc-process-endpoint',
         target_name: 'doc-process-endpoint',
         target_base_url: 'https://doc-worker-08.gpu.nexus.corp:8080',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4005-b555-7ef7-d0cc-5678901234ef'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'ml-research',
+        available: false,
       },
     ],
     rest_http_endpoints: [
@@ -610,12 +622,14 @@ export const INITIAL_AGENTS: MockAgent[] = [
         slug: 'custom-cli-stdio-bridge-local-stdio',
         target_name: 'local-stdio',
         target_base_url: 'stdio://process.pipe',
-        gateway_url: createPlatformEndpointUrl(),
+        proxy_url: createPlatformEndpointUrl(),
         target_resource_urn: generateAgentUrn(
           CURRENT_TENANT_ID,
           '018f4006-c666-7ff8-e1dd-6789012345fa'
         ),
         tenant_id: CURRENT_TENANT_ID,
+        owner: 'platform-core',
+        available: true,
       },
     ],
     rest_http_endpoints: [],
