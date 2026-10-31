@@ -56,7 +56,7 @@ const services: ServiceItem[] = [
     label:
       'Playground for Model Creation, Adaptation, Training, Compression, and Inference',
     name: 'MLHub',
-    link: '/ml-hub',
+    link: '/mlhub',
     internal: true,
   },
   {
