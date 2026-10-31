@@ -32,7 +32,7 @@ const useCheckCredential = (
       ...options,
       // caller's enabled is honored, but never without a token — the old
       // version spread options first and silently overrode enabled:false
-      enabled: !!accessToken && (options.enabled ?? true),
+      enabled: !!accessToken && (options.enabled ?? false),
     }
   );
   return result;
