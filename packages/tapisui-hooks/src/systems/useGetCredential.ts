@@ -28,7 +28,7 @@ const useGetCredential = (
       ...noBackgroundRefetch,
       refetchOnMount: false,
       ...options,
-      enabled: !!accessToken && (options.enabled ?? true),
+      enabled: !!accessToken && (options.enabled ?? false),
     }
   );
 };

@@ -1,4 +1,4 @@
-import { useMutation, MutateOptions } from 'react-query';
+import { useMutation, MutateOptions, useQueryClient } from 'react-query';
 import { Systems } from '@tapis/tapis-typescript';
 import { Systems as API } from '@tapis/tapisui-api';
 import { useTapisConfig } from '../context';
@@ -12,6 +12,7 @@ type CreateSystemHookParams = {
 const useCreateSystem = () => {
   const { basePath, accessToken } = useTapisConfig();
   const jwt = accessToken?.access_token || '';
+  const queryClient = useQueryClient();
   const {
     mutate,
     mutateAsync,
@@ -24,7 +25,13 @@ const useCreateSystem = () => {
   } = useMutation<Systems.RespBasic, Error, CreateSystemHookParams>(
     [QueryKeys.createSystem, basePath, jwt],
     ({ reqPostSystem, skipCredentialCheck }) =>
-      API.createSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt)
+      API.createSystem({ reqPostSystem, skipCredentialCheck }, basePath, jwt),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(QueryKeys.list);
+        queryClient.invalidateQueries(QueryKeys.listWindow);
+      },
+    }
   );
 
   // Return hook object with loading states and login function
