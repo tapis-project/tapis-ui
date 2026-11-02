@@ -37,6 +37,7 @@ import { DeleteImageModal } from '../Modals';
 import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
+import PodsLoadError from '../PodsLoadError';
 import { NavLink } from 'react-router-dom';
 
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
@@ -53,6 +54,7 @@ const PageImages: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     { imageId: objId },
     { enabled: !!objId }
   );
+  const loadFailed = objId !== undefined && !!error && !data;
   const tooltipText =
     'Pods saves pod interactions in an Action Logs ledger. User and system interaction with your pod is logged here.';
   const pod: any | undefined = data?.result;
@@ -374,12 +376,22 @@ Select an image to get started.`;
           <NavImages />
         </div>
         <div className={styles['right-pane']}>
-          <div className={styles['work-toolbar']}>
-            {renderTabBar(getTabBarButtons(), rightButtons)}
-          </div>
+          {!loadFailed && (
+            <div className={styles['work-toolbar']}>
+              {renderTabBar(getTabBarButtons(), rightButtons)}
+            </div>
+          )}
           <div className={styles['work-content']}>
             <div className={styles['container']}>
-              {imageTab === 'edit' && objId !== undefined ? (
+              {loadFailed ? (
+                <PodsLoadError
+                  kind="Image"
+                  id={objId}
+                  error={error}
+                  listRoute="/pods/images"
+                  listLabel="All images"
+                />
+              ) : imageTab === 'edit' && objId !== undefined ? (
                 <ImageWizardEdit key={objId} image={pod} />
               ) : imageRootTab === 'createImage' && objId === undefined ? (
                 <ImageWizard

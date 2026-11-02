@@ -52,6 +52,7 @@ import {
   TemplatePermissionModal,
 } from 'app/Pods/_components/Modals';
 import PodsLoadingText from '../PodsLoadingText';
+import PodsLoadError from '../PodsLoadError';
 import { getPodsAdminMode, subscribePodsAdminMode } from 'utils/podsAdminMode';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 import { template } from 'lodash';
@@ -127,6 +128,7 @@ const PageTemplates: React.FC<{
 
   const { data, isLoading, isFetching, error, invalidate } =
     Hooks.useGetTemplate({ templateId: objId ?? '' }, { enabled: !!objId });
+  const loadFailed = objId !== undefined && !!error && !data;
   const {
     data: dataTags,
     isLoading: isLoadingTags,
@@ -1814,16 +1816,19 @@ templateNavExpandedItems: ${templateNavExpandedItems}
           <NavTemplates />
         </div>
         <div className={styles['right-pane']} style={{ minWidth: '200px' }}>
-          <div className={styles['work-toolbar']}>
-            {renderTabBar(
-              objId === undefined ? getTabBarButtons() : getLeftButtons(),
-              rightButtons
-            )}
-          </div>
+          {!loadFailed && (
+            <div className={styles['work-toolbar']}>
+              {renderTabBar(
+                objId === undefined ? getTabBarButtons() : getLeftButtons(),
+                rightButtons
+              )}
+            </div>
+          )}
 
           <div className={styles['work-content']}>
             {/* View Configs checkbox - show when viewing template details or tags */}
             {objId &&
+              !loadFailed &&
               (templateTab === 'detailsTag' || templateTab === 'details') && (
                 <Box
                   sx={{
@@ -1956,7 +1961,15 @@ templateNavExpandedItems: ${templateNavExpandedItems}
                   ? renderCreateTemplateTag()
                   : null}
                 {/* Edit panel using ResourceEditor */}
-                {templateTab === 'edit' && objId !== undefined ? (
+                {loadFailed ? (
+                  <PodsLoadError
+                    kind="Template"
+                    id={objId}
+                    error={error}
+                    listRoute="/pods/templates"
+                    listLabel="All templates"
+                  />
+                ) : templateTab === 'edit' && objId !== undefined ? (
                   <TemplateWizardEdit key={objId} template={pod} />
                 ) : (
                   /* Default code mirror for other views */
