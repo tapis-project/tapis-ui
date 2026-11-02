@@ -35,6 +35,7 @@ import { DeleteVolumeModal, VolumePermissionModal } from '../Modals';
 import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
+import PodsLoadError from '../PodsLoadError';
 import { set } from 'date-fns';
 import { NavLink } from 'react-router-dom';
 
@@ -48,6 +49,7 @@ const PageVolumes: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     { volumeId: objId },
     { enabled: !!objId }
   );
+  const loadFailed = objId !== undefined && !!error && !data;
   const {
     data: filesData,
     isLoading: isFilesLoading,
@@ -454,13 +456,15 @@ Select or create a volume to get started.`;
           <NavVolumes />
         </div>
         <div className={styles['right-pane']}>
-          <div className={styles['work-toolbar']}>
-            {renderTabBar(getTabBarButtons(), rightButtons)}
-          </div>
+          {!loadFailed && (
+            <div className={styles['work-toolbar']}>
+              {renderTabBar(getTabBarButtons(), rightButtons)}
+            </div>
+          )}
           <div className={styles['work-content']}>
             <div className={styles['container']}>
               {/* Permissions chips when viewing perms */}
-              {volumeTab === 'perms' && objId !== undefined && (
+              {!loadFailed && volumeTab === 'perms' && objId !== undefined && (
                 <Box sx={{ px: 1, py: 1, mb: 1 }}>
                   {isFetchingPerms ? (
                     <Typography variant="body2" color="text.secondary">
@@ -540,7 +544,15 @@ Select or create a volume to get started.`;
                   )}
                 </Box>
               )}
-              {volumeTab === 'edit' && objId !== undefined ? (
+              {loadFailed ? (
+                <PodsLoadError
+                  kind="Volume"
+                  id={objId}
+                  error={error}
+                  listRoute="/pods/volumes"
+                  listLabel="All volumes"
+                />
+              ) : volumeTab === 'edit' && objId !== undefined ? (
                 <VolumeWizardEdit key={objId} volume={pod} />
               ) : volumeRootTab === 'createVolume' && objId === undefined ? (
                 <VolumeWizard
