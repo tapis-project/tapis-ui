@@ -5,6 +5,7 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
+import NotFound from 'app/_components/NotFound';
 import JobDetail from '../JobDetail';
 import JobsDashboard from '../_components/JobsDashboard';
 
@@ -19,6 +20,7 @@ const Router: React.FC = () => {
 
       <Route
         path={`${path}/:jobUuid`}
+        exact
         render={({
           match: {
             params: { jobUuid },
@@ -27,6 +29,10 @@ const Router: React.FC = () => {
           <JobDetail jobUuid={jobUuid} />
         )}
       />
+
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 };

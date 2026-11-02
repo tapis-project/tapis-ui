@@ -9,6 +9,9 @@ import { resolveMLHubBasePath } from 'utils/resolveMLHubBasePath';
 import reportWebVitals from './reportWebVitals';
 import { ExtensionsProvider, initializedExtensions } from './extensions';
 import { NotificationsProvider } from 'app/_components/Notifications';
+import ErrorBoundary, {
+  reloadForNewBuild,
+} from 'app/_components/ErrorBoundary';
 import Theme from './theme'; // Import the Theme component
 import { registerModuleHeaders } from '@tapis/tapisui-api';
 import { Pods as PodsModule } from '@tapis/tapis-typescript';
@@ -29,6 +32,12 @@ if (window.location.hostname === 'icicle.tapis.io') {
   );
 }
 
+// Vite raises this when a lazy chunk fails. Left alone, the import rejects and
+// the error boundary shows it.
+window.addEventListener('vite:preloadError', (event) => {
+  if (reloadForNewBuild()) event.preventDefault();
+});
+
 const container = document.getElementById('react-root');
 const root = createRoot(container!);
 
@@ -42,7 +51,9 @@ root.render(
         <Theme>
           <NotificationsProvider>
             <Router>
-              <App />
+              <ErrorBoundary>
+                <App />
+              </ErrorBoundary>
             </Router>
           </NotificationsProvider>
         </Theme>

@@ -5,6 +5,7 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
+import NotFound from 'app/_components/NotFound';
 import AppDetails from '../AppDetails';
 import AppsOverview from '../_components/AppsOverview';
 
@@ -30,6 +31,10 @@ const Router: React.FC = () => {
           return <AppDetails appId={appId} appVersion={appVersion} />;
         }}
       />
+
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 };

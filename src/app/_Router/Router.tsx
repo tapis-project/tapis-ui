@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { ProtectedRoute } from '@tapis/tapisui-common';
 import { Authenticator as Auth, useTapisConfig } from '@tapis/tapisui-hooks';
 
@@ -7,6 +7,8 @@ import { Authenticator as Auth, useTapisConfig } from '@tapis/tapisui-hooks';
 import Login from '../Login';
 import Dashboard from '../Dashboard';
 import OAuth2 from '../OAuth2';
+import ErrorBoundary from '../_components/ErrorBoundary';
+import NotFound from '../_components/NotFound';
 import RouteLoader from '../_components/RouteLoader';
 
 // Lazy load heavy feature components
@@ -219,10 +221,23 @@ const Router: React.FC = () => {
               </ProtectedRoute>
             );
           }
-          return <></>;
+          return null;
         })}
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 };
 
-export default Router;
+// A crash on one page keeps the shell, and the next navigation clears it.
+const GuardedRouter: React.FC = () => {
+  const { pathname } = useLocation();
+  return (
+    <ErrorBoundary resetKey={pathname}>
+      <Router />
+    </ErrorBoundary>
+  );
+};
+
+export default GuardedRouter;
