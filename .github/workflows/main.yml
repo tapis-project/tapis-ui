@@ -44,6 +44,27 @@ jobs:
       - name: Client Side Linting
         run: pnpm run lint
 
+  # The app's own suite. Jest reads the workspace packages from dist, so they
+  # build first. Client_Side_Unit_Tests above covers only the hooks and api
+  # packages.
+  Client_Side_App_Tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: install pnpm
+        uses: pnpm/action-setup@v6
+      - name: setup Node.js for use with actions
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.4.x
+          cache: 'pnpm'
+      - name: install packages
+        run: pnpm install --frozen-lockfile
+      - name: build workspace packages
+        run: pnpm -r build
+      - name: run app tests
+        run: pnpm exec jest --silent
+
   # The compile gate. Runs the same build the image does
   # (Dockerfile.nix: `pnpm -r build && pnpm build`) without Docker or secrets,
   # so it also works on fork PRs. Without this, nothing in CI typechecks:
@@ -123,6 +144,7 @@ jobs:
       - Resolve_Image_Tag
       - Client_Side_Linting
       - Client_Side_Unit_Tests
+      - Client_Side_App_Tests
       - Client_Side_Build
     runs-on: ubuntu-24.04
     name: Build_Push_Image
@@ -154,6 +176,7 @@ jobs:
     needs:
       - Client_Side_Linting
       - Client_Side_Unit_Tests
+      - Client_Side_App_Tests
       - Client_Side_Build
     runs-on: ubuntu-24.04
     name: Build_Push_PR_Image
