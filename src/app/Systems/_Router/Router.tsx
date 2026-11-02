@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import SystemDetail from '../SystemDetail';
 import SystemsOverview from '../_components/SystemsOverview';
+import NotFound from 'app/_components/NotFound';
 
 const Router: React.FC = () => {
   const { path } = useRouteMatch();
@@ -18,6 +19,7 @@ const Router: React.FC = () => {
 
       <Route
         path={`${path}/:systemId`}
+        exact
         render={({
           match: {
             params: { systemId },
@@ -26,6 +28,10 @@ const Router: React.FC = () => {
           return <SystemDetail systemId={systemId} />;
         }}
       />
+
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 };

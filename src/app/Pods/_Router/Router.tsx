@@ -5,6 +5,7 @@ import {
   RouteComponentProps,
   Switch,
 } from 'react-router-dom';
+import NotFound from 'app/_components/NotFound';
 import { default as PagePods } from 'app/Pods/_components/PagePods';
 import { default as PageImages } from 'app/Pods/_components/PageImages';
 import { default as PageVolumes } from 'app/Pods/_components/PageVolumes';
@@ -75,6 +76,7 @@ const Router: React.FC = () => {
 
       <Route
         path={`${path}/:podId?`}
+        exact
         render={({
           match: {
             params: { podId },
@@ -83,6 +85,10 @@ const Router: React.FC = () => {
           <PagePods objId={podId} />
         )}
       />
+
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 };
