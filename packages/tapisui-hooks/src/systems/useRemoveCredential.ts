@@ -31,7 +31,9 @@ const useRemoveCredential = () => {
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries([QueryKeys.list, QueryKeys.details]);
+    // separate calls — the array form is one compound key, matching nothing
+    queryClient.invalidateQueries(QueryKeys.list);
+    queryClient.invalidateQueries(QueryKeys.details);
   };
 
   return {

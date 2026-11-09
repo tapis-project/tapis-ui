@@ -1,7 +1,25 @@
 const QueryKeys = {
   list: 'apps/list',
+  listWindow: 'apps/listWindow',
+  deletedList: 'apps/deletedList',
   createApp: 'apps/createApp',
   patch: 'apps/update',
+  shareApp: 'apps/shareApp',
+  unShareApp: 'apps/unShareApp',
+  shareAppPublic: 'apps/shareAppPublic',
+  unShareAppPublic: 'apps/unShareAppPublic',
+  shareInfo: 'apps/shareInfo',
+  enableApp: 'apps/enableApp',
+  disableApp: 'apps/disableApp',
+  deleteApp: 'apps/deleteApp',
+  undeleteApp: 'apps/undeleteApp',
+  lockApp: 'apps/lockApp',
+  unlockApp: 'apps/unlockApp',
+  changeAppOwner: 'apps/changeAppOwner',
+  history: 'apps/history',
+  userPermsMap: 'apps/userPermsMap',
+  grantUserPerms: 'apps/grantUserPerms',
+  revokeUserPerms: 'apps/revokeUserPerms',
 };
 
 export default QueryKeys;

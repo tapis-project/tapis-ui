@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import { Apps } from '@tapis/tapis-typescript';
 
 export const tapisApp: Apps.TapisApp = {

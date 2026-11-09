@@ -3,6 +3,7 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { noBackgroundRefetch } from '../utils/cachePolicy';
 
 export const defaultParams: Systems.GetSystemsRequest = {
   listType: Systems.ListTypeEnum.All,
@@ -19,8 +20,10 @@ const useList = (
     // which is expected behavior for not having a token
     () => API.list(params, basePath, accessToken?.access_token || ''),
     {
+      ...noBackgroundRefetch,
+      refetchOnMount: false,
       ...options,
-      enabled: !!accessToken,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;

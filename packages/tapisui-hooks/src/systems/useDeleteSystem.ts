@@ -24,7 +24,12 @@ const useDeleteSystem = () => {
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries([QueryKeys.list, QueryKeys.details]);
+    // one key per call: an ARRAY here is a single compound key
+    // ['systems/list', 'systems/details'], which matches nothing — this
+    // invalidate was a silent no-op, and a deleted system's row lived on
+    queryClient.invalidateQueries(QueryKeys.list);
+    queryClient.invalidateQueries(QueryKeys.listWindow);
+    queryClient.invalidateQueries(QueryKeys.details);
   };
 
   // Return hook object with loading states and login function

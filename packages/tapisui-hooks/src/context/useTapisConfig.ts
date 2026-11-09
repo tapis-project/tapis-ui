@@ -1,9 +1,97 @@
-import { useContext, useEffect, useRef } from 'react';
-import { useQuery } from 'react-query';
+import { useContext, useEffect, useMemo, useRef } from 'react';
+import { QueryClient, useQuery, useQueryClient } from 'react-query';
 import Cookies from 'js-cookie';
 import { Authenticator } from '@tapis/tapis-typescript';
 import jwt_decode from 'jwt-decode';
 import TapisContext from './TapisContext';
+
+/**
+ * Has the JWT passed its `exp`? Tokens without an `exp` claim are treated as
+ * live (undecodable tokens are rejected earlier). `now` is injectable for tests.
+ */
+export const isJwtExpired = (
+  claims: { exp?: number },
+  now: number = Date.now()
+): boolean => {
+  if (!claims?.exp) return false;
+  return now >= claims.exp * 1000;
+};
+
+/**
+ * Does a token's tenant match the host? A mismatch signs the user out.
+ * The tenant must be a whole label of the hostname: a substring test would
+ * accept "cc" for "tacc.tapis.io" and "tacc" for "taccdev.tapis.io".
+ */
+export const tenantMatchesHost = (
+  basePath: string | undefined,
+  tokenTenantId: string | undefined
+): boolean => {
+  if (!basePath || !tokenTenantId) return false;
+  let host: string;
+  try {
+    host = new URL(basePath).hostname;
+  } catch {
+    host = basePath.replace(/^[a-z]+:\/\//i, '').split(/[/:]/)[0];
+  }
+  return host.toLowerCase().split('.').includes(tokenTenantId.toLowerCase());
+};
+
+/**
+ * A localhost basePath cannot encode a tenant, so the tenant check is skipped
+ * for it: the service resolves the tenant from the token claim (dev Pods
+ * proxy, VITE_PODS_BASE_URL).
+ */
+const isLocalDevBasePath = (basePath: string | undefined): boolean =>
+  !!basePath &&
+  /\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|172\.17\.0\.1)(:|\/|$)/i.test(
+    basePath
+  );
+
+export type TokenRefusal = {
+  reason: 'unreadable' | 'expired' | 'tenant-mismatch';
+  /** The token's tenant, for 'tenant-mismatch'. */
+  tenant?: string;
+};
+
+/**
+ * Why this deployment cannot use an access token, or undefined if it can.
+ * The one rule set for the auto-logout effect, the OAuth2 callback and the
+ * token dialog: decodable, unexpired, tenant is a label of the host.
+ */
+export const checkAccessToken = (
+  token: string,
+  { basePath, now }: { basePath: string | undefined; now?: number }
+): TokenRefusal | undefined => {
+  let claims: { exp?: number; 'tapis/tenant_id'?: string };
+  try {
+    claims = jwt_decode(token);
+  } catch {
+    return { reason: 'unreadable' };
+  }
+  if (!claims || typeof claims !== 'object') return { reason: 'unreadable' };
+  if (isJwtExpired(claims, now)) return { reason: 'expired' };
+  const tenant = claims['tapis/tenant_id'];
+  if (
+    tenant &&
+    !isLocalDevBasePath(basePath) &&
+    !tenantMatchesHost(basePath, tenant)
+  ) {
+    return { reason: 'tenant-mismatch', tenant };
+  }
+  return undefined;
+};
+
+/**
+ * Cached responses outlive the session unless removed, so the next sign-in in
+ * this tab must not find the previous user's data. The token query stays: it
+ * is what tells the app the session ended.
+ */
+export const dropSessionQueries = (client: QueryClient): void => {
+  client.removeQueries({
+    predicate: (query) => query.queryHash !== '["tapis-token"]',
+  });
+  client.getMutationCache().clear();
+};
 
 const useTapisConfig = () => {
   const { basePath, mlHubBasePath } = useContext(TapisContext);
@@ -16,57 +104,71 @@ const useTapisConfig = () => {
     return undefined;
   };
 
+  const queryClient = useQueryClient();
   const { data, refetch } = useQuery<
     Authenticator.NewAccessTokenResponse | undefined
   >('tapis-token', getAccessToken, {
     initialData: () => getAccessToken(),
   });
 
+  // Re-read the cookie after writing it. A plain refetch can return the read
+  // already in flight (started before the token was stored), which resolves
+  // to "no token". Cancel first, then fetch.
+  const rereadToken = async () => {
+    await queryClient.cancelQueries('tapis-token');
+    await refetch();
+  };
+
   const setAccessToken = async (
     resp: Authenticator.NewAccessTokenResponse | null | undefined
   ): Promise<void> => {
+    // Need to create wildcard path from current basePath
+    // basePath:   https://scoped.tapis.io, must turn into .scoped.tapis.io
+    // basePath can be undefined when VITE_TAPIS_BASE_URL is unset on localhost:
+    // don't crash auth flows over a cookie domain we can't compute.
+    const cookieDomain = basePath
+      ? basePath.replace('https://', '.').replace('http://', '.')
+      : undefined;
     if (!resp) {
       Cookies.remove('tapis-token');
       // Requires the correct domain as the cookie is set to the domain to remove
-      Cookies.remove('X-Tapis-Token', {
-        domain: basePath.replace('https://', '.').replace('http://', '.'),
-      });
-      await refetch();
+      Cookies.remove('X-Tapis-Token', { domain: cookieDomain });
+      await rereadToken();
+      dropSessionQueries(queryClient);
       return;
     }
 
     const expires = new Date(resp.expires_at ?? 0);
 
     Cookies.set('tapis-token', JSON.stringify(resp), { expires });
-    // Need to create wildcard path from current basePath
-    // basePath:   https://scoped.tapis.io, must turn into .scoped.tapis.io
+    // Tenant-wide `domain` is required: pods are served from subdomains of the
+    // tenant host and read this cookie (tapis_auth). Do not widen the scope.
     Cookies.set('X-Tapis-Token', resp.access_token ?? '', {
       expires,
-      domain: basePath.replace('https://', '.').replace('http://', '.'),
+      domain: cookieDomain,
       secure: true,
     });
-    await refetch();
+    await rereadToken();
   };
-  console.debug(
-    `useTapisConfig: basePath: ${basePath}, data.access_token exists:`,
-    JSON.stringify(data?.access_token ? true : false, null, 2)
-  );
-
-  // Safely decode JWT — garbage tokens won't crash the app
-  let claims: { [key: string]: any } = {};
-  let jwtDecodeFailed = false;
-  try {
-    claims = data?.access_token ? jwt_decode(data.access_token) : {};
-  } catch (e) {
-    console.error('Failed to decode access token JWT:', e);
-    jwtDecodeFailed = true;
-  }
+  // Memoized on the token string: many modules call this hook, and decoding
+  // on every render is costly. Claims only change when the token changes.
+  const { claims, jwtDecodeFailed } = useMemo((): {
+    claims: { [key: string]: any };
+    jwtDecodeFailed: boolean;
+  } => {
+    const token = data?.access_token;
+    if (!token) return { claims: {}, jwtDecodeFailed: false };
+    try {
+      // a malformed token must not throw
+      return { claims: jwt_decode(token) as any, jwtDecodeFailed: false };
+    } catch (e) {
+      console.error('Failed to decode access token JWT:', e);
+      return { claims: {}, jwtDecodeFailed: true };
+    }
+  }, [data?.access_token]);
 
   // Check if the JWT has expired based on the `exp` claim (seconds since epoch)
-  const isTokenExpired = (() => {
-    if (!claims.exp) return false;
-    return Date.now() >= claims.exp * 1000;
-  })();
+  const isTokenExpired = isJwtExpired(claims as { exp?: number });
 
   const pathTenantId = basePath
     ? basePath.replace('https://', '').replace('http://', '').split('.')[0]
@@ -118,11 +220,12 @@ const useTapisConfig = () => {
   const tokenTenantId: string | undefined =
     claims['tapis/tenant_id'] ?? undefined;
 
+  const isLocalDev = isLocalDevBasePath(basePath);
+
   // Inline logic for domainsMatched
-  const domainsMatched =
-    basePath && tokenTenantId
-      ? basePath.toLowerCase().includes(tokenTenantId.toLowerCase() + '.')
-      : false;
+  const domainsMatched = isLocalDev
+    ? true
+    : tenantMatchesHost(basePath, tokenTenantId);
 
   // Use a ref to avoid re-triggering the effect when setAccessToken identity changes
   const setAccessTokenRef = useRef(setAccessToken);
@@ -132,35 +235,29 @@ const useTapisConfig = () => {
   useEffect(() => {
     if (!data?.access_token) return;
 
-    // Undecodable JWT (garbage token) — clear it immediately
+    // Undecodable JWT: clear it
     if (jwtDecodeFailed) {
       console.warn('Access token is not a valid JWT. Clearing token.');
       setAccessTokenRef.current(null);
       return;
     }
 
-    // Expired JWT — clear it and force re-login
+    // Expired JWT: clear it and force re-login
     if (isTokenExpired) {
       console.warn('Access token has expired (JWT exp claim). Logging out.');
       setAccessTokenRef.current(null);
       return;
     }
 
-    // Tenant mismatch — token is for a different tenant than the current basePath
-    if (tokenTenantId && Object.keys(claims).length > 0 && !domainsMatched) {
+    // Tenant mismatch: the token is for a different tenant than the basePath
+    const refusal = checkAccessToken(data.access_token, { basePath });
+    if (refusal?.reason === 'tenant-mismatch') {
       console.error(
-        `The basePath ${basePath} does not match the tenant_id ${tokenTenantId}. Logging user out.`
+        `The basePath ${basePath} does not match the tenant_id ${refusal.tenant}. Logging user out.`
       );
       setAccessTokenRef.current(null);
     }
-  }, [
-    data?.access_token,
-    isTokenExpired,
-    jwtDecodeFailed,
-    tokenTenantId,
-    domainsMatched,
-    basePath,
-  ]);
+  }, [data?.access_token, isTokenExpired, jwtDecodeFailed, basePath]);
 
   return {
     basePath,

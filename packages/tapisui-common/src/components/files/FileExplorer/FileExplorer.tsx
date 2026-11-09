@@ -27,6 +27,10 @@ type FileExplorerProps = {
   fields?: Array<'size' | 'lastModified'>;
   selectedFiles?: Array<Files.FileInfo>;
   selectMode?: SelectMode;
+  /** see FileListing: what a click on a file does instead of the viewer */
+  onOpenFile?: (file: Files.FileInfo) => void;
+  /** the listing's frame, in place of the fixed-height grey box */
+  listingClassName?: string;
 };
 
 const FileExplorer: React.FC<FileExplorerProps> = ({
@@ -40,6 +44,8 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
   fields = ['size'],
   selectedFiles,
   selectMode,
+  onOpenFile,
+  listingClassName,
 }) => {
   const [currentSystem, setCurrentSystem] = useState(systemId);
   const [currentPath, setCurrentPath] = useState(path);
@@ -117,19 +123,24 @@ const FileExplorer: React.FC<FileExplorerProps> = ({
       <div>
         {currentSystem ? (
           <FileListing
-            className={`${styles['nav-list']}`}
+            className={listingClassName ?? styles['nav-list']}
             systemId={currentSystem}
             path={currentPath ?? '/'}
             onNavigate={onFileNavigate}
+            // a picker: you are choosing a destination, so one click enters
+            openOn="single"
+            // and choosing a destination is not an invitation to upload
+            dropToUpload={false}
             onSelect={onSelect}
             onUnselect={onUnselect}
             selectedFiles={selectedFiles}
             fields={fields}
             selectMode={selectMode}
+            onOpenFile={onOpenFile}
           />
         ) : (
           <SystemListing
-            className={`${styles['nav-list']}`}
+            className={listingClassName ?? styles['nav-list']}
             onNavigate={onSystemNavigate}
           />
         )}

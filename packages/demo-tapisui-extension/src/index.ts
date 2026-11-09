@@ -1,6 +1,5 @@
 import {
   createExtension,
-  EnumTapisCoreService,
 } from '@tapis/tapisui-extensions-core';
 import { tasks as generatedTasks } from './gen';
 import {
@@ -34,7 +33,6 @@ const extension = createExtension({
       responseType: 'token',
     },
   },
-  removeServices: [],
   betaSidebar: {
     enabled: true,
     noSection: {

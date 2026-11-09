@@ -178,7 +178,12 @@ const AuthModal: React.FC<ModalProps> = ({
               in a shell.
               <br />
               <br />
-              <b>ssh-keygen -t rsa -b 4096 -m PEM</b>
+              <b>ssh-keygen -t ed25519</b>
+              <br />
+              <br />
+              For an older host that refuses ed25519, use{' '}
+              <b>ssh-keygen -t rsa -b 4096 -m PEM</b> instead. Do not set a
+              passphrase — Tapis uses the key non-interactively.
               <br />
               <br />
               Ensure that the public key you paste below has already been placed

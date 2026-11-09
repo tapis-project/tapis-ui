@@ -7,7 +7,8 @@
   "pnpm": {
     "overrides": {
       "glob": "^9.0.0",
-      "@codemirror/state": "6.6.0"
+      "@codemirror/state": "6.6.0",
+      "get-intrinsic": ">=1.2.4 <1.3.0"
     }
   },
   "dependencies": {
@@ -16,7 +17,9 @@
     "@codemirror/commands": "^6.0.0",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-python": "^6.1.6",
+    "@codemirror/lang-yaml": "^6.1.3",
     "@codemirror/language": "^6.11.0",
+    "@codemirror/legacy-modes": "^6.5.3",
     "@codemirror/lint": "^6.8.5",
     "@codemirror/search": "^6.0.0",
     "@codemirror/state": "^6.6.0",
@@ -28,6 +31,7 @@
     "@icicle/tapisui-extension": "workspace:*",
     "@jest/globals": "30.2.0",
     "@kitware/vtk.js": "^36.2.0",
+    "@lezer/highlight": "^1.2.3",
     "@mlhub/agents-ts-sdk": "=0.36.0",
     "@mlhub/deployments-ts-sdk": "=0.36.0",
     "@mlhub/models-ts-sdk": "=0.36.0",
@@ -41,6 +45,7 @@
     "@mui/x-data-grid": "^7.7.0",
     "@mui/x-tree-view": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@replit/codemirror-indentation-markers": "^6.5.3",
     "@scoped/tapisui-extension": "workspace:*",
     "@tapis/tapis-typescript": "0.0.68",
     "@tapis/tapisui-api": "workspace:*",
@@ -49,6 +54,7 @@
     "@tapis/tapisui-extensions-core": "workspace:*",
     "@tapis/tapisui-hooks": "workspace:*",
     "@testing-library/jest-dom": "6.6.3",
+    "@types/d3-force": "^3.0.10",
     "@types/jest": "^26.0.24",
     "@types/leaflet": "^1.9.17",
     "@types/lodash": "^4.17.17",
@@ -61,6 +67,7 @@
     "base-64": "^1.0.0",
     "bootstrap": "4.6.2",
     "codemirror": "^6.0.1",
+    "d3-force": "^3.0.0",
     "date-fns": "^3.6.0",
     "depcheck": "^1.4.7",
     "elkjs": "^0.9.3",
@@ -77,6 +84,7 @@
     "markdown-to-jsx": "^7.4.7",
     "mime-types": "^3.0.2",
     "nanoid": "^6.0.0",
+    "pixi.js": "^8.19.0",
     "prop-types": "^15.7.2",
     "react": "^18.3.1",
     "react-copy-to-clipboard": "^5.0.2",
@@ -102,6 +110,7 @@
     "uuid": "^7.0.2",
     "vite": "^5.2.12",
     "web-vitals": "^1.1.2",
+    "yaml": "^2.9.0",
     "yup": "^0.32.11"
   },
   "homepage": "https://tapis-project.github.io/tapis-ui",
@@ -117,6 +126,12 @@
     "docker": "docker build -t uidev -f Dockerfile.nix .; docker run -p 3000:3000 uidev",
     "docker-prod": "docker build -t uiprod -f Dockerfile.nix .; docker run -p 3000:80 uiprod",
     "test": "chmod +x ./scripts/test-all.sh && ./scripts/test-all.sh",
+    "bench": "node scripts/bench/bench.mjs",
+    "bench:prod": "bash scripts/bench/prod.sh",
+    "bench:bundle": "node scripts/bench/bundle-report.mjs",
+    "bench:server": "node scripts/bench/server.mjs",
+    "bench:stack": "node scripts/bench/stack.mjs",
+    "bench:report": "node scripts/bench/report.mjs",
     "lint": "eslint --max-warnings=13 . && prettier --single-quote --check src",
     "prettier": "prettier --single-quote --write -l src packages",
     "prettier-loop": "while true; do prettier --loglevel=silent --single-quote -l src packages || (echo -e '\n#############################################\nFound something to pretty - checked every 60s'; eslint --max-warnings=1000 .; echo 'eslint ran - now running prettier'; prettier --loglevel=log --single-quote --write -l src packages; echo -e '#############################################\n'); sleep 60; done",
@@ -154,8 +169,8 @@
     "@tapis/tapis-typescript-systems": "0.0.7",
     "@tapis/tapisui-extension-devtools": "file:./packages/tapisui-extension-devtools",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^14.2.1",
-    "@testing-library/user-event": "^12.8.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/base-64": "^1.0.0",
     "@types/jest": "^26.0.24",
     "@types/js-cookie": "^2.2.7",
@@ -180,6 +195,7 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "path": "^0.12.7",
+    "playwright-core": "^1.62.1",
     "prettier": "^2.3.2",
     "rollup-plugin-visualizer": "^5.12.0",
     "ts-jest": "^29.1.4",
@@ -204,17 +220,32 @@
     }
   },
   "jest": {
-    "globals": {
-      "Uint8Array": "Uint8Array"
-    },
     "preset": "ts-jest/presets/js-with-ts",
     "testEnvironment": "jest-environment-jsdom",
     "testPathIgnorePatterns": [
-      "lib"
+      "lib",
+      "/node_modules/",
+      "/packages/",
+      "/dist/"
+    ],
+    "setupFiles": [
+      "<rootDir>/src/testing/jest.setup.js"
+    ],
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-dom"
     ],
     "moduleNameMapper": {
+      "^@redux$": "<rootDir>/src/redux/index.tsx",
+      "^@redux/(.*)$": "<rootDir>/src/redux/$1",
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy"
+      ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy",
+      "^react-markdown$": "<rootDir>/__mocks__/react-markdown.js",
+      "^pixi.js$": "<rootDir>/__mocks__/pixiMock.js",
+      "^d3-force$": "<rootDir>/__mocks__/pixiMock.js",
+      "^utils/resolveBasePath$": "<rootDir>/__mocks__/utils/resolveBasePath.js",
+      "^utils/resolvePodsBasePath$": "<rootDir>/__mocks__/utils/resolvePodsBasePath.js",
+      "^utils/settingsAdmins$": "<rootDir>/__mocks__/utils/settingsAdmins.js",
+      "^@mlhub/(.*)$": "<rootDir>/__mocks__/mlhub-sdk.js"
     },
     "modulePaths": [
       "<rootDir>/src"

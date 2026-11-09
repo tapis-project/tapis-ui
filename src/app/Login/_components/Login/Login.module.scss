@@ -1,7 +1,238 @@
+@use '../../loginTokens' as t;
+
 .buttons {
-  max-width: 450px;
   display: flex;
   flex-direction: column;
-  padding-top: 16px;
-  gap: 16px;
+  gap: 12px;
+}
+
+/* Gray at rest, sidebar purple ($core-portal-color-primary #9d85ef) for
+   every other state — hover, press, disabled, loading. Element+class
+   specificity so it beats bootstrap's .btn-secondary without !important. */
+button.podButton {
+  width: 100%;
+  padding: 0.6em 1em;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.6);
+  background: #fdfdfd;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+  transition: background 0.06s, color 0.06s, box-shadow 0.04s;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background: #9d85ef;
+    border-color: #8a6fe8;
+  }
+
+  &:active:not(:disabled) {
+    color: #ffffff;
+    background: #7a5fd0;
+    border-color: #6b52c7;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(157, 133, 239, 0.6);
+    outline-offset: 2px;
+  }
+
+  /* Disabled (probe failed / submitting) is muted purple, never gray —
+     text stays readable. */
+  &:disabled {
+    color: rgba(255, 255, 255, 0.92);
+    background: #b9a7f4;
+    border-color: #b9a7f4;
+    opacity: 1;
+  }
+}
+
+/* Loading lives inside the button: label + spinner, box unchanged. */
+button.podButton.loadingBtn {
+  pointer-events: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  vertical-align: -1px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: login-spin 0.7s linear infinite;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin-top: 14px;
+  color: #888888;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid #d9d9d9;
+  }
+}
+
+/* Scope a pods-flavored pass over the reactstrap/Formik form controls. */
+.passwordForm {
+  margin-top: 10px;
+
+  :global(label) {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 0.2rem;
+  }
+
+  :global(.form-control) {
+    font-size: 0.82rem;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    background: #fdfdfd;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+
+    &:focus {
+      border-color: rgba(157, 133, 239, 0.65);
+      box-shadow: 0 0 0 3px rgba(157, 133, 239, 0.16);
+      background: #ffffff;
+    }
+  }
+
+  :global(.form-text),
+  :global(small) {
+    font-size: 0.68rem;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  :global(.form-group) {
+    margin-bottom: t.$field-gap;
+  }
+}
+
+/* SubmitWrapper's row: the inline error/success Message inherits this
+   font-size, so a failed login reads as one quiet line instead of a
+   shouting block. */
+.submitRow {
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+/* ── amber advisories ───────────────────────────────────────────────── */
+
+/* Shared dot: a small amber circle that marks a non-blocking notice —
+   "this is a dev-only path" or "an admin needs to act". */
+.amberDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  /* the logo's horn orange, not a mustard */
+  background: #f69723;
+  flex-shrink: 0;
+  margin-top: 0.35em;
+}
+
+/* The password form is showing only because we're on localhost — the
+   deployment is SSO-only in production. */
+/* One quiet line on localhost: a small tag, a few words, no warning colour.
+   It is information about the machine, not a problem. */
+.devNotice {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 10px;
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A rectangular chip with softened corners, in the orange Pods uses for
+   in-progress states (creating, requested, deleting: #fb8c00). */
+.devTag {
+  flex-shrink: 0;
+  padding: 0.15em 0.55em;
+  border-radius: 4px;
+  border: 1px solid rgba(251, 140, 0, 0.45);
+  font-size: 0.66rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: #e67700;
+  background: rgba(251, 140, 0, 0.1);
+}
+
+/* Implicit probe failed. Amber, not red: for a brand-new tenant this is a
+   provisioning to-do for an admin, not a user-facing error. */
+.adminNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45em;
+  margin-top: 0.6em;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(0, 0, 0, 0.68);
+}
+
+/* "Tapis" in the field hints, in the logo wordmark's red. */
+.tapisMark {
+  color: #c5492f;
+  font-weight: 600;
+}
+
+/* The password field, with its show/hide eye inside the input's right edge.
+   The input keeps room on the right so typed text never runs under it. */
+.passwordField {
+  position: relative;
+
+  :global(input) {
+    padding-right: 2rem;
+  }
+}
+
+/* Centred on the input by a measured top; translate keeps it centred. */
+.revealToggle {
+  position: absolute;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.78);
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(157, 133, 239, 0.65);
+    outline-offset: 0;
+  }
 }

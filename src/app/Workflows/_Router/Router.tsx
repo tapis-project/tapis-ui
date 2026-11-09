@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, useRouteMatch, Switch } from 'react-router-dom';
+import NotFound from 'app/_components/NotFound';
 import { Dashboard } from '../Dashboard';
 import { default as PipelinesLayout } from '../Pipelines';
 import { default as ArchivesLayout } from '../Archives';
@@ -130,6 +131,10 @@ const Router: React.FC = () => {
           </div>
         )}
       /> */}
+
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 };

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import styles from './AppsToolbar.module.scss';
-import { useLocation } from 'react-router-dom';
 import CreateAppModal from './CreateAppModal';
-import { Button } from '@mui/material';
 import { Add, RocketLaunch, Update } from '@mui/icons-material';
 import UpdateAppModal from './UpdateAppModal';
 import { Apps } from '@tapis/tapis-typescript';
 import JobLaunchModal from './JobLaunchModal';
+import PodBarButton from 'app/Pods/_utils/PodBarButton';
 
 type ToolbarButtonProps = {
   text: string;
@@ -19,6 +18,8 @@ export type ToolbarModalProps = {
   toggle: () => void;
 };
 
+/** the house bar button — the same press every landing's actions wear;
+ *  these were the last default-MUI outlined buttons on a landing page */
 export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   text,
   icon,
@@ -27,30 +28,32 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   ...rest
 }) => {
   return (
-    <div>
-      <Button
-        disabled={disabled}
-        onClick={onClick}
-        className={styles['toolbar-btn']}
-        startIcon={icon}
-        variant="outlined"
-        size="small"
-        {...rest}
-      >
-        <span>{text}</span>
-      </Button>
-    </div>
+    <PodBarButton onClick={onClick} disabled={disabled} {...rest}>
+      {icon &&
+        React.cloneElement(icon, {
+          sx: { fontSize: 14, mr: 0.25, verticalAlign: 'text-top' },
+        })}
+      {text}
+    </PodBarButton>
   );
 };
 
 type AppsToolbarProps = {
   include?: Array<'create' | 'update' | 'submit'>;
   app?: Apps.RespApp | undefined;
+  /**
+   * Riding a head line beside chips rather than sitting under a table.
+   * The stylesheet's half-em top margin is right above a toolbar's own
+   * row and wrong inside a centered flex line, where it drops the
+   * buttons below everything next to them.
+   */
+  inline?: boolean;
 };
 
 const AppsToolbar: React.FC<AppsToolbarProps> = ({
   app,
   include = ['create'],
+  inline,
 }) => {
   const [modal, setModal] = useState<string | undefined>(undefined);
 
@@ -61,7 +64,7 @@ const AppsToolbar: React.FC<AppsToolbarProps> = ({
     <div id="file-operation-toolbar">
       <div
         className={styles['toolbar-wrapper']}
-        style={{ justifyContent: 'right' }}
+        style={{ justifyContent: 'right', marginTop: inline ? 0 : undefined }}
       >
         {app && include.includes('submit') && (
           <ToolbarButton

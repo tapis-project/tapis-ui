@@ -10,6 +10,10 @@
 
 1.
 
-## UI Photos:
+## UI Photos
+
+- [ ] No UI changes (skips the screenshot check)
+
+<!-- paste at least one screenshot of the change here -->
 
 ## Notes:

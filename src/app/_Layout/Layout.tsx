@@ -5,6 +5,8 @@ import { Tenants as Hooks } from '@tapis/tapisui-hooks';
 import './Layout.scss';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
 import { useExtension } from 'extensions';
+import { resolveTopBar } from './breadcrumbRoutes';
+import TopBarStrip from './TopBarStrip';
 import {
   ButtonDropdown,
   DropdownToggle,
@@ -16,10 +18,12 @@ import {
   PageLayout,
   Breadcrumbs,
   breadcrumbsFromPathname,
+  type LoginPromptState,
 } from '@tapis/tapisui-common';
 import { ChatPanel } from 'app/_components';
 import { Box, Stack, Typography, Chip } from '@mui/material';
-import { Sidebar } from 'app/_components';
+import { Sidebar, PreloginBanner } from 'app/_components';
+import { LoginDialog } from 'app/Login/_components';
 import {
   ChatProvider,
   ChatContext,
@@ -37,6 +41,12 @@ import 'app/Apps/_context/registerAppsChat';
 import 'app/Jobs/_context/registerJobsChat';
 import 'app/Workflows/_context/registerWorkflowsChat';
 import 'app/Pods/_context/registerPodsChat';
+
+// Chat state lives in LayoutContent, so every message update re-renders it.
+// Memoized (both are prop-less), the page body and sidebar skip those
+// renders — without this, every stream token re-rendered the entire app.
+const MemoRouter = React.memo(Router);
+const MemoSidebar = React.memo(Sidebar);
 
 function parseAssistantStream(raw: string) {
   const thinkStartToken = '<think>';
@@ -73,8 +83,18 @@ const LayoutContent: React.FC = () => {
   const { data, isLoading, error } = Hooks.useList();
   const result = data?.result ?? [];
   const tenants = result;
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const { pathname } = location;
   const crumbs = breadcrumbsFromPathname(pathname);
+  // What sits above the page: breadcrumbs, nothing, or an extension's info
+  // strip — one decision, see breadcrumbRoutes.ts. Memoized because this
+  // component re-renders on every chat token and the answer only moves when
+  // the route does.
+  const topBar = useMemo(
+    () => resolveTopBar(pathname, extension),
+    [pathname, extension]
+  );
+  const hideCrumbs = topBar.mode !== 'crumbs';
 
   const history = useHistory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -93,6 +113,24 @@ const LayoutContent: React.FC = () => {
   const loadedChatIdsRef = useRef<Set<string>>(new Set());
   const { accessToken, basePath, mlHubBasePath } = useTapisConfig();
   const isAuthenticated = Boolean(accessToken?.access_token);
+
+  // Pre-login chrome (extensions with a public landing): the not-logged-in
+  // banner replaces the breadcrumb bar, and a bounce off a protected route
+  // (ProtectedRoute sets { loginModal, from } state) opens the login dialog
+  // over the current page instead of navigating to /login.
+  const prelogin = extension?.prelogin;
+  const preloginActive = !isAuthenticated && !!prelogin;
+  // The banner marks the not-logged-in state on the landing page only —
+  // other public pages (training catalog iframe, the login page itself)
+  // shouldn't carry an extra chrome bar.
+  const showPreloginBanner =
+    preloginActive && !!prelogin?.banner && pathname === prelogin?.mainRoute;
+  const locationState = location.state as Partial<LoginPromptState> | undefined;
+  const loginModalOpen = !!prelogin && !!locationState?.loginModal;
+  // Cancel: drop the state so the dialog doesn't reopen on re-render
+  // (search preserved — only the state should go).
+  const closeLoginModal = () =>
+    history.replace({ pathname, search: location.search });
 
   useEffect(() => {
     return () => {
@@ -413,17 +451,49 @@ const LayoutContent: React.FC = () => {
     <>
       <div style={{ display: 'flex', height: '100vh' }}>
         <PageLayout
-          left={<Sidebar />}
+          left={<MemoSidebar />}
           right={
-            <div style={{ height: '100%' }}>
-              <div>{crumbs && crumbs.length == 0 ? null : header}</div>
+            <div
+              style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {showPreloginBanner && (
+                <PreloginBanner text={prelogin?.banner?.text} />
+              )}
+              <div style={{ flexShrink: 0 }}>
+                {/* Pre-login the banner is the only chrome — no breadcrumbs. */}
+                {preloginActive || hideCrumbs || (crumbs && crumbs.length == 0)
+                  ? null
+                  : header}
+                {/* A public page keeps its strip before login too; only the
+                    landing page, which already carries the pre-login banner,
+                    does not stack a second bar. */}
+                {!showPreloginBanner && topBar.mode === 'strip' && (
+                  <TopBarStrip strip={topBar.strip} />
+                )}
+              </div>
               <div className="body">
-                <Router />
+                <MemoRouter />
               </div>
             </div>
           }
         />
       </div>
+      {/* Mounted whenever a prelogin config exists (not just while the
+          location state asks for it) so the post-login success beat inside
+          the dialog can play out before it navigates away. */}
+      {prelogin && (
+        <LoginDialog
+          open={loginModalOpen}
+          onClose={closeLoginModal}
+          fromPathname={locationState?.from?.pathname}
+          fromSearch={locationState?.from?.search}
+          message={locationState?.loginMessage}
+        />
+      )}
       <FloatingChatButton isAuthenticated={isAuthenticated} />
       {chatConfig ? (
         <ChatPanel

@@ -1,13 +1,8 @@
 import React from 'react';
-import { Help } from '@tapis/tapisui-common';
+import ServiceDocs from '../ServiceDocs';
 
-const AuthenticatorHelp: React.FC = () => {
-  return (
-    <Help
-      title="Authenticator Help"
-      iframeUrl="https://tapis.readthedocs.io/en/latest/technical/authentication.html#oauth-clients"
-    />
-  );
-};
+const AuthenticatorHelp: React.FC = () => (
+  <ServiceDocs service="authenticator" />
+);
 
 export default AuthenticatorHelp;

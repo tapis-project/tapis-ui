@@ -23,6 +23,13 @@ export const registerModuleHeaders = (
   headerProviders.set(module, provider);
 };
 
+/**
+ * Return the extra headers currently registered for `module`.
+ * Useful for manual fetch() calls that bypass apiGenerator.
+ */
+export const getModuleHeaders = (module: ApiModule): Record<string, string> =>
+  headerProviders.get(module)?.() ?? {};
+
 const apiGenerator = <T extends unknown>(
   module: ApiModule,
   api: BaseApiClass,

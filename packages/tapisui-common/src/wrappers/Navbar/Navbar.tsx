@@ -6,7 +6,10 @@ import { ListItemButton, ListItemText } from '@mui/material';
 
 export const NavItem: React.FC<
   React.PropsWithChildren<{
-    to?: string;
+    // A plain path, or a full location — the object form is how a nav row
+    // carries state, e.g. the sidebar's Login raising the login dialog in
+    // place instead of navigating away from a public pre-login page.
+    to?: string | { pathname: string; search?: string; state?: unknown };
     icon?: string;
     // Renders instead of the icon-font glyph named by `icon` — for cases the
     // font doesn't cover (e.g. there's no "home" glyph in it).
@@ -16,6 +19,9 @@ export const NavItem: React.FC<
     accentLeftColor?: string;
     onLongPress?: () => void;
     longPressMs?: number;
+    /** Runs alongside navigation, for a row that has to record something
+     *  before it leaves (e.g. Login stashing where it was pressed). */
+    onClick?: () => void;
   }>
 > = ({
   to,
@@ -27,6 +33,7 @@ export const NavItem: React.FC<
   accentLeftColor,
   onLongPress,
   longPressMs = 3000,
+  onClick,
 }) => {
   const accentStyle: React.CSSProperties = accentLeft
     ? { boxShadow: `inset 0.2rem 0 0 0 ${accentLeftColor ?? '#F69723'}` }
@@ -52,12 +59,17 @@ export const NavItem: React.FC<
     }
   }, []);
 
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    if (didLongPress.current) {
-      e.preventDefault();
-      didLongPress.current = false;
-    }
-  }, []);
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (didLongPress.current) {
+        e.preventDefault();
+        didLongPress.current = false;
+        return;
+      }
+      onClick?.();
+    },
+    [onClick]
+  );
 
   if (to) {
     return (

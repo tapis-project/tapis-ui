@@ -2,18 +2,8 @@ import { useCallback, useState, useMemo } from 'react';
 import { Files } from '@tapis/tapis-typescript';
 import { GenericModal } from '../../../ui';
 import { FileExplorer } from '../../../components/files';
-import { SelectMode } from '../../../components/files/FileListing/FileListing';
 import { Button } from 'reactstrap';
-
-type FileSelectModalProps = {
-  systemId?: string;
-  path?: string;
-  allowSystemChange?: boolean;
-  onSelect?: (systemId: string | null, files: Array<Files.FileInfo>) => void;
-  selectMode?: SelectMode;
-  toggle: () => void;
-  initialSelection?: Array<Files.FileInfo>;
-};
+import type { FileSelectModalProps } from './types';
 
 const FileSelectModal: React.FC<FileSelectModalProps> = ({
   systemId,

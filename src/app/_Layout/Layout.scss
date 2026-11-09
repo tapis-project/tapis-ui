@@ -121,10 +121,12 @@
 .body {
   display: flex;
   overflow: hidden;
-  max-height: calc(100vh - 48px);
-  min-height: calc(100vh - 48px);
+  /* flex-sized by the column wrapper in Layout.tsx — no hardcoded 48px
+     breadcrumb math, so breadcrumb-less pages (see breadcrumbRoutes.ts)
+     get the full height instead of a phantom bottom gap */
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
-  height: 100%;
 }
 
 .body > * {

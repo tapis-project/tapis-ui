@@ -9,7 +9,6 @@ import styles from './DeleteSystemModal.module.scss';
 import * as Yup from 'yup';
 import { Systems as Hooks } from '@tapis/tapisui-hooks';
 import { useTapisConfig } from '@tapis/tapisui-hooks';
-import { useHistory } from 'react-router-dom';
 
 type DeleteModalProps = {
   systemId?: string;
@@ -26,7 +25,6 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
     return <></>;
   }
   const { claims } = useTapisConfig();
-  const history = useHistory();
   const effectiveUserId = claims['tapis/username'];
   const { data } = Hooks.useList({ search: `owner.like.${effectiveUserId}` });
   const systems: Array<Systems.TapisSystem> = data?.result ?? [];
@@ -53,8 +51,10 @@ const DeleteSystemModal: React.FC<DeleteModalProps> = ({
     }
     deleteSystem(systemIdToDelete, {
       onSuccess: () => {
+        // no navigation: on a system's own page the card turns into the
+        // deleted banner (restore right there) — being bounced to the
+        // overview hid exactly the thing the delete just changed
         invalidate();
-        history.push('/systems');
       },
     });
   };

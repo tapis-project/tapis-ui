@@ -7,12 +7,11 @@ import 'styles/index.css';
 import { resolveBasePath } from 'utils/resolveBasePath';
 import { resolveMLHubBasePath } from 'utils/resolveMLHubBasePath';
 import reportWebVitals from './reportWebVitals';
-import { ExtensionsProvider } from './extensions';
-import { Extension } from '@tapis/tapisui-extensions-core';
-import { extension as icicleExtension } from '@icicle/tapisui-extension';
-import { extension as scopedExtension } from '@scoped/tapisui-extension';
-import { extension as demoExtension } from '@tapis/tapisui-extension-demo';
+import { ExtensionsProvider, initializedExtensions } from './extensions';
 import { NotificationsProvider } from 'app/_components/Notifications';
+import ErrorBoundary, {
+  reloadForNewBuild,
+} from 'app/_components/ErrorBoundary';
 import Theme from './theme'; // Import the Theme component
 import { registerModuleHeaders } from '@tapis/tapisui-api';
 import { Pods as PodsModule } from '@tapis/tapis-typescript';
@@ -26,11 +25,18 @@ registerModuleHeaders(
     getPodsAdminMode() ? { 'X-Pods-Admin': 'true' } : {}
 );
 
-const initializedExtensions: { [key: string]: Extension } = {
-  '@icicle/tapisui-extension': icicleExtension,
-  '@scoped/tapisui-extension': scopedExtension,
-  '@demo/tapisui-extension': demoExtension,
-};
+// icicle.tapis.io is archived — redirect to icicleai.tapis.io.
+if (window.location.hostname === 'icicle.tapis.io') {
+  window.location.replace(
+    window.location.href.replace('icicle.tapis.io', 'icicleai.tapis.io')
+  );
+}
+
+// Vite raises this when a lazy chunk fails. Left alone, the import rejects and
+// the error boundary shows it.
+window.addEventListener('vite:preloadError', (event) => {
+  if (reloadForNewBuild()) event.preventDefault();
+});
 
 const container = document.getElementById('react-root');
 const root = createRoot(container!);
@@ -45,7 +51,9 @@ root.render(
         <Theme>
           <NotificationsProvider>
             <Router>
-              <App />
+              <ErrorBoundary>
+                <App />
+              </ErrorBoundary>
             </Router>
           </NotificationsProvider>
         </Theme>

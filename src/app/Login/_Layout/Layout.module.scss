@@ -1,0 +1,109 @@
+@use '../loginTokens' as t;
+
+/* The login page: an open header (logo, host, tagline, description), one
+   boxed sign-in card, and the links under it, all on one left edge. The
+   pieces are shared with LoginDialog. */
+
+.landing {
+  max-width: 380px;
+  margin: 0 auto;
+  padding: t.$page-top 1.25rem 2.5rem;
+  text-align: left;
+}
+
+/* The open header and the links sit 0.35rem inside the card's edges, the
+   same on both sides, so wrapped text never runs out to the right edge. */
+.head {
+  padding: 0 t.$inset t.$above-card;
+}
+
+.logoRow {
+  display: flex;
+  user-select: none;
+}
+
+.logo {
+  height: 64px;
+  max-width: 15rem;
+}
+
+.hostRow {
+  display: flex;
+  margin-top: 0.65rem;
+}
+
+/* The deployment's host: a raised white chip with a green dot. */
+.host {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.22em 0.65em;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #24262b;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2e9e48;
+    flex-shrink: 0;
+  }
+}
+
+.tagline {
+  font-size: t.$tagline-size;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.74);
+  margin-top: 0.95rem;
+}
+
+.description {
+  font-size: t.$description-size;
+  line-height: 1.55;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 0.75rem;
+}
+
+.tagline + .description {
+  margin-top: t.$tagline-gap;
+}
+
+/* The only box: the form sits close to the shared left edge. */
+.signInCard {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 8px;
+  background: #fdfdfd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: t.$card-top t.$card-side t.$card-bottom;
+}
+
+.signInTitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.72);
+  margin-bottom: t.$title-gap;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+  padding: t.$above-links t.$inset 0;
+  font-size: 0.7rem;
+
+  a {
+    color: rgba(0, 0, 0, 0.52);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.78);
+    }
+  }
+}

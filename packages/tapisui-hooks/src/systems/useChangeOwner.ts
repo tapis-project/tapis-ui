@@ -20,6 +20,8 @@ const useChangeOwner = () => {
 
   const invalidate = () => {
     queryClient.invalidateQueries([QueryKeys.details]);
+    queryClient.invalidateQueries(QueryKeys.list);
+    queryClient.invalidateQueries(QueryKeys.listWindow);
   };
 
   // Return hook object with loading states and login function

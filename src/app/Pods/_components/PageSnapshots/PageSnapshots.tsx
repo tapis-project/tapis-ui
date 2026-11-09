@@ -35,6 +35,7 @@ import { DeleteSnapshotModal, SnapshotPermissionModal } from '../Modals';
 import { useHistory } from 'react-router-dom';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
+import PodsLoadError from '../PodsLoadError';
 import { NavLink } from 'react-router-dom';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 
@@ -46,6 +47,7 @@ const PageSnapshots: React.FC<{ objId: string | undefined }> = ({ objId }) => {
 
   const { data, isLoading, isFetching, error, invalidate } =
     Hooks.useGetSnapshot({ snapshotId: objId }, { enabled: !!objId });
+  const loadFailed = objId !== undefined && !!error && !data;
   const {
     data: filesData,
     isLoading: isFilesLoading,
@@ -457,13 +459,15 @@ Select or create a snapshot to get started.`;
           <NavSnapshots />
         </div>
         <div className={styles['right-pane']}>
-          <div className={styles['work-toolbar']}>
-            {renderTabBar(getTabBarButtons(), rightButtons)}
-          </div>
+          {!loadFailed && (
+            <div className={styles['work-toolbar']}>
+              {renderTabBar(getTabBarButtons(), rightButtons)}
+            </div>
+          )}
           <div className={styles['work-content']}>
             <div className={styles['container']}>
               {/* Permissions chips when viewing perms */}
-              {snapshotTab === 'perms' && objId !== undefined && (
+              {snapshotTab === 'perms' && objId && !loadFailed && (
                 <Box sx={{ px: 1, py: 1, mb: 1 }}>
                   {isFetchingPerms ? (
                     <Typography variant="body2" color="text.secondary">
@@ -545,7 +549,15 @@ Select or create a snapshot to get started.`;
                   )}
                 </Box>
               )}
-              {snapshotTab === 'edit' && objId !== undefined ? (
+              {loadFailed ? (
+                <PodsLoadError
+                  kind="Snapshot"
+                  id={objId}
+                  error={error}
+                  listRoute="/pods/snapshots"
+                  listLabel="All snapshots"
+                />
+              ) : snapshotTab === 'edit' && objId !== undefined ? (
                 <SnapshotWizardEdit key={objId} snapshot={pod} />
               ) : snapshotRootTab === 'createSnapshot' &&
                 objId === undefined ? (

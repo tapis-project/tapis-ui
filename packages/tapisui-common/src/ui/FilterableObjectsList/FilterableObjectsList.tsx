@@ -53,9 +53,11 @@ export type ResolvableGroupValue<T, R> =
 
 export type Group<T, V> = {
   field: PropsOfObjectWithValuesOfType<T, V>;
-  primaryItemText: ResolvableGroupItemValue<T, string>;
-  secondaryItemText?: ResolvableGroupItemValue<T, string>;
-  tertiaryItemText?: ResolvableGroupItemValue<T, string>;
+  // ReactNode, not string: both renderers hand these to JSX/ListItemText,
+  // and a row sometimes needs styling of its own (deleted = struck through)
+  primaryItemText: ResolvableGroupItemValue<T, React.ReactNode>;
+  secondaryItemText?: ResolvableGroupItemValue<T, React.ReactNode>;
+  tertiaryItemText?: ResolvableGroupItemValue<T, React.ReactNode>;
   groupSelectorLabel?: string;
   groupLabel?: ResolvableGroupValue<T, string>;
   open?: Array<string>;
@@ -132,9 +134,9 @@ export type FilterableObjectsListProps<T, V = string | undefined> = {
   includeAllGroupLabel?: string;
   includeAllToolTip?: string;
   includeAllShowDropdown?: boolean;
-  includeAllPrimaryItemText?: ResolvableGroupItemValue<T, string>;
-  includeAllSecondaryItemText?: ResolvableGroupItemValue<T, string>;
-  includeAllTertiaryItemText?: ResolvableGroupItemValue<T, string>;
+  includeAllPrimaryItemText?: ResolvableGroupItemValue<T, React.ReactNode>;
+  includeAllSecondaryItemText?: ResolvableGroupItemValue<T, React.ReactNode>;
+  includeAllTertiaryItemText?: ResolvableGroupItemValue<T, React.ReactNode>;
   includeAllGroupIcon?: ResolvableGroupItemValue<T, any>;
   includeAllGroupItemIcon?: ResolvableGroupItemValue<T, any>;
   defaultField?: PropsOfObjectWithValuesOfType<T, V> | '*';
@@ -565,7 +567,7 @@ const FilterableObjectsList: FilterableObjectsListComponentProps<{
   };
 
   return (
-    <div style={{ maxHeight: '100%', minHeight: '100%', minWidth: '200px' }}>
+    <div style={{ maxHeight: '100%', minHeight: '100%', minWidth: '13rem' }}>
       {title && (
         <>
           <List

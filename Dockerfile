@@ -5,10 +5,13 @@ FROM node:22.4.0 as build-stage
 RUN mkdir tapisui
 WORKDIR /tapisui
 
-# Copy the rest of the files
+# Copy the rest of the files.
+# .env stays out twice over (here and .dockerignore): vite inlines VITE_*
+# values into the bundle, so a local key would ship inside the pushed image.
 COPY \
   --exclude=**node_modules* \
   --exclude=**dist* \
+  --exclude=./.env \
   --exclude=./.vscode \
   --exclude=./__pycache__ \
   --exclude=./__mocks__ \

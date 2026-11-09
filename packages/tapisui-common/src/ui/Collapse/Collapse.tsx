@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Badge } from 'reactstrap';
 import { Collapse as BootstrapCollapse } from 'reactstrap';
-import { Icon } from '../../ui';
+import Icon from '../Icon';
 import styles from './Collapse.module.scss';
 
 type CollapseProperties = React.PropsWithChildren<{
@@ -26,6 +26,16 @@ const Collapse: React.FC<CollapseProperties> = ({
   const toggle = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen, setIsOpen]);
+
+  // While a section is force-opened (isCollapsable=false, e.g. it holds a
+  // validation error) the internal open state is bypassed. Record it as open so
+  // that the moment it becomes collapsable again -- the user fixed the error --
+  // the section does not snap shut underneath them.
+  useEffect(() => {
+    if (!isCollapsable) {
+      setIsOpen(true);
+    }
+  }, [isCollapsable]);
 
   return (
     <div className={className}>

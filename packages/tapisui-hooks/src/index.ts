@@ -1,4 +1,12 @@
-import { useTapisConfig, TapisContext, TapisContextType } from './context';
+import {
+  useTapisConfig,
+  TapisContext,
+  TapisContextType,
+  isJwtExpired,
+  tenantMatchesHost,
+  checkAccessToken,
+} from './context';
+export type { TokenRefusal } from './context';
 import { TapisProvider } from './provider';
 import * as Apps from './apps';
 import * as Authenticator from './authenticator';
@@ -18,6 +26,9 @@ export {
   type MutationFunction,
   utils,
   useTapisConfig,
+  isJwtExpired,
+  tenantMatchesHost,
+  checkAccessToken,
   TapisContext,
   TapisProvider,
   Apps,

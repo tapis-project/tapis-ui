@@ -3,6 +3,7 @@ import { Systems as API } from '@tapis/tapisui-api';
 import { Systems } from '@tapis/tapis-typescript';
 import { useTapisConfig } from '../';
 import QueryKeys from './queryKeys';
+import { slowListPolicy } from '../utils/cachePolicy';
 
 export const defaultParams: Systems.GetSystemsRequest = {
   search: 'deleted.eq.true',
@@ -20,8 +21,9 @@ const useDeletedList = (
     // which is expected behavior for not having a token
     () => API.list(params, basePath, accessToken?.access_token || ''),
     {
+      ...slowListPolicy(),
       ...options,
-      enabled: !!accessToken,
+      enabled: (options.enabled ?? true) && !!accessToken,
     }
   );
   return result;

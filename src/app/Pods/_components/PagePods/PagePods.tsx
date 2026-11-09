@@ -58,6 +58,7 @@ import { PodWizard, PodWizardEdit } from '../';
 import { PodPermissionModal } from '../Modals';
 import { NavPods, PodsCodeMirror, PodsNavigation } from 'app/Pods/_components';
 import PodsLoadingText from '../PodsLoadingText';
+import PodsLoadError from '../PodsLoadError';
 import { useAppSelector, updateState, useAppDispatch } from '@redux';
 import ButtonGroup from '@mui/material/ButtonGroup';
 
@@ -89,6 +90,8 @@ const PagePods: React.FC<{ objId: string | undefined }> = ({ objId }) => {
     { podId: objId ?? '' },
     { enabled: !!objId }
   );
+  // a failed refresh of a record already on screen keeps the record
+  const loadFailed = objId !== undefined && !!error && !data;
   const {
     data: dataLogs,
     isLoading: isLoadingLogs,
@@ -302,8 +305,8 @@ Select or create a pod to get started.`;
         case 'edit':
           switch (podDetailTab) {
             case 'derived':
-              return error
-                ? `error: ${error}`
+              return errorDerived
+                ? `error: ${errorDerived}`
                 : isFetchingDerived
                 ? loadingText
                 : JSON.stringify(podDerived, null, 2);
@@ -319,7 +322,7 @@ Select or create a pod to get started.`;
         case 'logs':
           switch (podLogTab) {
             case 'logs':
-              return error
+              return errorLogs
                 ? `error: ${errorLogs}`
                 : isFetchingLogs
                 ? loadingText
@@ -327,7 +330,7 @@ Select or create a pod to get started.`;
                 ? podLogs.logs
                 : 'No logs available from this pod yet.';
             case 'actions':
-              return error
+              return errorLogs
                 ? `error: ${errorLogs}`
                 : isFetchingLogs
                 ? loadingText
@@ -336,14 +339,14 @@ Select or create a pod to get started.`;
               return ''; // Default or placeholder value
           }
         case 'secrets':
-          return error
+          return errorSecrets
             ? `error: ${errorSecrets}`
             : isFetchingSecrets
             ? loadingText
             : JSON.stringify(podSecrets, null, 2);
         case 'perms':
-          return error
-            ? `error: ${error}`
+          return errorPerms
+            ? `error: ${errorPerms}`
             : isFetchingPerms
             ? loadingText
             : JSON.stringify(podPerms, null, 2);
@@ -1034,15 +1037,17 @@ Select or create a pod to get started.`;
           <NavPods />
         </div>
         <div className={styles['right-pane']} style={{ minWidth: 352 }}>
-          <div className={styles['work-toolbar']}>
-            {objId === undefined
-              ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
-              : renderTabBar(detailsLeftButtons, detailsRightButtons)}
-          </div>
+          {!loadFailed && (
+            <div className={styles['work-toolbar']}>
+              {objId === undefined
+                ? renderTabBar(dashboardLeftButtons, dashboardRightButtons)
+                : renderTabBar(detailsLeftButtons, detailsRightButtons)}
+            </div>
+          )}
           <div className={styles['work-content']}>
             <div className={styles['container']}>
               {/* Permissions chips when viewing perms */}
-              {podTab === 'perms' && objId !== undefined && (
+              {!loadFailed && podTab === 'perms' && objId !== undefined && (
                 <Box sx={{ px: 1, py: 1, mb: 1 }}>
                   {isFetchingPerms ? (
                     <Typography variant="body2" color="text.secondary">
@@ -1122,7 +1127,15 @@ Select or create a pod to get started.`;
                   )}
                 </Box>
               )}
-              {podTab === 'edit' && objId !== undefined ? (
+              {loadFailed ? (
+                <PodsLoadError
+                  kind="Pod"
+                  id={objId}
+                  error={error}
+                  listRoute="/pods"
+                  listLabel="All pods"
+                />
+              ) : podTab === 'edit' && objId !== undefined ? (
                 <PodWizardEdit key={objId} pod={pod} />
               ) : podRootTab === 'createPod' && objId === undefined ? (
                 <PodWizard />

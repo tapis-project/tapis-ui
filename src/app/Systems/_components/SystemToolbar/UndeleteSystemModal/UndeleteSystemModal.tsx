@@ -23,6 +23,9 @@ const UndeleteSystemModal: React.FC<
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries(Hooks.queryKeys.list);
+    // the rebuilt nav renders from the WINDOW key — without this, the row
+    // flip (deleted <-> live) waits for a manual refresh
+    queryClient.invalidateQueries(Hooks.queryKeys.listWindow);
   }, [queryClient]);
 
   const {

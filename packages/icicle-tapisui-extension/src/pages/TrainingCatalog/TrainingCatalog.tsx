@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { SectionHeader } from '@tapis/tapisui-common';
 import { Component } from '@tapis/tapisui-extensions-core';
 
-export const TrainingCatalog: Component = ({ accessToken }) => {
+// The catalog is a public GitHub Pages site — no JWT involved, so it renders
+// pre-login too (this page is in the extension's prelogin sidebar).
+export const TrainingCatalog: Component = () => {
   return (
     <div
       style={{
@@ -13,14 +14,10 @@ export const TrainingCatalog: Component = ({ accessToken }) => {
         overflow: 'hidden',
       }}
     >
-      {accessToken ? (
-        <iframe
-          style={{ flexGrow: 1, border: 'none' }}
-          src={`https://icicle-ai.github.io/training-catalog/docs/intro`}
-        />
-      ) : (
-        <>Invalid JWT. Log out of TapisUI then log back in</>
-      )}
+      <iframe
+        style={{ flexGrow: 1, border: 'none' }}
+        src={`https://icicle-ai.github.io/training-catalog/docs/intro`}
+      />
     </div>
   );
 };

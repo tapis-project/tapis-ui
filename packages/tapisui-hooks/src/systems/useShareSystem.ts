@@ -11,12 +11,16 @@ const useShareSystem = () => {
 
   const { mutate, isLoading, isError, isSuccess, data, error, reset } =
     useMutation<Systems.RespBasic, Error, Systems.ShareSystemRequest>(
-      [QueryKeys.createUserCredential, basePath, jwt],
+      [QueryKeys.shareSystem, basePath, jwt],
       (params) => API.shareSystem(params, basePath, jwt)
     );
 
   const invalidate = () => {
-    queryClient.invalidateQueries([QueryKeys.details]);
+    // sharedWithUsers lives on the system record — every reader of it
+    queryClient.invalidateQueries(QueryKeys.details);
+    queryClient.invalidateQueries(QueryKeys.list);
+    queryClient.invalidateQueries(QueryKeys.listWindow);
+    queryClient.invalidateQueries(QueryKeys.userPermsMap);
   };
 
   // Return hook object with loading states and login function

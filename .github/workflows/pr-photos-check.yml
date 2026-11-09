@@ -1,0 +1,39 @@
+name: PR Photos Required
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches: [dev, staging, test, release-**]
+
+jobs:
+  check-photos:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Require a screenshot of the change
+        uses: actions/github-script@v8
+        with:
+          script: |
+            // HTML comments are template placeholders, not content.
+            const body = (context.payload.pull_request.body ?? '').replace(/<!--[\s\S]*?-->/g, '');
+
+            if (/- \[x\] No UI changes/i.test(body)) {
+              console.log('"No UI changes" is ticked: photo check skipped.');
+              return;
+            }
+
+            // Look inside "## UI Photos" (up to the next ## heading); without
+            // that heading, anywhere in the body counts.
+            const section = body.match(/^##\s*UI Photos[^\n]*\n([\s\S]*?)(?=^##\s|(?![\s\S]))/im);
+            const text = section ? section[1] : body;
+
+            // Markdown image, <img> tag, or a bare GitHub attachment URL (videos).
+            const IMAGE_RE = /!\[[^\]]*\]\(\s*https?:\/\/[^)\s]+|<img\s[^>]*src=|https:\/\/github\.com\/user-attachments\/assets\/\S+/i;
+
+            if (IMAGE_RE.test(text)) {
+              console.log('Screenshot found: photo check passed.');
+            } else {
+              core.setFailed(
+                'PR has no screenshot of the change. Add one under "UI Photos", ' +
+                'or tick "No UI changes" to skip.'
+              );
+            }

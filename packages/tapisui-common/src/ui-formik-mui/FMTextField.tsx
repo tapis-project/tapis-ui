@@ -8,6 +8,8 @@ interface FMTextFieldProps {
   name: string;
   label: string;
   description?: string;
+  helperText?: string;
+  placeholder?: string;
   multiline?: boolean;
   disabled?: boolean;
   rows?: number;
@@ -15,8 +17,9 @@ interface FMTextFieldProps {
   size?: 'small' | 'medium';
   style?: React.CSSProperties;
   InputProps?: any;
-  value?: any; // Optional value override
-  onChange?: (e: React.ChangeEvent<any>) => void; // Optional custom onChange
+  inputProps?: any;
+  value?: any;
+  onChange?: (e: React.ChangeEvent<any>) => void;
   variant?: 'outlined' | 'filled' | 'standard';
 }
 
@@ -25,6 +28,8 @@ const FMTextField: React.FC<FMTextFieldProps> = ({
   name,
   label,
   description = '',
+  helperText,
+  placeholder,
   rows,
   disabled = false,
   multiline = false,
@@ -32,6 +37,7 @@ const FMTextField: React.FC<FMTextFieldProps> = ({
   size = 'small',
   style = {},
   InputProps = {},
+  inputProps,
   value,
   onChange,
   variant = 'outlined',
@@ -54,10 +60,11 @@ const FMTextField: React.FC<FMTextFieldProps> = ({
       helperText={
         formik.touched[name] && formik.errors[name]
           ? String(formik.errors[name])
-          : description
+          : helperText ?? description
       }
       size={size}
       InputProps={InputProps}
+      inputProps={{ placeholder, ...inputProps }}
       variant={variant}
     />
   );

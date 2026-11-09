@@ -10,7 +10,7 @@
  * copy-edits only: spelling, and disambiguating rows that shared one label);
  * `description` is a cleaner one-liner shown on hover / when a section
  * expands. `status`:
- *   'live' — routes inside this portal (e.g. /ml-hub)
+ *   'live' — routes inside this portal (e.g. /mlhub)
  *   'ext'  — ready, but off-platform (GitHub / docs), opens in a new tab
  */
 export type ServiceStatus = 'live' | 'ext';
@@ -193,7 +193,7 @@ export const CATALOGS: Catalog[] = [
         description:
           'A playground for the full model lifecycle — creation, adaptation, training, compression, and inference.',
         name: 'MLHub',
-        href: '/ml-hub',
+        href: '/mlhub',
         status: 'live',
       },
       {
