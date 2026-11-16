@@ -96,7 +96,6 @@ const AutoOptTabularForm: React.FC = () => {
   const jwt = accessToken?.access_token || '';
   const submitEndpoint =
     'https://autoopttabularservice.pods.icicleai.tapis.io/run_job';
-
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,13 +127,23 @@ const AutoOptTabularForm: React.FC = () => {
 
         if (!response.ok) {
           const errBody = await response.text();
+          let details = errBody;
+          try {
+            details = JSON.stringify(
+              JSON.parse(errBody).detail ?? JSON.parse(errBody),
+              null,
+              2
+            );
+          } catch {
+            details = details;
+          }
           throw new Error(
-            `Job submission failed (${response.status}): ${errBody}`
+            `Job submission failed (${response.status}): ${response.statusText}: ${details}`
           );
         }
 
         const result = await response.json();
-        setSubmitSuccess(`Job submitted successfully. Job ID: ${result}`);
+        setSubmitSuccess(`Job submitted successfully. Job ID: ${result.uuid}`);
         formik.resetForm();
       } catch (err: any) {
         setSubmitError(err.message ?? 'An unknown error occurred.');
