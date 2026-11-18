@@ -40,6 +40,7 @@ import {
   WorkflowStudio,
   EarthDataHub,
   VideoSegmentationTracking,
+  SecurePrivacy
 } from './pages';
 import { portalStrips } from './portalStrips';
 
@@ -117,6 +118,7 @@ const extension = createExtension({
     'insights',
     'auto-opt-tabular',
     'fnas-lcd',
+    'secure-privacy',
     //'ckn-dashboard',
     //'data-labeler',
     //'smart-scheduler',
@@ -162,6 +164,7 @@ const extension = createExtension({
           'insights',
           'auto-opt-tabular',
           'fnas-lcd',
+          'secure-privacy',
         ],
         secondaryServices: [],
       },
@@ -512,6 +515,13 @@ extension.registerService({
   // no fnas glyph in the TACC icon font; globe for land-cover data
   iconName: 'globe',
   component: FNAS_LCD,
+});
+
+extension.registerService({
+  id: 'secure-privacy',
+  sidebarDisplayName: 'SECURE',
+  iconName: 'globe',
+  component: SecurePrivacy,
 });
 
 // extension.registerService({

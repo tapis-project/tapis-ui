@@ -90,3 +90,4 @@ export const EarthDataHub = lazy(() => import('./EarthDataHub/EarthDataHub'));
 export const VideoSegmentationTracking = lazy(
   () => import('./VideoSegmentationTracking/VideoSegmentationTracking')
 );
+export const SecurePrivacy = lazy(() => import ('./SecurePrivacy/SecurePrivacy'));
