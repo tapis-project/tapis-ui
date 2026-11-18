@@ -16,7 +16,7 @@ export const SecurePrivacy: Component = ({ accessToken }) => {
         <iframe
           style={{ flexGrow: 1, border: 'none' }}
           src="https://secureprivacy.pods.icicleai.tapis.io"
-          title="ScecurePrivacy"
+          title="SecurePrivacy"
         />
       ) : (
         <>Invalid JWT. Log out of TapisUI then log back in</>
